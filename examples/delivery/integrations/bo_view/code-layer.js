@@ -1,4 +1,5 @@
 // Optional source structure is a display projection, separate from recorded facts.
+import { mergeGraph } from "./graph-links.js";
 export const codeTypes = [
   "code-file",
   "code-endpoint",
@@ -55,21 +56,10 @@ export function migrateCodeFilters(value) {
 /** Merge by stable identity; never replace the authored graph or its build. */
 export function withCodeGraph(view, slice) {
   if (!slice) return view;
-  const ids = new Set(view.model.nodes.map((n) => n.id));
-  const nodes = slice.nodes.filter((n) => !ids.has(n.id));
-  nodes.forEach((n) => ids.add(n.id));
   return {
     ...view,
     code_structure: slice,
-    model: {
-      ...view.model,
-      nodes: [...view.model.nodes, ...nodes],
-      edges: [...view.model.edges, ...slice.edges.filter((e) => ids.has(e.from) && ids.has(e.to))],
-      graph_roots: [
-        ...(view.model.graph_roots || []),
-        ...nodes.filter((n) => !n.parent).map((n) => n.id),
-      ],
-    },
+    model: mergeGraph(view.model, slice),
     manifest: {
       ...view.manifest,
       bindings: {

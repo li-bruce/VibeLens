@@ -10,6 +10,7 @@
 *.png binary
 *.zip binary
 **/pixi.min.js -whitespace linguist-vendored=true
+**/spatial-*.vendor.js -text -whitespace linguist-vendored=true
 examples/delivery/observer_generated/** linguist-generated=true
 examples/delivery/.release/** linguist-generated=true
 examples/team-archive/.release/** linguist-generated=true
@@ -20,6 +21,10 @@ examples/team-archive/static/graph/elk-worker.min.js -text -whitespace linguist-
 # Frozen evidence must retain the bytes that its recorded hashes describe.
 docs/assessment/** -text
 docs/review/** -text
+# Raw Windows test output retains original line endings in the review archive.
+docs/review/spatial-graph/** -whitespace
 tests/fixtures/** -text
 examples/team-archive/review/** -text
 examples/*/.release/** -text
+# New spatial acceptance snapshots retain their recorded CRLF/LF bytes too.
+examples/*/.release/stategraph/spatial-*/** -whitespace

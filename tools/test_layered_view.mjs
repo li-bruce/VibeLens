@@ -7,10 +7,19 @@ import {
 } from "../skills/vibelens/assets/stategraph-viewer/capture-fields.js";
 import { dataLines } from "../skills/vibelens/assets/stategraph-viewer/data-layer.js";
 import {
-  projectLayers,
   cleanLayers,
-  unprojectMove,
-} from "../skills/vibelens/assets/stategraph-viewer/layered-view.js";
+  layerSlice,
+  layerOf,
+} from "../skills/vibelens/assets/stategraph-viewer/graph-layers.js";
+import {
+  spatialModel,
+  containmentVolumes,
+} from "../skills/vibelens/assets/stategraph-viewer/spatial-model.js";
+import { solveSpatial } from "../skills/vibelens/assets/stategraph-viewer/spatial-layout.js";
+import {
+  runtimeOwners,
+  mergeGraph,
+} from "../skills/vibelens/assets/stategraph-viewer/graph-links.js";
 import {
   relationStyle,
   emptyFilters,
@@ -18,6 +27,9 @@ import {
   refreshHierarchy,
 } from "../skills/vibelens/assets/stategraph-viewer/layout.js";
 
+assert.equal(layerOf({ kind: "wait" }), "state");
+assert.equal(layerOf({ kind: "function", execution_role: "join" }), "rules");
+assert.equal(layerOf({ kind: "function", execution_role: "resource" }), "rules");
 const owner = {
   id: "tx",
   label: "Publish transaction",
@@ -109,27 +121,36 @@ const graph = {
 };
 refreshHierarchy(graph);
 const before = JSON.stringify(graph.boxes);
-assert.equal(projectLayers(graph, { enabled: false }), graph);
-for (const camera of ["angled", "front", "side"]) {
-  const settings = cleanLayers({ enabled: true, camera }),
-    projected = projectLayers(graph, settings);
-  assert.equal(JSON.stringify(graph.boxes), before, "Projection cannot change persisted layout");
-  assert.equal(projected.planes.length, 3);
-  assert.equal(projected.byId.get("fn").node.parent, undefined);
-  assert.equal(graph.byId.get("fn").node.parent, "publish");
-  const p = projected.byId.get("fn"),
-    original = graph.byId.get("fn");
-  const move = unprojectMove(original, p, p.x + 40, p.y + 25, settings);
-  const modified = {
-    ...graph,
-    boxes: graph.boxes.map((b) => (b.id === "fn" ? { ...b, ...move } : b)),
-  };
-  const again = projectLayers(modified, settings).byId.get("fn");
-  assert.ok(Math.abs(again.x - p.x - 40) < 1e-8);
-  assert.ok(Math.abs(again.y - p.y - 25) < 1e-8);
-  assert.ok(presentationGraph(projected, emptyFilters()).edges.some((e) => e.type === "contains"));
-}
-const single = projectLayers(graph, { enabled: true, only: "execution" });
+assert.equal(layerSlice(graph, { enabled: false }), graph);
+const model = spatialModel(graph, presentationGraph(graph, emptyFilters()));
+const positions = solveSpatial({ ...model, gap: 260 });
+assert.equal(JSON.stringify(graph.boxes), before, "3D coordinates cannot mutate 2D preferences");
+assert.notEqual(positions.fn.y, positions.publish.y);
+assert.notEqual(positions.fn.z, positions.publish.z);
+assert.ok(Object.values(positions).every((p) => [p.x, p.y, p.z].every(Number.isFinite)));
+const volumes = containmentVolumes(model, positions, 260);
+assert.ok(volumes.some((v) => v.id === "publish" && v.layer === "execution" && v.projection));
+const saved = { ...positions, fn: { ...positions.fn, x: 712, z: 231, pinned: true } };
+assert.equal(solveSpatial({ ...model, positions: saved, gap: 260, arrange: true }).fn.x, 712);
+assert.equal(solveSpatial({ ...model, positions: saved, gap: 260 }).fn.z, 231);
+const merged = mergeGraph(
+  { nodes: [{ id: "a" }], edges: [] },
+  {
+    nodes: [
+      { id: "f", code_role: "function" },
+      { id: "p", code_role: "parameter", parent: "f" },
+      { id: "api", code_role: "endpoint" },
+    ],
+    edges: [
+      { id: "map", from: "a", to: "f", code_relation: "maps" },
+      { id: "handle", from: "api", to: "f", code_relation: "handles" },
+    ],
+  },
+);
+assert.deepEqual(runtimeOwners(merged, "p"), ["a"]);
+assert.deepEqual(runtimeOwners(merged, "api"), ["a"]);
+assert.equal(mergeGraph(merged, { nodes: [], edges: merged.edges }).edges.length, 2);
+const single = layerSlice(graph, cleanLayers({ enabled: true, only: "execution" }));
 assert.deepEqual(
   single.boxes.map((b) => b.id),
   ["fn"],
@@ -137,7 +158,7 @@ assert.deepEqual(
 assert.equal(single.edges.length, 0);
 assert.equal(cleanLayers({ gap: NaN, camera: "__proto__" }).camera, "angled");
 console.log(
-  "PASS: capture provenance, nested values, quiet captions, edge meaning, reversible layers, containment and inverse dragging.",
+  "PASS: capture provenance, nested values, quiet captions, edge meaning, real 3D layout, containment projections, stable positions and cross-layer runtime anchors.",
 );
 
 const file = "// rows in a comment\nfunction f(rows, other) { return rows; }\n// end of full file";

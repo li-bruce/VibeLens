@@ -116,28 +116,6 @@ export function createGraphRenderer({
     for (const item of renderPool.values()) item.object.destroy();
     renderPool.clear();
   }
-  function drawPlanes() {
-    for (const plane of [...(graph.planes || [])].reverse()) {
-      scope("plane:" + plane.id);
-      const points = plane.points.flatMap((p) => [p.x, p.y]);
-      scene.addChild(
-        graphic()
-          .poly(points)
-          .fill({ color: plane.color, alpha: 0.045 })
-          .stroke({ color: plane.color, width: 1.2 / scale, alpha: 0.28 }),
-      );
-      const p = plane.points[0];
-      text(
-        plane.label,
-        p.x + 12,
-        p.y - 24 / scale,
-        Math.max(14, 12 / scale),
-        plane.color,
-        "left",
-        "600",
-      );
-    }
-  }
   function drawRegions() {
     const labels = [];
     for (const r of graph.regions || []) {
@@ -638,7 +616,6 @@ export function createGraphRenderer({
     hits.length = 0;
     metrics.nodes = metrics.edges = metrics.texts = 0;
     const labelBoxes = [];
-    drawPlanes();
     drawRegions();
     drawEdges(false, labelBoxes);
     for (const box of graph.boxes) {

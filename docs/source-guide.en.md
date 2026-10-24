@@ -77,6 +77,12 @@ event ingestion and a build reload.
 
 The complete model, the selected view, and the captured evidence are separate values. Filtering a view must preserve the complete model. Moving a node or replaying a step must not execute a business command.
 
+### True 3D and common layer assembly
+
+[graph-inventory.js](../skills/vibelens/assets/stategraph-viewer/graph-inventory.js) assembles all authored nodes, state transitions, captured fields and shared references before either renderer filters them. [graph-links.js](../skills/vibelens/assets/stategraph-viewer/graph-links.js) merges the optional source index and follows explicit handler/source bindings to recording owners. [graph-layers.js](../skills/vibelens/assets/stategraph-viewer/graph-layers.js) owns semantic layer classification. Display names never establish relationships.
+
+[spatial-model.js](../skills/vibelens/assets/stategraph-viewer/spatial-model.js) describes 3D membership and containment projections. [spatial-layout.js](../skills/vibelens/assets/stategraph-viewer/spatial-layout.js) runs its constrained 3D force solver in a worker. [spatial-renderer.js](../skills/vibelens/assets/stategraph-viewer/spatial-renderer.js) owns the perspective camera, GPU resources and pointer interactions. [semantic-view.js](../skills/vibelens/assets/stategraph-viewer/semantic-view.js) maintains shared accessible controls with indexed, incremental attribute updates. Read [spatial graph](../skills/vibelens/references/spatial-graph.md) for interaction and verification details.
+
 ## Database structure and operations
 
 Start at [data/contract.py](../skills/vibelens/scripts/bo_observer/data/contract.py) for strict JSON and identity, then [catalog.py](../skills/vibelens/scripts/bo_observer/data/catalog.py) for native metadata, [projection.py](../skills/vibelens/scripts/bo_observer/data/projection.py) for graph nodes and relations, and [sync.py](../skills/vibelens/scripts/bo_observer/data/sync.py) for refresh and independent verification. [runtime.py](../skills/vibelens/scripts/bo_observer/data/runtime.py) and [bo_data.mjs](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_data.mjs) observe native calls. [watcher.py](../skills/vibelens/scripts/bo_observer/data/watcher.py) replaces the validated Web build; [data-layer.js](../skills/vibelens/assets/stategraph-viewer/data-layer.js) renders its provenance and values. These modules share the existing event, recording and preference services.
@@ -116,7 +122,7 @@ Pinned development tools are listed in [tools/formatting](../tools/formatting/).
     python tools/format_source.py
     python tools/format_source.py --check
 
-The formatter selects owned Python modules, viewer JavaScript, native JavaScript adapters, and the product site. It excludes vendored Pixi/ELK bundles, installed example copies, tests, and frozen records.
+The formatter selects owned Python modules, viewer JavaScript, native JavaScript adapters, and the product site. It excludes vendored Pixi/ELK/Three.js/d3 bundles, installed example copies, tests, and frozen records. Rebuild the pinned spatial bundles with `npm ci` and `npm run build` from tools/spatial; review their hashes and license notices before updating package checks.
 
 For a source-readability-only change, compare executable Python syntax with an explicit baseline:
 

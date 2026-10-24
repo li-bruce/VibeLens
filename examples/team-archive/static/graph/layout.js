@@ -57,6 +57,7 @@ export function emptyLayout() {
     positions: Object.create(null),
     expanded: [],
     camera: null,
+    spatial: { positions: {}, camera: null },
     algorithm: "cluster",
     annotations: Object.create(null),
     focus: null,
@@ -82,6 +83,10 @@ export function migrateNodeIds(state, aliases = {}, edgeAliases = {}) {
         state[field][to] = state[field][from];
         delete state[field][from];
       }
+    if (state.spatial?.positions?.[from] && !state.spatial.positions[to]) {
+      state.spatial.positions[to] = state.spatial.positions[from];
+      delete state.spatial.positions[from];
+    }
     state.expanded = (state.expanded || []).map((id) => (id === from ? to : id));
     if (state.filters?.hiddenNodes)
       state.filters.hiddenNodes = state.filters.hiddenNodes.map((id) => (id === from ? to : id));
@@ -197,6 +202,18 @@ export function readLayout(storage, key) {
     )
       for (const [id, annotation] of Object.entries(value.annotations))
         setAnnotation(clean, id, annotation);
+    if (value.spatial && typeof value.spatial === "object") {
+      for (const [id, p] of Object.entries(value.spatial.positions || {}))
+        if ([p?.x, p?.y, p?.z].every(coordinate))
+          clean.spatial.positions[id] = { x: p.x, y: p.y, z: p.z, pinned: p.pinned === true };
+      const camera = value.spatial.camera;
+      if (
+        camera?.position?.length === 3 &&
+        camera?.target?.length === 3 &&
+        [...camera.position, ...camera.target].every(coordinate)
+      )
+        clean.spatial.camera = camera;
+    }
     clean.focus = typeof value.focus === "string" ? value.focus : null;
     clean.filters = cleanFilters(value.filters);
     if (["cluster", "layered", "stress"].includes(value.algorithm))

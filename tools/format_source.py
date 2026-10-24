@@ -11,7 +11,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills/vibelens"
-VENDOR_FILES = {"pixi.min.js", "elk.bundled.js", "elk-worker.min.js"}
+VENDOR_FILES = {"pixi.min.js", "elk.bundled.js", "elk-worker.min.js", "spatial-three.vendor.js", "spatial-force.vendor.js"}
 
 
 def source_files():

@@ -1,4 +1,4 @@
-/** Real viewer acceptance: projection, inverse drag, source provenance and replay. */
+/** Real viewer acceptance: perspective camera, 3D drag, source provenance and replay. */
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const root = fileURLToPath(new URL("../", import.meta.url));
-const output = path.resolve(process.env.BO_BROWSER_EVIDENCE || "docs/review/layered-graph/browser");
+const output = path.resolve(process.env.BO_BROWSER_EVIDENCE || "docs/review/spatial-graph/browser");
 await mkdir(output, { recursive: true });
 const port = process.env.BO_BROWSER_PORT || "8890",
   base = `http://127.0.0.1:${port}`;
@@ -104,22 +104,31 @@ try {
   await page.click("#fit");
   const before = await page.evaluate(() => graphDebug.graph.boxes.map((b) => [b.id, b.x, b.y]));
   await page.click("#layered-toggle");
-  await page.waitForFunction(() => graphDebug.displayGraph.layered);
-  const planes = await page.evaluate(() => graphDebug.displayGraph.planes.map((p) => p.id));
-  assert.ok(
-    planes.includes("business") &&
-      planes.includes("execution") &&
-      planes.includes("state") &&
-      planes.includes("data"),
-  );
-  checks.planes = planes;
-  await shot("layers-angled");
+  await page.waitForFunction(() => graphDebug.spatial?.perspective && !graphDebug.layoutBusy);
+  await page.waitForTimeout(250);
+  checks.initial3D = await page.evaluate(() => graphDebug.spatial);
+  assert.ok(checks.initial3D.webgl);
+  assert.ok(checks.initial3D.volumes.some((v) => v.projection));
+  await shot("3d-angled");
+  const camera = await page.evaluate(() => graphDebug.spatial.camera.position);
+  await page.mouse.move(1000, 650);
+  await page.mouse.down();
+  await page.mouse.move(1120, 700, { steps: 12 });
+  await page.mouse.up();
+  await page.waitForTimeout(350);
+  assert.notDeepEqual(await page.evaluate(() => graphDebug.spatial.camera.position), camera);
   await page.selectOption("#layer-camera", "side");
   await page.selectOption("#layer-only", "execution");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.ok(
-    await page.evaluate(() => graphDebug.displayGraph.boxes.every((b) => b.layer === "execution")),
+    await page.evaluate(() =>
+      [...document.querySelectorAll("#semantic [data-node-id]")].every(
+        (e) => e.dataset.plane === "execution",
+      ),
+    ),
   );
   await page.selectOption("#layer-only", "all");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
   await page.click("#layered-toggle");
   assert.deepEqual(
     await page.evaluate(() => graphDebug.graph.boxes.map((b) => [b.id, b.x, b.y])),
@@ -127,6 +136,17 @@ try {
   );
   await page.click("#layered-toggle");
   await page.selectOption("#layer-camera", "front");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  await pick("load");
+  await page
+    .locator("#focus-selection")
+    .click({ timeout: 300 })
+    .catch(async () => {
+      await page.click("#selection-menu");
+      await page.click("#focus-selection");
+    });
+  await page.waitForTimeout(350);
+  const original = await page.evaluate(() => graphDebug.spatialPositions.load);
   const pos = await page
     .locator('#semantic [data-node-id="load"]')
     .evaluate((e) => ({ x: +e.dataset.screenX, y: +e.dataset.screenY }));
@@ -134,24 +154,64 @@ try {
   await page.mouse.down();
   await page.mouse.move(pos.x + 45, pos.y + 25, { steps: 8 });
   await page.mouse.up();
+  await page.waitForTimeout(350);
   const after = await page.evaluate(() => ({
-    positions: graphDebug.graph.boxes.map((b) => [b.id, b.x, b.y]),
+    positions: graphDebug.spatialPositions,
     layers: graphDebug.layers,
   }));
-  assert.notDeepEqual(
-    after.positions,
-    before,
-    "Dragging in layers must update canonical positions",
-  );
-  await page.waitForTimeout(500);
-  await page.reload();
-  await page.waitForFunction(() => graphDebug?.displayGraph?.layered === true);
-  assert.equal(await page.locator("#layer-camera").inputValue(), "front");
+  assert.notDeepEqual(after.positions.load, original, "Ray-picked node must move in world space");
   assert.deepEqual(
     await page.evaluate(() => graphDebug.graph.boxes.map((b) => [b.id, b.x, b.y])),
-    after.positions,
+    before,
+    "3D dragging must preserve 2D layout",
   );
+  await page.reload();
+  await page.waitForFunction(() => graphDebug?.spatial?.perspective && !graphDebug.layoutBusy);
+  assert.equal(await page.locator("#layer-camera").inputValue(), "front");
+  const restored = await page.evaluate(() => graphDebug.spatialPositions.load);
+  assert.ok(Math.abs(restored.x - after.positions.load.x) < 0.001);
+  assert.ok(Math.abs(restored.z - after.positions.load.z) < 0.001);
   checks.roundTrip = true;
+  await page.click("#fit");
+  await page.waitForTimeout(250);
+  const groupBefore = await page.evaluate(() => graphDebug.spatialPositions);
+  const groupPoint = await page
+    .locator('#semantic [data-node-id="publish"]')
+    .evaluate((e) => ({ x: +e.dataset.screenX, y: +e.dataset.screenY }));
+  await page.mouse.move(groupPoint.x, groupPoint.y);
+  await page.mouse.down();
+  await page.mouse.move(groupPoint.x + 48, groupPoint.y + 16, { steps: 8 });
+  await page.mouse.up();
+  await page.waitForTimeout(200);
+  const groupAfter = await page.evaluate(() => graphDebug.spatialPositions);
+  const dx = groupAfter.publish.x - groupBefore.publish.x,
+    dz = groupAfter.publish.z - groupBefore.publish.z;
+  assert.ok(Math.hypot(dx, dz) > 1);
+  assert.ok(Math.abs(groupAfter.load.x - groupBefore.load.x - dx) < 0.001);
+  assert.ok(Math.abs(groupAfter.transaction.z - groupBefore.transaction.z - dz) < 0.001);
+  checks.groupDrag = true;
+  // Double-click actual perspective geometry, rather than a hidden semantic control.
+  const collapsePoint = await page
+    .locator('#semantic [data-node-id="publish"]')
+    .evaluate((e) => ({ x: +e.dataset.screenX, y: +e.dataset.screenY }));
+  await page.mouse.dblclick(collapsePoint.x, collapsePoint.y);
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#semantic [data-node-id="publish"]').getAttribute("aria-expanded") ===
+      "false",
+  );
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  await page.waitForTimeout(150);
+  const expandPoint = await page
+    .locator('#semantic [data-node-id="publish"]')
+    .evaluate((e) => ({ x: +e.dataset.screenX, y: +e.dataset.screenY }));
+  await page.mouse.dblclick(expandPoint.x, expandPoint.y);
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#semantic [data-node-id="publish"]').getAttribute("aria-expanded") ===
+      "true",
+  );
+  checks.perspectiveExpansion = true;
   await page.click("#layered-toggle");
   await page.click("#record-start");
   await request("/demo/run", { rollback: false });
@@ -168,7 +228,7 @@ try {
   await page.selectOption("#language", "zh-CN");
   await page.waitForURL(/lang=zh-CN/);
   await page.waitForFunction(() => window.graphDebug?.graph);
-  assert.equal(await page.locator("#layered-toggle").innerText(), "分层");
+  assert.equal(await page.locator("#layered-toggle").innerText(), "3D");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(200);
   await page.selectOption("#layer-only", "execution");

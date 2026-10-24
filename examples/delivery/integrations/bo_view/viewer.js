@@ -1,5 +1,9 @@
+import { SemanticView } from "./semantic-view.js";
+import { prepareSpatialHierarchy } from "./spatial-model.js";
 import { renderSource } from "./source-view.js";
-import { layers, cleanLayers, projectLayers, unprojectMove } from "./layered-view.js";
+import { layers, cleanLayers, layerSlice } from "./graph-layers.js";
+import { SpatialRenderer } from "./spatial-renderer.js";
+import { runtimeOwners } from "./graph-links.js";
 import { nodeExplanation } from "./capture-fields.js";
 import { dataLines } from "./data-layer.js";
 import { relationStyle } from "./layout.js";
@@ -71,7 +75,7 @@ import {
   elementCoverage,
 } from "./layout.js";
 import { presets, profileFor, cleanProfile, matchingNodes, sharedMemberships } from "./analysis.js";
-import { legendGlyph, legendRelation, meanings, glyphAppearance } from "./glyphs.js";
+import { legendGlyph, legendRelation, meanings } from "./glyphs.js";
 import { timeline, frame, eventLabel, transferEdges, recordingRequest } from "./recording.js";
 import {
   boKinds,
@@ -195,7 +199,62 @@ const renderer = createGraphRenderer({
   edgePaths,
   onMetrics: (data) => Object.assign($("renderer").dataset, data),
 });
+let spatial = null,
+  semanticFrame = 0;
+const semanticView = new SemanticView($("semantic"), $("semantic-edges"), {
+  onSelect: select,
+  onEdge: showEdge,
+});
+const spatialActive = () => analysisSettings?.layers?.enabled === true;
+function updateSpatial() {
+  if (!spatialActive() || !graph) return;
+  if (!spatial)
+    spatial = new SpatialRenderer($("canvas-host"), {
+      onSelect: select,
+      onToggle: toggle,
+      onEdge: showEdge,
+      onSave: saveSoon,
+      onRender: () => {
+        if (graph && spatialActive() && performance.now() - semanticFrame > 90) {
+          semanticFrame = performance.now();
+          updateSemanticGeometry();
+          positionDetail();
+        }
+      },
+      onError: (message) => {
+        $("layout-status").textContent = message;
+      },
+      onLayer: (id) => {
+        analysisSettings.layers.only = analysisSettings.layers.only === id ? "all" : id;
+        updateLayerControls();
+        updatePresentation();
+        updateSemantic();
+        fit();
+        save();
+      },
+      onMenu: (hit, x, y) => {
+        select(hit?.id || hit?.region || null);
+        if (hit?.edge) selectedEdge = hit.edge.id;
+        openSelectionMenu(x, y);
+      },
+    });
+  spatial.update({
+    graph: displayGraph,
+    presentation,
+    preferences,
+    selected,
+    focusContext,
+    settings: cleanLayers(analysisSettings.layers),
+    scope: storageKey,
+    boDetail,
+    boTransfers,
+  });
+}
 function point(box) {
+  if (spatialActive()) {
+    const p = spatial?.screenNode(box.id);
+    if (p) return { x: (p.x - pan.x) / scale, y: (p.y - pan.y) / scale };
+  }
   return nodePoint(displayGraph || graph, presentation, displayGraph?.byId.get(box.id) || box);
 }
 function updateLayerControls() {
@@ -205,6 +264,7 @@ function updateLayerControls() {
   $("layer-camera").value = config.camera;
   $("layer-gap").value = config.gap;
   $("layer-only").value = config.only;
+  $("layer-projections").checked = config.projections;
 }
 $("layer-only").replaceChildren(
   new Option(boTranslate("All layers"), "all"),
@@ -217,6 +277,7 @@ $("layered-toggle").onclick = () => {
   save();
   const config = cleanLayers(analysisSettings.layers);
   analysisSettings.layers = { ...config, enabled: !config.enabled };
+  if (!analysisSettings.layers.enabled) project();
   updateLayerControls();
   updatePresentation();
   updateSemantic();
@@ -227,7 +288,7 @@ $("layered-toggle").onclick = () => {
   } else fit();
   save();
 };
-for (const id of ["layer-camera", "layer-only", "layer-gap"])
+for (const id of ["layer-camera", "layer-only", "layer-gap", "layer-projections"])
   $(id).oninput = () => {
     if (!analysisSettings || !graph) return;
     stopAnimation();
@@ -236,6 +297,7 @@ for (const id of ["layer-camera", "layer-only", "layer-gap"])
       camera: $("layer-camera").value,
       only: $("layer-only").value,
       gap: Number($("layer-gap").value),
+      projections: $("layer-projections").checked,
     });
     updatePresentation();
     updateSemantic();
@@ -243,7 +305,7 @@ for (const id of ["layer-camera", "layer-only", "layer-gap"])
     save();
   };
 function updatePresentation() {
-  displayGraph = projectLayers(graph, analysisSettings?.layers);
+  displayGraph = layerSlice(graph, cleanLayers(analysisSettings?.layers));
   presentation = presentationGraph(displayGraph, preferences.filters);
   renderedEdges = presentation.edges;
   const visibleTypes = new Set(
@@ -268,6 +330,17 @@ function draw() {
     ? selectionContext(graph, selected)
     : discussionContext(graph, conversation.ids);
   updatePresentation();
+  app.canvas.hidden = spatialActive();
+  if (spatialActive()) {
+    updateSpatial();
+    spatial.setVisible(true);
+    $("renderer").textContent = "Three.js / WebGL · 3D force layout";
+    $("zoom").value = "3D";
+    positionDetail();
+    return;
+  }
+  spatial?.setVisible(false);
+  $("renderer").textContent = "PixiJS / WebGL · ELK";
   renderer.draw({
     graph: displayGraph,
     presentation,
@@ -297,6 +370,7 @@ function save() {
   if (!preferences) return;
   saveAnalysis();
   preferences.expanded = [...expanded];
+  if (spatialActive() && spatial?.scope === storageKey) preferences.spatial = spatial.snapshot();
   if (!analysisSettings?.layers?.enabled) preferences.camera = { x: pan.x, y: pan.y, scale };
   preferences.focus = selected;
   const saved = writeLayout(storage, storageKey, preferences);
@@ -322,11 +396,14 @@ window.addEventListener("pagehide", (event) => {
     stopAnimation();
     layoutWorker.terminate();
     resizeObserver.disconnect();
+    spatial?.dispose();
     renderer.clear();
     app.destroy(true, { children: true });
   }
 });
 document.addEventListener("visibilitychange", () => {
+  // Browsers can emit this after pagehide has already destroyed the GPU objects.
+  if (disposed) return;
   if (document.hidden) {
     stopPlayback();
     stopAnimation();
@@ -396,7 +473,8 @@ function project() {
     b.baseHeight = b.h;
     b.h += annotationFor(preferences, b.node.referenceOf || b.id).note ? 22 : 0;
   }
-  placeIncremental(graph, preferences);
+  if (spatialActive()) prepareSpatialHierarchy(graph, preferences);
+  else placeIncremental(graph, preferences);
   updatePresentation();
   if (selected && !graph.byId.has(selected))
     selected = ancestorsToReveal(graph.all, selected).find((id) => graph.byId.has(id)) || null;
@@ -410,6 +488,11 @@ function project() {
 }
 async function arrange(initial = false) {
   if (!graph) return;
+  if (spatialActive()) {
+    updateSpatial();
+    spatial.layout(true);
+    return;
+  }
   const epoch = ++layoutEpoch,
     key = topologyKey(graph),
     scope = storageKey,
@@ -456,6 +539,14 @@ function plotArea() {
 }
 function fit() {
   if (!graph) return;
+  if (spatialActive()) {
+    updatePresentation();
+    updateSpatial();
+    spatial.fit();
+    schedule();
+    saveSoon();
+    return;
+  }
   refreshHierarchy(graph);
   updatePresentation();
   const area = plotArea();
@@ -471,6 +562,10 @@ function fit() {
   saveSoon();
 }
 function zoom(factor, point = { x: app.screen.width / 2, y: app.screen.height / 2 }) {
+  if (spatialActive()) {
+    spatial?.zoom(factor);
+    return;
+  }
   const next = Math.max(0.12, Math.min(3, scale * factor));
   pan.x = point.x - ((point.x - pan.x) * next) / scale;
   pan.y = point.y - ((point.y - pan.y) * next) / scale;
@@ -480,6 +575,7 @@ function zoom(factor, point = { x: app.screen.width / 2, y: app.screen.height / 
 }
 function select(id) {
   selected = id;
+  semanticView.select(id);
   selectedEdge = null;
   detailMode = null;
   $("node-details").hidden = true;
@@ -493,6 +589,11 @@ function clearCanvasFocus() {
   select(null);
 }
 function frameDiscussion() {
+  if (spatialActive()) {
+    updateSpatial();
+    spatial?.fit(conversation.ids[0]);
+    return;
+  }
   const boxes = [...discussionContext(graph, conversation.ids).nodes]
     .map((id) => graph?.byId.get(id))
     .filter(Boolean);
@@ -535,7 +636,7 @@ function toggle(id) {
   else expanded.delete(id);
   project();
   if (opening) {
-    settleExpansion(graph, preferences, id);
+    if (!spatialActive()) settleExpansion(graph, preferences, id);
     updatePresentation();
     focusSelection();
   }
@@ -546,6 +647,7 @@ function pin() {
   if (!selected) return;
   cancelLayout();
   togglePin(graph, preferences, selected);
+  if (spatialActive()) spatial?.setPinned(selected, !!graph.byId.get(selected)?.pinned);
   updateActions();
   save();
   schedule();
@@ -576,6 +678,11 @@ function updateHierarchyPath() {
 }
 function focusSelection() {
   if (!graph?.byId.has(selected)) return;
+  if (spatialActive()) {
+    updateSpatial();
+    spatial?.fit(selected);
+    return;
+  }
   const context = selectionContext(graph, selected),
     boxes = [
       ...graph.boxes.filter((b) => context.branch.has(b.id)),
@@ -624,121 +731,25 @@ function updateActions() {
       (binding ? ` · ${binding.path}:${binding.line}` : "")
     : boTranslate("Right-click a node or edge for actions.");
 }
+/** Both rendering modes expose the same keyboard and screen-reader graph. */
 function updateSemantic() {
-  const host = $("semantic"),
-    focused = document.activeElement?.dataset.nodeId;
-  host.replaceChildren();
-  for (const b of graph.boxes) {
-    if (!presentation.glyphs.has(b.id) && !presentation.regions.has(b.id)) continue;
-    const button = document.createElement("button"),
-      name = displayName(b.node, preferences);
-    button.dataset.representation = presentation.regions.has(b.id)
-      ? presentation.glyphs.has(b.id)
-        ? "self"
-        : "circle"
-      : "node";
-    button.dataset.color = "#" + nodeTypes[b.type].color.toString(16).padStart(6, "0");
-    button.dataset.core = String(!!annotationFor(preferences, b.node.referenceOf || b.id).core);
-    button.dataset.referenceOf = b.node.referenceOf || "";
-    button.dataset.runState = b.state;
-    button.dataset.depth = ancestorsToReveal(graph.all, b.id).length;
-    button.textContent = name;
-    button.dataset.nodeId = b.id;
-    button.dataset.nodeType = b.type;
-    button.dataset.plane = displayGraph.byId.get(b.id)?.layer || "flat";
-    button.setAttribute("aria-label", name);
-    button.setAttribute("aria-expanded", String(!!b.open));
-    button.onclick = () => select(b.id);
-    button.onfocus = () => {
-      if (selected !== b.id) select(b.id);
-    };
-    host.appendChild(button);
-  }
-  if (focused) {
-    const el = [...host.children].find((e) => e.dataset.nodeId === focused);
-    el?.focus({ preventScroll: true });
-  }
-  const relationships = $("semantic-edges"),
-    focusedEdge = document.activeElement?.dataset.edgeId;
-  relationships.replaceChildren();
-  for (const edge of renderedEdges) {
-    const button = document.createElement("button"),
-      style = relationStyle(edge);
-    button.textContent = boTranslate(
-      "{0}: {1} \u2192 {2}, {3} relations",
-      style.label,
-      displayName(graph.byId.get(edge.from).node, preferences),
-      displayName(graph.byId.get(edge.to).node, preferences),
-      edge.members.length,
-    );
-    button.dataset.edgeId = edge.id;
-    button.dataset.from = edge.from;
-    button.dataset.to = edge.to;
-    button.dataset.relationType = edge.type;
-    button.dataset.stroke = style.dash.length ? "dashed" : "solid";
-    button.dataset.layer = edge.crossing ? "foreground" : "internal";
-    button.dataset.sourceRegion = String(edge.sourceRegion);
-    button.dataset.targetRegion = String(edge.targetRegion);
-    button.dataset.count = edge.members.length;
-    button.onclick = () => showEdge(edge);
-    relationships.appendChild(button);
-  }
-  if (focusedEdge)
-    [...relationships.children]
-      .find((e) => e.dataset.edgeId === focusedEdge)
-      ?.focus({ preventScroll: true });
+  semanticView.render({ graph, presentation, preferences, selected, spatial: spatialActive() });
 }
 function updateSemanticGeometry() {
-  const r = app.canvas.getBoundingClientRect();
-  for (const el of $("semantic").children) {
-    const b = graph.byId.get(el.dataset.nodeId);
-    if (!b) continue;
-    const appearance = glyphAppearance(nodeTypes[b.type].color, {
-      core: annotationFor(preferences, b.node.referenceOf || b.id).core,
-      selected: selected === b.id,
-      related: focusContext.nodes.has(b.id),
-    });
-    el.dataset.fill = "#" + appearance.fill.toString(16).padStart(6, "0");
-    el.dataset.fillEmphasis = appearance.emphasis;
-    el.dataset.discussion = String(conversation.ids.includes(b.id));
-  }
-  for (const el of $("semantic").children) {
-    const b = graph.byId.get(el.dataset.nodeId);
-    if (b) {
-      const p = point(b);
-      el.dataset.x = b.x;
-      el.dataset.y = b.y;
-      el.dataset.pinned = String(!!b.pinned);
-      el.dataset.emphasis = focusContext.active
-        ? selected === b.id
-          ? "selected"
-          : focusContext.nodes.has(b.id)
-            ? "related"
-            : "dimmed"
-        : "normal";
-      el.setAttribute("aria-pressed", String(selected === b.id));
-      el.dataset.parent = b.node.parent || "";
-      el.dataset.screenX = r.left + p.x * scale + pan.x;
-      el.dataset.screenY = r.top + p.y * scale + pan.y;
-    }
-  }
-  for (const el of $("semantic").children) {
-    const region = presentation.regions.has(el.dataset.nodeId)
-      ? displayGraph.regions.find((region) => region.id === el.dataset.nodeId)
-      : null;
-    el.dataset.groupRadius = region?.radius || "";
-    el.dataset.groupCenterX = region?.cx ?? "";
-    el.dataset.groupCenterY = region?.cy ?? "";
-  }
-  for (const el of $("semantic-edges").children) {
-    const edge = renderedEdges.find((e) => e.id === el.dataset.edgeId);
-    if (!edge) continue;
-    const ports = edgePorts(displayGraph || graph, edge, Math.max(32, 15 / scale));
-    el.dataset.startX = ports.start.x;
-    el.dataset.startY = ports.start.y;
-    el.dataset.endX = ports.end.x;
-    el.dataset.endY = ports.end.y;
-  }
+  semanticView.geometry({
+    graph,
+    presentation,
+    displayGraph,
+    preferences,
+    selected,
+    focusContext,
+    discussion: conversation.ids,
+    spatial: spatialActive() ? spatial : null,
+    canvas: spatialActive() && spatial ? spatial.canvas : app.canvas,
+    point,
+    scale,
+    pan,
+  });
 }
 let selectedEdge = null;
 function showEdge(edge) {
@@ -1068,12 +1079,7 @@ app.canvas.addEventListener("pointermove", (e) => {
   const move = gesture.move({ pointerId: e.pointerId, x: e.clientX, y: e.clientY });
   if (!move) return;
   if (move.kind === "node") {
-    const original = graph.byId.get(move.id),
-      displayed = displayGraph.byId.get(move.id);
-    const next = analysisSettings?.layers?.enabled
-      ? unprojectMove(original, displayed, move.x, move.y, analysisSettings.layers)
-      : move;
-    setPosition(graph, preferences, move.id, next.x, next.y);
+    setPosition(graph, preferences, move.id, move.x, move.y);
   } else pan = { x: move.x, y: move.y };
   schedule();
 });
@@ -1150,7 +1156,8 @@ $("viewport").addEventListener("keydown", (e) => {
     const b = graph?.byId.get(selected),
       distance = e.shiftKey ? 80 : 20;
     cancelLayout();
-    if (b)
+    if (b && spatialActive()) spatial?.moveGroup(b.id, delta[0] * distance, delta[1] * distance);
+    else if (b)
       setPosition(graph, preferences, b.id, b.x + delta[0] * distance, b.y + delta[1] * distance);
     else {
       pan.x -= delta[0] * 50;
@@ -1466,6 +1473,7 @@ $("step").onchange = (e) => {
 const resizeObserver = new ResizeObserver(() => {
   if (!disposed) {
     app.renderer.resize($("viewport").clientWidth, $("viewport").clientHeight);
+    spatial?.resize();
     if (analysisSettings?.layers?.enabled) fit();
     else schedule();
   }
@@ -2093,6 +2101,11 @@ function boCaptureScope() {
   if ($("capture-mode").value === "all") return { mode: "all" };
   const box = graph?.byId.get(selected);
   if (!box) throw Error(boTranslate("Select a node or region to record"));
+  if (box.node.code_role) {
+    const roots = runtimeOwners(view.model, box.id);
+    if (!roots.length) throw Error(boTranslate("This node has no capture binding"));
+    return { mode: "focused", roots };
+  }
   const id = box.node.referenceOf || box.node.event_node || box.id,
     known = new Set(view.model.nodes.map((n) => n.id));
   const root = known.has(id)
@@ -2106,7 +2119,9 @@ function boCaptureScope() {
 function stopAnimation() {
   cancelAnimationFrame(animationFrame);
   animationFrame = null;
+  if (disposed) return;
   animationDot.clear();
+  spatial?.stopAnimation();
   animationUntil = 0;
   $("renderer").dataset.animationActive = "false";
   if (!disposed && !contextLost) app.renderer.render(app.stage);
@@ -2119,6 +2134,11 @@ function animateEvent(event) {
   if (!animatedIds.length)
     animatedIds = transferEdges(event, view.events, renderedEdges, graph.all, graph.configuration);
   $("renderer").dataset.animatedEdges = JSON.stringify(animatedIds);
+  if (spatialActive()) {
+    updateSpatial();
+    spatial?.animate(animatedIds, boTransfers);
+    return;
+  }
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const started = performance.now();
   animationUntil = started + 650;
@@ -2429,11 +2449,18 @@ window.graphDebug = {
   get camera() {
     return { scale, pan: { ...pan } };
   },
+  get spatial() {
+    return spatial?.diagnostics || null;
+  },
+  get spatialPositions() {
+    return spatial ? structuredClone(spatial.positions) : {};
+  },
   get metrics() {
+    if (spatialActive()) return spatial?.diagnostics || {};
     return { ...metrics, drawCount: renderer.frames, webgl: !!app.renderer.gl };
   },
   get layoutBusy() {
-    return layoutBusy;
+    return layoutBusy || (spatialActive() && spatial?.busy);
   },
 };
 const conversation = createConversationFocus({

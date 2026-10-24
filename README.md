@@ -12,6 +12,15 @@ Vibe coding can produce a working screen while leaving its decisions, state chan
 
 These are views of **one typed network** with shared nodes and typed relationships. Expand a region, follow a relation, or combine types to answer the question in front of you.
 
+Use **3D** for a perspective view of connected semantic layers. Rotate the graph, expand a region across layers, follow its colored containment projections, or focus one layer. Spatial positions and the camera are saved with the project. [Interaction and source guide](skills/vibelens/references/spatial-graph.md).
+
+<details>
+<summary>See the spatial viewer</summary>
+
+![Connected business, state, function and data layers](docs/review/spatial-graph/browser-delivery/3d-angled.png)
+
+</details>
+
 ## Two development modes
 
 The Skill asks you to choose when adopting it:

@@ -38,6 +38,8 @@ ELK.js 0.12.0 runs locally in a Worker. Default deterministic circular packing p
 
 ## Rendering and integration
 
+The optional true 3D renderer uses the same inventory, filters and runtime evidence. Read [spatial graph](spatial-graph.md) for semantic layers, cross-layer containment projections, worker layout and performance limits. The following Pixi/ELK details apply to the 2D view.
+
 Assets include PixiJS 8.22.0, ELK, and licenses. graph-core projects nodes/facts; layout handles geometry/gestures; renderer owns drawing/hits/disposal; viewer coordinates UI; preferences/polling handle persistence/refresh. Serve all resources including the Worker from the same origin. Runtime data never goes to CDN/layout services.
 
 Preserve model/manifest/events/authority/machine APIs. Stable layout_id shares layout across runs/history. graph_roots/parent define hierarchy; personal preferences restore scope. New views do not adopt obsolete default_expanded. States need explicit parentage, not renderer guesses. Do not recreate a separate machine_layout canvas. /api/source returns bound source/build only.
