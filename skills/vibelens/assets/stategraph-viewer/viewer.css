@@ -302,7 +302,7 @@ canvas {
 }
 #hierarchy-path {
   position: absolute;
-  top: 9px;
+  top: 58px;
   left: 12px;
   display: flex;
   align-items: center;
@@ -945,4 +945,55 @@ footer {
   * {
     scroll-behavior: auto !important;
   }
+}
+
+.layer-tools {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+#layer-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 5px;
+  border: 1px solid #dce3e9;
+  border-radius: 8px;
+  background: #ffffffed;
+}
+#layer-controls[hidden] {
+  display: none;
+}
+#layer-gap {
+  width: 90px;
+}
+@media (max-width: 600px) {
+  .layer-tools {
+    right: 50px;
+    flex-wrap: wrap;
+  }
+  #layer-controls {
+    flex-wrap: wrap;
+    max-width: 270px;
+  }
+}
+
+@media (max-width: 600px) {
+  #hierarchy-path {
+    top: 96px;
+  }
+}
+
+#source-code {
+  max-height: min(52vh, 520px);
+  scroll-behavior: auto;
+}
+#source-code mark {
+  background: #ffe79a;
+  color: #263547;
+  border-radius: 2px;
 }

@@ -94,7 +94,7 @@ for (const [status, label] of [
   ["outside_scope", "Reference outside inspected scope"],
 ])
   assert.ok(
-    dataLines({ data_role: "column", data_metadata: { status } }).some(
+    dataLines({ data_role: "column", data_metadata: { status } }, {}, {}, false, true).some(
       (row) => row.text === label && row.role === "muted",
     ),
   );
@@ -106,7 +106,7 @@ for (const [source, description] of [
   ["driver", "Targets reported by driver"],
 ])
   assert.ok(
-    dataLines({ data_role: "query" }, {}, { target_source: source }, true).some(
+    dataLines({ data_role: "query" }, {}, { target_source: source }, true, true).some(
       (row) => row.text === description,
     ),
   );
@@ -387,7 +387,7 @@ assert.ok(
     (row) => row.text.includes("Primary key") && row.text.includes("Required"),
   ),
 );
-assert.ok(dataLines(nodes[4]).some((row) => row.text.includes("Awaiting database")));
+assert.ok(dataLines(nodes[4], {}, {}, false, true).some((row) => row.text.includes("Awaiting database")));
 const unknown = dataLines(nodes[5], {}, { status: "executed", rows_known: false, rows: -1 }, true);
 assert.match(unknown[0].text, /Row count unknown/);
 assert.doesNotMatch(unknown[0].text, /-1 rows/);

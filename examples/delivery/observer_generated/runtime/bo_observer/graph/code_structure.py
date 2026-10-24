@@ -26,9 +26,18 @@ def module_name(path):
     return ".".join(parts[:-1] if parts[-1] == "__init__" else parts)
 
 
+def argument_selection(lines, argument):
+    """Convert Python's UTF-8 byte offset to the browser's UTF-16 columns."""
+    prefix = lines[argument.lineno - 1].encode("utf-8")[:argument.col_offset].decode("utf-8")
+    column = len(prefix.encode("utf-16-le")) // 2
+    return {"line": argument.lineno, "column": column, "end_line": argument.lineno,
+            "end_column": column + len(argument.arg.encode("utf-16-le")) // 2}
+
+
 def parse_unit(path, source):
     """Extract Python symbols, parameters, and call expressions from the syntax tree."""
     tree = ast.parse(source, filename=path)
+    source_lines = source.splitlines()
     imports, symbols, shadowed_globals = {}, {}, set()
     package = module_name(path).split(".")
     if not path.endswith("/__init__.py"):
@@ -104,6 +113,7 @@ def parse_unit(path, source):
                     {
                         "name": a.arg,
                         "annotation": ast.unparse(a.annotation) if a.annotation else None,
+                        "selection": argument_selection(source_lines, a),
                     }
                     for a in arguments
                 ]

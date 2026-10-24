@@ -26,6 +26,7 @@ def main():
     run(ROOT, 'tests/test_database_guidance.py')
     run(ROOT, 'tests/test_code_graph.py')
     subprocess.run(['node', 'tools/test_code_view.mjs'], cwd=ROOT, check=True)
+    subprocess.run(['node', 'tools/test_layered_view.mjs'], cwd=ROOT, check=True)
     if args.database:
         run(ROOT, 'tools/verify_databases.py')
     run(ROOT, 'tests/test_ast_fingerprint.py')

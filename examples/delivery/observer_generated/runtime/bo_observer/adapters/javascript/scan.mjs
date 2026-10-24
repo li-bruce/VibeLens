@@ -157,6 +157,12 @@ function parseUnit(path, original) {
         parameters: (n.parameters || []).map((p) => ({
           name: text(p.name),
           annotation: p.type ? text(p.type) : null,
+          selection: {
+            line: sf.getLineAndCharacterOfPosition(p.name.getStart(sf)).line + 1,
+            column: sf.getLineAndCharacterOfPosition(p.name.getStart(sf)).character,
+            end_line: sf.getLineAndCharacterOfPosition(p.name.end).line + 1,
+            end_column: sf.getLineAndCharacterOfPosition(p.name.end).character,
+          },
         })),
         returns: n.type ? text(n.type) : null,
         calls: [],

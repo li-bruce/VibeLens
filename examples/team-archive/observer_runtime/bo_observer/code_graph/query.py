@@ -65,7 +65,7 @@ def query(graph, model, *, focus=None, depth=1, limit=400):
         for _ in range(depth):
             current = set(wanted)
             for edge in graph["edges"]:
-                if edge["code_relation"] in {"calls", "inherits"}:
+                if edge["code_relation"] in {"calls", "inherits", "handles"}:
                     if edge["from"] in current or edge["to"] in current:
                         wanted.update((edge["from"], edge["to"]))
         # Context is an ancestor, never a fabricated direct call.
@@ -76,6 +76,14 @@ def query(graph, model, *, focus=None, depth=1, limit=400):
                 parent = nodes[parent].get("parent")
     else:
         wanted = set(nodes)
+        # Full code view retains each explicit authored-to-source mapping too.
+        for item in model.get("nodes", []):
+            source = item.get("source", {})
+            sid = graph["symbols"].get(source.get("path", "") + "::" + source.get("symbol", ""))
+            if sid:
+                links.append({"id": identity("binding", [item["id"], sid]),
+                              "from": item["id"], "to": sid, "type": "data",
+                              "code_relation": "maps", "label": "Source binding", "origin": "code-index"})
     ordered = sorted(
         wanted,
         key=lambda k: (

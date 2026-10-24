@@ -1,6 +1,7 @@
 // Optional source structure is a display projection, separate from recorded facts.
 export const codeTypes = [
   "code-file",
+  "code-endpoint",
   "code-class",
   "code-function",
   "code-parameter",
@@ -8,6 +9,7 @@ export const codeTypes = [
 ];
 export const codeRelations = [
   "code-defines",
+  "code-handles",
   "code-calls",
   "code-imports",
   "code-inherits",
@@ -29,10 +31,25 @@ export function codeSummary(slice, translate) {
 }
 
 export function migrateCodeFilters(value) {
-  if (!value || value.codeTypes === 1) return value;
-  // Opt-in source detail must not turn an old empty or specific filter into
-  // a broader view merely because the available type list grew.
-  return { ...value, codeTypes: 1 };
+  if (!value || value.codeTypes === 2) return value;
+  const next = { ...value, codeTypes: 2 };
+  // Upgrade prior all-code selections once. Preserve deliberate narrow/empty filters.
+  if (value.codeTypes === 1) {
+    for (const key of ["nodes", "regions"])
+      if (
+        codeTypes
+          .filter((type) => type !== "code-endpoint")
+          .every((type) => value[key]?.includes(type))
+      )
+        next[key] = [...new Set([...value[key], "code-endpoint"])];
+    if (
+      codeRelations
+        .filter((type) => type !== "code-handles")
+        .every((type) => value.edges?.includes(type))
+    )
+      next.edges = [...new Set([...value.edges, "code-handles"])];
+  }
+  return next;
 }
 
 /** Merge by stable identity; never replace the authored graph or its build. */

@@ -76,7 +76,7 @@
     "bo_stategraph/__init__.py": "56f694a30fa9e2aa6319931b24cb35c52c82ea30b8b4b6f4029df0f838e63e6e",
     "bo_stategraph/bo_contracts.py": "094f5feff89893ee5932eb6a4b6ad4aafc08c7e462d0b9b00c31d50702e6af29",
     "bo_stategraph/execution_contract.py": "0c966fb3549c0219c6a663ddf41c847e71ebf14216b02b725d2465e4bf0c4839",
-    "bo_stategraph/runtime-version.json": "b951b058ac23a1588061164f0f3b5b8f6ff65ca012517f6801bd71ec68cdf803",
+    "bo_stategraph/runtime-version.json": "cedc55e1c4587b92e11528cfb0e07731e20e60ad1bab6db7a47509d2e4c2d951",
     "observer_runtime/LICENSE.txt": "41f4bfe9aa8790612dd555d71a9e95fbf12c9f0e84bc6ce232a0aae3af3e2ba3",
     "observer_runtime/__init__.py": "c4cc8d894a9cb6e2da5510317e540d22b50b75b2a187f86675d20e86d967f9bf",
     "observer_runtime/architecture_guard.py": "b1966fd9fa189df104894e6cf91f1e28a12087d6d525bd5cb8db3c46af9e54b9",
@@ -92,13 +92,14 @@
     "observer_runtime/bo_observer/adapters/javascript/bo_runtime.mjs": "05ed9e47276963deeae13e86ec51ac3a84f180a6997c7dccd10508d0714cf507",
     "observer_runtime/bo_observer/adapters/javascript/package-lock.json": "4c2e797d1e8c70fa95ac6b0d4b2b5ec835d2fa12e44a81a93b33448fc33b9150",
     "observer_runtime/bo_observer/adapters/javascript/package.json": "74c6788e15cfb07e70b11d95439a818c4f56fa32f1a6a5baed9fe8d1bf4a0570",
-    "observer_runtime/bo_observer/adapters/javascript/scan.mjs": "89e5802fe9a6f880f685560b5408af3772a669f45d4e6667b17b5eb8a53a65bc",
+    "observer_runtime/bo_observer/adapters/javascript/scan.mjs": "22dacfb32c9f3a3ae4968ec08ce3c6d0c669ff705dace0fca49d2060c8d31188",
     "observer_runtime/bo_observer/adapters/python/__init__.py": "c6a3ee47a4c505a43adab164e23526237319b43eb0d157479a8cd4166774e831",
     "observer_runtime/bo_observer/adapters/python/bo_executor.py": "56ee5f17e8d9d0820f12f4a1b922a750338c3a97887a59f227b45e8f1ee6aab6",
     "observer_runtime/bo_observer/adapters/python/bo_probe.py": "55f4d9be2b6d7f97fe95bab974b98f2d3448279ca71a10077d0727431fe7ff5b",
     "observer_runtime/bo_observer/code_graph/__init__.py": "5f69b67916f2fe8f7da0295d8f6824cb8f1626a8570ba44b1a68dee83166e6de",
-    "observer_runtime/bo_observer/code_graph/index.py": "e8508e1dcb9173070647649d27f21bda4eec992f97b341d37ad27bc22b93a658",
-    "observer_runtime/bo_observer/code_graph/query.py": "7f8d6e784b0df2903d133dd3061073188008988eae72404bce69be232e61ba63",
+    "observer_runtime/bo_observer/code_graph/endpoints.py": "c68047a6569e5d93b4e4cdc90f166d9b9383786c67a77f8b6c3ae6f0902bf5bf",
+    "observer_runtime/bo_observer/code_graph/index.py": "e6ca6db03b19541ebdca47c779d9ff1d5e489f7940dd52586c31f849a9a5b59f",
+    "observer_runtime/bo_observer/code_graph/query.py": "0bfd0c83ff0894feca98405306a1bd1a3f62574efbe8032208a0a0fdc45a655b",
     "observer_runtime/bo_observer/code_graph/service.py": "45b7754c70ea9d6879b5ec92943c5ad8f41ebc9c7790c94bf0a6481243958ab1",
     "observer_runtime/bo_observer/data/__init__.py": "3dc7861217be44088a3475fc158cf990ab2a339650926e71d7b6c861dd094e61",
     "observer_runtime/bo_observer/data/acceptance.py": "4c52fda20e10a300dec02659dec576662704ae8bf8e18a880061232c1be601cc",
@@ -117,7 +118,7 @@
     "observer_runtime/bo_observer/development.py": "2f5ca6a2b2d962fac476b3dc389e9363ed37dcc975851f09d728422b78cf17a6",
     "observer_runtime/bo_observer/graph/__init__.py": "76c4a5c43cd71a23505d400f742ddd11cb95fff821171002971a186cd7921dd4",
     "observer_runtime/bo_observer/graph/behavior_model.py": "e176091dc46fa9776b8142f261ac3c28a62a667f859bdf2a5367a809dd79aef9",
-    "observer_runtime/bo_observer/graph/code_structure.py": "fcfd538058c36c8857a6d948607fc282e4df2f918edd54f913309d37d8c9956a",
+    "observer_runtime/bo_observer/graph/code_structure.py": "274655869602c361a02d987ff3af7c84612e8ea95fdaeea5c1f1dbe788b757ba",
     "observer_runtime/bo_observer/graph/focus_graph.py": "9b66c17c840626d9806602d8fa56aa304ae924403d6ad3cf6afc80cf55eec95c",
     "observer_runtime/bo_observer/graph/statechart_contract.py": "e0d43786de88de1463837a73481733c2f7c9b0687e0349b0de8835982cf47920",
     "observer_runtime/bo_observer/graph/worknet_contract.py": "c05575ed8286fafd7edec8976d9dd5c28e7567ef07bac2a465e7d59205b8d38c",
@@ -997,6 +998,30 @@
       "reason": "Remove the entire Current discussion bar and its controls. Keep confirmed focus directly on the graph with persistent Escape/blank-canvas dismissal. Preserve business rules, source mappings and runtime probes.",
       "changed": [
         "bo_stategraph/runtime-version.json"
+      ]
+    },
+    {
+      "reason": "Improve graph provenance and optional layered rendering; separate capture diagnostics, preserve source nesting, expose literal API registrations, and retain explicit state mappings. Business rules and independent expectations are unchanged.",
+      "changed": [
+        "bo_stategraph/runtime-version.json",
+        "observer_runtime/bo_observer/code_graph/endpoints.py",
+        "observer_runtime/bo_observer/code_graph/index.py",
+        "observer_runtime/bo_observer/code_graph/query.py"
+      ]
+    },
+    {
+      "reason": "Improve graph provenance and optional layered rendering; separate capture diagnostics, preserve source nesting, expose literal API registrations, and retain explicit state mappings. Business rules and independent expectations are unchanged.",
+      "changed": [
+        "bo_stategraph/runtime-version.json"
+      ]
+    },
+    {
+      "reason": "Improve graph provenance and optional layered rendering; separate capture diagnostics, preserve source nesting, expose literal API registrations, and retain explicit state mappings. Business rules and independent expectations are unchanged.",
+      "changed": [
+        "bo_stategraph/runtime-version.json",
+        "observer_runtime/bo_observer/adapters/javascript/scan.mjs",
+        "observer_runtime/bo_observer/code_graph/index.py",
+        "observer_runtime/bo_observer/graph/code_structure.py"
       ]
     }
   ],

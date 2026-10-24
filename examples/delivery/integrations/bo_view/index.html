@@ -233,6 +233,29 @@
           </div>
           <div id="change-rows"></div>
         </section>
+        <div class="layer-tools">
+          <button id="layered-toggle" aria-pressed="false" title="Separate graph layers">
+            Layers
+          </button>
+          <div id="layer-controls" hidden>
+            <select id="layer-camera" aria-label="Camera angle">
+              <option value="angled">Angled</option>
+              <option value="front">Front</option>
+              <option value="side">Side</option>
+            </select>
+            <select id="layer-only" aria-label="Visible layer"></select>
+            <input
+              id="layer-gap"
+              type="range"
+              min="80"
+              max="600"
+              step="20"
+              value="260"
+              aria-label="Layer separation"
+              title="Layer separation"
+            />
+          </div>
+        </div>
         <div class="canvas-tools" role="toolbar" aria-label="Canvas controls">
           <button
             id="layout-toggle"
@@ -303,7 +326,9 @@
     </div>
     <footer>
       <span id="selection">Right-click a node or edge for actions.</span
-      ><span id="layout-status" role="status"></span><span id="renderer">PixiJS</span>
+      ><span id="layout-status" role="status"></span
+      ><span title="Solid: calls and data transfer · Dashed: logic and associations">━ · ┄</span
+      ><span id="renderer">PixiJS</span>
     </footer>
     <div hidden aria-hidden="true">
       <select id="version">

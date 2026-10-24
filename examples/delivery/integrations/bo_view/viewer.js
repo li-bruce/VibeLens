@@ -1,3 +1,8 @@
+import { renderSource } from "./source-view.js";
+import { layers, cleanLayers, projectLayers, unprojectMove } from "./layered-view.js";
+import { nodeExplanation } from "./capture-fields.js";
+import { dataLines } from "./data-layer.js";
+import { relationStyle } from "./layout.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   locale,
@@ -89,6 +94,7 @@ let version = "live",
   step = "latest",
   view = null,
   graph = null,
+  displayGraph = null,
   selected = null;
 let scale = 1,
   pan = { x: 0, y: 0 },
@@ -190,10 +196,55 @@ const renderer = createGraphRenderer({
   onMetrics: (data) => Object.assign($("renderer").dataset, data),
 });
 function point(box) {
-  return nodePoint(graph, presentation, box);
+  return nodePoint(displayGraph || graph, presentation, displayGraph?.byId.get(box.id) || box);
 }
+function updateLayerControls() {
+  const config = cleanLayers(analysisSettings?.layers);
+  $("layered-toggle").setAttribute("aria-pressed", String(config.enabled));
+  $("layer-controls").hidden = !config.enabled;
+  $("layer-camera").value = config.camera;
+  $("layer-gap").value = config.gap;
+  $("layer-only").value = config.only;
+}
+$("layer-only").replaceChildren(
+  new Option(boTranslate("All layers"), "all"),
+  ...layers.map((layer) => new Option(boTranslate(layer.label), layer.id)),
+);
+$("layered-toggle").onclick = () => {
+  if (!analysisSettings || !graph) return;
+  stopAnimation();
+  contextMenu.close();
+  save();
+  const config = cleanLayers(analysisSettings.layers);
+  analysisSettings.layers = { ...config, enabled: !config.enabled };
+  updateLayerControls();
+  updatePresentation();
+  updateSemantic();
+  if (!analysisSettings.layers.enabled && preferences.camera) {
+    pan = { x: preferences.camera.x, y: preferences.camera.y };
+    scale = preferences.camera.scale;
+    schedule();
+  } else fit();
+  save();
+};
+for (const id of ["layer-camera", "layer-only", "layer-gap"])
+  $(id).oninput = () => {
+    if (!analysisSettings || !graph) return;
+    stopAnimation();
+    analysisSettings.layers = cleanLayers({
+      enabled: true,
+      camera: $("layer-camera").value,
+      only: $("layer-only").value,
+      gap: Number($("layer-gap").value),
+    });
+    updatePresentation();
+    updateSemantic();
+    fit();
+    save();
+  };
 function updatePresentation() {
-  presentation = presentationGraph(graph, preferences.filters);
+  displayGraph = projectLayers(graph, analysisSettings?.layers);
+  presentation = presentationGraph(displayGraph, preferences.filters);
   renderedEdges = presentation.edges;
   const visibleTypes = new Set(
     graph.boxes
@@ -218,7 +269,7 @@ function draw() {
     : discussionContext(graph, conversation.ids);
   updatePresentation();
   renderer.draw({
-    graph,
+    graph: displayGraph,
     presentation,
     focusContext,
     preferences,
@@ -246,7 +297,7 @@ function save() {
   if (!preferences) return;
   saveAnalysis();
   preferences.expanded = [...expanded];
-  preferences.camera = { x: pan.x, y: pan.y, scale };
+  if (!analysisSettings?.layers?.enabled) preferences.camera = { x: pan.x, y: pan.y, scale };
   preferences.focus = selected;
   const saved = writeLayout(storage, storageKey, preferences);
   if (!layoutBusy)
@@ -406,11 +457,15 @@ function plotArea() {
 function fit() {
   if (!graph) return;
   refreshHierarchy(graph);
+  updatePresentation();
   const area = plotArea();
-  scale = Math.max(0.12, Math.min(1.05, area.width / graph.width, area.height / graph.height));
+  scale = Math.max(
+    0.12,
+    Math.min(1.05, area.width / displayGraph.width, area.height / displayGraph.height),
+  );
   pan = {
-    x: (app.screen.width - graph.width * scale) / 2 - graph.minX * scale,
-    y: area.top + (area.height - graph.height * scale) / 2 - graph.minY * scale,
+    x: (app.screen.width - displayGraph.width * scale) / 2 - displayGraph.minX * scale,
+    y: area.top + (area.height - displayGraph.height * scale) / 2 - displayGraph.minY * scale,
   };
   schedule();
   saveSoon();
@@ -545,7 +600,7 @@ function updateActions() {
   $("code-local").disabled =
     view?.stage === "design" ||
     !!recording ||
-    analysisId === "code" ||
+    ["code", "api"].includes(analysisId) ||
     (!b && !analysisSettings?.codeFocus);
   $("reference-origin").hidden = !b?.node.referenceOf;
   $("core-toggle").disabled = !b;
@@ -590,6 +645,7 @@ function updateSemantic() {
     button.textContent = name;
     button.dataset.nodeId = b.id;
     button.dataset.nodeType = b.type;
+    button.dataset.plane = displayGraph.byId.get(b.id)?.layer || "flat";
     button.setAttribute("aria-label", name);
     button.setAttribute("aria-expanded", String(!!b.open));
     button.onclick = () => select(b.id);
@@ -607,7 +663,7 @@ function updateSemantic() {
   relationships.replaceChildren();
   for (const edge of renderedEdges) {
     const button = document.createElement("button"),
-      style = relationStyles[edge.type] || relationStyles.other;
+      style = relationStyle(edge);
     button.textContent = boTranslate(
       "{0}: {1} \u2192 {2}, {3} relations",
       style.label,
@@ -619,6 +675,7 @@ function updateSemantic() {
     button.dataset.from = edge.from;
     button.dataset.to = edge.to;
     button.dataset.relationType = edge.type;
+    button.dataset.stroke = style.dash.length ? "dashed" : "solid";
     button.dataset.layer = edge.crossing ? "foreground" : "internal";
     button.dataset.sourceRegion = String(edge.sourceRegion);
     button.dataset.targetRegion = String(edge.targetRegion);
@@ -667,7 +724,7 @@ function updateSemanticGeometry() {
   }
   for (const el of $("semantic").children) {
     const region = presentation.regions.has(el.dataset.nodeId)
-      ? graph.regions.find((region) => region.id === el.dataset.nodeId)
+      ? displayGraph.regions.find((region) => region.id === el.dataset.nodeId)
       : null;
     el.dataset.groupRadius = region?.radius || "";
     el.dataset.groupCenterX = region?.cx ?? "";
@@ -676,7 +733,7 @@ function updateSemanticGeometry() {
   for (const el of $("semantic-edges").children) {
     const edge = renderedEdges.find((e) => e.id === el.dataset.edgeId);
     if (!edge) continue;
-    const ports = edgePorts(graph, edge, Math.max(32, 15 / scale));
+    const ports = edgePorts(displayGraph || graph, edge, Math.max(32, 15 / scale));
     el.dataset.startX = ports.start.x;
     el.dataset.startY = ports.start.y;
     el.dataset.endX = ports.end.x;
@@ -698,7 +755,7 @@ function updateEdgeDetail() {
     panel.hidden = true;
     return;
   }
-  const style = relationStyles[edge.type] || relationStyles.other;
+  const style = relationStyle(edge);
   $("edge-title").textContent = boTranslate(
     "{0} \u00B7 {1} relations",
     style.label,
@@ -720,7 +777,7 @@ function updateEdgeDetail() {
       return item;
     }),
   );
-  const ports = edgePorts(graph, edge);
+  const ports = edgePorts(displayGraph || graph, edge);
   panel.hidden = false;
   panel.style.left =
     Math.max(
@@ -759,7 +816,14 @@ function updateDetail() {
     ...(annotation.label || editing
       ? [{ text: boTranslate("Original name: ") + b.node.label }]
       : []),
-    ...(editing ? [{ text: boTranslate("Node: ") + b.id }] : b.rows),
+    ...(editing
+      ? [{ text: boTranslate("Node: ") + b.id }]
+      : [
+          ...nodeExplanation(b.node, graph.all).map((text) => ({ text })),
+          ...(b.node.data_role && !["query", "transform"].includes(b.node.data_role)
+            ? dataLines(b.node, {}, {}, false, true)
+            : b.rows),
+        ]),
     ...(!editing && annotation.note ? [{ text: boTranslate("Note: ") + annotation.note }] : []),
   ];
   $("detail-rows").replaceChildren(
@@ -777,9 +841,27 @@ function updateDetail() {
     const key = (binding.code_revision || view.manifest.build_id) + ":" + binding.path,
       full = fullSources.get(key);
     $("detail-title").textContent =
-      `${binding.path}:${binding.line} · ${(binding.code_revision || view.manifest.build_id).slice(0, 8)}`;
-    $("source-code").textContent = full ?? binding.snippet;
-    $("full-source").hidden = !!full;
+      `${binding.path}:${binding.selection?.line || binding.line} · ${(binding.code_revision || view.manifest.build_id).slice(0, 8)}`;
+    $("full-source").hidden = true;
+    if (full !== undefined) {
+      const renderedKey = [key, selected].join(":");
+      if ($("source-code").dataset.location !== renderedKey) {
+        const target = renderSource($("source-code"), full, binding);
+        $("source-code").dataset.location = renderedKey;
+        requestAnimationFrame(() => {
+          if (target?.isConnected) {
+            const host = $("source-code");
+            host.scrollTop +=
+              target.getBoundingClientRect().top -
+              host.getBoundingClientRect().top -
+              host.clientHeight / 3;
+          }
+        });
+      }
+    } else {
+      $("source-code").textContent = boTranslate("Loading source…");
+      delete $("source-code").dataset.location;
+    }
   }
   positionDetail();
 }
@@ -798,6 +880,7 @@ function positionDetail() {
 function showDetail(mode) {
   detailMode = mode;
   updateDetail();
+  if (mode === "source") loadSource();
 }
 function editAnnotation() {
   if (!graph?.byId.has(selected)) return;
@@ -859,21 +942,39 @@ $("annotation-form").onsubmit = (e) => {
   updateDetail();
   $("viewport").focus({ preventScroll: true });
 };
-$("full-source").onclick = async () => {
+$("full-source").onclick = () => loadSource();
+async function loadSource() {
   const id = selected,
     build = view.manifest.build_id,
     binding = sourceBinding(view, graph.all, id),
     requestedVersion = version;
-  const response = await fetch(
-    (binding.code_revision
-      ? "/api/code/source?revision=" + binding.code_revision + "&path="
-      : "/api/source?path=") +
-      encodeURIComponent(binding.path) +
-      (recording
-        ? "&recording=" + recording.id
-        : "&version=" + encodeURIComponent(requestedVersion)),
-  );
-  if (!response.ok) return;
+  if (!binding) return;
+  const cacheKey = (binding.code_revision || build) + ":" + binding.path;
+  if (fullSources.has(cacheKey)) {
+    updateDetail();
+    return;
+  }
+  let response;
+  try {
+    response = await fetch(
+      (binding.code_revision
+        ? "/api/code/source?revision=" + binding.code_revision + "&path="
+        : "/api/source?path=") +
+        encodeURIComponent(binding.path) +
+        (recording
+          ? "&recording=" + recording.id
+          : "&version=" + encodeURIComponent(requestedVersion)),
+    );
+  } catch {
+    return;
+  }
+  if (!response.ok) {
+    if (selected === id && detailMode === "source")
+      $("source-code").textContent = boTranslate(
+        "Source changed or unavailable. Refresh the graph.",
+      );
+    return;
+  }
   const data = await response.json();
   if (
     binding.code_revision
@@ -884,7 +985,7 @@ $("full-source").onclick = async () => {
   fullSources.set((binding.code_revision || build) + ":" + binding.path, data.source);
   if (fullSources.size > 16) fullSources.delete(fullSources.keys().next().value);
   if (selected === id) updateDetail();
-};
+}
 function hitAt(e) {
   const r = app.canvas.getBoundingClientRect();
   return pickHit(hits, (e.clientX - r.left - pan.x) / scale, (e.clientY - r.top - pan.y) / scale);
@@ -958,7 +1059,7 @@ app.canvas.addEventListener("pointerdown", (e) => {
   const owner = hit?.id || hit?.region;
   gesture.start(
     { pointerId: e.pointerId, x: e.clientX, y: e.clientY },
-    { node: owner ? graph.byId.get(owner) : null, pan, scale },
+    { node: owner ? displayGraph.byId.get(owner) : null, pan, scale },
   );
   gesture.active.hit = hit;
   app.canvas.style.cursor = owner ? "grabbing" : "move";
@@ -966,8 +1067,14 @@ app.canvas.addEventListener("pointerdown", (e) => {
 app.canvas.addEventListener("pointermove", (e) => {
   const move = gesture.move({ pointerId: e.pointerId, x: e.clientX, y: e.clientY });
   if (!move) return;
-  if (move.kind === "node") setPosition(graph, preferences, move.id, move.x, move.y);
-  else pan = { x: move.x, y: move.y };
+  if (move.kind === "node") {
+    const original = graph.byId.get(move.id),
+      displayed = displayGraph.byId.get(move.id);
+    const next = analysisSettings?.layers?.enabled
+      ? unprojectMove(original, displayed, move.x, move.y, analysisSettings.layers)
+      : move;
+    setPosition(graph, preferences, move.id, next.x, next.y);
+  } else pan = { x: move.x, y: move.y };
   schedule();
 });
 function endDrag(e, cancelled = false) {
@@ -1359,7 +1466,8 @@ $("step").onchange = (e) => {
 const resizeObserver = new ResizeObserver(() => {
   if (!disposed) {
     app.renderer.resize($("viewport").clientWidth, $("viewport").clientHeight);
-    schedule();
+    if (analysisSettings?.layers?.enabled) fit();
+    else schedule();
   }
 });
 resizeObserver.observe($("viewport"));
@@ -1420,13 +1528,13 @@ async function poll() {
     const codeEnabled =
       !recording &&
       next.stage !== "design" &&
-      (analysisId === "code" || !!analysisSettings.codeFocus);
+      (["code", "api"].includes(analysisId) || !!analysisSettings.codeFocus);
     let codeSlice = null;
     try {
       const previousCodeFocus = codeLayer.slice?.focus;
       codeSlice = await codeLayer.load({
         enabled: codeEnabled,
-        focus: analysisId === "code" ? null : analysisSettings.codeFocus,
+        focus: ["code", "api"].includes(analysisId) ? null : analysisSettings.codeFocus,
         limit: codeLimit,
       });
       if (codeSlice?.focus && codeSlice.focus !== previousCodeFocus)
@@ -1443,7 +1551,7 @@ async function poll() {
     $("code-local").disabled =
       next.stage === "design" ||
       !!recording ||
-      analysisId === "code" ||
+      ["code", "api"].includes(analysisId) ||
       (!selected && !analysisSettings.codeFocus);
     const key = renderRevision(next, [
       version,
@@ -1567,7 +1675,7 @@ async function poll() {
       if (first) {
         first = false;
         if (!hasPositions) arrange(true);
-        else if (!preferences.camera) fit();
+        else if (!preferences.camera || analysisSettings?.layers?.enabled) fit();
       }
       saveSoon();
     }
@@ -1629,7 +1737,9 @@ function loadAnalysis(baseKey) {
     overrides: Object.create(null),
     selected: "overview",
     annotations: null,
+    layers: cleanLayers(saved?.layers),
   };
+  updateLayerControls();
   if (saved) {
     if (typeof saved.discussion?.revision === "string")
       analysisSettings.discussion = {
@@ -1681,7 +1791,7 @@ function updateAnalysisOptions() {
     ...[...presets, ...analysisSettings.custom].map((p) => {
       const option = new Option(p.label, p.id);
       // The lazy source index is current-source evidence, not a recorded frame.
-      option.disabled = !!recording && p.id === "code";
+      option.disabled = !!recording && ["code", "api"].includes(p.id);
       if (option.disabled)
         option.title = boTranslate("Return to live view to browse code structure");
       return option;
@@ -1692,14 +1802,14 @@ function updateAnalysisOptions() {
   $("delete-view").hidden = !analysisId.startsWith("custom-");
 }
 function changeAnalysis(id) {
-  if (!analysisSettings || id === analysisId || (recording && id === "code")) return;
+  if (!analysisSettings || id === analysisId || (recording && ["code", "api"].includes(id))) return;
   stopPlayback();
   cancelLayout();
   save();
   clearTimeout(saveTimer);
   analysisId = id;
   codeLayer.clear();
-  if (!["overview", "business"].includes(id)) analysisSettings.advanced = true;
+  if (["resources", "permission"].includes(id)) analysisSettings.advanced = true;
   analysisOverride = analysisSettings.overrides[id] || null;
   saveAnalysis();
   updateAnalysisOptions();
@@ -2203,7 +2313,7 @@ async function openRecording(id) {
       throw Error(boTranslate("Unsupported recording format"));
     if (latestLive && !recordingMatches(saved, latestLive))
       throw Error(boTranslate("This recording belongs to an earlier graph version."));
-    if (!recording) replayReturnAnalysis = analysisId === "code" ? analysisId : null;
+    if (!recording) replayReturnAnalysis = ["code", "api"].includes(analysisId) ? analysisId : null;
     recording = saved;
     $("record-list").value = saved.id;
     replayItems = timeline(saved);
@@ -2211,7 +2321,7 @@ async function openRecording(id) {
     $("replay").hidden = false;
     document.body.classList.add("is-replay");
     for (const id of ["version", "case", "attempt", "step"]) $(id).disabled = true;
-    if (analysisId === "code") changeAnalysis("overview");
+    if (["code", "api"].includes(analysisId)) changeAnalysis("overview");
     updateAnalysisOptions();
     $("code-local").disabled = true;
     $("code-more").hidden = true;
@@ -2309,6 +2419,12 @@ window.graphDebug = {
   },
   get view() {
     return view;
+  },
+  get displayGraph() {
+    return displayGraph;
+  },
+  get layers() {
+    return { ...analysisSettings?.layers };
   },
   get camera() {
     return { scale, pan: { ...pan } };

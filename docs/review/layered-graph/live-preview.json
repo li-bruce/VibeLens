@@ -1,0 +1,32 @@
+{
+  "saved_entries": 5,
+  "build": "3251e2b24d59621666ae2db7580182b8977fedc2c1419d293d500d0b63c300e5",
+  "state_links": [
+    {
+      "id": "publication-ready",
+      "from": "state.ready",
+      "to": "publish",
+      "type": "guard",
+      "label": "Ready to publish",
+      "evidence": "machine.transitions: ready --publish--> published"
+    },
+    {
+      "id": "publication-completed",
+      "from": "publish",
+      "to": "state.published",
+      "type": "flow",
+      "label": "Publication committed",
+      "event": "publish",
+      "evidence": "The demo applies publish after the database transaction commits"
+    }
+  ],
+  "binding": "current",
+  "parameter_selection": {
+    "line": 20,
+    "column": 20,
+    "end_line": 20,
+    "end_column": 24
+  },
+  "event_count": 0,
+  "url": "http://127.0.0.1:8882/graph?lang=zh-CN"
+}

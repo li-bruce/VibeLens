@@ -12,8 +12,9 @@ export const layoutKey = (model, projectId) =>
     model.intent);
 export function emptyFilters() {
   return {
+    containmentTypes: 1,
     dataTypes: 1,
-    codeTypes: 1,
+    codeTypes: 2,
     nodes: Object.keys(nodeTypes),
     edges: [
       "call",
@@ -25,6 +26,7 @@ export function emptyFilters() {
       "join",
       "shared",
       "other",
+      "contains",
       ...dataRelations,
       ...codeRelations,
     ],
@@ -36,6 +38,8 @@ export function emptyFilters() {
 }
 export function cleanFilters(value) {
   value = migrateCodeFilters(migrateDataFilters(value));
+  if (value && value.containmentTypes !== 1 && value.edges?.includes("other"))
+    value = { ...value, edges: [...value.edges, "contains"] };
   const clean = emptyFilters();
   for (const kind of ["nodes", "edges", "regions"])
     if (Array.isArray(value?.[kind]))
@@ -377,9 +381,10 @@ export function refreshHierarchy(graph) {
 }
 export { relationType };
 export const relationStyles = {
+  "code-handles": { label: boTranslate("Handled by"), color: 0x986345, dash: [], arrow: "open" },
   "code-defines": { label: boTranslate("Defines"), color: 0x83929e, dash: [2, 5], arrow: "none" },
-  "code-calls": { label: boTranslate("Static call"), color: 0x2476ad, dash: [6, 4], arrow: "open" },
-  "code-imports": { label: boTranslate("Import"), color: 0x8172a3, dash: [3, 4], arrow: "open" },
+  "code-calls": { label: boTranslate("Static call"), color: 0x2476ad, dash: [], arrow: "open" },
+  "code-imports": { label: boTranslate("Import"), color: 0x8172a3, dash: [], arrow: "open" },
   "code-inherits": { label: boTranslate("Inheritance"), color: 0x975b86, dash: [], arrow: "open" },
   "code-parameter": { label: boTranslate("Parameter"), color: 0x627f9c, dash: [], arrow: "open" },
   "code-maps": {
@@ -389,7 +394,7 @@ export const relationStyles = {
     arrow: "open",
   },
   call: { label: boTranslate("Call"), color: 0x2476ad, dash: [], arrow: "open" },
-  flow: { label: boTranslate("Flow"), color: 0x4e647b, dash: [], arrow: "filled" },
+  flow: { label: boTranslate("Flow"), color: 0x4e647b, dash: [6, 4], arrow: "filled" },
   transition: {
     label: boTranslate("State transition"),
     color: 0x8c57ad,
@@ -402,18 +407,25 @@ export const relationStyles = {
     dash: [3, 5],
     arrow: "diamond",
   },
-  data: { label: boTranslate("Value transfer"), color: 0x207e7d, dash: [7, 5], arrow: "open" },
+  data: { label: boTranslate("Value transfer"), color: 0x207e7d, dash: [], arrow: "open" },
   reads: { label: boTranslate("Read"), color: 0x316da4, dash: [], arrow: "open" },
   writes: { label: boTranslate("Write"), color: 0xb16b36, dash: [], arrow: "filled" },
   references: { label: boTranslate("Reference"), color: 0x716a9c, dash: [3, 4], arrow: "open" },
   maps: { label: boTranslate("Mapping"), color: 0x677a88, dash: [8, 3, 2, 3], arrow: "diamond" },
-  transforms: { label: boTranslate("Transform"), color: 0x887130, dash: [7, 4], arrow: "filled" },
+  transforms: { label: boTranslate("Transform"), color: 0x887130, dash: [], arrow: "filled" },
   resource: { label: boTranslate("Resource"), color: 0x7c7b2d, dash: [10, 3, 2, 3], arrow: "open" },
-  join: { label: boTranslate("Join"), color: 0xa36045, dash: [], arrow: "bar" },
+  join: { label: boTranslate("Join"), color: 0xa36045, dash: [6, 4], arrow: "bar" },
   shared: { label: boTranslate("Shared reference"), color: 0x68759e, dash: [2, 6], arrow: "none" },
   contains: { label: boTranslate("Contains"), color: 0x83929e, dash: [2, 5], arrow: "none" },
   other: { label: boTranslate("Relation"), color: 0x677a88, dash: [4, 4], arrow: "open" },
 };
+/** Stroke describes relation meaning; a runtime marker separately shows observation. */
+export function relationStyle(edge) {
+  const members = edge.members || [edge];
+  if (members.length && members.every((m) => m.origin === "capture-field"))
+    return { ...relationStyles.data, label: boTranslate("Recorded field"), dash: [3, 5] };
+  return relationStyles[edge.type] || relationStyles.other;
+}
 // Folding projects endpoints in graph-core. Keep already-visible inner endpoints:
 // an expanded cross-circle call must not turn into a new parent-to-parent call.
 /** Route relations through visible region boundaries while retaining their original endpoints. */
@@ -430,7 +442,7 @@ export function compoundEdges(graph) {
     return out;
   };
   for (const edge of graph.edges) {
-    if (edge.type === "contains") continue; // The enclosure already shows containment.
+    if (edge.type === "contains" && !graph.layered) continue; // The enclosure already shows containment.
     const a = chain(edge.from),
       b = chain(edge.to);
     const from = edge.from,
@@ -448,7 +460,11 @@ export function compoundEdges(graph) {
       type,
       sourceRegion,
       targetRegion,
-      ["python-ast", "source-ast"].includes(edge.origin) ? "static" : "model",
+      ["python-ast", "source-ast"].includes(edge.origin)
+        ? "static"
+        : edge.origin === "capture-field"
+          ? "capture"
+          : "model",
     ].join("|");
     const members = edge.members || [{ ...edge, from: edge.from, to: edge.to }];
     if (!result.has(key))

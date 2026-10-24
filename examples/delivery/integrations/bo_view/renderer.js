@@ -1,7 +1,7 @@
 import { t as boTranslate } from "./i18n.js";
 // Graph drawing owns Pixi objects and hit geometry, but no fetching, storage or UI commands.
 import { colors as C, nodeTypes } from "./graph-core.js";
-import { annotationFor, displayName, edgePorts, relationStyles } from "./layout.js";
+import { annotationFor, displayName, edgePorts, relationStyles, relationStyle } from "./layout.js";
 import { drawGlyph, glyphAppearance } from "./glyphs.js";
 import { boKinds } from "./replay-steps.js";
 import { dataRelationEvidence } from "./data-layer.js";
@@ -115,6 +115,28 @@ export function createGraphRenderer({
     scene.removeChildren();
     for (const item of renderPool.values()) item.object.destroy();
     renderPool.clear();
+  }
+  function drawPlanes() {
+    for (const plane of [...(graph.planes || [])].reverse()) {
+      scope("plane:" + plane.id);
+      const points = plane.points.flatMap((p) => [p.x, p.y]);
+      scene.addChild(
+        graphic()
+          .poly(points)
+          .fill({ color: plane.color, alpha: 0.045 })
+          .stroke({ color: plane.color, width: 1.2 / scale, alpha: 0.28 }),
+      );
+      const p = plane.points[0];
+      text(
+        plane.label,
+        p.x + 12,
+        p.y - 24 / scale,
+        Math.max(14, 12 / scale),
+        plane.color,
+        "left",
+        "600",
+      );
+    }
   }
   function drawRegions() {
     const labels = [];
@@ -250,7 +272,7 @@ export function createGraphRenderer({
       scope("edge:" + e.id);
       const highlight = [...e.edgeIds].some((id) => focusContext.edges.has(id)),
         dim = focusContext.active && !highlight,
-        style = relationStyles[e.type] || relationStyles.other,
+        style = relationStyle(e),
         col = style.color;
       const dx = q.x - p.x,
         dy = q.y - p.y,
@@ -359,9 +381,7 @@ export function createGraphRenderer({
         );
       }
       if (!dim && scale > 0.24 && (highlight || scale > 0.38)) {
-        const details =
-            dataRelationEvidence(e) ||
-            [...e.labels].filter((label) => label !== e.type).join(" / "),
+        const details = [...e.labels].filter((label) => label !== e.type).join(" / "),
           font = Math.max(11.5 / Math.sqrt(Math.min(1, scale)), 10 / scale),
           description =
             e.members.length > 1
@@ -618,6 +638,7 @@ export function createGraphRenderer({
     hits.length = 0;
     metrics.nodes = metrics.edges = metrics.texts = 0;
     const labelBoxes = [];
+    drawPlanes();
     drawRegions();
     drawEdges(false, labelBoxes);
     for (const box of graph.boxes) {

@@ -1,3 +1,4 @@
+import { captureFields, capturedValue } from "./capture-fields.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   dataRoles,
@@ -206,7 +207,7 @@ export function status(node, view, events, choice, configuration = null) {
     return node.value === phaseValue(view, configuration, choice) ? "active" : "declared";
   if (node.field) {
     const values = callValues(node, events)[node.direction === "in" ? "inputs" : "outputs"];
-    if (!(node.field in values)) return "declared";
+    if (!capturedValue(node, values).present) return "declared";
   }
   if (node.layer === "business") {
     const states = view.model.nodes
@@ -251,26 +252,23 @@ export function lines(node, view, events, choice, configuration = null) {
   if (node.code_role)
     return [
       { text: node.summary || node.source?.path || "", role: "symbol" },
-      {
-        text: boTranslate(
-          node.code_boundary
-            ? "Outside loaded code region"
-            : "Static structure; execution unproven",
-        ),
-        role: "muted",
-      },
+      ...(node.code_boundary
+        ? [{ text: boTranslate("Outside loaded code region"), role: "muted" }]
+        : []),
     ];
   if (view.stage === "design") return node.summary ? [{ text: node.summary, role: "muted" }] : [];
   if (node.field) {
     const values = callValues(node, events)[node.direction === "in" ? "inputs" : "outputs"];
     return [
-      { text: node.field + ": " + typeName(node.fieldType), role: "symbol" },
       {
-        text:
-          node.field in values
-            ? compact(values[node.field])
-            : boTranslate("Not captured in this run"),
-        role: node.field in values ? "value" : "muted",
+        text: [node.field, ...(node.field_path || [])].join(".") + ": " + typeName(node.fieldType),
+        role: "symbol",
+      },
+      {
+        text: capturedValue(node, values).present
+          ? compact(capturedValue(node, values).value)
+          : boTranslate("Not captured in this run"),
+        role: capturedValue(node, values).present ? "value" : "muted",
       },
     ];
   }
@@ -452,6 +450,7 @@ export function wrapText(text, width = 47) {
   return out;
 }
 export const nodeTypes = {
+  "code-endpoint": { label: boTranslate("API endpoint"), glyph: "API", color: 0x986345 },
   "code-file": { label: boTranslate("Source file"), glyph: "F", color: 0x657ca5 },
   "code-class": { label: boTranslate("Class"), glyph: "C", color: 0x9371a6 },
   "code-function": { label: boTranslate("Code function"), glyph: "ƒ", color: 0x387c88 },
@@ -544,32 +543,9 @@ export function layoutGraph(
     rawEdges = [...view.model.edges];
   for (const n of view.model.nodes) {
     if (n.kind === "state") continue;
-    for (const [direction, fields] of Object.entries(n.capture || {}))
-      for (const [field, fieldType] of Object.entries(fields)) {
-        const id = `field:${n.id}:${direction}:${field}`;
-        all.set(id, {
-          id,
-          label: field,
-          summary:
-            direction === "in" ? boTranslate("Input parameter") : boTranslate("Return value"),
-          kind: "data",
-          layer: "parameter",
-          parent: n.id,
-          field,
-          fieldType,
-          direction,
-          event_node: n.event_node || n.id,
-          origin: "capture-field",
-        });
-        rawEdges.push({
-          id: `capture:${id}`,
-          from: direction === "in" ? id : n.id,
-          to: direction === "in" ? n.id : id,
-          type: "data",
-          label: direction === "in" ? boTranslate("Input") : boTranslate("Return"),
-          origin: "capture-field",
-        });
-      }
+    const captures = captureFields(n);
+    for (const field of captures.nodes) all.set(field.id, field);
+    rawEdges.push(...captures.edges);
   }
   const stateIds = new Map();
   for (const value of view.model.machine.values) {
