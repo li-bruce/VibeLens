@@ -1,4 +1,5 @@
 import { nodeElevation } from "./spatial-model.js";
+import { layerHeights } from "./graph-layers.js";
 import {
   forceSimulation,
   forceManyBody,
@@ -19,8 +20,16 @@ function seed(id) {
  * Run it in a worker: no simulation ticks occupy the browser's interaction thread.
  * Existing positions are fixed during incremental changes; an explicit arrange releases them.
  */
-export function solveSpatial({ nodes, edges, layers, gap, positions = {}, arrange = false }) {
-  const layerY = new Map(layers.map((layer, i) => [layer.id, (layers.length - 1 - i) * gap]));
+export function solveSpatial({
+  nodes,
+  edges,
+  layers,
+  gap,
+  settings,
+  positions = {},
+  arrange = false,
+}) {
+  const layerY = layerHeights(settings || { gap }, layers);
   const byId = new Map(nodes.map((node) => [node.id, node]));
   const rootOf = (node) => {
     let current = node,

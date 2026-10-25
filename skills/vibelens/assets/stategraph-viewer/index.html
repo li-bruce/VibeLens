@@ -112,8 +112,20 @@
         <select id="replay-events" aria-label="Recorded steps"></select
         ><button id="replay-locate" data-icon="locate" aria-label="Locate" title="Locate"></button
         ><button id="replay-export" data-icon="download" aria-label="Export" title="Export"></button
+        ><button id="replay-steps-toggle" aria-expanded="false" aria-controls="replay-selection">
+          Steps</button
         ><span id="replay-note"></span>
       </div>
+      <section id="replay-selection" hidden aria-label="Playback steps">
+        <div class="replay-loop-controls">
+          <label><input type="checkbox" id="replay-loop" />Loop range</label>
+          <select id="replay-loop-from" aria-label="Loop start"></select
+          ><span>→</span>
+          <select id="replay-loop-to" aria-label="Loop end"></select>
+          <button id="replay-include-all">Include all steps</button>
+        </div>
+        <div id="replay-step-list" role="group" aria-label="Included steps"></div>
+      </section>
     </section>
     <div class="workspace">
       <main
@@ -244,6 +256,20 @@
             ☷
           </button>
           <button id="layers-all" title="Show all layers" aria-label="Show all layers">◎</button>
+          <div class="ruler-spacing">
+            <label class="layer-spacing" title="Layer separation">
+              <span aria-hidden="true">↕</span>
+              <input
+                id="layer-gap"
+                type="range"
+                min="80"
+                max="600"
+                step="20"
+                value="260"
+                aria-label="Layer separation"
+              />
+            </label>
+          </div>
           <div id="layer-controls" role="group" aria-label="Visible layers"></div>
         </aside>
         <div class="view-tools">
@@ -268,18 +294,12 @@
             <output id="zoom">100%</output>
             <button id="zoom-in" data-icon="plus" aria-label="Zoom in"></button>
             <span class="tool-divider"></span>
-            <label class="layer-spacing" title="Layer separation">
-              <span aria-hidden="true">↕</span>
-              <input
-                id="layer-gap"
-                type="range"
-                min="80"
-                max="600"
-                step="20"
-                value="260"
-                aria-label="Layer separation"
-              />
-            </label>
+            <select id="edge-routing" aria-label="Edge routing" title="Edge routing">
+              <option value="curve">Curved</option>
+              <option value="straight">Straight</option>
+              <option value="orthogonal">Orthogonal</option>
+              <option value="bus">Bus</option>
+            </select>
           </div>
         </div>
         <button

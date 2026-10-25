@@ -45,6 +45,7 @@ export class SemanticView {
         core: !!annotationFor(preferences, box.node.referenceOf || box.id).core,
         referenceOf: box.node.referenceOf || "",
         runState: box.state,
+        childCount: box.kids.length,
         depth: ancestorsToReveal(graph.all, box.id).length,
       });
       el.textContent = name;
@@ -150,7 +151,7 @@ export class SemanticView {
     }
     for (const { el, edge } of this.edgeElements?.values() || []) {
       const ports = spatial
-        ? { start: spatial.screenNode(edge.from), end: spatial.screenNode(edge.to) }
+        ? spatial.screenEdge(edge.id)
         : edgePorts(displayGraph, edge, Math.max(32, 15 / scale));
       if (ports.start && ports.end)
         this.data(el, {

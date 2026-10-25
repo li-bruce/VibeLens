@@ -54,7 +54,7 @@ async function expand(id) {
 async function isolateLayer(id) {
   await page.click("#layers-all");
   const ids = await page
-    .locator("#layer-controls button")
+    .locator("#layer-controls button[data-layer]")
     .evaluateAll((items) => items.map((e) => e.dataset.layer));
   for (const other of ids)
     if (other !== id) await page.click(`#layer-controls [data-layer="${other}"]`);
@@ -185,6 +185,95 @@ try {
     assert.equal(renderedPlanes.find((p) => p.id === layer)?.y, Number(ys[0]));
   assert.equal(renderedPlanes.length, planeFacts.length);
   checks.coplanarLayers = true;
+
+  const rulerLabels = await page
+    .locator(".layer-select")
+    .evaluateAll((els) =>
+      els.map((el) => ({ scroll: el.scrollWidth, width: el.clientWidth, height: el.clientHeight })),
+    );
+  assert.ok(
+    rulerLabels.every((el) => el.scroll <= el.width && el.height >= 24),
+    "Layer text is fully visible",
+  );
+  const orderBefore = await page.evaluate(() => graphDebug.layers.order);
+  await page.locator('[data-layer-row="state"] .layer-select').focus();
+  await page.keyboard.press("Alt+ArrowUp");
+  assert.equal((await page.evaluate(() => graphDebug.layers.order))[1], "state");
+  const gap = page.locator('[data-gap-after="state"]');
+  await gap.focus();
+  await page.keyboard.press("ArrowDown");
+  assert.equal(await gap.getAttribute("aria-valuenow"), "380");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  const changedPlanes = await page.evaluate(() => ({
+    layers: graphDebug.layers,
+    points: graphDebug.spatialPositions,
+  }));
+  assert.equal(changedPlanes.points["state.published"].y - changedPlanes.points["publish"].y, 380);
+  // Restore this test's uniform layout before checking its previous height invariants.
+  await page.locator('[data-layer-row="state"] .layer-select').focus();
+  await page.keyboard.press("Alt+ArrowDown");
+  assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), orderBefore);
+  await page.locator("#layer-gap").fill("360");
+  await page.dragAndDrop('[data-layer-row="state"] .layer-grip', '[data-layer-row="business"]');
+  assert.equal((await page.evaluate(() => graphDebug.layers.order))[1], "state");
+  const tick = await page.locator('[data-gap-after="state"]').boundingBox();
+  await page.mouse.move(tick.x + 3, tick.y + tick.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(tick.x + 3, tick.y + tick.height / 2 + 10, { steps: 3 });
+  await page.mouse.up();
+  assert.equal(await page.locator('[data-gap-after="state"]').getAttribute("aria-valuenow"), "440");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  const customLayers = await page.evaluate(() => graphDebug.layers);
+  await page.waitForTimeout(300);
+  await page.reload();
+  await page.waitForFunction(() => graphDebug?.spatial?.perspective && !graphDebug.layoutBusy);
+  assert.deepEqual(
+    await page.evaluate(() => graphDebug.layers),
+    customLayers,
+    "Custom order and individual gaps survive reload",
+  );
+  await page.locator('[data-layer-row="state"] .layer-select').focus();
+  await page.keyboard.press("Alt+ArrowDown");
+  await page.locator("#layer-gap").fill("360");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  for (const style of ["straight", "orthogonal", "bus", "curve"]) {
+    await page.selectOption("#edge-routing", style);
+    await page.waitForTimeout(80);
+    assert.equal(await page.evaluate(() => graphDebug.spatial.routing), style);
+    const rimFacts = await page.evaluate(() => {
+      const g = graphDebug,
+        result = [];
+      for (const edge of g.presentation.edges) {
+        const ports = g.spatial.edgePorts.find((p) => p.id === edge.id);
+        if (!ports) continue;
+        for (const [id, flag, end] of [
+          [edge.from, edge.sourceRegion, ports.start],
+          [edge.to, edge.targetRegion, ports.end],
+        ]) {
+          const volume = g.spatial.volumes.find((v) => v.id === id && !v.projection);
+          if (flag && volume)
+            result.push({
+              edge: edge.id,
+              id,
+              other: edge.from === id ? edge.to : edge.from,
+              end,
+              center: volume.center,
+              members: volume.members,
+              distance: Math.hypot(end.x - volume.center.x, end.z - volume.center.z),
+              radius: volume.radius,
+            });
+        }
+      }
+      return result;
+    });
+    assert.ok(rimFacts.length > 0, "Exercise an actual expanded group edge");
+    assert.ok(
+      rimFacts.every((p) => Math.abs(p.distance - p.radius) < 0.00001),
+      JSON.stringify({ style, rimFacts }),
+    );
+  }
+  assert.ok((await page.locator(".region-label .node-badges[data-child-count]").count()) > 0);
+  checks.rulerAndBoundaryRoutes = true;
   await shot("3d-top");
   const camera = await page.evaluate(() => graphDebug.spatial.camera.position);
   await page.mouse.move(1000, 650);
@@ -279,7 +368,9 @@ try {
   ]);
   assert.equal(await page.locator("#legend-panel").getAttribute("data-mode"), "2D");
   await page.click("#show-all");
-  assert.ok((await page.locator('#layer-controls button[aria-pressed="false"]').count()) === 0);
+  assert.ok(
+    (await page.locator('#layer-controls button[data-layer][aria-pressed="false"]').count()) === 0,
+  );
   await page.click("#layered-toggle");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   checks.multiLayerPersistence = true;

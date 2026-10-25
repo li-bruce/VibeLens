@@ -225,7 +225,7 @@ try {
     await page.click("#layered-toggle");
   await page.click("#layers-all");
   const layerIds = await page
-    .locator("#layer-controls button")
+    .locator("#layer-controls button[data-layer]")
     .evaluateAll((items) => items.map((e) => e.dataset.layer));
   for (const id of layerIds)
     if (id !== "api") await page.click(`#layer-controls [data-layer="${id}"]`);

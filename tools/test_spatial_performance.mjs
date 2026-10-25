@@ -156,6 +156,24 @@ try {
       const selectionMs = performance.now() - selectionStart;
       await new Promise((resolve) => setTimeout(resolve, 150));
       const after = renderer.diagnostics;
+      const cameraViewportReads = viewportReads,
+        routingChecks = [];
+      for (const routing of ["straight", "orthogonal", "bus"]) {
+        const start = performance.now();
+        renderer.update({ ...input, routing });
+        const rebuildMs = performance.now() - start;
+        await new Promise((resolve) => setTimeout(resolve, 70));
+        const finite = [...renderer.curves.values()].every((curve) =>
+          curve.getPoints(4).every((p) => [p.x, p.y, p.z].every(Number.isFinite)),
+        );
+        routingChecks.push({
+          routing,
+          rebuildMs,
+          finite,
+          drawCalls: renderer.diagnostics.drawCalls,
+          geometries: renderer.diagnostics.geometries,
+        });
+      }
       // No observer traffic is made by the renderer itself.
       const gl = renderer.renderer.getContext(),
         ext = gl.getExtension("WEBGL_debug_renderer_info");
@@ -172,13 +190,18 @@ try {
         heartbeats,
         worstDelay,
         selectionMs,
-        viewportReads,
+        viewportReads: cameraViewportReads,
+        routingChecks,
         before,
         after,
         gpu,
       };
     }, count);
     results.push(sample);
+    assert.ok(
+      sample.routingChecks.every((check) => check.finite && check.drawCalls < 35),
+      "Every routing style keeps finite batched geometry",
+    );
     assert.ok(sample.heartbeats > 5, "Layout must leave the browser responsive");
     assert.ok(sample.after.labels <= 300, "DOM labels must remain bounded");
     assert.ok(

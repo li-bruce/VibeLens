@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — spatial graph branch
+
+- Replace the clipped layer drawer with a saved layer ruler: drag to reorder, toggle visibility and adjust each gap. Keep fixed default elevations and preserve hidden layer slots.
+- Route expanded 3D groups at their circular boundaries. Share curved, straight, orthogonal and typed bus paths across 2D/3D, retaining original endpoints and evidence strokes.
+- Match child counts and live state badges across renderers; place expanded 2D captions below circles. Add Delete-to-hide for selected nodes, edges and layers.
+- Repeat the current animation while paused; add skipped steps and an optional loop range without changing raw recordings.
+- Preserve existing mapping, state, business and project gates. See [acceptance and retained failures](docs/review/spatial-ruler/README.md).
+
 ## 0.7.1 — 2026-10-24
 
 - Rename the product and repository to **VibeLens**; use `$vibelens` and `skills/vibelens`.

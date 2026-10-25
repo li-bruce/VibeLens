@@ -27,17 +27,41 @@ export function layerOf(node) {
 
 export function cleanLayers(value) {
   const only = layers.some((layer) => layer.id === value?.only) ? value.only : "all";
+  const ids = layers.map((layer) => layer.id);
+  const order = [...new Set([...(Array.isArray(value?.order) ? value.order : []), ...ids])].filter(
+    (id) => ids.includes(id),
+  );
   return {
     enabled: value?.enabled === true,
     drawer: value?.drawer === true,
     camera: ["angled", "front", "side", "top"].includes(value?.camera) ? value.camera : "top",
     gap: Number.isFinite(value?.gap) ? Math.max(80, Math.min(600, value.gap)) : 260,
+    order,
+    gaps: Object.fromEntries(
+      ids
+        .filter((id) => Number.isFinite(value?.gaps?.[id]))
+        .map((id) => [id, Math.max(80, Math.min(600, value.gaps[id]))]),
+    ),
     only,
     visible: Array.isArray(value?.visible)
       ? layers.filter((layer) => value.visible.includes(layer.id)).map((layer) => layer.id)
       : layers.filter((layer) => only === "all" || only === layer.id).map((layer) => layer.id),
     projections: value?.projections !== false,
   };
+}
+
+/** A hidden layer keeps its slot. Gaps belong to the layer immediately above them. */
+export function layerHeights(settings, scope = layers) {
+  const config = cleanLayers(settings),
+    result = new Map();
+  config.order = config.order.filter((id) => scope.some((layer) => layer.id === id));
+  let height = 0;
+  for (let i = config.order.length - 1; i >= 0; i--) {
+    const id = config.order[i];
+    if (i < config.order.length - 1) height += config.gaps[id] ?? config.gap;
+    result.set(id, height);
+  }
+  return result;
 }
 
 /** A layer filter keeps endpoints together; it never manufactures a direct relation. */

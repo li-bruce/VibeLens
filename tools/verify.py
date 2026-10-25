@@ -32,6 +32,7 @@ def main():
     subprocess.run(['node', 'tools/test_spatial_workspace.mjs'], cwd=ROOT, check=True)
     subprocess.run(['node', 'tools/test_spatial_planes.mjs'], cwd=ROOT, check=True)
     subprocess.run(['node', 'tools/test_replay_owners.mjs'], cwd=ROOT, check=True)
+    subprocess.run(['node', 'tools/test_ruler_controls.mjs'], cwd=ROOT, check=True)
     if args.database:
         run(ROOT, 'tools/verify_databases.py')
     run(ROOT, 'tests/test_ast_fingerprint.py')

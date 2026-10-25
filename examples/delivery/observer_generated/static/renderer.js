@@ -1,3 +1,4 @@
+import { routePoints, polylineAt, busTrunks, cleanRoute } from "./edge-routing.js";
 import { t as boTranslate } from "./i18n.js";
 // Graph drawing owns Pixi objects and hit geometry, but no fetching, storage or UI commands.
 import { colors as C, nodeTypes } from "./graph-core.js";
@@ -10,6 +11,7 @@ export function short(value, count = 27) {
   return chars.length > count ? chars.slice(0, count - 1).join("") + "…" : String(value);
 }
 export function bezierAt(path, t) {
+  if (path.points) return polylineAt(path.points, t);
   const { start: a, c1: b, c2: c, end: d } = path,
     u = 1 - t;
   return {
@@ -160,7 +162,7 @@ export function createGraphRenderer({
           (annotationFor(preferences, owner.node.referenceOf || r.id).core ? "★ " : "") +
           short(displayName(owner.node, preferences), 22);
       const label = text(
-        `${name} · ${nodeTypes[owner.type].label} · ${owner.kids.length}`,
+        `${name} · ${owner.kids.length} ${{ active: "▶", ok: "✓", blocked: "!", historical: "·" }[owner.state] || ""}`,
         0,
         0,
         font,
@@ -170,10 +172,10 @@ export function createGraphRenderer({
       );
       const w = label.width + 16 / scale,
         h = font + 8 / scale;
-      const candidates = [-90, -120, -60, -150, -30, 90, 180, 0].map((deg) => {
+      const candidates = [90].map((deg) => {
         const angle = (deg * Math.PI) / 180,
           cx = r.cx + Math.cos(angle) * r.radius,
-          cy = r.cy + Math.sin(angle) * r.radius;
+          cy = r.cy + Math.sin(angle) * r.radius + h / 2 + 5 / scale;
         return { x: cx - w / 2, y: cy - h / 2, w, h, cx, cy };
       });
       const box =
@@ -198,6 +200,12 @@ export function createGraphRenderer({
   }
   function strokeRelation(g, path, style, width, alpha) {
     const { start, end, c1, c2 } = path;
+    if (!style.dash.length && path.points) {
+      g.moveTo(start.x, start.y);
+      for (const point of path.points.slice(1)) g.lineTo(point.x, point.y);
+      g.stroke({ color: style.color, width, alpha });
+      return;
+    }
     if (!style.dash.length) {
       g.moveTo(start.x, start.y)
         .bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
@@ -237,6 +245,14 @@ export function createGraphRenderer({
   }
   function drawEdges(foreground, labelBoxes) {
     const lanes = new Map();
+    const routing = cleanRoute(preferences.routing);
+    const trunks =
+      routing === "bus"
+        ? busTrunks(renderedEdges, (id) => {
+            const box = graph.byId.get(id);
+            return box ? point(box) : null;
+          })
+        : new Map();
     for (const e of renderedEdges) {
       const a = graph.byId.get(e.from),
         b = graph.byId.get(e.to);
@@ -290,6 +306,8 @@ export function createGraphRenderer({
       )
         continue;
       const path = { start, end, c1, c2 };
+      if (a !== b && routing !== "curve")
+        path.points = routePoints(start, end, routing, trunks.get(e.id));
       edgePaths.set(e.id, path);
       const alpha = dim ? 0.1 : highlight ? 0.95 : 0.65,
         g = graphic();
@@ -304,7 +322,8 @@ export function createGraphRenderer({
       );
       scene.addChild(g);
       metrics.edges++;
-      const angle = Math.atan2(end.y - c2.y, end.x - c2.x);
+      const tangent = bezierAt(path, 0.99);
+      const angle = Math.atan2(end.y - tangent.y, end.x - tangent.x);
       const af = Math.max(1, 0.6 / scale),
         arrow = graphic(),
         left = {
@@ -384,18 +403,7 @@ export function createGraphRenderer({
           ),
           h = font + 7;
         // Put labels along the curve where they avoid nodes and previous labels.
-        const candidates = [0.5, 0.32, 0.68, 0.2, 0.8].map((t) => ({
-          x:
-            (1 - t) ** 3 * start.x +
-            3 * (1 - t) ** 2 * t * c1.x +
-            3 * (1 - t) * t * t * c2.x +
-            t ** 3 * end.x,
-          y:
-            (1 - t) ** 3 * start.y +
-            3 * (1 - t) ** 2 * t * c1.y +
-            3 * (1 - t) * t * t * c2.y +
-            t ** 3 * end.y,
-        }));
+        const candidates = [0.5, 0.32, 0.68, 0.2, 0.8].map((t) => bezierAt(path, t));
         const collision = (x, y, b) =>
           x - w / 2 < b.x + b.w && x + w / 2 > b.x && y - h / 2 < b.y + b.h && y + h / 2 > b.y;
         const candidate = candidates.find(

@@ -1,3 +1,6 @@
+import { LayerRuler } from "./layer-ruler.js";
+import { cleanRoute } from "./edge-routing.js";
+import { cleanReplaySelection, selectedReplayPlan, nextReplayIndex } from "./replay-selection.js";
 import { SemanticView } from "./semantic-view.js";
 import { prepareSpatialHierarchy } from "./spatial-model.js";
 import { renderSource } from "./source-view.js";
@@ -139,7 +142,10 @@ let animationFrame = null,
   animatedIds = [],
   animationEvent = null,
   lastLiveEvent = null;
+let heldTimer = null,
+  selectedLayer = null;
 let boPlan = [],
+  boFullPlan = [],
   boPlanKey = "",
   boDetail = null,
   boTransfers = new Map();
@@ -231,9 +237,15 @@ function updateSpatial() {
   if (!spatialActive() || !graph) return;
   if (!spatial)
     spatial = new SpatialRenderer($("canvas-host"), {
-      onSelect: select,
+      onSelect: (id) => {
+        $("viewport").focus({ preventScroll: true });
+        select(id);
+      },
       onToggle: toggle,
-      onEdge: showEdge,
+      onEdge: (edge) => {
+        $("viewport").focus({ preventScroll: true });
+        showEdge(edge);
+      },
       onSave: saveSoon,
       onRender: spatialGeometry,
       onError: (message) => {
@@ -256,6 +268,7 @@ function updateSpatial() {
     scope: storageKey,
     boDetail,
     boTransfers,
+    routing: cleanRoute(analysisSettings.routing),
   });
 }
 function point(box) {
@@ -265,10 +278,26 @@ function point(box) {
   }
   return nodePoint(displayGraph || graph, presentation, displayGraph?.byId.get(box.id) || box);
 }
-/** The same semantic-layer mask applies to both renderers. */
+/** Layer names remain readable; selection, visibility and height are independent. */
+const layerRuler = new LayerRuler($("layer-controls"), {
+  change: (config) => {
+    if (!analysisSettings || !graph) return;
+    analysisSettings.layers = cleanLayers(config);
+    updateLayerControls();
+    updatePresentation();
+    updateSemantic();
+    schedule();
+    saveSoon();
+  },
+  select: (id) => {
+    select(null);
+    selectedLayer = id;
+    updateLayerControls();
+  },
+});
 function updateLayerControls() {
-  const config = cleanLayers(analysisSettings?.layers);
-  const mode = config.enabled ? "3D" : "2D";
+  const config = cleanLayers(analysisSettings?.layers),
+    mode = config.enabled ? "3D" : "2D";
   $("layered-toggle").textContent = mode;
   $("layer-gap").value = config.gap;
   $("layer-gap").disabled = !config.enabled;
@@ -278,10 +307,10 @@ function updateLayerControls() {
   const action = boTranslate(config.enabled ? "Switch to 2D" : "Switch to 3D");
   $("layered-toggle").title = action;
   $("layered-toggle").setAttribute("aria-label", action);
-  for (const button of $("layer-controls").children)
-    button.setAttribute("aria-pressed", String(config.visible.includes(button.dataset.layer)));
+  layerRuler.render(config, selectedLayer);
   $("layers-all").setAttribute("aria-pressed", String(config.visible.length === layers.length));
   $("undo-layout").disabled = !undo || undo.mode !== mode;
+  $("edge-routing").value = cleanRoute(analysisSettings?.routing);
   updateLegendMode();
 }
 function changeLayers(visible) {
@@ -291,31 +320,9 @@ function changeLayers(visible) {
   updateLayerControls();
   updatePresentation();
   updateSemantic();
-  fit();
+  schedule();
   save();
 }
-$("layer-controls").replaceChildren(
-  ...layers.map((layer) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.dataset.layer = layer.id;
-    const label = document.createElement("span");
-    label.className = "layer-label";
-    label.textContent = boTranslate(layer.label);
-    button.append(label);
-    button.title = boTranslate(layer.label);
-    button.style.setProperty("--layer-color", "#" + layer.color.toString(16).padStart(6, "0"));
-    button.onclick = () => {
-      const visible = cleanLayers(analysisSettings?.layers).visible;
-      changeLayers(
-        visible.includes(layer.id)
-          ? visible.filter((id) => id !== layer.id)
-          : [...visible, layer.id],
-      );
-    };
-    return button;
-  }),
-);
 $("layers-toggle").onclick = () => {
   if (!analysisSettings) return;
   const config = cleanLayers(analysisSettings.layers);
@@ -328,13 +335,21 @@ $("layer-gap").oninput = () => {
   analysisSettings.layers = cleanLayers({
     ...analysisSettings.layers,
     gap: Number($("layer-gap").value),
+    gaps: {},
   });
+  updateLayerControls();
   updateSpatial();
   updateSemantic();
   schedule();
   saveSoon();
 };
 $("layers-all").onclick = () => changeLayers(layers.map((layer) => layer.id));
+$("edge-routing").onchange = (event) => {
+  analysisSettings.routing = cleanRoute(event.target.value);
+  updateSpatial();
+  schedule();
+  save();
+};
 $("layered-toggle").onclick = () => {
   if (!analysisSettings || !graph) return;
   stopAnimation();
@@ -416,6 +431,7 @@ function draw() {
   }
   spatial?.setVisible(false);
   $("renderer").textContent = "PixiJS / WebGL · ELK";
+  preferences.routing = cleanRoute(analysisSettings.routing);
   renderer.draw({
     graph: displayGraph,
     presentation,
@@ -658,6 +674,8 @@ function zoom(factor, point = { x: app.screen.width / 2, y: app.screen.height / 
   saveSoon();
 }
 function select(id) {
+  selectedLayer = null;
+  if (analysisSettings) layerRuler.render(analysisSettings.layers, null);
   selected = id;
   semanticView.select(id);
   selectedEdge = null;
@@ -1146,6 +1164,7 @@ $("edge-hide").onclick = () => {
 };
 app.canvas.addEventListener("pointerdown", (e) => {
   if (e.button !== 0 || gesture.active) return;
+  $("viewport").focus({ preventScroll: true });
   contextMenu.close();
   const hit = hitAt(e);
   cancelLayout();
@@ -1216,10 +1235,19 @@ $("viewport").addEventListener("keydown", (e) => {
   }
   if (
     e.target.closest(
-      "input,textarea,select,#node-details,#edge-details,#semantic-edges,#filter-panel,#legend-panel",
+      "input,textarea,select,#node-details,#edge-details,#filter-panel,#legend-panel",
     )
   )
     return;
+  if (e.key === "Delete" && !e.target.closest('[contenteditable="true"]')) {
+    e.preventDefault();
+    if (selectedLayer) {
+      const config = cleanLayers(analysisSettings.layers);
+      changeLayers(config.visible.filter((id) => id !== selectedLayer));
+    } else if (selectedEdge) $("edge-hide").click();
+    else if (selected) $("hide-node").click();
+    return;
+  }
   if (e.key.toLowerCase() === "f") focusSelection();
   if (e.key === "0") fit();
   if (e.key === "+" || e.key === "=") zoom(1.15);
@@ -1837,6 +1865,8 @@ function loadAnalysis(baseKey) {
     selected: "overview",
     annotations: null,
     layers: cleanLayers(saved?.layers),
+    routing: cleanRoute(saved?.routing),
+    replays: saved?.replays && typeof saved.replays === "object" ? saved.replays : {},
   };
   updateLayerControls();
   if (saved) {
@@ -2139,13 +2169,15 @@ function boUpdateReplay() {
       recording.id,
       $("replay-grain").value,
       visible.map((b) => [b.id, b.type]),
+      replaySelection(),
     ]);
   if (key !== boPlanKey) {
     boPlanKey = key;
-    boPlan = boStepPlan(recording, replayItems, graph.all, visible, {
+    boFullPlan = boStepPlan(recording, replayItems, graph.all, visible, {
       mode: $("replay-grain").value,
     });
-    $("replay-range").max = boPlan.length - 1;
+    boPlan = selectedReplayPlan(replayItems, boFullPlan, replaySelection());
+    $("replay-range").max = Math.max(0, boPlan.length - 1);
     $("replay-events").replaceChildren(
       ...boPlan.map(
         (raw, i) =>
@@ -2156,7 +2188,7 @@ function boUpdateReplay() {
       ),
     );
   }
-  const previous = boPlan.filter((i) => i < replayIndex).at(-1) ?? -1,
+  const previous = boFullPlan.filter((i) => i < replayIndex).at(-1) ?? -1,
     position = Math.max(0, boPlan.filter((i) => i <= replayIndex).length - 1),
     item = replayItems[replayIndex];
   boDetail = boStepDetail(recording, replayItems, replayIndex, previous, graph.all, visible, {
@@ -2166,7 +2198,8 @@ function boUpdateReplay() {
   boSetTransfers(replayItems.slice(Math.max(1, previous + 1), replayIndex + 1));
   $("replay-range").value = position;
   $("replay-events").value = String(boPlan[position]);
-  $("replay-position").value = `${position + 1} / ${boPlan.length}`;
+  $("replay-position").value =
+    `${boPlan.includes(replayIndex) ? position + 1 : "—"} / ${boPlan.length}`;
   Object.assign($("replay-position").dataset, {
     eventId: item.id,
     rawIndex: String(replayIndex),
@@ -2178,8 +2211,11 @@ function boUpdateReplay() {
     : recording.capture?.mode === "focused"
       ? boTranslate("Focused recording \u00B7 outside scope not captured")
       : boTranslate("{0} raw events", recording.events.length);
-  $("replay-prev").disabled = replayIndex === 0;
-  $("replay-next").disabled = replayIndex === replayItems.length - 1;
+  $("replay-prev").disabled = !boPlan.some((raw) => raw < replayIndex);
+  $("replay-next").disabled = !boPlan.some((raw) => raw > replayIndex);
+  $("replay-play").disabled = !boPlan.length;
+  $("replay-range").disabled = !boPlan.length;
+  updateReplaySelection();
   $("replay-locate").disabled = !item.node;
 }
 function boUpdateLive(before, after) {
@@ -2227,12 +2263,16 @@ function animateEvent(event) {
   if (!graph || disposed || document.hidden || contextLost) return;
   stopAnimation();
   animationEvent = event;
+  $("renderer").dataset.animationEpoch = String(
+    Number($("renderer").dataset.animationEpoch || 0) + 1,
+  );
   animatedIds = [...boTransfers.keys()];
   if (!animatedIds.length)
     animatedIds = transferEdges(event, view.events, renderedEdges, graph.all, graph.configuration);
   $("renderer").dataset.animatedEdges = JSON.stringify(animatedIds);
   if (spatialActive()) {
     updateSpatial();
+    $("renderer").dataset.animationActive = "true";
     spatial?.animate(animatedIds, boTransfers);
     return;
   }
@@ -2397,10 +2437,87 @@ $("record-clear").onclick = async () => {
     lastRecordPoll = 0;
   }
 };
-function stopPlayback() {
+function replaySelection() {
+  return cleanReplaySelection(analysisSettings?.replays?.[recording?.id], replayItems);
+}
+function changeReplaySelection(patch) {
+  if (!recording) return;
+  stopPlayback();
+  const selection = cleanReplaySelection({ ...replaySelection(), ...patch }, replayItems);
+  analysisSettings.replays[recording.id] = selection;
+  // Bound private playback preferences without retaining obsolete raw recordings.
+  const ids = Object.keys(analysisSettings.replays);
+  for (const id of ids.slice(0, Math.max(0, ids.length - 10))) delete analysisSettings.replays[id];
+  boPlanKey = "";
+  boUpdateReplay();
+  save();
+  holdCurrentStep();
+}
+let replayEditorKey = "";
+function updateReplaySelection() {
+  const selection = replaySelection();
+  const key = JSON.stringify([recording.id, boFullPlan, selection]);
+  if (key === replayEditorKey) return;
+  replayEditorKey = key;
+  $("replay-loop").checked = selection.loop;
+  const option = (raw) =>
+    new Option(
+      `${boFullPlan.indexOf(raw) + 1} · ${eventLabel(replayItems[raw], recording.context.model)}`,
+      replayItems[raw].id,
+    );
+  for (const id of ["replay-loop-from", "replay-loop-to"])
+    $(id).replaceChildren(...boFullPlan.map(option));
+  $("replay-loop-from").value = selection.from;
+  $("replay-loop-to").value = selection.to;
+  $("replay-step-list").replaceChildren(
+    ...boFullPlan.map((raw, index) => {
+      const label = document.createElement("label"),
+        check = document.createElement("input");
+      check.type = "checkbox";
+      check.dataset.eventId = replayItems[raw].id;
+      check.checked = !selection.skipped.includes(replayItems[raw].id);
+      check.onchange = () =>
+        changeReplaySelection({
+          skipped: check.checked
+            ? replaySelection().skipped.filter((id) => id !== replayItems[raw].id)
+            : [...replaySelection().skipped, replayItems[raw].id],
+        });
+      label.append(
+        check,
+        `${index + 1} · ${eventLabel(replayItems[raw], recording.context.model)}`,
+      );
+      return label;
+    }),
+  );
+}
+$("replay-steps-toggle").onclick = () => {
+  $("replay-selection").hidden = !$("replay-selection").hidden;
+  $("replay-steps-toggle").setAttribute("aria-expanded", String(!$("replay-selection").hidden));
+};
+$("replay-loop").onchange = (e) => changeReplaySelection({ loop: e.target.checked });
+$("replay-loop-from").onchange = (e) => changeReplaySelection({ from: e.target.value });
+$("replay-loop-to").onchange = (e) => changeReplaySelection({ to: e.target.value });
+$("replay-include-all").onclick = () => changeReplaySelection({ skipped: [] });
+
+/** Pausing repeats presentation of the same fact; no seek, capture or model mutation. */
+function holdCurrentStep() {
+  clearTimeout(heldTimer);
+  if (!recording || playTimer || disposed) return;
+  $("renderer").dataset.replayHeld = "true";
+  const replay = () => {
+    if (!recording || playTimer || disposed) return;
+    if (!document.hidden) animateEvent(replayItems[replayIndex]);
+    heldTimer = setTimeout(replay, 850);
+  };
+  replay();
+}
+function stopPlayback(hold = false) {
   clearTimeout(playTimer);
-  playTimer = null;
+  clearTimeout(heldTimer);
+  playTimer = heldTimer = null;
+  $("renderer").dataset.replayHeld = "false";
   iconButton($("replay-play"), "play", boTranslate("Play"));
+  if (hold) holdCurrentStep();
 }
 function seek(index, locate = false) {
   if (!recording) return;
@@ -2416,6 +2533,7 @@ function seek(index, locate = false) {
     revealResult(item.node);
   }
   animateEvent(item);
+  if (!playTimer) holdCurrentStep();
 }
 async function openRecording(id) {
   stopPlayback();
@@ -2507,11 +2625,19 @@ $("replay-grain").onchange = () => {
   schedule();
 };
 $("replay-play").onclick = () => {
-  if (playTimer) return stopPlayback();
-  if (replayIndex >= replayItems.length - 1) seek(0);
+  if (playTimer) return stopPlayback(true);
+  clearTimeout(heldTimer);
+  heldTimer = null;
+  $("renderer").dataset.replayHeld = "false";
+  if (!boPlan.length) return;
+  // Start at the first included step when the selected snapshot is outside the range.
+  if (!boPlan.includes(replayIndex) || replayIndex >= boPlan.at(-1)) {
+    playTimer = -1;
+    seek(boPlan[0]);
+  }
   const advance = () => {
-    const next = boPlan.find((i) => i > replayIndex);
-    if (next === undefined) return stopPlayback();
+    const next = nextReplayIndex(boPlan, replayIndex, replaySelection().loop);
+    if (next === undefined) return stopPlayback(true);
     seek(next);
     playTimer = setTimeout(advance, Number($("replay-speed").value));
   };
@@ -2536,6 +2662,9 @@ window.graphDebug = {
   },
   get view() {
     return view;
+  },
+  get presentation() {
+    return presentation;
   },
   get displayGraph() {
     return displayGraph;

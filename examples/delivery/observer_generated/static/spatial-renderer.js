@@ -1,7 +1,8 @@
 import { edgeCurve } from "./spatial-paths.js";
 import * as T from "./spatial-three.vendor.js";
 import { spatialModel, containmentVolumes, descendants, nodeElevation } from "./spatial-model.js";
-import { cleanLayers } from "./graph-layers.js";
+import { cleanLayers, layerHeights } from "./graph-layers.js";
+import { cleanRoute, busTrunks, regionPort } from "./edge-routing.js";
 import { nodeTypes } from "./graph-core.js";
 import { nodeGeometry } from "./spatial-geometry.js";
 import { regionLabelAnchor } from "./spatial-labels.js";
@@ -117,6 +118,8 @@ export class SpatialRenderer {
       next.nodes.map((n) => [n.id, n.parent, n.layer]),
       next.edges.map((e) => [e.id, e.from, e.to]),
       input.settings.gap,
+      input.settings.order,
+      input.settings.gaps,
     ]);
     const scopeChanged = this.scope !== input.scope;
     if (scopeChanged) {
@@ -144,6 +147,7 @@ export class SpatialRenderer {
       next.nodes.map((n) => [n.id, n.state, n.rows]),
       input.preferences.annotations,
       this.settings.projections,
+      input.routing,
       [...input.boTransfers],
     ]);
     if (scopeChanged || topology !== this.topology) {
@@ -157,6 +161,7 @@ export class SpatialRenderer {
       topology,
       input.preferences.annotations,
       this.settings.projections,
+      input.routing,
     ]);
     if (geometry !== this.geometryKey) {
       this.geometryKey = geometry;
@@ -167,14 +172,9 @@ export class SpatialRenderer {
 
   seedMissing() {
     const count = Math.max(1, this.model.nodes.length);
+    const heights = layerHeights(this.settings, this.model.layers);
     for (const [i, node] of this.model.nodes.entries()) {
-      const layer = this.model.layers.findIndex((layer) => layer.id === node.layer);
-      const y = nodeElevation(
-        node,
-        this.model.byId,
-        (this.model.layers.length - 1 - layer) * this.settings.gap,
-        this.settings.gap,
-      );
+      const y = nodeElevation(node, this.model.byId, heights.get(node.layer), this.settings.gap);
       if (!this.positions[node.id]) {
         const parent = this.positions[node.parent],
           angle = i * 2.3999632297;
@@ -201,6 +201,7 @@ export class SpatialRenderer {
       edges: this.model.edges.map(({ from, to, type }) => ({ from, to, type })),
       layers: this.model.layers,
       gap: this.settings.gap,
+      settings: this.settings,
       positions: existing,
       arrange,
     });
@@ -324,6 +325,7 @@ export class SpatialRenderer {
       title.className = "spatial-label-title";
       title.textContent = nodeTypes[node.type].glyph + " · " + displayName(box.node, preferences);
       label.append(title);
+      this.updateBadges(label, box);
       const rows = node.rows
         .filter((row) => ["value", "bad", "state"].includes(row.role))
         .slice(0, node.id === selected ? 5 : 2)
@@ -350,6 +352,7 @@ export class SpatialRenderer {
       label.dataset.regionLayer = volume.layer;
       const owner = this.model.byId.get(volume.id);
       label.textContent = displayName(graph.byId.get(volume.id).node, preferences);
+      this.updateBadges(label, graph.byId.get(volume.id));
       label.style.setProperty(
         "--node-color",
         "#" + nodeTypes[owner.type].color.toString(16).padStart(6, "0"),
@@ -365,6 +368,28 @@ export class SpatialRenderer {
 
   nodeGeometry(type) {
     return nodeGeometry(type, this.model.nodes.length > 2000);
+  }
+
+  /** Counts and runtime status use the same source box as the planar renderer. */
+  updateBadges(label, box) {
+    if (!box) return;
+    let badges = label.querySelector(".node-badges");
+    if (!badges) {
+      badges = document.createElement("span");
+      badges.className = "node-badges";
+      label.append(badges);
+    }
+    const count = Array.isArray(box.kids) ? box.kids.length : null;
+    const glyph = { ok: "✓", active: "▶", blocked: "!", historical: "·" }[box.state] || "";
+    badges.textContent = [count ? `${box.open ? "−" : "+"} ${count}` : "", glyph]
+      .filter(Boolean)
+      .join("  ");
+    badges.dataset.childCount = count === null ? "" : String(count);
+    badges.dataset.runState = box.state;
+    badges.title = [count ? t("{0} children", count) : "", t(box.state || "declared")]
+      .filter(Boolean)
+      .join(" · ");
+    badges.hidden = !badges.textContent;
   }
 
   /** Runtime/selection changes reuse GPU geometry; only instance colors and labels change. */
@@ -394,6 +419,7 @@ export class SpatialRenderer {
       const node = this.model.byId.get(item.id);
       if (!node) continue;
       item.el.classList.toggle("selected", item.id === selected);
+      this.updateBadges(item.el, graph.byId.get(item.id));
       const values = node.rows
         .filter((row) => ["value", "bad", "state"].includes(row.role))
         .slice(0, item.id === selected ? 5 : 2)
@@ -461,7 +487,7 @@ export class SpatialRenderer {
       // Keep the guide on the same plane as its nodes. A hidden/empty layer
       // leaves neither a background mesh nor a caption behind.
       if (!this.model.nodes.some((node) => node.layer === layer.id)) continue;
-      const y = (this.model.layers.length - 1 - i) * this.settings.gap;
+      const y = layerHeights(this.settings, this.model.layers).get(layer.id);
       const plane = new T.Mesh(
         new T.PlaneGeometry(Math.max(500, size.x + 180), Math.max(500, size.z + 180)),
         new T.MeshBasicMaterial({
@@ -528,11 +554,23 @@ export class SpatialRenderer {
             toPosition: volume.center,
           }))
       : [];
+    const routing = cleanRoute(this.input.routing);
+    const trunks =
+      routing === "bus" ? busTrunks(this.model.edges, (id) => this.positions[id]) : new Map();
     for (const edge of [...this.model.edges, ...guides]) {
-      const start = edge.fromPosition || this.positions[edge.from],
+      let start = edge.fromPosition || this.positions[edge.from],
         end = edge.toPosition || this.positions[edge.to];
       if (!start || !end) continue;
-      const curve = edgeCurve(start, end);
+      if (!edge.guide && edge.from !== edge.to) {
+        // Use the opposite owner's volume center before clipping both ends.
+        const from = this.volumes.find((v) => v.id === edge.from && !v.projection)?.center || start;
+        const to = this.volumes.find((v) => v.id === edge.to && !v.projection)?.center || end;
+        if (edge.sourceRegion)
+          start = regionPort(edge.from, edge.to, to, this.positions, this.volumes);
+        if (edge.targetRegion)
+          end = regionPort(edge.to, edge.from, from, this.positions, this.volumes);
+      }
+      const curve = edgeCurve(start, end, edge.guide ? "curve" : routing, trunks.get(edge.id));
       this.curves.set(edge.id, curve);
       const style = relationStyle(edge),
         color = this.edgeColor(edge),
@@ -540,10 +578,21 @@ export class SpatialRenderer {
       // At whole-graph scale, fewer curve samples reduce GPU overdraw. Focused
       // relations retain full detail; their underlying cubic path is unchanged.
       const focused = edge.from === selected || edge.to === selected;
-      const samples = curve.getPoints(this.model.edges.length > 5000 && !focused ? 10 : 24);
+      const samples =
+        (curve.boPoints && !style.dash.length ? curve.boPoints : null) ||
+        curve.getPoints(this.model.edges.length > 5000 && !focused ? 10 : 24);
       for (let i = 0; i < samples.length - 1; i++) {
         if ((style.dash.length || edge.guide) && i % 3 === 2) continue;
-        positions.push(...samples[i].toArray(), ...samples[i + 1].toArray());
+        positions.push(
+          ...[
+            samples[i].x,
+            samples[i].y,
+            samples[i].z,
+            samples[i + 1].x,
+            samples[i + 1].y,
+            samples[i + 1].z,
+          ],
+        );
         colors.push(color.r, color.g, color.b, color.r, color.g, color.b);
       }
       this.edgeSegments.push({ edge, start: segmentStart, end: positions.length / 6 });
@@ -608,17 +657,25 @@ export class SpatialRenderer {
       if (point && Math.hypot(point.x - volume.center.x, point.z - volume.center.z) < volume.radius)
         under.push({ ...volume, distance: point.distanceTo(this.raycaster.ray.origin) });
     }
-    if (under.length)
-      return { region: under.sort((a, b) => a.distance - b.distance || a.radius - b.radius)[0].id };
-    // Curves are tested only on an explicit click, never during pointer movement.
+    // Visible edge strokes take precedence over empty region space. Test the
+    // projected segments, not isolated samples that leave gaps in the hit target.
     for (const edge of this.model?.edges || []) {
       const curve = this.curves.get(edge.id);
-      for (const point of curve?.getPoints(12) || []) {
-        const p = this.screen(point);
-        if (p.visible && Math.hypot(p.x + rect.left - clientX, p.y + rect.top - clientY) < 7)
-          return { edge };
+      const points = (curve?.boPoints || curve?.getPoints(16) || []).map((p) => this.screen(p));
+      for (let i = 1; i < points.length; i++) {
+        const a = points[i - 1],
+          b = points[i];
+        if (!a.visible || !b.visible) continue;
+        const dx = b.x - a.x,
+          dy = b.y - a.y;
+        const px = clientX - rect.left - a.x,
+          py = clientY - rect.top - a.y;
+        const ratio = Math.max(0, Math.min(1, (px * dx + py * dy) / (dx * dx + dy * dy || 1)));
+        if (Math.hypot(px - ratio * dx, py - ratio * dy) < 5) return { edge };
       }
     }
+    if (under.length)
+      return { region: under.sort((a, b) => a.distance - b.distance || a.radius - b.radius)[0].id };
     return null;
   }
 
@@ -720,6 +777,13 @@ export class SpatialRenderer {
       visible: p.z > -1 && p.z < 1 && Math.abs(p.x) < 1.15 && Math.abs(p.y) < 1.15,
     };
   }
+  screenEdge(id) {
+    const curve = this.curves?.get(id);
+    return curve
+      ? { start: this.screen(curve.getPoint(0)), end: this.screen(curve.getPoint(1)) }
+      : {};
+  }
+
   screenNode(id) {
     return this.positions[id] ? this.screen(this.positions[id]) : null;
   }
@@ -790,6 +854,12 @@ export class SpatialRenderer {
   animate(ids, transfers) {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     this.animation = { ids, transfers, start: performance.now() };
+    const owners = new Set(
+      (this.input.boDetail?.rows || []).flatMap((row) => row.owners || [row.owner]),
+    );
+    for (const item of this.labelItems || [])
+      if (owners.has(item.id))
+        item.el.animate?.([{ opacity: 0.4 }, { opacity: 1 }, { opacity: 1 }], { duration: 650 });
     this.schedule();
   }
   stopAnimation() {
@@ -882,6 +952,7 @@ export class SpatialRenderer {
     this.busy = false;
     this.pendingFit = false;
     this.positions = structuredClone(snapshot.positions);
+    this.seedMissing();
     this.settled = new Set(Object.keys(this.positions));
     this.camera.position.fromArray(snapshot.camera.position);
     this.controls.target.fromArray(snapshot.camera.target);
@@ -905,6 +976,11 @@ export class SpatialRenderer {
       renderP95Ms: sorted[Math.floor(sorted.length * 0.95)] || 0,
       layoutMs: this.layoutMs || 0,
       busy: !!this.busy,
+      routing: cleanRoute(this.input?.routing),
+      animation: this.animation ? { start: this.animation.start, ids: this.animation.ids } : null,
+      edgePorts: [...(this.curves || [])]
+        .slice(0, 500)
+        .map(([id, curve]) => ({ id, start: curve.getPoint(0), end: curve.getPoint(1) })),
       volumes: this.volumes || [],
       layerPlanes: (this.group?.children || [])
         .filter((item) => item.userData.boLayer)
