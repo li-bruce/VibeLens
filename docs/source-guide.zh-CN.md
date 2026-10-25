@@ -105,8 +105,10 @@ JavaScript 比较使用原生适配器开发依赖中的 TypeScript。比较排�
 
 安装模块更新后，示例项目需要重新生成源码关联、检查候选、执行 verify，再 accept/check，并生成一份新的验收记录。
 
-图层标尺的排序、显隐和间距交互集中在 `layer-ruler.js`；坐标和圆周端点计算在 `edge-routing.js`；回放的跳步和循环范围规则在 `replay-selection.js`。这些模块只维护显示和个人设置，录制事实仍由原有记录模块保存。
+Canvas 图层工具的排序和显隐交互集中在 `layer-ruler.js`，统一间距由底部工具栏调整；坐标和圆周端点计算在 `edge-routing.js`；回放的跳步和循环范围规则在 `replay-selection.js`。这些模块只维护显示和个人设置，录制事实仍由原有记录模块保存。
 
 ## Routing and node icons
 
 The shared viewer pipeline is `routing-scene.js` (renderer adapters), `routing-client.js` / `routing-worker.js` (epochs and lifecycle), `routing-engine.js` (routing and typed bundles), `routing-navigation.js` (reusable A* channels), and `routing-geometry.js` (R-tree checks and certified smoothing). `route-picking.js` resolves shared strokes to original edges. `node-icons.js` is generated from selected Tabler vectors; `glyphs.js` and `spatial-geometry.js` draw the same vocabulary in 2D and 3D. Rebuild pinned dependencies with `tools/routing/build.mjs` and icons with `tools/routing/build-icons.mjs`.
+
+二维类型聚集由 [cluster-layout.js](../skills/vibelens/assets/stategraph-viewer/cluster-layout.js) 和其 worker 负责；[route-shapes.js](../skills/vibelens/assets/stategraph-viewer/route-shapes.js) 统一处理直线、曲线和连续虚线；[spatial-geometry.js](../skills/vibelens/assets/stategraph-viewer/spatial-geometry.js) 组合立体对象，供批量绘制和图例共同使用。图层选择在 Canvas2D 中绘制，间距统一由底部调整。

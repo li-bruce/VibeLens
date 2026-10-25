@@ -144,6 +144,8 @@ try {
       results.push({
         type,
         icon: geometry.userData.icon,
+        object: geometry.userData.object,
+        family: geometry.userData.family,
         vertices: geometry.attributes.position.count,
         denseVertices: dense.attributes.position.count,
         thickness: geometry.boundingBox.max.y - geometry.boundingBox.min.y,
@@ -156,6 +158,9 @@ try {
     return results;
   });
   assert.equal(results.icons.length, 19);
+  assert.ok(results.icons.every((n) => n.family === "VibeLens solids"));
+  assert.equal(results.icons.find((n) => n.type === "store").object, "tiered-database");
+  assert.equal(results.icons.find((n) => n.type === "resource").object, "stacked-crates");
   assert.ok(
     new Set(results.icons.map((n) => n.icon)).size >= 18,
     "Semantic silhouettes distinguish node types",

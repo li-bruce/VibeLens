@@ -38,11 +38,6 @@ export function cleanLayers(value) {
     camera: ["angled", "front", "side", "top"].includes(value?.camera) ? value.camera : "top",
     gap: Number.isFinite(value?.gap) ? Math.max(80, Math.min(600, value.gap)) : 260,
     order,
-    gaps: Object.fromEntries(
-      ids
-        .filter((id) => Number.isFinite(value?.gaps?.[id]))
-        .map((id) => [id, Math.max(80, Math.min(600, value.gaps[id]))]),
-    ),
     only,
     visible: Array.isArray(value?.visible)
       ? layers.filter((layer) => value.visible.includes(layer.id)).map((layer) => layer.id)
@@ -51,15 +46,17 @@ export function cleanLayers(value) {
   };
 }
 
-/** A hidden layer keeps its slot. Gaps belong to the layer immediately above them. */
+/** Visible, populated planes occupy consecutive slots in the chosen order. */
 export function layerHeights(settings, scope = layers) {
   const config = cleanLayers(settings),
     result = new Map();
-  config.order = config.order.filter((id) => scope.some((layer) => layer.id === id));
+  config.order = config.order.filter(
+    (id) => config.visible.includes(id) && scope.some((layer) => layer.id === id),
+  );
   let height = 0;
   for (let i = config.order.length - 1; i >= 0; i--) {
     const id = config.order[i];
-    if (i < config.order.length - 1) height += config.gaps[id] ?? config.gap;
+    if (i < config.order.length - 1) height += config.gap;
     result.set(id, height);
   }
   return result;

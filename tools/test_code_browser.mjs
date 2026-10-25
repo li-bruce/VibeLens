@@ -26,6 +26,7 @@ let logs = "",
   page;
 const errors = [],
   checkpoints = {};
+const pendingRequests = new Set();
 server.stdout.on("data", (s) => (logs += s));
 server.stderr.on("data", (s) => (logs += s));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -69,6 +70,9 @@ try {
   if (process.env.BO_BROWSER_EXECUTABLE) launch.executablePath = process.env.BO_BROWSER_EXECUTABLE;
   browser = await chromium.launch(launch);
   page = await browser.newPage({ viewport: { width: 1550, height: 1040 } });
+  page.on("request", (r) => pendingRequests.add(r.url()));
+  page.on("requestfinished", (r) => pendingRequests.delete(r.url()));
+  page.on("requestfailed", (r) => pendingRequests.delete(r.url()));
   await page.route("**/api/design", (route) =>
     route.fulfill({
       json: {
@@ -223,12 +227,19 @@ try {
   await pick(endpoint.id);
   if ((await page.getAttribute("#layered-toggle", "aria-pressed")) !== "true")
     await page.click("#layered-toggle");
-  await page.click("#layers-all");
+  {
+    const planeControl = await page.locator("#layer-controls canvas").boundingBox();
+    await page.mouse.click(planeControl.x + planeControl.width - 13, planeControl.y + 17);
+  }
   const layerIds = await page
     .locator("#layer-controls button[data-layer]")
     .evaluateAll((items) => items.map((e) => e.dataset.layer));
   for (const id of layerIds)
-    if (id !== "api") await page.click(`#layer-controls [data-layer="${id}"]`);
+    if (id !== "api") {
+      const box = await page.locator("#layer-controls canvas").boundingBox();
+      const order = await page.evaluate(() => graphDebug.layers.order);
+      await page.mouse.click(box.x + 22, box.y + 40 + order.indexOf(id) * 34 + 17);
+    }
   await page.click("#fit");
   await page.waitForFunction(
     () =>
@@ -242,7 +253,10 @@ try {
     ),
   );
   await shot("04-api-registration-layer");
-  await page.click("#layers-all");
+  {
+    const planeControl = await page.locator("#layer-controls canvas").boundingBox();
+    await page.mouse.click(planeControl.x + planeControl.width - 13, planeControl.y + 17);
+  }
   if (process.env.BO_SPATIAL_TEST !== "1") await page.click("#layered-toggle");
   await unlink(routeFile);
   await page.waitForFunction(
@@ -369,6 +383,16 @@ try {
     "PASS: lazy/focused/full code views, relationships, source, live edits/errors/deletion, persistence, exclusion, real recording and bilingual reload.",
   );
 } catch (error) {
+  checkpoints.pendingRequests = [...pendingRequests];
+  checkpoints.url = page?.url();
+  checkpoints.document = await page
+    ?.evaluate(() => ({
+      ready: document.readyState,
+      resources: performance
+        .getEntriesByType("resource")
+        .map((r) => ({ name: r.name, duration: r.duration })),
+    }))
+    .catch(() => null);
   if (page) await shot("failure");
   if (page)
     checkpoints.codeStatus = await page

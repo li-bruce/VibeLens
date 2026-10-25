@@ -51,13 +51,20 @@ async function expand(id) {
   await page.click("#node-expand");
   await page.waitForTimeout(180);
 }
+async function layerAction(id, toggle = false) {
+  const canvas = page.locator("#layer-controls canvas"),
+    box = await canvas.boundingBox();
+  const order = await page.evaluate(() => graphDebug.layers.order);
+  await page.mouse.click(box.x + (toggle ? 22 : 72), box.y + 40 + order.indexOf(id) * 34 + 17);
+}
+async function layerHeader(all = false) {
+  const box = await page.locator("#layer-controls canvas").boundingBox();
+  await page.mouse.click(box.x + (all ? box.width - 13 : 13), box.y + 17);
+}
 async function isolateLayer(id) {
-  await page.click("#layers-all");
-  const ids = await page
-    .locator("#layer-controls button[data-layer]")
-    .evaluateAll((items) => items.map((e) => e.dataset.layer));
-  for (const other of ids)
-    if (other !== id) await page.click(`#layer-controls [data-layer="${other}"]`);
+  await layerHeader(true);
+  const ids = await page.evaluate(() => graphDebug.layers.order);
+  for (const other of ids) if (other !== id) await layerAction(other, true);
 }
 async function shot(name) {
   await page.screenshot({ path: path.join(output, name + ".png"), fullPage: true });
@@ -181,14 +188,19 @@ try {
   assert.ok(arrangement.breadcrumbs.y < arrangement.drawer.y);
   assert.ok(arrangement.legend.y < arrangement.tools.y);
   assert.ok(arrangement.legend.width < arrangement.legend.height);
-  await page.click("#layers-toggle");
+  await layerHeader();
   assert.equal(await page.locator("#layers-toggle").getAttribute("aria-expanded"), "false");
-  assert.ok((await page.locator("#layer-drawer").boundingBox()).width < 60);
-  assert.equal(await page.locator(".layer-select:visible").count(), 0);
-  assert.equal(await page.locator(".layer-eye:visible").count(), 8);
-  await page.click("#layer-spacing-toggle");
-  assert.equal(await page.locator("#layer-spacing-toggle").getAttribute("aria-expanded"), "true");
+  assert.ok((await page.locator("#layer-controls canvas").boundingBox()).width < 60);
+  assert.equal(
+    await page.locator("#layer-controls canvas").count(),
+    1,
+    "Layer controls use a single canvas",
+  );
+  assert.equal(await page.locator(".layer-eye:visible").count(), 0, "No visible DOM layer rows");
+  await layerHeader();
   assert.equal(await page.locator("#layers-toggle").getAttribute("aria-expanded"), "true");
+  assert.equal(await page.locator("#layer-spacing-toggle").count(), 0);
+  assert.ok(await page.locator(".view-tools #layer-gap").isVisible());
   await page.locator("#layer-gap").fill("360");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.equal(await page.locator("#layer-gap").inputValue(), "360");
@@ -208,60 +220,55 @@ try {
   assert.equal(renderedPlanes.length, planeFacts.length);
   checks.coplanarLayers = true;
 
-  const rulerLabels = await page
-    .locator(".layer-select")
-    .evaluateAll((els) =>
-      els.map((el) => ({ scroll: el.scrollWidth, width: el.clientWidth, height: el.clientHeight })),
-    );
-  assert.ok(
-    rulerLabels.every((el) => el.scroll <= el.width && el.height >= 24),
-    "Layer text is fully visible",
-  );
   const orderBefore = await page.evaluate(() => graphDebug.layers.order);
-  await page.locator('[data-layer-row="state"] .layer-select').focus();
+  await layerAction("state");
   await page.keyboard.press("Alt+ArrowUp");
   assert.equal((await page.evaluate(() => graphDebug.layers.order))[1], "state");
-  const gap = page.locator('[data-gap-after="state"]');
-  await gap.focus();
-  await page.keyboard.press("ArrowDown");
-  assert.equal(await gap.getAttribute("aria-valuenow"), "380");
+  await page.locator("#layer-gap").fill("380");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
-  const changedPlanes = await page.evaluate(() => ({
-    layers: graphDebug.layers,
-    points: graphDebug.spatialPositions,
-  }));
-  assert.equal(changedPlanes.points["state.published"].y - changedPlanes.points["publish"].y, 380);
-  // Restore this test's uniform layout before checking its previous height invariants.
-  await page.locator('[data-layer-row="state"] .layer-select').focus();
+  const changedPlanes = await page.evaluate(() => graphDebug.spatialPositions);
+  assert.equal(changedPlanes["state.published"].y - changedPlanes.publish.y, 380);
+  await layerAction("state");
   await page.keyboard.press("Alt+ArrowDown");
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), orderBefore);
-  await page.locator("#layer-gap").fill("360");
-  await page.dragAndDrop('[data-layer-row="state"] .layer-grip', '[data-layer-row="business"]');
-  assert.equal((await page.evaluate(() => graphDebug.layers.order))[1], "state");
-  const tick = await page.locator('[data-gap-after="state"]').boundingBox();
-  await page.mouse.move(tick.x + 3, tick.y + tick.height / 2);
+  // Actual pointer drag reorders rendered plane tokens, not a DOM drag target.
+  const tick = await page.locator("#layer-controls canvas").boundingBox();
+  await page.mouse.move(tick.x + 75, tick.y + 40 + 2 * 34 + 17);
   await page.mouse.down();
-  await page.mouse.move(tick.x + 3, tick.y + tick.height / 2 + 10, { steps: 3 });
+  await page.mouse.move(tick.x + 75, tick.y + 40 + 34 + 17, { steps: 5 });
   await page.mouse.up();
-  assert.equal(await page.locator('[data-gap-after="state"]').getAttribute("aria-valuenow"), "440");
-  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  assert.equal((await page.evaluate(() => graphDebug.layers.order))[1], "state");
   const customLayers = await page.evaluate(() => graphDebug.layers);
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(350);
   await page.reload();
   await page.waitForFunction(() => graphDebug?.spatial?.perspective && !graphDebug.layoutBusy);
   assert.deepEqual(
     await page.evaluate(() => graphDebug.layers),
     customLayers,
-    "Custom order and individual gaps survive reload",
+    "Order, visibility and uniform gap survive reload",
   );
-  await page.locator('[data-layer-row="state"] .layer-select').focus();
+  await layerAction("state");
   await page.keyboard.press("Alt+ArrowDown");
   await page.locator("#layer-gap").fill("360");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   for (const style of ["straight", "orthogonal", "bus", "curve"]) {
     await page.selectOption("#edge-routing", style);
-    await page.waitForTimeout(80);
+    await page.waitForFunction(() => !graphDebug.layoutBusy);
     assert.equal(await page.evaluate(() => graphDebug.spatial.routing), style);
+    const paths = await page.evaluate(() =>
+      graphDebug.spatial.edgePorts.filter((e) => !e.id.startsWith("projection:")),
+    );
+    assert.ok(paths.length > 0);
+    if (style === "straight")
+      assert.ok(
+        paths.every((p) => p.vertices === 2 || (p.start.x === p.end.x && p.start.z === p.end.z)),
+        "Every non-self straight relation has exactly two ports",
+      );
+    if (style === "curve")
+      assert.ok(
+        paths.every((p) => p.vertices > 10),
+        "Curves do not silently fall back to polylines",
+      );
     const rimFacts = await page.evaluate(() => {
       const g = graphDebug,
         result = [];
@@ -308,8 +315,8 @@ try {
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.deepEqual(
     await page.evaluate(() => graphDebug.spatial.layerPlanes),
-    renderedPlanes.filter((p) => p.id === "operations"),
-    "A layer mask hides other planes without moving the remaining plane",
+    [{ ...renderedPlanes.find((p) => p.id === "operations"), y: 0 }],
+    "A layer mask compacts the remaining plane to zero",
   );
   assert.ok(
     await page.evaluate(() =>
@@ -318,7 +325,7 @@ try {
       ),
     ),
   );
-  await page.click("#layers-all");
+  await layerHeader(true);
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   await page.click("#layered-toggle");
   assert.equal(await page.locator("#legend-panel").getAttribute("data-mode"), "2D");
@@ -326,7 +333,7 @@ try {
   assert.ok(
     await page.evaluate(() => graphDebug.displayGraph.boxes.every((b) => b.type === "state")),
   );
-  await page.click("#layers-all");
+  await layerHeader(true);
   checks.sharedLayerControls = true;
   assert.deepEqual(
     await page.evaluate(() => graphDebug.graph.boxes.map((b) => [b.id, b.x, b.y])),
@@ -371,7 +378,7 @@ try {
   assert.ok(Math.abs(restored.z - after.positions.load.z) < 0.001);
   checks.roundTrip = true;
   await isolateLayer("operations");
-  await page.click('#layer-controls [data-layer="state"]');
+  await layerAction("state", true);
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
     "operations",
@@ -436,7 +443,7 @@ try {
   assert.ok(Math.abs(groupAfter.load.x - groupBefore.load.x - dx) < 0.001);
   assert.ok(Math.abs(groupAfter.transaction.z - groupBefore.transaction.z - dz) < 0.001);
   checks.groupDrag = true;
-  await page.click("#layers-all");
+  await layerHeader(true);
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   await pick("publish");
   await page.waitForTimeout(180);
@@ -476,7 +483,7 @@ try {
       "true",
   );
   checks.perspectiveExpansion = true;
-  await page.click("#layers-all");
+  await layerHeader(true);
   await page.click("#layered-toggle");
   await page.click("#record-start");
   await request("/demo/run", { rollback: false });

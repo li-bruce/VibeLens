@@ -1,3 +1,4 @@
+import { shapedPath } from "./route-shapes.js";
 /** Epochs prevent stale endpoints after a drag; routing never blocks the render thread. */
 export class RoutingClient {
   constructor(change = () => {}) {
@@ -28,6 +29,14 @@ export class RoutingClient {
     if (key === this.key) return;
     this.key = key;
     this.routes.clear();
+    // Do not leave old-style paths or blank edges while the worker catches up.
+    // These previews are replaced by the current epoch's final paths.
+    if (["straight", "curve"].includes(scene.style))
+      for (const edge of scene.edges)
+        this.routes.set(
+          edge.id,
+          shapedPath(edge, scene.style, 1, scene.edges.length > 5000 ? 12 : 24),
+        );
     this.stats = { busy: true, total: scene.edges.length };
     this.worker.postMessage({ epoch: ++this.epoch, scene });
   }

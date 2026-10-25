@@ -240,13 +240,18 @@ try {
       "Delete hides selected relation",
     );
     await page.click("#show-all");
-    await page.locator('[data-layer-row="state"] .layer-select').click();
+    const layerCanvas = await page.locator("#layer-controls canvas").boundingBox();
+    const layerOrder = await page.evaluate(() => graphDebug.layers.order);
+    await page.mouse.click(
+      layerCanvas.x + 70,
+      layerCanvas.y + 40 + layerOrder.indexOf("state") * 34 + 17,
+    );
     await page.keyboard.press("Delete");
     assert.ok(
       !(await page.evaluate(() => graphDebug.layers.visible)).includes("state"),
       "Delete hides selected layer",
     );
-    await page.click("#layers-all");
+    await page.locator("#layers-all").evaluate((el) => el.click());
     await page.selectOption("#analysis-view", "states");
     interactionChecks.push({ mode, paused, included, seen, deleteNodeEdgeLayer: true });
     await page.screenshot({ path: path.join(output, `controls-${mode.toLowerCase()}.png`) });

@@ -846,9 +846,44 @@ function circleTemplates(graph) {
   function pack(id) {
     const b = graph.byId.get(id),
       core = { x: 0, y: 0, radius: nodeRadius(b) };
-    const children = (tree.children.get(id) || [])
+    let children = (tree.children.get(id) || [])
       .map(pack)
       .sort((a, b) => b.radius - a.radius || a.id.localeCompare(b.id));
+    // Repeated sibling types get local packing neighborhoods, without adding
+    // synthetic containment to the graph. Small groups retain their simple pack.
+    const types = new Map();
+    for (const child of children) {
+      const type = graph.byId.get(child.id).type;
+      if (!types.has(type)) types.set(type, []);
+      types.get(type).push(child);
+    }
+    if (children.length >= 6 && types.size > 1) {
+      children = [...types]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([type, members]) => {
+          const circles = [],
+            items = [];
+          for (const child of members) {
+            const point = placeCircle(child.radius, circles);
+            circles.push(point);
+            items.push(
+              ...child.items.map((item) => ({
+                ...item,
+                x: item.x + point.x - child.cx,
+                y: item.y + point.y - child.cy,
+              })),
+            );
+          }
+          const enclosure = encloseCircles(circles);
+          return {
+            id: type,
+            cx: enclosure.x,
+            cy: enclosure.y,
+            radius: enclosure.radius + 15,
+            items,
+          };
+        });
+    }
     const self = children.length > 0 && hasSelfRelation(graph, id);
     const items = [{ id, x: -b.w / 2, y: -31, w: b.w, h: b.h }],
       occupied = children.length && !self ? [] : [core];
@@ -884,7 +919,7 @@ function circleTemplates(graph) {
   return templates;
 }
 // Pack each visible subtree into a circle, with its own core as the origin.
-// ELK places only the top-level circles, so it cannot flatten their contents.
+// Semantic clusters place only top-level circles and never flatten their contents.
 async function clusteredLayout(elk, graph, state) {
   const tree = hierarchyOf(graph),
     templates = circleTemplates(graph),
@@ -900,20 +935,55 @@ async function clusteredLayout(elk, graph, state) {
       b = owner(e.to);
     if (a !== b) links.set(a + ">" + b, { id: "group:" + a + ">" + b, sources: [a], targets: [b] });
   }
-  const output = await elk.layout({
-    id: "root",
-    layoutOptions: {
-      "elk.algorithm": "stress",
-      "elk.randomSeed": "42",
-      "elk.stress.iterationLimit": "250",
-      "elk.stress.desiredEdgeLength": "480",
-      "elk.spacing.nodeNode": "140",
-      "elk.spacing.componentComponent": "140",
-    },
-    children: roots.map((c) => ({ id: c.id, width: 2 * c.radius, height: 2 * c.radius })),
-    edges: [...links.values()],
+  const units = roots.map((c) => {
+    const pinned = c.items.find((item) => state.positions[item.id]?.pinned);
+    return {
+      id: c.id,
+      type: graph.byId.get(c.id).type,
+      radius: c.radius,
+      pin: pinned
+        ? {
+            x: state.positions[pinned.id].x - pinned.x + c.cx,
+            y: state.positions[pinned.id].y - pinned.y + c.cy,
+          }
+        : null,
+    };
   });
-  const proposed = new Map(output.children.map((p) => [p.id, p])),
+  const unitEdges = [...links.values()].map((e) => ({ from: e.sources[0], to: e.targets[0] }));
+  // Physics runs away from rendering and input; each request owns its worker.
+  const positions =
+    typeof Worker === "undefined" && typeof window === "undefined"
+      ? // Headless/CLI layout checks execute the same solver, with no browser shim.
+        (await import("./cluster-layout.js")).clusterUnits(units, unitEdges)
+      : await new Promise((resolve, reject) => {
+          const worker = new Worker(new URL("./cluster-worker.js", import.meta.url), {
+            type: "module",
+          });
+          const timeout = setTimeout(() => {
+            worker.terminate();
+            reject(Error("Cluster layout timed out"));
+          }, 30000);
+          worker.onmessage = ({ data }) => {
+            clearTimeout(timeout);
+            worker.terminate();
+            data.error ? reject(Error(data.error)) : resolve(data.positions);
+          };
+          worker.onerror = (error) => {
+            clearTimeout(timeout);
+            worker.terminate();
+            reject(Error(error.message));
+          };
+          worker.postMessage({ units, edges: unitEdges });
+        });
+  const proposed = new Map(
+      positions.map((p) => [
+        p.id,
+        {
+          x: p.x - roots.find((c) => c.id === p.id).radius,
+          y: p.y - roots.find((c) => c.id === p.id).radius,
+        },
+      ]),
+    ),
     result = Object.create(null),
     occupied = [];
   const hasPin = (c) => c.items.some((item) => state.positions[item.id]?.pinned);
@@ -937,16 +1007,56 @@ async function clusteredLayout(elk, graph, state) {
       edges: graph.edges,
       rawEdges: graph.rawEdges,
     }).find((r) => r.id === c.id);
+    // The solver separates circular subtree footprints. Testing their enclosing
+    // rectangles again would unnecessarily shove a corner neighbor out of its
+    // type cluster, even though the actual circles do not overlap.
+    const center = enclosure
+      ? { x: enclosure.cx, y: enclosure.cy }
+      : { x: origin.x + c.cx, y: origin.y + c.cy };
+    const radius = enclosure?.radius || c.radius;
+    const move = anchor
+      ? { x: 0, y: 0 }
+      : placeCircle(
+          radius,
+          occupied.map((p) => ({ x: p.x - center.x, y: p.y - center.y, radius: p.radius })),
+        );
+    let dx = move.x,
+      dy = move.y;
     const bounds = enclosure || {
-      x: origin.x + c.cx - c.radius,
-      y: origin.y + c.cy - c.radius,
-      w: 2 * c.radius,
-      h: 2 * c.radius,
+      x: center.x - radius,
+      y: center.y - radius,
+      w: radius * 2,
+      h: radius * 2,
     };
-    const next = anchor ? bounds : freePosition(bounds, bounds.x, bounds.y, occupied),
-      dx = next.x - bounds.x,
-      dy = next.y - bounds.y;
-    occupied.push({ ...bounds, x: next.x, y: next.y });
+    // Keep the established branch-boundary contract: foreign labels stay out of
+    // expanded regions' full label bounds. Ordinary root pairs use circles so
+    // a conservative rectangle pass cannot disperse every semantic cluster.
+    if (!anchor) {
+      const blockers = occupied.filter((p) => enclosure || p.region).map((p) => p.bounds);
+      for (let pass = 0; pass <= occupied.length + 1; pass++) {
+        const next = freePosition(bounds, bounds.x + dx, bounds.y + dy, blockers);
+        dx = next.x - bounds.x;
+        dy = next.y - bounds.y;
+        const correction = placeCircle(
+          radius,
+          occupied.map((p) => ({
+            x: p.x - center.x - dx,
+            y: p.y - center.y - dy,
+            radius: p.radius,
+          })),
+        );
+        if (Math.hypot(correction.x, correction.y) < 0.01) break;
+        dx += correction.x;
+        dy += correction.y;
+      }
+    }
+    occupied.push({
+      x: center.x + dx,
+      y: center.y + dy,
+      radius,
+      region: !!enclosure,
+      bounds: { ...bounds, x: bounds.x + dx, y: bounds.y + dy },
+    });
     for (const b of boxes)
       result[b.id] = { x: b.x + dx, y: b.y + dy, pinned: !!state.positions[b.id]?.pinned };
   }

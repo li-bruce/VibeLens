@@ -28,13 +28,13 @@ const config = cleanLayers({
 assert.equal(new Set(config.order).size, layers.length);
 assert.deepEqual(config.order.slice(0, 2), ["state", "business"]);
 const heights = layerHeights(config);
-assert.equal(heights.get("state") - heights.get("business"), 420);
+assert.equal(heights.get("state") - heights.get("business"), 260);
 assert.deepEqual(
-  layerHeights({ ...config, visible: ["business"] }),
-  heights,
-  "Masks preserve layer slots",
+  [...layerHeights({ ...config, visible: ["business"] })],
+  [["business", 0]],
+  "Hidden layers do not reserve slots",
 );
-assert.equal(layerHeights({}).get("api"), 1820, "Default fixed 260 gaps");
+assert.equal(layerHeights({}).get("api"), 1820, "Default uniform 260 gaps");
 const positions = solveSpatial({
   nodes: [
     { id: "a", layer: "state" },

@@ -310,10 +310,8 @@ function updateLayerControls() {
   $("layered-toggle").textContent = mode;
   $("layer-gap").value = config.gap;
   $("layer-gap").disabled = !config.enabled;
-  $("layer-drawer").classList.toggle("is-open", config.drawer);
   $("layer-drawer").classList.toggle("is-compact", config.compact);
   $("layers-toggle").setAttribute("aria-expanded", String(!config.compact));
-  $("layer-spacing-toggle").setAttribute("aria-expanded", String(config.drawer));
   $("layered-toggle").setAttribute("aria-pressed", String(config.enabled));
   const action = boTranslate(config.enabled ? "Switch to 2D" : "Switch to 3D");
   $("layered-toggle").title = action;
@@ -341,19 +339,11 @@ $("layers-toggle").onclick = () => {
   updateLayerControls();
   save();
 };
-$("layer-spacing-toggle").onclick = () => {
-  if (!analysisSettings) return;
-  const config = cleanLayers(analysisSettings.layers);
-  analysisSettings.layers = { ...config, compact: false, drawer: !config.drawer };
-  updateLayerControls();
-  save();
-};
 $("layer-gap").oninput = () => {
   if (!analysisSettings || !graph) return;
   analysisSettings.layers = cleanLayers({
     ...analysisSettings.layers,
     gap: Number($("layer-gap").value),
-    gaps: {},
   });
   updateLayerControls();
   updateSpatial();

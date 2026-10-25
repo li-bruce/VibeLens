@@ -83,8 +83,8 @@ export function spatialModel(graph, presentation) {
     byId,
     edges,
     containment,
-    // Keep a layer's elevation stable when other layers are hidden.
-    layers,
+    // Empty planes do not reserve invisible height slots.
+    layers: layers.filter((layer) => nodes.some((node) => node.layer === layer.id)),
   };
 }
 

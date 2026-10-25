@@ -1,5 +1,6 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "Arrows select; Space toggles; Alt + arrows reorders": "方向键选择；空格显隐；Alt + 方向键排序",
   "Routing unavailable": "连线计算不可用",
   "Routing {0}/{1}": "正在计算连线 {0}/{1}",
   "{0} routes blocked": "{0} 条连线受阻",

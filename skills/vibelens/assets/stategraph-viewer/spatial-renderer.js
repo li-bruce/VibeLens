@@ -1,3 +1,4 @@
+import { strokeSegments } from "./route-shapes.js";
 import { edgeCurve } from "./spatial-paths.js";
 import * as T from "./spatial-three.vendor.js";
 import { spatialModel, containmentVolumes, descendants, nodeElevation } from "./spatial-model.js";
@@ -12,7 +13,6 @@ import { relationStyle, displayName, annotationFor } from "./layout.js";
 import { t } from "./i18n.js";
 
 const vector = (p) => new T.Vector3(p.x, p.y, p.z);
-const statusColor = { active: 0x259d82, blocked: 0xd36d55, ok: 0x549b70, historical: 0x9ca9b6 };
 const cameraDirections = {
   angled: [1.2, 0.85, 1.5],
   front: [0, 0.2, 2],
@@ -127,7 +127,7 @@ export class SpatialRenderer {
       next.edges.map((e) => [e.id, e.from, e.to]),
       input.settings.gap,
       input.settings.order,
-      input.settings.gaps,
+      input.settings.visible,
     ]);
     const scopeChanged = this.scope !== input.scope;
     if (scopeChanged) {
@@ -261,7 +261,7 @@ export class SpatialRenderer {
         matrix.scale.setScalar(size);
         matrix.updateMatrix();
         mesh.setMatrixAt(i, matrix.matrix);
-        const color = new T.Color(statusColor[node.state] || nodeTypes[type].color);
+        const color = new T.Color(nodeTypes[type].color);
         if (focusContext.active && !focusContext.nodes.has(node.id))
           color.lerp(new T.Color(0xe1e7eb), 0.8);
         mesh.setColorAt(i, color);
@@ -436,7 +436,7 @@ export class SpatialRenderer {
         matrix.scale.setScalar(selected === id ? 27 : core ? 24 : 19);
         matrix.updateMatrix();
         mesh.setMatrixAt(i, matrix.matrix);
-        const color = new T.Color(statusColor[node.state] || nodeTypes[node.type].color);
+        const color = new T.Color(nodeTypes[node.type].color);
         if (focusContext.active && !focusContext.nodes.has(id))
           color.lerp(new T.Color(0xe1e7eb), 0.8);
         mesh.setColorAt(i, color);
@@ -606,18 +606,13 @@ export class SpatialRenderer {
       const focused = edge.from === selected || edge.to === selected;
       const samples =
         curve.boPoints || curve.getPoints(this.model.edges.length > 5000 && !focused ? 10 : 24);
-      for (let i = 0; i < samples.length - 1; i++) {
-        if ((style.dash.length || edge.guide) && i % 3 === 2) continue;
-        positions.push(
-          ...[
-            samples[i].x,
-            samples[i].y,
-            samples[i].z,
-            samples[i + 1].x,
-            samples[i + 1].y,
-            samples[i + 1].z,
-          ],
-        );
+      const dash = edge.guide ? [10, 7] : style.dash;
+      for (const [a, b] of strokeSegments(
+        samples,
+        dash,
+        this.model.edges.length > 5000 ? 12 : 64,
+      )) {
+        positions.push(a.x, a.y, a.z, b.x, b.y, b.z);
         colors.push(color.r, color.g, color.b, color.r, color.g, color.b);
       }
       this.edgeSegments.push({ edge, start: segmentStart, end: positions.length / 6 });
@@ -1024,9 +1019,13 @@ export class SpatialRenderer {
       routing: cleanRoute(this.input?.routing),
       routeSolver: this.router.stats,
       animation: this.animation ? { start: this.animation.start, ids: this.animation.ids } : null,
-      edgePorts: [...(this.curves || [])]
-        .slice(0, 500)
-        .map(([id, curve]) => ({ id, start: curve.getPoint(0), end: curve.getPoint(1) })),
+      edgePorts: [...(this.curves || [])].slice(0, 500).map(([id, curve]) => ({
+        id,
+        start: curve.getPoint(0),
+        midpoint: curve.getPoint(0.5),
+        end: curve.getPoint(1),
+        vertices: curve.boPoints?.length || 25,
+      })),
       volumes: this.volumes || [],
       layerPlanes: (this.group?.children || [])
         .filter((item) => item.userData.boLayer)

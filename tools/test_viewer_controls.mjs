@@ -220,7 +220,7 @@ try {
   scope = { ...scope, revision: "controls-focus-2" };
   await page.waitForSelector('#semantic [data-discussion="true"]', { state: "attached" });
   // Zoom out, then click clear space above the graph.
-  const canvas = await page.locator("#viewport canvas").boundingBox();
+  const canvas = await page.locator("#canvas-host canvas").boundingBox();
   await page.mouse.move(canvas.x + canvas.width / 2, canvas.y + canvas.height / 2);
   await page.mouse.wheel(0, 4000);
   await page.waitForTimeout(350);

@@ -6,4 +6,4 @@ The viewer loads `routing-libavoid.vendor.js` and `libavoid.wasm` as separate fi
 
 To build a modified library, unpack the source, follow `libavoid-js/README.md` and `tools/generate.py`, then run its npm build. To build the viewer distributions from this repository, run `npm ci` and `node build.mjs` under `tools/routing`. The Node smoke loader abort observed during investigation is preserved in the review evidence; production routing runs in a browser module worker.
 
-`routing-tools.vendor.js` contains ISC/MIT D3, RBush and ngraph utilities, with complete notices alongside the bundle. It does not contain libavoid. Tabler SVGs are converted at build time by `tools/routing/build-icons.mjs`; the resulting volumetric models are VibeLens adaptations, not an official Tabler 3D model collection.
+`routing-tools.vendor.js` contains ISC/MIT D3, RBush and ngraph utilities, with complete notices alongside the bundle. It does not contain libavoid. Tabler SVGs are converted at build time by `tools/routing/build-icons.mjs`; the result supplies planar icons only. The semantic compound 3D objects are original VibeLens geometry, separate from the Tabler vectors.

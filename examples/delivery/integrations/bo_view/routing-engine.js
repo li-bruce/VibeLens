@@ -8,6 +8,7 @@ import {
   distance,
 } from "./routing-geometry.js";
 import { stratify } from "./routing-tools.vendor.js";
+import { shapedPath } from "./route-shapes.js";
 import { Navigation } from "./routing-navigation.js";
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -222,7 +223,43 @@ export async function routeScene(
       let points;
       // Cached paths are checked against the NEW global obstacle index. Moving an
       // unrelated node therefore invalidates paths as well as incident edges.
-      if (
+      if (["straight", "curve"].includes(scene.style)) {
+        // Shape is a user choice. Avoidance may bend a curve, never a straight
+        // edge. A geometric intersection is reported separately, not omitted.
+        points = shapedPath(edge, scene.style, 1, scene.edges.length > 5000 ? 12 : 24);
+        const clear = (path) => {
+          if (edge.a.level === edge.b.level) return aIndex.clear(path, edge);
+          // Test the actual crossing point at each occupied semantic plane.
+          return levels
+            .filter(
+              (n) =>
+                n >= Math.min(edge.a.level, edge.b.level) &&
+                n <= Math.max(edge.a.level, edge.b.level),
+            )
+            .every((n) => {
+              const i = Math.max(
+                1,
+                path.findIndex((p) => (edge.a.level < edge.b.level ? p.level >= n : p.level <= n)),
+              );
+              const a = path[i - 1],
+                b = path[i],
+                t = (n - a.level) / (b.level - a.level || 1);
+              return indices
+                .get(n)
+                .free({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, edge);
+            });
+        };
+        if (scene.style === "curve" && !clear(points)) {
+          for (const bend of [-1, 2, -2, 4, -4]) {
+            const candidate = shapedPath(edge, "curve", bend, scene.edges.length > 5000 ? 12 : 24);
+            if (clear(candidate)) {
+              points = candidate;
+              break;
+            }
+          }
+        }
+        if (!clear(points)) stats.intersections = (stats.intersections || 0) + 1;
+      } else if (
         saved &&
         saved.every(
           (p, i) =>
