@@ -50,6 +50,10 @@ def check():
         'pixi.min.js': '06d9ef9823e743518793083c296d801e752db128cb1f519fbabe37e1259567ea',
         'elk.bundled.js': '1222e44f953ce7746af23801e723708f8e6f436b8b377a6a5fc7552f34a307b3',
         'elk-worker.min.js': 'e4f5c51c6f2fd564bb64e52e81c4a85a316ef2f24f8b90e1db5eb886c765b030',
+        'routing-tools.vendor.js': '9ddfbf1370eb9059dce154d9a3db95f28f04c47cf5024d7f94bace9ed7be8747',
+        'routing-libavoid.vendor.js': '59d4649c41ec2212d96298842caeceaf3162aabafe3fdf529afbbe0e68e0d801',
+        'libavoid.wasm': 'd17aa83a84896e65b15f4453913dac00953f4f698c7c271d43c5e93ea9ac16ac',
+        'index.js.map': '8a94297657de474134470d6c7e82163d1bad2d7e72d2325ce8716355a1b74a74',
         'spatial-force.vendor.js': 'ec52c8f1fbb6da83a7e21adc0f209fd860308f3ab7d8db61432605f4de0c597c',
         'spatial-three.vendor.js': '991c1ff57d7b5b90342bbd31e4063f46257b6ce0f21ffdf9decab63f4d558391',
     }
@@ -59,6 +63,8 @@ def check():
         assert 'Eclipse Public License - v 2.0' in (directory/'ELK-LICENSE.md').read_text(encoding='utf-8'), 'ELK license missing'
         assert 'The MIT License' in (directory/'PIXI-LICENSE.txt').read_text(encoding='utf-8'), 'PixiJS license missing'
         assert 'three' in (directory/'SPATIAL-LICENSES.txt').read_text(encoding='utf-8'), 'Spatial dependency notices missing'
+        assert 'libavoid-js' in (directory/'ROUTING-LICENSES.txt').read_text(encoding='utf-8'), 'Routing notices missing'
+        assert 'Tabler' in (directory/'NODE-ICONS-LICENSE.txt').read_text(encoding='utf-8'), 'Icon notices missing'
         assert not (directory/'layered-view.js').exists(), 'Superseded pseudo-3D implementation remains installed'
     page = (assets/'index.html').read_text(encoding='utf-8')
     assert set(re.findall(r'<script[^>]+src="([^"]+)"', page)) == {'/pixi.min.js', '/elk.bundled.js', '/viewer.js'}, 'Review new browser scripts and their licenses'

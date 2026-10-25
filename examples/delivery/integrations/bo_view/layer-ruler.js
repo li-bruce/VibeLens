@@ -37,6 +37,9 @@ export class LayerRuler {
       const eye = document.createElement("button");
       eye.className = "layer-eye";
       eye.dataset.layer = layer.id;
+      eye.title = t(layer.label);
+      eye.draggable = true;
+      eye.ondragstart = grip.ondragstart;
       eye.setAttribute("aria-label", t("Toggle {0}", t(layer.label)));
       eye.onclick = () => {
         const visible = this.config.visible.includes(layer.id)

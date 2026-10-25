@@ -123,7 +123,7 @@ console.log(
 );
 
 const badge = { dataset: {} },
-  label = { querySelector: () => badge };
+  label = { querySelector: () => badge, dataset: {}, classList: { toggle() {} } };
 SpatialRenderer.prototype.updateBadges.call({}, label, { id: "flat", state: "declared" });
 assert.equal(badge.dataset.childCount, "", "Absent child metadata remains unknown");
 assert.equal(badge.hidden, true);
@@ -134,3 +134,4 @@ SpatialRenderer.prototype.updateBadges.call({}, label, {
 });
 assert.equal(badge.dataset.childCount, "2");
 assert.ok(badge.textContent.includes("▶") && badge.textContent.includes("2"));
+assert.ok(!badge.textContent.includes("−"));

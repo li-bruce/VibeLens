@@ -1,3 +1,4 @@
+import { iconFor } from "./node-icons.js";
 import { t as boTranslate } from "./i18n.js";
 // One geometry source for WebGL nodes and the SVG legend.
 export const meanings = {
@@ -21,53 +22,6 @@ export const meanings = {
   query: boTranslate("Recorded database command or query"),
   transform: boTranslate("Application processing of data"),
 };
-export function glyphShapes(type) {
-  if (type === "code-endpoint")
-    return [{ kind: "polygon", points: [-34, -17, 22, -17, 34, 0, 22, 17, -34, 17, -26, 0] }];
-  if (type === "code-file")
-    return [{ kind: "polygon", points: [-24, -28, 10, -28, 25, -12, 25, 28, -24, 28] }];
-  if (type === "code-class") return [{ kind: "rect", x: -27, y: -26, w: 54, h: 52, r: 5 }];
-  if (type === "code-parameter") return glyphShapes("data");
-  if (type === "code-unresolved") return glyphShapes("decision");
-  if (type === "store")
-    return [
-      { kind: "rect", x: -28, y: -20, w: 56, h: 42, r: 8 },
-      { kind: "ellipse", cx: 0, cy: -18, rx: 28, ry: 8 },
-    ];
-  if (type === "dataset") return [{ kind: "rect", x: -29, y: -21, w: 58, h: 42, r: 3 }];
-  if (type === "column") return [{ kind: "rect", x: -25, y: -15, w: 50, h: 30, r: 15 }];
-  if (type === "query")
-    return [{ kind: "polygon", points: [-29, -21, 16, -21, 30, 0, 16, 21, -29, 21, -17, 0] }];
-  if (type === "transform")
-    return [
-      {
-        kind: "polygon",
-        points: [-15, -25, 15, -25, 28, -12, 28, 12, 15, 25, -15, 25, -28, 12, -28, -12],
-      },
-    ];
-  if (type === "business") return [{ kind: "circle", r: 29 }];
-  if (type === "state")
-    return [
-      { kind: "circle", r: 24 },
-      { kind: "circle", r: 19, outline: true },
-    ];
-  if (type === "decision") return [{ kind: "polygon", points: [0, -27, 29, 0, 0, 27, -29, 0] }];
-  if (type === "data") return [{ kind: "rect", x: -31, y: -19, w: 62, h: 38, r: 18 }];
-  if (type === "effect") return [{ kind: "rect", x: -23, y: -23, w: 46, h: 46, r: 7 }];
-  if (type === "resource")
-    return [2, 1, 0].map((k) => ({
-      kind: "rect",
-      x: -25,
-      y: -18 + k * 5,
-      w: 50,
-      h: 24,
-      r: 7,
-      opaque: true,
-    }));
-  if (type === "wait")
-    return [{ kind: "polygon", points: [-22, -24, 22, -24, 12, 0, 22, 24, -22, 24, -12, 0] }];
-  return [{ kind: "polygon", points: [-30, 0, -17, -23, 17, -23, 30, 0, 17, 23, -17, 23] }];
-}
 function mix(a, b, amount) {
   return [16, 8, 0].reduce(
     (value, shift) =>
@@ -85,88 +39,38 @@ export function glyphAppearance(color, { core = false, selected = false, related
     emphasis: selected ? "selected" : core ? "core" : related ? "related" : "normal",
   };
 }
+/** A single MIT Tabler vocabulary supplies graph icons and the planar legend. */
+export const spatialShape = (type) => "tabler:" + iconFor(type).name;
+export const glyphShapes = (type) =>
+  iconFor(type).strokes.map((points) => ({ kind: "polyline", points }));
 export function drawGlyph(g, type, x, y, color, appearance = glyphAppearance(color)) {
-  for (const s of glyphShapes(type)) {
-    if (s.kind === "circle") g.circle(x, y, s.r);
-    if (s.kind === "ellipse") g.ellipse(x + s.cx, y + s.cy, s.rx, s.ry);
-    if (s.kind === "rect") g.roundRect(x + s.x, y + s.y, s.w, s.h, s.r);
-    if (s.kind === "polygon") g.poly(s.points.map((v, i) => v + (i % 2 ? y : x)));
-    if (!s.outline) g.fill({ color: appearance.fill, alpha: 1 });
-    g.stroke({ color: s.outline ? appearance.ink : color, width: 1.8 });
+  g.circle(x, y, 29).fill({ color: appearance.fill, alpha: 1 });
+  for (const path of iconFor(type).strokes) {
+    g.moveTo(x + path[0][0] * 2.2, y + path[0][1] * 2.2);
+    for (const p of path.slice(1)) g.lineTo(x + p[0] * 2.2, y + p[1] * 2.2);
   }
-}
-/** Share actual 3D geometry names with the legend; never guess from node labels. */
-export function spatialShape(type) {
-  if (["data", "code-parameter"].includes(type)) return "capsule";
-  if (["decision", "code-unresolved"].includes(type)) return "octahedron";
-  if (["function", "code-function", "transform"].includes(type)) return "icosahedron";
-  if (["store", "query", "resource"].includes(type)) return "cylinder";
-  if (["dataset", "column", "code-file", "code-class", "effect"].includes(type)) return "box";
-  return "sphere";
-}
-/** Small isometric silhouettes mirror the meshes without another WebGL context. */
-function spatialShapes(type) {
-  const path = (d, outline = false) => ({ kind: "path", d, outline });
-  switch (spatialShape(type)) {
-    case "capsule":
-      return [{ kind: "rect", x: -28, y: -12, w: 56, h: 24, r: 12 }];
-    case "octahedron":
-      return [path("M0 -29 L25 0 L0 29 L-25 0 Z"), path("M0 -29 V29 M-25 0 L0 7 L25 0", true)];
-    case "icosahedron":
-      return [
-        path("M0 -28 L26 -9 L17 23 L-17 23 L-26 -9 Z"),
-        path("M0 -28 L-10 6 L17 23 M-26 -9 L-10 6 L26 -9 L17 23 M-10 6 L-17 23", true),
-      ];
-    case "cylinder":
-      return [
-        path("M-23 -17 C-23 -30 23 -30 23 -17 V18 C23 31 -23 31 -23 18 Z"),
-        { kind: "ellipse", cx: 0, cy: -17, rx: 23, ry: 8, outline: true },
-      ];
-    case "box":
-      return [
-        path("M0 -29 L26 -15 V16 L0 30 L-26 16 V-15 Z"),
-        path("M-26 -15 L0 0 L26 -15 M0 0 V30", true),
-      ];
-    default:
-      return [
-        { kind: "circle", r: 27 },
-        { kind: "ellipse", cx: -7, cy: -8, rx: 11, ry: 16, outline: true },
-      ];
-  }
+  g.stroke({ color: appearance.ink, width: 3.3, cap: "round", join: "round" });
 }
 export function legendGlyph(type, style, options = {}) {
   const ns = "http://www.w3.org/2000/svg",
     svg = document.createElementNS(ns, "svg");
-  svg.setAttribute("viewBox", "-36 -36 72 72");
+  svg.setAttribute("viewBox", "-14 -14 28 28");
   svg.setAttribute("aria-hidden", "true");
   svg.dataset.glyph = type;
   svg.dataset.mode = options.spatial ? "3D" : "2D";
-  if (options.spatial) svg.dataset.shape = spatialShape(type);
-  const appearance = glyphAppearance(style.color, options),
-    hex = (value) => "#" + value.toString(16).padStart(6, "0");
-  const color = hex(style.color),
-    ink = hex(appearance.ink);
-  for (const s of options.spatial ? spatialShapes(type) : glyphShapes(type)) {
-    const el = document.createElementNS(ns, s.kind === "polygon" ? "polygon" : s.kind);
-    if (s.kind === "circle") el.setAttribute("r", s.r);
-    if (s.kind === "ellipse") for (const k of ["cx", "cy", "rx", "ry"]) el.setAttribute(k, s[k]);
-    if (s.kind === "rect")
-      for (const [k, v] of Object.entries({ x: s.x, y: s.y, width: s.w, height: s.h, rx: s.r }))
-        el.setAttribute(k, v);
-    if (s.kind === "polygon") el.setAttribute("points", s.points.join(" "));
-    if (s.kind === "path") el.setAttribute("d", s.d);
-    el.setAttribute("stroke", s.outline ? ink : color);
-    el.setAttribute("stroke-width", "2");
-    el.setAttribute("fill", s.outline ? "none" : hex(appearance.fill));
-    svg.append(el);
+  svg.dataset.icon = iconFor(type).name;
+  svg.dataset.shape = spatialShape(type);
+  const ink = glyphAppearance(style.color, options).ink;
+  for (const points of iconFor(type).strokes) {
+    const path = document.createElementNS(ns, "polyline");
+    path.setAttribute("points", points.map((p) => p.join(",")).join(" "));
+    path.setAttribute("stroke", "#" + ink.toString(16).padStart(6, "0"));
+    path.setAttribute("stroke-width", "1.6");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    path.setAttribute("fill", "none");
+    svg.append(path);
   }
-  const text = document.createElementNS(ns, "text");
-  text.setAttribute("text-anchor", "middle");
-  text.setAttribute("y", "7");
-  text.setAttribute("font-size", "22");
-  text.setAttribute("fill", ink);
-  text.textContent = style.glyph;
-  svg.append(text);
   return svg;
 }
 export function legendRelation(style) {

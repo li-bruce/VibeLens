@@ -1,5 +1,8 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "Routing unavailable": "连线计算不可用",
+  "Routing {0}/{1}": "正在计算连线 {0}/{1}",
+  "{0} routes blocked": "{0} 条连线受阻",
   "Drag to reorder; Alt + arrows to move": "拖动排序；Alt + 方向键换层",
   "Reorder {0}": "调整{0}顺序",
   "Toggle {0}": "显示或隐藏{0}",

@@ -39,10 +39,17 @@ try {
     executablePath: process.env.BO_BROWSER_EXECUTABLE,
   });
   page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  page.on("console", (msg) => {
+    if (msg.text().startsWith("BENCH")) console.log(msg.text());
+  });
   page.on("pageerror", (error) => errors.push(error.stack || String(error)));
   await page.goto(base + "/graph?lang=en");
   await page.waitForFunction(() => window.graphDebug?.graph);
   for (const count of process.env.BO_SPATIAL_INTEGRATED_ONLY ? [] : [1000, 4000]) {
+    await page.evaluate(() => {
+      window.benchmarkRenderer?.dispose();
+      window.benchmarkHost?.remove();
+    });
     const sample = await page.evaluate(async (count) => {
       const { SpatialRenderer } = await import("/spatial-renderer.js");
       const host = document.createElement("div");
@@ -139,6 +146,12 @@ try {
         await new Promise((resolve) => setTimeout(resolve, 25));
       if (renderer.busy) throw Error("Spatial worker did not settle within 30 seconds");
       const settledMs = performance.now() - started;
+      const routeDeadline = performance.now() + 120000;
+      while (renderer.router.stats.busy && performance.now() < routeDeadline)
+        await new Promise((resolve) => setTimeout(resolve, 40));
+      if (renderer.router.stats.busy || renderer.router.stats.error)
+        throw Error("Initial routing failed: " + JSON.stringify(renderer.router.stats));
+      await new Promise((resolve) => setTimeout(resolve, 200));
       viewportReads = 0;
       for (let i = 0; i < 35; i++) {
         renderer.camera.position.x += 5;
@@ -147,6 +160,7 @@ try {
         await new Promise((resolve) => setTimeout(resolve, 16));
       }
       const before = renderer.diagnostics;
+      console.log("BENCH ready", count, before.routeSolver);
       const selectionStart = performance.now();
       renderer.update({
         ...input,
@@ -162,13 +176,22 @@ try {
         const start = performance.now();
         renderer.update({ ...input, routing });
         const rebuildMs = performance.now() - start;
-        await new Promise((resolve) => setTimeout(resolve, 70));
+        const routeStarted = performance.now(),
+          routeDeadline = routeStarted + 120000;
+        while (renderer.router.stats.busy && performance.now() < routeDeadline)
+          await new Promise((resolve) => setTimeout(resolve, 40));
+        if (renderer.router.stats.busy || renderer.router.stats.error)
+          throw Error("Routing failed: " + JSON.stringify(renderer.router.stats));
+        await new Promise((resolve) => setTimeout(resolve, 200));
         const finite = [...renderer.curves.values()].every((curve) =>
           curve.getPoints(4).every((p) => [p.x, p.y, p.z].every(Number.isFinite)),
         );
         routingChecks.push({
           routing,
           rebuildMs,
+          solveMs: performance.now() - routeStarted,
+          solver: renderer.router.stats,
+          drawn: renderer.curves.size,
           finite,
           drawCalls: renderer.diagnostics.drawCalls,
           geometries: renderer.diagnostics.geometries,
@@ -219,6 +242,48 @@ try {
       "Camera frames repeatedly read layout dimensions while writing labels",
     );
     await page.screenshot({ path: path.join(output, `graph-${count}.png`) });
+    if (count === 4000) {
+      await page.evaluate(() => window.benchmarkRenderer.fit("bench:0", "top"));
+      await page.waitForTimeout(350);
+      const target = await page.evaluate(() => {
+        const r = window.benchmarkRenderer,
+          p = r.screenNode("bench:0"),
+          rect = r.canvas.getBoundingClientRect();
+        const started = performance.now(),
+          hit = r.pick(p.x + rect.left, p.y + rect.top);
+        return {
+          x: p.x + rect.left,
+          y: p.y + rect.top,
+          before: { ...r.positions["bench:0"] },
+          hit: hit?.id,
+          pickMs: performance.now() - started,
+        };
+      });
+      assert.equal(target.hit, "bench:0", "The actual large-scene icon center is pickable");
+      const dragStarted = Date.now();
+      await page.mouse.move(target.x, target.y);
+      await page.mouse.down();
+      await page.mouse.move(target.x + 22, target.y + 14, { steps: 3 });
+      await page.mouse.up();
+      const pointerMs = Date.now() - dragStarted;
+      await page.waitForFunction(() => !window.benchmarkRenderer.router.stats.busy, undefined, {
+        timeout: 120000,
+      });
+      const moved = await page.evaluate(() => ({
+        position: window.benchmarkRenderer.positions["bench:0"],
+        solver: window.benchmarkRenderer.router.stats,
+      }));
+      assert.notDeepEqual(moved.position, target.before);
+      assert.equal(moved.position.y, target.before.y);
+      assert.equal(moved.solver.routed + moved.solver.unresolved, count * 4);
+      assert.ok(target.pickMs < 1000, "Large-scene ray picking must return within one second");
+      sample.drag = {
+        pickMs: target.pickMs,
+        pointerMs,
+        routingAndDragMs: Date.now() - dragStarted,
+        ...moved,
+      };
+    }
   }
   // Exercise the full coordinator and accessible controls as well as raw GPU drawing.
   await page.close();
@@ -254,6 +319,9 @@ try {
   });
   await page.route("**/api/view*", (route) => route.fulfill({ json: sample }));
   await page.route("**/api/preferences", (route) => route.fulfill({ json: prefs }));
+  page.on("console", (msg) => {
+    if (msg.text().startsWith("BENCH")) console.log(msg.text());
+  });
   page.on("pageerror", (error) => errors.push(error.stack || String(error)));
   const integratedStart = Date.now();
   await page.goto(base + "/graph?lang=en");

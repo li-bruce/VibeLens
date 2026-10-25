@@ -169,4 +169,4 @@ Checks include strict declarations, source/graph drift, independent mapping evid
 
 ## License
 
-[MIT](LICENSE). PixiJS is MIT; ELK.js is EPL-2.0. No proprietary yFiles code is included. See [third-party notices](THIRD_PARTY_NOTICES.md).
+[MIT](LICENSE). PixiJS and Tabler Icons are MIT; ELK.js is EPL-2.0; the separately replaceable libavoid router is LGPL-2.1-or-later. No proprietary yFiles code is included. See [third-party notices](THIRD_PARTY_NOTICES.md).

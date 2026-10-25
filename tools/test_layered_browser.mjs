@@ -135,6 +135,22 @@ try {
   await page.waitForFunction(() => graphDebug.spatial?.perspective && !graphDebug.layoutBusy);
   await page.waitForTimeout(250);
   checks.initial3D = await page.evaluate(() => graphDebug.spatial);
+  checks.routeGapGeometry = await page.evaluate(async () => {
+    const { spatialScene } = await import("/routing-scene.js"),
+      { spatialModel } = await import("/spatial-model.js");
+    const scene = spatialScene(
+      spatialModel(graphDebug.displayGraph, graphDebug.presentation),
+      graphDebug.spatialPositions,
+      graphDebug.spatial.volumes,
+      "curve",
+    );
+    return scene.edges
+      .filter((e) => graphDebug.spatial.routeSolver?.failures?.includes(e.id))
+      .map((e) => ({
+        edge: e,
+        obstacles: scene.obstacles.filter((o) => o.level === e.a.level || o.level === e.b.level),
+      }));
+  });
   assert.ok(checks.initial3D.webgl);
   assert.ok(checks.initial3D.volumes.some((v) => v.projection));
   const delta = checks.initial3D.camera.position.map(
@@ -166,6 +182,12 @@ try {
   assert.ok(arrangement.legend.y < arrangement.tools.y);
   assert.ok(arrangement.legend.width < arrangement.legend.height);
   await page.click("#layers-toggle");
+  assert.equal(await page.locator("#layers-toggle").getAttribute("aria-expanded"), "false");
+  assert.ok((await page.locator("#layer-drawer").boundingBox()).width < 60);
+  assert.equal(await page.locator(".layer-select:visible").count(), 0);
+  assert.equal(await page.locator(".layer-eye:visible").count(), 8);
+  await page.click("#layer-spacing-toggle");
+  assert.equal(await page.locator("#layer-spacing-toggle").getAttribute("aria-expanded"), "true");
   assert.equal(await page.locator("#layers-toggle").getAttribute("aria-expanded"), "true");
   await page.locator("#layer-gap").fill("360");
   await page.waitForFunction(() => !graphDebug.layoutBusy);

@@ -34,6 +34,7 @@ export function cleanLayers(value) {
   return {
     enabled: value?.enabled === true,
     drawer: value?.drawer === true,
+    compact: value?.compact === true,
     camera: ["angled", "front", "side", "top"].includes(value?.camera) ? value.camera : "top",
     gap: Number.isFinite(value?.gap) ? Math.max(80, Math.min(600, value.gap)) : 260,
     order,

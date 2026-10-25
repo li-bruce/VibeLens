@@ -135,3 +135,7 @@ The JavaScript comparison uses TypeScript from the native adapter's development 
     python tools/verify.py
 
 When a managed runtime changes, rebuild each example's source bindings, inspect its new candidate, run verify, then accept/check before freezing a new record. Earlier accepted records remain available for review.
+
+## Routing and node icons
+
+The shared viewer pipeline is `routing-scene.js` (renderer adapters), `routing-client.js` / `routing-worker.js` (epochs and lifecycle), `routing-engine.js` (routing and typed bundles), `routing-navigation.js` (reusable A* channels), and `routing-geometry.js` (R-tree checks and certified smoothing). `route-picking.js` resolves shared strokes to original edges. `node-icons.js` is generated from selected Tabler vectors; `glyphs.js` and `spatial-geometry.js` draw the same vocabulary in 2D and 3D. Rebuild pinned dependencies with `tools/routing/build.mjs` and icons with `tools/routing/build-icons.mjs`.

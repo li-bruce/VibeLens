@@ -23,6 +23,7 @@ import {
 } from "./i18n.js";
 import { iconButton, installIcons, createContextMenu } from "./controls.js";
 import { createGraphRenderer, nodePoint, bezierAt } from "./renderer.js";
+import { pickRoutes } from "./route-picking.js";
 import { createConversationFocus, discussionContext } from "./conversation.js";
 import { projectStorage } from "./preferences.js";
 import { createPoller } from "./polling.js";
@@ -211,6 +212,13 @@ const renderer = createGraphRenderer({
   hits,
   edgePaths,
   onMetrics: (data) => Object.assign($("renderer").dataset, data),
+  onRoutes: (stats) => {
+    updateRouteStatus(stats);
+    if (!stats.busy || stats.total <= 2000) {
+      schedule();
+      updateSemanticGeometry();
+    }
+  },
 });
 let spatial = null,
   semanticFrame = 0,
@@ -225,6 +233,7 @@ function spatialGeometry() {
     return;
   }
   semanticFrame = performance.now();
+  updateRouteStatus(spatial?.diagnostics.routeSolver);
   updateSemanticGeometry();
   positionDetail();
 }
@@ -302,7 +311,9 @@ function updateLayerControls() {
   $("layer-gap").value = config.gap;
   $("layer-gap").disabled = !config.enabled;
   $("layer-drawer").classList.toggle("is-open", config.drawer);
-  $("layers-toggle").setAttribute("aria-expanded", String(config.drawer));
+  $("layer-drawer").classList.toggle("is-compact", config.compact);
+  $("layers-toggle").setAttribute("aria-expanded", String(!config.compact));
+  $("layer-spacing-toggle").setAttribute("aria-expanded", String(config.drawer));
   $("layered-toggle").setAttribute("aria-pressed", String(config.enabled));
   const action = boTranslate(config.enabled ? "Switch to 2D" : "Switch to 3D");
   $("layered-toggle").title = action;
@@ -326,7 +337,14 @@ function changeLayers(visible) {
 $("layers-toggle").onclick = () => {
   if (!analysisSettings) return;
   const config = cleanLayers(analysisSettings.layers);
-  analysisSettings.layers = { ...config, drawer: !config.drawer };
+  analysisSettings.layers = { ...config, compact: !config.compact };
+  updateLayerControls();
+  save();
+};
+$("layer-spacing-toggle").onclick = () => {
+  if (!analysisSettings) return;
+  const config = cleanLayers(analysisSettings.layers);
+  analysisSettings.layers = { ...config, compact: false, drawer: !config.drawer };
   updateLayerControls();
   save();
 };
@@ -404,6 +422,9 @@ function updatePresentation() {
       .map((box) => box.type),
   );
   const visibleRelations = new Set(renderedEdges.map((edge) => edge.type));
+  $("key-legend").hidden = !displayGraph.boxes.some(
+    (box) => box.node.data_metadata?.primary_key === true && presentation.glyphs.has(box.id),
+  );
   for (const item of document.querySelectorAll("[data-legend-node]"))
     item.hidden = !visibleTypes.has(item.dataset.legendNode);
   for (const item of document.querySelectorAll("[data-legend-edge]"))
@@ -446,6 +467,7 @@ function draw() {
     formatValue: boText,
     contextLost,
   });
+  updateRouteStatus(renderer.routing);
   app.renderer.render(app.stage);
   $("zoom").value = Math.round(scale * 100) + "%";
   updateSemanticGeometry();
@@ -456,6 +478,16 @@ function schedule() {
     dirty = true;
     drawFrame = requestAnimationFrame(draw);
   }
+}
+function updateRouteStatus(stats = {}) {
+  const element = $("route-status");
+  element.hidden = !stats.busy && !stats.unresolved && !stats.error;
+  element.textContent = stats.error
+    ? boTranslate("Routing unavailable")
+    : stats.busy
+      ? boTranslate("Routing {0}/{1}", stats.routed || 0, stats.total || 0)
+      : boTranslate("{0} routes blocked", stats.unresolved);
+  element.title = stats.error || (stats.failures || []).join("\n");
 }
 function save() {
   if (!preferences) return;
@@ -490,6 +522,7 @@ window.addEventListener("pagehide", (event) => {
     layoutWorker.terminate();
     resizeObserver.disconnect();
     spatial?.dispose();
+    renderer.dispose();
     renderer.clear();
     app.destroy(true, { children: true });
   }
@@ -853,10 +886,12 @@ function updateSemanticGeometry() {
     pan,
   });
 }
-let selectedEdge = null;
+let selectedEdge = null,
+  edgeChoices = [];
 function showEdge(edge) {
   select(null);
   selectedEdge = edge.id;
+  edgeChoices = edge.alternatives || [];
   updateActions();
   updateEdgeDetail();
 }
@@ -875,6 +910,18 @@ function updateEdgeDetail() {
     edge.members.length,
   );
   $("edge-members").replaceChildren(
+    ...edgeChoices
+      .filter((choice) => choice.id !== edge.id)
+      .map((choice) => {
+        const item = document.createElement("li"),
+          button = document.createElement("button");
+        const a = graph.all.get(choice.from),
+          b = graph.all.get(choice.to);
+        button.textContent = `${a ? displayName(a, preferences) : choice.from} → ${b ? displayName(b, preferences) : choice.to}`;
+        button.onclick = () => showEdge({ ...choice, alternatives: edgeChoices });
+        item.append(button);
+        return item;
+      }),
     ...edge.members.map((member) => {
       const item = document.createElement("li"),
         a = graph.all.get(member.from),
@@ -1106,7 +1153,17 @@ async function loadSource() {
 }
 function hitAt(e) {
   const r = app.canvas.getBoundingClientRect();
-  return pickHit(hits, (e.clientX - r.left - pan.x) / scale, (e.clientY - r.top - pan.y) / scale);
+  const x = (e.clientX - r.left - pan.x) / scale,
+    y = (e.clientY - r.top - pan.y) / scale;
+  const hit = pickHit(hits, x, y);
+  if (hit?.id || hit?.expand) return hit;
+  const choices = pickRoutes(
+    renderedEdges,
+    (edge) => edgePaths.get(edge.id)?.points,
+    { x, y },
+    5 / scale,
+  );
+  return choices.length ? { edge: { ...choices[0], alternatives: choices } } : hit;
 }
 // Pointer and keyboard users share the same selection and action handlers.
 function openSelectionMenu(x, y, target = $("viewport")) {
@@ -2683,10 +2740,18 @@ window.graphDebug = {
   },
   get metrics() {
     if (spatialActive()) return spatial?.diagnostics || {};
-    return { ...metrics, drawCount: renderer.frames, webgl: !!app.renderer.gl };
+    return {
+      ...metrics,
+      drawCount: renderer.frames,
+      routeSolver: renderer.routing,
+      webgl: !!app.renderer.gl,
+    };
   },
   get layoutBusy() {
-    return layoutBusy || (spatialActive() && spatial?.busy);
+    return (
+      layoutBusy ||
+      (spatialActive() ? spatial?.busy || spatial?.router.stats.busy : renderer.routing.busy)
+    );
   },
 };
 const conversation = createConversationFocus({

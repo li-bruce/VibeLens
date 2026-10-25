@@ -130,9 +130,9 @@ export function dataLines(node, inputs = {}, outputs = {}, recorded = false, det
     sampled: t("Sampled structure"),
   }[node.data_coverage];
   const identity = [meta.engine || meta.kind, meta.native_type].filter(Boolean);
-  if (meta.primary_key) identity.push(t("Primary key"));
-  if (meta.nullable === false || meta.required === true) identity.push(t("Required"));
-  if (meta.nullable === true) identity.push(t("Nullable"));
+  if (details && meta.primary_key) identity.push(t("Primary key"));
+  if (details && (meta.nullable === false || meta.required === true)) identity.push(t("Required"));
+  if (details && meta.nullable === true) identity.push(t("Nullable"));
   if (identity.length) rows.push({ text: identity.join(" · "), role: "value" });
   const comparison = {
     declared_only: t("Awaiting database structure"),
@@ -155,7 +155,7 @@ export function dataLines(node, inputs = {}, outputs = {}, recorded = false, det
     });
   if (details && (origin || coverage))
     rows.push({ text: [origin, coverage].filter(Boolean).join(" · "), role: "muted" });
-  for (const constraint of meta.constraints || [])
+  for (const constraint of details ? meta.constraints || [] : [])
     rows.push({
       text: [
         constraint.kind,

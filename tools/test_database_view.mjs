@@ -383,7 +383,7 @@ assert.equal(
   "blocked",
 );
 assert.ok(
-  dataLines(nodes[3]).some(
+  dataLines(nodes[3], {}, {}, false, true).some(
     (row) => row.text.includes("Primary key") && row.text.includes("Required"),
   ),
 );
@@ -451,7 +451,7 @@ assert.equal(coverage.excludedNodes, 0);
 assert.equal(coverage.excludedEdges, 0, "All elements accounts for relations inside folded groups");
 setLocale("zh-CN");
 assert.match(dataLines(nodes[5], event.inputs, event.outputs, true)[0].text, /已执行.*12 条/);
-assert.match(dataLines(nodes[3])[0].text, /主键.*必填/);
+assert.match(dataLines(nodes[3], {}, {}, false, true)[0].text, /主键.*必填/);
 for (const status of [
   "started",
   "returned",

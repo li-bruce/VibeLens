@@ -2,7 +2,9 @@ import { edgeCurve } from "./spatial-paths.js";
 import * as T from "./spatial-three.vendor.js";
 import { spatialModel, containmentVolumes, descendants, nodeElevation } from "./spatial-model.js";
 import { cleanLayers, layerHeights } from "./graph-layers.js";
-import { cleanRoute, busTrunks, regionPort } from "./edge-routing.js";
+import { cleanRoute, polylineAt } from "./edge-routing.js";
+import { RoutingClient } from "./routing-client.js";
+import { spatialScene } from "./routing-scene.js";
 import { nodeTypes } from "./graph-core.js";
 import { nodeGeometry } from "./spatial-geometry.js";
 import { regionLabelAnchor } from "./spatial-labels.js";
@@ -26,6 +28,12 @@ export class SpatialRenderer {
   constructor(host, callbacks = {}) {
     this.host = host;
     this.callbacks = callbacks;
+    this.router = new RoutingClient((stats) => {
+      // Large scenes upload the finished edge buffer once. Rebuilding a growing
+      // buffer on every progress packet creates quadratic work and allocation.
+      if (stats.busy && this.model?.edges.length > 2000) this.callbacks.onRender?.();
+      else this.refreshEdges();
+    });
     this.scene = new T.Scene();
     this.scene.background = new T.Color(0xf6f8fa);
     this.scene.add(new T.AmbientLight(0xffffff, 1.3));
@@ -307,6 +315,9 @@ export class SpatialRenderer {
       this.group.add(ring);
     }
     this.drawLayerGuides();
+    this.router.request(
+      spatialScene(this.model, this.positions, this.volumes, cleanRoute(this.input.routing)),
+    );
     this.drawEdges(matrix);
     // Projected regions repeat the owner's label, not the owner node or its facts.
     const labelNodes = [...this.model.nodes].sort(
@@ -323,7 +334,7 @@ export class SpatialRenderer {
       );
       const title = document.createElement("span");
       title.className = "spatial-label-title";
-      title.textContent = nodeTypes[node.type].glyph + " · " + displayName(box.node, preferences);
+      title.textContent = displayName(box.node, preferences);
       label.append(title);
       this.updateBadges(label, box);
       const rows = node.rows
@@ -370,6 +381,22 @@ export class SpatialRenderer {
     return nodeGeometry(type, this.model.nodes.length > 2000);
   }
 
+  /** Routing results replace only edge buffers; node meshes and DOM labels survive. */
+  refreshEdges() {
+    if (!this.group || this.disposed) return;
+    for (const object of [this.lines, this.arrowMesh])
+      if (object) {
+        this.group.remove(object);
+        object.geometry.dispose();
+        object.material.dispose();
+      }
+    this.curves.clear();
+    this.drawEdges(new T.Object3D());
+    this.updateTransferLabels();
+    this.schedule();
+    this.callbacks.onRender?.();
+  }
+
   /** Counts and runtime status use the same source box as the planar renderer. */
   updateBadges(label, box) {
     if (!box) return;
@@ -381,7 +408,7 @@ export class SpatialRenderer {
     }
     const count = Array.isArray(box.kids) ? box.kids.length : null;
     const glyph = { ok: "✓", active: "▶", blocked: "!", historical: "·" }[box.state] || "";
-    badges.textContent = [count ? `${box.open ? "−" : "+"} ${count}` : "", glyph]
+    badges.textContent = [count ? `${box.open ? "" : "+ "}${count}` : "", glyph]
       .filter(Boolean)
       .join("  ");
     badges.dataset.childCount = count === null ? "" : String(count);
@@ -390,6 +417,8 @@ export class SpatialRenderer {
       .filter(Boolean)
       .join(" · ");
     badges.hidden = !badges.textContent;
+    label.classList.toggle("primary-key", box.node?.data_metadata?.primary_key === true);
+    label.dataset.primaryKey = String(box.node?.data_metadata?.primary_key === true);
   }
 
   /** Runtime/selection changes reuse GPU geometry; only instance colors and labels change. */
@@ -554,23 +583,20 @@ export class SpatialRenderer {
             toPosition: volume.center,
           }))
       : [];
-    const routing = cleanRoute(this.input.routing);
-    const trunks =
-      routing === "bus" ? busTrunks(this.model.edges, (id) => this.positions[id]) : new Map();
     for (const edge of [...this.model.edges, ...guides]) {
       let start = edge.fromPosition || this.positions[edge.from],
         end = edge.toPosition || this.positions[edge.to];
       if (!start || !end) continue;
-      if (!edge.guide && edge.from !== edge.to) {
-        // Use the opposite owner's volume center before clipping both ends.
-        const from = this.volumes.find((v) => v.id === edge.from && !v.projection)?.center || start;
-        const to = this.volumes.find((v) => v.id === edge.to && !v.projection)?.center || end;
-        if (edge.sourceRegion)
-          start = regionPort(edge.from, edge.to, to, this.positions, this.volumes);
-        if (edge.targetRegion)
-          end = regionPort(edge.to, edge.from, from, this.positions, this.volumes);
+      let curve;
+      if (edge.guide) curve = edgeCurve(start, end, "curve");
+      else {
+        const routed = this.router.routes.get(edge.id);
+        if (!routed) continue;
+        const points = routed.map((p) => ({ x: p.x, y: p.level, z: p.y }));
+        curve = new T.Curve();
+        curve.getPoint = (t, target = new T.Vector3()) => target.copy(polylineAt(points, t));
+        curve.boPoints = points;
       }
-      const curve = edgeCurve(start, end, edge.guide ? "curve" : routing, trunks.get(edge.id));
       this.curves.set(edge.id, curve);
       const style = relationStyle(edge),
         color = this.edgeColor(edge),
@@ -579,8 +605,7 @@ export class SpatialRenderer {
       // relations retain full detail; their underlying cubic path is unchanged.
       const focused = edge.from === selected || edge.to === selected;
       const samples =
-        (curve.boPoints && !style.dash.length ? curve.boPoints : null) ||
-        curve.getPoints(this.model.edges.length > 5000 && !focused ? 10 : 24);
+        curve.boPoints || curve.getPoints(this.model.edges.length > 5000 && !focused ? 10 : 24);
       for (let i = 0; i < samples.length - 1; i++) {
         if ((style.dash.length || edge.guide) && i % 3 === 2) continue;
         positions.push(
@@ -647,6 +672,21 @@ export class SpatialRenderer {
     );
     const hit = this.raycaster.intersectObjects(this.pickable || [], false)[0];
     if (hit) return { id: hit.object.userData.ids[hit.instanceId] };
+    // Open icon strokes have empty centers. Keep the full circular interaction
+    // target on the node's own plane, rather than requiring a stroke-perfect click.
+    const targets = [];
+    for (const node of this.model?.nodes || [])
+      if (node.glyph) {
+        const p = this.positions[node.id];
+        if (!p) continue;
+        const q = this.raycaster.ray.intersectPlane(
+          new T.Plane(new T.Vector3(0, 1, 0), -p.y),
+          new T.Vector3(),
+        );
+        if (q && Math.hypot(q.x - p.x, q.z - p.z) <= 28)
+          targets.push({ id: node.id, distance: q.distanceTo(this.raycaster.ray.origin) });
+      }
+    if (targets.length) return targets.sort((a, b) => a.distance - b.distance)[0];
     const under = [];
     for (const volume of this.volumes || []) {
       if (volume.projection && !this.settings.projections) continue;
@@ -659,6 +699,7 @@ export class SpatialRenderer {
     }
     // Visible edge strokes take precedence over empty region space. Test the
     // projected segments, not isolated samples that leave gaps in the hit target.
+    const choices = [];
     for (const edge of this.model?.edges || []) {
       const curve = this.curves.get(edge.id);
       const points = (curve?.boPoints || curve?.getPoints(16) || []).map((p) => this.screen(p));
@@ -671,9 +712,13 @@ export class SpatialRenderer {
         const px = clientX - rect.left - a.x,
           py = clientY - rect.top - a.y;
         const ratio = Math.max(0, Math.min(1, (px * dx + py * dy) / (dx * dx + dy * dy || 1)));
-        if (Math.hypot(px - ratio * dx, py - ratio * dy) < 5) return { edge };
+        if (Math.hypot(px - ratio * dx, py - ratio * dy) < 5) {
+          choices.push(edge);
+          break;
+        }
       }
     }
+    if (choices.length) return { edge: { ...choices[0], alternatives: choices } };
     if (under.length)
       return { region: under.sort((a, b) => a.distance - b.distance || a.radius - b.radius)[0].id };
     return null;
@@ -977,6 +1022,7 @@ export class SpatialRenderer {
       layoutMs: this.layoutMs || 0,
       busy: !!this.busy,
       routing: cleanRoute(this.input?.routing),
+      routeSolver: this.router.stats,
       animation: this.animation ? { start: this.animation.start, ids: this.animation.ids } : null,
       edgePorts: [...(this.curves || [])]
         .slice(0, 500)
@@ -992,6 +1038,7 @@ export class SpatialRenderer {
     this.disposed = true;
     this.pause();
     this.worker.terminate();
+    this.router.dispose();
     this.controls.dispose();
     this.clearScene();
     if (this.particles) {
