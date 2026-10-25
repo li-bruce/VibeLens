@@ -162,6 +162,12 @@ const restoredLocaleURL = restoreLocale(storage, window.location.href);
 if (restoredLocaleURL) window.location.replace(restoredLocaleURL);
 translateShell(document);
 installIcons(document);
+// Tool rows wrap with language and viewport width. Reserve their actual height
+// for legends and replay changes instead of overlapping them with fixed offsets.
+const toolObserver = new ResizeObserver(([entry]) => {
+  $("viewport").style.setProperty("--view-tools-height", entry.contentRect.height + "px");
+});
+toolObserver.observe(document.querySelector(".view-tools"));
 const contextMenu = createContextMenu($("graph-menu"));
 $("language").value = locale();
 $("language").addEventListener("change", async (event) => {
@@ -200,7 +206,21 @@ const renderer = createGraphRenderer({
   onMetrics: (data) => Object.assign($("renderer").dataset, data),
 });
 let spatial = null,
-  semanticFrame = 0;
+  semanticFrame = 0,
+  semanticTimer = null;
+/** Throttle movement updates, but always publish the final camera geometry. */
+function spatialGeometry() {
+  clearTimeout(semanticTimer);
+  if (disposed || !graph || !spatialActive()) return;
+  const remaining = 90 - (performance.now() - semanticFrame);
+  if (remaining > 0) {
+    semanticTimer = setTimeout(spatialGeometry, remaining);
+    return;
+  }
+  semanticFrame = performance.now();
+  updateSemanticGeometry();
+  positionDetail();
+}
 const semanticView = new SemanticView($("semantic"), $("semantic-edges"), {
   onSelect: select,
   onEdge: showEdge,
@@ -214,24 +234,11 @@ function updateSpatial() {
       onToggle: toggle,
       onEdge: showEdge,
       onSave: saveSoon,
-      onRender: () => {
-        if (graph && spatialActive() && performance.now() - semanticFrame > 90) {
-          semanticFrame = performance.now();
-          updateSemanticGeometry();
-          positionDetail();
-        }
-      },
+      onRender: spatialGeometry,
       onError: (message) => {
         $("layout-status").textContent = message;
       },
-      onLayer: (id) => {
-        analysisSettings.layers.only = analysisSettings.layers.only === id ? "all" : id;
-        updateLayerControls();
-        updatePresentation();
-        updateSemantic();
-        fit();
-        save();
-      },
+      onLayer: (id) => changeLayers([id]),
       onMenu: (hit, x, y) => {
         select(hit?.id || hit?.region || null);
         if (hit?.edge) selectedEdge = hit.edge.id;
@@ -257,26 +264,58 @@ function point(box) {
   }
   return nodePoint(displayGraph || graph, presentation, displayGraph?.byId.get(box.id) || box);
 }
+/** The same semantic-layer mask applies to both renderers. */
 function updateLayerControls() {
   const config = cleanLayers(analysisSettings?.layers);
+  const mode = config.enabled ? "3D" : "2D";
+  $("layered-toggle").textContent = mode;
   $("layered-toggle").setAttribute("aria-pressed", String(config.enabled));
-  $("layer-controls").hidden = !config.enabled;
-  $("layer-camera").value = config.camera;
-  $("layer-gap").value = config.gap;
-  $("layer-only").value = config.only;
-  $("layer-projections").checked = config.projections;
+  const action = boTranslate(config.enabled ? "Switch to 2D" : "Switch to 3D");
+  $("layered-toggle").title = action;
+  $("layered-toggle").setAttribute("aria-label", action);
+  for (const button of $("layer-controls").children)
+    button.setAttribute("aria-pressed", String(config.visible.includes(button.dataset.layer)));
+  $("layers-all").setAttribute("aria-pressed", String(config.visible.length === layers.length));
+  $("undo-layout").disabled = !undo || undo.mode !== mode;
+  updateLegendMode();
 }
-$("layer-only").replaceChildren(
-  new Option(boTranslate("All layers"), "all"),
-  ...layers.map((layer) => new Option(boTranslate(layer.label), layer.id)),
+function changeLayers(visible) {
+  if (!analysisSettings || !graph) return;
+  stopAnimation();
+  analysisSettings.layers = cleanLayers({ ...analysisSettings.layers, only: "all", visible });
+  updateLayerControls();
+  updatePresentation();
+  updateSemantic();
+  fit();
+  save();
+}
+$("layer-controls").replaceChildren(
+  ...layers.map((layer) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.layer = layer.id;
+    button.textContent = boTranslate(layer.label);
+    button.title = boTranslate(layer.label);
+    button.style.setProperty("--layer-color", "#" + layer.color.toString(16).padStart(6, "0"));
+    button.onclick = () => {
+      const visible = cleanLayers(analysisSettings?.layers).visible;
+      changeLayers(
+        visible.includes(layer.id)
+          ? visible.filter((id) => id !== layer.id)
+          : [...visible, layer.id],
+      );
+    };
+    return button;
+  }),
 );
+$("layers-all").onclick = () => changeLayers(layers.map((layer) => layer.id));
 $("layered-toggle").onclick = () => {
   if (!analysisSettings || !graph) return;
   stopAnimation();
   contextMenu.close();
   save();
   const config = cleanLayers(analysisSettings.layers);
-  analysisSettings.layers = { ...config, enabled: !config.enabled };
+  analysisSettings.layers = { ...config, enabled: !config.enabled, camera: "top" };
   if (!analysisSettings.layers.enabled) project();
   updateLayerControls();
   updatePresentation();
@@ -288,22 +327,25 @@ $("layered-toggle").onclick = () => {
   } else fit();
   save();
 };
-for (const id of ["layer-camera", "layer-only", "layer-gap", "layer-projections"])
-  $(id).oninput = () => {
-    if (!analysisSettings || !graph) return;
-    stopAnimation();
-    analysisSettings.layers = cleanLayers({
-      enabled: true,
-      camera: $("layer-camera").value,
-      only: $("layer-only").value,
-      gap: Number($("layer-gap").value),
-      projections: $("layer-projections").checked,
-    });
-    updatePresentation();
-    updateSemantic();
-    fit();
-    save();
-  };
+$("top-view").onclick = () => {
+  if (analysisSettings)
+    analysisSettings.layers = { ...cleanLayers(analysisSettings.layers), camera: "top" };
+  fit();
+};
+let legendMode = null;
+function updateLegendMode() {
+  const mode = spatialActive() ? "3D" : "2D";
+  if (legendMode === mode) return;
+  legendMode = mode;
+  $("legend-mode").textContent = mode;
+  $("legend-panel").dataset.mode = mode;
+  for (const row of document.querySelectorAll("[data-legend-node]")) {
+    const type = row.dataset.legendNode;
+    row.firstElementChild?.replaceWith(
+      legendGlyph(type, nodeTypes[type], { spatial: mode === "3D" }),
+    );
+  }
+}
 function updatePresentation() {
   displayGraph = layerSlice(graph, cleanLayers(analysisSettings?.layers));
   presentation = presentationGraph(displayGraph, preferences.filters);
@@ -383,6 +425,7 @@ function saveSoon() {
   saveTimer = setTimeout(save, 180);
 }
 window.addEventListener("pagehide", (event) => {
+  clearTimeout(semanticTimer);
   save();
   storage.flush();
   clearTimeout(saveTimer);
@@ -390,6 +433,7 @@ window.addEventListener("pagehide", (event) => {
   cancelAnimationFrame(drawFrame);
   dirty = false;
   if (!event.persisted) {
+    toolObserver.disconnect();
     disposed = true;
     poller.close();
     stopPlayback();
@@ -490,13 +534,17 @@ async function arrange(initial = false) {
   if (!graph) return;
   if (spatialActive()) {
     updateSpatial();
+    if (!initial) {
+      undo = { mode: "3D", snapshot: spatial.snapshot() };
+      $("undo-layout").disabled = false;
+    }
     spatial.layout(true);
     return;
   }
   const epoch = ++layoutEpoch,
     key = topologyKey(graph),
     scope = storageKey,
-    algorithm = $("layout").value;
+    algorithm = preferences.algorithm || "cluster";
   const previous = JSON.stringify(preferences.positions),
     camera = { scale, pan: { ...pan } };
   layoutBusy = true;
@@ -507,7 +555,7 @@ async function arrange(initial = false) {
     const positions = await calculateLayout(elk, graph, preferences, algorithm);
     if (epoch !== layoutEpoch || scope !== storageKey || !graph || key !== topologyKey(graph))
       return;
-    undo = { positions: previous, camera };
+    undo = { mode: "2D", positions: previous, camera };
     $("undo-layout").disabled = false;
     applyLayout(graph, preferences, positions);
     preferences.algorithm = algorithm;
@@ -530,7 +578,10 @@ async function arrange(initial = false) {
 }
 function plotArea() {
   const top = 42,
-    bottom = $("step-changes").hidden ? 92 : Math.min(240, $("step-changes").offsetHeight + 90);
+    tools = document.querySelector(".view-tools").offsetHeight + 24,
+    bottom = $("step-changes").hidden
+      ? tools
+      : Math.min(app.screen.height * 0.6, $("step-changes").offsetHeight + tools + 12);
   return {
     top,
     height: Math.max(60, app.screen.height - top - bottom),
@@ -847,6 +898,11 @@ function updateDetail() {
   const binding = sourceBinding(view, graph.all, selected),
     source = detailMode === "source" && binding;
   $("source-code").hidden = !source;
+  if (source?.provenance === "capture-owner") {
+    const note = document.createElement("p");
+    note.textContent = boTranslate("Operation source context · no matching source parameter");
+    $("detail-rows").append(note);
+  }
   $("full-source").hidden = !source;
   if (source) {
     const key = (binding.code_revision || view.manifest.build_id) + ":" + binding.path,
@@ -1055,10 +1111,6 @@ $("edge-hide").onclick = () => {
   select(null);
   applyFilters();
 };
-$("layout-toggle").onclick = () => {
-  $("layout-panel").hidden = !$("layout-panel").hidden;
-  $("layout-toggle").setAttribute("aria-expanded", String(!$("layout-panel").hidden));
-};
 app.canvas.addEventListener("pointerdown", (e) => {
   if (e.button !== 0 || gesture.active) return;
   contextMenu.close();
@@ -1170,20 +1222,21 @@ $("viewport").addEventListener("keydown", (e) => {
 $("fit").onclick = fit;
 $("zoom-in").onclick = () => zoom(1.2);
 $("zoom-out").onclick = () => zoom(1 / 1.2);
-$("arrange").onclick = () => {
-  $("layout-panel").hidden = true;
-  $("layout-toggle").setAttribute("aria-expanded", "false");
-  arrange();
-};
+$("arrange").onclick = () => arrange();
 $("undo-layout").onclick = () => {
-  if (!undo) return;
+  if (!undo || undo.mode !== (spatialActive() ? "3D" : "2D")) return;
   cancelLayout();
-  preferences.positions = Object.assign(Object.create(null), JSON.parse(undo.positions));
-  scale = undo.camera.scale;
-  pan = undo.camera.pan;
+  if (undo.mode === "3D") {
+    preferences.spatial = structuredClone(undo.snapshot);
+    spatial.restore(undo.snapshot);
+  } else {
+    preferences.positions = Object.assign(Object.create(null), JSON.parse(undo.positions));
+    scale = undo.camera.scale;
+    pan = undo.camera.pan;
+    project();
+  }
   undo = null;
   $("undo-layout").disabled = true;
-  project();
   save();
 };
 $("collapse").onclick = () => {
@@ -1202,7 +1255,7 @@ $("expand").onclick = () => {
   const roots = graph.boxes.filter((b) => !b.node.parent).map((b) => b.id);
   for (const id of roots) expanded.add(id);
   project();
-  for (const id of roots) settleExpansion(graph, preferences, id);
+  if (!spatialActive()) for (const id of roots) settleExpansion(graph, preferences, id);
   fit();
   save();
 };
@@ -1314,6 +1367,12 @@ $("show-all").onclick = () => {
   analysisOverride = { ...cleanProfile(), hierarchical: true };
   analysisSettings.advanced = true;
   preferences.filters = emptyFilters();
+  analysisSettings.layers = cleanLayers({
+    ...analysisSettings.layers,
+    only: "all",
+    visible: layers.map((layer) => layer.id),
+  });
+  updateLayerControls();
   updateAnalysisOptions();
   applyFilters();
 };
@@ -1619,7 +1678,6 @@ async function poll() {
         pan = { x: preferences.camera.x, y: preferences.camera.y };
       }
       first = true;
-      $("layout").value = preferences.algorithm;
     }
     const cases = next.available_cases || [];
     if (JSON.stringify([cases, version]) !== $("case").dataset.options) {
@@ -1836,7 +1894,7 @@ function changeAnalysis(id) {
   detailMode = null;
   undo = null;
   $("undo-layout").disabled = true;
-  $("layout").value = preferences.algorithm;
+
   project();
   if (preferences.camera) {
     scale = preferences.camera.scale;

@@ -19,11 +19,21 @@ These files are in assets/stategraph-viewer. Python parsers and language adapter
 
 ## Interaction
 
-- Use **3D** to switch between planar and spatial views. Drag empty space to orbit; right-drag to pan; scroll to dolly. Preset angles, fit and a single-layer selector provide repeatable views.
+- The bottom-left **2D / 3D** switch changes renderer. Entering 3D starts from above; drag empty space to orbit, right-drag to pan, scroll to dolly. **Top view** restores the overhead view. Layer buttons select any combination in either mode; saved single-layer settings migrate without resetting personal positions.
 - Drag a node or the empty area of its region to move its whole branch, preserving layer elevations. Double-click to expand/collapse. Keyboard/context actions share the same IDs and handlers.
-- An expanded owner has a colored volume on its layer and corresponding volumes around its descendants on other layers. Projected regions retain the owner's ID and highlight together. **Projections** hides/shows those guides. Click a layer caption to isolate it.
+- An expanded owner has a colored volume on its layer and corresponding volumes around its descendants on other layers. Projected regions retain the owner's ID and highlight together. Click a layer caption to isolate it; **All** restores every layer. The bottom-right legend follows the active renderer and shares its type-to-geometry definitions.
 - Calls and actual data relations use solid curves. Logical/mapping/containment relations use dashed curves. An observed transfer can display its payload on a curve; static source relations never become executed merely because a nearby anchor ran.
 - Spatial positions/pins and the perspective camera live with personal project preferences. Incremental layout fixes existing positions while placing new nodes. Explicit Arrange releases unpinned coordinates. The independent 2D layout remains intact.
+
+Arrange, undo, fit, zoom and expansion use the same toolbar in both modes. Spatial undo cancels pending layout work before restoring positions and camera. Dragging a label uses the same node/branch identity as dragging its geometry.
+
+## Operations, functions and event fields
+
+The **Data operations** layer contains Q queries, writes, transactions and transformations, together with their selected event fields. A data operation can wrap multiple calls or driver events; it is not a function signature. **Functions and values** contains authored function anchors; **Source code** contains indexed declarations, formal parameters and static calls. Explicit source mapping edges connect these levels.
+
+For example, `inputs.parameters.count` is a selected observation summary. It does not assert that the business function declares a parameter named `count`. `outputs.committed` belongs only to a transaction outcome, never to an individual write that may later roll back. Recorded input/output edges describe payload membership with dashed strokes; actual arguments/calls retain their solid relation types.
+
+When an event field has no explicit source-symbol binding, Source loads the operation owner's complete file as context, scrolls to the owner, and highlights no token. An exact source parameter binding still highlights only its declared range. Do not invent a lexical source location for an adapter-produced value.
 
 ## Rendering and verification
 

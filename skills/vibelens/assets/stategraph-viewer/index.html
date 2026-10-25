@@ -233,57 +233,35 @@
           </div>
           <div id="change-rows"></div>
         </section>
-        <div class="layer-tools">
-          <button id="layered-toggle" aria-pressed="false" title="3D graph">3D</button>
-          <div id="layer-controls" hidden>
-            <select id="layer-camera" aria-label="Camera angle">
-              <option value="angled">Angled</option>
-              <option value="front">Front</option>
-              <option value="side">Side</option>
-              <option value="top">Top</option>
-            </select>
-            <select id="layer-only" aria-label="Visible layer"></select>
-            <label class="projection-control"
-              ><input id="layer-projections" type="checkbox" checked />Projections</label
+        <div class="view-tools">
+          <div class="layer-tools" role="toolbar" aria-label="Graph layers">
+            <button
+              id="layered-toggle"
+              aria-pressed="false"
+              aria-label="Switch to 3D"
+              title="Switch to 3D"
             >
-            <input
-              id="layer-gap"
-              type="range"
-              min="80"
-              max="600"
-              step="20"
-              value="260"
-              aria-label="Layer separation"
-              title="Layer separation"
-            />
+              2D
+            </button>
+            <span class="tool-divider"></span>
+            <button id="layers-all" title="Show all layers" aria-label="Show all layers">
+              All
+            </button>
+            <div id="layer-controls" role="group" aria-label="Visible layers"></div>
+          </div>
+          <div class="canvas-tools" role="toolbar" aria-label="Canvas controls">
+            <button id="arrange" data-icon="layout" aria-label="Arrange" title="Arrange"></button>
+            <button id="top-view" title="Top view" aria-label="Top view">⌃</button>
+            <button id="undo-layout" data-icon="undo" aria-label="Undo layout" disabled></button>
+            <button id="collapse" data-icon="collapse" aria-label="Collapse all"></button>
+            <button id="expand" data-icon="expand" aria-label="Expand one level"></button>
+            <button id="fit" data-icon="fit" aria-label="Fit to canvas"></button>
+            <span class="tool-divider"></span>
+            <button id="zoom-out" data-icon="minus" aria-label="Zoom out"></button>
+            <output id="zoom">100%</output>
+            <button id="zoom-in" data-icon="plus" aria-label="Zoom in"></button>
           </div>
         </div>
-        <div class="canvas-tools" role="toolbar" aria-label="Canvas controls">
-          <button
-            id="layout-toggle"
-            data-icon="layout"
-            aria-label="Layout"
-            aria-expanded="false"
-            aria-controls="layout-panel"
-          ></button>
-          <button id="undo-layout" data-icon="undo" aria-label="Undo layout" disabled></button>
-          <button id="collapse" data-icon="collapse" aria-label="Collapse all"></button>
-          <button id="expand" data-icon="expand" aria-label="Expand one level"></button>
-          <button id="fit" data-icon="fit" aria-label="Fit to canvas"></button>
-          <span class="tool-divider"></span>
-          <button id="zoom-out" data-icon="minus" aria-label="Zoom out"></button>
-          <output id="zoom">100%</output>
-          <button id="zoom-in" data-icon="plus" aria-label="Zoom in"></button>
-        </div>
-        <section id="layout-panel" class="small-popover" hidden aria-label="Layout settings">
-          <label for="layout">Layout</label>
-          <select id="layout" aria-label="Layout algorithm">
-            <option value="cluster">Circular groups</option>
-            <option value="layered">Layered layout</option>
-            <option value="stress">Relationship layout</option>
-          </select>
-          <button id="arrange">Arrange</button>
-        </section>
         <button
           id="selection-menu"
           data-icon="more"
@@ -315,6 +293,7 @@
           </div>
         </section>
         <aside id="legend-panel" aria-label="Legend">
+          <span id="legend-mode">2D</span>
           <div id="legend-types" aria-label="Visible node types"></div>
           <div class="legend relation-legend" aria-label="Visible edge types"></div>
           <div class="marker-legend">

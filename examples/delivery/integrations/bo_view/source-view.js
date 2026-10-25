@@ -1,6 +1,7 @@
 /** Full files are fetched on demand; graph bindings only supply source locations. */
 export function sourceLines(source, binding) {
-  const selection = binding.selection;
+  const context = binding.provenance === "capture-owner";
+  const selection = context ? null : binding.selection;
   return source.split("\n").map((text, index) => {
     const number = index + 1;
     if (selection && number >= selection.line && number <= selection.end_line) {
@@ -18,10 +19,17 @@ export function sourceLines(source, binding) {
       };
     }
     const active =
+      !context &&
       !selection &&
       number >= (binding.line || 1) &&
       number <= (binding.end_line || binding.line || 1);
-    return { number, text, active, parts: [{ text, marked: active }] };
+    return {
+      number,
+      text,
+      active,
+      anchor: context && number === binding.line,
+      parts: [{ text, marked: active }],
+    };
   });
 }
 
@@ -35,7 +43,7 @@ export function renderSource(host, source, binding) {
   };
   for (const row of sourceLines(source, binding)) {
     const prefix = String(row.number).padStart(4) + "  ";
-    if (!row.active) {
+    if (!row.active && !row.anchor) {
       block += prefix + row.text + "\n";
       continue;
     }

@@ -91,7 +91,7 @@ for (const type of [
   assert.equal(relationStyle({ type }).dash.length, 0, type);
 for (const type of ["guard", "flow", "transition", "maps", "references", "contains"])
   assert.ok(relationStyle({ type }).dash.length, type);
-assert.equal(relationStyle(fields.edges[0]).label, "Recorded field");
+assert.equal(relationStyle(fields.edges[0]).label, "Recorded input");
 assert.ok(relationStyle(fields.edges[0]).dash.length);
 
 const nodes = [
@@ -156,7 +156,7 @@ assert.deepEqual(
   ["fn"],
 );
 assert.equal(single.edges.length, 0);
-assert.equal(cleanLayers({ gap: NaN, camera: "__proto__" }).camera, "angled");
+assert.equal(cleanLayers({ gap: NaN, camera: "__proto__" }).camera, "top");
 console.log(
   "PASS: capture provenance, nested values, quiet captions, edge meaning, real 3D layout, containment projections, stable positions and cross-layer runtime anchors.",
 );

@@ -51,6 +51,14 @@ async function expand(id) {
   await page.click("#node-expand");
   await page.waitForTimeout(180);
 }
+async function isolateLayer(id) {
+  await page.click("#layers-all");
+  const ids = await page
+    .locator("#layer-controls button")
+    .evaluateAll((items) => items.map((e) => e.dataset.layer));
+  for (const other of ids)
+    if (other !== id) await page.click(`#layer-controls [data-layer="${other}"]`);
+}
 async function shot(name) {
   await page.screenshot({ path: path.join(output, name + ".png"), fullPage: true });
 }
@@ -93,7 +101,27 @@ try {
   assert.match(await page.locator("#detail-rows").innerText(), /outputs.status/);
   assert.match(await page.locator("#detail-rows").innerText(), /collection owner/);
   assert.match(await page.locator("#source-code").innerText(), /\d+\s+def publish/);
+  assert.equal(
+    await page.locator("#source-code mark").count(),
+    0,
+    "Event fields must not highlight a function as a parameter",
+  );
   await shot("capture-owner");
+  await page.keyboard.press("Escape");
+  await expand("save");
+  assert.equal(
+    await page.locator('#semantic [data-node-id="field:save:out:committed"]').count(),
+    0,
+  );
+  await pick("field:save:out:status");
+  await page.click("#selection-menu");
+  await page.click("#source");
+  assert.match(await page.locator("#source-code").innerText(), /def save_pictures/);
+  assert.equal(await page.locator("#source-code mark").count(), 0);
+  checks.operationFieldsAreNotSourceParameters = true;
+  await shot("write-operation-source-context");
+  await page.keyboard.press("Escape");
+  await expand("save");
   await page.keyboard.press("Escape");
   checks.stateLinks = await page.evaluate(() =>
     graphDebug.graph.rawEdges
@@ -109,7 +137,20 @@ try {
   checks.initial3D = await page.evaluate(() => graphDebug.spatial);
   assert.ok(checks.initial3D.webgl);
   assert.ok(checks.initial3D.volumes.some((v) => v.projection));
-  await shot("3d-angled");
+  const delta = checks.initial3D.camera.position.map(
+    (v, i) => v - checks.initial3D.camera.target[i],
+  );
+  assert.ok(
+    delta[1] > 0 && Math.hypot(delta[0], delta[2]) / delta[1] < 0.001,
+    "3D starts from above",
+  );
+  assert.equal(await page.locator("#legend-panel").getAttribute("data-mode"), "3D");
+  assert.ok((await page.locator('#legend-types svg[data-mode="3D"]').count()) > 0);
+  assert.equal(
+    await page.locator("#layer-camera, #layer-only, #layer-gap, #layout-panel").count(),
+    0,
+  );
+  await shot("3d-top");
   const camera = await page.evaluate(() => graphDebug.spatial.camera.position);
   await page.mouse.move(1000, 650);
   await page.mouse.down();
@@ -117,25 +158,31 @@ try {
   await page.mouse.up();
   await page.waitForTimeout(350);
   assert.notDeepEqual(await page.evaluate(() => graphDebug.spatial.camera.position), camera);
-  await page.selectOption("#layer-camera", "side");
-  await page.selectOption("#layer-only", "execution");
+  await isolateLayer("operations");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.ok(
     await page.evaluate(() =>
       [...document.querySelectorAll("#semantic [data-node-id]")].every(
-        (e) => e.dataset.plane === "execution",
+        (e) => e.dataset.plane === "operations",
       ),
     ),
   );
-  await page.selectOption("#layer-only", "all");
+  await page.click("#layers-all");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   await page.click("#layered-toggle");
+  assert.equal(await page.locator("#legend-panel").getAttribute("data-mode"), "2D");
+  await isolateLayer("state");
+  assert.ok(
+    await page.evaluate(() => graphDebug.displayGraph.boxes.every((b) => b.type === "state")),
+  );
+  await page.click("#layers-all");
+  checks.sharedLayerControls = true;
   assert.deepEqual(
     await page.evaluate(() => graphDebug.graph.boxes.map((b) => [b.id, b.x, b.y])),
     before,
   );
   await page.click("#layered-toggle");
-  await page.selectOption("#layer-camera", "front");
+  await page.click("#top-view");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   await pick("load");
   await page
@@ -167,17 +214,57 @@ try {
   );
   await page.reload();
   await page.waitForFunction(() => graphDebug?.spatial?.perspective && !graphDebug.layoutBusy);
-  assert.equal(await page.locator("#layer-camera").inputValue(), "front");
+  assert.equal(await page.locator("#layered-toggle").innerText(), "3D");
   const restored = await page.evaluate(() => graphDebug.spatialPositions.load);
   assert.ok(Math.abs(restored.x - after.positions.load.x) < 0.001);
   assert.ok(Math.abs(restored.z - after.positions.load.z) < 0.001);
   checks.roundTrip = true;
-  await page.click("#fit");
+  await isolateLayer("operations");
+  await page.click('#layer-controls [data-layer="state"]');
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
+    "operations",
+    "state",
+  ]);
+  await page.reload();
+  await page.waitForFunction(() => graphDebug?.spatial?.perspective && !graphDebug.layoutBusy);
+  assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
+    "operations",
+    "state",
+  ]);
+  await page.click("#layered-toggle");
+  assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
+    "operations",
+    "state",
+  ]);
+  assert.equal(await page.locator("#legend-panel").getAttribute("data-mode"), "2D");
+  await page.click("#show-all");
+  assert.ok((await page.locator('#layer-controls button[aria-pressed="false"]').count()) === 0);
+  await page.click("#layered-toggle");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  checks.multiLayerPersistence = true;
+  const beforeArrange = await page.evaluate(() => graphDebug.spatialPositions);
+  await page.click("#arrange");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  await page.click("#undo-layout");
+  assert.deepEqual(await page.evaluate(() => graphDebug.spatialPositions), beforeArrange);
+  checks.spatialUndo = true;
+  await isolateLayer("business");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
   await page.waitForTimeout(250);
   const groupBefore = await page.evaluate(() => graphDebug.spatialPositions);
   const groupPoint = await page
     .locator('#semantic [data-node-id="publish"]')
     .evaluate((e) => ({ x: +e.dataset.screenX, y: +e.dataset.screenY }));
+  checks.groupHit = await page.evaluate((p) => {
+    const e = document.elementFromPoint(p.x, p.y);
+    return {
+      point: p,
+      tag: e?.tagName,
+      label: e?.closest("[data-spatial-label]")?.dataset.spatialLabel,
+      text: e?.textContent?.slice(0, 80),
+    };
+  }, groupPoint);
   await page.mouse.move(groupPoint.x, groupPoint.y);
   await page.mouse.down();
   await page.mouse.move(groupPoint.x + 48, groupPoint.y + 16, { steps: 8 });
@@ -186,10 +273,34 @@ try {
   const groupAfter = await page.evaluate(() => graphDebug.spatialPositions);
   const dx = groupAfter.publish.x - groupBefore.publish.x,
     dz = groupAfter.publish.z - groupBefore.publish.z;
+  checks.movedAfterGroup = Object.keys(groupAfter).filter(
+    (id) => JSON.stringify(groupBefore[id]) !== JSON.stringify(groupAfter[id]),
+  );
+  checks.pickedAfterGroup = await page
+    .locator('#semantic [aria-pressed="true"]')
+    .getAttribute("data-node-id");
   assert.ok(Math.hypot(dx, dz) > 1);
   assert.ok(Math.abs(groupAfter.load.x - groupBefore.load.x - dx) < 0.001);
   assert.ok(Math.abs(groupAfter.transaction.z - groupBefore.transaction.z - dz) < 0.001);
   checks.groupDrag = true;
+  await page.click("#layers-all");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  await pick("publish");
+  await page.waitForTimeout(180);
+  const label = page.locator('[data-spatial-label="publish"]');
+  const labelBox = await label.boundingBox();
+  assert.ok(labelBox, "Selected group label remains visible");
+  const labelBefore = await page.evaluate(() => graphDebug.spatialPositions.publish);
+  await page.mouse.move(labelBox.x + 5, labelBox.y + 5);
+  await page.mouse.down();
+  await page.mouse.move(labelBox.x + 35, labelBox.y + 15, { steps: 6 });
+  await page.mouse.up();
+  await page.waitForTimeout(150);
+  assert.notDeepEqual(await page.evaluate(() => graphDebug.spatialPositions.publish), labelBefore);
+  checks.labelDrag = true;
+  await isolateLayer("business");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  await page.waitForTimeout(180);
   // Double-click actual perspective geometry, rather than a hidden semantic control.
   const collapsePoint = await page
     .locator('#semantic [data-node-id="publish"]')
@@ -212,6 +323,7 @@ try {
       "true",
   );
   checks.perspectiveExpansion = true;
+  await page.click("#layers-all");
   await page.click("#layered-toggle");
   await page.click("#record-start");
   await request("/demo/run", { rollback: false });
@@ -231,7 +343,7 @@ try {
   assert.equal(await page.locator("#layered-toggle").innerText(), "3D");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(200);
-  await page.selectOption("#layer-only", "execution");
+  await isolateLayer("operations");
   await page.waitForTimeout(200);
   assert.ok(
     await page
@@ -247,8 +359,23 @@ try {
       ),
   );
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+  const bounds = await page.evaluate(() => ({
+    legend: document.querySelector("#legend-panel").getBoundingClientRect().toJSON(),
+    tools: document.querySelector(".view-tools").getBoundingClientRect().toJSON(),
+  }));
+  assert.ok(
+    bounds.legend.bottom <= bounds.tools.top - 4,
+    "The mobile legend must stay above the controls",
+  );
   await shot("layers-mobile-zh");
   checks.languageAndMobile = true;
+  const live = await request("/api/view");
+  const commits = live.events.filter((e) => e.node === "transaction" && e.phase === "commit");
+  assert.ok(commits.some((e) => e.outputs.committed === true));
+  assert.ok(
+    live.events.filter((e) => e.node === "save").every((e) => !("committed" in (e.outputs || {}))),
+  );
+  checks.actualTransactionOutcomes = true;
   assert.deepEqual(errors, []);
   await writeFile(
     path.join(output, "result.json"),

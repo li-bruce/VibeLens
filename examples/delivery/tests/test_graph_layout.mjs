@@ -35,7 +35,7 @@ renamed.events.push({...exactFrame,node:'custom.checks',seq:10001,id:'same-revis
 assert.deepEqual(selectedEvents(renamed,'latest',String(wait.seq)),earlyEvents,'a later reevaluation cannot leak into an earlier frame with the same revision');
 renamed.events=renamed.events.filter(e=>e.node!=='custom.checks'||e.outputs.revision!==wait.seq);
 assert.deepEqual(selectedEvents(renamed,'latest',String(wait.seq)),[],'missing exact frame evidence remains unknown');
-assert.equal(sourceBinding(view,graph.all,'field:checksum:out:checksum'),view.manifest.bindings.checksum,'parameter source is its captured function');
+assert.deepEqual(sourceBinding(view,graph.all,'field:checksum:out:checksum'), {...view.manifest.bindings.checksum, selection:undefined, provenance:'capture-owner'}, 'event fields keep the complete owner binding as context, without claiming a lexical parameter');
 assert.equal(sourceBinding(view,graph.all,'missing'),undefined);
 const callIdentity={node:'fn',call_id:'c1',run_id:'r1',attempt:'a1',entity:'d1',build_id:'b1',model_revision:'m1',basis:{param_version:1}};
 const valuesEvents=[{...callIdentity,inputs:{version:1},outputs:{}},{...callIdentity,inputs:{length:3},outputs:{passed:true}}];

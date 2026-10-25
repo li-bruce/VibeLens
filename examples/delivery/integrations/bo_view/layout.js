@@ -440,7 +440,11 @@ export const relationStyles = {
 export function relationStyle(edge) {
   const members = edge.members || [edge];
   if (members.length && members.every((m) => m.origin === "capture-field"))
-    return { ...relationStyles.data, label: boTranslate("Recorded field"), dash: [3, 5] };
+    return {
+      ...relationStyles.data,
+      label: members[0].label || boTranslate("Recorded field"),
+      dash: [3, 5],
+    };
   return relationStyles[edge.type] || relationStyles.other;
 }
 // Folding projects endpoints in graph-core. Keep already-visible inner endpoints:

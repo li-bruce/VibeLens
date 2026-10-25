@@ -103,7 +103,13 @@ try {
     "browser locale does not override English default",
   );
   assert.equal(await page.locator("#title").textContent(), "VibeLens");
-  assert.equal(await page.locator(".view-tools").count(), 0);
+  // Node actions stay in the context menu; this bottom toolbar contains only
+  // view controls shared by both renderers.
+  assert.equal(
+    await page.locator(".view-tools #pin, .view-tools #source, .view-tools #annotate").count(),
+    0,
+  );
+  assert.equal(await page.locator(".view-tools #layered-toggle").count(), 1);
   for (const id of ["record-start", "record-stop", "record-clear"]) {
     assert.equal(await page.locator("#" + id + " svg").count(), 1);
     assert.ok(await page.locator("#" + id).getAttribute("aria-label"));

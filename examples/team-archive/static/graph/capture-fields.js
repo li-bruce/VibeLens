@@ -26,6 +26,7 @@ export function captureFields(owner) {
       event_node: owner.event_node || owner.id,
       origin: "capture-field",
       capture_role: diagnostic ? "diagnostic" : "value",
+      capture_owner_role: owner.data_role,
       ...(diagnostic ? { analysis_level: "advanced" } : {}),
       summary: t(direction === "in" ? "Recorded input" : "Recorded output"),
     });
@@ -34,7 +35,7 @@ export function captureFields(owner) {
       from: direction === "in" ? id : parent,
       to: direction === "in" ? parent : id,
       type: "data",
-      label: t(path.length ? "Field" : "Recorded field"),
+      label: t(path.length ? "Field" : direction === "in" ? "Recorded input" : "Recorded output"),
       origin: "capture-field",
     });
     if (record)
@@ -42,7 +43,18 @@ export function captureFields(owner) {
         add(direction, field, child, [...path, key], id, diagnostic);
   }
   for (const [direction, fields] of Object.entries(owner.capture || {}))
-    for (const [field, spec] of Object.entries(fields)) add(direction, field, spec);
+    for (const [field, spec] of Object.entries(fields)) {
+      // Older declarations listed transaction-only outcomes on every query.
+      // Keep those historic files readable without presenting nonexistent values.
+      if (
+        database &&
+        field === "committed" &&
+        owner.data_metadata?.action &&
+        owner.data_metadata.action !== "transaction"
+      )
+        continue;
+      add(direction, field, spec);
+    }
   return { nodes, edges };
 }
 
@@ -68,11 +80,13 @@ export function nodeExplanation(node, all) {
     return [
       t("Recorded field: {0}", path),
       t("Collected during: {0}", owner?.label || node.event_node),
-      t("Source opens the collection owner; this field may be produced by the adapter."),
+      t("Source context: collection owner. This event field has no declared source symbol."),
       ...(node.capture_role === "diagnostic" ? [t("Collection metadata")] : []),
     ];
   }
   const result = [];
+  if (["query", "transform"].includes(node.data_role))
+    result.push(t("Data operation · {0}", node.data_metadata?.action || node.data_role));
   if (node.summary) result.push(node.summary);
   if (node.code_role) result.push(t("Static source declaration"));
   if (node.source?.symbol) result.push(`${node.source.path} · ${node.source.symbol}`);

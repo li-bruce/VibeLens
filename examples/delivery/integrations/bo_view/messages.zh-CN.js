@@ -1,5 +1,19 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "Value": "值",
+  "Selected value or event field": "选定值或事件记录字段",
+  "Graph layers": "图层",
+  "Visible layers": "显示图层",
+  "Show all layers": "显示所有图层",
+  "All": "全部",
+  "Switch to 2D": "切换到二维",
+  "Switch to 3D": "切换到三维",
+  "Data operations": "数据操作",
+  "Top view": "俯视",
+  "Source context: collection owner. This event field has no declared source symbol.":
+    "源码显示采集所属操作的上下文，此记录字段没有声明对应的源码符号。",
+  "Operation source context · no matching source parameter": "操作源码上下文 · 未绑定对应源码参数",
+  "Data operation · {0}": "数据操作 · {0}",
   "Code structure": "代码结构",
   "Local code": "局部代码",
   "Load more code": "加载更多代码节点",

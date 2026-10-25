@@ -2,6 +2,7 @@ import * as T from "./spatial-three.vendor.js";
 import { spatialModel, containmentVolumes, descendants, nodeElevation } from "./spatial-model.js";
 import { cleanLayers } from "./graph-layers.js";
 import { nodeTypes } from "./graph-core.js";
+import { spatialShape } from "./glyphs.js";
 import { relationStyle, displayName, annotationFor } from "./layout.js";
 import { t } from "./i18n.js";
 
@@ -11,7 +12,7 @@ const cameraDirections = {
   angled: [1.2, 0.85, 1.5],
   front: [0, 0.2, 2],
   side: [2, 0.3, 0.1],
-  top: [0.01, 2, 0.01],
+  top: [0, 2, 0.0001],
 };
 
 /** Owns the real WebGL scene and nothing in the business/state model.
@@ -60,7 +61,9 @@ export class SpatialRenderer {
         this.callbacks.onError?.(data.error);
         return;
       }
-      this.positions = data.positions;
+      // A solve covers only visible nodes. Keep folded/filtered positions so
+      // hiding a layer cannot erase a layout or break whole-branch movement.
+      this.positions = { ...this.positions, ...data.positions };
       this.layoutMs = data.elapsed;
       this.rebuild();
       if (this.pendingFit) {
@@ -195,7 +198,7 @@ export class SpatialRenderer {
       positions: existing,
       arrange,
     });
-    this.settled = new Set(this.model.nodes.map((n) => n.id));
+    this.settled = new Set([...(this.settled || []), ...this.model.nodes.map((n) => n.id)]);
   }
 
   /** Dispose replaced topology/position buffers once; runtime colors reuse them. */
@@ -326,6 +329,7 @@ export class SpatialRenderer {
       }
       label.title = displayName(box.node, preferences);
       label.dataset.nodeId = node.id;
+      label.onpointerdown = (event) => this.startDrag(event, { id: node.id });
       label.onclick = () => this.callbacks.onSelect?.(node.id);
       label.ondblclick = () => this.callbacks.onToggle?.(node.id);
       this.labels.append(label);
@@ -336,6 +340,7 @@ export class SpatialRenderer {
       const label = document.createElement("div");
       label.className = "spatial-label projection";
       label.textContent = this.model.byId.get(volume.id).label + " ↕";
+      label.onpointerdown = (event) => this.startDrag(event, { region: volume.id });
       label.onclick = () => this.callbacks.onSelect?.(volume.id);
       this.labels.append(label);
       this.labelItems.push({ el: label, position: volume.center, offset: -25 });
@@ -346,15 +351,12 @@ export class SpatialRenderer {
 
   nodeGeometry(type) {
     const dense = this.model.nodes.length > 2000;
-    if (["data", "code-parameter"].includes(type))
-      return new T.CapsuleGeometry(0.6, 0.7, 5, 10).rotateZ(Math.PI / 2);
-    if (["decision", "code-unresolved"].includes(type)) return new T.OctahedronGeometry(1);
-    if (["function", "code-function", "transform"].includes(type))
-      return new T.IcosahedronGeometry(1, 0);
-    if (["store", "query", "resource"].includes(type))
-      return new T.CylinderGeometry(0.85, 0.85, 1.5, dense ? 10 : 18);
-    if (["dataset", "column", "code-file", "code-class", "effect"].includes(type))
-      return new T.BoxGeometry(1.4, 1.4, 1.4);
+    const shape = spatialShape(type);
+    if (shape === "capsule") return new T.CapsuleGeometry(0.6, 0.7, 5, 10).rotateZ(Math.PI / 2);
+    if (shape === "octahedron") return new T.OctahedronGeometry(1);
+    if (shape === "icosahedron") return new T.IcosahedronGeometry(1, 0);
+    if (shape === "cylinder") return new T.CylinderGeometry(0.85, 0.85, 1.5, dense ? 10 : 18);
+    if (shape === "box") return new T.BoxGeometry(1.4, 1.4, 1.4);
     return new T.SphereGeometry(1, dense ? 12 : 20, dense ? 8 : 12);
   }
 
@@ -610,9 +612,10 @@ export class SpatialRenderer {
         new T.Vector3(),
       );
       if (point && Math.hypot(point.x - volume.center.x, point.z - volume.center.z) < volume.radius)
-        under.push(volume);
+        under.push({ ...volume, distance: point.distanceTo(this.raycaster.ray.origin) });
     }
-    if (under.length) return { region: under.sort((a, b) => a.radius - b.radius)[0].id };
+    if (under.length)
+      return { region: under.sort((a, b) => a.distance - b.distance || a.radius - b.radius)[0].id };
     // Curves are tested only on an explicit click, never during pointer movement.
     for (const edge of this.model?.edges || []) {
       const curve = this.curves.get(edge.id);
@@ -625,29 +628,40 @@ export class SpatialRenderer {
     return null;
   }
 
+  /** Labels and meshes share dragging, so text never starts a browser selection. */
+  startDrag(event, hit) {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    const id = hit?.id || hit?.region;
+    this.pointer = { x: event.clientX, y: event.clientY, id, hit, moved: false };
+    if (!id) return;
+    const rect = this.canvas.getBoundingClientRect();
+    this.raycaster.setFromCamera(
+      new T.Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        1 - ((event.clientY - rect.top) / rect.height) * 2,
+      ),
+      this.camera,
+    );
+    this.callbacks.onSelect?.(id);
+    this.controls.enabled = false;
+    const normal = this.camera.getWorldDirection(new T.Vector3());
+    this.dragPlane = new T.Plane().setFromNormalAndCoplanarPoint(
+      normal,
+      vector(this.positions[id]),
+    );
+    this.dragOrigin = this.raycaster.ray.intersectPlane(this.dragPlane, new T.Vector3());
+    this.dragPositions = structuredClone(this.positions);
+    this.dragIds = this.branch(id);
+    this.canvas.setPointerCapture(event.pointerId);
+    event.stopImmediatePropagation();
+  }
+
   installPointer() {
     // Capture runs before OrbitControls: dragging a node/group does not orbit the camera.
     this.canvas.addEventListener(
       "pointerdown",
-      (event) => {
-        if (event.button !== 0) return;
-        const hit = this.pick(event.clientX, event.clientY),
-          id = hit?.id || hit?.region;
-        this.pointer = { x: event.clientX, y: event.clientY, id, hit, moved: false };
-        if (!id) return;
-        this.callbacks.onSelect?.(id);
-        this.controls.enabled = false;
-        const normal = this.camera.getWorldDirection(new T.Vector3());
-        this.dragPlane = new T.Plane().setFromNormalAndCoplanarPoint(
-          normal,
-          vector(this.positions[id]),
-        );
-        this.dragOrigin = this.raycaster.ray.intersectPlane(this.dragPlane, new T.Vector3());
-        this.dragPositions = structuredClone(this.positions);
-        this.dragIds = this.branch(id);
-        this.canvas.setPointerCapture(event.pointerId);
-        event.stopImmediatePropagation();
-      },
+      (event) => this.startDrag(event, this.pick(event.clientX, event.clientY)),
       true,
     );
     this.canvas.addEventListener("pointermove", (event) => {
@@ -715,7 +729,7 @@ export class SpatialRenderer {
     return this.positions[id] ? this.screen(this.positions[id]) : null;
   }
 
-  fit(id = null, angle = this.settings?.camera || "angled") {
+  fit(id = null, angle = this.settings?.camera || "top") {
     if (!this.model) return;
     const ids = id ? descendants(this.model, id) : new Set(this.model.nodes.map((n) => n.id));
     const points = [...ids]
@@ -864,10 +878,24 @@ export class SpatialRenderer {
       camera: { position: this.camera.position.toArray(), target: this.controls.target.toArray() },
     };
   }
+  /** Cancel an in-flight solve before restoring a user's previous spatial layout. */
+  restore(snapshot) {
+    this.epoch++;
+    this.busy = false;
+    this.pendingFit = false;
+    this.positions = structuredClone(snapshot.positions);
+    this.settled = new Set(Object.keys(this.positions));
+    this.camera.position.fromArray(snapshot.camera.position);
+    this.controls.target.fromArray(snapshot.camera.target);
+    this.controls.update();
+    this.rebuild();
+    this.callbacks.onSave?.();
+  }
   get diagnostics() {
     const sorted = [...this.frames].sort((a, b) => a - b);
     return {
       renderer: "Three.js",
+      nodeRendering: "instanced-mesh",
       perspective: this.camera.isPerspectiveCamera,
       webgl: !!this.renderer.getContext(),
       nodes: this.model?.nodes.length || 0,

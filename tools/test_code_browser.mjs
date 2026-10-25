@@ -223,7 +223,12 @@ try {
   await pick(endpoint.id);
   if ((await page.getAttribute("#layered-toggle", "aria-pressed")) !== "true")
     await page.click("#layered-toggle");
-  await page.selectOption("#layer-only", "api");
+  await page.click("#layers-all");
+  const layerIds = await page
+    .locator("#layer-controls button")
+    .evaluateAll((items) => items.map((e) => e.dataset.layer));
+  for (const id of layerIds)
+    if (id !== "api") await page.click(`#layer-controls [data-layer="${id}"]`);
   await page.click("#fit");
   await page.waitForFunction(
     () =>
@@ -237,7 +242,7 @@ try {
     ),
   );
   await shot("04-api-registration-layer");
-  await page.selectOption("#layer-only", "all");
+  await page.click("#layers-all");
   if (process.env.BO_SPATIAL_TEST !== "1") await page.click("#layered-toggle");
   await unlink(routeFile);
   await page.waitForFunction(

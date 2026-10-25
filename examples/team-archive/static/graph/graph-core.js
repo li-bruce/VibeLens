@@ -98,7 +98,11 @@ export function sourceBinding(view, all, id) {
   const node = all?.get(id);
   if (node?.referenceOf)
     return view?.manifest.bindings[node.referenceOf] || view?.manifest.bindings[node.event_node];
-  return node?.field ? view?.manifest.bindings[node.event_node || node.parent] : undefined;
+  if (!node?.field) return undefined;
+  const owner = view?.manifest.bindings[node.event_node || node.parent];
+  // An event JSON path is not a lexical symbol. Show the owner's full file as
+  // context, but never highlight it as the definition of an adapter field.
+  return owner ? { ...owner, selection: undefined, provenance: "capture-owner" } : undefined;
 }
 export function nodeEvents(node, events) {
   return events.filter((e) => e.node === (node.event_node || node.id));
@@ -424,7 +428,7 @@ export function lines(node, view, events, choice, configuration = null) {
     for (const [key, t] of Object.entries(spec)) {
       if (!(key in vals) || key === "state") continue;
       result.push({
-        text: `${direction === "in" ? boTranslate("Parameter") : boTranslate("Return")} ${key}: ${typeName(t)} = ${compact(vals[key])}`,
+        text: `${direction === "in" ? boTranslate("Input") : boTranslate("Output")} ${key}: ${typeName(t)} = ${compact(vals[key])}`,
         role: vals[key] === false ? "bad" : "value",
       });
     }
@@ -463,7 +467,7 @@ export const nodeTypes = {
   state: { label: boTranslate("State"), glyph: "S", color: 0x9869a0 },
   decision: { label: boTranslate("Decision"), glyph: "?", color: 0xaf8029 },
   resource: { label: boTranslate("Resource"), glyph: "R", color: 0x7b8845 },
-  data: { label: boTranslate("Parameter"), glyph: "x", color: 0x627f9c },
+  data: { label: boTranslate("Value"), glyph: "x", color: 0x627f9c },
   effect: { label: boTranslate("Effect"), glyph: "✓", color: 0x2d8a70 },
   wait: { label: boTranslate("Wait"), glyph: "…", color: 0xb38442 },
   store: { label: boTranslate("Database"), glyph: "DB", color: 0x426b9a },

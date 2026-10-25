@@ -161,7 +161,7 @@ def capture_spec(operation):
             "unknown_targets": ["string"],
             "input_count": "number",
             "output_count": "number",
-            "committed": "boolean",
+            **({"committed": "boolean"} if operation["action"] == "transaction" else {}),
             "target_source": "string",
             "target_access": [{"target": "string", "action": "string"}],
         },
