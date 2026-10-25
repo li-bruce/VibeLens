@@ -212,6 +212,12 @@ def validate_runtime_definition(
     if guard_names is not None and set(chart.get("guards", {})) - set(guard_names):
         raise ValueError("declared guard is missing from loaded executor")
     states, parents = state_tree(chart)
+    if engine != "bo.fsm" and "values" in chart and (
+        not isinstance(chart["values"], list)
+        or len(chart["values"]) != len(states)
+        or set(chart["values"]) != set(states)
+    ):
+        raise ValueError("state values must exactly cover executable states")
     if engine == "bo.fsm":
         if (
             chart.get("version") != "1"

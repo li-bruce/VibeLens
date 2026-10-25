@@ -947,89 +947,190 @@ footer {
   }
 }
 
+/* A shared centered control bar leaves the graph's side axes available. */
 .view-tools {
   position: absolute;
-  left: 12px;
+  left: 50%;
   bottom: 12px;
+  transform: translateX(-50%);
   z-index: 5;
-  display: grid;
-  gap: 6px;
   max-width: calc(100% - 24px);
+  width: max-content;
 }
 .view-tools .canvas-tools {
   position: static;
-  width: max-content;
-  max-width: 100%;
-}
-.layer-tools,
-#layer-controls {
   display: flex;
-  align-items: center;
-  gap: 3px;
-}
-.layer-tools {
+  flex-wrap: wrap;
+  justify-content: center;
   width: max-content;
   max-width: 100%;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background: #ffffffef;
-}
-#layer-controls {
-  flex-wrap: wrap;
-}
-#layer-controls button {
-  font-size: 10px;
-  padding: 4px 7px;
-  min-height: 28px;
-  border: 1px solid transparent;
-  opacity: 0.45;
-}
-#layer-controls button[aria-pressed="true"] {
-  opacity: 1;
-  background: color-mix(in srgb, var(--layer-color) 12%, white);
-  border-color: color-mix(in srgb, var(--layer-color) 35%, white);
-}
-#layer-controls button::before {
-  content: "";
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-right: 5px;
-  border-radius: 50%;
-  background: var(--layer-color);
+  padding: 5px 7px;
+  gap: 2px;
+  box-shadow: 0 3px 16px #2434450b;
+  border-radius: 10px;
 }
 #layered-toggle {
   font-weight: 650;
   color: #2c5fa7;
   min-width: 36px;
 }
-#legend-mode {
+.layer-spacing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  padding: 0 5px;
+}
+#layer-gap {
+  width: 95px;
+  accent-color: #638b98;
+}
+.layer-drawer {
+  position: absolute;
+  left: 10px;
+  top: 62px;
+  z-index: 5;
+  display: grid;
+  width: 34px;
+  padding: 3px;
+  border: 1px solid #dce3e9;
+  border-radius: 9px;
+  background: #ffffffde;
+  overflow: hidden;
+  transition: width 130ms ease;
+  box-shadow: 0 2px 10px #24344508;
+}
+.layer-drawer:is(:hover, :focus-within, .is-open) {
+  width: 159px;
+}
+#layer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+#layer-controls button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 28px;
+  width: 100%;
+  font-size: 10px;
+  padding: 5px 8px;
+  opacity: 0.4;
+  border: 1px solid transparent;
+  text-align: left;
+}
+#layer-controls button::before {
+  content: "";
   display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--layer-color);
+  flex-shrink: 0;
+}
+#layer-controls button[aria-pressed="true"] {
+  opacity: 1;
+  background: color-mix(in srgb, var(--layer-color) 9%, white);
+}
+.layer-label {
+  white-space: nowrap;
+}
+#layers-toggle,
+#layers-all {
+  padding: 3px;
+  width: 28px;
+  min-height: 28px;
+  font-size: 18px;
+  color: #63809b;
+}
+#hierarchy-path {
+  top: 10px;
+  left: 12px;
+  flex-wrap: nowrap;
+  max-width: calc(100% - 190px);
+  overflow-x: auto;
+  background: #ffffffb8;
+}
+#hierarchy-path button {
+  flex-shrink: 0;
+  max-width: 180px;
+}
+#legend-panel,
+.is-replay #legend-panel {
+  top: 10px;
+  right: 10px;
+  bottom: auto;
+  left: auto;
+  width: 142px;
+  max-width: 32%;
+  max-height: calc(100% - var(--view-tools-height, 65px) - 45px);
+  background: #ffffffcf;
+  padding: 7px 8px;
+  gap: 6px;
+}
+#legend-types,
+.relation-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-wrap: nowrap;
+}
+#legend-types > div,
+.relation-legend > span {
+  display: flex;
+  font-size: 10px;
+  white-space: normal;
+  gap: 5px;
+}
+#legend-types :is(svg, img) {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+#legend-mode {
   color: var(--muted);
   font-size: 10px;
   text-align: right;
 }
-@media (max-width: 1280px) {
-  body:not(.is-replay) #legend-panel {
-    bottom: calc(var(--view-tools-height, 140px) + 24px);
-  }
+.marker-legend {
+  flex-wrap: wrap;
+  gap: 7px;
 }
-@media (max-width: 600px) {
-  .layer-tools {
-    align-items: flex-start;
+@media (max-width: 640px) {
+  .view-tools {
+    width: calc(100% - 16px);
   }
-  #layer-controls {
-    max-width: 240px;
+  .view-tools .canvas-tools {
+    width: 100%;
   }
-  #layer-controls button {
-    padding: 3px 5px;
+  #layer-gap {
+    width: 70px;
   }
-}
-
-@media (max-width: 600px) {
+  .layer-drawer {
+    left: 7px;
+    top: 54px;
+  }
+  #legend-panel,
+  .is-replay #legend-panel {
+    display: grid;
+    width: 104px;
+    right: 7px;
+    max-width: 29%;
+    max-height: calc(100% - var(--view-tools-height, 95px) - 50px);
+  }
+  #legend-types > div,
+  .relation-legend > span {
+    font-size: 9px;
+  }
   #hierarchy-path {
-    top: 96px;
+    max-width: calc(100% - 135px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .layer-drawer {
+    transition: none;
   }
 }
 
@@ -1077,37 +1178,41 @@ footer {
 }
 .spatial-label {
   pointer-events: auto;
-  cursor: pointer;
+  cursor: grab;
   max-width: 230px;
-  padding: 3px 7px;
-  border-left: 2px solid var(--node-color, #8c9da9);
-  border-radius: 4px;
-  background: #f9fbfce8;
-  transition: box-shadow 120ms;
+  padding: 1px 3px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: #30454d;
+  text-shadow:
+    -1px -1px 2px #f6f8fad9,
+    1px 1px 2px #f6f8fad9;
 }
 .spatial-label:hover,
 .spatial-label.selected {
-  background: #fff;
-  box-shadow: 0 2px 12px #30454d25;
+  background: color-mix(in srgb, var(--node-color, #638b98) 9%, transparent);
+  box-shadow: none;
 }
 .spatial-label-title {
-  font-weight: 600;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 560;
 }
 .spatial-label small {
   display: block;
-  max-width: 225px;
+  max-width: 230px;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #677c88;
-  font-size: 10px;
+  font:
+    10px/1.3 ui-monospace,
+    Consolas,
+    monospace;
+  color: #527181;
 }
-.spatial-label.projection {
-  border-left-style: dashed;
-  opacity: 0.7;
-  font-size: 10px;
+.spatial-label.region-label {
+  font-weight: 620;
+  font-size: 12px;
+  color: var(--node-color, #477b9c);
+  text-align: center;
 }
 .spatial-layer-label {
   color: #6b8091;

@@ -12,6 +12,8 @@ The 3D viewport is another renderer of the existing graph. It uses a real perspe
 | spatial-model.js | Produce renderer-neutral nodes, edges and cross-layer containment projections. |
 | spatial-layout.js / spatial-worker.js | Run deterministic 3D forces with layer, cluster, collision and pin constraints outside the UI thread. |
 | spatial-renderer.js | Own camera, GPU objects, picking, bounded labels and runtime transfer particles. |
+| spatial-geometry.js / spatial-labels.js / spatial-paths.js | Share mesh/legend geometry, camera-relative region captions and coplanar curves. |
+| machine-projection.js | Project real states, hierarchy, events and conditional transitions without executing them. |
 | semantic-view.js | Expose the same graph to keyboard/screen-reader controls and maintain linear-time geometry lookup. |
 | viewer.js | Coordinate API snapshots, user actions, source panels and recording/replay. |
 
@@ -19,13 +21,22 @@ These files are in assets/stategraph-viewer. Python parsers and language adapter
 
 ## Interaction
 
-- The bottom-left **2D / 3D** switch changes renderer. Entering 3D starts from above; drag empty space to orbit, right-drag to pan, scroll to dolly. **Top view** restores the overhead view. Layer buttons select any combination in either mode; saved single-layer settings migrate without resetting personal positions.
-- Drag a node or the empty area of its region to move its whole branch, preserving layer elevations. Double-click to expand/collapse. Keyboard/context actions share the same IDs and handlers.
-- An expanded owner has a colored volume on its layer and corresponding volumes around its descendants on other layers. Projected regions retain the owner's ID and highlight together. Click a layer caption to isolate it; **All** restores every layer. The bottom-right legend follows the active renderer and shares its type-to-geometry definitions.
-- Calls and actual data relations use solid curves. Logical/mapping/containment relations use dashed curves. An observed transfer can display its payload on a curve; static source relations never become executed merely because a nearby anchor ran.
-- Spatial positions/pins and the perspective camera live with personal project preferences. Incremental layout fixes existing positions while placing new nodes. Explicit Arrange releases unpinned coordinates. The independent 2D layout remains intact.
+- Breadcrumbs stay at the top. The bottom-centered bar shares 2D/3D, arrangement/undo, expansion, fit and zoom. The layer-spacing slider controls 3D plane separation. A compact left drawer toggles any combination of layers and can stay open; hovering or keyboard focus reveals labels. Preserve these settings and user positions across iterations.
+- 3D starts from above; drag empty space to orbit, right-drag to pan, scroll to dolly. Top view restores the overhead view. Layer elevations remain stable when other layers are hidden.
+- Every node center, region and same-layer curve stays on its semantic plane. Hierarchy is shown by nested colored regions, not artificial vertical offsets. Cross-layer connections keep their real endpoints. A projected region retains its owner's ID.
+- Drag geometry, a label or empty region space to move the branch. Double-click expands/collapses. Expanded regions show their name below the projected circumference; this anchor follows the camera. Ordinary labels sit below nodes with transparent backgrounds.
+- The upper-right legend is vertical. Its 3D icons are WebGL renders from the same geometry factory and material family as the graph; the temporary thumbnail context is disposed after caching. Switching to 2D restores the planar glyphs.
+- Spatial positions/pins/camera remain separate from 2D positions. Arrange releases unpinned coordinates; undo cancels pending layout work before restoring them. Preserve hidden descendants and their saved positions.
 
-Arrange, undo, fit, zoom and expansion use the same toolbar in both modes. Spatial undo cancels pending layout work before restoring positions and camera. Dragging a label uses the same node/branch identity as dragging its geometry.
+## Executable state projection
+
+`machine-projection.js` reads the validated machine declaration. Every declared state has one canonical state node, and every declared transition retains its event, source, destination, conditions and exclusions. Active leaf states also activate their declared ancestors; parallel leaves remain separate. Actual nested declarations establish ancestry; underscores in flat names do not. Keep conditional transitions with the same event/source as distinct edges. Internal transitions have visible coplanar loops.
+
+The state graph is a view of the executable declaration, not an AI business summary or a second executor. Only real journal evidence marks an executed path. If several conditional declarations share the same endpoints and the journal does not identify which was used, keep branch execution ambiguous rather than lighting every candidate. Business summaries, function calls and recorded fields remain connected but have different node roles.
+
+The backend rejects state-value projections that omit or invent executable states. Verify declaration coverage, actual state queries, successful and rejected events, guard branches and relevant hierarchy cases. Rendering a complete declaration alone does not prove business correctness.
+
+For each exercised drive-mode transition, correlate the native event, actual before/after state, evaluated conditions and commit witness with the public query and recording frames. Preserve skipped guards as unevaluated. A query returning only the final state and an empty journal cannot pass path-coverage checks. Add a negative case that removes a real transition witness while retaining the final state; that case must report missing evidence rather than pass from the declaration.
 
 ## Operations, functions and event fields
 

@@ -1,0 +1,62 @@
+{
+  "valid": true,
+  "recording": "870c162a1d124eca8a1dab24b3336d90",
+  "build": "2589ec518852a132c32ab71d4f5f3dc4ed2112ee0b88732fda1c4c26d6f0cd6f",
+  "steps": [
+    {
+      "event": "6bf07323b6034e9b8157d842a0352520:847052c143d746bbb1ab25286e517479:15",
+      "actual_node": "repair.submit",
+      "source_label": "用户提交报修内容",
+      "rows": 1,
+      "visual_owners": [
+        "repair.pending"
+      ]
+    },
+    {
+      "event": "6bf07323b6034e9b8157d842a0352520:847052c143d746bbb1ab25286e517479:31",
+      "actual_node": "repair.claim",
+      "source_label": "维修员接单",
+      "rows": 1,
+      "visual_owners": [
+        "repair.pending",
+        "repair.in_progress"
+      ]
+    },
+    {
+      "event": "6bf07323b6034e9b8157d842a0352520:847052c143d746bbb1ab25286e517479:48",
+      "actual_node": "repair.record_result",
+      "source_label": "登记处理结果",
+      "rows": 1,
+      "visual_owners": [
+        "repair.in_progress",
+        "repair.awaiting_confirmation"
+      ]
+    },
+    {
+      "event": "6bf07323b6034e9b8157d842a0352520:847052c143d746bbb1ab25286e517479:64",
+      "actual_node": "repair.confirm",
+      "source_label": "提交人确认完成",
+      "rows": 1,
+      "visual_owners": [
+        "repair.awaiting_confirmation",
+        "repair.completed"
+      ]
+    }
+  ],
+  "actual_target_selection": "repair.completed",
+  "original_failure_retained": true,
+  "original_record_before_rows": [
+    1,
+    2,
+    2,
+    2
+  ],
+  "original_record_upgraded_rows": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "machine_unchanged": true,
+  "full_baseline_bytes_unchanged": true
+}

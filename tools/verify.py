@@ -25,9 +25,13 @@ def main():
     run(ROOT, 'tests/test_document_links.py')
     run(ROOT, 'tests/test_database_guidance.py')
     run(ROOT, 'tests/test_code_graph.py')
+    run(ROOT, 'tests/test_state_projection.py')
     subprocess.run(['node', 'tools/test_code_view.mjs'], cwd=ROOT, check=True)
     subprocess.run(['node', 'tools/test_layered_view.mjs'], cwd=ROOT, check=True)
     subprocess.run(['node', 'tools/test_viewer_semantics.mjs'], cwd=ROOT, check=True)
+    subprocess.run(['node', 'tools/test_spatial_workspace.mjs'], cwd=ROOT, check=True)
+    subprocess.run(['node', 'tools/test_spatial_planes.mjs'], cwd=ROOT, check=True)
+    subprocess.run(['node', 'tools/test_replay_owners.mjs'], cwd=ROOT, check=True)
     if args.database:
         run(ROOT, 'tools/verify_databases.py')
     run(ROOT, 'tests/test_ast_fingerprint.py')

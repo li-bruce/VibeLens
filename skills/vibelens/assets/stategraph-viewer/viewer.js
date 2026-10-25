@@ -2,6 +2,7 @@ import { SemanticView } from "./semantic-view.js";
 import { prepareSpatialHierarchy } from "./spatial-model.js";
 import { renderSource } from "./source-view.js";
 import { layers, cleanLayers, layerSlice } from "./graph-layers.js";
+import { spatialLegend } from "./spatial-geometry.js";
 import { SpatialRenderer } from "./spatial-renderer.js";
 import { runtimeOwners } from "./graph-links.js";
 import { nodeExplanation } from "./capture-fields.js";
@@ -269,6 +270,10 @@ function updateLayerControls() {
   const config = cleanLayers(analysisSettings?.layers);
   const mode = config.enabled ? "3D" : "2D";
   $("layered-toggle").textContent = mode;
+  $("layer-gap").value = config.gap;
+  $("layer-gap").disabled = !config.enabled;
+  $("layer-drawer").classList.toggle("is-open", config.drawer);
+  $("layers-toggle").setAttribute("aria-expanded", String(config.drawer));
   $("layered-toggle").setAttribute("aria-pressed", String(config.enabled));
   const action = boTranslate(config.enabled ? "Switch to 2D" : "Switch to 3D");
   $("layered-toggle").title = action;
@@ -294,7 +299,10 @@ $("layer-controls").replaceChildren(
     const button = document.createElement("button");
     button.type = "button";
     button.dataset.layer = layer.id;
-    button.textContent = boTranslate(layer.label);
+    const label = document.createElement("span");
+    label.className = "layer-label";
+    label.textContent = boTranslate(layer.label);
+    button.append(label);
     button.title = boTranslate(layer.label);
     button.style.setProperty("--layer-color", "#" + layer.color.toString(16).padStart(6, "0"));
     button.onclick = () => {
@@ -308,6 +316,24 @@ $("layer-controls").replaceChildren(
     return button;
   }),
 );
+$("layers-toggle").onclick = () => {
+  if (!analysisSettings) return;
+  const config = cleanLayers(analysisSettings.layers);
+  analysisSettings.layers = { ...config, drawer: !config.drawer };
+  updateLayerControls();
+  save();
+};
+$("layer-gap").oninput = () => {
+  if (!analysisSettings || !graph) return;
+  analysisSettings.layers = cleanLayers({
+    ...analysisSettings.layers,
+    gap: Number($("layer-gap").value),
+  });
+  updateSpatial();
+  updateSemantic();
+  schedule();
+  saveSoon();
+};
 $("layers-all").onclick = () => changeLayers(layers.map((layer) => layer.id));
 $("layered-toggle").onclick = () => {
   if (!analysisSettings || !graph) return;
@@ -341,9 +367,16 @@ function updateLegendMode() {
   $("legend-panel").dataset.mode = mode;
   for (const row of document.querySelectorAll("[data-legend-node]")) {
     const type = row.dataset.legendNode;
-    row.firstElementChild?.replaceWith(
-      legendGlyph(type, nodeTypes[type], { spatial: mode === "3D" }),
-    );
+    let glyph;
+    if (mode === "3D") {
+      glyph = document.createElement("img");
+      glyph.src = spatialLegend(nodeTypes).get(type);
+      glyph.alt = "";
+      glyph.dataset.glyph = type;
+      glyph.dataset.mode = "3D";
+      glyph.dataset.geometry = "webgl";
+    } else glyph = legendGlyph(type, nodeTypes[type]);
+    row.firstElementChild?.replaceWith(glyph);
   }
 }
 function updatePresentation() {
@@ -2031,19 +2064,23 @@ function boShowChanges() {
   $("change-count").textContent = boDetail.rows.length
     ? boTranslate("{0} changes", boDetail.rows.length)
     : boTranslate("No visible value changes");
+  const attempts = new Set(boDetail.rows.map((row) => row.attempt).filter(Boolean));
   $("change-rows").replaceChildren(
     ...boDetail.rows.map((row) => {
       const line = document.createElement("div");
       line.className = "change-row";
       line.dataset.eventId = row.event;
       line.dataset.owner = row.owner;
+      line.dataset.owners = JSON.stringify(row.owners || [row.owner]);
+      line.dataset.attempt = row.attempt || "";
       line.dataset.kind = row.kind;
       const kind = document.createElement("span");
       kind.className = "change-kind";
       kind.textContent = boKinds[row.kind].label;
       kind.style.color = "#" + boKinds[row.kind].color.toString(16).padStart(6, "0");
       const node = document.createElement("button");
-      node.textContent = row.sourceLabel;
+      node.textContent =
+        attempts.size > 1 && row.attempt ? `${row.sourceLabel} · ${row.attempt}` : row.sourceLabel;
       node.onclick = () => {
         select(row.owner);
         focusSelection();
@@ -2061,7 +2098,9 @@ function boShowChanges() {
     }),
   );
   for (const button of $("semantic").children) {
-    const rows = boDetail.rows.filter((r) => r.owner === button.dataset.nodeId);
+    const rows = boDetail.rows.filter((r) =>
+      (r.owners || [r.owner]).includes(button.dataset.nodeId),
+    );
     button.dataset.changes = JSON.stringify(
       rows.map((r) => ({ field: r.field, before: r.before, after: r.after, kind: r.kind })),
     );

@@ -1,16 +1,8 @@
 import { layerOf, layers } from "./graph-layers.js";
 
-/** Keep file → class → method → parameter depth visible inside a semantic layer. */
-export function nodeElevation(node, byId, base, gap) {
-  let depth = 0,
-    current = node;
-  const seen = new Set();
-  while (byId.has(current.parent) && !seen.has(current.id)) {
-    seen.add(current.id);
-    depth++;
-    current = byId.get(current.parent);
-  }
-  return base - Math.min(depth, 5) * gap * 0.1;
+/** Hierarchy uses containment on the plane; it never changes semantic elevation. */
+export function nodeElevation(_node, _byId, base, _gap) {
+  return base;
 }
 
 /** Compute containment membership without running a hidden planar packing pass.
@@ -91,7 +83,8 @@ export function spatialModel(graph, presentation) {
     byId,
     edges,
     containment,
-    layers: layers.filter((layer) => nodes.some((node) => node.layer === layer.id)),
+    // Keep a layer's elevation stable when other layers are hidden.
+    layers,
   };
 }
 
@@ -134,7 +127,7 @@ export function containmentVolumes(model, positions, gap) {
         layer: layer.id,
         center,
         radius,
-        height: Math.min(gap * 0.42, Math.max(38, (max[1] - min[1]) / 2 + 30)),
+        height: 0,
         projection: layer.id !== owner.layer,
         members: members.map((node) => node.id),
       });

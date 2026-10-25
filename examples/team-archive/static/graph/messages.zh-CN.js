@@ -1,5 +1,11 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "Declared state": "声明状态",
+  "Nested state": "子状态",
+  "Layers": "图层",
+  "when {0}": "条件 {0}",
+  "unless {0}": "排除 {0}",
+  "Executable state: {0}": "状态机声明：{0}",
   "Value": "值",
   "Selected value or event field": "选定值或事件记录字段",
   "Graph layers": "图层",

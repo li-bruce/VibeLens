@@ -145,11 +145,46 @@ try {
     "3D starts from above",
   );
   assert.equal(await page.locator("#legend-panel").getAttribute("data-mode"), "3D");
-  assert.ok((await page.locator('#legend-types svg[data-mode="3D"]').count()) > 0);
-  assert.equal(
-    await page.locator("#layer-camera, #layer-only, #layer-gap, #layout-panel").count(),
-    0,
+  assert.ok(
+    (await page.locator('#legend-types img[data-mode="3D"][data-geometry="webgl"]').count()) > 0,
   );
+  assert.equal(await page.locator("#layer-camera, #layer-only, #layout-panel").count(), 0);
+  const arrangement = await page.evaluate(() => {
+    const rect = (id) => document.querySelector(id).getBoundingClientRect().toJSON();
+    return {
+      breadcrumbs: rect("#hierarchy-path"),
+      tools: rect(".view-tools"),
+      legend: rect("#legend-panel"),
+      drawer: rect("#layer-drawer"),
+      width: innerWidth,
+    };
+  });
+  assert.ok(
+    Math.abs(arrangement.tools.x + arrangement.tools.width / 2 - arrangement.width / 2) < 2,
+  );
+  assert.ok(arrangement.breadcrumbs.y < arrangement.drawer.y);
+  assert.ok(arrangement.legend.y < arrangement.tools.y);
+  assert.ok(arrangement.legend.width < arrangement.legend.height);
+  await page.click("#layers-toggle");
+  assert.equal(await page.locator("#layers-toggle").getAttribute("aria-expanded"), "true");
+  await page.locator("#layer-gap").fill("360");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  assert.equal(await page.locator("#layer-gap").inputValue(), "360");
+  const planeFacts = await page.evaluate(() => {
+    const ys = new Map();
+    for (const el of document.querySelectorAll("#semantic [data-node-id]")) {
+      const layer = el.dataset.plane;
+      if (!ys.has(layer)) ys.set(layer, new Set());
+      ys.get(layer).add(el.dataset.worldY);
+    }
+    return [...ys].map(([id, y]) => [id, [...y]]);
+  });
+  assert.ok(planeFacts.every(([, ys]) => ys.length === 1));
+  const renderedPlanes = await page.evaluate(() => graphDebug.spatial.layerPlanes);
+  for (const [layer, ys] of planeFacts)
+    assert.equal(renderedPlanes.find((p) => p.id === layer)?.y, Number(ys[0]));
+  assert.equal(renderedPlanes.length, planeFacts.length);
+  checks.coplanarLayers = true;
   await shot("3d-top");
   const camera = await page.evaluate(() => graphDebug.spatial.camera.position);
   await page.mouse.move(1000, 650);
@@ -160,6 +195,11 @@ try {
   assert.notDeepEqual(await page.evaluate(() => graphDebug.spatial.camera.position), camera);
   await isolateLayer("operations");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
+  assert.deepEqual(
+    await page.evaluate(() => graphDebug.spatial.layerPlanes),
+    renderedPlanes.filter((p) => p.id === "operations"),
+    "A layer mask hides other planes without moving the remaining plane",
+  );
   assert.ok(
     await page.evaluate(() =>
       [...document.querySelectorAll("#semantic [data-node-id]")].every(
@@ -287,7 +327,7 @@ try {
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   await pick("publish");
   await page.waitForTimeout(180);
-  const label = page.locator('[data-spatial-label="publish"]');
+  const label = page.locator('[data-spatial-region="publish"]:visible').first();
   const labelBox = await label.boundingBox();
   assert.ok(labelBox, "Selected group label remains visible");
   const labelBefore = await page.evaluate(() => graphDebug.spatialPositions.publish);

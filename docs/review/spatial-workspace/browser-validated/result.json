@@ -1,0 +1,192 @@
+{
+  "passed": true,
+  "checks": {
+    "quietCapture": {
+      "shown": [
+        "committed",
+        "status"
+      ],
+      "all": 18
+    },
+    "operationFieldsAreNotSourceParameters": true,
+    "stateLinks": [
+      [
+        "state.ready",
+        "publish"
+      ],
+      [
+        "publish",
+        "state.published"
+      ]
+    ],
+    "initial3D": {
+      "renderer": "Three.js",
+      "nodeRendering": "instanced-mesh",
+      "perspective": true,
+      "webgl": true,
+      "nodes": 13,
+      "edges": 12,
+      "labels": 20,
+      "drawCalls": 30,
+      "geometries": 18,
+      "frames": 2,
+      "renderP95Ms": 129,
+      "layoutMs": 24.5,
+      "busy": false,
+      "volumes": [
+        {
+          "id": "publish",
+          "layer": "business",
+          "center": {
+            "x": -209.7013475935031,
+            "y": 1560,
+            "z": 209.21936058045577
+          },
+          "radius": 65,
+          "height": 0,
+          "projection": false,
+          "members": [
+            "publish"
+          ]
+        },
+        {
+          "id": "publish",
+          "layer": "operations",
+          "center": {
+            "x": -221.41371498710822,
+            "y": 780,
+            "z": 132.89667544650052
+          },
+          "radius": 348.35676545404567,
+          "height": 0,
+          "projection": true,
+          "members": [
+            "load",
+            "select",
+            "save",
+            "transaction",
+            "field:transaction:out:status",
+            "field:transaction:out:committed"
+          ]
+        },
+        {
+          "id": "publish",
+          "layer": "execution",
+          "center": {
+            "x": -207.1186089462724,
+            "y": 520,
+            "z": 240.8616903958273
+          },
+          "radius": 232.49291502562426,
+          "height": 0,
+          "projection": true,
+          "members": [
+            "field:publish:in:rollback",
+            "field:publish:out:published",
+            "field:publish:out:status"
+          ]
+        },
+        {
+          "id": "transaction",
+          "layer": "operations",
+          "center": {
+            "x": -326.966279262503,
+            "y": 780,
+            "z": 143.93187225394908
+          },
+          "radius": 235.87344224102216,
+          "height": 0,
+          "projection": false,
+          "members": [
+            "transaction",
+            "field:transaction:out:status",
+            "field:transaction:out:committed"
+          ]
+        }
+      ],
+      "layerPlanes": [
+        {
+          "id": "business",
+          "y": 1560
+        },
+        {
+          "id": "state",
+          "y": 1300
+        },
+        {
+          "id": "operations",
+          "y": 780
+        },
+        {
+          "id": "execution",
+          "y": 520
+        },
+        {
+          "id": "data",
+          "y": 260
+        }
+      ],
+      "camera": {
+        "position": [
+          -123.94743904741397,
+          3353.3132071903897,
+          75.7895673639126
+        ],
+        "target": [
+          -123.94743904741397,
+          910,
+          75.66740169838452
+        ]
+      }
+    },
+    "coplanarLayers": true,
+    "sharedLayerControls": true,
+    "roundTrip": true,
+    "multiLayerPersistence": true,
+    "spatialUndo": true,
+    "groupHit": {
+      "point": {
+        "x": 719.9999999999999,
+        "y": 558.5000000000005
+      },
+      "tag": "CANVAS",
+      "text": ""
+    },
+    "movedAfterGroup": [
+      "publish",
+      "load",
+      "select",
+      "save",
+      "transaction",
+      "field:transaction:out:status",
+      "field:transaction:out:committed",
+      "field:publish:in:rollback",
+      "field:publish:out:published",
+      "field:publish:out:status",
+      "field:transaction:in:operation",
+      "field:transaction:in:statement",
+      "field:transaction:in:parameters",
+      "field:transaction:out:duration_ms",
+      "field:transaction:out:rows",
+      "field:transaction:out:rows_known",
+      "field:transaction:out:result",
+      "field:transaction:out:before",
+      "field:transaction:out:error_type",
+      "field:transaction:out:transaction_id",
+      "field:transaction:out:targets",
+      "field:transaction:out:unknown_targets",
+      "field:transaction:out:input_count",
+      "field:transaction:out:output_count",
+      "field:transaction:out:target_source",
+      "field:transaction:out:target_access"
+    ],
+    "pickedAfterGroup": "publish",
+    "groupDrag": true,
+    "labelDrag": true,
+    "perspectiveExpansion": true,
+    "replay": true,
+    "languageAndMobile": true,
+    "actualTransactionOutcomes": true
+  },
+  "errors": []
+}

@@ -85,6 +85,7 @@ export function nodeExplanation(node, all) {
     ];
   }
   const result = [];
+  if (node.machine_state) result.push(t("Executable state: {0}", node.value));
   if (["query", "transform"].includes(node.data_role))
     result.push(t("Data operation · {0}", node.data_metadata?.action || node.data_role));
   if (node.summary) result.push(node.summary);

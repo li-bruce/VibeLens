@@ -1,3 +1,4 @@
+import { activeMachineStates } from "./machine-projection.js";
 import { graphInventory } from "./graph-inventory.js";
 export { stateNodeId } from "./graph-inventory.js";
 import { capturedValue } from "./capture-fields.js";
@@ -210,7 +211,11 @@ export function status(node, view, events, choice, configuration = null) {
         ? "ok"
         : "blocked";
   if (node.layer === "state")
-    return node.value === phaseValue(view, configuration, choice) ? "active" : "declared";
+    return activeMachineStates(view.model.machine, phaseValue(view, configuration, choice)).has(
+      node.value,
+    )
+      ? "active"
+      : "declared";
   if (node.field) {
     const values = callValues(node, events)[node.direction === "in" ? "inputs" : "outputs"];
     if (!capturedValue(node, values).present) return "declared";
@@ -352,10 +357,11 @@ export function lines(node, view, events, choice, configuration = null) {
   } else if (node.layer === "state") {
     result.push({ text: `phase: Phase = ${node.value}`, role: "value" });
     result.push({
-      text:
-        node.value === phaseValue(view, configuration, choice)
-          ? boTranslate("Flow state for this run")
-          : boTranslate("Reachable flow state"),
+      text: activeMachineStates(view.model.machine, phaseValue(view, configuration, choice)).has(
+        node.value,
+      )
+        ? boTranslate("Flow state for this run")
+        : boTranslate("Declared state"),
       role: "muted",
     });
     if (node.value === view.model.machine.execution?.within && configuration) {

@@ -1,6 +1,7 @@
 """Check the shipped Skill, relative documentation links and copied runtime."""
 from pathlib import Path
 import hashlib
+import json
 import re
 import sys
 from document_links import document_link_errors
@@ -21,6 +22,12 @@ def check():
         for source, target in [('bo_stategraph.py','__init__.py'),('bo_contracts.py','bo_contracts.py'),('execution_contract.py','execution_contract.py')]:
             assert (SKILL/'scripts'/source).read_bytes() == (ROOT/'examples'/project/'bo_stategraph'/target).read_bytes(), f'State module copy stale: {project}/{target}'
     assert (SKILL/'scripts/bo_stategraph.py').read_bytes() == (ROOT/'examples/python-modes/bo_stategraph/__init__.py').read_bytes(), 'Standalone Python module copy is stale'
+    # The small drive/observe example keeps reviewed raw-byte bindings too.
+    # Copying shared runtime code must not leave that example silently stale.
+    modes = ROOT/'examples/python-modes'
+    binding = json.loads((modes/'bo_stategraph/sources.json').read_text(encoding='utf-8'))
+    for name, expected in binding['files'].items():
+        assert hashlib.sha256((modes/name).read_bytes()).hexdigest() == expected, 'Mode example source binding stale: '+name
     for source,target in [('bo_observer/adapters/javascript/bo_runtime.mjs','bo_runtime.mjs'),
         ('bo_observer/adapters/python/bo_executor.py','bo_executor.py'),('bo_observer/adapters/python/bo_probe.py','bo_probe.py'),
         ('bo_contracts.py','bo_contracts.py'),('execution_contract.py','execution_contract.py')]:

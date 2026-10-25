@@ -1,3 +1,4 @@
+import { machineProjection } from "./machine-projection.js";
 import { captureFields } from "./capture-fields.js";
 import { t as boTranslate } from "./i18n.js";
 
@@ -20,50 +21,9 @@ export function graphInventory(
     for (const field of captures.nodes) all.set(field.id, field);
     rawEdges.push(...captures.edges);
   }
-  const stateIds = new Map();
-  for (const value of view.model.machine.values) {
-    const authored = [...all.values()].find((n) => n.kind === "state" && n.value === value);
-    const id = stateNodeId(view.model, value);
-    stateIds.set(value, id);
-    if (!authored)
-      all.set(id, {
-        id,
-        label: view.model.machine.labels?.[value] || value,
-        kind: "state",
-        layer: "state",
-        value,
-        source: view.model.machine.source,
-      });
-  }
-  for (const t of view.model.machine.transitions) {
-    const sources = Array.isArray(t.source) ? t.source : [t.source];
-    for (const source of view.model.machine.values.filter((v) =>
-      sources.some((s) => s === "*" || s === v || v.startsWith(s + "_")),
-    )) {
-      const target = t.dest || source,
-        from = stateIds.get(source),
-        to = stateIds.get(target);
-      const observed =
-        step === "latest" &&
-        (view.machine.journal || []).some(
-          (j) =>
-            j.event === t.trigger &&
-            j.source === source &&
-            j.target === target &&
-            j.attempt === attempt,
-        );
-      rawEdges.push({
-        id: "transition:" + t.trigger + ":" + source,
-        from,
-        to,
-        type: "transition",
-        event: t.trigger,
-        label: view.model.machine.event_labels?.[t.trigger] || t.trigger,
-        observed,
-        current: choice === "latest",
-      });
-    }
-  }
+  const machine = machineProjection(view.model, view.machine, { attempt, choice, step });
+  for (const node of machine.nodes) all.set(node.id, node);
+  rawEdges.push(...machine.edges);
   // Membership is a view reference to one canonical identity, not another call.
   for (const m of memberships) {
     const member = all.get(m.member),

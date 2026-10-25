@@ -271,14 +271,21 @@ export function boStepDetail(
           (b) =>
             b.type === "state" && (b.node.value === change.before || b.node.value === change.after),
         );
-      for (const owner of targets)
-        if (mode === "events" || boVisibleChange(change, owner, all))
-          rows.push({
-            ...change,
-            owner: owner.id,
-            label: owner.node.label,
-            sourceLabel: all.get(change.node)?.label || change.node,
-          });
+      targets = targets.filter((owner) => mode === "events" || boVisibleChange(change, owner, all));
+      if (!targets.length) continue;
+      // One fact may appear at both state endpoints or in shared-node views.
+      // Retain every visual owner without counting that fact more than once.
+      const owner =
+        targets.find((b) => b.id === change.node) ||
+        targets.find((b) => b.type === "state" && b.node.value === change.after) ||
+        targets[0];
+      rows.push({
+        ...change,
+        owner: owner.id,
+        owners: [...new Set(targets.map((b) => b.id))],
+        label: owner.node.label,
+        sourceLabel: all.get(change.node)?.label || change.node,
+      });
     }
   return {
     rows,

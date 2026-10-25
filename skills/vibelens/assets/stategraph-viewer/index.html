@@ -233,8 +233,21 @@
           </div>
           <div id="change-rows"></div>
         </section>
+        <aside id="layer-drawer" class="layer-drawer" aria-label="Graph layers">
+          <button
+            id="layers-toggle"
+            aria-label="Layers"
+            title="Layers"
+            aria-expanded="false"
+            aria-controls="layer-controls"
+          >
+            ☷
+          </button>
+          <button id="layers-all" title="Show all layers" aria-label="Show all layers">◎</button>
+          <div id="layer-controls" role="group" aria-label="Visible layers"></div>
+        </aside>
         <div class="view-tools">
-          <div class="layer-tools" role="toolbar" aria-label="Graph layers">
+          <div class="canvas-tools" role="toolbar" aria-label="Canvas controls">
             <button
               id="layered-toggle"
               aria-pressed="false"
@@ -244,12 +257,6 @@
               2D
             </button>
             <span class="tool-divider"></span>
-            <button id="layers-all" title="Show all layers" aria-label="Show all layers">
-              All
-            </button>
-            <div id="layer-controls" role="group" aria-label="Visible layers"></div>
-          </div>
-          <div class="canvas-tools" role="toolbar" aria-label="Canvas controls">
             <button id="arrange" data-icon="layout" aria-label="Arrange" title="Arrange"></button>
             <button id="top-view" title="Top view" aria-label="Top view">⌃</button>
             <button id="undo-layout" data-icon="undo" aria-label="Undo layout" disabled></button>
@@ -260,6 +267,19 @@
             <button id="zoom-out" data-icon="minus" aria-label="Zoom out"></button>
             <output id="zoom">100%</output>
             <button id="zoom-in" data-icon="plus" aria-label="Zoom in"></button>
+            <span class="tool-divider"></span>
+            <label class="layer-spacing" title="Layer separation">
+              <span aria-hidden="true">↕</span>
+              <input
+                id="layer-gap"
+                type="range"
+                min="80"
+                max="600"
+                step="20"
+                value="260"
+                aria-label="Layer separation"
+              />
+            </label>
           </div>
         </div>
         <button

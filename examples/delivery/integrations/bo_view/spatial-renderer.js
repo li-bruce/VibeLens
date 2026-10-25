@@ -1,8 +1,10 @@
+import { edgeCurve } from "./spatial-paths.js";
 import * as T from "./spatial-three.vendor.js";
 import { spatialModel, containmentVolumes, descendants, nodeElevation } from "./spatial-model.js";
 import { cleanLayers } from "./graph-layers.js";
 import { nodeTypes } from "./graph-core.js";
-import { spatialShape } from "./glyphs.js";
+import { nodeGeometry } from "./spatial-geometry.js";
+import { regionLabelAnchor } from "./spatial-labels.js";
 import { relationStyle, displayName, annotationFor } from "./layout.js";
 import { t } from "./i18n.js";
 
@@ -25,6 +27,10 @@ export class SpatialRenderer {
     this.callbacks = callbacks;
     this.scene = new T.Scene();
     this.scene.background = new T.Color(0xf6f8fa);
+    this.scene.add(new T.AmbientLight(0xffffff, 1.3));
+    const light = new T.DirectionalLight(0xffffff, 2);
+    light.position.set(3, 4, 5);
+    this.scene.add(light);
     this.camera = new T.PerspectiveCamera(43, 1, 1, 100000);
     this.camera.position.set(1400, 1000, 1800);
     this.renderer = new T.WebGLRenderer({
@@ -234,7 +240,7 @@ export class SpatialRenderer {
     }
     for (const [type, nodes] of typeGroups) {
       const geometry = this.nodeGeometry(type);
-      const mesh = new T.InstancedMesh(geometry, new T.MeshBasicMaterial(), nodes.length);
+      const mesh = new T.InstancedMesh(geometry, new T.MeshLambertMaterial(), nodes.length);
       mesh.userData.ids = nodes.map((n) => n.id);
       for (const [i, node] of nodes.entries()) {
         const p = this.positions[node.id];
@@ -257,14 +263,14 @@ export class SpatialRenderer {
       this.pickable.push(mesh);
     }
     this.volumes = containmentVolumes(this.model, this.positions, this.settings.gap);
-    const sphere = new T.SphereGeometry(1, 40, 20);
+    const circle = new T.CircleGeometry(1, 64);
     for (const volume of this.volumes) {
       if (volume.projection && !this.settings.projections) continue;
       const node = this.model.byId.get(volume.id),
         color = nodeTypes[node.type].color;
       const active = selected === volume.id || focusContext.regions.has(volume.id);
       const shell = new T.Mesh(
-        sphere,
+        circle,
         new T.MeshBasicMaterial({
           color,
           transparent: true,
@@ -274,7 +280,8 @@ export class SpatialRenderer {
         }),
       );
       shell.position.copy(vector(volume.center));
-      shell.scale.set(volume.radius, volume.height, volume.radius);
+      shell.rotation.x = -Math.PI / 2;
+      shell.scale.set(volume.radius, volume.radius, 1);
       shell.userData.volume = volume;
       shell.renderOrder = -2;
       this.group.add(shell);
@@ -304,7 +311,7 @@ export class SpatialRenderer {
     const labelNodes = [...this.model.nodes].sort(
       (a, b) => (b.id === selected) - (a.id === selected) || Number(b.region) - Number(a.region),
     );
-    for (const node of labelNodes.slice(0, 240)) {
+    for (const node of labelNodes.filter((n) => n.glyph && !n.region).slice(0, 220)) {
       const box = graph.byId.get(node.id),
         label = document.createElement("div");
       label.className = "spatial-label" + (node.id === selected ? " selected" : "");
@@ -333,31 +340,31 @@ export class SpatialRenderer {
       label.onclick = () => this.callbacks.onSelect?.(node.id);
       label.ondblclick = () => this.callbacks.onToggle?.(node.id);
       this.labels.append(label);
-      this.labelItems.push({ el: label, id: node.id, offset: 30 });
+      this.labelItems.push({ el: label, id: node.id, offset: 18 });
     }
-    for (const volume of this.volumes.filter((v) => v.projection && this.settings.projections)) {
+    for (const volume of this.volumes.filter((v) => !v.projection || this.settings.projections)) {
       if (this.labelItems.length >= 300) break;
       const label = document.createElement("div");
-      label.className = "spatial-label projection";
-      label.textContent = this.model.byId.get(volume.id).label + " ↕";
+      label.className = "spatial-label region-label";
+      label.dataset.spatialRegion = volume.id;
+      label.dataset.regionLayer = volume.layer;
+      const owner = this.model.byId.get(volume.id);
+      label.textContent = displayName(graph.byId.get(volume.id).node, preferences);
+      label.style.setProperty(
+        "--node-color",
+        "#" + nodeTypes[owner.type].color.toString(16).padStart(6, "0"),
+      );
       label.onpointerdown = (event) => this.startDrag(event, { region: volume.id });
       label.onclick = () => this.callbacks.onSelect?.(volume.id);
       this.labels.append(label);
-      this.labelItems.push({ el: label, position: volume.center, offset: -25 });
+      this.labelItems.unshift({ el: label, id: volume.id, volume, offset: 0 });
     }
     this.updateTransferLabels();
     this.schedule();
   }
 
   nodeGeometry(type) {
-    const dense = this.model.nodes.length > 2000;
-    const shape = spatialShape(type);
-    if (shape === "capsule") return new T.CapsuleGeometry(0.6, 0.7, 5, 10).rotateZ(Math.PI / 2);
-    if (shape === "octahedron") return new T.OctahedronGeometry(1);
-    if (shape === "icosahedron") return new T.IcosahedronGeometry(1, 0);
-    if (shape === "cylinder") return new T.CylinderGeometry(0.85, 0.85, 1.5, dense ? 10 : 18);
-    if (shape === "box") return new T.BoxGeometry(1.4, 1.4, 1.4);
-    return new T.SphereGeometry(1, dense ? 12 : 20, dense ? 8 : 12);
+    return nodeGeometry(type, this.model.nodes.length > 2000);
   }
 
   /** Runtime/selection changes reuse GPU geometry; only instance colors and labels change. */
@@ -451,7 +458,10 @@ export class SpatialRenderer {
       size = bounds.getSize(new T.Vector3());
     const center = bounds.getCenter(new T.Vector3());
     for (const [i, layer] of this.model.layers.entries()) {
-      const y = (this.model.layers.length - 1 - i) * this.settings.gap - this.settings.gap * 0.25;
+      // Keep the guide on the same plane as its nodes. A hidden/empty layer
+      // leaves neither a background mesh nor a caption behind.
+      if (!this.model.nodes.some((node) => node.layer === layer.id)) continue;
+      const y = (this.model.layers.length - 1 - i) * this.settings.gap;
       const plane = new T.Mesh(
         new T.PlaneGeometry(Math.max(500, size.x + 180), Math.max(500, size.z + 180)),
         new T.MeshBasicMaterial({
@@ -464,6 +474,7 @@ export class SpatialRenderer {
       );
       plane.rotation.x = -Math.PI / 2;
       plane.position.set(center.x, y, center.z);
+      plane.userData.boLayer = layer.id;
       plane.renderOrder = -3;
       this.group.add(plane);
       const label = document.createElement("div");
@@ -474,7 +485,7 @@ export class SpatialRenderer {
       label.onclick = () => this.callbacks.onLayer?.(layer.id);
       this.labelItems.push({
         el: label,
-        position: { x: bounds.min.x - 85, y: y + 10, z: bounds.max.z + 60 },
+        position: { x: bounds.min.x - 85, y, z: bounds.max.z + 60 },
         offset: 0,
       });
     }
@@ -521,24 +532,7 @@ export class SpatialRenderer {
       const start = edge.fromPosition || this.positions[edge.from],
         end = edge.toPosition || this.positions[edge.to];
       if (!start || !end) continue;
-      const a = vector(start),
-        b = vector(end),
-        delta = b.clone().sub(a),
-        length = delta.length();
-      const normal = new T.Vector3(-delta.z, 0, delta.x).normalize();
-      if (normal.lengthSq() === 0) normal.set(1, 0, 0);
-      const curve = new T.CubicBezierCurve3(
-        a,
-        a
-          .clone()
-          .addScaledVector(delta, 0.32)
-          .addScaledVector(normal, Math.min(90, length * 0.16)),
-        b
-          .clone()
-          .addScaledVector(delta, -0.32)
-          .addScaledVector(normal, Math.min(90, length * 0.16)),
-        b,
-      );
+      const curve = edgeCurve(start, end);
       this.curves.set(edge.id, curve);
       const style = relationStyle(edge),
         color = this.edgeColor(edge),
@@ -722,6 +716,7 @@ export class SpatialRenderer {
     return {
       x: ((p.x + 1) * this.viewportSize.width) / 2,
       y: ((1 - p.y) * this.viewportSize.height) / 2,
+      depth: p.z,
       visible: p.z > -1 && p.z < 1 && Math.abs(p.x) < 1.15 && Math.abs(p.y) < 1.15,
     };
   }
@@ -853,9 +848,12 @@ export class SpatialRenderer {
     // Labels with colliding screen rectangles yield to selected/region labels.
     const occupied = new Set();
     for (const item of this.labelItems || []) {
-      const p = this.screen(item.position || this.positions[item.id]);
+      const p = item.volume
+        ? regionLabelAnchor(item.volume, (p) => this.screen(p))
+        : this.screen(item.position || this.positions[item.id]);
       const key = `${Math.round(p.x / 145)}:${Math.round(p.y / 42)}`;
-      const visible = p.visible && (!occupied.has(key) || item.id === this.input.selected);
+      const visible =
+        p.visible && (item.volume || !occupied.has(key) || item.id === this.input.selected);
       item.el.hidden = !visible;
       if (visible) {
         occupied.add(key);
@@ -908,6 +906,9 @@ export class SpatialRenderer {
       layoutMs: this.layoutMs || 0,
       busy: !!this.busy,
       volumes: this.volumes || [],
+      layerPlanes: (this.group?.children || [])
+        .filter((item) => item.userData.boLayer)
+        .map((item) => ({ id: item.userData.boLayer, y: item.position.y })),
       camera: this.snapshot().camera,
     };
   }
