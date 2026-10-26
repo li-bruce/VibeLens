@@ -228,8 +228,7 @@ export function boStepPlan(recording, items, all, visible, { mode = "view" } = {
       plan.push(i);
       continue;
     }
-    const direct = owners(event.node),
-      node = all.get(event.node);
+    const direct = owners(event.node);
     const changed =
       delta.some((c) => owners(c.node, c).some((b) => boVisibleChange(c, b, all))) ||
       delta.some(

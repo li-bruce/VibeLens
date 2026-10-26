@@ -1,16 +1,20 @@
+/** Viewer coordinator: connect API snapshots, graph presentation and user actions.
+ * Feature modules own drawing, source/edge/change panels, layout, evidence and
+ * persistence. This module owns view selection and lifecycle; it never executes
+ * application commands or rewrites recorded facts.
+ */
+import { renderStepChanges } from "./change-panel.js";
+import { renderEdgeDetail } from "./edge-panel.js";
+import { createDetailPanel } from "./detail-panel.js";
 import { LayerRuler } from "./layer-ruler.js";
 import { cleanRoute } from "./edge-routing.js";
 import { cleanReplaySelection, selectedReplayPlan, nextReplayIndex } from "./replay-selection.js";
 import { SemanticView } from "./semantic-view.js";
 import { prepareSpatialHierarchy } from "./spatial-model.js";
-import { renderSource } from "./source-view.js";
 import { layers, cleanLayers, layerSlice } from "./graph-layers.js";
 import { spatialLegend } from "./spatial-geometry.js";
 import { SpatialRenderer } from "./spatial-renderer.js";
 import { runtimeOwners } from "./graph-links.js";
-import { nodeExplanation } from "./capture-fields.js";
-import { dataLines } from "./data-layer.js";
-import { relationStyle } from "./layout.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   locale,
@@ -34,10 +38,8 @@ import {
   recordingMatches,
   connectionStatus,
 } from "./view-lifecycle.js";
-import { databaseWarning, dataRelationEvidence } from "./data-layer.js";
+import { databaseWarning } from "./data-layer.js";
 import { CodeLayer, withCodeGraph, codeTypes, codeRelations, codeSummary } from "./code-layer.js";
-const codeLayer = new CodeLayer();
-let codeLimit = 400;
 import {
   executionIds,
   layoutGraph,
@@ -50,7 +52,6 @@ import {
   parameterSummary,
 } from "./graph-core.js";
 import {
-  layoutKey,
   readLayout,
   writeLayout,
   placeIncremental,
@@ -68,8 +69,6 @@ import {
   ancestorsToReveal,
   selectionContext,
   refreshHierarchy,
-  compoundEdges,
-  edgePorts,
   relationStyles,
   settleExpansion,
   presentationGraph,
@@ -82,14 +81,9 @@ import {
 import { presets, profileFor, cleanProfile, matchingNodes, sharedMemberships } from "./analysis.js";
 import { legendGlyph, legendRelation, meanings } from "./glyphs.js";
 import { timeline, frame, eventLabel, transferEdges, recordingRequest } from "./recording.js";
-import {
-  boKinds,
-  boValue,
-  boDisplayValue,
-  boStepPlan,
-  boStepDetail,
-  boTransferLabel,
-} from "./replay-steps.js";
+import { boDisplayValue, boStepPlan, boStepDetail, boTransferLabel } from "./replay-steps.js";
+const codeLayer = new CodeLayer();
+let codeLimit = 400;
 const $ = (id) => document.getElementById(id),
   app = new PIXI.Application(),
   scene = new PIXI.Container();
@@ -141,7 +135,6 @@ let recording = null,
 let animationFrame = null,
   animationUntil = 0,
   animatedIds = [],
-  animationEvent = null,
   lastLiveEvent = null;
 let heldTimer = null,
   selectedLayer = null;
@@ -157,8 +150,22 @@ let drawFrame = null,
   disposed = false,
   contextLost = false;
 const hits = [],
-  fullSources = new Map(),
   metrics = { nodes: 0, edges: 0, texts: 0 };
+const detailPanel = createDetailPanel({
+  read: () => ({
+    view,
+    graph,
+    preferences,
+    selected,
+    mode: detailMode,
+    version,
+    recording,
+    scale,
+    pan,
+    screen: app.screen,
+  }),
+  point,
+});
 let legacyStorage;
 try {
   legacyStorage = window.localStorage;
@@ -886,65 +893,23 @@ function showEdge(edge) {
   updateEdgeDetail();
 }
 function updateEdgeDetail() {
-  const panel = $("edge-details"),
-    edge = renderedEdges.find((e) => e.id === selectedEdge);
-  if (!edge) {
-    selectedEdge = null;
-    panel.hidden = true;
-    return;
-  }
-  const style = relationStyle(edge);
-  $("edge-title").textContent = boTranslate(
-    "{0} \u00B7 {1} relations",
-    style.label,
-    edge.members.length,
-  );
-  $("edge-members").replaceChildren(
-    ...edgeChoices
-      .filter((choice) => choice.id !== edge.id)
-      .map((choice) => {
-        const item = document.createElement("li"),
-          button = document.createElement("button");
-        const a = graph.all.get(choice.from),
-          b = graph.all.get(choice.to);
-        button.textContent = `${a ? displayName(a, preferences) : choice.from} → ${b ? displayName(b, preferences) : choice.to}`;
-        button.onclick = () => showEdge({ ...choice, alternatives: edgeChoices });
-        item.append(button);
-        return item;
-      }),
-    ...edge.members.map((member) => {
-      const item = document.createElement("li"),
-        a = graph.all.get(member.from),
-        b = graph.all.get(member.to);
-      item.textContent = `${a ? displayName(a, preferences) : member.from} → ${b ? displayName(b, preferences) : member.to}：${member.label || style.label}（${dataRelationEvidence(member) || (["python-ast", "source-ast"].includes(member.origin) ? boTranslate("Static call") : member.observed ? (member.current ? boTranslate("Observed in this run") : boTranslate("Observed in a previous run")) : boTranslate("Declared relation"))}）`;
-      const hide = document.createElement("button");
-      hide.textContent = boTranslate("Hide relation");
-      hide.onclick = () => {
-        preferences.filters.hiddenEdges.push(member.id);
-        applyFilters();
-      };
-      item.append(hide);
-      return item;
-    }),
-  );
-  const ports = edgePorts(displayGraph || graph, edge);
-  panel.hidden = false;
-  panel.style.left =
-    Math.max(
-      12,
-      Math.min(
-        app.screen.width - panel.offsetWidth - 12,
-        ((ports.start.x + ports.end.x) / 2) * scale + pan.x,
-      ),
-    ) + "px";
-  panel.style.top =
-    Math.max(
-      45,
-      Math.min(
-        app.screen.height - panel.offsetHeight - 12,
-        ((ports.start.y + ports.end.y) / 2) * scale + pan.y,
-      ),
-    ) + "px";
+  const shown = renderEdgeDetail({
+    graph,
+    displayGraph,
+    preferences,
+    edges: renderedEdges,
+    selected: selectedEdge,
+    choices: edgeChoices,
+    screen: app.screen,
+    scale,
+    pan,
+    onChoose: showEdge,
+    onHide: (id) => {
+      preferences.filters.hiddenEdges.push(id);
+      applyFilters();
+    },
+  });
+  if (!shown) selectedEdge = null;
 }
 $("close-edge").onclick = () => {
   selectedEdge = null;
@@ -952,85 +917,10 @@ $("close-edge").onclick = () => {
   $("viewport").focus({ preventScroll: true });
 };
 function updateDetail() {
-  const b = graph?.byId.get(selected);
-  if (!b || !detailMode) {
-    $("node-details").hidden = true;
-    return;
-  }
-  const annotation = annotationFor(preferences, b.node.referenceOf || b.id),
-    editing = detailMode === "annotation";
-  $("node-details").hidden = false;
-  $("detail-title").textContent = displayName(b.node, preferences);
-  $("annotation-form").hidden = !editing;
-  const rows = [
-    ...(annotation.label || editing
-      ? [{ text: boTranslate("Original name: ") + b.node.label }]
-      : []),
-    ...(editing
-      ? [{ text: boTranslate("Node: ") + b.id }]
-      : [
-          ...nodeExplanation(b.node, graph.all).map((text) => ({ text })),
-          ...(b.node.data_role && !["query", "transform"].includes(b.node.data_role)
-            ? dataLines(b.node, {}, {}, false, true)
-            : b.rows),
-        ]),
-    ...(!editing && annotation.note ? [{ text: boTranslate("Note: ") + annotation.note }] : []),
-  ];
-  $("detail-rows").replaceChildren(
-    ...rows.map((r) => {
-      const p = document.createElement("p");
-      p.textContent = r.text;
-      return p;
-    }),
-  );
-  const binding = sourceBinding(view, graph.all, selected),
-    source = detailMode === "source" && binding;
-  $("source-code").hidden = !source;
-  if (source?.provenance === "capture-owner") {
-    const note = document.createElement("p");
-    note.textContent = boTranslate("Operation source context · no matching source parameter");
-    $("detail-rows").append(note);
-  }
-  $("full-source").hidden = !source;
-  if (source) {
-    const key = (binding.code_revision || view.manifest.build_id) + ":" + binding.path,
-      full = fullSources.get(key);
-    $("detail-title").textContent =
-      `${binding.path}:${binding.selection?.line || binding.line} · ${(binding.code_revision || view.manifest.build_id).slice(0, 8)}`;
-    $("full-source").hidden = true;
-    if (full !== undefined) {
-      const renderedKey = [key, selected].join(":");
-      if ($("source-code").dataset.location !== renderedKey) {
-        const target = renderSource($("source-code"), full, binding);
-        $("source-code").dataset.location = renderedKey;
-        requestAnimationFrame(() => {
-          if (target?.isConnected) {
-            const host = $("source-code");
-            host.scrollTop +=
-              target.getBoundingClientRect().top -
-              host.getBoundingClientRect().top -
-              host.clientHeight / 3;
-          }
-        });
-      }
-    } else {
-      $("source-code").textContent = boTranslate("Loading source…");
-      delete $("source-code").dataset.location;
-    }
-  }
-  positionDetail();
+  detailPanel.update();
 }
 function positionDetail() {
-  if ($("node-details").hidden || !graph?.byId.has(selected)) return;
-  const b = graph.byId.get(selected),
-    p = point(b),
-    panel = $("node-details"),
-    w = panel.offsetWidth,
-    h = panel.offsetHeight;
-  panel.style.left =
-    Math.max(10, Math.min(app.screen.width - w - 10, p.x * scale + pan.x + 45)) + "px";
-  panel.style.top =
-    Math.max(10, Math.min(app.screen.height - h - 12, p.y * scale + pan.y - 30)) + "px";
+  detailPanel.position();
 }
 function showDetail(mode) {
   detailMode = mode;
@@ -1099,47 +989,7 @@ $("annotation-form").onsubmit = (e) => {
 };
 $("full-source").onclick = () => loadSource();
 async function loadSource() {
-  const id = selected,
-    build = view.manifest.build_id,
-    binding = sourceBinding(view, graph.all, id),
-    requestedVersion = version;
-  if (!binding) return;
-  const cacheKey = (binding.code_revision || build) + ":" + binding.path;
-  if (fullSources.has(cacheKey)) {
-    updateDetail();
-    return;
-  }
-  let response;
-  try {
-    response = await fetch(
-      (binding.code_revision
-        ? "/api/code/source?revision=" + binding.code_revision + "&path="
-        : "/api/source?path=") +
-        encodeURIComponent(binding.path) +
-        (recording
-          ? "&recording=" + recording.id
-          : "&version=" + encodeURIComponent(requestedVersion)),
-    );
-  } catch {
-    return;
-  }
-  if (!response.ok) {
-    if (selected === id && detailMode === "source")
-      $("source-code").textContent = boTranslate(
-        "Source changed or unavailable. Refresh the graph.",
-      );
-    return;
-  }
-  const data = await response.json();
-  if (
-    binding.code_revision
-      ? data.code_revision !== view?.code_structure?.revision
-      : view?.manifest.build_id !== build || data.build_id !== build || version !== requestedVersion
-  )
-    return;
-  fullSources.set((binding.code_revision || build) + ":" + binding.path, data.source);
-  if (fullSources.size > 16) fullSources.delete(fullSources.keys().next().value);
-  if (selected === id) updateDetail();
+  await detailPanel.load();
 }
 function hitAt(e) {
   const r = app.canvas.getBoundingClientRect();
@@ -1743,7 +1593,7 @@ async function poll() {
     const graphChanged = previousLive && graphVersion(previousLive) !== graphVersion(next);
     if (graphChanged) {
       cancelLayout();
-      fullSources.clear();
+      detailPanel.clear();
       lastRecordPoll = 0;
       lastLiveEvent = null;
     }
@@ -2129,59 +1979,14 @@ function boChangeText(row) {
   return `${row.field}: ${boText(row.before, row)} → ${boText(row.after, row)}`;
 }
 function boShowChanges() {
-  const panel = $("step-changes");
-  panel.hidden = !boDetail;
-  if (!boDetail) return;
-  $("change-title").textContent =
-    boDetail.event.kind === "start"
-      ? boTranslate("Recording started")
-      : boDetail.event.kind === "end"
-        ? boTranslate("Recording stopped")
-        : eventLabel(boDetail.event, view.model);
-  $("change-count").textContent = boDetail.rows.length
-    ? boTranslate("{0} changes", boDetail.rows.length)
-    : boTranslate("No visible value changes");
-  const attempts = new Set(boDetail.rows.map((row) => row.attempt).filter(Boolean));
-  $("change-rows").replaceChildren(
-    ...boDetail.rows.map((row) => {
-      const line = document.createElement("div");
-      line.className = "change-row";
-      line.dataset.eventId = row.event;
-      line.dataset.owner = row.owner;
-      line.dataset.owners = JSON.stringify(row.owners || [row.owner]);
-      line.dataset.attempt = row.attempt || "";
-      line.dataset.kind = row.kind;
-      const kind = document.createElement("span");
-      kind.className = "change-kind";
-      kind.textContent = boKinds[row.kind].label;
-      kind.style.color = "#" + boKinds[row.kind].color.toString(16).padStart(6, "0");
-      const node = document.createElement("button");
-      node.textContent =
-        attempts.size > 1 && row.attempt ? `${row.sourceLabel} · ${row.attempt}` : row.sourceLabel;
-      node.onclick = () => {
-        select(row.owner);
-        focusSelection();
-      };
-      const value = document.createElement("span");
-      value.className = "change-value";
-      value.append(document.createTextNode(row.field + ": "));
-      const before = document.createElement("del"),
-        after = document.createElement("ins");
-      before.textContent = boText(row.before, row);
-      after.textContent = boText(row.after, row);
-      value.append(before, document.createTextNode(" → "), after);
-      line.append(kind, node, value);
-      return line;
-    }),
-  );
-  for (const button of $("semantic").children) {
-    const rows = boDetail.rows.filter((r) =>
-      (r.owners || [r.owner]).includes(button.dataset.nodeId),
-    );
-    button.dataset.changes = JSON.stringify(
-      rows.map((r) => ({ field: r.field, before: r.before, after: r.after, kind: r.kind })),
-    );
-  }
+  renderStepChanges({
+    detail: boDetail,
+    model: view.model,
+    onLocate: (id) => {
+      select(id);
+      focusSelection();
+    },
+  });
 }
 function boSetTransfers(events) {
   boTransfers.clear();
@@ -2309,7 +2114,6 @@ function stopAnimation() {
 function animateEvent(event) {
   if (!graph || disposed || document.hidden || contextLost) return;
   stopAnimation();
-  animationEvent = event;
   $("renderer").dataset.animationEpoch = String(
     Number($("renderer").dataset.animationEpoch || 0) + 1,
   );

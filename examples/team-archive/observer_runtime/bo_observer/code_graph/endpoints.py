@@ -15,7 +15,11 @@ def endpoints(symbol):
             verb = call.func.attr.lower()
             if verb not in {"get", "post", "put", "patch", "delete", "route", "websocket"}:
                 continue
-            path = call.args[0] if call.args else next(k.value for k in call.keywords if k.arg == "path")
+            path = (
+                call.args[0]
+                if call.args
+                else next(k.value for k in call.keywords if k.arg == "path")
+            )
             if not isinstance(path, ast.Constant) or not isinstance(path.value, str):
                 continue
             if observer_route(path.value):
@@ -25,7 +29,9 @@ def endpoints(symbol):
                 for keyword in call.keywords:
                     if keyword.arg == "methods":
                         value = ast.literal_eval(keyword.value)
-                        if isinstance(value, (list, tuple)) and all(isinstance(v, str) for v in value):
+                        if isinstance(value, (list, tuple)) and all(
+                            isinstance(v, str) for v in value
+                        ):
                             methods = [v.upper() for v in value]
             # A route decorator can use framework-specific defaults; do not assume GET.
             result.append({"path": path.value, "methods": methods, "declaration": declaration})

@@ -25,6 +25,7 @@ const cameraDirections = {
  * bounded, screen-facing DOM. Camera movement does not rebuild graph geometry.
  */
 export class SpatialRenderer {
+  /** Allocate one viewport and workers; callbacks report UI changes without changing the model. */
   constructor(host, callbacks = {}) {
     this.host = host;
     this.callbacks = callbacks;
@@ -108,6 +109,7 @@ export class SpatialRenderer {
     this.setVisible(false);
   }
 
+  /** Suspend hidden viewports while retaining camera, buffers and saved positions. */
   setVisible(visible) {
     this.visible = visible;
     this.canvas.hidden = this.labels.hidden = !visible;
@@ -178,6 +180,7 @@ export class SpatialRenderer {
     this.content = content;
   }
 
+  /** Place new identities near their parent; existing coordinates keep their X/Z values. */
   seedMissing() {
     const count = Math.max(1, this.model.nodes.length);
     const heights = layerHeights(this.settings, this.model.layers);
@@ -195,6 +198,7 @@ export class SpatialRenderer {
     }
   }
 
+  /** Send constrained layout work off-thread; only explicit Arrange releases saved positions. */
   layout(arrange = false) {
     if (!this.model) return;
     this.busy = true;
@@ -232,6 +236,7 @@ export class SpatialRenderer {
     this.labels.replaceChildren();
   }
 
+  /** Replace topology/position buffers once; keep semantic ownership separate from geometry. */
   rebuild() {
     if (!this.model || !this.input || this.disposed) return;
     this.clearScene();
@@ -506,13 +511,14 @@ export class SpatialRenderer {
     }
   }
 
+  /** Draw only populated, visible semantic planes at their current compacted heights. */
   drawLayerGuides() {
     const values = this.model.nodes.map((node) => this.positions[node.id]).filter(Boolean);
     if (!values.length) return;
     const bounds = new T.Box3().setFromPoints(values.map(vector)),
       size = bounds.getSize(new T.Vector3());
     const center = bounds.getCenter(new T.Vector3());
-    for (const [i, layer] of this.model.layers.entries()) {
+    for (const layer of this.model.layers) {
       // Keep the guide on the same plane as its nodes. A hidden/empty layer
       // leaves neither a background mesh nor a caption behind.
       if (!this.model.nodes.some((node) => node.layer === layer.id)) continue;
@@ -561,6 +567,7 @@ export class SpatialRenderer {
     return color;
   }
 
+  /** Batch the accepted or current-preview paths used by both picking and playback. */
   drawEdges(matrix) {
     const selected = this.input.selected;
     const positions = [],
@@ -748,6 +755,7 @@ export class SpatialRenderer {
     event.stopImmediatePropagation();
   }
 
+  /** Coordinate ray picking, branch drag and camera gestures on the same viewport. */
   installPointer() {
     // Capture runs before OrbitControls: dragging a node/group does not orbit the camera.
     this.canvas.addEventListener(
@@ -867,6 +875,7 @@ export class SpatialRenderer {
     return descendants({ nodes: [...this.input.graph.all.values()] }, id);
   }
 
+  /** Carry visible and saved descendants together without moving unrelated branches. */
   moveGroup(id, dx, dz) {
     if (!this.model) return;
     this.epoch++;
@@ -907,6 +916,7 @@ export class SpatialRenderer {
     if (this.particles) this.particles.visible = false;
     this.schedule();
   }
+  /** Animate retained transfer facts along the same paths as the visible relations. */
   updateParticles(now) {
     if (!this.animation || now - this.animation.start > 650) {
       this.animation = null;
@@ -944,10 +954,12 @@ export class SpatialRenderer {
     this.particles.computeBoundingSphere();
   }
 
+  /** Coalesce input and worker updates into at most one pending animation frame. */
   schedule() {
     if (this.frame || !this.visible || this.disposed || this.lost || document.hidden) return;
     this.frame = requestAnimationFrame((now) => this.render(now));
   }
+  /** Render on demand, cache viewport measurements and retain bounded timing samples. */
   render(now) {
     this.frame = null;
     if (!this.visible || this.disposed || this.lost || document.hidden) return;
@@ -980,6 +992,7 @@ export class SpatialRenderer {
     cancelAnimationFrame(this.frame);
     this.frame = null;
   }
+  /** Return personal spatial settings only; no model or recorded evidence is copied. */
   snapshot() {
     return {
       positions: structuredClone(this.positions),
@@ -1033,6 +1046,7 @@ export class SpatialRenderer {
       camera: this.snapshot().camera,
     };
   }
+  /** Release workers, controls, buffers and contexts when the viewport is removed. */
   dispose() {
     this.disposed = true;
     this.pause();

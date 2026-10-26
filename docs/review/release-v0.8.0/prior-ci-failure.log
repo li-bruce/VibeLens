@@ -1,0 +1,28 @@
+3Z PASS: walkthrough transitions, bounded recording scope, exact replay, iteration, reset, and bilingual copy.
+2026-10-25T16:10:39.0883420Z 
+2026-10-25T16:10:39.0884141Z {
+2026-10-25T16:10:39.0884428Z   "valid": false,
+2026-10-25T16:10:39.0884703Z   "status": "needs_sync",
+2026-10-25T16:10:39.0884956Z   "errors": [
+2026-10-25T16:10:39.0885267Z     "review belongs to an older candidate",
+2026-10-25T16:10:39.0885622Z     "verification is failed or stale",
+2026-10-25T16:10:39.0885969Z     "change is not accepted for current inputs"
+2026-10-25T16:10:39.0886274Z   ],
+2026-10-25T16:10:39.0886684Z   "candidate_id": "1cb7bf12061efbb111df97617afd355188d7edb8d48571a9565b8aaa12770b72"
+2026-10-25T16:10:39.0887121Z }
+2026-10-25T16:10:39.0887230Z 
+2026-10-25T16:10:39.0945970Z Traceback (most recent call last):
+2026-10-25T16:10:39.0946898Z   File "/home/runner/work/VibeLens/VibeLens/tools/verify.py", line 101, in <module>
+2026-10-25T16:10:39.0947688Z     main()
+2026-10-25T16:10:39.0948422Z   File "/home/runner/work/VibeLens/VibeLens/tools/verify.py", line 69, in main
+2026-10-25T16:10:39.0949423Z     prepare()  # Refuse stale source/review before any re-verification.
+2026-10-25T16:10:39.0950076Z     ^^^^^^^^^
+2026-10-25T16:10:39.0950787Z   File "/home/runner/work/VibeLens/VibeLens/tools/demo.py", line 29, in prepare
+2026-10-25T16:10:39.0951452Z     run('tooling/dev.py', 'check')
+2026-10-25T16:10:39.0952354Z   File "/home/runner/work/VibeLens/VibeLens/tools/demo.py", line 14, in run
+2026-10-25T16:10:39.0953103Z     subprocess.run([sys.executable, '-B', '-X', 'utf8', *map(str, args)], cwd=EXAMPLE, check=True)
+2026-10-25T16:10:39.0954283Z   File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/subprocess.py", line 571, in run
+2026-10-25T16:10:39.1164535Z     raise CalledProcessError(retcode, process.args,
+2026-10-25T16:10:39.1165974Z subprocess.CalledProcessError: Command '['/opt/hostedtoolcache/Python/3.11.17/x64/bin/python', '-B', '-X', 'utf8', 'tooling/dev.py', 'check']' returned non-zero exit status 1.
+2026-10-25T16:10:39.1254759Z ##[error]Process completed with exit code 1.
+2026-10-25T16:10:39.1399622Z 

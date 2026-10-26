@@ -45,3 +45,11 @@ docs/review/spatial-routing/** -whitespace
 
 # Preserve raw failure and retest output for the solid-object correction.
 docs/review/spatial-objects/** -whitespace
+
+# Retain raw v0.8.0 failure/retest receipts and frozen candidate evidence.
+docs/review/release-v0.8.0/** -whitespace
+examples/*/.release/stategraph/readability-*/** -whitespace
+
+# This watched test is fingerprinted in frozen delivery approvals.
+# Preserve its exact CRLF bytes when checking out on either operating system.
+examples/delivery/tests/test_graph_layout.mjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

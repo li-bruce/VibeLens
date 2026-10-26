@@ -154,8 +154,13 @@ def build(index):
         edge(parent, value["id"], "defines", "Defines")
         for route in endpoints(symbol):
             endpoint_id = identity("endpoint", [key, route["path"], route["methods"]])
-            endpoint = node(endpoint_id, " ".join(route["methods"] + [route["path"]]),
-                            "endpoint", source, summary=route["declaration"])
+            endpoint = node(
+                endpoint_id,
+                " ".join(route["methods"] + [route["path"]]),
+                "endpoint",
+                source,
+                summary=route["declaration"],
+            )
             endpoint["api"] = route
             edge(endpoint_id, value["id"], "handles", "Handled by", route["declaration"])
         for parameter in symbol.get("parameters", []):
@@ -164,7 +169,10 @@ def build(index):
                 pid,
                 parameter["name"],
                 "parameter",
-                {**source, **({"selection": parameter["selection"]} if parameter.get("selection") else {})},
+                {
+                    **source,
+                    **({"selection": parameter["selection"]} if parameter.get("selection") else {}),
+                },
                 value["id"],
                 parameter.get("annotation") or "Type unspecified",
             )

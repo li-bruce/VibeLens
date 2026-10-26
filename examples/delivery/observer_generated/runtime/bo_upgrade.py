@@ -18,7 +18,7 @@ except ImportError:
     from behavior_model import contained, read
     from sync_io import write
 
-RELEASE = "2026.10-db-vis"
+RELEASE = "0.8.0"
 PROTOCOLS = {
     "behavior": 3,
     "event": 3,

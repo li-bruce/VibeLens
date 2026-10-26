@@ -81,9 +81,17 @@ def query(graph, model, *, focus=None, depth=1, limit=400):
             source = item.get("source", {})
             sid = graph["symbols"].get(source.get("path", "") + "::" + source.get("symbol", ""))
             if sid:
-                links.append({"id": identity("binding", [item["id"], sid]),
-                              "from": item["id"], "to": sid, "type": "data",
-                              "code_relation": "maps", "label": "Source binding", "origin": "code-index"})
+                links.append(
+                    {
+                        "id": identity("binding", [item["id"], sid]),
+                        "from": item["id"],
+                        "to": sid,
+                        "type": "data",
+                        "code_relation": "maps",
+                        "label": "Source binding",
+                        "origin": "code-index",
+                    }
+                )
     ordered = sorted(
         wanted,
         key=lambda k: (

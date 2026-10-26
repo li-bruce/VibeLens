@@ -1,12 +1,18 @@
 # Changelog
 
-## Unreleased — spatial graph branch
+## 0.8.0 — 2026-10-26
 
-- Replace the clipped layer drawer with a saved layer ruler: drag to reorder, toggle visibility and adjust each gap. Keep fixed default elevations and preserve hidden layer slots.
-- Route expanded 3D groups at their circular boundaries. Share curved, straight, orthogonal and typed bus paths across 2D/3D, retaining original endpoints and evidence strokes.
-- Match child counts and live state badges across renderers; place expanded 2D captions below circles. Add Delete-to-hide for selected nodes, edges and layers.
-- Repeat the current animation while paused; add skipped steps and an optional loop range without changing raw recordings.
-- Preserve existing mapping, state, business and project gates. See [acceptance and retained failures](docs/review/spatial-ruler/README.md).
+- Release the genuine 3D layered viewer with shared 2D/3D selection, expansion, annotations, filters and replay. Pack visible layers in saved order; use solid semantic objects, readable labels and a compact canvas layer ruler.
+- Add typed 2D subtree clustering with exact user pins. Share straight, curved, orthogonal and bundled routes, with worker-based obstacle avoidance and recalculation after dragging or expansion.
+- Preserve original edge identities, evidence styles and circle-boundary connections. Repeat a paused step; select skipped steps or a playback loop without changing captured evidence.
+- Separate HTTP transport from graph sessions and database comparison from projection. Extract source/value, relation and step-change presenters from the viewer coordinator, with revision-bound asynchronous source loading.
+- Add a shared owned-source inventory, pinned Ruff/ESLint and Black/Prettier checks on Windows and Linux. Preserve vendor bytes, compatibility imports, strict example acceptance and independent business/mapping reports.
+- Check frozen approvals in a clean Git export, preserve exact watched-file bytes, and synchronize the real HTTP waiting regression with task barriers.
+- Update the bilingual source guide and product introduction. See [release notes](docs/releases/v0.8.0.md) and [acceptance evidence](docs/review/release-v0.8.0/README.md).
+
+## 0.7.2 — 2026-10-24
+
+- Simplify graph controls, support English/Chinese presentation and publish the updated bilingual viewer tour. See [release notes](docs/releases/v0.7.2.md).
 
 ## 0.7.1 — 2026-10-24
 

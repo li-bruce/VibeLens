@@ -1,6 +1,6 @@
 import { t as boTranslate } from "./i18n.js";
 // Layout preferences are local view data. They never change model or runtime facts.
-import { graphBounds, nodeType, nodeTypes, viewTypes, relationType } from "./graph-core.js";
+import { graphBounds, nodeTypes, viewTypes, relationType } from "./graph-core.js";
 import { dataRelations, migrateDataFilters } from "./data-layer.js";
 import { codeRelations, migrateCodeFilters } from "./code-layer.js";
 export const layoutKey = (model, projectId) =>

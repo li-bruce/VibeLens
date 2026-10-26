@@ -8,23 +8,9 @@ import argparse
 from pathlib import Path
 import subprocess
 import sys
+from source_scope import source_files
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "skills/vibelens"
-VENDOR_FILES = {"pixi.min.js", "elk.bundled.js", "elk-worker.min.js", "spatial-three.vendor.js", "spatial-force.vendor.js"}
-
-
-def source_files():
-    """Select authored sources once; installed copies are updated by sync_runtime.py."""
-    python = sorted((SKILL / "scripts").rglob("*.py"))
-    javascript = sorted(
-        p for p in (SKILL / "assets/stategraph-viewer").glob("*.js") if p.name not in VENDOR_FILES
-    )
-    javascript += sorted((SKILL / "scripts/bo_observer/adapters/javascript").glob("*.mjs"))
-    website = sorted(
-        p for p in (ROOT / "docs/site").iterdir() if p.suffix in {".html", ".css", ".js", ".mjs"}
-    )
-    return python, javascript + website
 
 
 def main():

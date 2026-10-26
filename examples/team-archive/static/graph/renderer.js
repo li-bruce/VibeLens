@@ -2,10 +2,9 @@ import { polylineAt, cleanRoute } from "./edge-routing.js";
 import { t as boTranslate } from "./i18n.js";
 // Graph drawing owns Pixi objects and hit geometry, but no fetching, storage or UI commands.
 import { colors as C, nodeTypes } from "./graph-core.js";
-import { annotationFor, displayName, edgePorts, relationStyles, relationStyle } from "./layout.js";
+import { annotationFor, displayName, relationStyle } from "./layout.js";
 import { drawGlyph, glyphAppearance } from "./glyphs.js";
 import { boKinds } from "./replay-steps.js";
-import { dataRelationEvidence } from "./data-layer.js";
 import { RoutingClient } from "./routing-client.js";
 import { planarScene } from "./routing-scene.js";
 export function short(value, count = 27) {
@@ -269,7 +268,7 @@ export function createGraphRenderer({
       const resolved = router.routes.get(e.id);
       if (!resolved) continue;
       const path = { start: resolved[0], end: resolved.at(-1), points: resolved };
-      const { start, end } = path;
+      const { end } = path;
       let mid = bezierAt(path, 0.5);
       edgePaths.set(e.id, path);
       const alpha = dim ? 0.1 : highlight ? 0.95 : 0.65,

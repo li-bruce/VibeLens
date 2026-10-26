@@ -59,7 +59,6 @@ function parseUnit(path, original) {
   const line = (n) => sf.getLineAndCharacterOfPosition(n.getStart(sf)).line + 1;
   const imports = {},
     symbols = {},
-    entries = new Map(),
     names = new Map();
   const counts = new Map();
   function bindingNames(name) {
