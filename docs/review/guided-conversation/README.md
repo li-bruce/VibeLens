@@ -46,3 +46,9 @@ Reproduce with `python tools/build_site_viewer.py`, `node tools/test_case_browse
 These checks exercise the updated presentation over the existing 82-event and 138-event captures. No backend/database execution, renderer performance benchmark or new implementation-coverage claim is added here. The canonical viewer and captured model, source and runtime artifacts are unchanged. Earlier review directories remain historical evidence.
 
 Graph-to-AI context export is tracked separately. The current demo shows a developer describing observations in conversation; it does not advertise an implemented selection-to-chat button.
+
+## Published verification
+
+[Pages run 40333810855](https://github.com/li-bruce/VibeLens/actions/runs/40333810855) deployed commit `9964cea`. The [public demo](https://liblog.vip/VibeLens/demo.html?lang=zh-CN&rev=story-6) and [product introduction](https://liblog.vip/VibeLens/index.html?lang=zh-CN&rev=story-6) pass the complete bilingual browser suites, including the mobile confirmation flow.
+
+[Deployment receipt](deployment.json), [demo results](deployed-demo.json), [product results](deployed-product.json) and [15 matching published assets](published-assets.json) retain the exact deployed revision. [Published three-window view](screens/deployed-three-surfaces.png) and [published rule verification](screens/deployed-verify-logic.png) show the accepted output.
