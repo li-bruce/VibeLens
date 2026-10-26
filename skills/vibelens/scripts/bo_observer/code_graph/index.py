@@ -6,6 +6,7 @@ dispatch, or data flow from a syntactic call.
 
 from pathlib import PurePosixPath
 from copy import deepcopy
+from .endpoints import endpoints
 from ..sources import SOURCE_SUFFIXES
 from ..graph.code_structure import module_name
 from ..graph.behavior_model import digest
@@ -151,13 +152,27 @@ def build(index):
         value["code_signature"] = symbol.get("signature", "")
         value["code_returns"] = symbol.get("returns")
         edge(parent, value["id"], "defines", "Defines")
+        for route in endpoints(symbol):
+            endpoint_id = identity("endpoint", [key, route["path"], route["methods"]])
+            endpoint = node(
+                endpoint_id,
+                " ".join(route["methods"] + [route["path"]]),
+                "endpoint",
+                source,
+                summary=route["declaration"],
+            )
+            endpoint["api"] = route
+            edge(endpoint_id, value["id"], "handles", "Handled by", route["declaration"])
         for parameter in symbol.get("parameters", []):
             pid = identity("parameter", [key, parameter["name"]])
             node(
                 pid,
                 parameter["name"],
                 "parameter",
-                source,
+                {
+                    **source,
+                    **({"selection": parameter["selection"]} if parameter.get("selection") else {}),
+                },
                 value["id"],
                 parameter.get("annotation") or "Type unspecified",
             )

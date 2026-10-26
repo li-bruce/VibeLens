@@ -25,6 +25,7 @@ const edges = [
   "join",
   "shared",
   "other",
+  "contains",
   ...dataRelations,
   ...codeRelations,
 ];
@@ -48,7 +49,15 @@ export const presets = [
     hierarchical: true,
     nodes: codeTypes,
     edges: codeRelations,
-    codeTypes: 1,
+    codeTypes: 2,
+  },
+  {
+    id: "api",
+    label: boTranslate("API entries"),
+    hierarchical: true,
+    nodes: ["code-endpoint", "code-function", "code-parameter", "code-file"],
+    edges: ["code-handles", "code-calls", "code-parameter", "code-maps"],
+    codeTypes: 2,
   },
   { id: "states", label: boTranslate("State machine"), nodes: ["state"], edges: ["transition"] },
   {
@@ -119,7 +128,7 @@ export function cleanProfile(value) {
       : allowed.slice();
   return {
     dataTypes: 1,
-    codeTypes: 1,
+    codeTypes: 2,
     nodes: strings(value?.nodes, types),
     edges: strings(value?.edges, edges),
     regions: strings(value?.regions, types),
@@ -137,7 +146,7 @@ export function profileFor(id, custom = []) {
   const preset = presets.find((p) => p.id === id);
   return cleanProfile(
     preset
-      ? { ...preset, dataTypes: 1, codeTypes: 1 }
+      ? { ...preset, dataTypes: 1, codeTypes: 2 }
       : custom.find((p) => p.id === id) || { ...presets[0], dataTypes: 1 },
   );
 }

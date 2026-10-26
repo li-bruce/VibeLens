@@ -33,6 +33,61 @@ class CodeGraphTests(unittest.TestCase):
     def write(self, path, text):
         (self.root / path).write_text(text, encoding="utf-8")
 
+    def test_api_endpoints_source_refresh_and_observer_exclusion(self):
+        self.write("api.py", "from fastapi import FastAPI\napp = FastAPI()\n"
+                   "@app.post('/pictures')\ndef upload(name: str):\n    return name\n"
+                   "@app.get('/api/view')\ndef observer_view():\n    return {}\n")
+        first, model = self.service.refresh()
+        endpoints = [n for n in first["nodes"] if n["code_role"] == "endpoint"]
+        self.assertEqual([n["label"] for n in endpoints], ["POST /pictures"])
+        handler = first["symbols"]["api.py::upload"]
+        self.assertTrue(any(e["from"] == endpoints[0]["id"] and e["to"] == handler
+                            and e["code_relation"] == "handles" for e in first["edges"]))
+        local = query(first, model, focus=handler)
+        self.assertIn(endpoints[0]["id"], {n["id"] for n in local["nodes"]})
+        authored = {"nodes": [{"id": "upload", "source": {"path": "api.py", "symbol": "upload"}}]}
+        full = query(first, authored)
+        self.assertTrue(any(e["from"] == "upload" and e["to"] == handler for e in full["edges"]))
+        self.write("api.py", "from fastapi import FastAPI\napp = FastAPI()\n"
+                   "@app.get('/pictures')\ndef upload(name):\n    return name\n")
+        updated, _ = self.service.refresh()
+        self.assertEqual([n["label"] for n in updated["nodes"] if n["code_role"] == "endpoint"], ["GET /pictures"])
+
+    def test_javascript_literal_route_has_handler_and_nested_parameters(self):
+        self.write("routes.mjs", "import express from 'express';\nconst app = express();\n"
+                   "function upload(req, res) { return res.json({ok:true}); }\n"
+                   "app.post('/pictures', upload);\napp.get('/api/bo/health', upload);\n")
+        graph, _ = self.service.refresh()
+        endpoint = next(n for n in graph["nodes"] if n.get("api", {}).get("path") == "/pictures")
+        self.assertEqual(endpoint["api"]["methods"], ["POST"])
+        handler = graph["symbols"]["routes.mjs::upload"]
+        self.assertTrue(any(e["from"] == endpoint["id"] and e["to"] == handler for e in graph["edges"]))
+        self.assertEqual({n["label"] for n in graph["nodes"] if n.get("parent") == handler and n["code_role"] == "parameter"}, {"req", "res"})
+        self.assertFalse(any(n.get("api", {}).get("path") == "/api/bo/health" for n in graph["nodes"]))
+
+    def test_parameter_source_ranges_python_javascript_and_vue(self):
+        sources = {
+            "unicode.py": "def f(中文, rows: int):\n    return rows\n",
+            "columns.mjs": "// columns\nfunction f(中文, rows) { return rows; }\n",
+            "component.vue": "<template><div /></template>\n<script setup>\nfunction f(中文, rows) { return rows; }\n</script>\n",
+        }
+        for path, source in sources.items():
+            self.write(path, source)
+        graph, _ = self.service.refresh()
+        for path, source in sources.items():
+            parameter = next(n for n in graph["nodes"] if n["code_role"] == "parameter"
+                             and n["label"] == "rows" and n["source"]["path"] == path)
+            location = graph["bindings"][parameter["id"]]["selection"]
+            line = source.splitlines()[location["line"] - 1].encode("utf-16-le")
+            self.assertEqual(line[location["column"]*2:location["end_column"]*2].decode("utf-16-le"), "rows")
+
+    def test_route_method_defaults_and_dynamic_paths_stay_unknown(self):
+        from bo_observer.code_graph.endpoints import endpoints
+        self.assertEqual(endpoints({"entrypoints": ["app.route('/items')"]})[0]["methods"], [])
+        self.assertEqual(endpoints({"entrypoints": ["app.route('/items', methods=['POST', 'PUT'])"]})[0]["methods"], ["POST", "PUT"])
+        self.assertEqual(endpoints({"entrypoints": ["app.get(route_name)"]}), [])
+        self.assertEqual(endpoints({"entrypoints": ["app.get('/api/recordings')"]}), [])
+
     def test_independent_new_file_and_deleted_file(self):
         old, _ = self.service.refresh()
         self.write("new_feature.py", "def added(value):\n    return value\n")

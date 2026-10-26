@@ -94,7 +94,7 @@ for (const [status, label] of [
   ["outside_scope", "Reference outside inspected scope"],
 ])
   assert.ok(
-    dataLines({ data_role: "column", data_metadata: { status } }).some(
+    dataLines({ data_role: "column", data_metadata: { status } }, {}, {}, false, true).some(
       (row) => row.text === label && row.role === "muted",
     ),
   );
@@ -106,7 +106,7 @@ for (const [source, description] of [
   ["driver", "Targets reported by driver"],
 ])
   assert.ok(
-    dataLines({ data_role: "query" }, {}, { target_source: source }, true).some(
+    dataLines({ data_role: "query" }, {}, { target_source: source }, true, true).some(
       (row) => row.text === description,
     ),
   );
@@ -383,11 +383,11 @@ assert.equal(
   "blocked",
 );
 assert.ok(
-  dataLines(nodes[3]).some(
+  dataLines(nodes[3], {}, {}, false, true).some(
     (row) => row.text.includes("Primary key") && row.text.includes("Required"),
   ),
 );
-assert.ok(dataLines(nodes[4]).some((row) => row.text.includes("Awaiting database")));
+assert.ok(dataLines(nodes[4], {}, {}, false, true).some((row) => row.text.includes("Awaiting database")));
 const unknown = dataLines(nodes[5], {}, { status: "executed", rows_known: false, rows: -1 }, true);
 assert.match(unknown[0].text, /Row count unknown/);
 assert.doesNotMatch(unknown[0].text, /-1 rows/);
@@ -451,7 +451,7 @@ assert.equal(coverage.excludedNodes, 0);
 assert.equal(coverage.excludedEdges, 0, "All elements accounts for relations inside folded groups");
 setLocale("zh-CN");
 assert.match(dataLines(nodes[5], event.inputs, event.outputs, true)[0].text, /已执行.*12 条/);
-assert.match(dataLines(nodes[3])[0].text, /主键.*必填/);
+assert.match(dataLines(nodes[3], {}, {}, false, true)[0].text, /主键.*必填/);
 for (const status of [
   "started",
   "returned",

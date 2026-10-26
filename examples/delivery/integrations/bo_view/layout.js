@@ -1,6 +1,6 @@
 import { t as boTranslate } from "./i18n.js";
 // Layout preferences are local view data. They never change model or runtime facts.
-import { graphBounds, nodeType, nodeTypes, viewTypes, relationType } from "./graph-core.js";
+import { graphBounds, nodeTypes, viewTypes, relationType } from "./graph-core.js";
 import { dataRelations, migrateDataFilters } from "./data-layer.js";
 import { codeRelations, migrateCodeFilters } from "./code-layer.js";
 export const layoutKey = (model, projectId) =>
@@ -12,8 +12,9 @@ export const layoutKey = (model, projectId) =>
     model.intent);
 export function emptyFilters() {
   return {
+    containmentTypes: 1,
     dataTypes: 1,
-    codeTypes: 1,
+    codeTypes: 2,
     nodes: Object.keys(nodeTypes),
     edges: [
       "call",
@@ -25,6 +26,7 @@ export function emptyFilters() {
       "join",
       "shared",
       "other",
+      "contains",
       ...dataRelations,
       ...codeRelations,
     ],
@@ -36,6 +38,8 @@ export function emptyFilters() {
 }
 export function cleanFilters(value) {
   value = migrateCodeFilters(migrateDataFilters(value));
+  if (value && value.containmentTypes !== 1 && value.edges?.includes("other"))
+    value = { ...value, edges: [...value.edges, "contains"] };
   const clean = emptyFilters();
   for (const kind of ["nodes", "edges", "regions"])
     if (Array.isArray(value?.[kind]))
@@ -53,6 +57,7 @@ export function emptyLayout() {
     positions: Object.create(null),
     expanded: [],
     camera: null,
+    spatial: { positions: {}, camera: null },
     algorithm: "cluster",
     annotations: Object.create(null),
     focus: null,
@@ -78,6 +83,10 @@ export function migrateNodeIds(state, aliases = {}, edgeAliases = {}) {
         state[field][to] = state[field][from];
         delete state[field][from];
       }
+    if (state.spatial?.positions?.[from] && !state.spatial.positions[to]) {
+      state.spatial.positions[to] = state.spatial.positions[from];
+      delete state.spatial.positions[from];
+    }
     state.expanded = (state.expanded || []).map((id) => (id === from ? to : id));
     if (state.filters?.hiddenNodes)
       state.filters.hiddenNodes = state.filters.hiddenNodes.map((id) => (id === from ? to : id));
@@ -193,6 +202,18 @@ export function readLayout(storage, key) {
     )
       for (const [id, annotation] of Object.entries(value.annotations))
         setAnnotation(clean, id, annotation);
+    if (value.spatial && typeof value.spatial === "object") {
+      for (const [id, p] of Object.entries(value.spatial.positions || {}))
+        if ([p?.x, p?.y, p?.z].every(coordinate))
+          clean.spatial.positions[id] = { x: p.x, y: p.y, z: p.z, pinned: p.pinned === true };
+      const camera = value.spatial.camera;
+      if (
+        camera?.position?.length === 3 &&
+        camera?.target?.length === 3 &&
+        [...camera.position, ...camera.target].every(coordinate)
+      )
+        clean.spatial.camera = camera;
+    }
     clean.focus = typeof value.focus === "string" ? value.focus : null;
     clean.filters = cleanFilters(value.filters);
     if (["cluster", "layered", "stress"].includes(value.algorithm))
@@ -377,9 +398,10 @@ export function refreshHierarchy(graph) {
 }
 export { relationType };
 export const relationStyles = {
+  "code-handles": { label: boTranslate("Handled by"), color: 0x986345, dash: [], arrow: "open" },
   "code-defines": { label: boTranslate("Defines"), color: 0x83929e, dash: [2, 5], arrow: "none" },
-  "code-calls": { label: boTranslate("Static call"), color: 0x2476ad, dash: [6, 4], arrow: "open" },
-  "code-imports": { label: boTranslate("Import"), color: 0x8172a3, dash: [3, 4], arrow: "open" },
+  "code-calls": { label: boTranslate("Static call"), color: 0x2476ad, dash: [], arrow: "open" },
+  "code-imports": { label: boTranslate("Import"), color: 0x8172a3, dash: [], arrow: "open" },
   "code-inherits": { label: boTranslate("Inheritance"), color: 0x975b86, dash: [], arrow: "open" },
   "code-parameter": { label: boTranslate("Parameter"), color: 0x627f9c, dash: [], arrow: "open" },
   "code-maps": {
@@ -389,7 +411,7 @@ export const relationStyles = {
     arrow: "open",
   },
   call: { label: boTranslate("Call"), color: 0x2476ad, dash: [], arrow: "open" },
-  flow: { label: boTranslate("Flow"), color: 0x4e647b, dash: [], arrow: "filled" },
+  flow: { label: boTranslate("Flow"), color: 0x4e647b, dash: [6, 4], arrow: "filled" },
   transition: {
     label: boTranslate("State transition"),
     color: 0x8c57ad,
@@ -402,18 +424,29 @@ export const relationStyles = {
     dash: [3, 5],
     arrow: "diamond",
   },
-  data: { label: boTranslate("Value transfer"), color: 0x207e7d, dash: [7, 5], arrow: "open" },
+  data: { label: boTranslate("Value transfer"), color: 0x207e7d, dash: [], arrow: "open" },
   reads: { label: boTranslate("Read"), color: 0x316da4, dash: [], arrow: "open" },
   writes: { label: boTranslate("Write"), color: 0xb16b36, dash: [], arrow: "filled" },
   references: { label: boTranslate("Reference"), color: 0x716a9c, dash: [3, 4], arrow: "open" },
   maps: { label: boTranslate("Mapping"), color: 0x677a88, dash: [8, 3, 2, 3], arrow: "diamond" },
-  transforms: { label: boTranslate("Transform"), color: 0x887130, dash: [7, 4], arrow: "filled" },
+  transforms: { label: boTranslate("Transform"), color: 0x887130, dash: [], arrow: "filled" },
   resource: { label: boTranslate("Resource"), color: 0x7c7b2d, dash: [10, 3, 2, 3], arrow: "open" },
-  join: { label: boTranslate("Join"), color: 0xa36045, dash: [], arrow: "bar" },
+  join: { label: boTranslate("Join"), color: 0xa36045, dash: [6, 4], arrow: "bar" },
   shared: { label: boTranslate("Shared reference"), color: 0x68759e, dash: [2, 6], arrow: "none" },
   contains: { label: boTranslate("Contains"), color: 0x83929e, dash: [2, 5], arrow: "none" },
   other: { label: boTranslate("Relation"), color: 0x677a88, dash: [4, 4], arrow: "open" },
 };
+/** Stroke describes relation meaning; a runtime marker separately shows observation. */
+export function relationStyle(edge) {
+  const members = edge.members || [edge];
+  if (members.length && members.every((m) => m.origin === "capture-field"))
+    return {
+      ...relationStyles.data,
+      label: members[0].label || boTranslate("Recorded field"),
+      dash: [3, 5],
+    };
+  return relationStyles[edge.type] || relationStyles.other;
+}
 // Folding projects endpoints in graph-core. Keep already-visible inner endpoints:
 // an expanded cross-circle call must not turn into a new parent-to-parent call.
 /** Route relations through visible region boundaries while retaining their original endpoints. */
@@ -430,7 +463,7 @@ export function compoundEdges(graph) {
     return out;
   };
   for (const edge of graph.edges) {
-    if (edge.type === "contains") continue; // The enclosure already shows containment.
+    if (edge.type === "contains" && !graph.layered) continue; // The enclosure already shows containment.
     const a = chain(edge.from),
       b = chain(edge.to);
     const from = edge.from,
@@ -448,7 +481,11 @@ export function compoundEdges(graph) {
       type,
       sourceRegion,
       targetRegion,
-      ["python-ast", "source-ast"].includes(edge.origin) ? "static" : "model",
+      ["python-ast", "source-ast"].includes(edge.origin)
+        ? "static"
+        : edge.origin === "capture-field"
+          ? "capture"
+          : "model",
     ].join("|");
     const members = edge.members || [{ ...edge, from: edge.from, to: edge.to }];
     if (!result.has(key))
@@ -809,9 +846,44 @@ function circleTemplates(graph) {
   function pack(id) {
     const b = graph.byId.get(id),
       core = { x: 0, y: 0, radius: nodeRadius(b) };
-    const children = (tree.children.get(id) || [])
+    let children = (tree.children.get(id) || [])
       .map(pack)
       .sort((a, b) => b.radius - a.radius || a.id.localeCompare(b.id));
+    // Repeated sibling types get local packing neighborhoods, without adding
+    // synthetic containment to the graph. Small groups retain their simple pack.
+    const types = new Map();
+    for (const child of children) {
+      const type = graph.byId.get(child.id).type;
+      if (!types.has(type)) types.set(type, []);
+      types.get(type).push(child);
+    }
+    if (children.length >= 6 && types.size > 1) {
+      children = [...types]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([type, members]) => {
+          const circles = [],
+            items = [];
+          for (const child of members) {
+            const point = placeCircle(child.radius, circles);
+            circles.push(point);
+            items.push(
+              ...child.items.map((item) => ({
+                ...item,
+                x: item.x + point.x - child.cx,
+                y: item.y + point.y - child.cy,
+              })),
+            );
+          }
+          const enclosure = encloseCircles(circles);
+          return {
+            id: type,
+            cx: enclosure.x,
+            cy: enclosure.y,
+            radius: enclosure.radius + 15,
+            items,
+          };
+        });
+    }
     const self = children.length > 0 && hasSelfRelation(graph, id);
     const items = [{ id, x: -b.w / 2, y: -31, w: b.w, h: b.h }],
       occupied = children.length && !self ? [] : [core];
@@ -847,7 +919,7 @@ function circleTemplates(graph) {
   return templates;
 }
 // Pack each visible subtree into a circle, with its own core as the origin.
-// ELK places only the top-level circles, so it cannot flatten their contents.
+// Semantic clusters place only top-level circles and never flatten their contents.
 async function clusteredLayout(elk, graph, state) {
   const tree = hierarchyOf(graph),
     templates = circleTemplates(graph),
@@ -863,20 +935,55 @@ async function clusteredLayout(elk, graph, state) {
       b = owner(e.to);
     if (a !== b) links.set(a + ">" + b, { id: "group:" + a + ">" + b, sources: [a], targets: [b] });
   }
-  const output = await elk.layout({
-    id: "root",
-    layoutOptions: {
-      "elk.algorithm": "stress",
-      "elk.randomSeed": "42",
-      "elk.stress.iterationLimit": "250",
-      "elk.stress.desiredEdgeLength": "480",
-      "elk.spacing.nodeNode": "140",
-      "elk.spacing.componentComponent": "140",
-    },
-    children: roots.map((c) => ({ id: c.id, width: 2 * c.radius, height: 2 * c.radius })),
-    edges: [...links.values()],
+  const units = roots.map((c) => {
+    const pinned = c.items.find((item) => state.positions[item.id]?.pinned);
+    return {
+      id: c.id,
+      type: graph.byId.get(c.id).type,
+      radius: c.radius,
+      pin: pinned
+        ? {
+            x: state.positions[pinned.id].x - pinned.x + c.cx,
+            y: state.positions[pinned.id].y - pinned.y + c.cy,
+          }
+        : null,
+    };
   });
-  const proposed = new Map(output.children.map((p) => [p.id, p])),
+  const unitEdges = [...links.values()].map((e) => ({ from: e.sources[0], to: e.targets[0] }));
+  // Physics runs away from rendering and input; each request owns its worker.
+  const positions =
+    typeof Worker === "undefined" && typeof window === "undefined"
+      ? // Headless/CLI layout checks execute the same solver, with no browser shim.
+        (await import("./cluster-layout.js")).clusterUnits(units, unitEdges)
+      : await new Promise((resolve, reject) => {
+          const worker = new Worker(new URL("./cluster-worker.js", import.meta.url), {
+            type: "module",
+          });
+          const timeout = setTimeout(() => {
+            worker.terminate();
+            reject(Error("Cluster layout timed out"));
+          }, 30000);
+          worker.onmessage = ({ data }) => {
+            clearTimeout(timeout);
+            worker.terminate();
+            data.error ? reject(Error(data.error)) : resolve(data.positions);
+          };
+          worker.onerror = (error) => {
+            clearTimeout(timeout);
+            worker.terminate();
+            reject(Error(error.message));
+          };
+          worker.postMessage({ units, edges: unitEdges });
+        });
+  const proposed = new Map(
+      positions.map((p) => [
+        p.id,
+        {
+          x: p.x - roots.find((c) => c.id === p.id).radius,
+          y: p.y - roots.find((c) => c.id === p.id).radius,
+        },
+      ]),
+    ),
     result = Object.create(null),
     occupied = [];
   const hasPin = (c) => c.items.some((item) => state.positions[item.id]?.pinned);
@@ -900,16 +1007,56 @@ async function clusteredLayout(elk, graph, state) {
       edges: graph.edges,
       rawEdges: graph.rawEdges,
     }).find((r) => r.id === c.id);
+    // The solver separates circular subtree footprints. Testing their enclosing
+    // rectangles again would unnecessarily shove a corner neighbor out of its
+    // type cluster, even though the actual circles do not overlap.
+    const center = enclosure
+      ? { x: enclosure.cx, y: enclosure.cy }
+      : { x: origin.x + c.cx, y: origin.y + c.cy };
+    const radius = enclosure?.radius || c.radius;
+    const move = anchor
+      ? { x: 0, y: 0 }
+      : placeCircle(
+          radius,
+          occupied.map((p) => ({ x: p.x - center.x, y: p.y - center.y, radius: p.radius })),
+        );
+    let dx = move.x,
+      dy = move.y;
     const bounds = enclosure || {
-      x: origin.x + c.cx - c.radius,
-      y: origin.y + c.cy - c.radius,
-      w: 2 * c.radius,
-      h: 2 * c.radius,
+      x: center.x - radius,
+      y: center.y - radius,
+      w: radius * 2,
+      h: radius * 2,
     };
-    const next = anchor ? bounds : freePosition(bounds, bounds.x, bounds.y, occupied),
-      dx = next.x - bounds.x,
-      dy = next.y - bounds.y;
-    occupied.push({ ...bounds, x: next.x, y: next.y });
+    // Keep the established branch-boundary contract: foreign labels stay out of
+    // expanded regions' full label bounds. Ordinary root pairs use circles so
+    // a conservative rectangle pass cannot disperse every semantic cluster.
+    if (!anchor) {
+      const blockers = occupied.filter((p) => enclosure || p.region).map((p) => p.bounds);
+      for (let pass = 0; pass <= occupied.length + 1; pass++) {
+        const next = freePosition(bounds, bounds.x + dx, bounds.y + dy, blockers);
+        dx = next.x - bounds.x;
+        dy = next.y - bounds.y;
+        const correction = placeCircle(
+          radius,
+          occupied.map((p) => ({
+            x: p.x - center.x - dx,
+            y: p.y - center.y - dy,
+            radius: p.radius,
+          })),
+        );
+        if (Math.hypot(correction.x, correction.y) < 0.01) break;
+        dx += correction.x;
+        dy += correction.y;
+      }
+    }
+    occupied.push({
+      x: center.x + dx,
+      y: center.y + dy,
+      radius,
+      region: !!enclosure,
+      bounds: { ...bounds, x: bounds.x + dx, y: bounds.y + dy },
+    });
     for (const b of boxes)
       result[b.id] = { x: b.x + dx, y: b.y + dy, pinned: !!state.positions[b.id]?.pinned };
   }

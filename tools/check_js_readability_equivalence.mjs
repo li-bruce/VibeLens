@@ -1,31 +1,31 @@
 /** Compare maintained JavaScript syntax with a Git revision before readability edits. */
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const { values } = parseArgs({
-  options: { base: { type: "string" }, out: { type: "string" }, "base-skill-path": { type: "string", default: "skills/vibelens" } },
+  options: {
+    base: { type: "string" },
+    out: { type: "string" },
+    "base-skill-path": { type: "string", default: "skills/vibelens" },
+  },
 });
 if (!values.base) throw Error("Pass --base <commit> to select the comparison revision.");
 const adapter = "skills/vibelens/scripts/bo_observer/adapters/javascript/";
 const viewer = "skills/vibelens/assets/stategraph-viewer/";
 const require = createRequire(path.join(root, adapter, "package.json"));
 const ts = require("typescript");
-const vendor = new Set(["pixi.min.js", "elk.bundled.js", "elk-worker.min.js"]);
-const files = [
-  ...fs
-    .readdirSync(path.join(root, viewer))
-    .filter((name) => name.endsWith(".js") && !vendor.has(name))
-    .map((name) => viewer + name),
-  ...fs
-    .readdirSync(path.join(root, adapter))
-    .filter((name) => name.endsWith(".mjs"))
-    .map((name) => adapter + name),
-];
+const inventory = JSON.parse(
+  execFileSync(process.env.BO_PYTHON || "python", ["tools/source_scope.py"], {
+    cwd: root,
+    encoding: "utf8",
+  }),
+);
+const files = inventory.javascript.filter((name) => name.startsWith("skills/vibelens/"));
 
 /** Retain token values and child order; discard comments, positions, and grouping. */
 function syntax(source, name) {
@@ -48,19 +48,28 @@ function syntax(source, name) {
   return JSON.stringify(normalize(tree));
 }
 
+const added = [];
 const changes = files.filter((name) => {
-  const baselineName = values["base-skill-path"].replace(/\/$/, "") + name.slice("skills/vibelens".length);
-  const before = execFileSync("git", ["show", values.base + ":" + baselineName], {
+  const baselineName =
+    values["base-skill-path"].replace(/\/$/, "") + name.slice("skills/vibelens".length);
+  const baseline = spawnSync("git", ["show", values.base + ":" + baselineName], {
     cwd: root,
     encoding: "utf8",
     maxBuffer: 10 * 1024 * 1024,
   });
-  return syntax(before, name) !== syntax(fs.readFileSync(path.join(root, name), "utf8"), name);
+  if (baseline.status !== 0) {
+    added.push(name);
+    return true;
+  }
+  return (
+    syntax(baseline.stdout, name) !== syntax(fs.readFileSync(path.join(root, name), "utf8"), name)
+  );
 });
 const result = {
   base: values.base,
   javascript_modules: files.length,
   executable_ast_changes: changes,
+  added_modules: added,
   valid: changes.length === 0,
   scope: "TypeScript syntax trees; comments, source locations and redundant parentheses excluded",
 };

@@ -1,5 +1,5 @@
 /** A small illustrated tour of the viewer, independent of the runnable demo. */
-import { t, onLanguageChange } from "./site-ui.mjs?rev=0.7.2";
+import { t, onLanguageChange } from "./site-ui.mjs?rev=0.8.0";
 
 const host = document.getElementById("viewer-tour");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");

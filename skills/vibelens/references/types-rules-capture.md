@@ -68,3 +68,11 @@ Business uses its own neutral ports. Observation methods use bo_, classes BO, wi
 Developers may change business freely; AI maintains stable IDs, source bindings, types, probes, white-box expectations, and existing gates per iteration. Report broken mappings on rename/refactor/removal; graph cache must not hide stale bindings. Ordinary manual edits are not automatically consumed by a Skill.
 
 Test skipped out-of-region payload construction, complete boundaries, stop/failure restoration, equivalent off/filtered/fault outcomes, different abstraction steps over unchanged raw events, intermediate changes and identity isolation, evidence-only animation, and stable personal notes/core markers that do not alter source or permissions.
+
+## Readable graph evidence
+
+- Keep business summaries specific to the implemented action. Put catalog provenance and capture diagnostics in node details, not repeated canvas captions.
+- Captured fields are event payloads. They may be adapter-produced summaries rather than source variables or function returns. Keep their owning operation, input/output path and nested structure. Without an explicit lexical binding, open the owner file as context without token highlighting. Source parameters retain their actual declaration, exact range and parent function. Keep Q data operations and their event fields in the data-operations layer; connect actual functions through explicit source mappings. Commit outcomes belong only to transaction operations.
+- Bind business actions to relevant states with explicit graph edges backed by transition declarations or source/runtime evidence. Similar labels do not establish a relation. Test preconditions, successful transitions and failed/rolled-back operations independently.
+- Use solid edges for concrete calls, parameters and data processing, dashed edges for rules, mappings and conceptual associations. Runtime observation remains a separate marker. Never describe a declared static call as an executed call.
+- The optional Layers control separates semantic levels for viewing. Folding, source mappings, annotations and runtime facts retain the same identities; switching back to 2D preserves the layout. Collection diagnostics remain available in Analysis details.

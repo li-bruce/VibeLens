@@ -10,6 +10,7 @@
 *.png binary
 *.zip binary
 **/pixi.min.js -whitespace linguist-vendored=true
+**/spatial-*.vendor.js -text -whitespace linguist-vendored=true
 examples/delivery/observer_generated/** linguist-generated=true
 examples/delivery/.release/** linguist-generated=true
 examples/team-archive/.release/** linguist-generated=true
@@ -20,6 +21,35 @@ examples/team-archive/static/graph/elk-worker.min.js -text -whitespace linguist-
 # Frozen evidence must retain the bytes that its recorded hashes describe.
 docs/assessment/** -text
 docs/review/** -text
+# Raw Windows test output retains original line endings in the review archive.
+docs/review/spatial-graph/** -whitespace
 tests/fixtures/** -text
 examples/team-archive/review/** -text
 examples/*/.release/** -text
+# New spatial acceptance snapshots retain their recorded CRLF/LF bytes too.
+examples/*/.release/stategraph/spatial-*/** -whitespace
+
+# Preserve exact bytes of this viewer regression evidence.
+docs/review/viewer-controls/** -whitespace
+docs/review/spatial-workspace/** -whitespace
+examples/*/.release/stategraph/viewer-controls-*/** -whitespace
+
+# Keep raw spatial ruler failure and acceptance receipts byte-for-byte.
+docs/review/spatial-ruler/** -whitespace
+
+# Preserve separately replaceable routing distributions and raw review receipts.
+**/routing-*.vendor.js -text -whitespace linguist-vendored
+**/index.js.map -text -whitespace linguist-vendored
+**/libavoid.wasm binary linguist-vendored
+docs/review/spatial-routing/** -whitespace
+
+# Preserve raw failure and retest output for the solid-object correction.
+docs/review/spatial-objects/** -whitespace
+
+# Retain raw v0.8.0 failure/retest receipts and frozen candidate evidence.
+docs/review/release-v0.8.0/** -whitespace
+examples/*/.release/stategraph/readability-*/** -whitespace
+
+# This watched test is fingerprinted in frozen delivery approvals.
+# Preserve its exact CRLF bytes when checking out on either operating system.
+examples/delivery/tests/test_graph_layout.mjs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -1,0 +1,111 @@
+{
+  "passed": true,
+  "checks": {
+    "quietCapture": {
+      "shown": [
+        "committed",
+        "status"
+      ],
+      "all": 18
+    },
+    "stateLinks": [
+      [
+        "state.ready",
+        "publish"
+      ],
+      [
+        "publish",
+        "state.published"
+      ]
+    ],
+    "initial3D": {
+      "renderer": "Three.js",
+      "perspective": true,
+      "webgl": true,
+      "nodes": 13,
+      "edges": 12,
+      "labels": 18,
+      "drawCalls": 25,
+      "geometries": 16,
+      "frames": 2,
+      "renderP95Ms": 120.60000014305115,
+      "layoutMs": 19.200000047683716,
+      "busy": false,
+      "volumes": [
+        {
+          "id": "publish",
+          "layer": "business",
+          "center": {
+            "x": -215.35804109933235,
+            "y": 780,
+            "z": 211.66488855773787
+          },
+          "radius": 65,
+          "height": 38,
+          "projection": false,
+          "members": [
+            "publish"
+          ]
+        },
+        {
+          "id": "publish",
+          "layer": "execution",
+          "center": {
+            "x": -229.9109311094092,
+            "y": 221,
+            "z": 188.94655207669095
+          },
+          "radius": 411.83913711234,
+          "height": 43,
+          "projection": true,
+          "members": [
+            "load",
+            "select",
+            "save",
+            "transaction",
+            "field:transaction:out:status",
+            "field:transaction:out:committed",
+            "field:publish:in:rollback",
+            "field:publish:out:published",
+            "field:publish:out:status"
+          ]
+        },
+        {
+          "id": "transaction",
+          "layer": "execution",
+          "center": {
+            "x": -354.83847530993773,
+            "y": 221,
+            "z": 138.29357364212083
+          },
+          "radius": 229.11592579903063,
+          "height": 43,
+          "projection": false,
+          "members": [
+            "transaction",
+            "field:transaction:out:status",
+            "field:transaction:out:committed"
+          ]
+        }
+      ],
+      "camera": {
+        "position": [
+          1022.0541381040368,
+          1202.0687810258592,
+          1522.5012670485125
+        ],
+        "target": [
+          -124.39590569717602,
+          390,
+          89.43871229699641
+        ]
+      }
+    },
+    "roundTrip": true,
+    "groupDrag": true,
+    "perspectiveExpansion": true,
+    "replay": true,
+    "languageAndMobile": true
+  },
+  "errors": []
+}

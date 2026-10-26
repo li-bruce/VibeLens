@@ -112,8 +112,20 @@
         <select id="replay-events" aria-label="Recorded steps"></select
         ><button id="replay-locate" data-icon="locate" aria-label="Locate" title="Locate"></button
         ><button id="replay-export" data-icon="download" aria-label="Export" title="Export"></button
+        ><button id="replay-steps-toggle" aria-expanded="false" aria-controls="replay-selection">
+          Steps</button
         ><span id="replay-note"></span>
       </div>
+      <section id="replay-selection" hidden aria-label="Playback steps">
+        <div class="replay-loop-controls">
+          <label><input type="checkbox" id="replay-loop" />Loop range</label>
+          <select id="replay-loop-from" aria-label="Loop start"></select
+          ><span>→</span>
+          <select id="replay-loop-to" aria-label="Loop end"></select>
+          <button id="replay-include-all">Include all steps</button>
+        </div>
+        <div id="replay-step-list" role="group" aria-label="Included steps"></div>
+      </section>
     </section>
     <div class="workspace">
       <main
@@ -233,32 +245,64 @@
           </div>
           <div id="change-rows"></div>
         </section>
-        <div class="canvas-tools" role="toolbar" aria-label="Canvas controls">
+        <aside id="layer-drawer" class="layer-drawer" aria-label="Graph layers">
           <button
-            id="layout-toggle"
-            data-icon="layout"
-            aria-label="Layout"
+            id="layers-toggle"
+            aria-label="Layers"
+            title="Layers"
             aria-expanded="false"
-            aria-controls="layout-panel"
-          ></button>
-          <button id="undo-layout" data-icon="undo" aria-label="Undo layout" disabled></button>
-          <button id="collapse" data-icon="collapse" aria-label="Collapse all"></button>
-          <button id="expand" data-icon="expand" aria-label="Expand one level"></button>
-          <button id="fit" data-icon="fit" aria-label="Fit to canvas"></button>
-          <span class="tool-divider"></span>
-          <button id="zoom-out" data-icon="minus" aria-label="Zoom out"></button>
-          <output id="zoom">100%</output>
-          <button id="zoom-in" data-icon="plus" aria-label="Zoom in"></button>
+            aria-controls="layer-controls"
+          >
+            ☷
+          </button>
+          <button id="layers-all" title="Show all layers" aria-label="Show all layers">◎</button>
+          <div id="layer-controls" role="group" aria-label="Visible layers"></div>
+        </aside>
+        <output id="route-status" hidden></output>
+        <div class="view-tools">
+          <div class="canvas-tools" role="toolbar" aria-label="Canvas controls">
+            <button
+              id="layered-toggle"
+              aria-pressed="false"
+              aria-label="Switch to 3D"
+              title="Switch to 3D"
+            >
+              2D
+            </button>
+            <div class="toolbar-spacing">
+              <label class="layer-spacing" title="Layer separation">
+                <span aria-hidden="true">↕</span>
+                <input
+                  id="layer-gap"
+                  type="range"
+                  min="80"
+                  max="600"
+                  step="20"
+                  value="260"
+                  aria-label="Layer separation"
+                />
+              </label>
+            </div>
+            <span class="tool-divider"></span>
+            <button id="arrange" data-icon="layout" aria-label="Arrange" title="Arrange"></button>
+            <button id="top-view" title="Top view" aria-label="Top view">⌃</button>
+            <button id="undo-layout" data-icon="undo" aria-label="Undo layout" disabled></button>
+            <button id="collapse" data-icon="collapse" aria-label="Collapse all"></button>
+            <button id="expand" data-icon="expand" aria-label="Expand one level"></button>
+            <button id="fit" data-icon="fit" aria-label="Fit to canvas"></button>
+            <span class="tool-divider"></span>
+            <button id="zoom-out" data-icon="minus" aria-label="Zoom out"></button>
+            <output id="zoom">100%</output>
+            <button id="zoom-in" data-icon="plus" aria-label="Zoom in"></button>
+            <span class="tool-divider"></span>
+            <select id="edge-routing" aria-label="Edge routing" title="Edge routing">
+              <option value="curve">Curved</option>
+              <option value="straight">Straight</option>
+              <option value="orthogonal">Orthogonal</option>
+              <option value="bus">Bus</option>
+            </select>
+          </div>
         </div>
-        <section id="layout-panel" class="small-popover" hidden aria-label="Layout settings">
-          <label for="layout">Layout</label>
-          <select id="layout" aria-label="Layout algorithm">
-            <option value="cluster">Circular groups</option>
-            <option value="layered">Layered layout</option>
-            <option value="stress">Relationship layout</option>
-          </select>
-          <button id="arrange">Arrange</button>
-        </section>
         <button
           id="selection-menu"
           data-icon="more"
@@ -290,7 +334,9 @@
           </div>
         </section>
         <aside id="legend-panel" aria-label="Legend">
+          <span id="legend-mode">2D</span>
           <div id="legend-types" aria-label="Visible node types"></div>
+          <span id="key-legend" hidden><i class="key-dot"></i>Primary key</span>
           <div class="legend relation-legend" aria-label="Visible edge types"></div>
           <div class="marker-legend">
             <span title="Running">▶</span><span title="Finished">✓</span
@@ -303,7 +349,9 @@
     </div>
     <footer>
       <span id="selection">Right-click a node or edge for actions.</span
-      ><span id="layout-status" role="status"></span><span id="renderer">PixiJS</span>
+      ><span id="layout-status" role="status"></span
+      ><span title="Solid: calls and data transfer · Dashed: logic and associations">━ · ┄</span
+      ><span id="renderer">PixiJS</span>
     </footer>
     <div hidden aria-hidden="true">
       <select id="version">

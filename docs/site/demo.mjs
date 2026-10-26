@@ -1,6 +1,6 @@
-import { DemoSession } from "./demo-model.mjs?rev=0.7.2";
-import { messages } from "./demo-messages.mjs?rev=0.7.2";
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=0.7.2";
+import { DemoSession } from "./demo-model.mjs?rev=0.8.0";
+import { messages } from "./demo-messages.mjs?rev=0.8.0";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=0.8.0";
 
 const session = new DemoSession();
 const stages = ["conversation", "inspect", "record", "iterate"];
@@ -240,10 +240,7 @@ function renderControls() {
 }
 
 function render() {
-  document.title =
-    locale() === "en"
-      ? "VibeLens — Interactive walkthrough"
-      : "VibeLens · 交互演示";
+  document.title = locale() === "en" ? "VibeLens — Interactive walkthrough" : "VibeLens · 交互演示";
   document.querySelectorAll("[data-stage]").forEach((button) => {
     const selected = button.dataset.stage === stage;
     button.setAttribute("aria-selected", String(selected));

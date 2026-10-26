@@ -126,7 +126,7 @@ class EngineTests(unittest.TestCase):
     def test_compound_entry_resolves_initial_descendants(self):
         from transitions.extensions import HierarchicalMachine
         m = self.fixture(['idle', {'name':'active','initial':'a','children':['a','b']}], 'idle',
-            [{'source':'idle','dest':'active','trigger':'go'}], ['idle','active_a','active_b'])
+            [{'source':'idle','dest':'active','trigger':'go'}], ['idle','active','active_a','active_b'])
         self.compare(m, HierarchicalMachine, 'active_b')
         incomplete = BOStateGraph(m, build_id='b').bo_observe('i', state='active', context={},
             revision=0, evidence_id='s0', build_id='b')
@@ -150,7 +150,7 @@ class EngineTests(unittest.TestCase):
             {'name':'a','initial':'one','children':['one','two']},
             {'name':'b','initial':'one','children':['one','two']}]}]
         m=self.fixture(states,'idle',[{'source':'idle','dest':'work','trigger':'go'}],
-            ['idle','work_a_one','work_a_two','work_b_one','work_b_two'])
+            ['idle','work','work_a','work_b','work_a_one','work_a_two','work_b_one','work_b_two'])
         self.compare(m,HierarchicalMachine,['work_a_two','work_b_one'])
         m['machine']['initial']='work'
         m['machine']['transitions']=[{'source':'work_a_one','dest':'work_a_two','trigger':'go'},

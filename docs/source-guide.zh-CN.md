@@ -4,6 +4,8 @@
 
 这份导览按实际执行路径介绍源码。维护中的实现位于 [skills/vibelens](../skills/vibelens/)，示例项目中的同名模块是安装副本，用于验证接入真实项目后的行为。
 
+三维视窗与二维视窗使用同一份图和运行证据。`graph-inventory.js` 汇总各层内容，`graph-links.js` 连接明确的源码与运行锚点，`graph-layers.js` 管理层的分类；`spatial-model.js` 计算包含关系的跨层投影，`spatial-layout.js` 在后台线程布局，`spatial-renderer.js` 管理真实三维摄像机和绘制。`semantic-view.js` 统一键盘和辅助访问入口。模块边界与交互说明见[三维图说明](../skills/vibelens/references/spatial-graph.md)。
+
 ## 先找到对应目录
 
 图标与右键菜单的键盘操作位于 `assets/stategraph-viewer/controls.js`。
@@ -47,7 +49,7 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 1. 应用完成业务判断，通过 [Python BOProbe](../skills/vibelens/scripts/bo_observer/adapters/python/bo_probe.py) 或 [JavaScript BOProbe](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs) 提交指定参数。
 2. 适配器筛选采集字段、抑制观测自身的事件，并排队发送。传输失败单独计数。
 3. [protocol.py](../skills/vibelens/scripts/bo_observer/protocol.py) 校验项目、构建版本、类型及消息大小。
-4. [service.py](../skills/vibelens/scripts/bo_observer/service.py) 的 GraphSession.event 保存事件标识、来源顺序和依赖；snapshot 将真实状态关联到对应事件。
+4. [observation/session.py](../skills/vibelens/scripts/bo_observer/observation/session.py) 的 GraphSession.event 保存事件标识、来源顺序和依赖；snapshot 将真实状态关联到对应事件。
 5. [bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) 的 bo_observe 对照声明检查实际状态及版本。实际状态与声明冲突时保留原始事实并报告差异。
 6. [observation/recording_session.py](../skills/vibelens/scripts/bo_observer/observation/recording_session.py) 保存指定时间段及缺失信息。view/export 返回结构和保留的运行事实。
 
@@ -102,3 +104,33 @@ JavaScript 比较使用原生适配器开发依赖中的 TypeScript。比较排�
     python tools/verify.py
 
 安装模块更新后，示例项目需要重新生成源码关联、检查候选、执行 verify，再 accept/check，并生成一份新的验收记录。
+
+Canvas 图层工具的排序和显隐交互集中在 `layer-ruler.js`，统一间距由底部工具栏调整；坐标和圆周端点计算在 `edge-routing.js`；回放的跳步和循环范围规则在 `replay-selection.js`。这些模块只维护显示和个人设置，录制事实仍由原有记录模块保存。
+
+## Routing and node icons
+
+The shared viewer pipeline is `routing-scene.js` (renderer adapters), `routing-client.js` / `routing-worker.js` (epochs and lifecycle), `routing-engine.js` (routing and typed bundles), `routing-navigation.js` (reusable A* channels), and `routing-geometry.js` (R-tree checks and certified smoothing). `route-picking.js` resolves shared strokes to original edges. `node-icons.js` is generated from selected Tabler vectors; `glyphs.js` and `spatial-geometry.js` draw the same vocabulary in 2D and 3D. Rebuild pinned dependencies with `tools/routing/build.mjs` and icons with `tools/routing/build-icons.mjs`.
+
+二维类型聚集由 [cluster-layout.js](../skills/vibelens/assets/stategraph-viewer/cluster-layout.js) 和其 worker 负责；[route-shapes.js](../skills/vibelens/assets/stategraph-viewer/route-shapes.js) 统一处理直线、曲线和连续虚线；[spatial-geometry.js](../skills/vibelens/assets/stategraph-viewer/spatial-geometry.js) 组合立体对象，供批量绘制和图例共同使用。图层选择在 Canvas2D 中绘制，间距统一由底部调整。
+
+## v0.8.0 模块边界与检查
+
+- `bo_observer/service.py` 负责 HTTP 鉴权、路由和会话借用；[observation/session.py](../skills/vibelens/scripts/bo_observer/observation/session.py) 负责事件接收、版本、因果关系和一致的状态帧。旧的 `service.GraphSession` 导入继续可用。
+- [data/schema_compare.py](../skills/vibelens/scripts/bo_observer/data/schema_compare.py) 独立比较数据库结构；`data/projection.py` 负责把结构投影到图中。
+- 前端 `viewer.js` 连接交互与数据；[detail-panel.js](../skills/vibelens/assets/stategraph-viewer/detail-panel.js)、[edge-panel.js](../skills/vibelens/assets/stategraph-viewer/edge-panel.js)、[change-panel.js](../skills/vibelens/assets/stategraph-viewer/change-panel.js) 分别显示源码与值、关系、步骤变化。面板把选择操作交回协调模块，避免直接修改模型和录制。
+- 源码面板只缓存当前构建和源码版本的文件。异步响应过期或用户已切换节点时，丢弃旧结果。
+
+维护者运行：
+
+```sh
+python tools/check_source.py --format
+python tests/test_source_quality.py
+node tools/test_detail_panel.mjs
+python tools/verify.py --database
+```
+
+[统一源码范围](../tools/source-scope.json) 同时用于格式化、lint 和语法对照。排除开源分发包、生成图标、示例安装副本和历史证据。Ruff 检查 Python 名称和控制流错误，ESLint 检查 JavaScript 名称、重复键等问题；Windows 和 Linux CI 使用相同的固定版本。新增或迁移模块会被语法对照报告为变化，需要明确审查和运行测试，不能用格式检查代替业务或映射验收。
+
+发布前暂存候选版本，再运行 `python tools/check_release_export.py --staged`。CI 检查 `HEAD`：导出两个示例，只恢复已冻结的验收记录，并运行严格的 `check`。这个过程不重建图、不重新批准变更，可发现换行转换、漏提交文件等本地运行不容易暴露的问题。
+
+HTTP 等待测试通过现有检查钩子暂停真实任务，观察到“运行中＋等待中”后释放。状态、函数和 SQLite 写入仍由程序实际执行，保留原有断言。

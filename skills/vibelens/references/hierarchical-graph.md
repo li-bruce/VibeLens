@@ -14,7 +14,7 @@ Spatial grouping does not turn calls/data/permission dependencies into containme
 
 Parent-level edges terminate on region boundaries. Cross-region edges with visible internal endpoints connect those actual endpoints and draw above region fills/nodes. Only collapsed endpoints project to visible ancestors. Do not invent a parent-to-parent call from visible child calls. Regions express containment without duplicate interior contains lines. Never merge relation types or static calls with business flow. Aggregate edges show type/count and reveal original endpoints/evidence. One observed member does not imply the whole aggregate executed.
 
-Stable glyphs: business circle, function hexagon, state double circle, decision diamond, parameter capsule, resource stack. Edges use distinct type colors/dashes/arrows for calls/flow/transitions/decisions/values/resources/joins. Keep a concise visible legend. Runtime badges/values are additional evidence, not replacement type colors.
+Stable semantic icons use the shared Tabler vocabulary: route, function, state, branch, variable, resource stack, database, table and field. Two-dimensional vectors and volumetric three-dimensional strokes come from the same definition; the visible legend uses the actual renderer geometry. Edges retain distinct type colors/dashes/arrows for calls/flow/transitions/decisions/values/resources/joins. Runtime badges/values add evidence without replacing type identity.
 
 Dragging a node, region edge/title, or empty region space moves all descendants, including saved hidden ones. Pins constrain automatic layout; explicit group drag moves pinned children with the group while retaining pins. Automatic movement of collapsed groups translates saved internal coordinates. Expansion uses current parent location, restores relative positions and nested expansion, and places new nodes locally. Make room by moving conflicting unpinned neighbors only, never during polling. Fit the expanded region; breadcrumbs return to ancestors.
 
@@ -37,6 +37,8 @@ The project file is persistent authority; localStorage is cache. Initial empty-p
 ELK.js 0.12.0 runs locally in a Worker. Default deterministic circular packing plus group stress, with layered/stress alternatives, produces fixed positions—not continuous force simulation. Polling cannot drift nodes. Pins outrank compactness. Arrange may reorganize old expanded layouts with undo. These choices borrow [yWorks incremental-layout principles](https://docs.yworks.com/yfiles-html/dguide/layout-incremental_layout/), not proprietary yFiles code. [Hierarchical layout](https://docs.yworks.com/yfiles-html/api/HierarchicalLayout/), [ELK.js](https://github.com/kieler/elkjs), [ELK stress](https://eclipse.dev/elk/reference/algorithms/org-eclipse-elk-stress.html).
 
 ## Rendering and integration
+
+The optional true 3D renderer uses the same inventory, filters and runtime evidence. Read [spatial graph](spatial-graph.md) for semantic layers, cross-layer containment projections, worker layout and performance limits. The following Pixi/ELK details apply to the 2D view.
 
 Assets include PixiJS 8.22.0, ELK, and licenses. graph-core projects nodes/facts; layout handles geometry/gestures; renderer owns drawing/hits/disposal; viewer coordinates UI; preferences/polling handle persistence/refresh. Serve all resources including the Worker from the same origin. Runtime data never goes to CDN/layout services.
 

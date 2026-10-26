@@ -158,7 +158,7 @@ class RefactorTests(unittest.TestCase):
 
     def hierarchical(self):
         m=model();m['machine'].update(states=[{'name':'checking','children':['content','index']},'done'],
-            values=['checking_content','checking_index','done'],initial='checking_content',context={},guards={},
+            values=['checking','checking_content','checking_index','done'],initial='checking_content',context={},guards={},
             transitions=[{'source':'checking','trigger':'finish','dest':'done'}])
         m['nodes']=[{'id':s,'kind':'state','layer':'state','value':s} for s in m['machine']['values']];m['edges']=[]
         return m

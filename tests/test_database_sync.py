@@ -339,6 +339,21 @@ class DatabaseSyncTests(unittest.TestCase):
         next(n for n in changed_model["nodes"] if n["id"] == "db.query")["capture"]["out"]["required_extra"] = "string"
         self.assertTrue(coverage(plan, changed_model, payload, root=self.root)["errors"])
 
+    def test_only_transactions_declare_commit_outcomes(self):
+        """A query returning successfully cannot stand in for a committed transaction."""
+        from bo_observer.data.protocol import validate_data_projection
+        self.assert_valid(synchronize(self.root))
+        model = self.model()
+        for node in model["nodes"]:
+            if node.get("data_role") not in {"query", "transform"}:
+                continue
+            transaction = node["data_metadata"]["action"] == "transaction"
+            self.assertEqual("committed" in node["capture"]["out"], transaction)
+        query = next(node for node in model["nodes"] if node["id"] == "db.query")
+        query["capture"]["out"]["committed"] = "boolean"
+        with self.assertRaises(ValueError):
+            validate_data_projection(model)
+
     def test_data_gate_requires_failed_case_error_and_rollback(self):
         from bo_observer.workflow.implementation_coverage import runtime_errors as coverage
         plan, model, payload = self.recorded_data()

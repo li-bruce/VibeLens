@@ -1,4 +1,4 @@
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=0.7.2";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=0.8.0";
 
 const views = ["business", "state", "decision", "function", "data", "source", "mixed"];
 let view = "business";
@@ -88,9 +88,7 @@ function diagram() {
 /** View selection changes presentation only, leaving the concept relationships intact. */
 function render() {
   document.title =
-    locale() === "en"
-      ? "VibeLens — Understand what you build"
-      : "VibeLens · 看懂你正在开发的程序";
+    locale() === "en" ? "VibeLens — Understand what you build" : "VibeLens · 看懂你正在开发的程序";
   document.querySelectorAll("[data-view]").forEach((button) => {
     const selected = button.dataset.view === view;
     button.setAttribute("aria-selected", String(selected));

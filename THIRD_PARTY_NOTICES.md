@@ -21,6 +21,11 @@ dependencies, not bundled with the Skill.
 |---|---|---|---|
 | [PixiJS](https://github.com/pixijs/pixijs/tree/v8.22.0) | 8.22.0 | MIT | Browser bundle included with the Skill and example |
 | [ELK.js](https://github.com/kieler/elkjs) | 0.12.0 | EPL-2.0 | Unmodified browser bundle and worker from the npm release; license retained as `ELK-LICENSE.md` |
+| [Tabler Icons](https://github.com/tabler/tabler-icons) | 3.49.0 | MIT | Selected vectors sampled into planar icons; semantic 3D solids are original VibeLens geometry; `NODE-ICONS-LICENSE.txt` |
+| [libavoid-js](https://github.com/Aksem/libavoid-js) | 0.4.5 | LGPL-2.1-or-later | Unmodified, separately replaceable JS/Wasm; [source and replacement notes](skills/vibelens/references/vendor/README.md) |
+| [D3 hierarchy / shape / Delaunay](https://github.com/d3) | 3.1.2 / 3.2.0 / 6.0.4 | ISC | Typed bundle grouping, spline sampling and navigation channels |
+| [RBush](https://github.com/mourner/rbush) | 4.0.1 | MIT | Spatial obstacle lookup |
+| [ngraph.graph / path](https://github.com/anvaka/ngraph.path) | 20.1.2 / 1.6.1 | MIT | Reusable channel graph and A* search |
 | [transitions](https://github.com/pytransitions/transitions/tree/0.9.3) | 0.9.3 | MIT | Installed by pip; not vendored |
 | [six](https://github.com/benjaminp/six/tree/1.17.0) | 1.17.0 | MIT | Installed by pip; not vendored |
 

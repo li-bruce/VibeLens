@@ -1,0 +1,151 @@
+{
+  "passed": true,
+  "checks": {
+    "quietCapture": {
+      "shown": [
+        "committed",
+        "status"
+      ],
+      "all": 18
+    },
+    "operationFieldsAreNotSourceParameters": true,
+    "stateLinks": [
+      [
+        "state.ready",
+        "publish"
+      ],
+      [
+        "publish",
+        "state.published"
+      ]
+    ],
+    "initial3D": {
+      "renderer": "Three.js",
+      "nodeRendering": "instanced-mesh",
+      "perspective": true,
+      "webgl": true,
+      "nodes": 13,
+      "edges": 12,
+      "labels": 20,
+      "drawCalls": 30,
+      "geometries": 18,
+      "frames": 3,
+      "renderP95Ms": 95.30000019073486,
+      "layoutMs": 15,
+      "busy": false,
+      "volumes": [
+        {
+          "id": "publish",
+          "layer": "business",
+          "center": {
+            "x": -211.13822224197293,
+            "y": 1040,
+            "z": 209.7431382034964
+          },
+          "radius": 65,
+          "height": 38,
+          "projection": false,
+          "members": [
+            "publish"
+          ]
+        },
+        {
+          "id": "publish",
+          "layer": "operations",
+          "center": {
+            "x": -226.56807932646726,
+            "y": 481,
+            "z": 135.9856650459251
+          },
+          "radius": 353.01870892953116,
+          "height": 43,
+          "projection": true,
+          "members": [
+            "load",
+            "select",
+            "save",
+            "transaction",
+            "field:transaction:out:status",
+            "field:transaction:out:committed"
+          ]
+        },
+        {
+          "id": "publish",
+          "layer": "execution",
+          "center": {
+            "x": -209.70992037819371,
+            "y": 234,
+            "z": 243.71355920101672
+          },
+          "radius": 238.88097733271226,
+          "height": 38,
+          "projection": true,
+          "members": [
+            "field:publish:in:rollback",
+            "field:publish:out:published",
+            "field:publish:out:status"
+          ]
+        },
+        {
+          "id": "transaction",
+          "layer": "operations",
+          "center": {
+            "x": -335.5624562641951,
+            "y": 481,
+            "z": 146.09526146363638
+          },
+          "radius": 236.3811069058132,
+          "height": 43,
+          "projection": false,
+          "members": [
+            "transaction",
+            "field:transaction:out:status",
+            "field:transaction:out:committed"
+          ]
+        }
+      ],
+      "camera": {
+        "position": [
+          -118.5637940979115,
+          2725.175867643707,
+          67.83756973166655
+        ],
+        "target": [
+          -118.5637940979115,
+          520,
+          67.72731093851604
+        ]
+      }
+    },
+    "sharedLayerControls": true,
+    "roundTrip": true,
+    "spatialUndo": true,
+    "groupHit": {
+      "point": {
+        "x": 719.9999999999999,
+        "y": 558.5000000000001
+      },
+      "tag": "CANVAS",
+      "text": ""
+    },
+    "movedAfterGroup": [
+      "publish",
+      "load",
+      "select",
+      "save",
+      "transaction",
+      "field:transaction:out:status",
+      "field:transaction:out:committed",
+      "field:publish:in:rollback",
+      "field:publish:out:published",
+      "field:publish:out:status"
+    ],
+    "pickedAfterGroup": "publish",
+    "groupDrag": true,
+    "perspectiveExpansion": true,
+    "replay": true,
+    "languageAndMobile": true,
+    "actualTransactionOutcomes": true
+  },
+  "errors": []
+}

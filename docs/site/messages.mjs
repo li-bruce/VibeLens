@@ -3,9 +3,15 @@ export const extra = {
   "tour.aria": ["Viewer tour", "图分析页面演示"],
   "tour.kicker": ["Inside VibeLens", "看看 VibeLens 界面"],
   "tour.title": ["A closer look,\none step at a time.", "逐层展开，\n看清每一步。"],
-  "tour.body": ["Expand a flow, leave a note, and replay an operation. Keep the graph in view as you inspect the details.", "展开流程、留下批注、回放操作，在图上逐步查看细节。"],
+  "tour.body": [
+    "Explore the same graph in 2D or 3D. Expand a flow, leave a note, and replay an operation while keeping related layers in view.",
+    "在二维和三维中查看同一张图。展开流程、留下批注、回放操作，同时看清各层之间的联系。",
+  ],
   "tour.illustration": ["Illustrated tour", "界面示意演示"],
-  "tour.graph": ["Expand a flow and inspect its state and values", "展开流程并查看其中的状态和数值"],
+  "tour.graph": [
+    "Expand a flow and inspect its state and values",
+    "展开流程并查看其中的状态和数值",
+  ],
   "tour.business": ["Business flow", "业务流程"],
   "tour.recording": ["Recording", "正在录制"],
   "tour.replay": ["Step 2 of 3", "第 2 步，共 3 步"],
@@ -19,11 +25,26 @@ export const extra = {
   "tour.pause": ["Pause tour", "暂停演示"],
   "tour.play": ["Play tour", "播放演示"],
   "tour.next": ["Next step", "下一步"],
-  "tour.step.overview": ["Start with the flow. Open the part you want to understand.", "从流程开始，打开你关心的环节。"],
-  "tour.step.expand": ["Expand a region to see its functions, states and values together.", "展开区域，一起查看相关函数、状态和数值。"],
-  "tour.step.note": ["Right-click to add a note, mark a core node or pin its position.", "右键添加批注、标记核心节点或固定位置。"],
-  "tour.step.record": ["Start recording, then operate your application.", "开始录制，然后在程序中执行操作。"],
-  "tour.step.replay": ["Stop and replay. Inspect what changed at each step.", "停止并回放，查看每一步发生的变化。"],
+  "tour.step.overview": [
+    "Start with the flow. Open the part you want to understand.",
+    "从流程开始，打开你关心的环节。",
+  ],
+  "tour.step.expand": [
+    "Expand a region to see its functions, states and values together.",
+    "展开区域，一起查看相关函数、状态和数值。",
+  ],
+  "tour.step.note": [
+    "Right-click to add a note, mark a core node or pin its position.",
+    "右键添加批注、标记核心节点或固定位置。",
+  ],
+  "tour.step.record": [
+    "Start recording, then operate your application.",
+    "开始录制，然后在程序中执行操作。",
+  ],
+  "tour.step.replay": [
+    "Stop and replay. Inspect what changed at each step.",
+    "停止并回放，查看每一步发生的变化。",
+  ],
   "level.business.title": ["Follow the whole operation", "看清完整流程"],
   "level.business.body": [
     "See the main activities and how work passes between them. Expand a region when you need its details.",

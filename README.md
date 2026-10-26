@@ -12,6 +12,15 @@ Vibe coding can produce a working screen while leaving its decisions, state chan
 
 These are views of **one typed network** with shared nodes and typed relationships. Expand a region, follow a relation, or combine types to answer the question in front of you.
 
+Use **3D** for a perspective view of connected semantic layers. Rotate the graph, expand a region across layers, follow its colored containment projections, or focus one layer. Spatial positions and the camera are saved with the project. [Interaction and source guide](skills/vibelens/references/spatial-graph.md).
+
+<details>
+<summary>See the spatial viewer</summary>
+
+![Connected business, state, function and data layers](docs/review/spatial-graph/browser-delivery/3d-angled.png)
+
+</details>
+
 ## Two development modes
 
 The Skill asks you to choose when adopting it:
@@ -95,7 +104,7 @@ Alternatively, install with the Skills CLI:
 npx skills add li-bruce/VibeLens --skill vibelens
 ```
 
-You can also ask Codex's Skill installer to install from [the Skill directory](https://github.com/li-bruce/VibeLens/tree/main/skills/vibelens). Use `main` for current updates or `v0.7.2` for this fixed release. Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.7.2.md), [independent application trial](docs/review/release-v0.7.0/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
+You can also ask Codex's Skill installer to install from [the Skill directory](https://github.com/li-bruce/VibeLens/tree/main/skills/vibelens). Use `main` for current updates or `v0.8.0` for this fixed release. Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.8.0.md), [independent application trial](docs/review/release-v0.7.0/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
 
 English is the maintained source/documentation language. Conversation follows the user; the viewer offers English/Chinese and saves the preference in the project. Original answers and historical evidence retain their original language.
 
@@ -160,4 +169,4 @@ Checks include strict declarations, source/graph drift, independent mapping evid
 
 ## License
 
-[MIT](LICENSE). PixiJS is MIT; ELK.js is EPL-2.0. No proprietary yFiles code is included. See [third-party notices](THIRD_PARTY_NOTICES.md).
+[MIT](LICENSE). PixiJS and Tabler Icons are MIT; ELK.js is EPL-2.0; the separately replaceable libavoid router is LGPL-2.1-or-later. No proprietary yFiles code is included. See [third-party notices](THIRD_PARTY_NOTICES.md).

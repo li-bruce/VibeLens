@@ -1,3 +1,20 @@
+/** Viewer coordinator: connect API snapshots, graph presentation and user actions.
+ * Feature modules own drawing, source/edge/change panels, layout, evidence and
+ * persistence. This module owns view selection and lifecycle; it never executes
+ * application commands or rewrites recorded facts.
+ */
+import { renderStepChanges } from "./change-panel.js";
+import { renderEdgeDetail } from "./edge-panel.js";
+import { createDetailPanel } from "./detail-panel.js";
+import { LayerRuler } from "./layer-ruler.js";
+import { cleanRoute } from "./edge-routing.js";
+import { cleanReplaySelection, selectedReplayPlan, nextReplayIndex } from "./replay-selection.js";
+import { SemanticView } from "./semantic-view.js";
+import { prepareSpatialHierarchy } from "./spatial-model.js";
+import { layers, cleanLayers, layerSlice } from "./graph-layers.js";
+import { spatialLegend } from "./spatial-geometry.js";
+import { SpatialRenderer } from "./spatial-renderer.js";
+import { runtimeOwners } from "./graph-links.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   locale,
@@ -10,6 +27,7 @@ import {
 } from "./i18n.js";
 import { iconButton, installIcons, createContextMenu } from "./controls.js";
 import { createGraphRenderer, nodePoint, bezierAt } from "./renderer.js";
+import { pickRoutes } from "./route-picking.js";
 import { createConversationFocus, discussionContext } from "./conversation.js";
 import { projectStorage } from "./preferences.js";
 import { createPoller } from "./polling.js";
@@ -20,10 +38,8 @@ import {
   recordingMatches,
   connectionStatus,
 } from "./view-lifecycle.js";
-import { databaseWarning, dataRelationEvidence } from "./data-layer.js";
+import { databaseWarning } from "./data-layer.js";
 import { CodeLayer, withCodeGraph, codeTypes, codeRelations, codeSummary } from "./code-layer.js";
-const codeLayer = new CodeLayer();
-let codeLimit = 400;
 import {
   executionIds,
   layoutGraph,
@@ -36,7 +52,6 @@ import {
   parameterSummary,
 } from "./graph-core.js";
 import {
-  layoutKey,
   readLayout,
   writeLayout,
   placeIncremental,
@@ -54,8 +69,6 @@ import {
   ancestorsToReveal,
   selectionContext,
   refreshHierarchy,
-  compoundEdges,
-  edgePorts,
   relationStyles,
   settleExpansion,
   presentationGraph,
@@ -66,16 +79,11 @@ import {
   elementCoverage,
 } from "./layout.js";
 import { presets, profileFor, cleanProfile, matchingNodes, sharedMemberships } from "./analysis.js";
-import { legendGlyph, legendRelation, meanings, glyphAppearance } from "./glyphs.js";
+import { legendGlyph, legendRelation, meanings } from "./glyphs.js";
 import { timeline, frame, eventLabel, transferEdges, recordingRequest } from "./recording.js";
-import {
-  boKinds,
-  boValue,
-  boDisplayValue,
-  boStepPlan,
-  boStepDetail,
-  boTransferLabel,
-} from "./replay-steps.js";
+import { boDisplayValue, boStepPlan, boStepDetail, boTransferLabel } from "./replay-steps.js";
+const codeLayer = new CodeLayer();
+let codeLimit = 400;
 const $ = (id) => document.getElementById(id),
   app = new PIXI.Application(),
   scene = new PIXI.Container();
@@ -89,6 +97,7 @@ let version = "live",
   step = "latest",
   view = null,
   graph = null,
+  displayGraph = null,
   selected = null;
 let scale = 1,
   pan = { x: 0, y: 0 },
@@ -126,9 +135,11 @@ let recording = null,
 let animationFrame = null,
   animationUntil = 0,
   animatedIds = [],
-  animationEvent = null,
   lastLiveEvent = null;
+let heldTimer = null,
+  selectedLayer = null;
 let boPlan = [],
+  boFullPlan = [],
   boPlanKey = "",
   boDetail = null,
   boTransfers = new Map();
@@ -139,8 +150,22 @@ let drawFrame = null,
   disposed = false,
   contextLost = false;
 const hits = [],
-  fullSources = new Map(),
   metrics = { nodes: 0, edges: 0, texts: 0 };
+const detailPanel = createDetailPanel({
+  read: () => ({
+    view,
+    graph,
+    preferences,
+    selected,
+    mode: detailMode,
+    version,
+    recording,
+    scale,
+    pan,
+    screen: app.screen,
+  }),
+  point,
+});
 let legacyStorage;
 try {
   legacyStorage = window.localStorage;
@@ -152,6 +177,12 @@ const restoredLocaleURL = restoreLocale(storage, window.location.href);
 if (restoredLocaleURL) window.location.replace(restoredLocaleURL);
 translateShell(document);
 installIcons(document);
+// Tool rows wrap with language and viewport width. Reserve their actual height
+// for legends and replay changes instead of overlapping them with fixed offsets.
+const toolObserver = new ResizeObserver(([entry]) => {
+  $("viewport").style.setProperty("--view-tools-height", entry.contentRect.height + "px");
+});
+toolObserver.observe(document.querySelector(".view-tools"));
 const contextMenu = createContextMenu($("graph-menu"));
 $("language").value = locale();
 $("language").addEventListener("change", async (event) => {
@@ -188,12 +219,199 @@ const renderer = createGraphRenderer({
   hits,
   edgePaths,
   onMetrics: (data) => Object.assign($("renderer").dataset, data),
+  onRoutes: (stats) => {
+    updateRouteStatus(stats);
+    if (!stats.busy || stats.total <= 2000) {
+      schedule();
+      updateSemanticGeometry();
+    }
+  },
 });
+let spatial = null,
+  semanticFrame = 0,
+  semanticTimer = null;
+/** Throttle movement updates, but always publish the final camera geometry. */
+function spatialGeometry() {
+  clearTimeout(semanticTimer);
+  if (disposed || !graph || !spatialActive()) return;
+  const remaining = 90 - (performance.now() - semanticFrame);
+  if (remaining > 0) {
+    semanticTimer = setTimeout(spatialGeometry, remaining);
+    return;
+  }
+  semanticFrame = performance.now();
+  updateRouteStatus(spatial?.diagnostics.routeSolver);
+  updateSemanticGeometry();
+  positionDetail();
+}
+const semanticView = new SemanticView($("semantic"), $("semantic-edges"), {
+  onSelect: select,
+  onEdge: showEdge,
+});
+const spatialActive = () => analysisSettings?.layers?.enabled === true;
+function updateSpatial() {
+  if (!spatialActive() || !graph) return;
+  if (!spatial)
+    spatial = new SpatialRenderer($("canvas-host"), {
+      onSelect: (id) => {
+        $("viewport").focus({ preventScroll: true });
+        select(id);
+      },
+      onToggle: toggle,
+      onEdge: (edge) => {
+        $("viewport").focus({ preventScroll: true });
+        showEdge(edge);
+      },
+      onSave: saveSoon,
+      onRender: spatialGeometry,
+      onError: (message) => {
+        $("layout-status").textContent = message;
+      },
+      onLayer: (id) => changeLayers([id]),
+      onMenu: (hit, x, y) => {
+        select(hit?.id || hit?.region || null);
+        if (hit?.edge) selectedEdge = hit.edge.id;
+        openSelectionMenu(x, y);
+      },
+    });
+  spatial.update({
+    graph: displayGraph,
+    presentation,
+    preferences,
+    selected,
+    focusContext,
+    settings: cleanLayers(analysisSettings.layers),
+    scope: storageKey,
+    boDetail,
+    boTransfers,
+    routing: cleanRoute(analysisSettings.routing),
+  });
+}
 function point(box) {
-  return nodePoint(graph, presentation, box);
+  if (spatialActive()) {
+    const p = spatial?.screenNode(box.id);
+    if (p) return { x: (p.x - pan.x) / scale, y: (p.y - pan.y) / scale };
+  }
+  return nodePoint(displayGraph || graph, presentation, displayGraph?.byId.get(box.id) || box);
+}
+/** Layer names remain readable; selection, visibility and height are independent. */
+const layerRuler = new LayerRuler($("layer-controls"), {
+  change: (config) => {
+    if (!analysisSettings || !graph) return;
+    analysisSettings.layers = cleanLayers(config);
+    updateLayerControls();
+    updatePresentation();
+    updateSemantic();
+    schedule();
+    saveSoon();
+  },
+  select: (id) => {
+    select(null);
+    selectedLayer = id;
+    updateLayerControls();
+  },
+});
+function updateLayerControls() {
+  const config = cleanLayers(analysisSettings?.layers),
+    mode = config.enabled ? "3D" : "2D";
+  $("layered-toggle").textContent = mode;
+  $("layer-gap").value = config.gap;
+  $("layer-gap").disabled = !config.enabled;
+  $("layer-drawer").classList.toggle("is-compact", config.compact);
+  $("layers-toggle").setAttribute("aria-expanded", String(!config.compact));
+  $("layered-toggle").setAttribute("aria-pressed", String(config.enabled));
+  const action = boTranslate(config.enabled ? "Switch to 2D" : "Switch to 3D");
+  $("layered-toggle").title = action;
+  $("layered-toggle").setAttribute("aria-label", action);
+  layerRuler.render(config, selectedLayer);
+  $("layers-all").setAttribute("aria-pressed", String(config.visible.length === layers.length));
+  $("undo-layout").disabled = !undo || undo.mode !== mode;
+  $("edge-routing").value = cleanRoute(analysisSettings?.routing);
+  updateLegendMode();
+}
+function changeLayers(visible) {
+  if (!analysisSettings || !graph) return;
+  stopAnimation();
+  analysisSettings.layers = cleanLayers({ ...analysisSettings.layers, only: "all", visible });
+  updateLayerControls();
+  updatePresentation();
+  updateSemantic();
+  schedule();
+  save();
+}
+$("layers-toggle").onclick = () => {
+  if (!analysisSettings) return;
+  const config = cleanLayers(analysisSettings.layers);
+  analysisSettings.layers = { ...config, compact: !config.compact };
+  updateLayerControls();
+  save();
+};
+$("layer-gap").oninput = () => {
+  if (!analysisSettings || !graph) return;
+  analysisSettings.layers = cleanLayers({
+    ...analysisSettings.layers,
+    gap: Number($("layer-gap").value),
+  });
+  updateLayerControls();
+  updateSpatial();
+  updateSemantic();
+  schedule();
+  saveSoon();
+};
+$("layers-all").onclick = () => changeLayers(layers.map((layer) => layer.id));
+$("edge-routing").onchange = (event) => {
+  analysisSettings.routing = cleanRoute(event.target.value);
+  updateSpatial();
+  schedule();
+  save();
+};
+$("layered-toggle").onclick = () => {
+  if (!analysisSettings || !graph) return;
+  stopAnimation();
+  contextMenu.close();
+  save();
+  const config = cleanLayers(analysisSettings.layers);
+  analysisSettings.layers = { ...config, enabled: !config.enabled, camera: "top" };
+  if (!analysisSettings.layers.enabled) project();
+  updateLayerControls();
+  updatePresentation();
+  updateSemantic();
+  if (!analysisSettings.layers.enabled && preferences.camera) {
+    pan = { x: preferences.camera.x, y: preferences.camera.y };
+    scale = preferences.camera.scale;
+    schedule();
+  } else fit();
+  save();
+};
+$("top-view").onclick = () => {
+  if (analysisSettings)
+    analysisSettings.layers = { ...cleanLayers(analysisSettings.layers), camera: "top" };
+  fit();
+};
+let legendMode = null;
+function updateLegendMode() {
+  const mode = spatialActive() ? "3D" : "2D";
+  if (legendMode === mode) return;
+  legendMode = mode;
+  $("legend-mode").textContent = mode;
+  $("legend-panel").dataset.mode = mode;
+  for (const row of document.querySelectorAll("[data-legend-node]")) {
+    const type = row.dataset.legendNode;
+    let glyph;
+    if (mode === "3D") {
+      glyph = document.createElement("img");
+      glyph.src = spatialLegend(nodeTypes).get(type);
+      glyph.alt = "";
+      glyph.dataset.glyph = type;
+      glyph.dataset.mode = "3D";
+      glyph.dataset.geometry = "webgl";
+    } else glyph = legendGlyph(type, nodeTypes[type]);
+    row.firstElementChild?.replaceWith(glyph);
+  }
 }
 function updatePresentation() {
-  presentation = presentationGraph(graph, preferences.filters);
+  displayGraph = layerSlice(graph, cleanLayers(analysisSettings?.layers));
+  presentation = presentationGraph(displayGraph, preferences.filters);
   renderedEdges = presentation.edges;
   const visibleTypes = new Set(
     graph.boxes
@@ -201,6 +419,9 @@ function updatePresentation() {
       .map((box) => box.type),
   );
   const visibleRelations = new Set(renderedEdges.map((edge) => edge.type));
+  $("key-legend").hidden = !displayGraph.boxes.some(
+    (box) => box.node.data_metadata?.primary_key === true && presentation.glyphs.has(box.id),
+  );
   for (const item of document.querySelectorAll("[data-legend-node]"))
     item.hidden = !visibleTypes.has(item.dataset.legendNode);
   for (const item of document.querySelectorAll("[data-legend-edge]"))
@@ -217,8 +438,20 @@ function draw() {
     ? selectionContext(graph, selected)
     : discussionContext(graph, conversation.ids);
   updatePresentation();
+  app.canvas.hidden = spatialActive();
+  if (spatialActive()) {
+    updateSpatial();
+    spatial.setVisible(true);
+    $("renderer").textContent = "Three.js / WebGL · 3D force layout";
+    $("zoom").value = "3D";
+    positionDetail();
+    return;
+  }
+  spatial?.setVisible(false);
+  $("renderer").textContent = "PixiJS / WebGL · ELK";
+  preferences.routing = cleanRoute(analysisSettings.routing);
   renderer.draw({
-    graph,
+    graph: displayGraph,
     presentation,
     focusContext,
     preferences,
@@ -231,6 +464,7 @@ function draw() {
     formatValue: boText,
     contextLost,
   });
+  updateRouteStatus(renderer.routing);
   app.renderer.render(app.stage);
   $("zoom").value = Math.round(scale * 100) + "%";
   updateSemanticGeometry();
@@ -242,11 +476,22 @@ function schedule() {
     drawFrame = requestAnimationFrame(draw);
   }
 }
+function updateRouteStatus(stats = {}) {
+  const element = $("route-status");
+  element.hidden = !stats.busy && !stats.unresolved && !stats.error;
+  element.textContent = stats.error
+    ? boTranslate("Routing unavailable")
+    : stats.busy
+      ? boTranslate("Routing {0}/{1}", stats.routed || 0, stats.total || 0)
+      : boTranslate("{0} routes blocked", stats.unresolved);
+  element.title = stats.error || (stats.failures || []).join("\n");
+}
 function save() {
   if (!preferences) return;
   saveAnalysis();
   preferences.expanded = [...expanded];
-  preferences.camera = { x: pan.x, y: pan.y, scale };
+  if (spatialActive() && spatial?.scope === storageKey) preferences.spatial = spatial.snapshot();
+  if (!analysisSettings?.layers?.enabled) preferences.camera = { x: pan.x, y: pan.y, scale };
   preferences.focus = selected;
   const saved = writeLayout(storage, storageKey, preferences);
   if (!layoutBusy)
@@ -258,6 +503,7 @@ function saveSoon() {
   saveTimer = setTimeout(save, 180);
 }
 window.addEventListener("pagehide", (event) => {
+  clearTimeout(semanticTimer);
   save();
   storage.flush();
   clearTimeout(saveTimer);
@@ -265,17 +511,22 @@ window.addEventListener("pagehide", (event) => {
   cancelAnimationFrame(drawFrame);
   dirty = false;
   if (!event.persisted) {
+    toolObserver.disconnect();
     disposed = true;
     poller.close();
     stopPlayback();
     stopAnimation();
     layoutWorker.terminate();
     resizeObserver.disconnect();
+    spatial?.dispose();
+    renderer.dispose();
     renderer.clear();
     app.destroy(true, { children: true });
   }
 });
 document.addEventListener("visibilitychange", () => {
+  // Browsers can emit this after pagehide has already destroyed the GPU objects.
+  if (disposed) return;
   if (document.hidden) {
     stopPlayback();
     stopAnimation();
@@ -345,7 +596,8 @@ function project() {
     b.baseHeight = b.h;
     b.h += annotationFor(preferences, b.node.referenceOf || b.id).note ? 22 : 0;
   }
-  placeIncremental(graph, preferences);
+  if (spatialActive()) prepareSpatialHierarchy(graph, preferences);
+  else placeIncremental(graph, preferences);
   updatePresentation();
   if (selected && !graph.byId.has(selected))
     selected = ancestorsToReveal(graph.all, selected).find((id) => graph.byId.has(id)) || null;
@@ -359,10 +611,19 @@ function project() {
 }
 async function arrange(initial = false) {
   if (!graph) return;
+  if (spatialActive()) {
+    updateSpatial();
+    if (!initial) {
+      undo = { mode: "3D", snapshot: spatial.snapshot() };
+      $("undo-layout").disabled = false;
+    }
+    spatial.layout(true);
+    return;
+  }
   const epoch = ++layoutEpoch,
     key = topologyKey(graph),
     scope = storageKey,
-    algorithm = $("layout").value;
+    algorithm = preferences.algorithm || "cluster";
   const previous = JSON.stringify(preferences.positions),
     camera = { scale, pan: { ...pan } };
   layoutBusy = true;
@@ -373,7 +634,7 @@ async function arrange(initial = false) {
     const positions = await calculateLayout(elk, graph, preferences, algorithm);
     if (epoch !== layoutEpoch || scope !== storageKey || !graph || key !== topologyKey(graph))
       return;
-    undo = { positions: previous, camera };
+    undo = { mode: "2D", positions: previous, camera };
     $("undo-layout").disabled = false;
     applyLayout(graph, preferences, positions);
     preferences.algorithm = algorithm;
@@ -396,7 +657,10 @@ async function arrange(initial = false) {
 }
 function plotArea() {
   const top = 42,
-    bottom = $("step-changes").hidden ? 92 : Math.min(240, $("step-changes").offsetHeight + 90);
+    tools = document.querySelector(".view-tools").offsetHeight + 24,
+    bottom = $("step-changes").hidden
+      ? tools
+      : Math.min(app.screen.height * 0.6, $("step-changes").offsetHeight + tools + 12);
   return {
     top,
     height: Math.max(60, app.screen.height - top - bottom),
@@ -405,17 +669,33 @@ function plotArea() {
 }
 function fit() {
   if (!graph) return;
+  if (spatialActive()) {
+    updatePresentation();
+    updateSpatial();
+    spatial.fit();
+    schedule();
+    saveSoon();
+    return;
+  }
   refreshHierarchy(graph);
+  updatePresentation();
   const area = plotArea();
-  scale = Math.max(0.12, Math.min(1.05, area.width / graph.width, area.height / graph.height));
+  scale = Math.max(
+    0.12,
+    Math.min(1.05, area.width / displayGraph.width, area.height / displayGraph.height),
+  );
   pan = {
-    x: (app.screen.width - graph.width * scale) / 2 - graph.minX * scale,
-    y: area.top + (area.height - graph.height * scale) / 2 - graph.minY * scale,
+    x: (app.screen.width - displayGraph.width * scale) / 2 - displayGraph.minX * scale,
+    y: area.top + (area.height - displayGraph.height * scale) / 2 - displayGraph.minY * scale,
   };
   schedule();
   saveSoon();
 }
 function zoom(factor, point = { x: app.screen.width / 2, y: app.screen.height / 2 }) {
+  if (spatialActive()) {
+    spatial?.zoom(factor);
+    return;
+  }
   const next = Math.max(0.12, Math.min(3, scale * factor));
   pan.x = point.x - ((point.x - pan.x) * next) / scale;
   pan.y = point.y - ((point.y - pan.y) * next) / scale;
@@ -424,7 +704,10 @@ function zoom(factor, point = { x: app.screen.width / 2, y: app.screen.height / 
   saveSoon();
 }
 function select(id) {
+  selectedLayer = null;
+  if (analysisSettings) layerRuler.render(analysisSettings.layers, null);
   selected = id;
+  semanticView.select(id);
   selectedEdge = null;
   detailMode = null;
   $("node-details").hidden = true;
@@ -438,6 +721,11 @@ function clearCanvasFocus() {
   select(null);
 }
 function frameDiscussion() {
+  if (spatialActive()) {
+    updateSpatial();
+    spatial?.fit(conversation.ids[0]);
+    return;
+  }
   const boxes = [...discussionContext(graph, conversation.ids).nodes]
     .map((id) => graph?.byId.get(id))
     .filter(Boolean);
@@ -480,7 +768,7 @@ function toggle(id) {
   else expanded.delete(id);
   project();
   if (opening) {
-    settleExpansion(graph, preferences, id);
+    if (!spatialActive()) settleExpansion(graph, preferences, id);
     updatePresentation();
     focusSelection();
   }
@@ -491,6 +779,7 @@ function pin() {
   if (!selected) return;
   cancelLayout();
   togglePin(graph, preferences, selected);
+  if (spatialActive()) spatial?.setPinned(selected, !!graph.byId.get(selected)?.pinned);
   updateActions();
   save();
   schedule();
@@ -521,6 +810,11 @@ function updateHierarchyPath() {
 }
 function focusSelection() {
   if (!graph?.byId.has(selected)) return;
+  if (spatialActive()) {
+    updateSpatial();
+    spatial?.fit(selected);
+    return;
+  }
   const context = selectionContext(graph, selected),
     boxes = [
       ...graph.boxes.filter((b) => context.branch.has(b.id)),
@@ -545,7 +839,7 @@ function updateActions() {
   $("code-local").disabled =
     view?.stage === "design" ||
     !!recording ||
-    analysisId === "code" ||
+    ["code", "api"].includes(analysisId) ||
     (!b && !analysisSettings?.codeFocus);
   $("reference-origin").hidden = !b?.node.referenceOf;
   $("core-toggle").disabled = !b;
@@ -569,175 +863,53 @@ function updateActions() {
       (binding ? ` · ${binding.path}:${binding.line}` : "")
     : boTranslate("Right-click a node or edge for actions.");
 }
+/** Both rendering modes expose the same keyboard and screen-reader graph. */
 function updateSemantic() {
-  const host = $("semantic"),
-    focused = document.activeElement?.dataset.nodeId;
-  host.replaceChildren();
-  for (const b of graph.boxes) {
-    if (!presentation.glyphs.has(b.id) && !presentation.regions.has(b.id)) continue;
-    const button = document.createElement("button"),
-      name = displayName(b.node, preferences);
-    button.dataset.representation = presentation.regions.has(b.id)
-      ? presentation.glyphs.has(b.id)
-        ? "self"
-        : "circle"
-      : "node";
-    button.dataset.color = "#" + nodeTypes[b.type].color.toString(16).padStart(6, "0");
-    button.dataset.core = String(!!annotationFor(preferences, b.node.referenceOf || b.id).core);
-    button.dataset.referenceOf = b.node.referenceOf || "";
-    button.dataset.runState = b.state;
-    button.dataset.depth = ancestorsToReveal(graph.all, b.id).length;
-    button.textContent = name;
-    button.dataset.nodeId = b.id;
-    button.dataset.nodeType = b.type;
-    button.setAttribute("aria-label", name);
-    button.setAttribute("aria-expanded", String(!!b.open));
-    button.onclick = () => select(b.id);
-    button.onfocus = () => {
-      if (selected !== b.id) select(b.id);
-    };
-    host.appendChild(button);
-  }
-  if (focused) {
-    const el = [...host.children].find((e) => e.dataset.nodeId === focused);
-    el?.focus({ preventScroll: true });
-  }
-  const relationships = $("semantic-edges"),
-    focusedEdge = document.activeElement?.dataset.edgeId;
-  relationships.replaceChildren();
-  for (const edge of renderedEdges) {
-    const button = document.createElement("button"),
-      style = relationStyles[edge.type] || relationStyles.other;
-    button.textContent = boTranslate(
-      "{0}: {1} \u2192 {2}, {3} relations",
-      style.label,
-      displayName(graph.byId.get(edge.from).node, preferences),
-      displayName(graph.byId.get(edge.to).node, preferences),
-      edge.members.length,
-    );
-    button.dataset.edgeId = edge.id;
-    button.dataset.from = edge.from;
-    button.dataset.to = edge.to;
-    button.dataset.relationType = edge.type;
-    button.dataset.layer = edge.crossing ? "foreground" : "internal";
-    button.dataset.sourceRegion = String(edge.sourceRegion);
-    button.dataset.targetRegion = String(edge.targetRegion);
-    button.dataset.count = edge.members.length;
-    button.onclick = () => showEdge(edge);
-    relationships.appendChild(button);
-  }
-  if (focusedEdge)
-    [...relationships.children]
-      .find((e) => e.dataset.edgeId === focusedEdge)
-      ?.focus({ preventScroll: true });
+  semanticView.render({ graph, presentation, preferences, selected, spatial: spatialActive() });
 }
 function updateSemanticGeometry() {
-  const r = app.canvas.getBoundingClientRect();
-  for (const el of $("semantic").children) {
-    const b = graph.byId.get(el.dataset.nodeId);
-    if (!b) continue;
-    const appearance = glyphAppearance(nodeTypes[b.type].color, {
-      core: annotationFor(preferences, b.node.referenceOf || b.id).core,
-      selected: selected === b.id,
-      related: focusContext.nodes.has(b.id),
-    });
-    el.dataset.fill = "#" + appearance.fill.toString(16).padStart(6, "0");
-    el.dataset.fillEmphasis = appearance.emphasis;
-    el.dataset.discussion = String(conversation.ids.includes(b.id));
-  }
-  for (const el of $("semantic").children) {
-    const b = graph.byId.get(el.dataset.nodeId);
-    if (b) {
-      const p = point(b);
-      el.dataset.x = b.x;
-      el.dataset.y = b.y;
-      el.dataset.pinned = String(!!b.pinned);
-      el.dataset.emphasis = focusContext.active
-        ? selected === b.id
-          ? "selected"
-          : focusContext.nodes.has(b.id)
-            ? "related"
-            : "dimmed"
-        : "normal";
-      el.setAttribute("aria-pressed", String(selected === b.id));
-      el.dataset.parent = b.node.parent || "";
-      el.dataset.screenX = r.left + p.x * scale + pan.x;
-      el.dataset.screenY = r.top + p.y * scale + pan.y;
-    }
-  }
-  for (const el of $("semantic").children) {
-    const region = presentation.regions.has(el.dataset.nodeId)
-      ? graph.regions.find((region) => region.id === el.dataset.nodeId)
-      : null;
-    el.dataset.groupRadius = region?.radius || "";
-    el.dataset.groupCenterX = region?.cx ?? "";
-    el.dataset.groupCenterY = region?.cy ?? "";
-  }
-  for (const el of $("semantic-edges").children) {
-    const edge = renderedEdges.find((e) => e.id === el.dataset.edgeId);
-    if (!edge) continue;
-    const ports = edgePorts(graph, edge, Math.max(32, 15 / scale));
-    el.dataset.startX = ports.start.x;
-    el.dataset.startY = ports.start.y;
-    el.dataset.endX = ports.end.x;
-    el.dataset.endY = ports.end.y;
-  }
+  semanticView.geometry({
+    graph,
+    presentation,
+    displayGraph,
+    preferences,
+    selected,
+    focusContext,
+    discussion: conversation.ids,
+    spatial: spatialActive() ? spatial : null,
+    canvas: spatialActive() && spatial ? spatial.canvas : app.canvas,
+    point,
+    scale,
+    pan,
+  });
 }
-let selectedEdge = null;
+let selectedEdge = null,
+  edgeChoices = [];
 function showEdge(edge) {
   select(null);
   selectedEdge = edge.id;
+  edgeChoices = edge.alternatives || [];
   updateActions();
   updateEdgeDetail();
 }
 function updateEdgeDetail() {
-  const panel = $("edge-details"),
-    edge = renderedEdges.find((e) => e.id === selectedEdge);
-  if (!edge) {
-    selectedEdge = null;
-    panel.hidden = true;
-    return;
-  }
-  const style = relationStyles[edge.type] || relationStyles.other;
-  $("edge-title").textContent = boTranslate(
-    "{0} \u00B7 {1} relations",
-    style.label,
-    edge.members.length,
-  );
-  $("edge-members").replaceChildren(
-    ...edge.members.map((member) => {
-      const item = document.createElement("li"),
-        a = graph.all.get(member.from),
-        b = graph.all.get(member.to);
-      item.textContent = `${a ? displayName(a, preferences) : member.from} → ${b ? displayName(b, preferences) : member.to}：${member.label || style.label}（${dataRelationEvidence(member) || (["python-ast", "source-ast"].includes(member.origin) ? boTranslate("Static call") : member.observed ? (member.current ? boTranslate("Observed in this run") : boTranslate("Observed in a previous run")) : boTranslate("Declared relation"))}）`;
-      const hide = document.createElement("button");
-      hide.textContent = boTranslate("Hide relation");
-      hide.onclick = () => {
-        preferences.filters.hiddenEdges.push(member.id);
-        applyFilters();
-      };
-      item.append(hide);
-      return item;
-    }),
-  );
-  const ports = edgePorts(graph, edge);
-  panel.hidden = false;
-  panel.style.left =
-    Math.max(
-      12,
-      Math.min(
-        app.screen.width - panel.offsetWidth - 12,
-        ((ports.start.x + ports.end.x) / 2) * scale + pan.x,
-      ),
-    ) + "px";
-  panel.style.top =
-    Math.max(
-      45,
-      Math.min(
-        app.screen.height - panel.offsetHeight - 12,
-        ((ports.start.y + ports.end.y) / 2) * scale + pan.y,
-      ),
-    ) + "px";
+  const shown = renderEdgeDetail({
+    graph,
+    displayGraph,
+    preferences,
+    edges: renderedEdges,
+    selected: selectedEdge,
+    choices: edgeChoices,
+    screen: app.screen,
+    scale,
+    pan,
+    onChoose: showEdge,
+    onHide: (id) => {
+      preferences.filters.hiddenEdges.push(id);
+      applyFilters();
+    },
+  });
+  if (!shown) selectedEdge = null;
 }
 $("close-edge").onclick = () => {
   selectedEdge = null;
@@ -745,59 +917,15 @@ $("close-edge").onclick = () => {
   $("viewport").focus({ preventScroll: true });
 };
 function updateDetail() {
-  const b = graph?.byId.get(selected);
-  if (!b || !detailMode) {
-    $("node-details").hidden = true;
-    return;
-  }
-  const annotation = annotationFor(preferences, b.node.referenceOf || b.id),
-    editing = detailMode === "annotation";
-  $("node-details").hidden = false;
-  $("detail-title").textContent = displayName(b.node, preferences);
-  $("annotation-form").hidden = !editing;
-  const rows = [
-    ...(annotation.label || editing
-      ? [{ text: boTranslate("Original name: ") + b.node.label }]
-      : []),
-    ...(editing ? [{ text: boTranslate("Node: ") + b.id }] : b.rows),
-    ...(!editing && annotation.note ? [{ text: boTranslate("Note: ") + annotation.note }] : []),
-  ];
-  $("detail-rows").replaceChildren(
-    ...rows.map((r) => {
-      const p = document.createElement("p");
-      p.textContent = r.text;
-      return p;
-    }),
-  );
-  const binding = sourceBinding(view, graph.all, selected),
-    source = detailMode === "source" && binding;
-  $("source-code").hidden = !source;
-  $("full-source").hidden = !source;
-  if (source) {
-    const key = (binding.code_revision || view.manifest.build_id) + ":" + binding.path,
-      full = fullSources.get(key);
-    $("detail-title").textContent =
-      `${binding.path}:${binding.line} · ${(binding.code_revision || view.manifest.build_id).slice(0, 8)}`;
-    $("source-code").textContent = full ?? binding.snippet;
-    $("full-source").hidden = !!full;
-  }
-  positionDetail();
+  detailPanel.update();
 }
 function positionDetail() {
-  if ($("node-details").hidden || !graph?.byId.has(selected)) return;
-  const b = graph.byId.get(selected),
-    p = point(b),
-    panel = $("node-details"),
-    w = panel.offsetWidth,
-    h = panel.offsetHeight;
-  panel.style.left =
-    Math.max(10, Math.min(app.screen.width - w - 10, p.x * scale + pan.x + 45)) + "px";
-  panel.style.top =
-    Math.max(10, Math.min(app.screen.height - h - 12, p.y * scale + pan.y - 30)) + "px";
+  detailPanel.position();
 }
 function showDetail(mode) {
   detailMode = mode;
   updateDetail();
+  if (mode === "source") loadSource();
 }
 function editAnnotation() {
   if (!graph?.byId.has(selected)) return;
@@ -859,35 +987,23 @@ $("annotation-form").onsubmit = (e) => {
   updateDetail();
   $("viewport").focus({ preventScroll: true });
 };
-$("full-source").onclick = async () => {
-  const id = selected,
-    build = view.manifest.build_id,
-    binding = sourceBinding(view, graph.all, id),
-    requestedVersion = version;
-  const response = await fetch(
-    (binding.code_revision
-      ? "/api/code/source?revision=" + binding.code_revision + "&path="
-      : "/api/source?path=") +
-      encodeURIComponent(binding.path) +
-      (recording
-        ? "&recording=" + recording.id
-        : "&version=" + encodeURIComponent(requestedVersion)),
-  );
-  if (!response.ok) return;
-  const data = await response.json();
-  if (
-    binding.code_revision
-      ? data.code_revision !== view?.code_structure?.revision
-      : view?.manifest.build_id !== build || data.build_id !== build || version !== requestedVersion
-  )
-    return;
-  fullSources.set((binding.code_revision || build) + ":" + binding.path, data.source);
-  if (fullSources.size > 16) fullSources.delete(fullSources.keys().next().value);
-  if (selected === id) updateDetail();
-};
+$("full-source").onclick = () => loadSource();
+async function loadSource() {
+  await detailPanel.load();
+}
 function hitAt(e) {
   const r = app.canvas.getBoundingClientRect();
-  return pickHit(hits, (e.clientX - r.left - pan.x) / scale, (e.clientY - r.top - pan.y) / scale);
+  const x = (e.clientX - r.left - pan.x) / scale,
+    y = (e.clientY - r.top - pan.y) / scale;
+  const hit = pickHit(hits, x, y);
+  if (hit?.id || hit?.expand) return hit;
+  const choices = pickRoutes(
+    renderedEdges,
+    (edge) => edgePaths.get(edge.id)?.points,
+    { x, y },
+    5 / scale,
+  );
+  return choices.length ? { edge: { ...choices[0], alternatives: choices } } : hit;
 }
 // Pointer and keyboard users share the same selection and action handlers.
 function openSelectionMenu(x, y, target = $("viewport")) {
@@ -943,12 +1059,9 @@ $("edge-hide").onclick = () => {
   select(null);
   applyFilters();
 };
-$("layout-toggle").onclick = () => {
-  $("layout-panel").hidden = !$("layout-panel").hidden;
-  $("layout-toggle").setAttribute("aria-expanded", String(!$("layout-panel").hidden));
-};
 app.canvas.addEventListener("pointerdown", (e) => {
   if (e.button !== 0 || gesture.active) return;
+  $("viewport").focus({ preventScroll: true });
   contextMenu.close();
   const hit = hitAt(e);
   cancelLayout();
@@ -958,7 +1071,7 @@ app.canvas.addEventListener("pointerdown", (e) => {
   const owner = hit?.id || hit?.region;
   gesture.start(
     { pointerId: e.pointerId, x: e.clientX, y: e.clientY },
-    { node: owner ? graph.byId.get(owner) : null, pan, scale },
+    { node: owner ? displayGraph.byId.get(owner) : null, pan, scale },
   );
   gesture.active.hit = hit;
   app.canvas.style.cursor = owner ? "grabbing" : "move";
@@ -966,8 +1079,9 @@ app.canvas.addEventListener("pointerdown", (e) => {
 app.canvas.addEventListener("pointermove", (e) => {
   const move = gesture.move({ pointerId: e.pointerId, x: e.clientX, y: e.clientY });
   if (!move) return;
-  if (move.kind === "node") setPosition(graph, preferences, move.id, move.x, move.y);
-  else pan = { x: move.x, y: move.y };
+  if (move.kind === "node") {
+    setPosition(graph, preferences, move.id, move.x, move.y);
+  } else pan = { x: move.x, y: move.y };
   schedule();
 });
 function endDrag(e, cancelled = false) {
@@ -1018,10 +1132,19 @@ $("viewport").addEventListener("keydown", (e) => {
   }
   if (
     e.target.closest(
-      "input,textarea,select,#node-details,#edge-details,#semantic-edges,#filter-panel,#legend-panel",
+      "input,textarea,select,#node-details,#edge-details,#filter-panel,#legend-panel",
     )
   )
     return;
+  if (e.key === "Delete" && !e.target.closest('[contenteditable="true"]')) {
+    e.preventDefault();
+    if (selectedLayer) {
+      const config = cleanLayers(analysisSettings.layers);
+      changeLayers(config.visible.filter((id) => id !== selectedLayer));
+    } else if (selectedEdge) $("edge-hide").click();
+    else if (selected) $("hide-node").click();
+    return;
+  }
   if (e.key.toLowerCase() === "f") focusSelection();
   if (e.key === "0") fit();
   if (e.key === "+" || e.key === "=") zoom(1.15);
@@ -1043,7 +1166,8 @@ $("viewport").addEventListener("keydown", (e) => {
     const b = graph?.byId.get(selected),
       distance = e.shiftKey ? 80 : 20;
     cancelLayout();
-    if (b)
+    if (b && spatialActive()) spatial?.moveGroup(b.id, delta[0] * distance, delta[1] * distance);
+    else if (b)
       setPosition(graph, preferences, b.id, b.x + delta[0] * distance, b.y + delta[1] * distance);
     else {
       pan.x -= delta[0] * 50;
@@ -1056,20 +1180,21 @@ $("viewport").addEventListener("keydown", (e) => {
 $("fit").onclick = fit;
 $("zoom-in").onclick = () => zoom(1.2);
 $("zoom-out").onclick = () => zoom(1 / 1.2);
-$("arrange").onclick = () => {
-  $("layout-panel").hidden = true;
-  $("layout-toggle").setAttribute("aria-expanded", "false");
-  arrange();
-};
+$("arrange").onclick = () => arrange();
 $("undo-layout").onclick = () => {
-  if (!undo) return;
+  if (!undo || undo.mode !== (spatialActive() ? "3D" : "2D")) return;
   cancelLayout();
-  preferences.positions = Object.assign(Object.create(null), JSON.parse(undo.positions));
-  scale = undo.camera.scale;
-  pan = undo.camera.pan;
+  if (undo.mode === "3D") {
+    preferences.spatial = structuredClone(undo.snapshot);
+    spatial.restore(undo.snapshot);
+  } else {
+    preferences.positions = Object.assign(Object.create(null), JSON.parse(undo.positions));
+    scale = undo.camera.scale;
+    pan = undo.camera.pan;
+    project();
+  }
   undo = null;
   $("undo-layout").disabled = true;
-  project();
   save();
 };
 $("collapse").onclick = () => {
@@ -1088,7 +1213,7 @@ $("expand").onclick = () => {
   const roots = graph.boxes.filter((b) => !b.node.parent).map((b) => b.id);
   for (const id of roots) expanded.add(id);
   project();
-  for (const id of roots) settleExpansion(graph, preferences, id);
+  if (!spatialActive()) for (const id of roots) settleExpansion(graph, preferences, id);
   fit();
   save();
 };
@@ -1200,6 +1325,12 @@ $("show-all").onclick = () => {
   analysisOverride = { ...cleanProfile(), hierarchical: true };
   analysisSettings.advanced = true;
   preferences.filters = emptyFilters();
+  analysisSettings.layers = cleanLayers({
+    ...analysisSettings.layers,
+    only: "all",
+    visible: layers.map((layer) => layer.id),
+  });
+  updateLayerControls();
   updateAnalysisOptions();
   applyFilters();
 };
@@ -1359,7 +1490,9 @@ $("step").onchange = (e) => {
 const resizeObserver = new ResizeObserver(() => {
   if (!disposed) {
     app.renderer.resize($("viewport").clientWidth, $("viewport").clientHeight);
-    schedule();
+    spatial?.resize();
+    if (analysisSettings?.layers?.enabled) fit();
+    else schedule();
   }
 });
 resizeObserver.observe($("viewport"));
@@ -1420,13 +1553,13 @@ async function poll() {
     const codeEnabled =
       !recording &&
       next.stage !== "design" &&
-      (analysisId === "code" || !!analysisSettings.codeFocus);
+      (["code", "api"].includes(analysisId) || !!analysisSettings.codeFocus);
     let codeSlice = null;
     try {
       const previousCodeFocus = codeLayer.slice?.focus;
       codeSlice = await codeLayer.load({
         enabled: codeEnabled,
-        focus: analysisId === "code" ? null : analysisSettings.codeFocus,
+        focus: ["code", "api"].includes(analysisId) ? null : analysisSettings.codeFocus,
         limit: codeLimit,
       });
       if (codeSlice?.focus && codeSlice.focus !== previousCodeFocus)
@@ -1443,7 +1576,7 @@ async function poll() {
     $("code-local").disabled =
       next.stage === "design" ||
       !!recording ||
-      analysisId === "code" ||
+      ["code", "api"].includes(analysisId) ||
       (!selected && !analysisSettings.codeFocus);
     const key = renderRevision(next, [
       version,
@@ -1460,7 +1593,7 @@ async function poll() {
     const graphChanged = previousLive && graphVersion(previousLive) !== graphVersion(next);
     if (graphChanged) {
       cancelLayout();
-      fullSources.clear();
+      detailPanel.clear();
       lastRecordPoll = 0;
       lastLiveEvent = null;
     }
@@ -1503,7 +1636,6 @@ async function poll() {
         pan = { x: preferences.camera.x, y: preferences.camera.y };
       }
       first = true;
-      $("layout").value = preferences.algorithm;
     }
     const cases = next.available_cases || [];
     if (JSON.stringify([cases, version]) !== $("case").dataset.options) {
@@ -1567,7 +1699,7 @@ async function poll() {
       if (first) {
         first = false;
         if (!hasPositions) arrange(true);
-        else if (!preferences.camera) fit();
+        else if (!preferences.camera || analysisSettings?.layers?.enabled) fit();
       }
       saveSoon();
     }
@@ -1629,7 +1761,11 @@ function loadAnalysis(baseKey) {
     overrides: Object.create(null),
     selected: "overview",
     annotations: null,
+    layers: cleanLayers(saved?.layers),
+    routing: cleanRoute(saved?.routing),
+    replays: saved?.replays && typeof saved.replays === "object" ? saved.replays : {},
   };
+  updateLayerControls();
   if (saved) {
     if (typeof saved.discussion?.revision === "string")
       analysisSettings.discussion = {
@@ -1681,7 +1817,7 @@ function updateAnalysisOptions() {
     ...[...presets, ...analysisSettings.custom].map((p) => {
       const option = new Option(p.label, p.id);
       // The lazy source index is current-source evidence, not a recorded frame.
-      option.disabled = !!recording && p.id === "code";
+      option.disabled = !!recording && ["code", "api"].includes(p.id);
       if (option.disabled)
         option.title = boTranslate("Return to live view to browse code structure");
       return option;
@@ -1692,14 +1828,14 @@ function updateAnalysisOptions() {
   $("delete-view").hidden = !analysisId.startsWith("custom-");
 }
 function changeAnalysis(id) {
-  if (!analysisSettings || id === analysisId || (recording && id === "code")) return;
+  if (!analysisSettings || id === analysisId || (recording && ["code", "api"].includes(id))) return;
   stopPlayback();
   cancelLayout();
   save();
   clearTimeout(saveTimer);
   analysisId = id;
   codeLayer.clear();
-  if (!["overview", "business"].includes(id)) analysisSettings.advanced = true;
+  if (["resources", "permission"].includes(id)) analysisSettings.advanced = true;
   analysisOverride = analysisSettings.overrides[id] || null;
   saveAnalysis();
   updateAnalysisOptions();
@@ -1718,7 +1854,7 @@ function changeAnalysis(id) {
   detailMode = null;
   undo = null;
   $("undo-layout").disabled = true;
-  $("layout").value = preferences.algorithm;
+
   project();
   if (preferences.camera) {
     scale = preferences.camera.scale;
@@ -1843,53 +1979,14 @@ function boChangeText(row) {
   return `${row.field}: ${boText(row.before, row)} → ${boText(row.after, row)}`;
 }
 function boShowChanges() {
-  const panel = $("step-changes");
-  panel.hidden = !boDetail;
-  if (!boDetail) return;
-  $("change-title").textContent =
-    boDetail.event.kind === "start"
-      ? boTranslate("Recording started")
-      : boDetail.event.kind === "end"
-        ? boTranslate("Recording stopped")
-        : eventLabel(boDetail.event, view.model);
-  $("change-count").textContent = boDetail.rows.length
-    ? boTranslate("{0} changes", boDetail.rows.length)
-    : boTranslate("No visible value changes");
-  $("change-rows").replaceChildren(
-    ...boDetail.rows.map((row) => {
-      const line = document.createElement("div");
-      line.className = "change-row";
-      line.dataset.eventId = row.event;
-      line.dataset.owner = row.owner;
-      line.dataset.kind = row.kind;
-      const kind = document.createElement("span");
-      kind.className = "change-kind";
-      kind.textContent = boKinds[row.kind].label;
-      kind.style.color = "#" + boKinds[row.kind].color.toString(16).padStart(6, "0");
-      const node = document.createElement("button");
-      node.textContent = row.sourceLabel;
-      node.onclick = () => {
-        select(row.owner);
-        focusSelection();
-      };
-      const value = document.createElement("span");
-      value.className = "change-value";
-      value.append(document.createTextNode(row.field + ": "));
-      const before = document.createElement("del"),
-        after = document.createElement("ins");
-      before.textContent = boText(row.before, row);
-      after.textContent = boText(row.after, row);
-      value.append(before, document.createTextNode(" → "), after);
-      line.append(kind, node, value);
-      return line;
-    }),
-  );
-  for (const button of $("semantic").children) {
-    const rows = boDetail.rows.filter((r) => r.owner === button.dataset.nodeId);
-    button.dataset.changes = JSON.stringify(
-      rows.map((r) => ({ field: r.field, before: r.before, after: r.after, kind: r.kind })),
-    );
-  }
+  renderStepChanges({
+    detail: boDetail,
+    model: view.model,
+    onLocate: (id) => {
+      select(id);
+      focusSelection();
+    },
+  });
 }
 function boSetTransfers(events) {
   boTransfers.clear();
@@ -1924,13 +2021,15 @@ function boUpdateReplay() {
       recording.id,
       $("replay-grain").value,
       visible.map((b) => [b.id, b.type]),
+      replaySelection(),
     ]);
   if (key !== boPlanKey) {
     boPlanKey = key;
-    boPlan = boStepPlan(recording, replayItems, graph.all, visible, {
+    boFullPlan = boStepPlan(recording, replayItems, graph.all, visible, {
       mode: $("replay-grain").value,
     });
-    $("replay-range").max = boPlan.length - 1;
+    boPlan = selectedReplayPlan(replayItems, boFullPlan, replaySelection());
+    $("replay-range").max = Math.max(0, boPlan.length - 1);
     $("replay-events").replaceChildren(
       ...boPlan.map(
         (raw, i) =>
@@ -1941,7 +2040,7 @@ function boUpdateReplay() {
       ),
     );
   }
-  const previous = boPlan.filter((i) => i < replayIndex).at(-1) ?? -1,
+  const previous = boFullPlan.filter((i) => i < replayIndex).at(-1) ?? -1,
     position = Math.max(0, boPlan.filter((i) => i <= replayIndex).length - 1),
     item = replayItems[replayIndex];
   boDetail = boStepDetail(recording, replayItems, replayIndex, previous, graph.all, visible, {
@@ -1951,7 +2050,8 @@ function boUpdateReplay() {
   boSetTransfers(replayItems.slice(Math.max(1, previous + 1), replayIndex + 1));
   $("replay-range").value = position;
   $("replay-events").value = String(boPlan[position]);
-  $("replay-position").value = `${position + 1} / ${boPlan.length}`;
+  $("replay-position").value =
+    `${boPlan.includes(replayIndex) ? position + 1 : "—"} / ${boPlan.length}`;
   Object.assign($("replay-position").dataset, {
     eventId: item.id,
     rawIndex: String(replayIndex),
@@ -1963,8 +2063,11 @@ function boUpdateReplay() {
     : recording.capture?.mode === "focused"
       ? boTranslate("Focused recording \u00B7 outside scope not captured")
       : boTranslate("{0} raw events", recording.events.length);
-  $("replay-prev").disabled = replayIndex === 0;
-  $("replay-next").disabled = replayIndex === replayItems.length - 1;
+  $("replay-prev").disabled = !boPlan.some((raw) => raw < replayIndex);
+  $("replay-next").disabled = !boPlan.some((raw) => raw > replayIndex);
+  $("replay-play").disabled = !boPlan.length;
+  $("replay-range").disabled = !boPlan.length;
+  updateReplaySelection();
   $("replay-locate").disabled = !item.node;
 }
 function boUpdateLive(before, after) {
@@ -1983,6 +2086,11 @@ function boCaptureScope() {
   if ($("capture-mode").value === "all") return { mode: "all" };
   const box = graph?.byId.get(selected);
   if (!box) throw Error(boTranslate("Select a node or region to record"));
+  if (box.node.code_role) {
+    const roots = runtimeOwners(view.model, box.id);
+    if (!roots.length) throw Error(boTranslate("This node has no capture binding"));
+    return { mode: "focused", roots };
+  }
   const id = box.node.referenceOf || box.node.event_node || box.id,
     known = new Set(view.model.nodes.map((n) => n.id));
   const root = known.has(id)
@@ -1996,7 +2104,9 @@ function boCaptureScope() {
 function stopAnimation() {
   cancelAnimationFrame(animationFrame);
   animationFrame = null;
+  if (disposed) return;
   animationDot.clear();
+  spatial?.stopAnimation();
   animationUntil = 0;
   $("renderer").dataset.animationActive = "false";
   if (!disposed && !contextLost) app.renderer.render(app.stage);
@@ -2004,11 +2114,19 @@ function stopAnimation() {
 function animateEvent(event) {
   if (!graph || disposed || document.hidden || contextLost) return;
   stopAnimation();
-  animationEvent = event;
+  $("renderer").dataset.animationEpoch = String(
+    Number($("renderer").dataset.animationEpoch || 0) + 1,
+  );
   animatedIds = [...boTransfers.keys()];
   if (!animatedIds.length)
     animatedIds = transferEdges(event, view.events, renderedEdges, graph.all, graph.configuration);
   $("renderer").dataset.animatedEdges = JSON.stringify(animatedIds);
+  if (spatialActive()) {
+    updateSpatial();
+    $("renderer").dataset.animationActive = "true";
+    spatial?.animate(animatedIds, boTransfers);
+    return;
+  }
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const started = performance.now();
   animationUntil = started + 650;
@@ -2170,10 +2288,87 @@ $("record-clear").onclick = async () => {
     lastRecordPoll = 0;
   }
 };
-function stopPlayback() {
+function replaySelection() {
+  return cleanReplaySelection(analysisSettings?.replays?.[recording?.id], replayItems);
+}
+function changeReplaySelection(patch) {
+  if (!recording) return;
+  stopPlayback();
+  const selection = cleanReplaySelection({ ...replaySelection(), ...patch }, replayItems);
+  analysisSettings.replays[recording.id] = selection;
+  // Bound private playback preferences without retaining obsolete raw recordings.
+  const ids = Object.keys(analysisSettings.replays);
+  for (const id of ids.slice(0, Math.max(0, ids.length - 10))) delete analysisSettings.replays[id];
+  boPlanKey = "";
+  boUpdateReplay();
+  save();
+  holdCurrentStep();
+}
+let replayEditorKey = "";
+function updateReplaySelection() {
+  const selection = replaySelection();
+  const key = JSON.stringify([recording.id, boFullPlan, selection]);
+  if (key === replayEditorKey) return;
+  replayEditorKey = key;
+  $("replay-loop").checked = selection.loop;
+  const option = (raw) =>
+    new Option(
+      `${boFullPlan.indexOf(raw) + 1} · ${eventLabel(replayItems[raw], recording.context.model)}`,
+      replayItems[raw].id,
+    );
+  for (const id of ["replay-loop-from", "replay-loop-to"])
+    $(id).replaceChildren(...boFullPlan.map(option));
+  $("replay-loop-from").value = selection.from;
+  $("replay-loop-to").value = selection.to;
+  $("replay-step-list").replaceChildren(
+    ...boFullPlan.map((raw, index) => {
+      const label = document.createElement("label"),
+        check = document.createElement("input");
+      check.type = "checkbox";
+      check.dataset.eventId = replayItems[raw].id;
+      check.checked = !selection.skipped.includes(replayItems[raw].id);
+      check.onchange = () =>
+        changeReplaySelection({
+          skipped: check.checked
+            ? replaySelection().skipped.filter((id) => id !== replayItems[raw].id)
+            : [...replaySelection().skipped, replayItems[raw].id],
+        });
+      label.append(
+        check,
+        `${index + 1} · ${eventLabel(replayItems[raw], recording.context.model)}`,
+      );
+      return label;
+    }),
+  );
+}
+$("replay-steps-toggle").onclick = () => {
+  $("replay-selection").hidden = !$("replay-selection").hidden;
+  $("replay-steps-toggle").setAttribute("aria-expanded", String(!$("replay-selection").hidden));
+};
+$("replay-loop").onchange = (e) => changeReplaySelection({ loop: e.target.checked });
+$("replay-loop-from").onchange = (e) => changeReplaySelection({ from: e.target.value });
+$("replay-loop-to").onchange = (e) => changeReplaySelection({ to: e.target.value });
+$("replay-include-all").onclick = () => changeReplaySelection({ skipped: [] });
+
+/** Pausing repeats presentation of the same fact; no seek, capture or model mutation. */
+function holdCurrentStep() {
+  clearTimeout(heldTimer);
+  if (!recording || playTimer || disposed) return;
+  $("renderer").dataset.replayHeld = "true";
+  const replay = () => {
+    if (!recording || playTimer || disposed) return;
+    if (!document.hidden) animateEvent(replayItems[replayIndex]);
+    heldTimer = setTimeout(replay, 850);
+  };
+  replay();
+}
+function stopPlayback(hold = false) {
   clearTimeout(playTimer);
-  playTimer = null;
+  clearTimeout(heldTimer);
+  playTimer = heldTimer = null;
+  $("renderer").dataset.replayHeld = "false";
   iconButton($("replay-play"), "play", boTranslate("Play"));
+  if (hold) holdCurrentStep();
 }
 function seek(index, locate = false) {
   if (!recording) return;
@@ -2189,6 +2384,7 @@ function seek(index, locate = false) {
     revealResult(item.node);
   }
   animateEvent(item);
+  if (!playTimer) holdCurrentStep();
 }
 async function openRecording(id) {
   stopPlayback();
@@ -2203,7 +2399,7 @@ async function openRecording(id) {
       throw Error(boTranslate("Unsupported recording format"));
     if (latestLive && !recordingMatches(saved, latestLive))
       throw Error(boTranslate("This recording belongs to an earlier graph version."));
-    if (!recording) replayReturnAnalysis = analysisId === "code" ? analysisId : null;
+    if (!recording) replayReturnAnalysis = ["code", "api"].includes(analysisId) ? analysisId : null;
     recording = saved;
     $("record-list").value = saved.id;
     replayItems = timeline(saved);
@@ -2211,7 +2407,7 @@ async function openRecording(id) {
     $("replay").hidden = false;
     document.body.classList.add("is-replay");
     for (const id of ["version", "case", "attempt", "step"]) $(id).disabled = true;
-    if (analysisId === "code") changeAnalysis("overview");
+    if (["code", "api"].includes(analysisId)) changeAnalysis("overview");
     updateAnalysisOptions();
     $("code-local").disabled = true;
     $("code-more").hidden = true;
@@ -2280,11 +2476,19 @@ $("replay-grain").onchange = () => {
   schedule();
 };
 $("replay-play").onclick = () => {
-  if (playTimer) return stopPlayback();
-  if (replayIndex >= replayItems.length - 1) seek(0);
+  if (playTimer) return stopPlayback(true);
+  clearTimeout(heldTimer);
+  heldTimer = null;
+  $("renderer").dataset.replayHeld = "false";
+  if (!boPlan.length) return;
+  // Start at the first included step when the selected snapshot is outside the range.
+  if (!boPlan.includes(replayIndex) || replayIndex >= boPlan.at(-1)) {
+    playTimer = -1;
+    seek(boPlan[0]);
+  }
   const advance = () => {
-    const next = boPlan.find((i) => i > replayIndex);
-    if (next === undefined) return stopPlayback();
+    const next = nextReplayIndex(boPlan, replayIndex, replaySelection().loop);
+    if (next === undefined) return stopPlayback(true);
     seek(next);
     playTimer = setTimeout(advance, Number($("replay-speed").value));
   };
@@ -2310,14 +2514,38 @@ window.graphDebug = {
   get view() {
     return view;
   },
+  get presentation() {
+    return presentation;
+  },
+  get displayGraph() {
+    return displayGraph;
+  },
+  get layers() {
+    return { ...analysisSettings?.layers };
+  },
   get camera() {
     return { scale, pan: { ...pan } };
   },
+  get spatial() {
+    return spatial?.diagnostics || null;
+  },
+  get spatialPositions() {
+    return spatial ? structuredClone(spatial.positions) : {};
+  },
   get metrics() {
-    return { ...metrics, drawCount: renderer.frames, webgl: !!app.renderer.gl };
+    if (spatialActive()) return spatial?.diagnostics || {};
+    return {
+      ...metrics,
+      drawCount: renderer.frames,
+      routeSolver: renderer.routing,
+      webgl: !!app.renderer.gl,
+    };
   },
   get layoutBusy() {
-    return layoutBusy;
+    return (
+      layoutBusy ||
+      (spatialActive() ? spatial?.busy || spatial?.router.stats.busy : renderer.routing.busy)
+    );
   },
 };
 const conversation = createConversationFocus({

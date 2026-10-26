@@ -39,3 +39,26 @@ parameters, imports, inheritance and syntactic call occurrences in Python,
 JS/TS/React/Vue. It does not prove dynamic dispatch or arbitrary variable flow.
 Bounded queries report omitted content; use JSON export for the full indexed
 scope. Never describe a bounded canvas as every possible execution path.
+
+## API entries and layers
+
+Literal route registrations recognized by the Python and JavaScript adapters appear
+as **API** nodes linked to their handler declarations in **API entries**, **Code structure**, or a matching **Local code** region. The optional Layers control
+can separate these entries from business actions, states, rules, functions/values,
+data structure and source declarations. Local code includes registered callers of
+the selected handler. The complete code view also retains authored source bindings.
+
+These are source registrations, not recorded requests. Dynamic route construction,
+framework prefixes and middleware dispatch need explicit application bindings and
+real request tests; never guess a full URL or imply an endpoint was exercised.
+Observer routes stay excluded from application endpoint nodes. Keep function,
+method and parameter containment; a parameter belongs to its declaration, while a
+captured event field belongs to its collecting operation. Verify those separately.
+
+Source opens the complete file on demand, with line numbers and automatic focus.
+Parser-supplied UTF-16 ranges highlight a declared parameter precisely, including
+non-ASCII names and Vue script offsets. Files are cached by bound source revision
+inside the viewer; graph JSON carries locations rather than complete source files.
+Opening another parameter in the same version reuses that file. Changed revisions
+invalidate the source cache. Captured adapter fields locate their collection owner;
+a missing source-variable binding must not be replaced with a guessed text match.

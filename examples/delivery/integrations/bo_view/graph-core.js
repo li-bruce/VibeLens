@@ -1,3 +1,7 @@
+import { activeMachineStates } from "./machine-projection.js";
+import { graphInventory } from "./graph-inventory.js";
+export { stateNodeId } from "./graph-inventory.js";
+import { capturedValue } from "./capture-fields.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   dataRoles,
@@ -95,7 +99,11 @@ export function sourceBinding(view, all, id) {
   const node = all?.get(id);
   if (node?.referenceOf)
     return view?.manifest.bindings[node.referenceOf] || view?.manifest.bindings[node.event_node];
-  return node?.field ? view?.manifest.bindings[node.event_node || node.parent] : undefined;
+  if (!node?.field) return undefined;
+  const owner = view?.manifest.bindings[node.event_node || node.parent];
+  // An event JSON path is not a lexical symbol. Show the owner's full file as
+  // context, but never highlight it as the definition of an adapter field.
+  return owner ? { ...owner, selection: undefined, provenance: "capture-owner" } : undefined;
 }
 export function nodeEvents(node, events) {
   return events.filter((e) => e.node === (node.event_node || node.id));
@@ -203,10 +211,14 @@ export function status(node, view, events, choice, configuration = null) {
         ? "ok"
         : "blocked";
   if (node.layer === "state")
-    return node.value === phaseValue(view, configuration, choice) ? "active" : "declared";
+    return activeMachineStates(view.model.machine, phaseValue(view, configuration, choice)).has(
+      node.value,
+    )
+      ? "active"
+      : "declared";
   if (node.field) {
     const values = callValues(node, events)[node.direction === "in" ? "inputs" : "outputs"];
-    if (!(node.field in values)) return "declared";
+    if (!capturedValue(node, values).present) return "declared";
   }
   if (node.layer === "business") {
     const states = view.model.nodes
@@ -251,26 +263,23 @@ export function lines(node, view, events, choice, configuration = null) {
   if (node.code_role)
     return [
       { text: node.summary || node.source?.path || "", role: "symbol" },
-      {
-        text: boTranslate(
-          node.code_boundary
-            ? "Outside loaded code region"
-            : "Static structure; execution unproven",
-        ),
-        role: "muted",
-      },
+      ...(node.code_boundary
+        ? [{ text: boTranslate("Outside loaded code region"), role: "muted" }]
+        : []),
     ];
   if (view.stage === "design") return node.summary ? [{ text: node.summary, role: "muted" }] : [];
   if (node.field) {
     const values = callValues(node, events)[node.direction === "in" ? "inputs" : "outputs"];
     return [
-      { text: node.field + ": " + typeName(node.fieldType), role: "symbol" },
       {
-        text:
-          node.field in values
-            ? compact(values[node.field])
-            : boTranslate("Not captured in this run"),
-        role: node.field in values ? "value" : "muted",
+        text: [node.field, ...(node.field_path || [])].join(".") + ": " + typeName(node.fieldType),
+        role: "symbol",
+      },
+      {
+        text: capturedValue(node, values).present
+          ? compact(capturedValue(node, values).value)
+          : boTranslate("Not captured in this run"),
+        role: capturedValue(node, values).present ? "value" : "muted",
       },
     ];
   }
@@ -348,10 +357,11 @@ export function lines(node, view, events, choice, configuration = null) {
   } else if (node.layer === "state") {
     result.push({ text: `phase: Phase = ${node.value}`, role: "value" });
     result.push({
-      text:
-        node.value === phaseValue(view, configuration, choice)
-          ? boTranslate("Flow state for this run")
-          : boTranslate("Reachable flow state"),
+      text: activeMachineStates(view.model.machine, phaseValue(view, configuration, choice)).has(
+        node.value,
+      )
+        ? boTranslate("Flow state for this run")
+        : boTranslate("Declared state"),
       role: "muted",
     });
     if (node.value === view.model.machine.execution?.within && configuration) {
@@ -424,7 +434,7 @@ export function lines(node, view, events, choice, configuration = null) {
     for (const [key, t] of Object.entries(spec)) {
       if (!(key in vals) || key === "state") continue;
       result.push({
-        text: `${direction === "in" ? boTranslate("Parameter") : boTranslate("Return")} ${key}: ${typeName(t)} = ${compact(vals[key])}`,
+        text: `${direction === "in" ? boTranslate("Input") : boTranslate("Output")} ${key}: ${typeName(t)} = ${compact(vals[key])}`,
         role: vals[key] === false ? "bad" : "value",
       });
     }
@@ -452,6 +462,7 @@ export function wrapText(text, width = 47) {
   return out;
 }
 export const nodeTypes = {
+  "code-endpoint": { label: boTranslate("API endpoint"), glyph: "API", color: 0x986345 },
   "code-file": { label: boTranslate("Source file"), glyph: "F", color: 0x657ca5 },
   "code-class": { label: boTranslate("Class"), glyph: "C", color: 0x9371a6 },
   "code-function": { label: boTranslate("Code function"), glyph: "ƒ", color: 0x387c88 },
@@ -462,7 +473,7 @@ export const nodeTypes = {
   state: { label: boTranslate("State"), glyph: "S", color: 0x9869a0 },
   decision: { label: boTranslate("Decision"), glyph: "?", color: 0xaf8029 },
   resource: { label: boTranslate("Resource"), glyph: "R", color: 0x7b8845 },
-  data: { label: boTranslate("Parameter"), glyph: "x", color: 0x627f9c },
+  data: { label: boTranslate("Value"), glyph: "x", color: 0x627f9c },
   effect: { label: boTranslate("Effect"), glyph: "✓", color: 0x2d8a70 },
   wait: { label: boTranslate("Wait"), glyph: "…", color: 0xb38442 },
   store: { label: boTranslate("Database"), glyph: "DB", color: 0x426b9a },
@@ -503,9 +514,6 @@ export function viewTypes(n) {
     ]),
   ];
 }
-export function stateNodeId(model, value) {
-  return model.nodes.find((n) => n.kind === "state" && n.value === value)?.id || "state." + value;
-}
 export function relationType(e) {
   if (e.origin === "code-index" && e.code_relation) return "code-" + e.code_relation;
   if (e.type === "data" && dataRelations.includes(e.data_relation)) return e.data_relation;
@@ -539,108 +547,13 @@ export function layoutGraph(
 ) {
   const configuration = selectedConfiguration(view, choice, step),
     events = selectedEvents(view, choice, step);
-  const all = new Map(view.model.nodes.map((n) => [n.id, n])),
-    children = new Map(),
-    rawEdges = [...view.model.edges];
-  for (const n of view.model.nodes) {
-    if (n.kind === "state") continue;
-    for (const [direction, fields] of Object.entries(n.capture || {}))
-      for (const [field, fieldType] of Object.entries(fields)) {
-        const id = `field:${n.id}:${direction}:${field}`;
-        all.set(id, {
-          id,
-          label: field,
-          summary:
-            direction === "in" ? boTranslate("Input parameter") : boTranslate("Return value"),
-          kind: "data",
-          layer: "parameter",
-          parent: n.id,
-          field,
-          fieldType,
-          direction,
-          event_node: n.event_node || n.id,
-          origin: "capture-field",
-        });
-        rawEdges.push({
-          id: `capture:${id}`,
-          from: direction === "in" ? id : n.id,
-          to: direction === "in" ? n.id : id,
-          type: "data",
-          label: direction === "in" ? boTranslate("Input") : boTranslate("Return"),
-          origin: "capture-field",
-        });
-      }
-  }
-  const stateIds = new Map();
-  for (const value of view.model.machine.values) {
-    const authored = [...all.values()].find((n) => n.kind === "state" && n.value === value);
-    const id = stateNodeId(view.model, value);
-    stateIds.set(value, id);
-    if (!authored)
-      all.set(id, {
-        id,
-        label: view.model.machine.labels?.[value] || value,
-        kind: "state",
-        layer: "state",
-        value,
-        source: view.model.machine.source,
-      });
-  }
-  const attempt = currentAttempt(view, choice);
-  for (const t of view.model.machine.transitions) {
-    const sources = Array.isArray(t.source) ? t.source : [t.source];
-    for (const source of view.model.machine.values.filter((v) =>
-      sources.some((s) => s === "*" || s === v || v.startsWith(s + "_")),
-    )) {
-      const target = t.dest || source,
-        from = stateIds.get(source),
-        to = stateIds.get(target);
-      const observed =
-        step === "latest" &&
-        (view.machine.journal || []).some(
-          (j) =>
-            j.event === t.trigger &&
-            j.source === source &&
-            j.target === target &&
-            j.attempt === attempt,
-        );
-      rawEdges.push({
-        id: "transition:" + t.trigger + ":" + source,
-        from,
-        to,
-        type: "transition",
-        event: t.trigger,
-        label: view.model.machine.event_labels?.[t.trigger] || t.trigger,
-        observed,
-        current: choice === "latest",
-      });
-    }
-  }
-  // Membership is a view reference to one canonical identity, not another call.
-  for (const m of options.memberships || []) {
-    const member = all.get(m.member),
-      group = all.get(m.group);
-    if (!member || !group || member.parent === group.id || member.id === group.id) continue;
-    const id = "ref:" + encodeURIComponent(group.id) + ":" + encodeURIComponent(member.id);
-    all.set(id, {
-      ...member,
-      id,
-      parent: group.id,
-      referenceOf: member.id,
-      event_node: member.event_node || member.id,
-      summary: boTranslate("Shared entry: ") + m.reason,
-      origin: "membership-reference",
-      membership: m,
-    });
-    rawEdges.push({
-      id: "shared:" + id,
-      from: id,
-      to: member.id,
-      type: "shared",
-      label: boTranslate("Same node"),
-      evidence: m.evidence,
-    });
-  }
+  const { all, rawEdges } = graphInventory(view, {
+    attempt: currentAttempt(view, choice),
+    choice,
+    step,
+    memberships: options.memberships,
+  });
+  const children = new Map();
   const explicitlyHidden = new Set(options.hiddenNodes || []);
   const excludedIds = new Set();
   for (const [id, node] of all) {

@@ -48,7 +48,7 @@ An inspection does not advance the accepted baseline. Acceptance is the explicit
 1. The application makes its business decision and calls its native adapter's BOProbe.record with selected values: [Python](../skills/vibelens/scripts/bo_observer/adapters/python/bo_probe.py) or [JavaScript](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs).
 2. The adapter filters fields, suppresses observation of its own work, and queues delivery. Transport failures are counted separately from the business result.
 3. [protocol.py](../skills/vibelens/scripts/bo_observer/protocol.py) checks project/build identity, field types, and envelope limits.
-4. [service.py](../skills/vibelens/scripts/bo_observer/service.py): GraphSession.event retains producer identity, ordering, and dependencies. snapshot attaches the application's state to the corresponding event.
+4. [observation/session.py](../skills/vibelens/scripts/bo_observer/observation/session.py): GraphSession.event retains producer identity, ordering, and dependencies. snapshot attaches the application's state to the corresponding event.
 5. [bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py): bo_observe checks the actual state/revision against the declaration. It records a mismatch as evidence instead of replacing the reported state with an expected state.
 6. [observation/recording_session.py](../skills/vibelens/scripts/bo_observer/observation/recording_session.py) saves bounded recording intervals and explicit gaps. view/export serve the declared graph and retained evidence.
 
@@ -60,11 +60,16 @@ last request. The short host lock protects ownership only. Parsing source and
 writing an HTTP response do not hold it, so a slow code view can coexist with
 event ingestion and a build reload.
 
+The HTTP adapter in `service.py` handles request authorization, routes and session borrowing. `observation/session.py` admits events and provides consistent state frames. Existing imports of `service.GraphSession` remain supported. Database shape comparison lives in [data/schema_compare.py](../skills/vibelens/scripts/bo_observer/data/schema_compare.py); `data/projection.py` assembles the graph and reexports the comparator.
+
 ### 3. A click changes the view
 
 | Viewer module | Responsibility |
 |---|---|
 | [viewer.js](../skills/vibelens/assets/stategraph-viewer/viewer.js) | Connect controls, graph data, live updates, and recording selection. Start here for UI wiring. |
+| [detail-panel.js](../skills/vibelens/assets/stategraph-viewer/detail-panel.js) | Show selected values and the complete revision-bound source file; discard obsolete asynchronous responses. |
+| [edge-panel.js](../skills/vibelens/assets/stategraph-viewer/edge-panel.js) | Explain original relation members and delegate selection/hiding to the coordinator. |
+| [change-panel.js](../skills/vibelens/assets/stategraph-viewer/change-panel.js) | Present actual before/after changes and locate their graph owner. |
 | [graph-core.js](../skills/vibelens/assets/stategraph-viewer/graph-core.js) | Resolve node values, source bindings, event selection, and visible graph content. |
 | [layout.js](../skills/vibelens/assets/stategraph-viewer/layout.js) | Expand/collapse regions, position groups, apply filters, and retain annotations. |
 | [view-lifecycle.js](../skills/vibelens/assets/stategraph-viewer/view-lifecycle.js) | Keep project view identity stable across builds; compare recording and live graph versions. |
@@ -76,6 +81,14 @@ event ingestion and a build reload.
 | [polling.js](../skills/vibelens/assets/stategraph-viewer/polling.js) | Serialize refresh tasks and control their lifecycle. |
 
 The complete model, the selected view, and the captured evidence are separate values. Filtering a view must preserve the complete model. Moving a node or replaying a step must not execute a business command.
+
+### True 3D and common layer assembly
+
+[graph-inventory.js](../skills/vibelens/assets/stategraph-viewer/graph-inventory.js) assembles all authored nodes, state transitions, captured fields and shared references before either renderer filters them. [graph-links.js](../skills/vibelens/assets/stategraph-viewer/graph-links.js) merges the optional source index and follows explicit handler/source bindings to recording owners. [graph-layers.js](../skills/vibelens/assets/stategraph-viewer/graph-layers.js) owns semantic layer classification. Display names never establish relationships.
+
+[spatial-model.js](../skills/vibelens/assets/stategraph-viewer/spatial-model.js) describes 3D membership and containment projections. [spatial-layout.js](../skills/vibelens/assets/stategraph-viewer/spatial-layout.js) runs its constrained 3D force solver in a worker. [spatial-renderer.js](../skills/vibelens/assets/stategraph-viewer/spatial-renderer.js) owns the perspective camera, GPU resources and pointer interactions. [semantic-view.js](../skills/vibelens/assets/stategraph-viewer/semantic-view.js) maintains shared accessible controls with indexed, incremental attribute updates. [layer-ruler.js](../skills/vibelens/assets/stategraph-viewer/layer-ruler.js) draws the Canvas2D sorting/visibility navigator; [edge-routing.js](../skills/vibelens/assets/stategraph-viewer/edge-routing.js) shares path and boundary math. [replay-selection.js](../skills/vibelens/assets/stategraph-viewer/replay-selection.js) owns non-destructive playback inclusion and range rules. Read [spatial graph](../skills/vibelens/references/spatial-graph.md) for interaction and verification details.
+
+[cluster-layout.js](../skills/vibelens/assets/stategraph-viewer/cluster-layout.js) and [cluster-worker.js](../skills/vibelens/assets/stategraph-viewer/cluster-worker.js) arrange typed subtree clusters using the existing D3 forces. [route-shapes.js](../skills/vibelens/assets/stategraph-viewer/route-shapes.js) owns faithful straight/cubic shapes and continuous dash tessellation. [spatial-geometry.js](../skills/vibelens/assets/stategraph-viewer/spatial-geometry.js) merges semantic solid objects for instanced rendering and shared legend thumbnails.
 
 ## Database structure and operations
 
@@ -114,18 +127,34 @@ Pinned development tools are listed in [tools/formatting](../tools/formatting/).
     python -m pip install -r tools/formatting/requirements.txt
     npm ci --prefix tools/formatting
     python tools/format_source.py
-    python tools/format_source.py --check
+    python tools/check_source.py --format
+    python tests/test_source_quality.py
+    node tools/test_detail_panel.mjs
 
-The formatter selects owned Python modules, viewer JavaScript, native JavaScript adapters, and the product site. It excludes vendored Pixi/ELK bundles, installed example copies, tests, and frozen records.
+The shared [source scope](../tools/source-scope.json) selects owned Python modules, viewer JavaScript, native JavaScript adapters, and the product site. It excludes vendored Pixi/ELK/Three.js/d3 bundles, installed example copies, tests, and frozen records. Rebuild the pinned spatial bundles with `npm ci` and `npm run build` from tools/spatial; review their hashes and license notices before updating package checks.
+
+`check_source.py` parses Python, checks undefined names and invalid control flow with Ruff, and checks JavaScript bindings, duplicate keys and syntax with ESLint. CI runs the same pinned checks on Windows and Linux. These checks detect source defects; runtime, business and mapping checks remain separate.
 
 For a source-readability-only change, compare executable Python syntax with an explicit baseline:
 
     python tools/check_readability_equivalence.py --base <commit>
     node tools/check_js_readability_equivalence.mjs --base <commit>
 
-The JavaScript comparison uses TypeScript from the native adapter's development dependencies. These comparisons ignore documentation and source positions. They supplement the actual behavior checks:
+The JavaScript comparison uses TypeScript from the native adapter's development dependencies. These comparisons ignore documentation and source positions. New or structurally changed modules are reported as changes; a relocation needs an explicit review and behavior tests rather than an equality claim. They supplement the actual behavior checks:
 
     python tools/check_package.py
     python tools/verify.py
 
 When a managed runtime changes, rebuild each example's source bindings, inspect its new candidate, run verify, then accept/check before freezing a new record. Earlier accepted records remain available for review.
+
+## Routing and node icons
+
+The shared viewer pipeline is `routing-scene.js` (renderer adapters), `routing-client.js` / `routing-worker.js` (epochs and lifecycle), `routing-engine.js` (routing and typed bundles), `routing-navigation.js` (reusable A* channels), and `routing-geometry.js` (R-tree checks and certified smoothing). `route-picking.js` resolves shared strokes to original edges. `node-icons.js` is generated from selected Tabler vectors; `glyphs.js` and `spatial-geometry.js` draw the same vocabulary in 2D and 3D. Rebuild pinned dependencies with `tools/routing/build.mjs` and icons with `tools/routing/build-icons.mjs`.
+
+## Release from a clean checkout
+
+Run `python tools/check_release_export.py --staged` after staging the reviewed candidate. CI uses `HEAD`. The command exports both examples to an isolated directory, restores only their frozen approvals, and requires the normal strict `check` to pass. It never regenerates a graph or approves changed inputs. This catches Git line-ending conversion and files omitted from the release, independently of a warm development checkout.
+
+The HTTP waiting regression holds actual checking tasks at their existing test hook until an HTTP snapshot contains the real running/waiting pair. It then releases those tasks and verifies the normal SQLite effect. This avoids relying on polling speed or lengthening arbitrary demo delays.
+
+The older delivery example’s [HTTP adapter](../examples/delivery/integrations/bo_server.py) enumerates its installed viewer assets, including module and WASM dependencies. `python tests/test_runtime_http.py` checks actual asset bytes/types and business execution. The optional `node tools/test_delivery_browser.mjs` checks the installed example in a real browser; it uses the same Playwright/browser setup as the other browser tools and keeps its temporary application isolated.

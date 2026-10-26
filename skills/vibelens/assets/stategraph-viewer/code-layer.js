@@ -1,6 +1,8 @@
 // Optional source structure is a display projection, separate from recorded facts.
+import { mergeGraph } from "./graph-links.js";
 export const codeTypes = [
   "code-file",
+  "code-endpoint",
   "code-class",
   "code-function",
   "code-parameter",
@@ -8,6 +10,7 @@ export const codeTypes = [
 ];
 export const codeRelations = [
   "code-defines",
+  "code-handles",
   "code-calls",
   "code-imports",
   "code-inherits",
@@ -29,30 +32,34 @@ export function codeSummary(slice, translate) {
 }
 
 export function migrateCodeFilters(value) {
-  if (!value || value.codeTypes === 1) return value;
-  // Opt-in source detail must not turn an old empty or specific filter into
-  // a broader view merely because the available type list grew.
-  return { ...value, codeTypes: 1 };
+  if (!value || value.codeTypes === 2) return value;
+  const next = { ...value, codeTypes: 2 };
+  // Upgrade prior all-code selections once. Preserve deliberate narrow/empty filters.
+  if (value.codeTypes === 1) {
+    for (const key of ["nodes", "regions"])
+      if (
+        codeTypes
+          .filter((type) => type !== "code-endpoint")
+          .every((type) => value[key]?.includes(type))
+      )
+        next[key] = [...new Set([...value[key], "code-endpoint"])];
+    if (
+      codeRelations
+        .filter((type) => type !== "code-handles")
+        .every((type) => value.edges?.includes(type))
+    )
+      next.edges = [...new Set([...value.edges, "code-handles"])];
+  }
+  return next;
 }
 
 /** Merge by stable identity; never replace the authored graph or its build. */
 export function withCodeGraph(view, slice) {
   if (!slice) return view;
-  const ids = new Set(view.model.nodes.map((n) => n.id));
-  const nodes = slice.nodes.filter((n) => !ids.has(n.id));
-  nodes.forEach((n) => ids.add(n.id));
   return {
     ...view,
     code_structure: slice,
-    model: {
-      ...view.model,
-      nodes: [...view.model.nodes, ...nodes],
-      edges: [...view.model.edges, ...slice.edges.filter((e) => ids.has(e.from) && ids.has(e.to))],
-      graph_roots: [
-        ...(view.model.graph_roots || []),
-        ...nodes.filter((n) => !n.parent).map((n) => n.id),
-      ],
-    },
+    model: mergeGraph(view.model, slice),
     manifest: {
       ...view.manifest,
       bindings: {

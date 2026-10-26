@@ -168,7 +168,14 @@ def initialize(root):
                     "requirements": ["R1"],
                 }
             ],
-            "edges": [],
+            "edges": [
+                {"id": "publication-ready", "from": "state.ready", "to": "publish",
+                 "type": "guard", "label": "Ready to publish",
+                 "evidence": "machine.transitions: ready --publish--> published"},
+                {"id": "publication-completed", "from": "publish", "to": "state.published",
+                 "type": "flow", "label": "Publication committed", "event": "publish",
+                 "evidence": "The demo applies publish after the database transaction commits"},
+            ],
             "overview": [{"node": "publish"}],
             "scope": {"unknowns": []},
             "machine": machine,

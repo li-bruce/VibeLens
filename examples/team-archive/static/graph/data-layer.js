@@ -63,7 +63,7 @@ export function dataStatusClass(status) {
 }
 
 /** Keep provenance, execution outcome, and committed effect visibly separate. */
-export function dataLines(node, inputs = {}, outputs = {}, recorded = false) {
+export function dataLines(node, inputs = {}, outputs = {}, recorded = false, details = false) {
   const meta = node.data_metadata || {},
     rows = [];
   if (["query", "transform"].includes(node.data_role)) {
@@ -94,7 +94,7 @@ export function dataLines(node, inputs = {}, outputs = {}, recorded = false) {
         parsed_and_provided: t("Targets from SQL and application"),
         unresolved: t("Targets unresolved"),
       }[outputs.target_source];
-      if (targetSource) rows.push({ text: targetSource, role: "muted" });
+      if (details && targetSource) rows.push({ text: targetSource, role: "muted" });
       if (present(outputs.input_count) || present(outputs.output_count))
         rows.push({
           text: t("Items: {0} → {1}", outputs.input_count ?? "?", outputs.output_count ?? "?"),
@@ -130,9 +130,9 @@ export function dataLines(node, inputs = {}, outputs = {}, recorded = false) {
     sampled: t("Sampled structure"),
   }[node.data_coverage];
   const identity = [meta.engine || meta.kind, meta.native_type].filter(Boolean);
-  if (meta.primary_key) identity.push(t("Primary key"));
-  if (meta.nullable === false || meta.required === true) identity.push(t("Required"));
-  if (meta.nullable === true) identity.push(t("Nullable"));
+  if (details && meta.primary_key) identity.push(t("Primary key"));
+  if (details && (meta.nullable === false || meta.required === true)) identity.push(t("Required"));
+  if (details && meta.nullable === true) identity.push(t("Nullable"));
   if (identity.length) rows.push({ text: identity.join(" · "), role: "value" });
   const comparison = {
     declared_only: t("Awaiting database structure"),
@@ -144,7 +144,7 @@ export function dataLines(node, inputs = {}, outputs = {}, recorded = false) {
     unverified: t("Database structure unverified"),
     outside_scope: t("Reference outside inspected scope"),
   }[meta.status];
-  if (comparison)
+  if (details && comparison)
     rows.push({
       text: comparison,
       role: ["different", "stale"].includes(meta.status)
@@ -153,9 +153,9 @@ export function dataLines(node, inputs = {}, outputs = {}, recorded = false) {
           ? "muted"
           : "value",
     });
-  if (origin || coverage)
+  if (details && (origin || coverage))
     rows.push({ text: [origin, coverage].filter(Boolean).join(" · "), role: "muted" });
-  for (const constraint of meta.constraints || [])
+  for (const constraint of details ? meta.constraints || [] : [])
     rows.push({
       text: [
         constraint.kind,
@@ -166,8 +166,9 @@ export function dataLines(node, inputs = {}, outputs = {}, recorded = false) {
         .join(" · "),
       role: "symbol",
     });
-  for (const limitation of meta.limitations || []) rows.push({ text: limitation, role: "muted" });
-  if (!rows.length && node.summary) rows.push({ text: node.summary, role: "muted" });
+  for (const limitation of details ? meta.limitations || [] : [])
+    rows.push({ text: limitation, role: "muted" });
+  if (details && !rows.length && node.summary) rows.push({ text: node.summary, role: "muted" });
   return rows;
 }
 

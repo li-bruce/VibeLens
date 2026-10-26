@@ -10,6 +10,7 @@ import ast
 import json
 from pathlib import Path
 import subprocess
+from source_scope import source_files
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -39,21 +40,33 @@ def executable_tree(source, name):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base", required=True)
-    parser.add_argument("--base-skill-path", default="skills/vibelens",
-                        help="Skill path in the baseline, such as skills/business-observer before the rename")
+    parser.add_argument(
+        "--base-skill-path",
+        default="skills/vibelens",
+        help="Skill path in the baseline, such as skills/business-observer before the rename",
+    )
     parser.add_argument("--out")
     args = parser.parse_args()
-    files = sorted((ROOT / "skills/vibelens/scripts").rglob("*.py"))
-    checked, changed = [], []
+    files, _ = source_files()
+    checked, changed, added = [], [], []
     for path in files:
         name = path.relative_to(ROOT).as_posix()
-        baseline_name = args.base_skill_path.rstrip('/') + '/' + path.relative_to(ROOT/'skills/vibelens').as_posix()
-        previous = subprocess.run(
+        baseline_name = (
+            args.base_skill_path.rstrip("/")
+            + "/"
+            + path.relative_to(ROOT / "skills/vibelens").as_posix()
+        )
+        baseline = subprocess.run(
             ["git", "show", args.base + ":" + baseline_name],
             cwd=ROOT,
             capture_output=True,
-            check=True,
-        ).stdout.decode("utf-8-sig")
+            check=False,
+        )
+        if baseline.returncode:
+            added.append(name)
+            changed.append(name)
+            continue
+        previous = baseline.stdout.decode("utf-8-sig")
         current = path.read_text(encoding="utf-8-sig")
         checked.append(name)
         if executable_tree(previous, name) != executable_tree(current, name):
@@ -62,6 +75,7 @@ def main():
         "base": args.base,
         "python_modules": len(checked),
         "executable_ast_changes": changed,
+        "added_modules": added,
         "valid": not changed,
         "scope": "Python executable AST equality; comments, docstrings, and source locations excluded",
     }

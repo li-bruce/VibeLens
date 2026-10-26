@@ -6,7 +6,6 @@ export async function projectStorage(legacy, onStatus, request = fetch) {
     error = "",
     timer = null,
     pending = false,
-    writing = false,
     blocked = false;
   let state = boTranslate("Loading project views");
   const status = (value) => {
@@ -47,7 +46,6 @@ export async function projectStorage(legacy, onStatus, request = fetch) {
     return pending ? flush() : true;
   }
   async function write() {
-    writing = true;
     pending = false;
     const snapshot = { ...document, entries: { ...entries } };
     status(boTranslate("Saving to project\u2026"));
@@ -70,7 +68,6 @@ export async function projectStorage(legacy, onStatus, request = fetch) {
       pending = true;
       status(boTranslate("Not saved: ") + error);
     } finally {
-      writing = false;
       if (pending && !error && !blocked) timer = setTimeout(flush, 150);
     }
   }

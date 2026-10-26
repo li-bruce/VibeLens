@@ -1,15 +1,18 @@
+import { polylineAt, cleanRoute } from "./edge-routing.js";
 import { t as boTranslate } from "./i18n.js";
 // Graph drawing owns Pixi objects and hit geometry, but no fetching, storage or UI commands.
 import { colors as C, nodeTypes } from "./graph-core.js";
-import { annotationFor, displayName, edgePorts, relationStyles } from "./layout.js";
+import { annotationFor, displayName, relationStyle } from "./layout.js";
 import { drawGlyph, glyphAppearance } from "./glyphs.js";
 import { boKinds } from "./replay-steps.js";
-import { dataRelationEvidence } from "./data-layer.js";
+import { RoutingClient } from "./routing-client.js";
+import { planarScene } from "./routing-scene.js";
 export function short(value, count = 27) {
   const chars = [...String(value)];
   return chars.length > count ? chars.slice(0, count - 1).join("") + "…" : String(value);
 }
 export function bezierAt(path, t) {
+  if (path.points) return polylineAt(path.points, t);
   const { start: a, c1: b, c2: c, end: d } = path,
     u = 1 - t;
   return {
@@ -33,7 +36,9 @@ export function createGraphRenderer({
   hits,
   edgePaths,
   onMetrics = () => {},
+  onRoutes = () => {},
 }) {
+  const router = new RoutingClient(onRoutes);
   let graph, presentation, focusContext, preferences, selected, scale, pan;
   let renderedEdges, boDetail, boTransfers, formatChange, formatValue, contextLost;
   let drawCount = 0;
@@ -160,7 +165,7 @@ export function createGraphRenderer({
           (annotationFor(preferences, owner.node.referenceOf || r.id).core ? "★ " : "") +
           short(displayName(owner.node, preferences), 22);
       const label = text(
-        `${name} · ${nodeTypes[owner.type].label} · ${owner.kids.length}`,
+        `${name} · ${owner.kids.length} ${{ active: "▶", ok: "✓", blocked: "!", historical: "·" }[owner.state] || ""}`,
         0,
         0,
         font,
@@ -170,10 +175,10 @@ export function createGraphRenderer({
       );
       const w = label.width + 16 / scale,
         h = font + 8 / scale;
-      const candidates = [-90, -120, -60, -150, -30, 90, 180, 0].map((deg) => {
+      const candidates = [90].map((deg) => {
         const angle = (deg * Math.PI) / 180,
           cx = r.cx + Math.cos(angle) * r.radius,
-          cy = r.cy + Math.sin(angle) * r.radius;
+          cy = r.cy + Math.sin(angle) * r.radius + h / 2 + 5 / scale;
         return { x: cx - w / 2, y: cy - h / 2, w, h, cx, cy };
       });
       const box =
@@ -198,22 +203,36 @@ export function createGraphRenderer({
   }
   function strokeRelation(g, path, style, width, alpha) {
     const { start, end, c1, c2 } = path;
+    if (!style.dash.length && path.points) {
+      g.moveTo(start.x, start.y);
+      for (const point of path.points.slice(1)) g.lineTo(point.x, point.y);
+      g.stroke({ color: style.color, width, alpha });
+      return;
+    }
     if (!style.dash.length) {
       g.moveTo(start.x, start.y)
         .bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
         .stroke({ color: style.color, width, alpha });
       return;
     }
-    const length =
-      Math.hypot(start.x - c1.x, start.y - c1.y) +
-      Math.hypot(c1.x - c2.x, c1.y - c2.y) +
-      Math.hypot(c2.x - end.x, c2.y - end.y);
+    const length = path.points
+      ? path.points
+          .slice(1)
+          .reduce(
+            (sum, p, i) => sum + Math.hypot(p.x - path.points[i].x, p.y - path.points[i].y),
+            0,
+          )
+      : Math.hypot(start.x - c1.x, start.y - c1.y) +
+        Math.hypot(c1.x - c2.x, c1.y - c2.y) +
+        Math.hypot(c2.x - end.x, c2.y - end.y);
     const steps = Math.max(24, Math.min(700, Math.ceil(length / 6)));
     let previous = start,
       index = 0,
       remaining = style.dash[0];
-    for (let i = 1; i <= steps; i++) {
-      const next = bezierAt(path, i / steps);
+    const samples =
+      path.points || Array.from({ length: steps + 1 }, (_, i) => bezierAt(path, i / steps));
+    for (let i = 1; i < samples.length; i++) {
+      const next = samples[i];
       let from = previous,
         distance = Math.hypot(next.x - from.x, next.y - from.y);
       while (distance > 1e-6) {
@@ -236,60 +255,21 @@ export function createGraphRenderer({
     g.stroke({ color: style.color, width, alpha });
   }
   function drawEdges(foreground, labelBoxes) {
-    const lanes = new Map();
     for (const e of renderedEdges) {
       const a = graph.byId.get(e.from),
         b = graph.byId.get(e.to);
       if (!a || !b) continue;
-      const p = point(a),
-        q = point(b),
-        key = [e.from, e.to].sort().join("|"),
-        index = lanes.get(key) || 0;
-      lanes.set(key, index + 1);
       if (!!e.crossing !== foreground) continue;
       scope("edge:" + e.id);
       const highlight = [...e.edgeIds].some((id) => focusContext.edges.has(id)),
         dim = focusContext.active && !highlight,
-        style = relationStyles[e.type] || relationStyles.other,
+        style = relationStyle(e),
         col = style.color;
-      const dx = q.x - p.x,
-        dy = q.y - p.y,
-        length = Math.hypot(dx, dy) || 1,
-        offset = (index + 1) * 20;
-      let start, end, c1, c2, mid;
-      if (a === b) {
-        start = { x: p.x - 18, y: p.y - 18 };
-        end = { x: p.x + 18, y: p.y - 18 };
-        c1 = { x: p.x - 68, y: p.y - 95 - offset };
-        c2 = { x: p.x + 68, y: p.y - 95 - offset };
-        mid = { x: p.x, y: p.y - 75 - offset };
-      } else {
-        ({ start, end } = edgePorts(graph, e, Math.max(32, 15 / scale)));
-        const sx = end.x - start.x,
-          sy = end.y - start.y;
-        c1 = {
-          x: start.x + sx * 0.32 - (dy / length) * offset,
-          y: start.y + sy * 0.32 + (dx / length) * offset,
-        };
-        c2 = {
-          x: end.x - sx * 0.32 - (dy / length) * offset,
-          y: end.y - sy * 0.32 + (dx / length) * offset,
-        };
-        mid = {
-          x: (start.x + 3 * c1.x + 3 * c2.x + end.x) / 8,
-          y: (start.y + 3 * c1.y + 3 * c2.y + end.y) / 8,
-        };
-      }
-      if (
-        !visible(
-          Math.min(p.x, q.x) - 120,
-          Math.min(p.y, q.y) - 120,
-          Math.abs(dx) + 240,
-          Math.abs(dy) + 240,
-        )
-      )
-        continue;
-      const path = { start, end, c1, c2 };
+      const resolved = router.routes.get(e.id);
+      if (!resolved) continue;
+      const path = { start: resolved[0], end: resolved.at(-1), points: resolved };
+      const { end } = path;
+      let mid = bezierAt(path, 0.5);
       edgePaths.set(e.id, path);
       const alpha = dim ? 0.1 : highlight ? 0.95 : 0.65,
         g = graphic();
@@ -304,7 +284,8 @@ export function createGraphRenderer({
       );
       scene.addChild(g);
       metrics.edges++;
-      const angle = Math.atan2(end.y - c2.y, end.x - c2.x);
+      const tangent = bezierAt(path, 0.99);
+      const angle = Math.atan2(end.y - tangent.y, end.x - tangent.x);
       const af = Math.max(1, 0.6 / scale),
         arrow = graphic(),
         left = {
@@ -359,9 +340,7 @@ export function createGraphRenderer({
         );
       }
       if (!dim && scale > 0.24 && (highlight || scale > 0.38)) {
-        const details =
-            dataRelationEvidence(e) ||
-            [...e.labels].filter((label) => label !== e.type).join(" / "),
+        const details = [...e.labels].filter((label) => label !== e.type).join(" / "),
           font = Math.max(11.5 / Math.sqrt(Math.min(1, scale)), 10 / scale),
           description =
             e.members.length > 1
@@ -386,18 +365,7 @@ export function createGraphRenderer({
           ),
           h = font + 7;
         // Put labels along the curve where they avoid nodes and previous labels.
-        const candidates = [0.5, 0.32, 0.68, 0.2, 0.8].map((t) => ({
-          x:
-            (1 - t) ** 3 * start.x +
-            3 * (1 - t) ** 2 * t * c1.x +
-            3 * (1 - t) * t * t * c2.x +
-            t ** 3 * end.x,
-          y:
-            (1 - t) ** 3 * start.y +
-            3 * (1 - t) ** 2 * t * c1.y +
-            3 * (1 - t) * t * t * c2.y +
-            t ** 3 * end.y,
-        }));
+        const candidates = [0.5, 0.32, 0.68, 0.2, 0.8].map((t) => bezierAt(path, t));
         const collision = (x, y, b) =>
           x - w / 2 < b.x + b.w && x + w / 2 > b.x && y - h / 2 < b.y + b.h && y + h / 2 > b.y;
         const candidate = candidates.find(
@@ -423,12 +391,10 @@ export function createGraphRenderer({
     metrics.nodes++;
     scope("node:" + b.id);
     const p = point(b),
-      style = nodeTypes[b.type],
       stroke = nodeTypes[b.type].color,
       g = graphic(),
       r = b.type === "business" ? 29 : 24;
-    const size = Math.max(1, 11 / (r * scale)),
-      glyphFont = Math.max(b.type === "business" ? 13 : 19, 10 / scale);
+    const size = Math.max(1, 11 / (r * scale));
     if (focusContext.active && focusContext.nodes.has(b.id) && selected !== b.id)
       g.circle(p.x, p.y, r + 5).stroke({ color: 0x5d87b1, width: 1.6, alpha: 0.65 });
     if (selected === b.id)
@@ -442,7 +408,12 @@ export function createGraphRenderer({
     g.scale.set(size);
     g.position.set(p.x * (1 - size), p.y * (1 - size));
     scene.addChild(g);
-    text(style.glyph, p.x, p.y - glyphFont * 0.55, glyphFont, appearance.ink, "center", "600");
+    if (b.node.data_metadata?.primary_key === true)
+      scene.addChild(
+        graphic()
+          .circle(p.x + 24 * size, p.y - 22 * size, 4)
+          .fill(0xba8b24),
+      );
     if (b.state !== "declared") {
       const statusColor =
         { active: 0x22876e, ok: 0x22876e, blocked: 0xbd8237, historical: 0x8192a2 }[b.state] ||
@@ -487,7 +458,7 @@ export function createGraphRenderer({
     if (annotation.core) text("★", p.x - 32, p.y + 20, 14, 0xb18c3c, "center");
     if (b.kids.length) {
       text(
-        b.open ? "−" : "+ " + b.kids.length,
+        b.open ? String(b.kids.length) : "+ " + b.kids.length,
         p.x + 52 * size,
         p.y - 5,
         Math.max(14, 9 / scale),
@@ -611,6 +582,7 @@ export function createGraphRenderer({
       contextLost,
     } = state);
     renderedEdges = presentation.edges;
+    router.request(planarScene(graph, presentation, cleanRoute(preferences.routing), scale));
     scene.removeChildren();
     edgePaths.clear();
     scene.position.set(pan.x, pan.y);
@@ -635,6 +607,10 @@ export function createGraphRenderer({
   return {
     draw,
     clear,
+    dispose: () => router.dispose(),
+    get routing() {
+      return router.stats;
+    },
     get frames() {
       return drawCount;
     },
