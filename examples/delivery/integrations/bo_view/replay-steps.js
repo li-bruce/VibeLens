@@ -242,8 +242,7 @@ export function boStepPlan(recording, items, all, visible, { mode = "view" } = {
         (b) =>
           b.type !== "data" &&
           (b.type !== "business" || event.phase !== "return") &&
-          (b.type === "business" ||
-            (b.node.referenceOf || b.node.event_node || b.id) === event.node),
+          (b.node.referenceOf || b.node.event_node || b.id) === event.node,
       );
     const command = event.kind === "command" && direct.some((b) => b.type === "business");
     if (changed || call || command) plan.push(i);

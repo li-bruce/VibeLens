@@ -691,7 +691,11 @@ export function layoutGraph(
         : !["python-ast", "source-ast", "capture-field"].includes(e.origin) &&
           !["contains", "shared"].includes(e.type) &&
           targetEvents.some((x) =>
-            (x.depends || []).some((d) => ids.has(d.event) && d.type === e.type),
+            (x.depends || []).some(
+              (d) =>
+                ids.has(d.event) &&
+                (d.type === e.type || (e.type === "flow" && d.type === "control")),
+            ),
           );
     if (["reads", "writes"].includes(e.data_relation))
       observed = events.some((event) => observedDataTransfer(e, event, all));

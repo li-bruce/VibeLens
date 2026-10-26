@@ -35,6 +35,8 @@ The main page now has a centered opening, a visual business foundation and one s
 | Syntax, lint and formatting | [source-quality.json](source-quality.json) |
 | Canonical viewer copies | [viewer-assets.json](viewer-assets.json): 65 source hashes; HTML entrypoint adapted for Pages |
 
+The deployed [main page](https://liblog.vip/VibeLens/?lang=zh-CN&rev=story-3) and [demo](https://liblog.vip/VibeLens/demo.html?lang=zh-CN&rev=story-3) both pass the same bilingual browser checks. [deployed.json](deployed.json) binds these results to Pages run [40312622390](https://github.com/li-bruce/VibeLens/actions/runs/40312622390), commit `f7311c9`, and 64 byte-identical canonical assets. [Deployed source inspection](screens/deployed-zh-CN-02-drill.png).
+
 Additional passing checks: seven observer-free domain tests, six document-link tests, source-panel response isolation, actual artifact freshness, dependency-backed transfer tests, replay owner/grain tests, recorded-view semantics, preset coverage, spatial workspace and view continuity. The first implementation remains a disclosed teaching defect. These checks add no claims about other databases or large-graph throughput.
 
 ## Failures retained
@@ -43,5 +45,6 @@ Additional passing checks: seven observer-free domain tests, six document-link t
 - [First browser attempt](failures/browser-01.json): the test expected an original edge ID, while the visible edge had a summary ID. It now recognizes the displayed flow relation.
 - [Second browser attempt](failures/browser-02.json): a screenshot targeted the hidden renderer-status element. The test now captures the actual canvas and compares frames.
 - Visual inspection found source-panel overlap caused by flex sizing. The canvas now has an explicit flex basis; the browser asserts that its bounds end before the source panel.
+- [Full-package failure](failures/stale-viewer-copies.txt): the repository's shipped examples still contained older copies of three viewer modules. `tools/sync_runtime.py` updates those copies and their runtime inventories. Project definitions and frozen business approvals remain unchanged.
 
 The earlier [scroll-presentation review](../scroll-story/README.md) and [original execution review](../pages-case/README.md) remain historical records. This directory contains the fresh execution and presentation checks for the current change.

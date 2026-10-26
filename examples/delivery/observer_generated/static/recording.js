@@ -199,7 +199,11 @@ export function transferEdges(event, events, edges, all, configuration = null) {
             prior.some(
               (e) =>
                 e.node === source &&
-                (event.depends || []).some((d) => d.event === e.id && d.type === member.type),
+                (event.depends || []).some(
+                  (d) =>
+                    d.event === e.id &&
+                    (d.type === member.type || (member.type === "flow" && d.type === "control")),
+                ),
             )
           );
         }),
