@@ -48,3 +48,9 @@ Additional passing checks: seven observer-free domain tests, six document-link t
 - [Full-package failure](failures/stale-viewer-copies.txt): the repository's shipped examples still contained older copies of three viewer modules. `tools/sync_runtime.py` updates those copies and their runtime inventories. Project definitions and frozen business approvals remain unchanged.
 
 The earlier [scroll-presentation review](../scroll-story/README.md) and [original execution review](../pages-case/README.md) remain historical records. This directory contains the fresh execution and presentation checks for the current change.
+
+## Shipped example maintenance
+
+The shared viewer update also changes the examples' watched runtime inventories. Explicit architecture seals cover only the reviewed generated assets and runtime metadata. New `source-flow-20261026` release records pass inspect, verify, accept and check in both examples; [example-maintenance.json](example-maintenance.json) retains the separate mapping, state, project and business results. Existing business source, expectations and historical acceptance records are preserved.
+
+[Clean Git export verification](release-export.json) restores the newly reviewed release records in independent directories and checks both examples without regeneration or reapproval. Both return `current`. Earlier strict failures were resolved by updating the reviewed maintenance records, rather than relaxing source, architecture or business checks.

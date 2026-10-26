@@ -1,4 +1,8 @@
-# 发布时已审阅的记录
+# Reviewed release records
+
+The current record is `source-flow-20261026`. It updates the shared viewer's witnessed workflow transfers and business-level replay. Existing business source, state definitions, probes and independent scenarios remain unchanged. A new inspect/verify/accept/check record passes mapping, state constraints, business and project checks. Historical records are preserved below.
+
+## Historical release notes
 
 `tools/archive_demo.py` 在全新目录恢复这里的状态记录和 manifest，然后先执行 `change_sync check`。它不会为修改后的代码生成新验收。
 

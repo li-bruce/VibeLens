@@ -1,11 +1,15 @@
 # Reviewed starting point
 
-The current snapshot is `db-vis-20261024`. It binds the published delivery example
+The current snapshot is `source-flow-20261026`. It binds the published delivery example
 to its reviewed source, graph, copied runtime and verification results.
 
 `tools/demo.py` restores this snapshot only for a fresh checkout, then checks the
 current source. It does not approve local edits. `tools/verify.py` reruns the tests
 against the same reviewed candidate. Earlier reviewed stages remain available.
+
+The latest maintenance record updates witnessed workflow transfers and business-level replay in the shared viewer. Business source, state definitions, capture requirements and independent expectations are unchanged. The copied assets and runtime inventory were explicitly reviewed and sealed, then mapping, state rules, business and project checks passed again. Previous acceptance records remain intact.
+
+The following notes describe the earlier database-view update.
 
 This update installs the shared database observer and typed data views. The
 delivery application keeps its existing state declaration, behavior and capture
