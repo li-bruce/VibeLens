@@ -131,8 +131,8 @@ export const extra = {
   "workflow.kicker": ["Begin with the business", "先把业务说清楚"],
   "workflow.title": ["Agree on the graph.\nThen build.", "先把业务图，\n一起定清楚。"],
   "workflow.body": [
-    "Turn the conversation into a business and state graph. Confirm the flow before development.",
-    "将需求变成业务与状态图，确认后进入开发。",
+    "Confirm the business and states in conversation. Explore the running program in VibeLens, then bring your findings into the next coding iteration.",
+    "在对话中确认业务与状态，在 VibeLens 中观察运行，再带着发现进入下一轮开发。",
   ],
   "workflow.1.title": ["Confirm the flow", "看图确认"],
   "workflow.1.body": [
@@ -141,13 +141,18 @@ export const extra = {
   ],
   "workflow.2.title": ["Build and stay in sync", "开发同步"],
   "workflow.2.body": [
-    "Keep coding. The graph follows the implementation.",
-    "继续开发，图随代码更新。",
+    "As coding progresses, connect the flow to states, functions, parameters and data.",
+    "随开发推进，将业务流连到状态、函数、参数与数据。",
   ],
-  "workflow.3.title": ["Inspect and improve", "验证改进"],
+  "workflow.3.title": ["Explore in VibeLens", "在 VibeLens 中分析"],
   "workflow.3.body": [
-    "Record a run, locate the issue and retest the change.",
-    "记录运行，定位问题，复测本轮修改。",
+    "Record your application actions, replay changes and build your own focused view.",
+    "记录项目操作，回看变化，自行下钻并调整观察视图。",
+  ],
+  "workflow.4.title": ["Refine through conversation", "带着发现继续开发"],
+  "workflow.4.body": [
+    "Discuss a fix or a changed flow. The graph follows the new code; return to VibeLens to check it.",
+    "通过对话修复问题或调整流程，图随新代码更新，再回到 VibeLens 验证。",
   ],
   "explore.title": ["Start with the flow.\nGo deeper.", "从流程开始，\n逐层看清。"],
   "explore.body": [

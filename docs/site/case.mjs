@@ -1,8 +1,8 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-3";
-import { messages, chapters } from "./case-messages.mjs?rev=story-4";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-5";
+import { messages, chapters } from "./case-messages.mjs?rev=story-5";
 import { scrollStory } from "./scroll-story.mjs?rev=story-3";
-import { companion } from "./case-companion.mjs?rev=story-4";
+import { companion } from "./case-companion.mjs?rev=story-5";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -38,21 +38,24 @@ function stage(index) {
   // Camera gestures work immediately in 3D. 2D keeps normal story scrolling.
   setInteraction(mode === "3d" || tools);
   context?.stage(index);
-  const version = index >= 4 ? 2 : 1;
+  const current = chapters[index];
+  const version = current.version;
   const message = {
     scene: chapters[index].id,
     mode,
     compact: !tools,
-    options: index === 2 ? { versions: true, effects: false, states: false } : options,
+    options: current.id === "drill" ? { versions: true, effects: false, states: false } : options,
     name: $("watch-name")?.value || t("case.viewName"),
   };
   const key = version + ":" + locale();
   $("case-view-name").textContent = t(
-    index === 0 || index === 1
-      ? "case.graph"
-      : index === 3 || index >= 4
-        ? "case.viewName"
-        : "case.core",
+    current.id === "build"
+      ? "case.implementation"
+      : ["foundation", "run"].includes(current.id)
+        ? "case.graph"
+        : ["watch", "iterate", "verify"].includes(current.id)
+          ? "case.viewName"
+          : "case.core",
   );
   $("case-telemetry").replaceChildren();
   if (loaded !== key) {
@@ -60,7 +63,7 @@ function stage(index) {
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-4`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-5`;
   } else send(message);
   document.body.dataset.chapter = String(index);
 }
@@ -68,6 +71,7 @@ function stage(index) {
 function button(parent, key, action, css = "scene-action") {
   const node = document.createElement("button");
   node.type = "button";
+  node.dataset.sceneAction = key;
   node.textContent = t(key);
   node.className = css;
   node.addEventListener("click", action);
@@ -93,20 +97,41 @@ function render() {
     const kicker = document.createElement("p");
     kicker.className = "eyebrow";
     kicker.textContent = `${String(index + 1).padStart(2, "0")} / ${copy(current.label)}`;
+    const surface = document.createElement("span");
+    surface.className = "scene-surface";
+    surface.textContent = t("case.location." + current.surface);
+    kicker.append(surface);
     const title = document.createElement("h2");
     title.textContent = copy(current.title);
     const body = document.createElement("p");
     body.textContent = copy(current.body);
     section.append(kicker, title, body);
+    if (current.steps) {
+      const steps = document.createElement("ol");
+      steps.className = "scene-steps";
+      for (const [location, text] of current.steps) {
+        const step = document.createElement("li");
+        step.dataset.location = location;
+        const label = document.createElement("span");
+        label.textContent = t("case.location." + location);
+        const action = document.createElement("p");
+        action.textContent = copy(text);
+        step.append(label, action);
+        steps.append(step);
+      }
+      section.append(steps);
+    }
     const slot = document.createElement("div");
     slot.className = "scene-companion-slot";
     section.append(slot);
-    if (index === 0) {
+    if (current.id === "foundation") {
       button(section, "case.confirm", () => story.go(1));
+      button(section, "case.business", () => send({ action: "business" }));
       button(section, "case.states", () => send({ action: "states" }));
     }
-    if (index === 1) button(section, "case.run", () => send({ action: "play" }));
-    if (index === 2) {
+    if (current.id === "build") button(section, "case.build", () => setInteraction(true));
+    if (current.id === "run") button(section, "case.run", () => send({ action: "play" }));
+    if (current.id === "drill") {
       const trace = document.createElement("div");
       trace.className = "source-trail";
       const owner = values[0].view.model.nodes.find((node) => node.id === "review-policy");
@@ -116,13 +141,9 @@ function render() {
         trace.append(item);
       }
       section.append(trace);
-      const check = document.createElement("div");
-      check.className = "scene-check";
-      check.textContent = t("case.check.fail");
-      section.append(check);
       button(section, "case.drill", () => send({ action: "source" }));
     }
-    if (index === 3) {
+    if (current.id === "watch") {
       const fieldset = document.createElement("fieldset");
       fieldset.className = "watch-options";
       const legend = document.createElement("legend");
@@ -166,10 +187,10 @@ function render() {
       save.id = "save-watch";
       button(section, "case.replay", () => send({ action: "play" }));
     }
-    if (index === 4) {
+    if (current.id === "iterate") {
       button(section, "case.repair", () => send({ scene: "iterate", options }));
     }
-    if (index === 5) {
+    if (current.id === "verify") {
       const check = document.createElement("div");
       check.id = "case-check";
       check.className = "scene-check passed";
@@ -184,7 +205,6 @@ function render() {
     chapters,
     artifacts: values,
     send,
-    begin: () => story.go(1),
   });
   story?.destroy?.();
   story = scrollStory({
@@ -198,7 +218,7 @@ window.addEventListener("message", (event) => {
   if (
     event.origin !== location.origin ||
     event.source !== $("case-graph").contentWindow ||
-    event.data.version !== (chapter >= 4 ? 2 : 1) ||
+    event.data.version !== chapters[chapter].version ||
     event.data.locale !== locale()
   )
     return;
@@ -229,15 +249,18 @@ window.addEventListener("message", (event) => {
       ? '<span aria-hidden="true">Ⅱ</span>'
       : '<span aria-hidden="true">▶</span>';
     $("case-play").setAttribute("aria-label", t(data.playing ? "case.pause" : "case.paused"));
-    const model = values[chapter >= 4 ? 1 : 0].view.model;
+    const model = values[chapters[chapter].version - 1].view.model;
     $("case-step").textContent = data.node
       ? model.nodes.find((node) => node.id === data.node)?.label || data.node
       : "";
     $("case-graph").dataset.visibleNodes = data.nodes;
     document.body.dataset.nativeView = data.viewId;
-    if (chapter >= 3 && data.viewId?.startsWith("custom-"))
+    if (
+      ["watch", "iterate", "verify"].includes(chapters[chapter].id) &&
+      data.viewId?.startsWith("custom-")
+    )
       $("case-view-name").textContent = data.viewName;
-    if ([2, 3, 4].includes(chapter)) {
+    if (["drill", "watch", "iterate"].includes(chapters[chapter].id)) {
       const inputs = data.inputs || {},
         host = $("case-telemetry");
       host.replaceChildren();

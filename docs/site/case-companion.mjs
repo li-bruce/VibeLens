@@ -1,7 +1,7 @@
 /** Keep the authored conversation and application replay beside the real graph.
  * Application controls seek captured actions; Pages never executes a backend.
  */
-import { locale, t } from "./site-ui.mjs?rev=story-3";
+import { locale, t } from "./site-ui.mjs?rev=story-5";
 
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
 const node = (tag, className, text) => {
@@ -34,7 +34,7 @@ export function applicationAt(artifact, eventId) {
 }
 
 /** One shared companion moves into the active narrative on narrow screens. */
-export function companion({ host, chapters, artifacts, send, begin }) {
+export function companion({ host, chapters, artifacts, send }) {
   let chapter = 0;
   const narrow = matchMedia("(max-width: 700px)");
   const conversation = node("section", "case-conversation");
@@ -47,12 +47,12 @@ export function companion({ host, chapters, artifacts, send, begin }) {
 
   const app = node("section", "case-application");
   const heading = node("div", "app-heading");
-  heading.append(node("strong", "", "Afterlight"), node("span", "", t("case.app")));
+  heading.append(node("strong", "", t("case.app.name")), node("span", "", t("case.app")));
   const restart = node("button", "app-restart", "↻");
   restart.type = "button";
   restart.setAttribute("aria-label", t("case.app.replay"));
   restart.title = t("case.app.replay");
-  restart.onclick = () => (chapter === 0 ? begin() : send({ action: "play" }));
+  restart.onclick = () => send({ action: "play" });
   heading.append(restart);
   app.append(heading);
   const rooms = node("div", "app-rooms");
@@ -100,8 +100,9 @@ export function companion({ host, chapters, artifacts, send, begin }) {
     if (parent && host.parentNode !== parent) parent.append(host);
   }
   function update(eventId) {
-    const artifact = artifacts[chapter >= 4 ? 1 : 0];
-    const state = applicationAt(artifact, chapter === 0 ? null : eventId);
+    const artifact = artifacts[chapters[chapter].version - 1];
+    const designing = chapters[chapter].application === false;
+    const state = applicationAt(artifact, designing ? null : eventId);
     app.dataset.eventId = state.eventId || "";
     app.dataset.status = state.status;
     status.textContent = t("case.app." + state.status);
@@ -113,15 +114,21 @@ export function companion({ host, chapters, artifacts, send, begin }) {
       if (version) field.image.src = `case-data/image-${version}.png`;
       else field.image.removeAttribute("src");
       field.caption.textContent = version ? `${t("case.app.image")} ${version}` : "—";
-      field.button.disabled = chapter === 0;
+      field.button.disabled = designing;
     }
-    approve.disabled = chapter === 0 || !state.reviewed;
+    approve.disabled = designing || !state.reviewed;
   }
   function stage(index) {
     chapter = index;
     host.dataset.scene = chapters[index].id;
+    host.dataset.surface = chapters[index].surface;
+    const dialogue = chapters[index].dialogue || [];
+    conversation.hidden = !dialogue.length;
+    app.hidden = chapters[index].application === false;
+    host.classList.toggle("has-dialogue", dialogue.length > 0);
+    host.classList.toggle("has-application", !app.hidden);
     turns.replaceChildren();
-    for (const [role, text] of chapters[index].dialogue) {
+    for (const [role, text] of dialogue) {
       const turn = node("div", "conversation-turn " + role);
       turn.dataset.speaker = role;
       turn.append(

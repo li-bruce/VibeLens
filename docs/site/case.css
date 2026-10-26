@@ -149,6 +149,33 @@
   color: #74839a;
   margin: 0 0 18px;
 }
+.scene-surface {
+  display: block;
+  color: #315eef;
+  letter-spacing: 0;
+  margin-top: 10px;
+  font-size: 11px;
+  text-transform: none;
+}
+.scene-steps {
+  list-style: none;
+  padding: 0 0 0 14px;
+  margin: 0 0 24px;
+  border-left: 1px solid #dce4ef;
+}
+.scene-steps li {
+  margin-bottom: 16px;
+}
+.scene-steps span {
+  font-size: 10px;
+  color: #7a8ba2;
+}
+.scene-steps p {
+  font-size: 13px;
+  line-height: 1.75;
+  margin: 5px 0 0;
+  color: #44566e;
+}
 .case-scene h2 {
   font-size: clamp(27px, 2.8vw, 40px);
   max-width: 330px;
@@ -264,6 +291,36 @@
   min-height: 0;
   border-top: 1px solid #e5eaf0;
   background: #fff;
+}
+.case-context:not(.has-application) {
+  grid-template-columns: minmax(0, 1fr);
+  flex-basis: 175px;
+}
+.case-conversation[hidden],
+.case-application[hidden] {
+  display: none;
+}
+/* Exploration belongs to the person using VibeLens. Only the application
+   preview remains below the graph during recording, inspection and replay. */
+.case-context:not(.has-dialogue) {
+  display: block;
+  flex-basis: 154px;
+}
+.case-context:not(.has-dialogue) .case-application {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.7fr) minmax(0, 2fr) minmax(130px, 0.8fr);
+  align-items: center;
+  gap: 24px;
+  border-left: 0;
+}
+.case-context:not(.has-dialogue) .app-heading,
+.case-context:not(.has-dialogue) .app-footer {
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+}
+.case-context:not(.has-dialogue) .app-restart {
+  margin-left: 0;
 }
 .case-conversation {
   padding: 15px 18px 12px;
@@ -622,6 +679,23 @@
   }
 }
 @media (max-width: 700px) {
+  .case-context:not(.has-dialogue) .case-application {
+    display: block;
+  }
+  .case-context:not(.has-dialogue) .app-heading,
+  .case-context:not(.has-dialogue) .app-footer {
+    flex-direction: row;
+    align-items: center;
+  }
+  .case-context:not(.has-dialogue) .app-heading {
+    margin-bottom: 10px;
+  }
+  .case-context:not(.has-dialogue) .app-footer {
+    margin-top: 13px;
+  }
+  .case-context:not(.has-dialogue) .app-restart {
+    margin-left: auto;
+  }
   .case-context {
     grid-template-columns: minmax(0, 1fr);
     border: 1px solid #e5eaf0;
@@ -769,8 +843,8 @@
 
 .source-trail {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 6px 12px;
   padding-left: 18px;
   border-left: 1px solid #dce4ef;
   margin: 0 0 28px;

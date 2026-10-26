@@ -29,21 +29,35 @@ try {
     await page.locator("#" + id).scrollIntoViewIfNeeded();
     await page.waitForFunction((id) => document.body.dataset.sceneReady === id, id, {timeout: 30000});
     assert.equal(await page.getAttribute("#case-context", "data-scene"), id);
-    assert.ok(await page.locator('#case-context [data-speaker="user"]').count() >= 1);
-    assert.ok(await page.locator('#case-context [data-speaker="codex"]').count() >= 1);
+    const coding = ['foundation','build','iterate'].includes(id);
+    assert.equal(await page.locator('#case-context .case-conversation').isVisible(), coding);
+    if (coding) {
+      assert.ok(await page.locator('#case-context [data-speaker="user"]').count() >= 1);
+      assert.ok(await page.locator('#case-context [data-speaker="codex"]').count() >= 1);
+    } else {
+      assert.equal(await page.locator('#case-context [data-speaker]').count(), 0, 'Manual VibeLens actions must not become Codex dialogue');
+      assert.ok(await page.locator('#'+id+' .scene-steps li').count() >= 2);
+    }
     return frame();
   }
   async function shot(name) {await page.waitForTimeout(300); await page.screenshot({path: path.join(output, name + ".png"), fullPage: false});}
   for (const language of ["en", "zh-CN"]) {
     await page.goto(base + "/demo.html?lang=" + language);
     await page.waitForSelector("#foundation");
-    assert.equal(await page.locator(".case-scene").count(), 6);
+    assert.equal(await page.locator(".case-scene").count(), 7);
     assert.equal(await page.getAttribute("html", "lang"), language);
     let child = await go("foundation");
     assert.deepEqual(await child.evaluate(() => graphDebug.graph.boxes.map((box) => box.id).sort()), ["exhibit", "publish", "review", "upload"]);
     assert.equal(await child.evaluate(() => graphDebug.view.stage), "design");
     assert.equal(await page.getAttribute('[data-app-room="published"]', 'data-version'), '0');
+    assert.equal(await page.locator('.case-application').isVisible(), false);
     await shot(language + "-01-foundation");
+    await page.click('[data-scene-action="case.states"]');
+    await child.waitForFunction(() => ['state.empty','state.pending','state.displayed'].every(id => graphDebug.graph.boxes.some(box => box.id === id)));
+    assert.ok(await child.evaluate(() => graphDebug.graph.edges.length > 0), 'Confirmed states must have relationships');
+    await shot(language + '-confirmed-states');
+    await page.click('[data-scene-action="case.business"]');
+    await child.waitForFunction(() => graphDebug.graph.boxes.length === 4 && graphDebug.graph.boxes.some(box => box.id === 'upload'));
     // Compact 3D accepts native camera gestures without the Full tools switch.
     await page.click('#case-3d');
     await child.waitForFunction(() => graphDebug.spatial?.perspective && !graphDebug.layoutBusy);
@@ -69,11 +83,31 @@ try {
     await page.waitForTimeout(400);
     assert.notDeepEqual((await camera()).target, zoomAfter.target, 'Right-drag must pan the camera');
     await shot(language + '-camera-gestures');
-    child = await go('run');
+    child = await go('build');
     assert.equal(await page.locator('#case-graph').evaluate((element) => getComputedStyle(element).pointerEvents), 'auto');
     assert.ok(await child.evaluate(() => graphDebug.layers.enabled), 'A new scene must retain interactive 3D');
+    const implementationIds = await child.evaluate(() => graphDebug.graph.boxes.map(box => box.id));
+    for (const id of ['api.publish','review-policy','field:review-policy:in:current_version','save-exhibition','db:gallery:table%3Aexhibition','state.pending'])
+      assert.ok(implementationIds.includes(id), 'Missing implemented layer: '+id);
+    assert.ok(implementationIds.length <= 20);
+    assert.equal(await child.evaluate(() => graphDebug.view.stage), 'design');
+    assert.ok(await child.evaluate(() => graphDebug.graph.edges.length > 8));
+    const buildCanvas = await child.locator('.spatial-canvas').boundingBox();
+    await page.mouse.move(buildCanvas.x + 20, buildCanvas.y + buildCanvas.height - 25);
+    await page.mouse.down();
+    await page.mouse.move(buildCanvas.x + 135, buildCanvas.y + buildCanvas.height - 95, {steps:16});
+    await page.mouse.up(); await page.waitForTimeout(350);
+    await shot(language + '-development-3d');
     await page.click('#case-2d');
     await child.waitForFunction(() => !graphDebug.layers.enabled);
+    await child.waitForFunction(() => {
+      const graph = graphDebug.displayGraph, {scale, pan} = graphDebug.camera;
+      const viewport = document.querySelector('#viewport');
+      return graph.minX * scale + pan.x >= -2 && graph.minY * scale + pan.y >= -2 &&
+        (graph.minX + graph.width) * scale + pan.x <= viewport.clientWidth + 2 &&
+        (graph.minY + graph.height) * scale + pan.y <= viewport.clientHeight + 2;
+    });
+    await shot(language + '-development-2d');
     child = await go('foundation');
     // The graph's visible region must not trap normal page wheel scrolling.
     const area = await page.locator("#case-graph").boundingBox();
@@ -205,7 +239,7 @@ try {
     assert.equal(await page.locator('#watch .case-context').count(), 1);
     await page.click('#language'); await go('watch');
     await page.setViewportSize({width: 1536, height: 1050});
-    receipts.push({language, stages: 6, conversations: 6, app_response_replay: true, backward_seek_clears_future_values: true, stale_approval_rejected_after_repair: true, compact_3d_rotate_zoom_pan: true, camera_before: orbitBefore, camera_after_orbit: orbitAfter, camera_after_zoom: zoomAfter, mobile_companion: true, mobile_language_switch: true, initial_business_nodes: 4, focused_nodes: drillIds.length, custom_nodes: savedNodes.length, saved_view_id: savedId, retained_across_builds: true, retained_after_reload: true, source_and_layer_presets: 8, real_3d_layers: layers.length, native_scroll: true, events_before_replay: eventCount});
+    receipts.push({language, stages: 7, coding_conversations: 3, manual_vibelens_stages: 4, manual_steps_have_no_dialogue: true, implementation_nodes: implementationIds, app_response_replay: true, backward_seek_clears_future_values: true, stale_approval_rejected_after_repair: true, compact_3d_rotate_zoom_pan: true, camera_before: orbitBefore, camera_after_orbit: orbitAfter, camera_after_zoom: zoomAfter, mobile_companion: true, mobile_language_switch: true, initial_business_nodes: 4, focused_nodes: drillIds.length, custom_nodes: savedNodes.length, saved_view_id: savedId, retained_across_builds: true, retained_after_reload: true, source_and_layer_presets: 8, real_3d_layers: layers.length, native_scroll: true, events_before_replay: eventCount});
   }
   await page.emulateMedia({reducedMotion: "reduce"});
   await page.goto(base + "/demo.html?lang=en"); await go("run");

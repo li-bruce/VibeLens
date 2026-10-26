@@ -5,13 +5,15 @@ export const messages = {
   "case.eyebrow": ["VibeLens in action", "VibeLens 交互演示"],
   "case.title": ["See what your AI built.", "看清 AI 写出的程序。"],
   "case.lead": [
-    "Start with the business. Follow the logic. Refine every iteration.",
-    "从业务定图，沿运行下钻，让每轮迭代有据可循。",
+    "Define Afterlight in conversation. Explore its running logic in VibeLens. Bring the findings into your next change.",
+    "在对话中构建夜幕，在 VibeLens 中观察运行，再带着发现继续修改。",
   ],
   "case.scroll": ["Scroll to follow the build", "向下，跟随一次开发"],
   "case.nav": ["Development stages", "开发阶段"],
-  "case.confirm": ["Confirm the flow", "确认业务图"],
+  "case.confirm": ["Continue to development", "确认后进入开发"],
+  "case.business": ["Business graph", "业务图"],
   "case.states": ["See the states", "查看状态机"],
+  "case.build": ["Inspect the connections", "操作这张关系图"],
   "case.run": ["Replay the operation", "回放这次操作"],
   "case.drill": ["Open function source", "查看函数源码"],
   "case.save": ["Save my view", "保存观察视图"],
@@ -32,17 +34,22 @@ export const messages = {
   "case.tools": ["Full tools", "完整工具"],
   "case.core": ["Core path", "核心链路"],
   "case.graph": ["Business flow", "业务流程"],
+  "case.implementation": ["Implementation map", "实现关系"],
   "case.layered": ["All layers", "全部图层"],
   "case.paused": ["Play", "播放"],
   "case.pause": ["Pause", "暂停"],
   "case.position": ["Playback", "回放进度"],
-  "case.conversation": ["Example conversation", "示例对话"],
+  "case.conversation": ["Developing Afterlight · Codex", "开发夜幕 · Codex"],
+  "case.location.codex": ["In Codex", "在 Codex 中"],
+  "case.location.vibelens": ["In VibeLens", "在 VibeLens 中"],
+  "case.location.project": ["In Afterlight", "在夜幕网站中"],
   "case.user": ["You", "用户"],
   "case.gestures": [
     "Drag to rotate · scroll to zoom · right-drag to pan",
     "拖动旋转 · 滚轮缩放 · 右键拖动平移",
   ],
   "case.app": ["Application replay", "业务界面回放"],
+  "case.app.name": ["Afterlight", "夜幕"],
   "case.app.replay": ["Replay the application actions", "重放业务操作"],
   "case.app.seek": ["Jump to the next recorded action", "定位到下一次已录制的操作"],
   "case.app.artist": ["Upload", "上传"],
@@ -56,10 +63,6 @@ export const messages = {
   "case.app.stale_review": ["Open the latest image", "请重新查看最新图片"],
   "case.app.forbidden": ["Reviewer required", "需要审核权限"],
   "case.app.invalid_image": ["Invalid image", "图片格式无效"],
-  "case.check.fail": [
-    "Only the role was checked. The opened image was ignored.",
-    "这里只检查了角色，遗漏了审核对象的校验。",
-  ],
   "case.check.pass": [
     "Old preview rejected · latest image approved",
     "旧审核已拦截，重新审核后发布",
@@ -81,18 +84,21 @@ export const messages = {
 export const chapters = [
   {
     id: "foundation",
+    version: 1,
+    surface: "codex",
+    application: false,
     label: ["Define", "定图"],
     title: ["The flow comes first.", "先定业务，再写代码。"],
     body: [
-      "Confirm the business and state graph before development begins.",
-      "在对话中确认业务与状态，让后续开发有清晰的地基。",
+      "Describe Afterlight, clarify image replacement, then confirm its business graph and states.",
+      "描述夜幕的需求，明确替换图片后的处理，在图上确认业务与状态。",
     ],
     dialogue: [
       [
         "user",
         [
-          "Build a gallery: an artist uploads an image, a reviewer opens and approves it, then it appears in the exhibition.",
-          "做一个画展网站：作者上传图片，审核者查看并通过后，图片进入展览。",
+          "Build Afterlight: an artist uploads an image; a reviewer opens and approves it for the exhibition.",
+          "做一个叫“夜幕”的画展网站。作者上传图片，审核者查看并通过后，图片进入展览。",
         ],
       ],
       [
@@ -105,89 +111,126 @@ export const chapters = [
       [
         "user",
         [
-          "No. Open the replacement and review it again. This flow looks right; continue.",
-          "不能，需要查看新图后重新审核。这个业务图符合我的想法，继续开发。",
+          "No. Replacements need another review. The flow and states match what I want; continue.",
+          "不能，换图后要重新审核。业务图和状态符合我的想法，继续开发。",
+        ],
+      ],
+    ],
+  },
+  {
+    id: "build",
+    version: 1,
+    surface: "codex",
+    application: false,
+    label: ["Build", "开发"],
+    title: ["The graph grows with the code.", "写出的实现，逐层连入图中。"],
+    body: [
+      "As development progresses, states, API handlers, functions, parameters and tables connect to the business flow.",
+      "开发推进时，状态、API、函数、参数与数据表逐步连到业务流中。",
+    ],
+    dialogue: [
+      [
+        "user",
+        [
+          "Build the confirmed flow. Get upload, review and the exhibition running.",
+          "按确认的流程开发，先把上传、审核和展览页面跑起来。",
+        ],
+      ],
+      [
+        "codex",
+        [
+          "The pages and API are connected. Expand the graph to see the implementation behind each step.",
+          "页面和接口已接通，图中可以展开查看各环节对应的状态、函数、参数和数据表。",
         ],
       ],
     ],
   },
   {
     id: "run",
+    version: 1,
+    surface: "vibelens",
     label: ["Run", "运行"],
     title: ["One operation. Every change.", "录下一次完整流转。"],
     body: [
-      "Upload, open, replace, approve. Follow the recorded run.",
-      "上传、查看、替换、审核。看见每一步如何影响结果。",
+      "Start recording in VibeLens, operate Afterlight, then stop and replay. The graph follows the running program.",
+      "在 VibeLens 开始记录，再操作夜幕。图随运行变化，结束后可沿时间轴回看。",
     ],
-    dialogue: [
+    steps: [
+      ["vibelens", ["Start recording.", "点击开始记录。"]],
       [
-        "user",
+        "project",
         [
-          "Record this: upload the blue image, open it for review, replace it with orange, then approve the image still open.",
-          "录一下：上传蓝图、打开审核、替换成橙图，再通过仍然打开的蓝图。",
+          "Upload blue, open it for review, replace it with orange, then approve the open image.",
+          "上传蓝图并打开审核，再换成橙图，通过仍然打开的蓝图。",
         ],
       ],
       [
-        "codex",
+        "vibelens",
         [
-          "The operation is recorded. Replay it to follow the inputs, decisions and publication.",
-          "操作已记录，可以沿业务流回放，查看参数、判断和发布结果。",
+          "Stop recording and replay the changed states and values.",
+          "停止记录，回看状态与参数变化。",
         ],
       ],
     ],
   },
   {
     id: "drill",
+    version: 1,
+    surface: "vibelens",
     label: ["Inspect", "下钻"],
     title: ["Trace the decision to its source.", "沿着运行，找到出错的代码。"],
     body: [
-      "An unseen image was published. Follow the approval rule into approval_policy().",
-      "程序发布了未确认的图片。沿审核节点下钻，查看 approval_policy() 的判断条件。",
+      "Blue was reviewed; orange was published. Follow the publication path to the faulty decision.",
+      "审核的是蓝图，展出的却是橙图。沿发布链路下钻，找到出错的判断。",
     ],
-    dialogue: [
+    steps: [
       [
-        "user",
+        "vibelens",
         [
-          "I approved blue. Why did orange appear? Open the approval logic.",
-          "我审核的是蓝图，怎么展出橙图了？展开审核逻辑看看。",
+          "Expand the approval node and compare its recorded inputs.",
+          "展开审核节点，对照已查看图片与当前图片的参数。",
         ],
       ],
       [
-        "codex",
+        "vibelens",
         [
-          "approval_policy() only checks the role. It receives both image versions but never compares them.",
-          "approval_policy() 只检查了角色，虽然收到两张图片的版本参数，却没有比较它们。",
+          "Open the bound source: approval_policy() checks the role and omits the image comparison.",
+          "打开对应源码：approval_policy() 检查了角色，却遗漏了图片比较。",
         ],
       ],
     ],
   },
   {
     id: "watch",
+    version: 1,
+    surface: "vibelens",
     label: ["Focus", "关注"],
     title: ["Keep your own signal.", "留下你关心的链路。"],
     body: [
       "Choose the rule, values and effects to watch. Save the view for the next iteration.",
       "选择规则、参数与写入，保存为自己的观察视图。",
     ],
-    dialogue: [
+    steps: [
       [
-        "user",
+        "vibelens",
         [
-          "Keep the approval rule, its inputs and the database write. Save this as My approval path.",
-          "只保留审核规则、输入参数和数据库写入，保存成“我的审核链路”。",
+          "Keep the approval rule, inputs and database write.",
+          "勾选审核规则、输入参数和数据库写入。",
         ],
       ],
       [
-        "codex",
+        "vibelens",
         [
-          "Choose the elements below and save the view. This path will remain available after the code changes.",
-          "可以在下方选择保留内容并保存，下次代码更新后继续沿这条链路观察。",
+          "Save this view and replay only the path you are investigating.",
+          "保存观察视图，集中回看这条链路。",
         ],
       ],
     ],
   },
   {
     id: "iterate",
+    version: 2,
+    surface: "codex",
     label: ["Refine", "迭代"],
     title: ["Make the change. Keep the view.", "改动代码，沿用视图。"],
     body: [
@@ -198,40 +241,42 @@ export const chapters = [
       [
         "user",
         [
-          "Compare the opened image with the current image before publishing. If they differ, ask the reviewer to reopen it.",
-          "发布前比较已查看的图片和当前图片，不一致就要求审核者重新打开图片。",
+          "I found the missing image comparison. Fix it: a replaced image must be opened and reviewed again before publication.",
+          "我在图中找到了遗漏的图片比较。修复它：换图后必须重新查看和审核，才能发布。",
         ],
       ],
       [
         "codex",
         [
-          "The comparison is added to approval_policy(). The saved view now points to the updated code.",
-          "已在 approval_policy() 中补上比较，保存的观察视图也已对应到新代码。",
+          "The comparison is added to approval_policy(). The graph now follows the changed code, and your saved view is retained.",
+          "已在 approval_policy() 中补上比较，图随代码更新，之前保存的观察视图已保留。",
         ],
       ],
     ],
   },
   {
     id: "verify",
+    version: 2,
+    surface: "vibelens",
     label: ["Verify", "验证"],
     title: ["Watch the repair hold.", "让下一次运行验证修改。"],
     body: [
       "The stale approval stops. A fresh review publishes the intended image.",
       "旧审核被拦截，重新打开最新版后才发布。",
     ],
-    dialogue: [
+    steps: [
       [
-        "user",
+        "project",
         [
-          "Repeat the same operation, then reopen the latest image and approve it.",
-          "重复刚才的操作，再重新打开最新图片并通过审核。",
+          "Repeat the operation, then reopen the replacement and approve it.",
+          "重复刚才的操作，再重新打开新图并通过审核。",
         ],
       ],
       [
-        "codex",
+        "vibelens",
         [
-          "The old approval is rejected. Opening and approving the latest image publishes that exact image. The check passes.",
-          "旧审核已被拦截，重新查看并审核后发布的是同一张图片，复测通过。",
+          "Replay the new recording in your saved view: the old approval stops; the fresh review publishes the intended image.",
+          "在原观察视图中回看新记录：旧审核被拦截，重新审核后才发布。",
         ],
       ],
     ],

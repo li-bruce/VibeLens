@@ -90,7 +90,7 @@ artifact.recording.context.model = mergeGraph(
   artifact.codeFocus.publish,
 );
 await import("./viewer/viewer.js");
-const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-4");
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-5");
 const runtimeView = structuredClone(view);
 const designView = {
   ...structuredClone(artifact.recording.context),

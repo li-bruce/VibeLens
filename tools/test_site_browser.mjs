@@ -36,6 +36,8 @@ try {
     await page.keyboard.press('PageDown');
     await page.waitForFunction(()=>scrollY>100);
     await page.locator('#workflow').scrollIntoViewIfNeeded();
+    assert.equal(await page.locator('.workflow-steps > li').count(), 4);
+    assert.equal(await page.locator('.workflow-schematic circle').count(), 4);
     await page.waitForTimeout(750);
     await page.locator('#workflow').screenshot({path:path.join(output,language+'-foundation.png')});
     assert.ok(await page.locator('.scroll-scene').count() >= 6);
