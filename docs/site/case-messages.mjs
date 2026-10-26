@@ -36,6 +36,26 @@ export const messages = {
   "case.paused": ["Play", "播放"],
   "case.pause": ["Pause", "暂停"],
   "case.position": ["Playback", "回放进度"],
+  "case.conversation": ["Example conversation", "示例对话"],
+  "case.user": ["You", "用户"],
+  "case.gestures": [
+    "Drag to rotate · scroll to zoom · right-drag to pan",
+    "拖动旋转 · 滚轮缩放 · 右键拖动平移",
+  ],
+  "case.app": ["Application replay", "业务界面回放"],
+  "case.app.replay": ["Replay the application actions", "重放业务操作"],
+  "case.app.seek": ["Jump to the next recorded action", "定位到下一次已录制的操作"],
+  "case.app.artist": ["Upload", "上传"],
+  "case.app.reviewer": ["Open", "查看"],
+  "case.app.exhibition": ["Exhibition", "展览"],
+  "case.app.approve": ["Approve", "通过审核"],
+  "case.app.image": ["Image", "图片"],
+  "case.app.empty": ["Awaiting upload", "等待上传"],
+  "case.app.pending": ["Pending review", "待审核"],
+  "case.app.displayed": ["Published", "已发布"],
+  "case.app.stale_review": ["Open the latest image", "请重新查看最新图片"],
+  "case.app.forbidden": ["Reviewer required", "需要审核权限"],
+  "case.app.invalid_image": ["Invalid image", "图片格式无效"],
   "case.check.fail": [
     "Only the role was checked. The opened image was ignored.",
     "这里只检查了角色，遗漏了审核对象的校验。",
@@ -67,7 +87,29 @@ export const chapters = [
       "Confirm the business and state graph before development begins.",
       "在对话中确认业务与状态，让后续开发有清晰的地基。",
     ],
-    quote: ["A replacement image needs a fresh review.", "替换图片后，需要重新审核。"],
+    dialogue: [
+      [
+        "user",
+        [
+          "Build a gallery: an artist uploads an image, a reviewer opens and approves it, then it appears in the exhibition.",
+          "做一个画展网站：作者上传图片，审核者查看并通过后，图片进入展览。",
+        ],
+      ],
+      [
+        "codex",
+        [
+          "If the artist replaces the image after it was opened, can the previous approval publish the replacement?",
+          "审核者查看后，作者又替换了图片，之前的审核能直接发布新图吗？",
+        ],
+      ],
+      [
+        "user",
+        [
+          "No. Open the replacement and review it again. This flow looks right; continue.",
+          "不能，需要查看新图后重新审核。这个业务图符合我的想法，继续开发。",
+        ],
+      ],
+    ],
   },
   {
     id: "run",
@@ -76,6 +118,22 @@ export const chapters = [
     body: [
       "Upload, open, replace, approve. Follow the recorded run.",
       "上传、查看、替换、审核。看见每一步如何影响结果。",
+    ],
+    dialogue: [
+      [
+        "user",
+        [
+          "Record this: upload the blue image, open it for review, replace it with orange, then approve the image still open.",
+          "录一下：上传蓝图、打开审核、替换成橙图，再通过仍然打开的蓝图。",
+        ],
+      ],
+      [
+        "codex",
+        [
+          "The operation is recorded. Replay it to follow the inputs, decisions and publication.",
+          "操作已记录，可以沿业务流回放，查看参数、判断和发布结果。",
+        ],
+      ],
     ],
   },
   {
@@ -86,6 +144,22 @@ export const chapters = [
       "An unseen image was published. Follow the approval rule into approval_policy().",
       "程序发布了未确认的图片。沿审核节点下钻，查看 approval_policy() 的判断条件。",
     ],
+    dialogue: [
+      [
+        "user",
+        [
+          "I approved blue. Why did orange appear? Open the approval logic.",
+          "我审核的是蓝图，怎么展出橙图了？展开审核逻辑看看。",
+        ],
+      ],
+      [
+        "codex",
+        [
+          "approval_policy() only checks the role. It receives both image versions but never compares them.",
+          "approval_policy() 只检查了角色，虽然收到两张图片的版本参数，却没有比较它们。",
+        ],
+      ],
+    ],
   },
   {
     id: "watch",
@@ -94,6 +168,22 @@ export const chapters = [
     body: [
       "Choose the rule, values and effects to watch. Save the view for the next iteration.",
       "选择规则、参数与写入，保存为自己的观察视图。",
+    ],
+    dialogue: [
+      [
+        "user",
+        [
+          "Keep the approval rule, its inputs and the database write. Save this as My approval path.",
+          "只保留审核规则、输入参数和数据库写入，保存成“我的审核链路”。",
+        ],
+      ],
+      [
+        "codex",
+        [
+          "Choose the elements below and save the view. This path will remain available after the code changes.",
+          "可以在下方选择保留内容并保存，下次代码更新后继续沿这条链路观察。",
+        ],
+      ],
     ],
   },
   {
@@ -104,7 +194,22 @@ export const chapters = [
       "Add the version check. The same saved path now follows the repaired build.",
       "补上版本检查，用同一条观察链路对照本轮修改。",
     ],
-    quote: ["Compare the opened version before publishing.", "发布前，比较审核者打开的版本。"],
+    dialogue: [
+      [
+        "user",
+        [
+          "Compare the opened image with the current image before publishing. If they differ, ask the reviewer to reopen it.",
+          "发布前比较已查看的图片和当前图片，不一致就要求审核者重新打开图片。",
+        ],
+      ],
+      [
+        "codex",
+        [
+          "The comparison is added to approval_policy(). The saved view now points to the updated code.",
+          "已在 approval_policy() 中补上比较，保存的观察视图也已对应到新代码。",
+        ],
+      ],
+    ],
   },
   {
     id: "verify",
@@ -113,6 +218,22 @@ export const chapters = [
     body: [
       "The stale approval stops. A fresh review publishes the intended image.",
       "旧审核被拦截，重新打开最新版后才发布。",
+    ],
+    dialogue: [
+      [
+        "user",
+        [
+          "Repeat the same operation, then reopen the latest image and approve it.",
+          "重复刚才的操作，再重新打开最新图片并通过审核。",
+        ],
+      ],
+      [
+        "codex",
+        [
+          "The old approval is rejected. Opening and approving the latest image publishes that exact image. The check passes.",
+          "旧审核已被拦截，重新查看并审核后发布的是同一张图片，复测通过。",
+        ],
+      ],
     ],
   },
 ];

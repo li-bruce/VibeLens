@@ -170,6 +170,24 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       fit();
       return;
     }
+    if (message.action === "application") {
+      const currentId = window.graphDebug.view?.replay?.event?.id;
+      if (!(await recording(ticket))) return;
+      // The miniature app is a transport into this recording, not another
+      // implementation of the policy. Seek actual completed business actions.
+      const { timeline } = await import("./viewer/recording.js");
+      const events = timeline(artifact.recording);
+      const start = events.findIndex((event) => event.id === currentId);
+      const candidates = events.filter(
+        (event) => event.node === message.node && event.phase === "return",
+      );
+      const next = candidates.find((event) => events.indexOf(event) > start) || candidates[0];
+      if (next) {
+        control("replay-grain", "events");
+        control("replay-events", String(events.indexOf(next)));
+      }
+      return;
+    }
     if (message.action === "all") {
       $("replay-live").click();
       control("analysis-view", "overview");
@@ -246,6 +264,7 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       scene: current,
       node: event?.node,
       phase: event?.phase,
+      eventId: event?.id,
       inputs: { ...entry?.inputs, ...event?.inputs },
       outputs: event?.outputs || {},
       replayIndex: view?.replay?.index,

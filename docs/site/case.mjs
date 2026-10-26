@@ -1,7 +1,8 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-3";
-import { messages, chapters } from "./case-messages.mjs?rev=story-3";
+import { messages, chapters } from "./case-messages.mjs?rev=story-4";
 import { scrollStory } from "./scroll-story.mjs?rev=story-3";
+import { companion } from "./case-companion.mjs?rev=story-4";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -10,7 +11,8 @@ let chapter = 0,
   loaded = "",
   ready = false,
   pending = null,
-  story;
+  story,
+  context;
 let interacting = false,
   tools = false;
 let options = { versions: true, effects: true, states: false };
@@ -33,7 +35,9 @@ function setInteraction(enabled) {
 function stage(index) {
   chapter = index;
   delete document.body.dataset.sceneReady;
-  setInteraction(false);
+  // Camera gestures work immediately in 3D. 2D keeps normal story scrolling.
+  setInteraction(mode === "3d" || tools);
+  context?.stage(index);
   const version = index >= 4 ? 2 : 1;
   const message = {
     scene: chapters[index].id,
@@ -56,7 +60,7 @@ function stage(index) {
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-3`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-4`;
   } else send(message);
   document.body.dataset.chapter = String(index);
 }
@@ -71,6 +75,9 @@ function button(parent, key, action, css = "scene-action") {
   return node;
 }
 function render() {
+  context?.destroy();
+  // On mobile the shared companion lives in a scene about to be rebuilt.
+  document.querySelector(".case-visual").append($("case-context"));
   $("case-chapters").replaceChildren();
   $("case-narrative").replaceChildren();
   chapters.forEach((current, index) => {
@@ -91,11 +98,9 @@ function render() {
     const body = document.createElement("p");
     body.textContent = copy(current.body);
     section.append(kicker, title, body);
-    if (current.quote) {
-      const quote = document.createElement("blockquote");
-      quote.textContent = copy(current.quote);
-      section.append(quote);
-    }
+    const slot = document.createElement("div");
+    slot.className = "scene-companion-slot";
+    section.append(slot);
     if (index === 0) {
       button(section, "case.confirm", () => story.go(1));
       button(section, "case.states", () => send({ action: "states" }));
@@ -174,6 +179,13 @@ function render() {
     }
     $("case-narrative").append(section);
   });
+  context = companion({
+    host: $("case-context"),
+    chapters,
+    artifacts: values,
+    send,
+    begin: () => story.go(1),
+  });
   story?.destroy?.();
   story = scrollStory({
     scenes: document.querySelectorAll(".case-scene"),
@@ -191,6 +203,7 @@ window.addEventListener("message", (event) => {
   )
     return;
   const data = event.data;
+  if (data.scene && data.scene !== chapters[chapter].id) return;
   if (data.type === "vibelens-case-ready") {
     ready = true;
     send(pending || { scene: chapters[chapter].id, options });
@@ -210,6 +223,7 @@ window.addEventListener("message", (event) => {
     console.error(data.error);
   }
   if (data.type === "vibelens-case-state") {
+    context?.update(data.eventId);
     $("case-position").value = data.progress || 0;
     $("case-play").innerHTML = data.playing
       ? '<span aria-hidden="true">Ⅱ</span>'
@@ -249,12 +263,14 @@ for (const dimension of ["2d", "3d"])
     mode = dimension;
     for (const value of ["2d", "3d"])
       $("case-" + value).setAttribute("aria-pressed", String(value === mode));
+    setInteraction(mode === "3d" || tools);
+    $("case-gestures").hidden = mode !== "3d";
     send({ mode });
   };
 $("case-tools").onclick = () => {
   tools = !tools;
   $("case-tools").setAttribute("aria-pressed", String(tools));
-  setInteraction(tools);
+  setInteraction(tools || mode === "3d");
   send({ compact: !tools });
 };
 $("case-interact").onclick = () => setInteraction(!interacting);

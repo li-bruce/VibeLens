@@ -11,8 +11,8 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="site.css?rev=0.8.1" />
     <link rel="stylesheet" href="scroll-story.css?rev=story-3" />
-    <link rel="stylesheet" href="case.css?rev=story-3" />
-    <script type="module" src="case.mjs?rev=story-3"></script>
+    <link rel="stylesheet" href="case.css?rev=story-4" />
+    <script type="module" src="case.mjs?rev=story-4"></script>
   </head>
   <body class="demo-story">
     <a class="skip" href="#foundation" data-i18n="skip">Skip to content</a>
@@ -64,10 +64,13 @@
             <iframe
               id="case-graph"
               title="VibeLens interactive graph"
-              src="viewer/index.html?case=1&amp;lang=en&amp;rev=story-3"
+              src="viewer/index.html?case=1&amp;lang=en&amp;rev=story-4"
               tabindex="-1"
             ></iframe>
             <div class="case-telemetry" id="case-telemetry" aria-live="polite"></div>
+            <span id="case-gestures" data-i18n="case.gestures" hidden
+              >Drag to rotate · scroll to zoom · right-drag to pan</span
+            >
           </div>
           <div class="case-playback">
             <button id="case-play" aria-label="Play" data-i18n-aria="case.paused">
@@ -85,6 +88,7 @@
               Explore graph
             </button>
           </div>
+          <div class="case-context" id="case-context"></div>
         </aside>
       </div>
       <section class="case-end" data-scroll-scene>

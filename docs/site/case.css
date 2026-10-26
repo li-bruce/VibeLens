@@ -234,7 +234,7 @@
 }
 .case-canvas {
   flex: 1;
-  min-height: 0;
+  min-height: 200px;
   position: relative;
 }
 #case-graph {
@@ -247,6 +247,152 @@
 }
 .case-visual.is-interacting #case-graph {
   pointer-events: auto;
+}
+#case-gestures {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  color: #8490a2;
+  font-size: 10px;
+  pointer-events: none;
+}
+/* Conversation and application form one quiet workbench beneath the graph. */
+.case-context {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 1fr);
+  flex: 0 0 225px;
+  min-height: 0;
+  border-top: 1px solid #e5eaf0;
+  background: #fff;
+}
+.case-conversation {
+  padding: 15px 18px 12px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.companion-heading,
+.app-heading {
+  margin: 0 0 10px;
+  font: 500 10px/1.5 var(--body);
+  color: #8490a2;
+}
+.conversation-turns {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: #d8e1ed transparent;
+  padding-right: 6px;
+}
+.conversation-turn {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 10px;
+  margin: 0 0 9px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.conversation-speaker {
+  font: 500 10px/1.8 var(--body);
+  color: #8490a2;
+  padding-top: 3px;
+}
+.conversation-turn p {
+  margin: 0;
+  color: #44566e;
+  padding: 5px 9px;
+}
+.conversation-turn.user p {
+  background: #f1f5fc;
+  border-radius: 0 8px 8px 8px;
+}
+.conversation-turn.codex .conversation-speaker {
+  color: #315eef;
+}
+.case-application {
+  border-left: 1px solid #e5eaf0;
+  min-width: 0;
+  padding: 15px 16px 12px;
+}
+.app-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-heading strong {
+  font:
+    17px/1 Georgia,
+    serif;
+  color: #32465f;
+}
+.app-restart {
+  margin-left: auto;
+  font-size: 18px !important;
+}
+.app-rooms {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.case-application button {
+  border: 0;
+  background: none;
+  color: #516b93;
+  font: 11px var(--body);
+  cursor: pointer;
+  padding: 4px 0;
+}
+.case-application button:disabled {
+  cursor: default;
+  color: #94a0af;
+}
+.app-room > button {
+  margin-bottom: 5px;
+}
+.app-picture {
+  height: 65px;
+  background: #f5f7fb;
+  border-radius: 4px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e9edf4;
+}
+.app-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.app-empty {
+  color: #b2becf;
+  font-size: 22px;
+  font-weight: 300;
+}
+.app-caption {
+  display: block;
+  text-align: center;
+  font: 10px/1.8 var(--mono);
+  color: #8490a2;
+  padding-top: 4px;
+}
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-top: 13px;
+  font-size: 10px;
+  color: #71829a;
+}
+.app-footer .app-approve {
+  color: #315eef;
+  background: #eff3ff;
+  border-radius: 4px;
+  padding: 6px 9px;
+}
+.case-application[data-status="stale_review"] .app-status {
+  color: #ad623e;
 }
 .case-telemetry {
   position: absolute;
@@ -449,6 +595,14 @@
   outline-offset: 5px;
 }
 @media (max-width: 1000px) {
+  .case-context {
+    grid-template-columns: minmax(0, 1fr) minmax(230px, 1fr);
+    flex-basis: 210px;
+  }
+  .case-conversation,
+  .case-application {
+    padding: 12px;
+  }
   .case-journey {
     grid-template-columns: 25% minmax(0, 1fr);
     gap: 20px;
@@ -468,6 +622,33 @@
   }
 }
 @media (max-width: 700px) {
+  .case-context {
+    grid-template-columns: minmax(0, 1fr);
+    border: 1px solid #e5eaf0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 0 25px;
+  }
+  .case-conversation {
+    max-height: 250px;
+    padding: 16px;
+  }
+  .case-application {
+    border-left: 0;
+    border-top: 1px solid #e5eaf0;
+    padding: 16px;
+  }
+  .conversation-turn {
+    font-size: 12px;
+  }
+  .app-picture {
+    height: 60px;
+  }
+  #case-gestures {
+    font-size: 8px;
+    left: 9px;
+    top: 6px;
+  }
   .story-nav {
     height: 56px;
     padding: 0 22px;
