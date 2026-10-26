@@ -23,3 +23,9 @@ The [before-frame measurements](before-frames.json) captured 77 black frames out
 [Separate mapping, state, project and business checks](example-maintenance.json) pass in both examples under new `viewport-repaint-20261027` records. [The prior approvals were checked before beginning](baseline-begin.json); previous frozen records remain unchanged. Architecture regeneration covers only reviewed managed files and runtime fingerprints. [All viewer copies match the canonical bytes](copied-viewer-proof.json), and [17 business/model/expectation declarations are unchanged](business-contract-proof.json).
 
 [Clean Git export checks](clean-export.json) also pass using only frozen approvals. The export does not regenerate or reapprove either example.
+
+## Published check
+
+[Pages run 40420657283](https://github.com/li-bruce/VibeLens/actions/runs/40420657283) deployed commit `7a9849a`. [Published frame checks](published-transitions.json) cover 40 transitions and 1,608 compositor frames across both languages and both dimensions, with zero black frames or browser errors. [The deployed modules match the committed bytes](published-assets.json), and the entrypoint loads revision `story-7`. [Deployment receipt](deployment.json).
+
+[Open the repaired demo](https://liblog.vip/VibeLens/demo.html?lang=zh-CN&rev=story-7). [Published 2D view](screens/published-2d.png) and [published 3D view](screens/published-3d.png).
