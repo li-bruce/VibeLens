@@ -167,4 +167,7 @@ labelFinalState();
 for (let attempt = 0; attempt < 250 && !window.graphDebug.graph; attempt++)
   await new Promise((resolve) => setTimeout(resolve, 40));
 if (window.graphDebug.graph)
-  parent.postMessage({ type: "vibelens-case-ready", version }, location.origin);
+  parent.postMessage(
+    { type: "vibelens-case-ready", version, locale: params.get("lang") || "en" },
+    location.origin,
+  );

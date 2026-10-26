@@ -14,7 +14,8 @@ const artifacts = await Promise.all(
 let chapter = 0,
   mode = "2d",
   loaded = "",
-  ready = false;
+  ready = false,
+  pending = null;
 
 function send(value) {
   if (ready)
@@ -22,6 +23,7 @@ function send(value) {
       { type: "vibelens-case", ...value },
       location.origin,
     );
+  else pending = { ...pending, ...value };
 }
 
 function paragraph(parent, text, css = "") {
@@ -147,8 +149,9 @@ function render() {
   const key = version + ":" + locale();
   if (loaded !== key) {
     ready = false;
+    pending = { view: current.view, mode, inspectMismatch: chapter === 2 || chapter === 3 };
     loaded = key;
-    element("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}`;
+    element("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=case-2`;
   } else send({ view: current.view, mode, inspectMismatch: chapter === 2 || chapter === 3 });
   const links = element("case-layer-links"),
     map = element("case-layer-map");
@@ -162,7 +165,7 @@ function render() {
     button.textContent = locale() === "en" ? en : zh;
     button.style.setProperty("--layer-color", color);
     button.dataset.layer = id;
-    button.onclick = () => send({ view: id, expand: true });
+    button.onclick = () => send({ view: id, expand: true, inspectMismatch: false });
     links.append(button);
     const item = document.createElement("span"),
       label = document.createElement("small");
@@ -188,11 +191,20 @@ window.addEventListener("message", (event) => {
   if (
     event.source !== element("case-graph").contentWindow ||
     event.origin !== location.origin ||
-    event.data?.type !== "vibelens-case-ready"
+    event.data?.type !== "vibelens-case-ready" ||
+    event.data.version !== (chapter >= 3 ? 2 : 1) ||
+    event.data.locale !== locale()
   )
     return;
   ready = true;
-  send({ view: chapters[chapter].view, mode, inspectMismatch: chapter === 2 || chapter === 3 });
+  send(
+    pending || {
+      view: chapters[chapter].view,
+      mode,
+      inspectMismatch: chapter === 2 || chapter === 3,
+    },
+  );
+  pending = null;
 });
 document.querySelectorAll("[data-chapter]").forEach(
   (button) =>
@@ -213,6 +225,7 @@ for (const dimension of ["2d", "3d"])
     element("case-view-help").textContent = t("case.help." + mode);
     send({ mode });
   };
-element("case-layers").onclick = () => send({ view: "overview", expand: true });
+element("case-layers").onclick = () =>
+  send({ view: "overview", expand: true, inspectMismatch: false });
 onLanguageChange(render);
 initialize(messages);

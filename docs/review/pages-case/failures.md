@@ -19,5 +19,6 @@ V2 adds the comparison in `policy.py`. The same stale request returns `stale_rev
 | Mobile horizontal overflow | Long source code determined a grid child's minimum width | Added explicit minimum-width behavior; 390px EN/ZH checks pass |
 | Native event revalidation rejected `source_seq`/`stream_id` | Validator received collector annotations instead of the native envelope | Validate original producer sequence after removing only documented collector annotations; keep stored evidence unchanged |
 | Recorded case appeared as “Live observation” | Unmodified viewer label was misleading for a static host | Label the captured final state explicitly; hide unavailable capture controls and keep actual replay |
+| A layer selection immediately after switching builds was lost online | The iframe had rendered before its ready message reached the parent; controls discarded requests during loading | Queue the latest requested view, mode and expansion; reject ready messages from an obsolete build or language. A delayed-network browser regression now exercises the early selection |
 
 Final runs: [runtime](receipts/runtime.json) and [browser](receipts/browser.json). The original illustrative exercise is retained and tested separately. Frozen release evidence and canonical renderer files were not edited.

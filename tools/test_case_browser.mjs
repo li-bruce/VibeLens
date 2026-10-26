@@ -38,6 +38,12 @@ try {
       : {}),
   });
   const page = await browser.newPage({ viewport: { width: 1536, height: 1100 } });
+  // A real network delay keeps the iframe unready while a person selects a view.
+  // The requested view must be queued, not discarded or replaced by the chapter.
+  await page.route("**/case-viewer.mjs*", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    await route.continue();
+  });
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("response", (response) => {
     if (response.status() >= 400 && !response.url().endsWith("favicon.ico"))
@@ -142,7 +148,9 @@ try {
       .screenshot({ path: path.join(output, language + "-04-all-layers-2d.png") });
     await page.click('[data-chapter="3"]');
     await page.waitForFunction(() => document.querySelector("#case-graph").src.includes("case=2"));
+    await page.click('[data-layer="api"]');
     frame = await graph();
+    await frame.waitForFunction(() => document.querySelector("#analysis-view").value === "api");
     await page.waitForFunction(() =>
       document.querySelector("#case-evidence").textContent.includes("stale_review"),
     );
