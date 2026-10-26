@@ -12,7 +12,7 @@ let view = structuredClone(artifact.view);
 // A nonzero revision keeps the canonical viewer from migrating unrelated local
 // project layouts into this separately namespaced, bilingual demonstration.
 let preferences = { schema: 1, project_id: view.layout_id, revision: 1, entries: {} };
-const preferenceKey = `vibelens.case.afterlight.${params.get("lang") || "en"}`;
+const preferenceKey = `vibelens.case.gallery-story-6.${params.get("lang") || "en"}`;
 try {
   preferences = JSON.parse(localStorage.getItem(preferenceKey)) || preferences;
 } catch {
@@ -82,6 +82,68 @@ window.fetch = async (input, init = {}) => {
   );
 };
 
+// Seed readable captions and the native ELK layered layout. These are private
+// presentation preferences; the exported model, sources and events stay intact.
+const { emptyLayout, layoutKey } = await import("./viewer/layout.js");
+const { profileFor } = await import("./viewer/analysis.js");
+const chinese = params.get("lang") === "zh-CN";
+const hasComparison = artifact.sources["policy.py"].includes(
+  "if reviewed_version != current_version:",
+);
+if (hasComparison !== (version === 2))
+  throw Error("The policy caption differs from the captured source");
+const captions = {
+  upload: ["Upload", "上传图片"],
+  review: ["Open image", "查看图片"],
+  publish: ["Approve", "通过审核"],
+  exhibit: ["Exhibition", "展览"],
+  "review-policy": [
+    hasComparison ? "Role + image" : "Role check",
+    hasComparison ? "角色与图片一致" : "检查角色",
+  ],
+  "state.empty": ["No image", "尚未上传"],
+  "state.pending": ["Pending", "待审核"],
+  "state.displayed": ["Published", "已发布"],
+  "field:review-policy:in:reviewed_version": ["Opened image", "已查看图片"],
+  "field:review-policy:in:current_version": ["Current image", "当前图片"],
+  "field:review-policy:out:verdict": ["Result", "判断结果"],
+  "save-exhibition": ["Write exhibition", "写入展览"],
+  "db:gallery:table%3Aexhibition": ["Exhibition table", "展览表"],
+};
+const baseKey = layoutKey(view.model, preferences.project_id);
+for (const id of [
+  "overview",
+  "business",
+  "states",
+  "permission",
+  "functions",
+  "data-operations",
+  "database",
+  "code",
+  "api",
+]) {
+  const key = baseKey + (id === "overview" ? "" : ":view:" + id);
+  if (!preferences.entries[key]) {
+    const layout = emptyLayout();
+    layout.algorithm = "layered";
+    layout.filters = profileFor(id);
+    preferences.entries[key] = JSON.stringify(layout);
+  }
+}
+for (const [key, raw] of Object.entries(preferences.entries)) {
+  const state = JSON.parse(raw);
+  if (!state.annotations && state.schema !== 2) continue;
+  state.annotations ||= {};
+  for (const [id, pair] of Object.entries(captions)) {
+    const existing = state.annotations[id];
+    const previousPolicy = ["Role check", "检查角色", "Role + image", "角色与图片一致"];
+    if (!existing?.label || (id === "review-policy" && previousPolicy.includes(existing.label)))
+      state.annotations[id] = { ...existing, label: pair[chinese ? 1 : 0] };
+  }
+  preferences.entries[key] = JSON.stringify(state);
+}
+document.body.dataset.policyComparison = String(hasComparison);
+
 // Load after installing the transport: localization and preferences also use it.
 const { mergeGraph } = await import("./viewer/graph-links.js");
 view.model = mergeGraph(view.model, artifact.codeFocus.publish);
@@ -90,7 +152,7 @@ artifact.recording.context.model = mergeGraph(
   artifact.codeFocus.publish,
 );
 await import("./viewer/viewer.js");
-const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-5");
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-6");
 const runtimeView = structuredClone(view);
 const designView = {
   ...structuredClone(artifact.recording.context),

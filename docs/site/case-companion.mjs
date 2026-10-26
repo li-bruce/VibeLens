@@ -1,20 +1,14 @@
-/** Keep the authored conversation and application replay beside the real graph.
- * Application controls seek captured actions; Pages never executes a backend.
- */
-import { locale, t } from "./site-ui.mjs?rev=story-5";
-
+/** Scripted development dialogue and a separate, event-bound application preview. */
+import { locale, t } from "./site-ui.mjs?rev=story-6";
+import { proposedFlow } from "./case-flow.mjs?rev=story-6";
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
-const node = (tag, className, text) => {
+function node(tag, className, text) {
   const element = document.createElement(tag);
   element.className = className;
   if (text !== undefined) element.textContent = text;
   return element;
-};
-
-/** Project completed application responses up to this exact recorded event.
- * Scrubbing backward rebuilds the UI from the beginning, without future facts.
- * The open preview and exhibition follow their own responses, not request values.
- */
+}
+/** Reconstruct only completed responses at or before the selected event. */
 export function applicationAt(artifact, eventId) {
   const events = artifact.recording.events;
   const index = events.findIndex((event) => event.id === eventId);
@@ -32,31 +26,93 @@ export function applicationAt(artifact, eventId) {
   }
   return state;
 }
-
-/** One shared companion moves into the active narrative on narrow screens. */
-export function companion({ host, chapters, artifacts, send }) {
-  let chapter = 0;
-  const narrow = matchMedia("(max-width: 700px)");
+export function companion({ host, chapters, artifacts, send, begin }) {
+  let chapter = 0,
+    source = 0,
+    progress = 1,
+    open = true;
+  const narrow = matchMedia("(max-width: 900px)");
   const conversation = node("section", "case-conversation");
-  conversation.append(node("h3", "companion-heading", t("case.conversation")));
+  conversation.id = "case-conversation";
+  const toggle = node("button", "conversation-toggle");
+  toggle.type = "button";
+  const title = node("span", "");
+  toggle.append(node("strong", "", "Codex"), title, node("span", "conversation-chevron", "⌄"));
   const turns = node("div", "conversation-turns");
-  turns.tabIndex = 0;
   turns.setAttribute("role", "log");
-  turns.setAttribute("aria-label", t("case.conversation"));
-  conversation.append(turns);
-
+  turns.tabIndex = 0;
+  const next = node("button", "conversation-next");
+  next.id = "conversation-next";
+  next.type = "button";
+  conversation.append(toggle, turns, next);
+  function fold() {
+    turns.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+    conversation.classList.toggle("is-collapsed", !open);
+  }
+  toggle.onclick = () => {
+    if (chapter) {
+      open = !open;
+      fold();
+    }
+  };
+  function renderConversation() {
+    const foundation = chapter === 0;
+    const dialogue = chapters[source].dialogue;
+    turns.replaceChildren();
+    const visible = foundation ? dialogue.slice(0, progress) : dialogue;
+    visible.forEach(([role, text], index) => {
+      const turn = node("div", "conversation-turn " + role);
+      turn.dataset.speaker = role;
+      turn.append(
+        node("span", "conversation-speaker", role === "user" ? t("case.user") : "Codex"),
+        node("p", "", copy(text)),
+      );
+      if (foundation && index === 3) turn.append(proposedFlow(progress >= dialogue.length));
+      turns.append(turn);
+    });
+    next.hidden = !foundation;
+    next.textContent = t(
+      progress < 4
+        ? "case.dialogue.next"
+        : progress === 4
+          ? "case.dialogue.confirm"
+          : "case.dialogue.build",
+    );
+    conversation.dataset.turn = progress;
+    conversation.dataset.source = chapters[source].id;
+    conversation.dataset.mode = chapters[chapter].dialogue ? "current" : "history";
+    title.textContent = t(
+      chapters[chapter].dialogue ? "case.conversation" : "case.conversation.previous",
+    );
+    fold();
+  }
+  next.onclick = () => {
+    if (progress < chapters[0].dialogue.length) {
+      progress++;
+      renderConversation();
+      requestAnimationFrame(() => {
+        turns.scrollTop = turns.scrollHeight;
+        next.scrollIntoView({
+          block: "nearest",
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+        });
+      });
+      if (progress === chapters[0].dialogue.length) document.body.dataset.flowConfirmed = "true";
+    } else begin();
+  };
   const app = node("section", "case-application");
+  app.id = "case-application";
   const heading = node("div", "app-heading");
   heading.append(node("strong", "", t("case.app.name")), node("span", "", t("case.app")));
-  const restart = node("button", "app-restart", "↻");
-  restart.type = "button";
-  restart.setAttribute("aria-label", t("case.app.replay"));
-  restart.title = t("case.app.replay");
-  restart.onclick = () => send({ action: "play" });
-  heading.append(restart);
+  const minimize = node("button", "app-minimize", "−");
+  minimize.type = "button";
+  minimize.setAttribute("aria-label", t("case.app.minimize"));
+  minimize.onclick = () => app.classList.toggle("is-collapsed");
+  heading.append(minimize);
   app.append(heading);
-  const rooms = node("div", "app-rooms");
-  const fields = {};
+  const rooms = node("div", "app-rooms"),
+    fields = {};
   for (const [key, action, label] of [
     ["image", "upload", "case.app.artist"],
     ["reviewed", "review", "case.app.reviewer"],
@@ -64,45 +120,71 @@ export function companion({ host, chapters, artifacts, send }) {
   ]) {
     const room = node("div", "app-room");
     room.dataset.appRoom = key;
-    const picture = node("div", "app-picture");
-    const image = node("img", "");
+    const picture = node("div", "app-picture"),
+      image = node("img", ""),
+      empty = node("span", "app-empty", "+");
     image.alt = t(label);
     image.hidden = true;
-    const empty = node("span", "app-empty", "+");
     empty.setAttribute("aria-hidden", "true");
     picture.append(image, empty);
-    const caption = node("span", "app-caption");
-    const button = node("button", "", t(label));
+    const caption = node("span", "app-caption"),
+      button = node("button", "", t(label));
     button.type = "button";
     button.title = t("case.app.seek");
     button.dataset.appAction = action;
     button.onclick = () => send({ action: "application", node: action });
-    room.append(button, picture, caption);
-    fields[key] = { room, image, empty, caption, button };
+    room.append(picture, button, caption);
     rooms.append(room);
+    fields[key] = { room, image, empty, caption, button };
   }
-  app.append(rooms);
-  const footer = node("div", "app-footer");
-  const status = node("span", "app-status");
+  const footer = node("div", "app-footer"),
+    status = node("span", "app-status");
   const approve = node("button", "app-approve", t("case.app.approve"));
   approve.type = "button";
   approve.dataset.appAction = "publish";
   approve.title = t("case.app.seek");
   approve.onclick = () => send({ action: "application", node: "publish" });
-  footer.append(status, approve);
-  app.append(footer);
-  host.replaceChildren(conversation, app);
-
+  const restart = node("button", "app-restart", "↻");
+  restart.type = "button";
+  restart.setAttribute("aria-label", t("case.app.replay"));
+  restart.onclick = () => send({ action: "play" });
+  footer.append(status, approve, restart);
+  app.append(rooms, footer);
   function place() {
-    const parent = narrow.matches
-      ? document.querySelector(`#${chapters[chapter].id} .scene-companion-slot`)
-      : document.querySelector(".case-visual");
-    if (parent && host.parentNode !== parent) parent.append(host);
+    const current = document.getElementById(chapters[chapter].id);
+    const target = current?.querySelector(".scene-companion-slot");
+    const before = conversation.getBoundingClientRect();
+    const wasFoundation = conversation.closest("#foundation");
+    if (target && conversation.parentNode !== target) target.append(conversation);
+    const appTarget = narrow.matches
+      ? current?.querySelector(".scene-app-slot")
+      : document.getElementById("case-app-dock");
+    if (appTarget && app.parentNode !== appTarget) appTarget.append(app);
+    document.getElementById("case-app-dock").hidden = chapter === 0 || narrow.matches;
+    if (
+      wasFoundation &&
+      chapter === 1 &&
+      !matchMedia("(prefers-reduced-motion: reduce)").matches &&
+      before.width
+    ) {
+      const after = conversation.getBoundingClientRect();
+      conversation.animate(
+        [
+          {
+            transformOrigin: "top left",
+            transform: `translate(${before.x - after.x}px, ${before.y - after.y}px) scale(${before.width / after.width}, ${before.height / after.height})`,
+          },
+          { transformOrigin: "top left", transform: "none" },
+        ],
+        { duration: 420, easing: "cubic-bezier(.2,.7,.2,1)" },
+      );
+    }
   }
   function update(eventId) {
-    const artifact = artifacts[chapters[chapter].version - 1];
-    const designing = chapters[chapter].application === false;
-    const state = applicationAt(artifact, designing ? null : eventId);
+    const state = applicationAt(
+      artifacts[chapters[chapter].version - 1],
+      chapter === 0 ? null : eventId,
+    );
     app.dataset.eventId = state.eventId || "";
     app.dataset.status = state.status;
     status.textContent = t("case.app." + state.status);
@@ -111,36 +193,34 @@ export function companion({ host, chapters, artifacts, send }) {
       field.room.dataset.version = version;
       field.image.hidden = !version;
       field.empty.hidden = !!version;
-      if (version) field.image.src = `case-data/image-${version}.png`;
-      else field.image.removeAttribute("src");
+      const url = version ? `case-data/image-${version}.png` : null;
+      if (url && field.image.getAttribute("src") !== url) field.image.src = url;
+      if (!url) field.image.removeAttribute("src");
       field.caption.textContent = version ? `${t("case.app.image")} ${version}` : "—";
-      field.button.disabled = designing;
+      field.button.disabled = chapter === 0;
     }
-    approve.disabled = designing || !state.reviewed;
+    approve.disabled = chapter === 0 || !state.reviewed;
   }
   function stage(index) {
     chapter = index;
+    source = index;
+    while (!chapters[source].dialogue) source--;
     host.dataset.scene = chapters[index].id;
     host.dataset.surface = chapters[index].surface;
-    const dialogue = chapters[index].dialogue || [];
-    conversation.hidden = !dialogue.length;
-    app.hidden = chapters[index].application === false;
-    host.classList.toggle("has-dialogue", dialogue.length > 0);
-    host.classList.toggle("has-application", !app.hidden);
-    turns.replaceChildren();
-    for (const [role, text] of dialogue) {
-      const turn = node("div", "conversation-turn " + role);
-      turn.dataset.speaker = role;
-      turn.append(
-        node("span", "conversation-speaker", role === "user" ? t("case.user") : "Codex"),
-        node("p", "", copy(text)),
-      );
-      turns.append(turn);
-    }
-    turns.scrollTop = 0;
-    update(null);
+    open = !!chapters[index].dialogue;
+    app.hidden = chapter === 0;
+    renderConversation();
     place();
+    update(null);
   }
   narrow.addEventListener("change", place);
-  return { stage, update, destroy: () => narrow.removeEventListener("change", place) };
+  return {
+    stage,
+    update,
+    destroy() {
+      narrow.removeEventListener("change", place);
+      conversation.remove();
+      app.remove();
+    },
+  };
 }

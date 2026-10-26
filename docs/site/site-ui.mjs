@@ -1,4 +1,4 @@
-import { extra, chinese } from "./messages.mjs?rev=story-5";
+import { extra, chinese } from "./messages.mjs?rev=story-6";
 
 const defaults = new Map(
   [...document.querySelectorAll("[data-i18n]")].map((element) => [

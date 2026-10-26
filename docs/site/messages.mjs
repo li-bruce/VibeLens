@@ -2,7 +2,7 @@
 export const extra = {
   "tour.aria": ["Viewer tour", "图分析页面演示"],
   "tour.kicker": ["Inside VibeLens", "看看 VibeLens 界面"],
-  "tour.title": ["Record the run.\nReplay the change.", "看见流转，\n回到出错的一步。"],
+  "tour.title": ["Record the run\nReplay the change", "看见流转，\n回到出错的一步"],
   "tour.body": [
     "Record a path, inspect a change and keep your own view.",
     "录下关键链路，回看状态变化，保留自己的观察视图。",
@@ -116,20 +116,20 @@ export const extra = {
     "Use $vibelens for this project.\\nI want to build: [describe your project].\\nShow me the first business graph in this conversation and its Web address. Let's confirm the flow before implementation.",
     "在这个项目中使用 $vibelens。\\n我想开发：[描述你的项目]。\\n请先在对话中展示业务图，并给我 Web 查看地址。确认流程后再开始实现。",
   ],
-  "hero.title": ["Know your program.\nShape the next iteration.", "看清程序，\n掌握每次迭代。"],
+  "hero.title": ["Know your program\nShape the next iteration", "看清程序，\n掌握每次迭代"],
   "hero.body": [
     "One state graph connects your business, code and running program.",
     "用一张状态网，连接业务、代码与运行过程。",
   ],
   "hero.caption": ["From the flow to the value that changed.", "从业务流程，深入到变化的参数。"],
   "problem.kicker": ["Follow the change", "看清改动"],
-  "problem.title": ["Every change has a path.", "每次改动，\n都有路径可循。"],
+  "problem.title": ["Every change has a path", "每次改动，\n都有路径可循"],
   "problem.body": [
     "Trace an action through its rules, values and source. Understand how the result took shape.",
     "沿操作追踪规则、参数与源码，理解结果如何产生。",
   ],
   "workflow.kicker": ["Begin with the business", "先把业务说清楚"],
-  "workflow.title": ["Agree on the graph.\nThen build.", "先把业务图，\n一起定清楚。"],
+  "workflow.title": ["Agree on the graph\nThen build", "先把业务图，\n一起定清楚"],
   "workflow.body": [
     "Confirm the business and states in conversation. Explore the running program in VibeLens, then bring your findings into the next coding iteration.",
     "在对话中确认业务与状态，在 VibeLens 中观察运行，再带着发现进入下一轮开发。",
@@ -154,7 +154,7 @@ export const extra = {
     "Discuss a fix or a changed flow. The graph follows the new code; return to VibeLens to check it.",
     "通过对话修复问题或调整流程，图随新代码更新，再回到 VibeLens 验证。",
   ],
-  "explore.title": ["Start with the flow.\nGo deeper.", "从流程开始，\n逐层看清。"],
+  "explore.title": ["Start with the flow\nGo deeper", "从流程开始，\n逐层看清"],
   "explore.body": [
     "Expand the part that matters. Keep its rules, values and source in view.",
     "展开关心的环节，把规则、参数与源码放在一起看。",
@@ -163,7 +163,7 @@ export const extra = {
     "Choose a preset or save your own combination.",
     "选择预设，或保存自己的观察组合。",
   ],
-  "record.title": ["See it run.\nKeep the moment.", "看见运行，\n留住关键一刻。"],
+  "record.title": ["See it run\nKeep the moment", "看见运行，\n留住关键一刻"],
   "record.body": [
     "Record an operation and replay the states and values that changed.",
     "录下一次操作，回看状态与数值的变化。",
@@ -173,7 +173,7 @@ export const extra = {
     "聚焦局部，保留相关参数。",
   ],
   "record.replay.body": ["Step through the changes at your own pace.", "按步骤回看每次变化。"],
-  "modes.title": ["One graph.\nTwo ways to build.", "一张状态网，\n两种开发方式。"],
+  "modes.title": ["One graph\nTwo ways to build", "一张状态网，\n两种开发方式"],
   "modes.body": ["Choose the role of the graph in your project.", "选择状态网在项目中的角色。"],
   "modes.drive.title": ["Develop from the state graph", "从状态网驱动开发"],
   "modes.drive.body": [
@@ -186,28 +186,28 @@ export const extra = {
     "沿用自己的架构，通过图观察内部流转。",
   ],
   "demoLink.kicker": ["Explore VibeLens", "亲自体验"],
-  "demoLink.title": ["From the first graph\nto the next repair.", "从业务定图，\n到一次问题修复。"],
+  "demoLink.title": ["From the first graph\nto the next repair", "从业务定图，\n到一次问题修复"],
   "demoLink.body": [
     "Try progressive inspection, a saved focus view and a verified iteration.",
     "体验下钻、自定义视图与迭代复测。",
   ],
   "demoLink.button": ["Explore the demo ↗", "进入交互演示 ↗"],
-  "depth.business.title": ["Business comes first.", "先看业务全貌。"],
+  "depth.business.title": ["Business comes first", "先看业务全貌"],
   "depth.business.body": [
     "Start with the tasks and states you agreed on.",
     "从已经确认的任务和状态，理解程序要完成什么。",
   ],
-  "depth.state.title": ["Understand the decision.", "再看状态与判定。"],
+  "depth.state.title": ["Understand the decision", "再看状态与判定"],
   "depth.state.body": [
     "See the states and rules behind an action.",
     "展开一个环节，查看状态如何变化、规则如何放行。",
   ],
-  "depth.function.title": ["Follow the values.", "沿函数与参数下钻。"],
+  "depth.function.title": ["Follow the values", "沿函数与参数下钻"],
   "depth.function.body": [
     "Trace the core functions, inputs and data operations.",
     "沿关键调用，追踪输入、处理与数据写入。",
   ],
-  "depth.source.title": ["Arrive at the source.", "最后，落到具体源码。"],
+  "depth.source.title": ["Arrive at the source", "最后，落到具体源码"],
   "depth.source.body": [
     "Open the local implementation when you need the detail.",
     "定位到对应函数和参数，核对实际的实现。",
@@ -244,7 +244,7 @@ export const chinese = {
   "modes.drive.label": "驱动模式",
   "modes.observe.label": "观察模式",
   "install.kicker": "用于你自己的项目",
-  "install.title": "让下一次开发对话，\\n有一张图可看。",
+  "install.title": "让下一次开发对话，\\n有一张图可看",
   "install.body": "从 GitHub 安装 VibeLens，在项目中打开新对话，描述你想开发的内容。",
   "install.guide": "安装与使用说明 ↗",
   "install.promptLabel": "可以这样开始",

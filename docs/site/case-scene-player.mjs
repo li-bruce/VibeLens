@@ -6,7 +6,7 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
   let epoch = 0,
     lastState = "",
     current = "foundation",
-    needsImplementationLayout = false;
+    needsPlanarLayout = false;
   const pause = (ms = 25) => new Promise((resolve) => setTimeout(resolve, ms));
   function control(id, value) {
     const element = $(id);
@@ -63,6 +63,7 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
   }
   /** Expand just the ancestors needed to expose an actual mapped region. */
   async function revealRegion(keep, ticket) {
+    needsPlanarLayout = !!window.graphDebug.layers.enabled;
     $("collapse").click();
     // Open the containing groups before choosing individual visible children.
     // Hiding a parent intentionally hides its descendants in the real viewer.
@@ -89,34 +90,6 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     $("arrange").click();
     await until(() => !window.graphDebug.layoutBusy, ticket);
     fit();
-  }
-  async function implementation(ticket) {
-    // A region first expanded in 3D has spatial positions, but has not yet
-    // received a compact 2D layout for its newly exposed descendants.
-    needsImplementationLayout = !!window.graphDebug.layers.enabled;
-    control("analysis-view", "overview");
-    $("show-all").click();
-    await until(() => window.graphDebug.view?.stage === "design", ticket);
-    await revealRegion(
-      new Set([
-        "upload",
-        "review",
-        "publish",
-        "exhibit",
-        "api.publish",
-        "ui.publish",
-        "review-policy",
-        "choose-version",
-        "field:review-policy:in:current_version",
-        "field:review-policy:in:reviewed_version",
-        "state.pending",
-        "state.displayed",
-        "save-exhibition",
-        "db:gallery:store",
-        "db:gallery:table%3Aexhibition",
-      ]),
-      ticket,
-    );
   }
   function save(name) {
     $("custom-view-name").value = name || savedName();
@@ -185,9 +158,9 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       // Fit after the native toggle has restored that mode's viewport geometry.
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       if (ticket !== epoch) return;
-      if (message.mode === "2d" && current === "build" && needsImplementationLayout) {
+      if (message.mode === "2d" && needsPlanarLayout) {
         $("arrange").click();
-        needsImplementationLayout = false;
+        needsPlanarLayout = false;
       }
       if (!(await until(() => !window.graphDebug.layoutBusy, ticket))) return;
       fit();
@@ -209,14 +182,21 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     }
     if (message.action === "states") {
       control("analysis-view", "states");
+      $("show-all").click();
       hideExcept(new Set(["state.empty", "state.pending", "state.displayed"]), ticket);
       fit();
       return;
     }
     if (message.action === "business") {
       control("analysis-view", "business");
+      $("show-all").click();
+      $("collapse").click();
       hideExcept(new Set(["upload", "review", "publish", "exhibit"]), ticket);
       fit();
+      return;
+    }
+    if (message.action === "implementation") {
+      await focus({ effects: false }, ticket);
       return;
     }
     if (message.action === "application") {
@@ -263,13 +243,13 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     document.body.dataset.caseSource = "false";
     $("close-detail").click();
     $("replay-live").click();
-    if (current === "foundation" || current === "run") {
+    if (["foundation", "build", "run"].includes(current)) {
       control("analysis-view", "business");
       $("collapse").click();
       await until(
         () =>
           window.graphDebug.graph?.boxes.length > 0 &&
-          window.graphDebug.view.stage === (current === "foundation" ? "design" : "runtime"),
+          window.graphDebug.view.stage === (current === "run" ? "runtime" : "design"),
         ticket,
       );
       hideExcept(new Set(["upload", "review", "publish", "exhibit"]), ticket);
@@ -277,8 +257,6 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       fit();
       if (current === "run" && !matchMedia("(prefers-reduced-motion: reduce)").matches)
         await play(ticket);
-    } else if (current === "build") {
-      await implementation(ticket);
     } else if (["drill", "watch"].includes(current)) {
       await focus(message.options || { effects: current === "watch" }, ticket);
       await mismatch(ticket);
@@ -292,8 +270,9 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       }
       if (current === "iterate") {
         await mismatch(ticket);
-        await showSource(ticket);
-      } else if (!matchMedia("(prefers-reduced-motion: reduce)").matches) await play(ticket);
+      } else {
+        await mismatch(ticket);
+      }
     }
     if (ticket === epoch) {
       fit();

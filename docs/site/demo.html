@@ -9,10 +9,10 @@
     />
     <title>VibeLens — Follow the logic</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="site.css?rev=story-5" />
+    <link rel="stylesheet" href="site.css?rev=story-6" />
     <link rel="stylesheet" href="scroll-story.css?rev=story-3" />
-    <link rel="stylesheet" href="case.css?rev=story-5" />
-    <script type="module" src="case.mjs?rev=story-5"></script>
+    <link rel="stylesheet" href="case.css?rev=story-6" />
+    <script type="module" src="case.mjs?rev=story-6"></script>
   </head>
   <body class="demo-story">
     <a class="skip" href="#foundation" data-i18n="skip">Skip to content</a>
@@ -28,9 +28,10 @@
     <main id="main">
       <section class="case-intro" data-scroll-scene>
         <p class="eyebrow" data-i18n="case.eyebrow">VibeLens in action</p>
-        <h1 data-i18n="case.title">See what your AI built.</h1>
+        <h1 data-i18n="case.title">See what your AI built</h1>
         <p data-i18n="case.lead">
-          Start with the business. Follow the logic. Refine every iteration.
+          Follow a developer building an image review website with VibeLens, from the first business
+          graph to investigating and fixing a bug.
         </p>
         <a class="scroll-cue" href="#foundation"
           ><span data-i18n="case.scroll">Scroll to follow the build</span
@@ -44,6 +45,7 @@
         aria-label="Development stages"
         data-i18n-aria="case.nav"
       ></div>
+      <div id="case-foundation"></div>
       <div class="case-journey">
         <div class="case-narrative" id="case-narrative"></div>
         <aside class="case-visual" aria-label="VibeLens graph">
@@ -58,13 +60,27 @@
               ><button id="case-tools" aria-pressed="false" data-i18n="case.tools">
                 Full tools
               </button>
+              <button id="case-interact" aria-pressed="false" data-i18n="case.explore">
+                Explore graph
+              </button>
             </div>
+          </div>
+          <div class="case-lenses" role="group" aria-label="Graph view">
+            <button data-case-lens="business" data-i18n="case.business" aria-pressed="true">
+              Business graph
+            </button>
+            <button data-case-lens="states" data-i18n="case.states" aria-pressed="false">
+              States
+            </button>
+            <button data-case-lens="implementation" data-i18n="case.logic" aria-pressed="false">
+              Core logic
+            </button>
           </div>
           <div class="case-canvas">
             <iframe
               id="case-graph"
               title="VibeLens interactive graph"
-              src="viewer/index.html?case=1&amp;lang=en&amp;rev=story-5"
+              src="viewer/index.html?case=1&amp;lang=en&amp;rev=story-6"
               tabindex="-1"
             ></iframe>
             <div class="case-telemetry" id="case-telemetry" aria-live="polite"></div>
@@ -72,7 +88,7 @@
               >Drag to rotate · scroll to zoom · right-drag to pan</span
             >
           </div>
-          <div class="case-playback">
+          <div class="case-playback" hidden>
             <button id="case-play" aria-label="Play" data-i18n-aria="case.paused">
               <span aria-hidden="true">▶</span></button
             ><input
@@ -83,16 +99,14 @@
               value="0"
               aria-label="Playback"
               data-i18n-aria="case.position"
-            /><span id="case-step">—</span
-            ><button id="case-interact" aria-pressed="false" data-i18n="case.explore">
-              Explore graph
-            </button>
+            /><span id="case-step">—</span>
           </div>
-          <div class="case-context" id="case-context"></div>
         </aside>
+        <aside id="case-app-dock" class="case-app-dock"></aside>
       </div>
+      <div id="case-context" hidden></div>
       <section class="case-end" data-scroll-scene>
-        <h2 data-i18n="case.end">Bring clarity to your next build.</h2>
+        <h2 data-i18n="case.end">Bring clarity to your next build</h2>
         <a class="button primary" href="index.html#install" data-local-link data-i18n="case.install"
           >Get VibeLens</a
         >

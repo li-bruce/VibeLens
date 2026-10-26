@@ -1,12 +1,30 @@
 /** Short product copy; the review material carries the complete case history. */
 export const messages = {
+  "case.conversation.previous": ["Previous development", "上一次开发对话"],
+  "case.dialogue.next": ["Next reply", "继续对话"],
+  "case.dialogue.confirm": ["Confirm this flow", "确认这个流程"],
+  "case.dialogue.build": ["Start development", "开始开发"],
+  "case.app.minimize": ["Collapse application preview", "收起业务窗口"],
+  "case.logic": ["Core logic", "核心逻辑"],
+  "case.flow.proposed": ["Does this flow match your intent?", "确认这条业务流程"],
+  "case.flow.confirmed": ["Flow confirmed", "流程已确认"],
+  "case.flow.upload": ["Upload image", "上传图片"],
+  "case.flow.pending": ["Pending", "待审核"],
+  "case.flow.review": ["Open image", "查看图片"],
+  "case.flow.check": ["Same image?", "是否同一张图片"],
+  "case.flow.publish": ["Approve", "通过审核"],
+  "case.flow.exhibit": ["Exhibition", "进入展览"],
+  "case.flow.reopen": ["Replaced: open again", "图片已替换，重新查看"],
+  "case.flow.states": ["No image → Pending review → Published", "尚未上传 → 待审核 → 已发布"],
+  "case.change": ["Approval: role → role + image match", "审核条件：角色 → 角色与图片一致"],
+
   "case.home": ["VibeLens", "VibeLens"],
   "case.install": ["Get VibeLens", "开始使用"],
   "case.eyebrow": ["VibeLens in action", "VibeLens 交互演示"],
-  "case.title": ["See what your AI built.", "看清 AI 写出的程序。"],
+  "case.title": ["See what your AI built", "看清 AI 写出的程序"],
   "case.lead": [
-    "Define Afterlight in conversation. Explore its running logic in VibeLens. Bring the findings into your next change.",
-    "在对话中构建夜幕，在 VibeLens 中观察运行，再带着发现继续修改。",
+    "Follow a developer building an image review website: define the flow with VibeLens, record the running program and ask AI to fix a discovered bug.",
+    "一位开发者想做图片审核网站：作者上传图片，审核通过后进入展览。跟随这次开发，看 VibeLens 如何确认业务流程、记录运行并验证 AI 的修改。",
   ],
   "case.scroll": ["Scroll to follow the build", "向下，跟随一次开发"],
   "case.nav": ["Development stages", "开发阶段"],
@@ -39,17 +57,17 @@ export const messages = {
   "case.paused": ["Play", "播放"],
   "case.pause": ["Pause", "暂停"],
   "case.position": ["Playback", "回放进度"],
-  "case.conversation": ["Developing Afterlight · Codex", "开发夜幕 · Codex"],
+  "case.conversation": ["Development conversation", "开发对话"],
   "case.location.codex": ["In Codex", "在 Codex 中"],
   "case.location.vibelens": ["In VibeLens", "在 VibeLens 中"],
-  "case.location.project": ["In Afterlight", "在夜幕网站中"],
+  "case.location.project": ["In the gallery website", "在画展网站中"],
   "case.user": ["You", "用户"],
   "case.gestures": [
     "Drag to rotate · scroll to zoom · right-drag to pan",
     "拖动旋转 · 滚轮缩放 · 右键拖动平移",
   ],
   "case.app": ["Application replay", "业务界面回放"],
-  "case.app.name": ["Afterlight", "夜幕"],
+  "case.app.name": ["Gallery website", "画展网站"],
   "case.app.replay": ["Replay the application actions", "重放业务操作"],
   "case.app.seek": ["Jump to the next recorded action", "定位到下一次已录制的操作"],
   "case.app.artist": ["Upload", "上传"],
@@ -71,7 +89,7 @@ export const messages = {
   "case.current": ["Current image", "当前图片"],
   "case.verdict": ["Result", "判定"],
   "case.compare": ["Add the missing comparison", "补上版本比较"],
-  "case.end": ["Bring clarity to your next build.", "下一次开发，从看清逻辑开始。"],
+  "case.end": ["Bring clarity to your next build", "下一次开发，从看清逻辑开始"],
   "case.source": ["Example project ↗", "示例项目 ↗"],
   "case.evidence": ["Recordings & tests ↗", "记录与测试 ↗"],
   "case.about": ["About this demo", "演示说明"],
@@ -88,17 +106,17 @@ export const chapters = [
     surface: "codex",
     application: false,
     label: ["Define", "定图"],
-    title: ["The flow comes first.", "先定业务，再写代码。"],
+    title: ["The flow comes first", "先定业务，再写代码"],
     body: [
-      "Describe Afterlight, clarify image replacement, then confirm its business graph and states.",
-      "描述夜幕的需求，明确替换图片后的处理，在图上确认业务与状态。",
+      "Follow the conversation and confirm the proposed flow before development.",
+      "逐句明确需求，在对话里的流程图上确认业务与状态。",
     ],
     dialogue: [
       [
         "user",
         [
-          "Build Afterlight: an artist uploads an image; a reviewer opens and approves it for the exhibition.",
-          "做一个叫“夜幕”的画展网站。作者上传图片，审核者查看并通过后，图片进入展览。",
+          "I want a gallery website. An artist uploads images; a reviewer receives a message, opens the image and approves it for the exhibition.",
+          "我想做一个画展网站。作者上传图片，审核者收到消息，查看并通过后，图片进入展览。",
         ],
       ],
       [
@@ -111,19 +129,27 @@ export const chapters = [
       [
         "user",
         [
-          "No. Replacements need another review. The flow and states match what I want; continue.",
-          "不能，换图后要重新审核。业务图和状态符合我的想法，继续开发。",
+          "No. Keep the replacement pending until the reviewer opens and approves that image.",
+          "不能，替换后仍然待审核，需要重新查看新图再通过。",
         ],
       ],
+      [
+        "codex",
+        [
+          "Here is the flow and its states. Does this match the website you want?",
+          "我把流程和状态画在这里，看看是否符合你的想法？",
+        ],
+      ],
+      ["user", ["Yes. Build this flow.", "流程正确，按这个开发。"]],
     ],
   },
   {
     id: "build",
     version: 1,
     surface: "codex",
-    application: false,
+    application: true,
     label: ["Build", "开发"],
-    title: ["The graph grows with the code.", "写出的实现，逐层连入图中。"],
+    title: ["The graph grows with the code", "写出的实现，逐层连入图中"],
     body: [
       "As development progresses, states, API handlers, functions, parameters and tables connect to the business flow.",
       "开发推进时，状态、API、函数、参数与数据表逐步连到业务流中。",
@@ -150,10 +176,10 @@ export const chapters = [
     version: 1,
     surface: "vibelens",
     label: ["Run", "运行"],
-    title: ["One operation. Every change.", "录下一次完整流转。"],
+    title: ["Follow one complete operation", "录下一次完整流转"],
     body: [
-      "Start recording in VibeLens, operate Afterlight, then stop and replay. The graph follows the running program.",
-      "在 VibeLens 开始记录，再操作夜幕。图随运行变化，结束后可沿时间轴回看。",
+      "Start recording in VibeLens, operate the gallery website, then stop and replay. The graph follows the running program.",
+      "在 VibeLens 开始记录，再操作图片审核网站。图随运行变化，结束后可沿时间轴回看。",
     ],
     steps: [
       ["vibelens", ["Start recording.", "点击开始记录。"]],
@@ -178,10 +204,10 @@ export const chapters = [
     version: 1,
     surface: "vibelens",
     label: ["Inspect", "下钻"],
-    title: ["Trace the decision to its source.", "沿着运行，找到出错的代码。"],
+    title: ["Understand the problem down to its source", "沿着运行，看懂问题出在哪里"],
     body: [
-      "Blue was reviewed; orange was published. Follow the publication path to the faulty decision.",
-      "审核的是蓝图，展出的却是橙图。沿发布链路下钻，找到出错的判断。",
+      "Blue was reviewed; orange was published. Inspect the values and source so you can describe the problem to AI.",
+      "审核的是蓝图，展出的却是橙图。下钻查看参数和源码，把问题描述给 AI。",
     ],
     steps: [
       [
@@ -205,7 +231,7 @@ export const chapters = [
     version: 1,
     surface: "vibelens",
     label: ["Focus", "关注"],
-    title: ["Keep your own signal.", "留下你关心的链路。"],
+    title: ["Keep your own signal", "留下你关心的链路"],
     body: [
       "Choose the rule, values and effects to watch. Save the view for the next iteration.",
       "选择规则、参数与写入，保存为自己的观察视图。",
@@ -232,17 +258,17 @@ export const chapters = [
     version: 2,
     surface: "codex",
     label: ["Refine", "迭代"],
-    title: ["Make the change. Keep the view.", "改动代码，沿用视图。"],
+    title: ["Describe the issue, let AI make the change", "把问题交给 AI，图随修改更新"],
     body: [
-      "Add the version check. The same saved path now follows the repaired build.",
-      "补上版本检查，用同一条观察链路对照本轮修改。",
+      "Describe the issue and relevant graph values. AI changes the code; your view follows the update.",
+      "向 AI 描述现象和图中的关键参数，由 AI 修改代码，观察视图随之更新。",
     ],
     dialogue: [
       [
         "user",
         [
-          "I found the missing image comparison. Fix it: a replaced image must be opened and reviewed again before publication.",
-          "我在图中找到了遗漏的图片比较。修复它：换图后必须重新查看和审核，才能发布。",
+          "I reviewed the blue image but the orange replacement was published. The graph shows reviewed image 1, current image 2, yet the approval returned allowed. Please fix this.",
+          "我审核的是蓝图，换成橙图后却直接发布了。图里已查看图片是 1、当前图片是 2，审核仍返回 allowed。请修复这个问题。",
         ],
       ],
       [
@@ -259,10 +285,10 @@ export const chapters = [
     version: 2,
     surface: "vibelens",
     label: ["Verify", "验证"],
-    title: ["Watch the repair hold.", "让下一次运行验证修改。"],
+    title: ["See the updated logic in action", "看见修改后的业务逻辑"],
     body: [
-      "The stale approval stops. A fresh review publishes the intended image.",
-      "旧审核被拦截，重新打开最新版后才发布。",
+      "The approval node now checks both role and image identity. Replay the blocked approval, then the successful fresh review.",
+      "图中的审核条件增加了图片比较。回看旧审核被拦截、重新查看后发布的两条路径。",
     ],
     steps: [
       [

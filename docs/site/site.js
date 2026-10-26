@@ -1,6 +1,6 @@
 import { revealSections } from "./scroll-story.mjs?rev=story-3";
 import { mountProductStory } from "./product-story.mjs?rev=story-3";
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-5";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-6";
 
 const views = ["business", "state", "decision", "function", "data", "source", "mixed"];
 let view = "business";

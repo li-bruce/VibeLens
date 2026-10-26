@@ -31,6 +31,7 @@ try {
     assert.match(await page.locator(".brand").innerText(), /^VibeLens/);
     assert.equal(await page.locator("a.github").getAttribute("href"), "https://github.com/li-bruce/VibeLens");
     assert.match(await page.locator("#install-prompt").textContent(), /\$vibelens/);
+    for (const title of await page.locator('h1,h2,h3').allTextContents()) assert.ok(!/[.。]$/.test(title.trim()), title);
     assert.equal(await page.locator("[data-view]").count(), 7);
     await page.screenshot({path:path.join(output,language+'-hero.png')});
     await page.keyboard.press('PageDown');

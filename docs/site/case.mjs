@@ -1,8 +1,8 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-5";
-import { messages, chapters } from "./case-messages.mjs?rev=story-5";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-6";
+import { messages, chapters } from "./case-messages.mjs?rev=story-6";
 import { scrollStory } from "./scroll-story.mjs?rev=story-3";
-import { companion } from "./case-companion.mjs?rev=story-5";
+import { companion } from "./case-companion.mjs?rev=story-6";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -39,6 +39,15 @@ function stage(index) {
   setInteraction(mode === "3d" || tools);
   context?.stage(index);
   const current = chapters[index];
+  document.querySelector(".case-playback").hidden = !["run", "watch", "verify"].includes(
+    current.id,
+  );
+  const lens = ["foundation", "build", "run"].includes(current.id) ? "business" : "implementation";
+  document
+    .querySelectorAll("[data-case-lens]")
+    .forEach((button) =>
+      button.setAttribute("aria-pressed", String(button.dataset.caseLens === lens)),
+    );
   const version = current.version;
   const message = {
     scene: chapters[index].id,
@@ -49,13 +58,11 @@ function stage(index) {
   };
   const key = version + ":" + locale();
   $("case-view-name").textContent = t(
-    current.id === "build"
-      ? "case.implementation"
-      : ["foundation", "run"].includes(current.id)
-        ? "case.graph"
-        : ["watch", "iterate", "verify"].includes(current.id)
-          ? "case.viewName"
-          : "case.core",
+    ["foundation", "build", "run"].includes(current.id)
+      ? "case.graph"
+      : ["watch", "iterate", "verify"].includes(current.id)
+        ? "case.viewName"
+        : "case.core",
   );
   $("case-telemetry").replaceChildren();
   if (loaded !== key) {
@@ -63,7 +70,7 @@ function stage(index) {
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-5`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-6`;
   } else send(message);
   document.body.dataset.chapter = String(index);
 }
@@ -80,9 +87,8 @@ function button(parent, key, action, css = "scene-action") {
 }
 function render() {
   context?.destroy();
-  // On mobile the shared companion lives in a scene about to be rebuilt.
-  document.querySelector(".case-visual").append($("case-context"));
   $("case-chapters").replaceChildren();
+  $("case-foundation").replaceChildren();
   $("case-narrative").replaceChildren();
   chapters.forEach((current, index) => {
     const link = document.createElement("a");
@@ -92,8 +98,8 @@ function render() {
     $("case-chapters").append(link);
     const section = document.createElement("section");
     section.id = current.id;
-    section.className = "case-scene";
-    section.dataset.scrollScene = "";
+    section.className = index === 0 ? "foundation-scene" : "case-scene";
+    section.dataset.caseScene = current.id;
     const kicker = document.createElement("p");
     kicker.className = "eyebrow";
     kicker.textContent = `${String(index + 1).padStart(2, "0")} / ${copy(current.label)}`;
@@ -124,18 +130,17 @@ function render() {
     const slot = document.createElement("div");
     slot.className = "scene-companion-slot";
     section.append(slot);
-    if (current.id === "foundation") {
-      button(section, "case.confirm", () => story.go(1));
-      button(section, "case.business", () => send({ action: "business" }));
-      button(section, "case.states", () => send({ action: "states" }));
-    }
-    if (current.id === "build") button(section, "case.build", () => setInteraction(true));
+    const appSlot = document.createElement("div");
+    appSlot.className = "scene-app-slot";
+    section.append(appSlot);
+    if (current.id === "build")
+      button(section, "case.build", () => send({ action: "implementation" }));
     if (current.id === "run") button(section, "case.run", () => send({ action: "play" }));
     if (current.id === "drill") {
       const trace = document.createElement("div");
       trace.className = "source-trail";
       const owner = values[0].view.model.nodes.find((node) => node.id === "review-policy");
-      for (const text of [owner.label, owner.source.symbol + "()", owner.source.path]) {
+      for (const text of [owner.source.symbol + "()", owner.source.path]) {
         const item = document.createElement("span");
         item.textContent = text;
         trace.append(item);
@@ -188,9 +193,13 @@ function render() {
       button(section, "case.replay", () => send({ action: "play" }));
     }
     if (current.id === "iterate") {
-      button(section, "case.repair", () => send({ scene: "iterate", options }));
+      button(section, "case.repair", () => send({ action: "source" }));
     }
     if (current.id === "verify") {
+      const change = document.createElement("p");
+      change.className = "rule-change";
+      change.textContent = t("case.change");
+      section.append(change);
       const check = document.createElement("div");
       check.id = "case-check";
       check.className = "scene-check passed";
@@ -198,17 +207,18 @@ function render() {
       section.append(check);
       button(section, "case.retest", () => send({ action: "play" }));
     }
-    $("case-narrative").append(section);
+    $(index === 0 ? "case-foundation" : "case-narrative").append(section);
   });
   context = companion({
     host: $("case-context"),
     chapters,
     artifacts: values,
     send,
+    begin: () => story.go(1),
   });
   story?.destroy?.();
   story = scrollStory({
-    scenes: document.querySelectorAll(".case-scene"),
+    scenes: document.querySelectorAll("[data-case-scene]"),
     navigation: $("case-chapters"),
     onChange: stage,
   });
@@ -244,6 +254,8 @@ window.addEventListener("message", (event) => {
   }
   if (data.type === "vibelens-case-state") {
     context?.update(data.eventId);
+    document.querySelector(".case-playback").hidden =
+      !data.playing && !["run", "watch", "verify"].includes(chapters[chapter].id);
     $("case-position").value = data.progress || 0;
     $("case-play").innerHTML = data.playing
       ? '<span aria-hidden="true">Ⅱ</span>'
@@ -300,5 +312,13 @@ $("case-interact").onclick = () => setInteraction(!interacting);
 $("case-play").onclick = () => send({ action: "toggle-play" });
 $("case-position").oninput = (event) =>
   send({ action: "seek", progress: Number(event.target.value) });
+document.querySelectorAll("[data-case-lens]").forEach((button) => {
+  button.onclick = () => {
+    document
+      .querySelectorAll("[data-case-lens]")
+      .forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
+    send({ action: button.dataset.caseLens });
+  };
+});
 onLanguageChange(render);
 initialize(messages);
