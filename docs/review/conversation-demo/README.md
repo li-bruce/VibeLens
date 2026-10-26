@@ -39,3 +39,7 @@ python tools/check_source.py --format
 ```
 
 The previous [source-led demo review](../source-led-demo/README.md) retains the runtime execution and earlier presentation evidence.
+
+## Published check
+
+The [published demo](https://liblog.vip/VibeLens/demo.html?lang=zh-CN&rev=story-4) passes the same bilingual browser suite. [Deployment results](deployed.json) bind the tests and seven matching published assets to commit `1a23224` and successful [Pages run 40320853665](https://github.com/li-bruce/VibeLens/actions/runs/40320853665). [Published source and conversation](screens/deployed-source-and-conversation.png).
