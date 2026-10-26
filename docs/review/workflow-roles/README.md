@@ -32,3 +32,7 @@ The main introduction uses the same cycle: confirm, develop, investigate in Vibe
 Visual review caught [cropped 2D framing after a 3D stage](screens/before-switch-framing.png). [The retained failure](switch-framing-failure.json) shows an expanded region taller than the native minimum zoom could contain. A region first expanded in 3D had not received a compact 2D layout. The Pages adapter now prepares that layout once, waits for native layout completion and calls Fit after switching. The browser test still requires the entire displayed graph to fit in the 2D viewport.
 
 The viewer renderer, business implementation, runtime protocol and captured events remain unchanged. This is a presentation update using the existing real execution artifacts; it does not represent a new backend or database acceptance run. Earlier [conversation-demo receipts](../conversation-demo/README.md) remain historical evidence of the presentation that this update corrects.
+
+## Published check
+
+The [product introduction](https://liblog.vip/VibeLens/index.html?lang=zh-CN&rev=story-5#workflow) and [demo](https://liblog.vip/VibeLens/demo.html?lang=zh-CN&rev=story-5) pass their complete bilingual browser suites at the public URL. [Deployment results](deployed.json) retain successful [Pages run 40324917368](https://github.com/li-bruce/VibeLens/actions/runs/40324917368), commit `a3d3cca`, 15 matching published assets and both test reports. [Published investigation view](screens/deployed-inspection.png).
