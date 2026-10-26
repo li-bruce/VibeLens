@@ -13,7 +13,7 @@ export const messages = {
   "case.confirm": ["Confirm the flow", "确认业务图"],
   "case.states": ["See the states", "查看状态机"],
   "case.run": ["Replay the operation", "回放这次操作"],
-  "case.drill": ["Follow the values", "沿参数下钻"],
+  "case.drill": ["Open function source", "查看函数源码"],
   "case.save": ["Save my view", "保存观察视图"],
   "case.saved": ["View saved", "观察视图已保存"],
   "case.viewName": ["My approval path", "我的审核链路"],
@@ -36,13 +36,16 @@ export const messages = {
   "case.paused": ["Play", "播放"],
   "case.pause": ["Pause", "暂停"],
   "case.position": ["Playback", "回放进度"],
-  "case.check.fail": ["Old preview · new image published", "审核旧图，却发布了新图"],
+  "case.check.fail": [
+    "Only the role was checked. The opened image was ignored.",
+    "这里只检查了角色，遗漏了审核对象的校验。",
+  ],
   "case.check.pass": [
     "Old preview rejected · latest image approved",
     "旧审核已拦截，重新审核后发布",
   ],
-  "case.reviewed": ["Reviewed version", "已查看版本"],
-  "case.current": ["Current version", "当前版本"],
+  "case.reviewed": ["Opened image", "已查看图片"],
+  "case.current": ["Current image", "当前图片"],
   "case.verdict": ["Result", "判定"],
   "case.compare": ["Add the missing comparison", "补上版本比较"],
   "case.end": ["Bring clarity to your next build.", "下一次开发，从看清逻辑开始。"],
@@ -78,10 +81,10 @@ export const chapters = [
   {
     id: "drill",
     label: ["Inspect", "下钻"],
-    title: ["Two values reveal the fault.", "两个版本号，找到问题。"],
+    title: ["Trace the decision to its source.", "沿着运行，找到出错的代码。"],
     body: [
-      "The reviewer opened v1. The program published v2. Expand the approval rule.",
-      "看过的是第 1 版，发布的却是第 2 版。沿审核节点打开判定与参数。",
+      "An unseen image was published. Follow the approval rule into approval_policy().",
+      "程序发布了未确认的图片。沿审核节点下钻，查看 approval_policy() 的判断条件。",
     ],
   },
   {

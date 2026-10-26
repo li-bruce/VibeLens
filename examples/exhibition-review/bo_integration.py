@@ -16,6 +16,7 @@ class BOObservation:
         self.errors, self.last_event = [], None
         self.attempt = "idle"
         self.parent = None
+        self.bo_flow_facts = {"upload": {}, "review": {}, "publish": {}}
 
         def receive(value, kind):
             try:
@@ -106,14 +107,32 @@ class BOObservation:
             "reviewed_version": result.get("reviewed_version", 0),
             "published_version": public["published_version"] or 0,
         }
+        # A workflow transfer needs the same image identity on both sides.
+        # Mere proximity in the request log is not evidence of a transfer.
+        source, identity = {
+            "review": ("upload", result.get("reviewed_version")),
+            "publish": ("review", result.get("reviewed_version")),
+            "exhibit": ("publish", result.get("published_version")),
+        }.get(node, (None, None))
+        predecessor = self.bo_flow_facts.get(source, {}).get(identity)
         event = self.probe.record(
             node,
             "return",
             lambda: {"outputs": result},
             call_id=self.parent,
             revision=revision,
+            depends=[{"event": predecessor, "type": "control"}] if predecessor else [],
             **{k: v for k, v in self.context().items() if k != "parent_call_id"},
         )
+        identity = result.get(
+            {
+                "upload": "image_version",
+                "review": "reviewed_version",
+                "publish": "published_version",
+            }.get(node)
+        )
+        if node in self.bo_flow_facts and identity:
+            self.bo_flow_facts[node][identity] = event
         self.probe.snapshot("artwork:1", row["status"], context, revision, event)
         self.probe.record(
             "api." + node,

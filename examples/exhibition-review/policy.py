@@ -1,4 +1,4 @@
-"""Review policy after the repair. The exporter retains the faulty v1 separately."""
+"""Authorization for publishing an image."""
 
 
 def approval_policy(actor, current_version, reviewed_version):

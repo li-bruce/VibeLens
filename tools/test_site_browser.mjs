@@ -40,6 +40,13 @@ try {
     await page.locator('#workflow').screenshot({path:path.join(output,language+'-foundation.png')});
     assert.ok(await page.locator('.scroll-scene').count() >= 6);
     checks.push(language+': native keyboard scrolling and progressive product sections');
+    assert.equal(await page.locator('[data-depth-view]').count(),4);
+    for (const level of ['business','state','function','source']) {
+      await page.locator('#depth-'+level).scrollIntoViewIfNeeded();
+      await page.waitForFunction((level)=>document.querySelector('#explore').dataset.depth===level && document.querySelector('#tab-'+level).getAttribute('aria-selected')==='true', level);
+    }
+    await page.locator('#explore .depth-visual').screenshot({path:path.join(output,language+'-scroll-depth.png')});
+    checks.push(language+': four scroll-driven depths share one sticky graph');
     await page.locator('#viewer-tour').scrollIntoViewIfNeeded();
     await page.click('#tour-next');
     assert.equal(await page.locator('#tour-play').getAttribute('aria-pressed'), 'false');

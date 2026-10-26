@@ -1,6 +1,7 @@
 /** Keep the published story honest when its source or exported evidence changes. */
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {transferEdges} from "../skills/vibelens/assets/stategraph-viewer/recording.js";
 const base = new URL("../docs/site/case-data/", import.meta.url);
 const artifacts = [1, 2].map((version) =>
   JSON.parse(fs.readFileSync(new URL(`v${version}.json`, base))),
@@ -43,6 +44,14 @@ for (const artifact of artifacts) {
   assert.equal(result.outputs.verdict, artifact.version === 1 ? "allowed" : "stale_review");
   assert.equal(artifact.business.passed, artifact.version === 2);
   assert.equal(artifact.provenance.teaching_defect, artifact.version === 1);
+  const all = new Map(artifact.view.model.nodes.map(node=>[node.id,node]));
+  const workflow = artifact.view.model.edges.filter(edge=>['upload:review:flow','review:publish:flow','publish:exhibit:flow'].includes(edge.id)).map(edge=>({...edge,members:[edge]}));
+  for (const edge of workflow) {
+    const transfer = artifact.recording.events.find(event=>event.node===edge.to && event.depends.some(dependency=>dependency.type==='control' && artifact.recording.events.some(prior=>prior.id===dependency.event && prior.node===edge.from)));
+    assert.ok(transfer, 'Missing witnessed workflow transfer: '+edge.id);
+    assert.ok(transferEdges(transfer, artifact.recording.events,workflow,all).includes(edge.id));
+    assert.deepEqual(transferEdges({...transfer,depends:[]},artifact.recording.events,workflow,all),[], 'Declared workflow alone must not animate');
+  }
 }
 assert.notEqual(artifacts[0].view.manifest.build_id, artifacts[1].view.manifest.build_id);
 assert.deepEqual(

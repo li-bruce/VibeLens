@@ -1,6 +1,6 @@
 /** One runtime fact may have several visible representations, but one change row. */
 import assert from "node:assert/strict";
-import { boStepDetail } from "../skills/vibelens/assets/stategraph-viewer/replay-steps.js";
+import { boStepDetail, boStepPlan } from "../skills/vibelens/assets/stategraph-viewer/replay-steps.js";
 
 const node = { id: "task", label: "Repair ticket", kind: "action" };
 const alias = { id: "shared-task", label: "Repair ticket", referenceOf: "task" };
@@ -94,4 +94,16 @@ assert.deepEqual(
   repeated.rows.map((r) => r.event),
   ["call:1", "call:2"],
 );
-console.log("Replay owner identity checks passed");
+const nested = {id:'helper',label:'Helper',kind:'function',parent:'task'};
+const foldedRecording = structuredClone(calls);
+const foldedAll = new Map([...all,[nested.id,nested]]);
+const foldedItems = [
+  {id:'start',kind:'start'},
+  {id:'parent:enter',kind:'probe',node:'task',phase:'enter',inputs:{},outputs:{}},
+  {id:'helper:enter',kind:'probe',node:'helper',phase:'enter',inputs:{},outputs:{}},
+  {id:'helper:return',kind:'probe',node:'helper',phase:'return',inputs:{},outputs:{}},
+];
+assert.deepEqual(boStepPlan(foldedRecording,foldedItems,foldedAll,visible),[0,1], 'A collapsed business view omits unchanging internal calls');
+assert.deepEqual(boStepPlan(foldedRecording,foldedItems,foldedAll,[...visible,{id:nested.id,node:nested,type:'function'}]),[0,1,2,3], 'Opening the function restores its actual calls');
+assert.deepEqual(boStepPlan(foldedRecording,foldedItems,foldedAll,visible,{mode:'events'}),[0,1,2,3], 'Raw replay keeps every recorded event');
+console.log("Replay owner identity and hierarchy grain checks passed");

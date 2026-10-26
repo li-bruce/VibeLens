@@ -1,5 +1,5 @@
 /** Stage the real viewer through its public UI controls and original recording. */
-import { focusIds, focusTypes, focusRelations } from "./case-focus.mjs?rev=story-2";
+import { focusIds, focusTypes, focusRelations } from "./case-focus.mjs?rev=story-3";
 
 export function scenePlayer({ artifact, setDesign, locale, post }) {
   const $ = (id) => document.getElementById(id);
@@ -118,10 +118,19 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       String(timeline(artifact.recording).findIndex((event) => event.id === result.id)),
     );
   }
+  async function showSource(ticket) {
+    document.body.dataset.caseSource = "true";
+    if (nativeSelect("review-policy")) $("source").click();
+    await until(() => $("source-code").dataset.location && !$("source-code").hidden, ticket);
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    fit();
+  }
   async function play(ticket, fromStart = true) {
     if (!(await recording(ticket))) return;
     control("replay-grain", "view");
-    control("replay-speed", "300");
+    // A transfer takes 650ms in the native renderer. Let it finish before the
+    // next step replaces it, so a viewer can follow the complete edge path.
+    control("replay-speed", "900");
     if (fromStart) {
       const range = $("replay-range");
       range.value = 0;
@@ -141,6 +150,10 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     if (message.mode && (window.graphDebug.layers.enabled ? "3d" : "2d") !== message.mode)
       $("layered-toggle").click();
     if (!message.scene && !message.action) return;
+    if (message.action === "source") {
+      await showSource(ticket);
+      return;
+    }
     if (message.action === "toggle-play") {
       $("replay-play").click();
       return;
@@ -180,6 +193,8 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       return;
     }
     setDesign(current === "foundation");
+    document.body.dataset.caseSource = "false";
+    $("close-detail").click();
     $("replay-live").click();
     if (current === "foundation" || current === "run") {
       control("analysis-view", "business");
@@ -198,6 +213,7 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     } else if (["drill", "watch"].includes(current)) {
       await focus(message.options || { effects: current === "watch" }, ticket);
       await mismatch(ticket);
+      if (current === "drill") await showSource(ticket);
     } else {
       const saved = findSaved();
       if (saved) control("analysis-view", saved.value);
@@ -205,8 +221,10 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
         await focus(message.options, ticket);
         save(message.name);
       }
-      if (current === "iterate") await mismatch(ticket);
-      else if (!matchMedia("(prefers-reduced-motion: reduce)").matches) await play(ticket);
+      if (current === "iterate") {
+        await mismatch(ticket);
+        await showSource(ticket);
+      } else if (!matchMedia("(prefers-reduced-motion: reduce)").matches) await play(ticket);
     }
     if (ticket === epoch) {
       fit();

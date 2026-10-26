@@ -1,11 +1,11 @@
-// Product copy shared by both pages. English and Chinese are paired by message key.
+// Bilingual product copy.
 export const extra = {
   "tour.aria": ["Viewer tour", "图分析页面演示"],
   "tour.kicker": ["Inside VibeLens", "看看 VibeLens 界面"],
-  "tour.title": ["Your program,\nwithin reach.", "程序内部，\n就在眼前。"],
+  "tour.title": ["Record the run.\nReplay the change.", "看见流转，\n回到出错的一步。"],
   "tour.body": [
-    "Move, expand, annotate and replay the same graph in 2D or 3D.",
-    "在二维或三维中移动、展开、批注与回放。",
+    "Record a path, inspect a change and keep your own view.",
+    "录下关键链路，回看状态变化，保留自己的观察视图。",
   ],
   "tour.illustration": ["Illustrated tour", "界面示意演示"],
   "tour.graph": [
@@ -187,9 +187,27 @@ export const extra = {
     "体验下钻、自定义视图与迭代复测。",
   ],
   "demoLink.button": ["Explore the demo ↗", "进入交互演示 ↗"],
+  "depth.business.title": ["Business comes first.", "先看业务全貌。"],
+  "depth.business.body": [
+    "Start with the tasks and states you agreed on.",
+    "从已经确认的任务和状态，理解程序要完成什么。",
+  ],
+  "depth.state.title": ["Understand the decision.", "再看状态与判定。"],
+  "depth.state.body": [
+    "See the states and rules behind an action.",
+    "展开一个环节，查看状态如何变化、规则如何放行。",
+  ],
+  "depth.function.title": ["Follow the values.", "沿函数与参数下钻。"],
+  "depth.function.body": [
+    "Trace the core functions, inputs and data operations.",
+    "沿关键调用，追踪输入、处理与数据写入。",
+  ],
+  "depth.source.title": ["Arrive at the source.", "最后，落到具体源码。"],
+  "depth.source.body": [
+    "Open the local implementation when you need the detail.",
+    "定位到对应函数和参数，核对实际的实现。",
+  ],
 };
-
-// Remaining translated HTML defaults.
 export const chinese = {
   "skip": "跳转到正文",
   "navigation": "主导航",

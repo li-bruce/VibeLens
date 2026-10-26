@@ -32,9 +32,9 @@ def prepare(root, version):
     shutil.copytree(HERE / "review", root / "review")
     if version == 1:
         (root / "policy.py").write_text(
-            '"""Deliberately faulty first iteration: the opened version is ignored."""\n\n'
+            '"""Authorization for publishing an image."""\n\n'
             "def approval_policy(actor, current_version, reviewed_version):\n"
-            '    """Allow reviewers; this first version misses the freshness check."""\n'
+            '    """Decide whether the opened image can be published."""\n'
             '    return "allowed" if actor == "reviewer" else "forbidden"\n',
             encoding="utf-8",
         )

@@ -39,3 +39,54 @@ body[data-case-compact="true"] #node-details {
   max-height: 75%;
   font-size: 11px;
 }
+/* Source inspection stays in the real viewer. Resize its canvas beside the
+   on-demand file panel instead of covering the graph with a floating window. */
+body[data-case-compact="true"][data-case-source="true"] #viewport {
+  width: 55%;
+  flex: 0 0 55%;
+}
+body[data-case-compact="true"][data-case-source="true"] #node-details {
+  position: fixed !important;
+  left: 55% !important;
+  top: 0 !important;
+  width: 45%;
+  height: 100%;
+  max-height: none;
+  border: 0;
+  border-left: 1px solid #e0e7f0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 20px 16px;
+  background: #fff;
+}
+body[data-case-compact="true"][data-case-source="true"] #detail-rows {
+  display: none;
+}
+body[data-case-compact="true"][data-case-source="true"] #source-code {
+  font-size: 12px;
+  line-height: 2;
+  max-height: calc(100% - 55px);
+  margin-top: 25px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 550px) {
+  body[data-case-compact="true"][data-case-source="true"] #viewport {
+    width: 100%;
+    flex-basis: 100%;
+    height: 50% !important;
+  }
+  body[data-case-compact="true"][data-case-source="true"] #node-details {
+    left: 0 !important;
+    top: 50% !important;
+    width: 100%;
+    height: 50%;
+    padding: 10px;
+    border-left: 0;
+    border-top: 1px solid #e0e7f0;
+  }
+  body[data-case-compact="true"][data-case-source="true"] #source-code {
+    font-size: 10px;
+    margin-top: 8px;
+  }
+}

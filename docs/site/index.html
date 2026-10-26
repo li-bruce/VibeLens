@@ -9,9 +9,10 @@
     />
     <title>VibeLens — Understand what you build</title>
     <link rel="stylesheet" href="site.css?rev=0.8.1" />
-    <link rel="stylesheet" href="scroll-story.css?rev=story-2" />
+    <link rel="stylesheet" href="scroll-story.css?rev=story-3" />
+    <link rel="stylesheet" href="product-story.css?rev=story-3" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <script type="module" src="site.js?rev=story-2"></script>
+    <script type="module" src="site.js?rev=story-3"></script>
   </head>
   <body class="product-story">
     <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -31,6 +32,7 @@
         </button>
       </nav>
     </header>
+    <div class="product-progress" aria-hidden="true"><i></i></div>
     <main id="main">
       <section class="wrap hero">
         <div class="hero-copy">
@@ -119,6 +121,24 @@
             development.
           </p>
         </div>
+        <svg
+          class="workflow-schematic"
+          viewBox="0 0 1000 150"
+          role="img"
+          aria-label="Confirm a connected business flow"
+        >
+          <path d="M220 65H475M525 65H780" fill="none" stroke="#9eb4ed" stroke-width="2" />
+          <g fill="#eef3ff" stroke="#315eef" stroke-width="2">
+            <circle cx="195" cy="65" r="25" />
+            <circle cx="500" cy="65" r="25" />
+            <circle cx="805" cy="65" r="25" />
+          </g>
+          <g fill="#536b91" text-anchor="middle" font-size="16">
+            <text x="195" y="125" data-i18n="node.request">Request</text>
+            <text x="500" y="125" data-i18n="node.process">Process</text>
+            <text x="805" y="125" data-i18n="node.result">Result</text>
+          </g>
+        </svg>
         <ol class="workflow-steps">
           <li>
             <span class="step-index">01</span>
@@ -139,182 +159,167 @@
           </li>
         </ol>
       </section>
-      <section class="explore section-space" id="explore">
-        <div class="wrap">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow" data-i18n="explore.kicker">Choose your level of detail</p>
-              <h2 data-i18n="explore.title">Start with the flow.<br />Go deeper.</h2>
-            </div>
-            <p data-i18n="explore.body">
-              Expand the part that matters. Keep its rules, values and source in view.
-            </p>
+      <section class="product-depth" id="explore">
+        <div class="wrap section-heading depth-heading">
+          <div>
+            <p class="eyebrow" data-i18n="explore.kicker">Choose your level of detail</p>
+            <h2 data-i18n="explore.title">Start with the flow.<br />Go deeper.</h2>
           </div>
-          <div class="explorer">
-            <div
-              class="view-tabs"
-              role="tablist"
-              aria-label="Graph views"
-              data-i18n-aria="explore.tabs"
-            >
-              <button
-                role="tab"
-                id="tab-business"
-                aria-controls="view-panel"
-                aria-selected="true"
-                tabindex="0"
-                data-view="business"
-                data-i18n="view.business"
-              >
-                Business</button
-              ><button
-                role="tab"
-                id="tab-state"
-                aria-controls="view-panel"
-                aria-selected="false"
-                tabindex="-1"
-                data-view="state"
-                data-i18n="view.state"
-              >
-                States</button
-              ><button
-                role="tab"
-                id="tab-decision"
-                aria-controls="view-panel"
-                aria-selected="false"
-                tabindex="-1"
-                data-view="decision"
-                data-i18n="view.decision"
-              >
-                Decisions</button
-              ><button
-                role="tab"
-                id="tab-function"
-                aria-controls="view-panel"
-                aria-selected="false"
-                tabindex="-1"
-                data-view="function"
-                data-i18n="view.function"
-              >
-                Functions & values</button
-              ><button
-                role="tab"
-                id="tab-data"
-                aria-controls="view-panel"
-                aria-selected="false"
-                tabindex="-1"
-                data-view="data"
-                data-i18n="view.data"
-              >
-                Data</button
-              ><button
-                role="tab"
-                id="tab-source"
-                aria-controls="view-panel"
-                aria-selected="false"
-                tabindex="-1"
-                data-view="source"
-                data-i18n="view.source"
-              >
-                Source</button
-              ><button
-                role="tab"
-                id="tab-mixed"
-                aria-controls="view-panel"
-                aria-selected="false"
-                tabindex="-1"
-                data-view="mixed"
-                data-i18n="view.mixed"
-              >
-                Your own view
-              </button>
-            </div>
-            <div
-              class="graph-panel"
-              id="view-panel"
-              role="tabpanel"
-              tabindex="0"
-              aria-labelledby="tab-business"
-            >
-              <div class="graph-surface">
-                <span class="surface-caption" data-i18n="explore.caption">CONNECTED VIEWS</span>
-                <div id="concept-graph"></div>
-              </div>
-              <div class="level-explanation">
-                <span class="level-number" id="level-number">01 / 07</span>
-                <h3 id="level-title"></h3>
-                <p id="level-body"></p>
-                <fieldset id="mix-filters" hidden>
-                  <legend data-i18n="mix.legend">Include in this view</legend>
-                  <label
-                    ><input type="checkbox" value="state" checked /><span data-i18n="view.state"
-                      >state</span
-                    ></label
-                  ><label
-                    ><input type="checkbox" value="decision" checked /><span
-                      data-i18n="view.decision"
-                      >decision</span
-                    ></label
-                  ><label
-                    ><input type="checkbox" value="function" checked /><span
-                      data-i18n="view.function"
-                      >function</span
-                    ></label
-                  >
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <p class="preset-note" data-i18n="explore.presets">
-            Choose a preset or save your own combination.
+          <p data-i18n="explore.body">
+            Expand the part that matters. Keep its rules, values and source in view.
           </p>
         </div>
-      </section>
-      <section class="record-section section-space">
-        <div class="wrap">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow" data-i18n="record.kicker">See an operation unfold</p>
-              <h2 data-i18n="record.title">See it run.<br />Keep the moment.</h2>
+        <div class="wrap depth-story">
+          <div class="depth-scenes">
+            <section class="depth-stage" data-depth-view="business" id="depth-business">
+              <span class="depth-index" aria-hidden="true">01</span>
+              <h3 data-i18n="depth.business.title">Business comes first.</h3>
+              <p data-i18n="depth.business.body">Start with the tasks and states you agreed on.</p>
+            </section>
+            <section class="depth-stage" data-depth-view="state" id="depth-state">
+              <span class="depth-index" aria-hidden="true">02</span>
+              <h3 data-i18n="depth.state.title">Understand the decision.</h3>
+              <p data-i18n="depth.state.body">See the states and rules behind an action.</p>
+            </section>
+            <section class="depth-stage" data-depth-view="function" id="depth-function">
+              <span class="depth-index" aria-hidden="true">03</span>
+              <h3 data-i18n="depth.function.title">Follow the values.</h3>
+              <p data-i18n="depth.function.body">
+                Trace the core functions, inputs and data operations.
+              </p>
+            </section>
+            <section class="depth-stage" data-depth-view="source" id="depth-source">
+              <span class="depth-index" aria-hidden="true">04</span>
+              <h3 data-i18n="depth.source.title">Arrive at the source.</h3>
+              <p data-i18n="depth.source.body">
+                Open the local implementation when you need the detail.
+              </p>
+            </section>
+          </div>
+          <div class="depth-visual">
+            <div class="explorer">
+              <div
+                class="view-tabs"
+                role="tablist"
+                aria-label="Graph views"
+                data-i18n-aria="explore.tabs"
+              >
+                <button
+                  role="tab"
+                  id="tab-business"
+                  aria-controls="view-panel"
+                  aria-selected="true"
+                  tabindex="0"
+                  data-view="business"
+                  data-i18n="view.business"
+                >
+                  Business</button
+                ><button
+                  role="tab"
+                  id="tab-state"
+                  aria-controls="view-panel"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-view="state"
+                  data-i18n="view.state"
+                >
+                  States</button
+                ><button
+                  role="tab"
+                  id="tab-decision"
+                  aria-controls="view-panel"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-view="decision"
+                  data-i18n="view.decision"
+                >
+                  Decisions</button
+                ><button
+                  role="tab"
+                  id="tab-function"
+                  aria-controls="view-panel"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-view="function"
+                  data-i18n="view.function"
+                >
+                  Functions & values</button
+                ><button
+                  role="tab"
+                  id="tab-data"
+                  aria-controls="view-panel"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-view="data"
+                  data-i18n="view.data"
+                >
+                  Data</button
+                ><button
+                  role="tab"
+                  id="tab-source"
+                  aria-controls="view-panel"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-view="source"
+                  data-i18n="view.source"
+                >
+                  Source</button
+                ><button
+                  role="tab"
+                  id="tab-mixed"
+                  aria-controls="view-panel"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-view="mixed"
+                  data-i18n="view.mixed"
+                >
+                  Your own view
+                </button>
+              </div>
+              <div
+                class="graph-panel"
+                id="view-panel"
+                role="tabpanel"
+                tabindex="0"
+                aria-labelledby="tab-business"
+              >
+                <div class="graph-surface">
+                  <span class="surface-caption" data-i18n="explore.caption">CONNECTED VIEWS</span>
+                  <div id="concept-graph"></div>
+                </div>
+                <div class="level-explanation">
+                  <span class="level-number" id="level-number">01 / 07</span>
+                  <h3 id="level-title"></h3>
+                  <p id="level-body"></p>
+                  <fieldset id="mix-filters" hidden>
+                    <legend data-i18n="mix.legend">Include in this view</legend>
+                    <label
+                      ><input type="checkbox" value="state" checked /><span data-i18n="view.state"
+                        >state</span
+                      ></label
+                    ><label
+                      ><input type="checkbox" value="decision" checked /><span
+                        data-i18n="view.decision"
+                        >decision</span
+                      ></label
+                    ><label
+                      ><input type="checkbox" value="function" checked /><span
+                        data-i18n="view.function"
+                        >function</span
+                      ></label
+                    >
+                  </fieldset>
+                </div>
+              </div>
             </div>
-            <p data-i18n="record.body">
-              Record an operation and replay the states and values that changed.
+            <p class="preset-note" data-i18n="explore.presets">
+              Choose a preset or save your own combination.
             </p>
-          </div>
-          <div class="record-strip">
-            <span><i class="record-dot"></i><b data-i18n="record.start">Start recording</b></span
-            ><span class="strip-arrow" aria-hidden="true">→</span
-            ><span data-i18n="record.operate">Use your application</span
-            ><span class="strip-arrow" aria-hidden="true">→</span
-            ><span data-i18n="record.stop">Stop & replay</span>
-          </div>
-          <div class="record-details">
-            <div>
-              <h3 data-i18n="record.focus.title">Keep your focus</h3>
-              <p data-i18n="record.focus.body">
-                Capture a selected region and its relevant values.
-              </p>
-            </div>
-            <div>
-              <h3 data-i18n="record.values.title">Read each change</h3>
-              <p data-i18n="record.values.body">
-                See values before and after a step, the decision that was made, and the path the
-                operation followed.
-              </p>
-            </div>
-            <div>
-              <h3 data-i18n="record.keep.title">Make the graph yours</h3>
-              <p data-i18n="record.keep.body">
-                Drag groups, pin important nodes, rename labels, and add notes. Stable nodes keep
-                their layout, filters and notes as code changes. The recording list follows the
-                current version.
-              </p>
-            </div>
           </div>
         </div>
       </section>
       <section
-        class="wrap section-space viewer-tour"
+        class="wrap section-space viewer-tour record-section"
         id="viewer-tour"
         data-step="overview"
         aria-label="Viewer tour"
@@ -326,6 +331,13 @@
             <h2 data-i18n="tour.title">Your program,<br />within reach.</h2>
           </div>
           <p data-i18n="tour.body">Move, expand, annotate and replay the same graph in 2D or 3D.</p>
+        </div>
+        <div class="record-strip">
+          <span><i class="record-dot"></i><b data-i18n="record.start">Start recording</b></span
+          ><span class="strip-arrow" aria-hidden="true">→</span
+          ><span data-i18n="record.operate">Use your application</span
+          ><span class="strip-arrow" aria-hidden="true">→</span
+          ><span data-i18n="record.stop">Stop & replay</span>
         </div>
         <div class="tour-window">
           <div class="tour-top">
@@ -456,7 +468,7 @@
         </div>
       </section>
 
-      <section class="wrap section-space">
+      <section class="wrap section-space modes-section" id="modes">
         <div class="section-heading">
           <div>
             <p class="eyebrow" data-i18n="modes.kicker">Your choice at the start</p>
@@ -479,7 +491,7 @@
           </article>
         </div>
       </section>
-      <aside class="wrap demo-invitation">
+      <aside class="wrap demo-invitation" id="try-demo">
         <div>
           <p class="eyebrow" data-i18n="demoLink.kicker">Explore VibeLens</p>
           <h2 data-i18n="demoLink.title">From the first graph<br />to the next repair.</h2>
@@ -534,6 +546,6 @@
         ><a href="https://github.com/li-bruce/VibeLens/blob/main/LICENSE">MIT License</a>
       </div>
     </footer>
-    <script type="module" src="viewer-tour.mjs?rev=0.8.1"></script>
+    <script type="module" src="viewer-tour.mjs?rev=story-3"></script>
   </body>
 </html>

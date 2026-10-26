@@ -1,7 +1,7 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-2";
-import { messages, chapters } from "./case-messages.mjs?rev=story-2";
-import { scrollStory } from "./scroll-story.mjs?rev=story-2";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-3";
+import { messages, chapters } from "./case-messages.mjs?rev=story-3";
+import { scrollStory } from "./scroll-story.mjs?rev=story-3";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -56,7 +56,7 @@ function stage(index) {
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-2`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-3`;
   } else send(message);
   document.body.dataset.chapter = String(index);
 }
@@ -69,16 +69,6 @@ function button(parent, key, action, css = "scene-action") {
   node.addEventListener("click", action);
   parent.append(node);
   return node;
-}
-function mismatch(version) {
-  const artifact = values[version - 1];
-  const enter = artifact.recording.events.find(
-    (event) =>
-      event.node === "review-policy" &&
-      event.inputs.reviewed_version === 1 &&
-      event.inputs.current_version === 2,
-  );
-  return enter.inputs;
 }
 function render() {
   $("case-chapters").replaceChildren();
@@ -112,28 +102,20 @@ function render() {
     }
     if (index === 1) button(section, "case.run", () => send({ action: "play" }));
     if (index === 2) {
-      const facts = document.createElement("div");
-      facts.className = "scene-values";
-      const inputs = mismatch(1);
-      for (const [key, value] of [
-        ["case.reviewed", inputs.reviewed_version],
-        ["case.current", inputs.current_version],
-      ]) {
-        const item = document.createElement("div");
-        item.textContent = t(key);
-        const strong = document.createElement("strong");
-        strong.textContent = value;
-        item.append(strong);
-        facts.append(item);
+      const trace = document.createElement("div");
+      trace.className = "source-trail";
+      const owner = values[0].view.model.nodes.find((node) => node.id === "review-policy");
+      for (const text of [owner.label, owner.source.symbol + "()", owner.source.path]) {
+        const item = document.createElement("span");
+        item.textContent = text;
+        trace.append(item);
       }
-      section.append(facts);
+      section.append(trace);
       const check = document.createElement("div");
       check.className = "scene-check";
       check.textContent = t("case.check.fail");
       section.append(check);
-      button(section, "case.drill", () =>
-        send({ scene: "drill", options: { versions: true, effects: false, states: false } }),
-      );
+      button(section, "case.drill", () => send({ action: "source" }));
     }
     if (index === 3) {
       const fieldset = document.createElement("fieldset");
@@ -180,10 +162,6 @@ function render() {
       button(section, "case.replay", () => send({ action: "play" }));
     }
     if (index === 4) {
-      const code = document.createElement("pre");
-      code.className = "scene-code";
-      code.textContent = "reviewed_version\n       == current_version";
-      section.append(code);
       button(section, "case.repair", () => send({ scene: "iterate", options }));
     }
     if (index === 5) {

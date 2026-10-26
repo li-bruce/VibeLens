@@ -90,7 +90,7 @@ artifact.recording.context.model = mergeGraph(
   artifact.codeFocus.publish,
 );
 await import("./viewer/viewer.js");
-const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-2");
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-3");
 const runtimeView = structuredClone(view);
 const designView = {
   ...structuredClone(artifact.recording.context),
@@ -124,7 +124,7 @@ window.addEventListener("message", (event) => {
 });
 const style = document.createElement("link");
 style.rel = "stylesheet";
-style.href = new URL("./case-canvas.css?rev=story-2", import.meta.url).href;
+style.href = new URL("./case-canvas.css?rev=story-3", import.meta.url).href;
 document.head.append(style);
 document.body.dataset.caseCompact = "true";
 // Keep the captured provenance visible; recording and project-write controls are
