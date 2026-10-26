@@ -28,7 +28,7 @@ The product introduction and recorded-project demo now use native vertical scrol
 | Product introduction | Seven connected view previews, translated captions, interactive tour and separate practice recording |
 | Source checks | Syntax, lint and formatting pass; see source-quality.json for scope |
 | Captured artifacts | Source freshness, actual version mismatch, red/green outcomes, transformations and stable IDs pass |
-| Viewer integrity | 65 canonical assets retain their hashes; the Pages HTML alone changes asset paths and entrypoint |
+| Viewer integrity | 65 canonical source hashes recorded; 64 assets copied byte for byte; the adapted Pages HTML changes asset paths and entrypoint |
 
 Receipts: [demo browser](demo-browser.json), [product browser](product-browser.json), [source checks](source-quality.json), [viewer hashes](viewer-asset-proof.json). Screenshots show the tested local build; deployed verification is recorded separately after publication.
 
@@ -47,6 +47,8 @@ Preserved diagnostic receipts are in [failures](failures/).
 | Preference assertions ran before the native save completed | Wait for the saved preference document, then reload and compare the same view ID and node set. |
 | The second locale imported an unrelated legacy view | Give the Pages demonstration an initialized, locale-specific preference document. Both languages now retain only their own saved views. |
 | A collapsed database group showed no internal relation yet | Expand the native group before asserting its relation structure. No source or captured edge is fabricated. |
+| The compact change-panel selector did not match the canonical element | Hide step-changes in compact mode; Full tools retains the native details. |
+| A return event omitted its input fields | Resolve inputs from the enter event of the same call ID, then show the return verdict. The exact 1, 2, allowed display is asserted. |
 
 ## Files
 

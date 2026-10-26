@@ -1,5 +1,5 @@
 /** Stage the real viewer through its public UI controls and original recording. */
-import { focusIds, focusTypes, focusRelations } from "./case-focus.mjs?rev=story-1";
+import { focusIds, focusTypes, focusRelations } from "./case-focus.mjs?rev=story-2";
 
 export function scenePlayer({ artifact, setDesign, locale, post }) {
   const $ = (id) => document.getElementById(id);
@@ -45,11 +45,10 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     return locale === "zh-CN" ? "我的审核链路" : "My approval path";
   }
   function findSaved() {
-    return [...$("analysis-view").options].find(
-      (option) =>
-        option.value.startsWith("custom-") &&
-        !["Version check", "版本检查"].includes(option.textContent),
-    );
+    // Native saving appends the newly created or updated view to this list.
+    return [...$("analysis-view").options]
+      .filter((option) => option.value.startsWith("custom-"))
+      .at(-1);
   }
   async function focus(options = {}, ticket) {
     $("replay-live").click();
@@ -218,13 +217,18 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
   // animation clock. The parent uses these for its slim transport controls.
   const timer = setInterval(() => {
     const view = window.graphDebug?.view,
-      event = view?.replay?.event;
+      event = view?.replay?.event,
+      entry = event?.call_id
+        ? artifact.recording.events.find(
+            (item) => item.call_id === event.call_id && item.phase === "enter",
+          )
+        : null;
     const state = {
       type: "vibelens-case-state",
       scene: current,
       node: event?.node,
       phase: event?.phase,
-      inputs: event?.inputs || {},
+      inputs: { ...entry?.inputs, ...event?.inputs },
       outputs: event?.outputs || {},
       replayIndex: view?.replay?.index,
       progress:

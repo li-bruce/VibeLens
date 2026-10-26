@@ -1,7 +1,7 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-1";
-import { messages, chapters } from "./case-messages.mjs?rev=story-1";
-import { scrollStory } from "./scroll-story.mjs?rev=story-1";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-2";
+import { messages, chapters } from "./case-messages.mjs?rev=story-2";
+import { scrollStory } from "./scroll-story.mjs?rev=story-2";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -56,7 +56,7 @@ function stage(index) {
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-1`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-2`;
   } else send(message);
   document.body.dataset.chapter = String(index);
 }

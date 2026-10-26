@@ -56,6 +56,8 @@ try {
     await child.waitForFunction(() => graphDebug.view.replay?.event?.node === "review-policy" && graphDebug.view.replay.event.phase === "return");
     assert.equal(await child.evaluate(() => graphDebug.view.replay.event.outputs.verdict), "allowed");
     await page.waitForFunction(()=>document.querySelector('#case-telemetry').textContent.includes('allowed'));
+    assert.deepEqual(await page.locator('#case-telemetry strong').allTextContents(), ['1','2','allowed']);
+    assert.equal(await child.locator('#step-changes').isVisible(), false);
     const drillIds = await child.evaluate(() => graphDebug.graph.boxes.map((box) => box.id));
     assert.ok(drillIds.length <= 8, JSON.stringify(drillIds));
     assert.ok(drillIds.includes("field:review-policy:in:reviewed_version"));
@@ -69,8 +71,11 @@ try {
     await page.locator('[data-watch="states"]').check();
     await child.waitForFunction(() => graphDebug.graph.boxes.some((box) => box.id === "state.pending"));
     const customName = language === "en" ? "Exhibition review" : "展览审核";
-    await page.fill("#watch-name", customName); await page.click("#save-watch");
+    await page.fill("#watch-name", "Alternate path"); await page.click("#save-watch");
     await page.waitForFunction(() => document.body.dataset.savedView?.startsWith("custom-"));
+    const alternateId = await page.getAttribute("body", "data-saved-view");
+    await page.fill("#watch-name", customName); await page.click("#save-watch");
+    await page.waitForFunction((previous) => document.body.dataset.savedView?.startsWith("custom-") && document.body.dataset.savedView !== previous, alternateId);
     const savedId = await page.getAttribute("body", "data-saved-view");
     await child.waitForFunction((id) => document.querySelector("#analysis-view").value === id, savedId);
     const savedNodes = await child.evaluate(() => graphDebug.graph.boxes.map((box) => box.id).sort());
