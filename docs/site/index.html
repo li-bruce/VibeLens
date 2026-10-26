@@ -9,10 +9,11 @@
     />
     <title>VibeLens — Understand what you build</title>
     <link rel="stylesheet" href="site.css?rev=0.8.1" />
+    <link rel="stylesheet" href="scroll-story.css?rev=story-1" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <script type="module" src="site.js?rev=0.8.1"></script>
+    <script type="module" src="site.js?rev=story-1"></script>
   </head>
-  <body>
+  <body class="product-story">
     <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
     <header class="wrap nav">
       <a class="brand" href="index.html" data-local-link
@@ -34,10 +35,9 @@
       <section class="wrap hero">
         <div class="hero-copy">
           <p class="eyebrow" data-i18n="hero.kicker">A graph for your next coding conversation</p>
-          <h1 data-i18n="hero.title">Understand<br />what you build.</h1>
+          <h1 data-i18n="hero.title">Know your program.<br />Shape the next iteration.</h1>
           <p class="lead" data-i18n="hero.body">
-            See how your program works, from business flows to the functions behind them. Follow
-            state changes as it runs, then return to the exact step you want to understand.
+            One state graph connects your business, code and running program.
           </p>
           <div class="actions">
             <a class="button primary" href="#install" data-i18n="hero.start">Use the Skill</a
@@ -94,31 +94,60 @@
             </text>
           </svg>
           <figcaption id="hero-caption" data-i18n="hero.caption">
-            One connected view, from intent to execution.
+            From the flow to the value that changed.
           </figcaption>
         </figure>
       </section>
       <section class="wrap problem section-rule">
-        <p class="eyebrow" data-i18n="problem.kicker">Keep the program within reach</p>
+        <p class="eyebrow" data-i18n="problem.kicker">Follow the change</p>
         <div class="problem-grid">
-          <h2 data-i18n="problem.title">The screen works.<br />What happens inside?</h2>
+          <h2 data-i18n="problem.title">Every change has a path.</h2>
           <p data-i18n="problem.body">
-            During vibe coding, each change can touch several parts of a program. VibeLens helps you
-            follow those connections: what triggered an action, which decision allowed it, and which
-            value changed.
+            Trace an action through its rules, values and source. Understand how the result took
+            shape.
           </p>
         </div>
+      </section>
+      <section class="wrap section-space" id="workflow">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow" data-i18n="workflow.kicker">Begin with the business</p>
+            <h2 data-i18n="workflow.title">Agree on the graph.<br />Then build.</h2>
+          </div>
+          <p data-i18n="workflow.body">
+            Turn the conversation into a business and state graph. Confirm the flow before
+            development.
+          </p>
+        </div>
+        <ol class="workflow-steps">
+          <li>
+            <span class="step-index">01</span>
+            <h3 data-i18n="workflow.1.title">Confirm the flow</h3>
+            <p data-i18n="workflow.1.body">
+              Clarify tasks, permissions and states in the conversation.
+            </p>
+          </li>
+          <li>
+            <span class="step-index">02</span>
+            <h3 data-i18n="workflow.2.title">Build and stay in sync</h3>
+            <p data-i18n="workflow.2.body">Keep coding. The graph follows the implementation.</p>
+          </li>
+          <li>
+            <span class="step-index">03</span>
+            <h3 data-i18n="workflow.3.title">Inspect and improve</h3>
+            <p data-i18n="workflow.3.body">Record a run, locate the issue and retest the change.</p>
+          </li>
+        </ol>
       </section>
       <section class="explore section-space" id="explore">
         <div class="wrap">
           <div class="section-heading">
             <div>
               <p class="eyebrow" data-i18n="explore.kicker">Choose your level of detail</p>
-              <h2 data-i18n="explore.title">Start with the flow.<br />Follow the detail.</h2>
+              <h2 data-i18n="explore.title">Start with the flow.<br />Go deeper.</h2>
             </div>
             <p data-i18n="explore.body">
-              Expand a node to see what supports it. Follow a connection to a decision, a value, or
-              its source. Switch views as your question changes.
+              Expand the part that matters. Keep its rules, values and source in view.
             </p>
           </div>
           <div class="explorer">
@@ -237,61 +266,19 @@
             </div>
           </div>
           <p class="preset-note" data-i18n="explore.presets">
-            Built-in views cover business flows, state machines, functions, permissions, data, and
-            waiting or failed steps. Save a custom view with the types and regions you need.
+            Choose a preset or save your own combination.
           </p>
         </div>
-      </section>
-      <section class="wrap section-space" id="workflow">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow" data-i18n="workflow.kicker">Part of your development conversation</p>
-            <h2 data-i18n="workflow.title">A graph that follows<br />your project.</h2>
-          </div>
-          <p data-i18n="workflow.body">
-            From the first sketch to your next change, keep a view of what the program is meant to
-            do and what it currently does.
-          </p>
-        </div>
-        <ol class="workflow-steps">
-          <li>
-            <span class="step-index">01</span>
-            <h3 data-i18n="workflow.1.title">Agree on the flow</h3>
-            <p data-i18n="workflow.1.body">
-              Describe your project. See its first graph in the conversation, clarify the details
-              that affect the flow, and adjust it until it matches your intent. Open the linked Web
-              view for a closer look.
-            </p>
-          </li>
-          <li>
-            <span class="step-index">02</span>
-            <h3 data-i18n="workflow.2.title">Develop and inspect</h3>
-            <p data-i18n="workflow.2.body">
-              Continue coding with your preferred tools. At the end of each iteration, explore the
-              updated graph, open a function, or add a note beside something you want to revisit.
-            </p>
-          </li>
-          <li>
-            <span class="step-index">03</span>
-            <h3 data-i18n="workflow.3.title">Review the result</h3>
-            <p data-i18n="workflow.3.body">
-              Check how well the graph covers the implementation and how the program behaves in the
-              agreed test cases. Follow a reported issue back to the affected flow and review it
-              after a fix.
-            </p>
-          </li>
-        </ol>
       </section>
       <section class="record-section section-space">
         <div class="wrap">
           <div class="section-heading">
             <div>
               <p class="eyebrow" data-i18n="record.kicker">See an operation unfold</p>
-              <h2 data-i18n="record.title">Watch it live.<br />Replay the changes.</h2>
+              <h2 data-i18n="record.title">See it run.<br />Keep the moment.</h2>
             </div>
             <p data-i18n="record.body">
-              Start a recording, use your application, and stop when you have the sequence you need.
-              Step through the captured states and values to see where the result came from.
+              Record an operation and replay the states and values that changed.
             </p>
           </div>
           <div class="record-strip">
@@ -305,8 +292,7 @@
             <div>
               <h3 data-i18n="record.focus.title">Keep your focus</h3>
               <p data-i18n="record.focus.body">
-                Record a selected region, or capture the instrumented activity and narrow the view
-                afterwards.
+                Capture a selected region and its relevant values.
               </p>
             </div>
             <div>
@@ -337,12 +323,9 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow" data-i18n="tour.kicker">Inside VibeLens</p>
-            <h2 data-i18n="tour.title">A closer look,<br />one step at a time.</h2>
+            <h2 data-i18n="tour.title">Your program,<br />within reach.</h2>
           </div>
-          <p data-i18n="tour.body">
-            Explore the same graph in 2D or 3D. Expand a flow, leave a note, and replay an operation
-            while keeping related layers in view.
-          </p>
+          <p data-i18n="tour.body">Move, expand, annotate and replay the same graph in 2D or 3D.</p>
         </div>
         <div class="tour-window">
           <div class="tour-top">
@@ -477,43 +460,35 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow" data-i18n="modes.kicker">Your choice at the start</p>
-            <h2 data-i18n="modes.title">Build from the graph.<br />Or use it to observe.</h2>
+            <h2 data-i18n="modes.title">One graph.<br />Two ways to build.</h2>
           </div>
-          <p data-i18n="modes.body">
-            Choose how the state graph fits your project. Both modes give you a connected view of
-            code and captured behavior.
-          </p>
+          <p data-i18n="modes.body">Choose the role of the graph in your project.</p>
         </div>
         <div class="modes-grid">
           <article class="mode">
             <span class="mode-label" data-i18n="modes.drive.label">DRIVE</span>
-            <h3 data-i18n="modes.drive.title">Develop around agreed states</h3>
-            <p data-i18n="modes.drive.body">
-              Use the confirmed states and transitions as the basis for development. Compare the
-              running program with that shared picture as you iterate.
-            </p>
+            <h3 data-i18n="modes.drive.title">Develop from the state graph</h3>
+            <p data-i18n="modes.drive.body">Build around confirmed states and transitions.</p>
           </article>
           <article class="mode observe">
             <span class="mode-label" data-i18n="modes.observe.label">OBSERVE</span>
-            <h3 data-i18n="modes.observe.title">Keep your development approach</h3>
+            <h3 data-i18n="modes.observe.title">Observe your existing logic</h3>
             <p data-i18n="modes.observe.body">
-              Choose your own structure and implementation. Use the graph alongside it to inspect
-              the flow, decisions, and important values.
+              Keep your architecture and follow its behavior through the graph.
             </p>
           </article>
         </div>
       </section>
       <aside class="wrap demo-invitation">
         <div>
-          <p class="eyebrow" data-i18n="demoLink.kicker">A real project, a recorded repair</p>
-          <h2 data-i18n="demoLink.title">The image nobody reviewed.</h2>
+          <p class="eyebrow" data-i18n="demoLink.kicker">Explore VibeLens</p>
+          <h2 data-i18n="demoLink.title">From the first graph<br />to the next repair.</h2>
           <p data-i18n="demoLink.body">
-            A stale approval publishes the wrong image. Follow the actual recording through eight
-            graph layers, inspect the missing check, and compare the repaired run in 2D and 3D.
+            Try progressive inspection, a saved focus view and a verified iteration.
           </p>
         </div>
         <a class="button primary" href="demo.html" data-local-link data-i18n="demoLink.button"
-          >Open interactive demo ↗</a
+          >Explore the demo ↗</a
         >
       </aside>
       <section class="install section-space" id="install">

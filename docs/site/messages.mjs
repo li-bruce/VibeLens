@@ -1,11 +1,11 @@
-// Shared page translations. English copy in HTML is also available before JavaScript loads.
+// Product copy shared by both pages. English and Chinese are paired by message key.
 export const extra = {
   "tour.aria": ["Viewer tour", "图分析页面演示"],
   "tour.kicker": ["Inside VibeLens", "看看 VibeLens 界面"],
-  "tour.title": ["A closer look,\none step at a time.", "逐层展开，\n看清每一步。"],
+  "tour.title": ["Your program,\nwithin reach.", "程序内部，\n就在眼前。"],
   "tour.body": [
-    "Explore the same graph in 2D or 3D. Expand a flow, leave a note, and replay an operation while keeping related layers in view.",
-    "在二维和三维中查看同一张图。展开流程、留下批注、回放操作，同时看清各层之间的联系。",
+    "Move, expand, annotate and replay the same graph in 2D or 3D.",
+    "在二维或三维中移动、展开、批注与回放。",
   ],
   "tour.illustration": ["Illustrated tour", "界面示意演示"],
   "tour.graph": [
@@ -116,79 +116,110 @@ export const extra = {
     "Use $vibelens for this project.\\nI want to build: [describe your project].\\nShow me the first business graph in this conversation and its Web address. Let's confirm the flow before implementation.",
     "在这个项目中使用 $vibelens。\\n我想开发：[描述你的项目]。\\n请先在对话中展示业务图，并给我 Web 查看地址。确认流程后再开始实现。",
   ],
+  "hero.title": ["Know your program.\nShape the next iteration.", "看清程序，\n掌握每次迭代。"],
+  "hero.body": [
+    "One state graph connects your business, code and running program.",
+    "用一张状态网，连接业务、代码与运行过程。",
+  ],
+  "hero.caption": ["From the flow to the value that changed.", "从业务流程，深入到变化的参数。"],
+  "problem.kicker": ["Follow the change", "看清改动"],
+  "problem.title": ["Every change has a path.", "每次改动，\n都有路径可循。"],
+  "problem.body": [
+    "Trace an action through its rules, values and source. Understand how the result took shape.",
+    "沿操作追踪规则、参数与源码，理解结果如何产生。",
+  ],
+  "workflow.kicker": ["Begin with the business", "先把业务说清楚"],
+  "workflow.title": ["Agree on the graph.\nThen build.", "先把业务图，\n一起定清楚。"],
+  "workflow.body": [
+    "Turn the conversation into a business and state graph. Confirm the flow before development.",
+    "将需求变成业务与状态图，确认后进入开发。",
+  ],
+  "workflow.1.title": ["Confirm the flow", "看图确认"],
+  "workflow.1.body": [
+    "Clarify tasks, permissions and states in the conversation.",
+    "梳理任务、权限与状态，在对话中调整。",
+  ],
+  "workflow.2.title": ["Build and stay in sync", "开发同步"],
+  "workflow.2.body": [
+    "Keep coding. The graph follows the implementation.",
+    "继续开发，图随代码更新。",
+  ],
+  "workflow.3.title": ["Inspect and improve", "验证改进"],
+  "workflow.3.body": [
+    "Record a run, locate the issue and retest the change.",
+    "记录运行，定位问题，复测本轮修改。",
+  ],
+  "explore.title": ["Start with the flow.\nGo deeper.", "从流程开始，\n逐层看清。"],
+  "explore.body": [
+    "Expand the part that matters. Keep its rules, values and source in view.",
+    "展开关心的环节，把规则、参数与源码放在一起看。",
+  ],
+  "explore.presets": [
+    "Choose a preset or save your own combination.",
+    "选择预设，或保存自己的观察组合。",
+  ],
+  "record.title": ["See it run.\nKeep the moment.", "看见运行，\n留住关键一刻。"],
+  "record.body": [
+    "Record an operation and replay the states and values that changed.",
+    "录下一次操作，回看状态与数值的变化。",
+  ],
+  "record.focus.body": [
+    "Capture a selected region and its relevant values.",
+    "聚焦局部，保留相关参数。",
+  ],
+  "record.replay.body": ["Step through the changes at your own pace.", "按步骤回看每次变化。"],
+  "modes.title": ["One graph.\nTwo ways to build.", "一张状态网，\n两种开发方式。"],
+  "modes.body": ["Choose the role of the graph in your project.", "选择状态网在项目中的角色。"],
+  "modes.drive.title": ["Develop from the state graph", "从状态网驱动开发"],
+  "modes.drive.body": [
+    "Build around confirmed states and transitions.",
+    "围绕已确认的状态与转换实现程序。",
+  ],
+  "modes.observe.title": ["Observe your existing logic", "观察自己的业务逻辑"],
+  "modes.observe.body": [
+    "Keep your architecture and follow its behavior through the graph.",
+    "沿用自己的架构，通过图观察内部流转。",
+  ],
+  "demoLink.kicker": ["Explore VibeLens", "亲自体验"],
+  "demoLink.title": ["From the first graph\nto the next repair.", "从业务定图，\n到一次问题修复。"],
+  "demoLink.body": [
+    "Try progressive inspection, a saved focus view and a verified iteration.",
+    "体验下钻、自定义视图与迭代复测。",
+  ],
+  "demoLink.button": ["Explore the demo ↗", "进入交互演示 ↗"],
 };
+
+// Remaining translated HTML defaults.
 export const chinese = {
   "skip": "跳转到正文",
   "navigation": "主导航",
   "nav.explore": "功能",
   "nav.demo": "交互演示",
   "hero.kicker": "从一次开发对话开始",
-  "hero.title": "看懂你正在\\n开发的程序。",
-  "hero.body":
-    "从业务流程逐层看到背后的函数，观察程序运行中的状态变化，也可以回到某一步，弄清结果是怎样产生的。",
   "hero.start": "开始使用",
   "hero.demo": "体验交互演示 ↗",
-  "hero.caption": "在一张图中连接业务意图与运行过程。",
   "diagram.request": "请求",
   "diagram.flow": "业务流程",
   "diagram.state": "状态",
   "diagram.rule": "判断条件",
   "diagram.function": "函数",
   "diagram.source": "</> 源码",
-  "problem.kicker": "理解每次修改的影响",
-  "problem.title": "页面能用了，\\n内部怎样运行？",
-  "problem.body":
-    "在 vibe coding 过程中，一次修改可能影响程序的多个部分。VibeLens 帮你沿着这些联系查看：谁触发了操作、什么条件允许执行、哪些数值发生了变化。",
   "explore.kicker": "选择需要的细节",
-  "explore.title": "先看流程，\\n再沿着关系深入。",
-  "explore.body":
-    "展开一个节点，查看支撑它的内部内容。沿着连接找到判断条件、参数和源码，按当前的问题切换观察视角。",
   "explore.tabs": "图的观察视角",
   "explore.caption": "同一张图的不同视角",
-  "explore.presets":
-    "内置视图覆盖业务流程、状态机、函数、权限、数据，以及等待和失败的环节。也可以选择需要的类型与区域，保存自己的视图。",
-  "workflow.kicker": "贯穿开发对话",
-  "workflow.title": "项目在迭代，\\n图也跟着更新。",
-  "workflow.body": "从最初的草图到下一次修改，持续查看程序要完成什么，以及当前实际做到了什么。",
-  "workflow.1.title": "确认流程",
-  "workflow.1.body":
-    "描述你的项目，在对话中查看第一版业务图。澄清影响流程的细节，调整到符合你的意图，再通过提供的 Web 地址展开查看。",
-  "workflow.2.title": "开发与观察",
-  "workflow.2.body":
-    "继续使用熟悉的开发工具。每轮实现完成后，查看更新的图、打开相关函数，或在需要留意的位置添加批注。",
-  "workflow.3.title": "检查结果",
-  "workflow.3.body":
-    "分别查看图对实现的覆盖情况，以及程序在已约定测试场景中的表现。沿着问题找到对应流程，修复后再次检查。",
   "record.kicker": "观察一次操作",
-  "record.title": "实时查看，\\n逐步回放。",
-  "record.body":
-    "开始记录后，回到应用中操作；结束记录，再逐步查看采集到的状态和数值，找到影响结果的那一步。",
   "record.start": "开始记录",
   "record.operate": "操作你的应用",
   "record.stop": "结束并回放",
   "record.focus.title": "聚焦局部",
-  "record.focus.body": "选择一个区域进行记录，或采集已设置观测点的运行过程，再按需要缩小查看范围。",
   "record.values.title": "读懂每次变化",
   "record.values.body": "查看每一步前后的数值、当时的判断结果，以及操作经过的路径。",
   "record.keep.title": "保留观察习惯",
   "record.keep.body":
     "拖动节点组、固定重点节点、修改显示名称、添加批注。源码迭代后，稳定节点的布局、筛选和批注继续保留；记录列表只展示当前版本。",
   "modes.kicker": "开始时由你选择",
-  "modes.title": "基于图开发，\\n或用图观察。",
-  "modes.body": "选择状态图如何参与项目开发。两种模式都能结合代码与采集到的运行行为进行查看。",
   "modes.drive.label": "驱动模式",
-  "modes.drive.title": "围绕已确认的状态开发",
-  "modes.drive.body":
-    "以确认的状态和转换关系为基础推进开发，在迭代中对照这张图观察程序的实际运行。",
   "modes.observe.label": "观察模式",
-  "modes.observe.title": "沿用自己的开发方式",
-  "modes.observe.body":
-    "自行选择代码结构和实现方式，通过旁边的状态图查看流程、判断过程和关键参数。",
-  "demoLink.kicker": "真实项目，一次有记录的修复",
-  "demoLink.title": "那张没被审核过的图片。",
-  "demoLink.body":
-    "旧页面上的审核发布了新图片。沿实际记录查看八层关系，找到缺少的检查，再用二维、三维视图对照修复后的运行。",
-  "demoLink.button": "打开交互演示 ↗",
   "install.kicker": "用于你自己的项目",
   "install.title": "让下一次开发对话，\\n有一张图可看。",
   "install.body": "从 GitHub 安装 VibeLens，在项目中打开新对话，描述你想开发的内容。",

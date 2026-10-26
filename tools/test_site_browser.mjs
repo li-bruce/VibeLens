@@ -32,6 +32,14 @@ try {
     assert.equal(await page.locator("a.github").getAttribute("href"), "https://github.com/li-bruce/VibeLens");
     assert.match(await page.locator("#install-prompt").textContent(), /\$vibelens/);
     assert.equal(await page.locator("[data-view]").count(), 7);
+    await page.screenshot({path:path.join(output,language+'-hero.png')});
+    await page.keyboard.press('PageDown');
+    await page.waitForFunction(()=>scrollY>100);
+    await page.locator('#workflow').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(750);
+    await page.locator('#workflow').screenshot({path:path.join(output,language+'-foundation.png')});
+    assert.ok(await page.locator('.scroll-scene').count() >= 6);
+    checks.push(language+': native keyboard scrolling and progressive product sections');
     await page.locator('#viewer-tour').scrollIntoViewIfNeeded();
     await page.click('#tour-next');
     assert.equal(await page.locator('#tour-play').getAttribute('aria-pressed'), 'false');

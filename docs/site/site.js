@@ -1,4 +1,5 @@
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=0.8.1";
+import { revealSections } from "./scroll-story.mjs?rev=story-1";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-1";
 
 const views = ["business", "state", "decision", "function", "data", "source", "mixed"];
 let view = "business";
@@ -139,3 +140,5 @@ document.getElementById("copy-prompt").addEventListener("click", async () => {
 });
 onLanguageChange(render);
 initialize();
+
+revealSections(document.querySelectorAll("main > section, main > aside"));

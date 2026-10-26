@@ -5,180 +5,112 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="Follow a real frontend/backend project from a confirmed flow to a recorded bug, a targeted repair and a successful retest. Explore its actual VibeLens graph in 2D and 3D."
+      content="Start with a business graph. Follow a recorded operation, focus your own view, and see a repair take effect in VibeLens."
     />
-    <title>VibeLens — The image nobody reviewed</title>
+    <title>VibeLens — Follow the logic</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="site.css?rev=0.8.1" />
-    <link rel="stylesheet" href="case.css?rev=case-1" />
-    <script type="module" src="case.mjs?rev=case-2"></script>
+    <link rel="stylesheet" href="scroll-story.css?rev=story-1" />
+    <link rel="stylesheet" href="case.css?rev=story-1" />
+    <script type="module" src="case.mjs?rev=story-1"></script>
   </head>
-  <body>
-    <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
-    <header class="wrap nav">
+  <body class="demo-story">
+    <a class="skip" href="#foundation" data-i18n="skip">Skip to content</a>
+    <header class="story-nav">
       <a class="brand" href="index.html" data-local-link
-        ><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>VibeLens<span
-          class="skill-tag"
-          >CASE</span
-        ></a
+        ><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>VibeLens</a
       >
       <nav aria-label="Main navigation" data-i18n-aria="navigation">
-        <a href="index.html" data-local-link data-i18n="case.home">Product overview</a
-        ><a
-          class="github"
-          href="https://github.com/li-bruce/VibeLens/tree/main/examples/exhibition-review"
-          data-i18n="case.project"
-          >Run the project ↗</a
-        ><button class="language" id="language" type="button" aria-label="Switch to Chinese">
-          中文
-        </button>
+        <a href="index.html#install" data-local-link data-i18n="case.install">Get VibeLens</a
+        ><button class="language" id="language" aria-label="Switch to Chinese">中文</button>
       </nav>
     </header>
-    <main id="main" class="case-wrap">
-      <section class="case-intro">
-        <div>
-          <p class="eyebrow" data-i18n="case.kicker">AFTERLIGHT · A RECORDED DEBUGGING STORY</p>
-          <h1 data-i18n="case.title">The image nobody reviewed.</h1>
-          <p class="lead" data-i18n="case.lead">
-            The upload works. The approval works. Together, they publish the wrong version. Follow
-            the request through eight layers to see why—and watch the repair hold.
-          </p>
-        </div>
-        <div class="image-pair">
-          <figure>
-            <img src="case-data/image-1.png" alt="Blue image, version 1" />
-            <figcaption data-i18n="case.opened">v1 · opened for review</figcaption>
-          </figure>
-          <span aria-hidden="true">→</span>
-          <figure>
-            <img src="case-data/image-2.png" alt="Orange image, version 2" />
-            <figcaption data-i18n="case.published">v2 · published unseen</figcaption>
-          </figure>
-        </div>
-      </section>
-      <p class="case-provenance" data-i18n="case.provenance">
-        Recorded from a runnable browser + Python + SQLite project. The first version contains a
-        deliberately seeded defect; the dialogue is a scripted example. The graph and values below
-        come from actual executions.
-      </p>
-      <nav class="case-chapters" aria-label="Story chapters" data-i18n-aria="case.chapters">
-        <button data-chapter="0" aria-current="step" data-i18n="case.tab.0">1 · Confirm</button
-        ><button data-chapter="1" data-i18n="case.tab.1">2 · Record</button
-        ><button data-chapter="2" data-i18n="case.tab.2">3 · Find</button
-        ><button data-chapter="3" data-i18n="case.tab.3">4 · Change</button
-        ><button data-chapter="4" data-i18n="case.tab.4">5 · Retest</button>
-      </nav>
-      <section class="case-desk">
-        <aside class="case-story" aria-live="polite">
-          <p id="chapter-kicker" class="eyebrow"></p>
-          <h2 id="chapter-title"></h2>
-          <p id="chapter-body"></p>
-          <div id="case-dialogue" class="case-dialogue"></div>
-          <div id="case-evidence"></div>
-          <button id="case-next" class="button primary" type="button"></button>
-        </aside>
-        <div class="case-observer">
-          <div class="case-view-heading">
-            <div>
-              <strong data-i18n="case.graph">Actual VibeLens viewer</strong
-              ><span id="case-version"></span>
-            </div>
-            <div class="case-mode" role="group" aria-label="Graph dimension">
-              <button id="case-2d" aria-pressed="true">2D</button
-              ><button id="case-3d" aria-pressed="false">3D</button
-              ><button id="case-layers" data-i18n="case.layers">Open all layers</button>
-            </div>
-          </div>
-          <iframe
-            id="case-graph"
-            title="Recorded Afterlight project in VibeLens"
-            src="viewer/index.html?case=1&amp;lang=en&amp;rev=case-2"
-            loading="eager"
-          ></iframe>
-          <p class="case-view-help" id="case-view-help"></p>
-          <div
-            class="case-layers"
-            id="case-layer-links"
-            role="group"
-            aria-label="Graph layers"
-          ></div>
-        </div>
-      </section>
-      <section class="case-details">
-        <article>
-          <h2 data-i18n="case.trace">One request, eight connected layers.</h2>
-          <p data-i18n="case.trace.body">
-            Follow approval from the API into the business flow, state, rule, selected values,
-            database operation, tables and source. Use the layer shortcuts above, expand nodes, then
-            open source from a node’s menu.
-          </p>
-          <div id="case-layer-map"></div>
-        </article>
-        <article>
-          <h2 data-i18n="case.diff">The repair, in the real source.</h2>
-          <div class="case-code-head">
-            <span>policy.py</span><span data-i18n="case.diff.label">Iteration 1 → iteration 2</span>
-          </div>
-          <pre id="case-source" tabindex="0"></pre>
-          <p data-i18n="case.diff.body">
-            The rule now compares the version opened for review with the current version. The
-            request, state and database write remain connected to the same graph identities.
-          </p>
-        </article>
-      </section>
-      <details class="case-application">
-        <summary data-i18n="case.application">
-          See the running application: before and after
-        </summary>
-        <div class="case-application-pair">
-          <figure>
-            <img
-              src="case-data/application-v1.png"
-              alt="Real first-version gallery with a stale preview and the wrong published image"
-              loading="lazy"
-            />
-            <figcaption data-i18n="case.application.v1">
-              First run · preview v1, published v2
-            </figcaption>
-          </figure>
-          <figure>
-            <img
-              src="case-data/application-v2.png"
-              alt="Real repaired gallery after reopening and approving version 2"
-              loading="lazy"
-            />
-            <figcaption data-i18n="case.application.v2">
-              Repaired run · reopened v2, published v2
-            </figcaption>
-          </figure>
-        </div>
-      </details>
-      <section class="case-takeaway">
-        <div>
-          <h2 data-i18n="case.takeaway">A working button can hide a broken assumption.</h2>
-          <p data-i18n="case.takeaway.body">
-            The recording puts the two versions side by side. The source shows the missing
-            comparison. The next run shows whether the change worked. Bring that same view into your
-            next coding conversation.
-          </p>
-        </div>
-        <a class="button primary" href="index.html#install" data-local-link data-i18n="case.install"
-          >Use VibeLens in your project ↗</a
+    <main id="main">
+      <section class="case-intro" data-scroll-scene>
+        <p class="eyebrow" data-i18n="case.eyebrow">VibeLens in action</p>
+        <h1 data-i18n="case.title">See what your AI built.</h1>
+        <p data-i18n="case.lead">
+          Start with the business. Follow the logic. Refine every iteration.
+        </p>
+        <a class="scroll-cue" href="#foundation"
+          ><span data-i18n="case.scroll">Scroll to follow the build</span
+          ><span aria-hidden="true">↓</span></a
         >
       </section>
-      <p class="case-links">
-        <a href="practice.html" data-local-link data-i18n="case.practice"
-          >Try the small recording practice</a
-        ><a
-          href="https://github.com/li-bruce/VibeLens/tree/main/docs/review/pages-case"
-          data-i18n="case.receipts"
-          >Read the dialogue, test results and screenshots ↗</a
-        ><a href="case-data/receipt.json" data-i18n="case.raw">Execution receipt ↗</a>
-      </p>
+      <div
+        class="case-chapters"
+        id="case-chapters"
+        role="navigation"
+        aria-label="Development stages"
+        data-i18n-aria="case.nav"
+      ></div>
+      <div class="case-journey">
+        <div class="case-narrative" id="case-narrative"></div>
+        <aside class="case-visual" aria-label="VibeLens graph">
+          <div class="case-view-heading">
+            <div>
+              <span class="view-dot" aria-hidden="true"></span><strong>VibeLens</strong
+              ><span id="case-view-name" data-i18n="case.graph">Business flow</span>
+            </div>
+            <div class="case-mode">
+              <button id="case-2d" aria-pressed="true">2D</button
+              ><button id="case-3d" aria-pressed="false">3D</button
+              ><button id="case-tools" aria-pressed="false" data-i18n="case.tools">
+                Full tools
+              </button>
+            </div>
+          </div>
+          <div class="case-canvas">
+            <iframe
+              id="case-graph"
+              title="VibeLens interactive graph"
+              src="viewer/index.html?case=1&amp;lang=en&amp;rev=story-1"
+              tabindex="-1"
+            ></iframe>
+            <div class="case-telemetry" id="case-telemetry" aria-live="polite"></div>
+          </div>
+          <div class="case-playback">
+            <button id="case-play" aria-label="Play" data-i18n-aria="case.paused">
+              <span aria-hidden="true">▶</span></button
+            ><input
+              id="case-position"
+              type="range"
+              min="0"
+              max="100"
+              value="0"
+              aria-label="Playback"
+              data-i18n-aria="case.position"
+            /><span id="case-step">—</span
+            ><button id="case-interact" aria-pressed="false" data-i18n="case.explore">
+              Explore graph
+            </button>
+          </div>
+        </aside>
+      </div>
+      <section class="case-end" data-scroll-scene>
+        <h2 data-i18n="case.end">Bring clarity to your next build.</h2>
+        <a class="button primary" href="index.html#install" data-local-link data-i18n="case.install"
+          >Get VibeLens</a
+        >
+      </section>
     </main>
-    <footer class="wrap footer">
-      <span>VibeLens</span
-      ><a href="index.html" data-local-link data-i18n="case.home">Product overview</a>
+    <footer class="case-footer">
+      <a
+        href="https://github.com/li-bruce/VibeLens/tree/main/examples/exhibition-review"
+        data-i18n="case.source"
+        >Example project ↗</a
+      ><a
+        href="https://github.com/li-bruce/VibeLens/tree/main/docs/review/pages-case"
+        data-i18n="case.evidence"
+        >Recordings & tests ↗</a
+      >
+      <details>
+        <summary data-i18n="case.about">About this demo</summary>
+        <p data-i18n="case.about.body">
+          A scripted image-review case with a seeded first-version defect and real execution
+          recordings.
+        </p>
+      </details>
     </footer>
   </body>
 </html>

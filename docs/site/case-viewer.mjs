@@ -9,7 +9,9 @@ const artifact = await (
   await nativeFetch(new URL(`./case-data/v${version}.json`, import.meta.url))
 ).json();
 let view = structuredClone(artifact.view);
-let preferences = { schema: 1, project_id: view.layout_id, revision: 0, entries: {} };
+// A nonzero revision keeps the canonical viewer from migrating unrelated local
+// project layouts into this separately namespaced, bilingual demonstration.
+let preferences = { schema: 1, project_id: view.layout_id, revision: 1, entries: {} };
 const preferenceKey = `vibelens.case.afterlight.${params.get("lang") || "en"}`;
 try {
   preferences = JSON.parse(localStorage.getItem(preferenceKey)) || preferences;
@@ -88,66 +90,43 @@ artifact.recording.context.model = mergeGraph(
   artifact.codeFocus.publish,
 );
 await import("./viewer/viewer.js");
-const { timeline } = await import("./viewer/recording.js");
-let commandEpoch = 0;
-
-/** Apply a narrated location through the same controls used in the full viewer. */
-async function command(message) {
-  const epoch = ++commandEpoch;
-  const control = (id, value) => {
-    const element = document.getElementById(id);
-    if (!element) return;
-    if (value !== undefined) element.value = value;
-    element.dispatchEvent(new Event("change", { bubbles: true }));
-  };
-  if (message.view) control("analysis-view", message.view);
-  if (message.mode && (window.graphDebug.layers.enabled ? "3d" : "2d") !== message.mode)
-    document.getElementById("layered-toggle").click();
-  if (message.expand) document.getElementById("expand").click();
-  if (message.node) {
-    const target = [...document.querySelectorAll("#semantic [data-node-id]")].find(
-      (node) => node.dataset.nodeId === message.node,
-    );
-    target?.click();
-  }
-  if (message.inspectMismatch) {
-    control("record-list", artifact.recording.id);
-    for (let attempt = 0; attempt < 100 && document.getElementById("replay").hidden; attempt++)
-      await new Promise((resolve) => setTimeout(resolve, 25));
-    if (epoch !== commandEpoch) return;
-    control("replay-grain", "events");
-    const entered = artifact.recording.events.find(
-      (event) =>
-        event.node === "review-policy" &&
-        event.inputs.current_version === 2 &&
-        event.inputs.reviewed_version === 1,
-    );
-    const returned = artifact.recording.events.find(
-      (event) => event.call_id === entered.call_id && event.phase === "return",
-    );
-    const index = timeline(artifact.recording).findIndex((event) => event.id === returned.id);
-    control("replay-events", String(index));
-    document.getElementById("expand").click();
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    if (epoch !== commandEpoch) return;
-    const target = [...document.querySelectorAll("#semantic [data-node-id]")].find(
-      (node) => node.dataset.nodeId === "review-policy",
-    );
-    target?.click();
-    document.getElementById("node-expand").click();
-    document
-      .getElementById("viewport")
-      .dispatchEvent(new KeyboardEvent("keydown", { key: "f", bubbles: true }));
-  }
-}
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-1");
+const runtimeView = structuredClone(view);
+const designView = {
+  ...structuredClone(artifact.recording.context),
+  layout_id: runtimeView.layout_id,
+  stage: "design",
+  instances: [],
+  runtime_frames: { schema: "stategraph-runtime-frames/v1", frames: [] },
+  program_url: null,
+  database_status: null,
+};
+for (const node of designView.model.nodes) node.summary = "";
+const post = (value) =>
+  parent.postMessage({ ...value, version, locale: params.get("lang") || "en" }, location.origin);
+const player = scenePlayer({
+  artifact,
+  locale: params.get("lang") || "en",
+  post,
+  setDesign: (enabled) => {
+    view = enabled ? designView : runtimeView;
+  },
+});
 window.addEventListener("message", (event) => {
   if (
     event.source === parent &&
     event.origin === location.origin &&
     event.data?.type === "vibelens-case"
   )
-    command(event.data);
+    player
+      .scene(event.data)
+      .catch((error) => post({ type: "vibelens-case-error", error: error.message }));
 });
+const style = document.createElement("link");
+style.rel = "stylesheet";
+style.href = new URL("./case-canvas.css?rev=story-1", import.meta.url).href;
+document.head.append(style);
+document.body.dataset.caseCompact = "true";
 // Keep the captured provenance visible; recording and project-write controls are
 // unavailable on a static host. Inspection, routing, filtering and replay remain.
 document.querySelector("header").hidden = true;
