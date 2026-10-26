@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.1 — 2026-10-26
+
+- Retry temporary Windows sharing denial in the watcher test reader within its existing deadline. Keep update predicates and invalid-content failures strict; add transient/permanent-denial regressions.
+- Keep the v0.8.0 Skill payload unchanged; refresh release links. See [patch evidence](docs/review/release-v0.8.1/README.md).
+
 ## 0.8.0 — 2026-10-26
 
 - Release the genuine 3D layered viewer with shared 2D/3D selection, expansion, annotations, filters and replay. Pack visible layers in saved order; use solid semantic objects, readable labels and a compact canvas layer ruler.

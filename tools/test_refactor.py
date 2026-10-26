@@ -27,6 +27,26 @@ from test_stategraph_module import model
 from bo_upgrade import plan as upgrade_plan, apply as upgrade_apply
 
 
+def wait_for_maintenance(path, predicate, *, timeout=8, interval=0.05):
+    """Wait for a real watcher update, tolerating only transient file availability.
+
+    Windows can deny a read during atomic replacement. Content errors remain
+    errors, and a permanently unreadable file must still exhaust the deadline.
+    """
+    deadline = time.monotonic() + timeout
+    last_error = None
+    while time.monotonic() < deadline:
+        try:
+            value = json.loads(path.read_text(encoding='utf-8'))
+        except (FileNotFoundError, PermissionError) as error:
+            last_error = error
+        else:
+            if predicate(value):
+                return value
+        time.sleep(interval)
+    raise TimeoutError(f'Watcher status did not become available: {last_error}')
+
+
 class RefactorTests(unittest.TestCase):
     def setUp(self):
         folder=ROOT/'.validation/refactor-tests';folder.mkdir(parents=True,exist_ok=True)
@@ -243,6 +263,27 @@ class RefactorTests(unittest.TestCase):
         for roots in ([], '', [None]):
             with self.assertRaises(ValueError):source_inventory(self.root,{'source_scope':{'roots':roots}})
 
+    def test_watcher_status_retries_transient_windows_read_lock(self):
+        path = self.root / 'maintenance.json'
+        with patch.object(
+            Path, 'read_text',
+            side_effect=[PermissionError('sharing violation'), '{"status":"current"}'],
+        ) as read:
+            value = wait_for_maintenance(
+                path, lambda item: item['status'] == 'current', timeout=1, interval=0.001,
+            )
+        self.assertEqual(value, {'status': 'current'})
+        self.assertEqual(read.call_count, 2)
+
+    def test_watcher_status_keeps_permanent_and_content_errors_fatal(self):
+        path = self.root / 'maintenance.json'
+        with patch.object(Path, 'read_text', side_effect=PermissionError('permanent denial')):
+            with self.assertRaises(TimeoutError):
+                wait_for_maintenance(path, lambda item: True, timeout=0.02, interval=0.001)
+        with patch.object(Path, 'read_text', return_value='{'):
+            with self.assertRaises(json.JSONDecodeError):
+                wait_for_maintenance(path, lambda item: True)
+
     def test_watcher_refreshes_when_registration_or_acceptance_changes(self):
         cfg={'code_files':['app.py'],'watch_files':[],
              'source_scope':{'roots':['.'],'require_symbol_classification':True}}
@@ -255,14 +296,10 @@ class RefactorTests(unittest.TestCase):
                 str(ROOT/'skills/vibelens/scripts/bo_sync.py'),'watch','--root',str(self.root),'--interval','.1'],
                 stdout=stream,stderr=stream)
             def wait_for(predicate):
-                deadline=time.monotonic()+8
-                while time.monotonic()<deadline:
-                    path=self.root/'.stategraph/maintenance.json'
-                    if path.exists():
-                        value=json.loads(path.read_text(encoding='utf-8'))
-                        if predicate(value):return value
-                    time.sleep(.05)
-                self.fail('Watcher did not update: '+log.read_text(encoding='utf-8'))
+                try:
+                    return wait_for_maintenance(self.root/'.stategraph/maintenance.json', predicate)
+                except TimeoutError as error:
+                    self.fail(str(error)+'; '+log.read_text(encoding='utf-8'))
             try:
                 first=wait_for(lambda v:v['unregistered_files']==['new_entry.py'])
                 (self.root/'sync.json').write_text('{')
