@@ -46,6 +46,7 @@ These are case-specific and source-quality checks. The unchanged observation eng
 - [Actual runtime receipts](receipts/runtime.json), [browser checks](receipts/browser.json), [source quality](receipts/source-quality.json), [existing product checks](receipts/product-browser.json).
 - [V1 graph, source and recording](../../site/case-data/v1.json), [V2 graph, source and recording](../../site/case-data/v2.json), [compact receipt](../../site/case-data/receipt.json).
 - [Failures, fixes and retests](failures.md).
+- [Deployed browser acceptance](receipts/deployed-browser.json) and [Pages deployment/asset verification](receipts/deployment.json): the same EN/ZH desktop/mobile, real 2D/3D and replay checks passed against the public GitHub Pages URL after the loading-order repair.
 
 ![First run: the old blue preview publishes the orange replacement](gallery/application-before.png)
 
