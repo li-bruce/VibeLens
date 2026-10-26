@@ -32,6 +32,8 @@ The product introduction and recorded-project demo now use native vertical scrol
 
 Receipts: [demo browser](demo-browser.json), [product browser](product-browser.json), [source checks](source-quality.json), [viewer hashes](viewer-asset-proof.json). Screenshots show the tested local build; deployed verification is recorded separately after publication.
 
+Published verification: [deployed.json](deployed.json) records successful English and Chinese browser checks against [the product page](https://liblog.vip/VibeLens/) and [the demo](https://liblog.vip/VibeLens/demo.html). Pages run [40309212127](https://github.com/li-bruce/VibeLens/actions/runs/40309212127) deployed commit `68b1b6a`; all 64 copied viewer assets match their canonical bytes. The adapted HTML loads presentation revision `story-2`. [Deployed inspection screenshot](screens/deployed-zh-CN-02-drill.png).
+
 The existing [execution evidence](../pages-case/README.md) supplies the recorded project. This change preserves its 82-event first build and 138-event repaired build. The demo replays those executions; it does not run a new backend on Pages. No new database throughput or large-graph performance claim is made by this presentation test.
 
 ## Failures and fixes
