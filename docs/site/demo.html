@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="Try VibeLens through a sample conversation, an expandable graph, and a local recording walkthrough."
+      content="Follow a real frontend/backend project from a confirmed flow to a recorded bug, a targeted repair and a successful retest. Explore its actual VibeLens graph in 2D and 3D."
     />
-    <title>VibeLens — Interactive walkthrough</title>
-    <link rel="stylesheet" href="site.css?rev=0.8.1" />
+    <title>VibeLens — The image nobody reviewed</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <script type="module" src="demo.mjs?rev=0.8.1"></script>
+    <link rel="stylesheet" href="site.css?rev=0.8.1" />
+    <link rel="stylesheet" href="case.css?rev=case-1" />
+    <script type="module" src="case.mjs?rev=case-1"></script>
   </head>
   <body>
     <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -18,164 +19,166 @@
       <a class="brand" href="index.html" data-local-link
         ><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>VibeLens<span
           class="skill-tag"
-          >DEMO</span
+          >CASE</span
         ></a
       >
       <nav aria-label="Main navigation" data-i18n-aria="navigation">
-        <a href="index.html" data-local-link data-i18n="demo.home">Product overview</a
-        ><a class="github" href="https://github.com/li-bruce/VibeLens">GitHub ↗</a
+        <a href="index.html" data-local-link data-i18n="case.home">Product overview</a
+        ><a
+          class="github"
+          href="https://github.com/li-bruce/VibeLens/tree/main/examples/exhibition-review"
+          data-i18n="case.project"
+          >Run the project ↗</a
         ><button class="language" id="language" type="button" aria-label="Switch to Chinese">
           中文
         </button>
       </nav>
     </header>
-    <main id="main" class="wrap walkthrough">
-      <div class="demo-header">
-        <p class="eyebrow" data-i18n="demo.kicker">INTERACTIVE WALKTHROUGH · SAMPLE DATA</p>
-        <h1 data-i18n="demo.title">Follow one idea into the program.</h1>
-        <p class="lead" data-i18n="demo.body">
-          An image review project, from a conversation to a running graph. Move through the four
-          stages, then try recording and replaying an operation in the sample.
-        </p>
-      </div>
-      <div
-        class="walkthrough-tabs"
-        role="tablist"
-        aria-label="Walkthrough stages"
-        data-i18n-aria="demo.tabs"
-      >
-        <button
-          role="tab"
-          id="stage-conversation"
-          data-stage="conversation"
-          aria-controls="demo-panel"
-          aria-selected="true"
-          tabindex="0"
-          data-i18n="demo.stage.conversation"
-        >
-          1. conversation</button
-        ><button
-          role="tab"
-          id="stage-inspect"
-          data-stage="inspect"
-          aria-controls="demo-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-i18n="demo.stage.inspect"
-        >
-          2. inspect</button
-        ><button
-          role="tab"
-          id="stage-record"
-          data-stage="record"
-          aria-controls="demo-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-i18n="demo.stage.record"
-        >
-          3. record</button
-        ><button
-          role="tab"
-          id="stage-iterate"
-          data-stage="iterate"
-          aria-controls="demo-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-i18n="demo.stage.iterate"
-        >
-          4. iterate
-        </button>
-      </div>
-      <div
-        id="demo-panel"
-        class="demo-workspace"
-        role="tabpanel"
-        tabindex="0"
-        aria-labelledby="stage-conversation"
-      >
-        <aside class="demo-aside">
-          <h2 id="demo-heading"></h2>
-          <p id="demo-instruction"></p>
-          <div class="chat" id="conversation"></div>
-          <button class="button primary" id="advance" type="button"></button>
-        </aside>
-        <div class="demo-main">
-          <div class="demo-toolbar">
-            <span class="sample-label" data-i18n="demo.sample">IMAGE REVIEW · LOCAL SAMPLE</span
-            ><button class="small-button" id="reset" data-i18n="demo.reset">Restart demo</button>
-          </div>
-          <div class="demo-canvas">
-            <svg
-              id="demo-graph"
-              viewBox="0 0 740 380"
-              role="group"
-              aria-label="Sample application graph"
-              data-i18n-aria="demo.graph"
-            ></svg>
-          </div>
-          <div class="demo-legend">
-            <span><i class="business"></i><span data-i18n="view.business">Business</span></span
-            ><span><i class="state"></i><span data-i18n="view.state">States</span></span
-            ><span
-              ><i class="function"></i
-              ><span data-i18n="view.function">Functions & values</span></span
-            >
-          </div>
-          <div class="demo-controls">
-            <div id="record-controls" hidden>
-              <div class="controls-row">
-                <label for="capture-scope" data-i18n="demo.scope">Record</label
-                ><select id="capture-scope">
-                  <option value="all" data-i18n="demo.scope.all">Whole flow</option>
-                  <option value="review" data-i18n="demo.scope.review">Review only</option></select
-                ><button class="button primary" id="start" data-i18n="record.start">
-                  Start recording</button
-                ><button class="small-button" id="stop" disabled data-i18n="demo.stop">
-                  Stop recording
-                </button>
-              </div>
-              <div class="controls-row">
-                <button class="small-button" id="new-operation" data-i18n="demo.new">
-                  New operation
-                </button>
-                <span data-i18n="demo.operate">Sample app</span
-                ><button class="small-button" id="upload" data-i18n="demo.upload">
-                  Upload image</button
-                ><button class="small-button" id="approve" disabled data-i18n="demo.approve">
-                  Approve</button
-                ><button class="small-button" id="return" disabled hidden data-i18n="demo.return">
-                  Return for changes
-                </button>
-              </div>
-              <div class="replay-row">
-                <button class="small-button" id="play" disabled data-i18n="demo.play">
-                  Play recording</button
-                ><label for="replay" data-i18n="demo.step">Step</label
-                ><input id="replay" type="range" min="0" max="0" value="0" disabled /><span
-                  id="step-number"
-                  >0 / 0</span
-                ><button class="small-button" id="live" data-i18n="demo.live">Live</button>
-              </div>
-            </div>
-            <p class="demo-status" id="demo-status" role="status"></p>
-            <dl class="change-detail" id="change-detail"></dl>
-            <pre class="source-snippet" id="source-snippet" hidden></pre>
-          </div>
+    <main id="main" class="case-wrap">
+      <section class="case-intro">
+        <div>
+          <p class="eyebrow" data-i18n="case.kicker">AFTERLIGHT · A RECORDED DEBUGGING STORY</p>
+          <h1 data-i18n="case.title">The image nobody reviewed.</h1>
+          <p class="lead" data-i18n="case.lead">
+            The upload works. The approval works. Together, they publish the wrong version. Follow
+            the request through eight layers to see why—and watch the repair hold.
+          </p>
         </div>
-      </div>
-      <div class="demo-footnote">
-        <p data-i18n="demo.note">
-          This walkthrough runs with sample data in your browser. In your project, the conversation
-          stays in your coding tool and the graph shows its captured activity.
-        </p>
-        <a href="index.html#install" data-local-link data-i18n="demo.install"
-          >Use it in your project ↗</a
+        <div class="image-pair">
+          <figure>
+            <img src="case-data/image-1.png" alt="Blue image, version 1" />
+            <figcaption data-i18n="case.opened">v1 · opened for review</figcaption>
+          </figure>
+          <span aria-hidden="true">→</span>
+          <figure>
+            <img src="case-data/image-2.png" alt="Orange image, version 2" />
+            <figcaption data-i18n="case.published">v2 · published unseen</figcaption>
+          </figure>
+        </div>
+      </section>
+      <p class="case-provenance" data-i18n="case.provenance">
+        Recorded from a runnable browser + Python + SQLite project. The first version contains a
+        deliberately seeded defect; the dialogue is a scripted example. The graph and values below
+        come from actual executions.
+      </p>
+      <nav class="case-chapters" aria-label="Story chapters" data-i18n-aria="case.chapters">
+        <button data-chapter="0" aria-current="step" data-i18n="case.tab.0">1 · Confirm</button
+        ><button data-chapter="1" data-i18n="case.tab.1">2 · Record</button
+        ><button data-chapter="2" data-i18n="case.tab.2">3 · Find</button
+        ><button data-chapter="3" data-i18n="case.tab.3">4 · Change</button
+        ><button data-chapter="4" data-i18n="case.tab.4">5 · Retest</button>
+      </nav>
+      <section class="case-desk">
+        <aside class="case-story" aria-live="polite">
+          <p id="chapter-kicker" class="eyebrow"></p>
+          <h2 id="chapter-title"></h2>
+          <p id="chapter-body"></p>
+          <div id="case-dialogue" class="case-dialogue"></div>
+          <div id="case-evidence"></div>
+          <button id="case-next" class="button primary" type="button"></button>
+        </aside>
+        <div class="case-observer">
+          <div class="case-view-heading">
+            <div>
+              <strong data-i18n="case.graph">Actual VibeLens viewer</strong
+              ><span id="case-version"></span>
+            </div>
+            <div class="case-mode" role="group" aria-label="Graph dimension">
+              <button id="case-2d" aria-pressed="true">2D</button
+              ><button id="case-3d" aria-pressed="false">3D</button
+              ><button id="case-layers" data-i18n="case.layers">Open all layers</button>
+            </div>
+          </div>
+          <iframe
+            id="case-graph"
+            title="Recorded Afterlight project in VibeLens"
+            src="viewer/index.html?case=1&amp;lang=en"
+            loading="eager"
+          ></iframe>
+          <p class="case-view-help" id="case-view-help"></p>
+          <div
+            class="case-layers"
+            id="case-layer-links"
+            role="group"
+            aria-label="Graph layers"
+          ></div>
+        </div>
+      </section>
+      <section class="case-details">
+        <article>
+          <h2 data-i18n="case.trace">One request, eight connected layers.</h2>
+          <p data-i18n="case.trace.body">
+            Follow approval from the API into the business flow, state, rule, selected values,
+            database operation, tables and source. Use the layer shortcuts above, expand nodes, then
+            open source from a node’s menu.
+          </p>
+          <div id="case-layer-map"></div>
+        </article>
+        <article>
+          <h2 data-i18n="case.diff">The repair, in the real source.</h2>
+          <div class="case-code-head">
+            <span>policy.py</span><span data-i18n="case.diff.label">Iteration 1 → iteration 2</span>
+          </div>
+          <pre id="case-source" tabindex="0"></pre>
+          <p data-i18n="case.diff.body">
+            The rule now compares the version opened for review with the current version. The
+            request, state and database write remain connected to the same graph identities.
+          </p>
+        </article>
+      </section>
+      <details class="case-application">
+        <summary data-i18n="case.application">
+          See the running application: before and after
+        </summary>
+        <div class="case-application-pair">
+          <figure>
+            <img
+              src="case-data/application-v1.png"
+              alt="Real first-version gallery with a stale preview and the wrong published image"
+              loading="lazy"
+            />
+            <figcaption data-i18n="case.application.v1">
+              First run · preview v1, published v2
+            </figcaption>
+          </figure>
+          <figure>
+            <img
+              src="case-data/application-v2.png"
+              alt="Real repaired gallery after reopening and approving version 2"
+              loading="lazy"
+            />
+            <figcaption data-i18n="case.application.v2">
+              Repaired run · reopened v2, published v2
+            </figcaption>
+          </figure>
+        </div>
+      </details>
+      <section class="case-takeaway">
+        <div>
+          <h2 data-i18n="case.takeaway">A working button can hide a broken assumption.</h2>
+          <p data-i18n="case.takeaway.body">
+            The recording puts the two versions side by side. The source shows the missing
+            comparison. The next run shows whether the change worked. Bring that same view into your
+            next coding conversation.
+          </p>
+        </div>
+        <a class="button primary" href="index.html#install" data-local-link data-i18n="case.install"
+          >Use VibeLens in your project ↗</a
         >
-      </div>
+      </section>
+      <p class="case-links">
+        <a href="practice.html" data-local-link data-i18n="case.practice"
+          >Try the small recording practice</a
+        ><a
+          href="https://github.com/li-bruce/VibeLens/tree/main/docs/review/pages-case"
+          data-i18n="case.receipts"
+          >Read the dialogue, test results and screenshots ↗</a
+        ><a href="case-data/receipt.json" data-i18n="case.raw">Execution receipt ↗</a>
+      </p>
     </main>
     <footer class="wrap footer">
       <span>VibeLens</span
-      ><a href="index.html" data-local-link data-i18n="demo.home">Product overview</a>
+      ><a href="index.html" data-local-link data-i18n="case.home">Product overview</a>
     </footer>
   </body>
 </html>

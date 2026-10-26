@@ -130,7 +130,7 @@ To open the illustrated introduction locally:
 python -m http.server 8862 --bind 127.0.0.1
 ```
 
-Visit [the introduction](http://127.0.0.1:8862/docs/site/) for a bilingual overview of the Skill. The separate [interactive demo](http://127.0.0.1:8862/docs/site/demo.html) walks through a sample conversation, graph exploration, recording, replay, and a requested change using local sample data.
+Visit [the introduction](http://127.0.0.1:8862/docs/site/) for a bilingual overview of the Skill. Run `python tools/build_site_viewer.py` before opening the separate [interactive case](http://127.0.0.1:8862/docs/site/demo.html): a real frontend/backend project exposes a stale-approval bug across eight graph layers, then repeats the operation after a targeted repair. Its actual recordings use the maintained 2D/3D viewer. [Run the project](examples/exhibition-review/README.md) or read the [dialogue and evidence](docs/review/pages-case/README.md). The dialogue is scripted and the first defect deliberately seeded.
 
 To read or modify the implementation, start with the [source guide](docs/source-guide.en.md). It maps the modules and follows a coding iteration, a runtime event, and a graph interaction through the code. [Readability review](docs/review/readability-20261023/README.md) records the syntax comparison and regression results for this update.
 

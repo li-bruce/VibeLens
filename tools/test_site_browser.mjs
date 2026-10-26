@@ -69,7 +69,7 @@ try {
     await page.screenshot({path: path.join(output, language + "-mobile.png"), fullPage: true});
     await page.setViewportSize({width: 1440, height: 1000});
   }
-  await page.goto(base + "/demo.html?lang=zh-CN");
+  await page.goto(base + "/practice.html?lang=zh-CN");
   assert.match(await page.locator(".brand").innerText(), /^VibeLens/);
   assert.equal(await page.locator("a.github").getAttribute("href"), "https://github.com/li-bruce/VibeLens");
   await page.click("#stage-record");

@@ -184,9 +184,10 @@ export const chinese = {
   "modes.observe.title": "沿用自己的开发方式",
   "modes.observe.body":
     "自行选择代码结构和实现方式，通过旁边的状态图查看流程、判断过程和关键参数。",
-  "demoLink.kicker": "独立的操作演示",
-  "demoLink.title": "用一个小项目试试看。",
-  "demoLink.body": "跟随示例对话，展开图并记录一次操作。演示采用图片审核项目与示例数据。",
+  "demoLink.kicker": "真实项目，一次有记录的修复",
+  "demoLink.title": "那张没被审核过的图片。",
+  "demoLink.body":
+    "旧页面上的审核发布了新图片。沿实际记录查看八层关系，找到缺少的检查，再用二维、三维视图对照修复后的运行。",
   "demoLink.button": "打开交互演示 ↗",
   "install.kicker": "用于你自己的项目",
   "install.title": "让下一次开发对话，\\n有一张图可看。",

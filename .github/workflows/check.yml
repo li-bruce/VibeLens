@@ -21,6 +21,7 @@ jobs:
       - run: python tools/check_source.py --format
       - run: python tests/test_source_quality.py
       - run: node tools/test_detail_panel.mjs
+      - run: node tools/test_case_artifacts.mjs
   test:
     strategy:
       fail-fast: false
@@ -41,6 +42,7 @@ jobs:
       - run: python tools/setup_adapters.py
       - run: npm ci --prefix examples/multilanguage
       - run: python tools/check_release_export.py
+      - run: python -m unittest discover -s examples/exhibition-review -p test_domain.py
       - run: python tools/verify.py --database
   database-live:
     runs-on: ubuntu-latest

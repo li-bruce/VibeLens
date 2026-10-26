@@ -87,7 +87,7 @@ python tools/install_skill.py --project /path/to/your-project
 
 依赖与完整命令见[使用说明](docs/usage.zh-CN.md)和[英文首页](README.md)。本地产品介绍可通过 `python -m http.server 8862 --bind 127.0.0.1` 启动，然后打开[介绍页](http://127.0.0.1:8862/docs/site/?lang=zh-CN)。
 
-[独立交互演示](https://li-bruce.github.io/VibeLens/demo.html?lang=zh-CN)用示例数据展示对话确认、图的展开、记录回放和需求迭代。阅读实现时，可以从[源码导览](docs/source-guide.zh-CN.md)了解模块职责及主要调用路径；本轮改动的比较、失败与复测记录见[验收材料](docs/review/readability-20261023/README.md)。
+[独立交互演示](https://li-bruce.github.io/VibeLens/demo.html?lang=zh-CN)用真实前后端项目的录制结果，展示“确认、记录、定位、修改、复测”全过程。沿八层关系定位一次旧版本审核错误，并在原版二维、三维视窗中对照修复后的运行。首版缺陷为演示预设，对话为模拟。可[运行项目](examples/exhibition-review/README.zh-CN.md)，或查看[对话与验收材料](docs/review/pages-case/README.md)。[源码导览](docs/source-guide.zh-CN.md)说明整体模块职责。
 
 ## 当前边界
 
