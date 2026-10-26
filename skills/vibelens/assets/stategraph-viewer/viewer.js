@@ -1492,7 +1492,12 @@ const resizeObserver = new ResizeObserver(() => {
     app.renderer.resize($("viewport").clientWidth, $("viewport").clientHeight);
     spatial?.resize();
     if (analysisSettings?.layers?.enabled) fit();
-    else schedule();
+    // Resizing clears the WebGL drawing buffer. Paint in this observer turn,
+    // before the browser composites it, rather than exposing a black frame
+    // while waiting for the next animation callback.
+    cancelAnimationFrame(drawFrame);
+    if (graph) draw();
+    else app.renderer.render(app.stage);
   }
 });
 resizeObserver.observe($("viewport"));

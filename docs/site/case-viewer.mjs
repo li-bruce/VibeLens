@@ -151,7 +151,7 @@ artifact.recording.context.model = mergeGraph(
   artifact.recording.context.model,
   artifact.codeFocus.publish,
 );
-await import("./viewer/viewer.js");
+await import("./viewer/viewer.js?rev=story-7");
 const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-6");
 const runtimeView = structuredClone(view);
 const designView = {

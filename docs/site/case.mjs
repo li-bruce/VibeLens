@@ -70,7 +70,7 @@ function stage(index) {
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-6`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-7`;
   } else send(message);
   document.body.dataset.chapter = String(index);
 }
