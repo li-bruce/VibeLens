@@ -28,4 +28,12 @@ have been removed from those brand positions.
 ![Homepage and shared logo](homepage.png)
 ![First-person application brief](conversation.png)
 
-Publication receipts are retained after deployment.
+## Publication
+
+Merged into `main` at `f4c0bb48bf38eb2b5dc3ca473b81525de89b5056`.
+[Pages deployment](https://github.com/li-bruce/VibeLens/actions/runs/40711108573)
+completed successfully. The public site passed the same [homepage checks](public-browser.json)
+and [control checks](public-controls.json). All 86 [published-resource checks](publication/pages.json)
+passed, including the shared SVG and styles. The [workflow receipt](publication/ci.json)
+records Pages success separately from repository-wide CI, which was still running
+when captured.
