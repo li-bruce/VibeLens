@@ -20,6 +20,7 @@ WEB_APIS = (
     "/api/stategraph",
     "/api/versions",
     "/api/design",
+    "/api/vibelens/control",
 )
 _internal = ContextVar("bo_observer_internal", default=False)
 

@@ -3,6 +3,7 @@
 from copy import deepcopy
 import json
 import os
+import re
 from pathlib import Path
 import threading
 import uuid
@@ -44,8 +45,16 @@ def file_lock(path):
 
 
 class Preferences:
-    def __init__(self, project_root, project_id, *, legacy_project_ids=()):
-        self.path = Path(project_root) / "bo_stategraph/config/views/local.json"
+    def __init__(self, project_root, project_id, *, legacy_project_ids=(), namespace=None):
+        directory = Path(project_root) / "bo_stategraph/config/views"
+        if namespace is not None and not re.fullmatch(r"[a-f0-9]{32}", namespace):
+            raise ValueError("Invalid conversation view namespace")
+        self.path = (
+            directory / "conversations" / (namespace + ".json")
+            if namespace
+            else directory / "local.json"
+        )
+        self.seed = directory / "local.json" if namespace else None
         self.project_id = project_id
         if not isinstance(legacy_project_ids, (list, tuple)) or any(
             not isinstance(x, str) for x in legacy_project_ids
@@ -58,6 +67,12 @@ class Preferences:
         """Load this project's view settings, or return an empty revision-zero document."""
         with self.lock:
             if not self.path.exists():
+                if self.seed and self.seed.exists():
+                    value = json.loads(self.seed.read_text(encoding="utf-8"))
+                    if value.get("project_id") in self.legacy_project_ids:
+                        value["project_id"] = self.project_id
+                    self.validate(value)
+                    return {**deepcopy(value), "revision": 0}
                 return {"schema": 1, "project_id": self.project_id, "revision": 0, "entries": {}}
             value = json.loads(self.path.read_text(encoding="utf-8"))
             if isinstance(value, dict) and value.get("project_id") in self.legacy_project_ids:

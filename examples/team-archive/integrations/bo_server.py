@@ -65,6 +65,8 @@ class LocalApplication:
             action_nodes={"run":"archive_request","approve":"issue_approval","revoke":"approval_revoked",
                           "resume":"resume_run","cancel":"cancel_run","size-limit":"set_size_limit",
                           "edit":"content_changed","move":"move_folder"})
+        self.bo_web.control_view=self.recording_view
+        self.bo_web.control_recording=self.recordings.get
 
     def recording_view(self):
         with self.service.lock:
@@ -196,7 +198,7 @@ def serve(root, args, model, manifest, sources):
                 if parsed.path=="/api/bo/config":
                     return self.reply(200,{"project":application.observer.bo_project,"build_id":application.manifest["build_id"],"token":application.bo_client_token})
                 if parsed.path=="/api/preferences":
-                    return self.reply(200,application.preferences.read())
+                    return self.reply(200,application.bo_web.preferences_for(self.path,application.preferences).read())
                 if parsed.path=="/api/state":
                     return self.reply(200,application.state())
                 if parsed.path in ("/api/stategraph", "/api/stategraph/export"):
@@ -260,12 +262,15 @@ def serve(root, args, model, manifest, sources):
                 if not isinstance(values,dict):
                     raise ValueError("Request must be an object")
                 action=urlparse(self.path).path.removeprefix("/api/")
+                control=application.bo_web.control_reply(self.path,values)
+                if control is not None:
+                    return self.reply(200,control)
                 if action=="bo/events":
                     if not secrets.compare_digest(self.headers.get("X-BO-Token",""),application.bo_client_token):
                         return self.reply(403,{"error":"Invalid observation token"})
                     return self.reply(200,application.observer.bo_ingress.accept(values))
                 if action=="preferences":
-                    return self.reply(200,application.preferences.save(values))
+                    return self.reply(200,application.bo_web.preferences_for(self.path,application.preferences).save(values))
                 if action=="recordings/start":
                     return self.reply(200,application.recordings.start(values.get("label",""),values.get("scope")))
                 if action=="recordings/stop":

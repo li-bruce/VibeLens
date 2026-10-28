@@ -122,6 +122,8 @@ def serve(port=8797):
         assets=ROOT / "observer_generated/static",
         graph_routes=("/", "/graph", "/graph/"),
     )
+    bo_web.control_view = session.view
+    bo_web.control_recording = session.recordings.get
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
@@ -163,7 +165,7 @@ def serve(port=8797):
                 if request.path == "/api/app-state":
                     return self.send(session.store.snapshot())
                 if request.path == "/api/preferences":
-                    return self.send(session.preferences.read())
+                    return self.send(bo_web.preferences_for(self.path, session.preferences).read())
                 if request.path in ("/api/stategraph", "/api/stategraph/export"):
                     return self.send(
                         bo_export_view(
@@ -268,9 +270,10 @@ def serve(port=8797):
                     },
                     405,
                 )
-            if self.path not in (
+            if urlparse(self.path).path not in (
                 "/api/command",
                 "/api/preferences",
+                "/api/vibelens/control",
                 "/api/recordings/start",
                 "/api/recordings/stop",
                 "/api/recordings/clear",
@@ -285,14 +288,17 @@ def serve(port=8797):
                 if (
                     not 0
                     < length
-                    <= (2 * 1024 * 1024 if self.path == "/api/preferences" else 16384)
+                    <= (2 * 1024 * 1024 if urlparse(self.path).path == "/api/preferences" else 16384)
                 ):
                     raise ValueError("invalid body size")
                 data = json.loads(self.rfile.read(length))
                 if not isinstance(data, dict):
                     raise ValueError("request must be an object")
-                if self.path == "/api/preferences":
-                    return self.send(session.preferences.save(data))
+                control = bo_web.control_reply(self.path, data)
+                if control is not None:
+                    return self.send(control)
+                if urlparse(self.path).path == "/api/preferences":
+                    return self.send(bo_web.preferences_for(self.path, session.preferences).save(data))
                 if self.path == "/api/recordings/start":
                     return self.send(
                         session.recordings.start(

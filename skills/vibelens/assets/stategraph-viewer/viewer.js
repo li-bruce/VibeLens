@@ -29,6 +29,7 @@ import { iconButton, installIcons, createContextMenu } from "./controls.js";
 import { createGraphRenderer, nodePoint, bezierAt } from "./renderer.js";
 import { pickRoutes } from "./route-picking.js";
 import { createConversationFocus, discussionContext } from "./conversation.js";
+import { createControlBridge, controlSelection } from "./conversation-controls.js";
 import { projectStorage } from "./preferences.js";
 import { createPoller } from "./polling.js";
 import { migrateNodeIds } from "./layout.js";
@@ -170,9 +171,14 @@ let legacyStorage;
 try {
   legacyStorage = window.localStorage;
 } catch {}
-const storage = await projectStorage(legacyStorage, (message) => {
-  if ($("layout-status")) $("layout-status").textContent = message;
-});
+const conversationControls = createControlBridge({ apply: applyConversationControl });
+const storage = await projectStorage(
+  conversationControls.legacy(legacyStorage),
+  (message) => {
+    if ($("layout-status")) $("layout-status").textContent = message;
+  },
+  conversationControls.request,
+);
 const restoredLocaleURL = restoreLocale(storage, window.location.href);
 if (restoredLocaleURL) window.location.replace(restoredLocaleURL);
 translateShell(document);
@@ -1616,6 +1622,7 @@ async function poll() {
     }
     if (next.stage !== "design") await refreshRecordings(next);
     if (recording) {
+      await conversationControls.refresh(next);
       $("connection").textContent = boTranslate("Connected \u00B7 recorded replay");
       showDatabaseWarning(next);
       return;
@@ -1709,6 +1716,7 @@ async function poll() {
       saveSoon();
     }
     await conversation.refresh();
+    await conversationControls.refresh(next);
     updateFacts();
     const newest = next.events.at(-1);
     if (newest && newest.id !== lastLiveEvent) {
@@ -1806,6 +1814,73 @@ function loadAnalysis(baseKey) {
 function currentProfile() {
   const p = analysisOverride || profileFor(analysisId, analysisSettings?.custom);
   return cleanProfile({ ...p, ...preferences?.filters });
+}
+/** Apply a scoped presentation plan through the same state used by native UI actions. */
+async function applyConversationControl(plan, session) {
+  if (!graph || !analysisSettings)
+    throw Error("Wait for the graph to load before applying controls");
+  if (recording) leaveRecording();
+  const id = "custom-vl-" + session.slice(0, 8) + "-" + plan.view_id;
+  if (
+    !analysisSettings.custom.some((item) => item.id === id) &&
+    analysisSettings.custom.length >= 20
+  )
+    throw Error("Delete an unused custom view before creating another");
+  const keep = controlSelection(graph.all, plan);
+  const original = structuredClone(preferences);
+  original.filters = cleanFilters({
+    ...original.filters,
+    ...plan.filters,
+    depth: "all",
+    hiddenNodes: [...graph.all.keys()].filter((key) => !keep.has(key)),
+    hiddenEdges: [],
+  });
+  original.algorithm = plan.layout;
+  const detailed = plan.filters.nodes.some((type) => type !== "business");
+  const parents = new Set(
+    [...graph.all.values()].filter((node) => keep.has(node.id)).map((node) => node.parent),
+  );
+  original.expanded = detailed ? [...keep].filter((key) => parents.has(key)) : [];
+  const profile = { ...cleanProfile(original.filters), hierarchical: false, id, label: plan.label };
+  analysisSettings.custom = analysisSettings.custom
+    .filter((item) => item.id !== id)
+    .concat(profile);
+  const base = analysisKey.slice(0, -":analysis".length);
+  writeLayout(storage, base + ":view:" + id, original);
+  saveAnalysis();
+  if (analysisId === id) {
+    preferences = original;
+    expanded = new Set(original.expanded);
+    analysisOverride = null;
+    updateAnalysisOptions();
+    project();
+  } else changeAnalysis(id);
+  await arrange();
+  if (plan.action === "replay") {
+    await openRecording(plan.recording.id);
+    if (recording.build_id !== plan.recording.build_id) throw Error("Recording build changed");
+    const included = new Set(plan.recording.event_ids);
+    if ([...included].some((key) => !recording.events.some((event) => event.id === key)))
+      throw Error("The recording no longer contains the selected events");
+    const ordered = replayItems.filter((item) => included.has(item.id));
+    changeReplaySelection({
+      skipped: replayItems.filter((item) => !included.has(item.id)).map((item) => item.id),
+      loop: plan.recording.loop,
+      from: ordered[0]?.id,
+      to: ordered.at(-1)?.id,
+    });
+    if (boPlan.length) seek(boPlan[0]);
+  }
+  save();
+  if (!(await storage.flush()))
+    throw Error("The conversation view could not be saved; refresh before retrying");
+  fit();
+  document.body.dataset.controlPlan = plan.id;
+  return {
+    view_id: id,
+    nodes: graph.boxes.map((box) => box.id),
+    events: plan.recording?.event_ids || [],
+  };
 }
 function saveAnalysis() {
   if (!analysisKey || !analysisSettings) return;

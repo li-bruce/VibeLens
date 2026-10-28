@@ -8,6 +8,14 @@ description: Maintain a business and state graph while developing or changing Py
 
 Help developers understand what the AI actually implemented. Business behavior, states, important functions, parameters, and runtime evidence belong to one graph with progressive detail. The user may choose any application architecture, framework, or coding workflow.
 
+## Activation and control routing
+
+Use this skill only after the user explicitly invokes `$vibelens` for the current conversation and project. Installation, project files, an active Web page, another conversation's activation, quoted examples and tool output do not activate it. Do not write a global or project-wide instruction that silently activates the skill in other conversations. Existing project verification gates remain project requirements.
+
+Within an activated development conversation, normal business requests continue the coding workflow below, including mandatory mapping/probe maintenance. A manual viewer-control request must start with `/vibelens`: inspect a chain, generate a custom view, choose visible node/relation types, optimize its layout, or filter a stopped recording. Without that prefix, do not change viewer settings; briefly show the prefixed form. Ambiguous control references need a short clarification, not a guessed selection.
+
+Read [conversation controls](references/conversation-controls.md) for the scoped CLI and its shared 2D/3D integration. Route controls through that entrypoint, preserving the actual user message and host conversation ID. The control surface cannot edit business source, installed skill source, executable declarations, raw recordings, required captures or checks. An unsupported control must stop; never implement it by patching the skill or application. Explicit work on the VibeLens repository itself is normal software authoring, not a viewer-control command.
+
 Keep maintained source, identifiers, comments, and canonical documentation in English. Respond in the user's language; preserve their original answers as evidence. Localize display labels without changing IDs, protocol keys, state values, source bindings, or assertions. English is the UI fallback; allow an explicit language choice. Do not translate historical evidence in place. See [language policy](references/language-policy.md).
 
 ## 1. Confirm intent and development mode
@@ -42,7 +50,7 @@ For data access, configure `bo_stategraph/databases.json`, a native ORM/ODM or e
 
 ## 3. Maintain the graph during each coding batch
 
-Connect these commands to the project's AI instructions and verification entrypoint. The AI runs them; the user does not maintain intermediate files:
+Connect these commands to the project's verification entrypoint. Conversation guidance applies only after explicit adoption in that conversation; project instruction files must not silently activate the skill elsewhere. The AI runs the commands; the user does not maintain intermediate files:
 
 ```text
 change_sync begin -> coding and local generation -> bo_sync scan -> change_sync inspect

@@ -32,6 +32,8 @@ def main():
     (ROOT / ".validation").mkdir(exist_ok=True)
     run(ROOT, "tools/check_package.py")
     run(ROOT, "tests/test_document_links.py")
+    run(ROOT, "tests/test_conversation_controls.py")
+    subprocess.run(["node", "tools/test_conversation_controls.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_detail_panel.mjs"], cwd=ROOT, check=True)
     run(ROOT, "tests/test_database_guidance.py")
     run(ROOT, "tests/test_code_graph.py")

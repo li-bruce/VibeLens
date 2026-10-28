@@ -1,6 +1,6 @@
 # From requirements to actual execution
 
-This Skill is a required companion to development. The user initially chooses `drive` (execute from a state declaration) or `observe` (follow existing logic). The main workflow may use any user-selected architecture, framework, or coding Skill. Both modes always require monitoring, source-driven state-network updates, function/parameter mappings, the graph, and validation. Internal maintenance is not a user-operated workflow. See [independent state module](independent-python.md).
+This Skill is a required companion within an explicitly activated development conversation. The user initially chooses `drive` (execute from a state declaration) or `observe` (follow existing logic). The main workflow may use any user-selected architecture, framework, or coding Skill. Both modes always require monitoring, source-driven state-network updates, function/parameter mappings, the graph, and validation. Internal maintenance is not a user-operated workflow. See [independent state module](independent-python.md).
 
 The files and commands below are for AI and integration maintainers. Users discuss graph meaning, request ordinary development changes, and inspect the updated graph and results. AI maintains artifacts and runs checks. Do not repeatedly request graph confirmation when business meaning is unchanged.
 
@@ -16,19 +16,19 @@ Cover all implemented features. Missing state, source mapping, capture, or verif
 
 ## Persist the development contract
 
-At first integration, merge a short contract into the project's existing instruction file, preserving other rules. Replace every placeholder with real relative paths and runnable commands:
+At first integration, retain the project's graph integrity requirements in its existing instruction file. Keep interactive skill adoption separate from those project checks. Replace placeholders with real paths and commands:
 
 ```text
-This project uses VibeLens for its developer runtime graph.
-Ask for drive or observe at first setup, record the answer and source; reuse an existing choice.
-Both modes require monitoring, source-driven state updates, parameter/function mappings, graph, and checks.
-Read the project rules, current graph, and Skill; preserve the existing design/coding workflow.
-Before related behavior changes, preserve a change baseline. Update state, bindings, probes, and independent expectations while coding.
-Run the project validation entrypoint, including change_sync check, before delivery. Fix failures; never reset the baseline to hide them.
-AI performs this maintenance. Ask the user only about unclear business meaning and present the updated graph and relevant results.
+This project retains a developer graph with source bindings and selected runtime evidence.
+Run the normal validation entrypoint, including change_sync check, before delivery.
+Preserve accepted baselines and independent expectations; repair failures rather than reset them.
+Activate VibeLens conversation guidance only when the user explicitly invokes $vibelens in this conversation.
+In an activated conversation, reuse the recorded drive/observe choice and maintain graph/probes during coding.
+Manual viewer controls require /vibelens in the current message and the scoped control entrypoint.
+Other conversations follow ordinary project instructions without starting VibeLens dialogue or changing its views.
 ```
 
-The normal validation command must call synchronization checks and propagate failure exits. Rehearse a source-only change that omits graph/probe maintenance: the normal gate must reject it, then pass only after the missing updates and revalidation. This persists instructions across conversations and catches omissions at the gate; it cannot intercept every external edit that bypasses that gate.
+The normal validation command propagates synchronization failures for everyone changing the project. This is a project integrity requirement, independent of skill activation. Rehearse a source-only change that omits graph/probe maintenance: the gate must reject it and pass only after repair and revalidation. Never persist a conversation activation or control authorization as a project-wide flag.
 
 ## Before implementation
 
