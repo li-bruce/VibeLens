@@ -9,6 +9,7 @@ Read this guide when you want to change the Skill, inspect a recorded value, or 
 | Location | What to read or change here |
 |---|---|
 | [SKILL.md](../skills/vibelens/SKILL.md) | The conversation and iteration workflow followed by the coding agent. |
+| [scripts/bo_observer/control](../skills/vibelens/scripts/bo_observer/control/) | Explicit conversation/project scope, validated view/replay plans and the control CLI. |
 | [scripts/bo.py](../skills/vibelens/scripts/bo.py) | Entry point for serving, validating, inspecting, and exporting a native project. |
 | [scripts/bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) | Independent state declaration, observed instances, and complete graph export. |
 | [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | Value types, state hierarchy, active-state calculation, and strict declaration checks. |

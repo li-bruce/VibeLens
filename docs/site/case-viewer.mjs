@@ -4,6 +4,7 @@
  */
 const params = new URLSearchParams(location.search);
 const version = params.get("case") === "2" ? 2 : 1;
+const controlMode = params.get("controls") === "1";
 const nativeFetch = window.fetch.bind(window);
 const artifact = await (
   await nativeFetch(new URL(`./case-data/v${version}.json`, import.meta.url))
@@ -12,7 +13,20 @@ let view = structuredClone(artifact.view);
 // A nonzero revision keeps the canonical viewer from migrating unrelated local
 // project layouts into this separately namespaced, bilingual demonstration.
 let preferences = { schema: 1, project_id: view.layout_id, revision: 1, entries: {} };
-const preferenceKey = `vibelens.case.gallery-story-6.${params.get("lang") || "en"}`;
+const preferenceKey = `vibelens.case.${controlMode ? "controls-1" : "gallery-story-6"}.${params.get("lang") || "en"}`;
+const controlPlans = controlMode
+  ? (await (await nativeFetch(new URL("./control-plans.json", import.meta.url))).json()).locales[
+      params.get("lang") || "en"
+    ]
+  : null;
+const controlSession = {
+  active: true,
+  session: params.get("vl_session"),
+  revision: 0,
+  plan: null,
+  result: null,
+};
+let controlPreset = "business";
 try {
   preferences = JSON.parse(localStorage.getItem(preferenceKey)) || preferences;
 } catch {
@@ -27,6 +41,31 @@ window.fetch = async (input, init = {}) => {
   if (url.origin !== location.origin || !url.pathname.startsWith("/api/"))
     return nativeFetch(input, init);
   const route = url.pathname;
+  if (route === "/api/vibelens/control" && controlMode) {
+    if (init.method === "POST") {
+      const result = JSON.parse(init.body);
+      if (result.revision !== controlSession.revision)
+        return reply({ error: "Stale preview control" }, 409);
+      controlSession.result = result;
+      parent.postMessage(
+        {
+          type: "vibelens-controls-applied",
+          locale: params.get("lang") || "en",
+          preset: controlPreset,
+          result,
+          recording: controlSession.plan?.recording,
+        },
+        location.origin,
+      );
+      if (
+        result.status === "applied" &&
+        controlPreset === "replay" &&
+        !matchMedia("(prefers-reduced-motion: reduce)").matches
+      )
+        document.getElementById("replay-play")?.click();
+    }
+    return reply(controlSession);
+  }
   if (route === "/api/view") return reply(view);
   if (route === "/api/design") return reply({ available: false });
   if (route === "/api/versions") return reply([]);
@@ -111,6 +150,13 @@ const captions = {
   "db:gallery:table%3Aexhibition": ["Exhibition table", "展览表"],
 };
 const baseKey = layoutKey(view.model, preferences.project_id);
+if (controlMode) {
+  // Separate the layers in this preview; the native viewer keeps its own controls.
+  const key = baseKey + ":analysis";
+  const analysis = JSON.parse(preferences.entries[key] || "{}");
+  analysis.layers = { ...analysis.layers, camera: "angled", gap: 180 };
+  preferences.entries[key] = JSON.stringify(analysis);
+}
 for (const id of [
   "overview",
   "business",
@@ -146,12 +192,14 @@ document.body.dataset.policyComparison = String(hasComparison);
 
 // Load after installing the transport: localization and preferences also use it.
 const { mergeGraph } = await import("./viewer/graph-links.js");
-view.model = mergeGraph(view.model, artifact.codeFocus.publish);
-artifact.recording.context.model = mergeGraph(
-  artifact.recording.context.model,
-  artifact.codeFocus.publish,
-);
-await import("./viewer/viewer.js?rev=story-7");
+if (!controlMode) {
+  view.model = mergeGraph(view.model, artifact.codeFocus.publish);
+  artifact.recording.context.model = mergeGraph(
+    artifact.recording.context.model,
+    artifact.codeFocus.publish,
+  );
+}
+await import("./viewer/viewer.js?rev=controls-1");
 const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-6");
 const runtimeView = structuredClone(view);
 const designView = {
@@ -175,6 +223,31 @@ const player = scenePlayer({
   },
 });
 window.addEventListener("message", (event) => {
+  if (event.source !== parent || event.origin !== location.origin) return;
+  if (controlMode) {
+    if (
+      event.data?.type === "vibelens-controls-select" &&
+      Object.hasOwn(controlPlans, event.data.preset)
+    ) {
+      controlPreset = event.data.preset;
+      controlSession.revision++;
+      controlSession.plan = structuredClone(controlPlans[controlPreset]);
+      controlSession.result = null;
+    }
+    if (event.data?.type === "vibelens-controls-mode" && ["2d", "3d"].includes(event.data.mode)) {
+      const enabled = window.graphDebug.layers.enabled;
+      if (enabled !== (event.data.mode === "3d")) document.getElementById("layered-toggle").click();
+    }
+    if (event.data?.type === "vibelens-controls-fit")
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => document.getElementById("fit").click()),
+      );
+    if (event.data?.type === "vibelens-controls-visibility" && !event.data.visible) {
+      const play = document.getElementById("replay-play");
+      if (/Pause|暂停/.test(play?.getAttribute("aria-label"))) play.click();
+    }
+    return;
+  }
   if (
     event.source === parent &&
     event.origin === location.origin &&
@@ -209,6 +282,10 @@ for (let attempt = 0; attempt < 250 && !window.graphDebug.graph; attempt++)
   await new Promise((resolve) => setTimeout(resolve, 40));
 if (window.graphDebug.graph)
   parent.postMessage(
-    { type: "vibelens-case-ready", version, locale: params.get("lang") || "en" },
+    {
+      type: controlMode ? "vibelens-controls-ready" : "vibelens-case-ready",
+      version,
+      locale: params.get("lang") || "en",
+    },
     location.origin,
   );

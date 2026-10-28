@@ -108,6 +108,22 @@ You can also ask Codex's Skill installer to install from [the Skill directory](h
 
 English is the maintained source/documentation language. Conversation follows the user; the viewer offers English/Chinese and saves the preference in the project. Original answers and historical evidence retain their original language.
 
+## Control a view from the conversation
+
+Installation makes the skill available; it is activated explicitly with `$vibelens` for the current conversation and project. Other conversations keep their own activation and private views.
+
+Once activated, use the `/vibelens` prefix to control a view or filter an existing recording:
+
+```text
+/vibelens Focus the upload-to-approval chain, showing business actions and decisions
+/vibelens Show the approval rule and its parameters two relationships deep
+/vibelens In recording RECORDING_ID, replay only the approval path and loop it
+```
+
+The agent resolves actual graph identities, asks about ambiguous matches, then creates a saved custom view using the viewer's native layout and replay controls. Open the scoped graph address it returns. The original graph and recorded events remain intact; 2D and 3D share the selection. Ordinary project coding continues to update mappings and probes.
+
+`/vibelens` is a skill-local text prefix. Clients that intercept it can use `$vibelens /vibelens …`. Manual viewer changes require the prefix; it never grants source-edit permissions. See [scope, commands and boundaries](skills/vibelens/references/conversation-controls.md).
+
 ## Run locally
 
 Shared services require Python 3.11–3.13. JS/TS/React/Vue analysis requires Node.js 20.19+ or 22.12+. The viewer needs a modern WebGL browser.

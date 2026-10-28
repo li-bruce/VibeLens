@@ -11,8 +11,9 @@
     <link rel="stylesheet" href="site.css?rev=story-6" />
     <link rel="stylesheet" href="scroll-story.css?rev=story-3" />
     <link rel="stylesheet" href="product-story.css?rev=story-3" />
+    <link rel="stylesheet" href="conversation-tour.css?rev=controls-1" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <script type="module" src="site.js?rev=story-6"></script>
+    <script type="module" src="site.js?rev=controls-1"></script>
   </head>
   <body class="product-story">
     <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -26,6 +27,7 @@
       <nav aria-label="Main navigation" data-i18n-aria="navigation">
         <a href="#explore" data-i18n="nav.explore">Explore</a
         ><a href="demo.html" data-local-link data-i18n="nav.demo">Try the demo</a
+        ><a href="#conversation-controls" data-i18n="controls.nav">How to use</a
         ><a class="github" href="https://github.com/li-bruce/VibeLens">GitHub ↗</a
         ><button class="language" id="language" type="button" aria-label="Switch to Chinese">
           中文
@@ -522,14 +524,109 @@
           >Explore the demo ↗</a
         >
       </aside>
+      <section class="wrap conversation-tour section-space" id="conversation-controls">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow" data-i18n="controls.kicker">From your conversation</p>
+            <h2 data-i18n="controls.title">Your view,<br />in a sentence</h2>
+          </div>
+          <p data-i18n="controls.body">
+            Tell Codex which path to keep in view. A focused view appears in VibeLens.
+          </p>
+        </div>
+        <div class="conversation-tour-grid">
+          <div class="conversation-tour-copy">
+            <div
+              class="control-choices"
+              role="group"
+              aria-label="Choose an example"
+              data-i18n-aria="controls.choose"
+            >
+              <button
+                type="button"
+                data-control-preset="business"
+                aria-pressed="true"
+                data-i18n="controls.business"
+              >
+                Focus a path
+              </button>
+              <button
+                type="button"
+                data-control-preset="details"
+                aria-pressed="false"
+                data-i18n="controls.details"
+              >
+                Go deeper
+              </button>
+              <button
+                type="button"
+                data-control-preset="replay"
+                aria-pressed="false"
+                data-i18n="controls.replay"
+              >
+                Filter a recording
+              </button>
+            </div>
+            <p id="control-description"></p>
+            <div class="control-command">
+              <pre id="control-command"></pre>
+              <button
+                type="button"
+                id="copy-control"
+                aria-label="Copy command"
+                data-i18n-aria="controls.copy"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  aria-hidden="true"
+                >
+                  <rect x="8" y="8" width="12" height="12" rx="2" />
+                  <path d="M15 8V4H4v11h4" />
+                </svg>
+              </button>
+            </div>
+            <span id="control-copy-status" class="control-copy-status" role="status"></span>
+            <p class="control-prefix-note" data-i18n="controls.prefix">
+              If your client intercepts /vibelens, use $vibelens /vibelens …
+            </p>
+          </div>
+          <div class="control-preview-window">
+            <div class="control-preview-bar">
+              <strong>◉ VibeLens</strong>
+              <span data-i18n="controls.example">Recorded example</span>
+              <div
+                class="control-dimensions"
+                role="group"
+                aria-label="View dimensions"
+                data-i18n-aria="controls.dimensions"
+              >
+                <button type="button" data-control-mode="2d" aria-pressed="true">2D</button>
+                <button type="button" data-control-mode="3d" aria-pressed="false">3D</button>
+              </div>
+            </div>
+            <iframe
+              id="control-preview"
+              title="Conversation-selected graph preview"
+              referrerpolicy="same-origin"
+            ></iframe>
+            <p id="control-result" role="status"></p>
+          </div>
+        </div>
+      </section>
       <section class="install section-space" id="install">
         <div class="wrap install-grid">
           <div>
             <p class="eyebrow" data-i18n="install.kicker">Start with your own project</p>
             <h2 data-i18n="install.title">Bring the graph into<br />your next conversation</h2>
             <p data-i18n="install.body">
-              Install VibeLens from GitHub, then open a new conversation in your project and
-              describe what you want to build.
+              Install VibeLens, then start with $vibelens in the conversation where you want to use
+              it.
+            </p>
+            <p class="activation-note" data-i18n="install.scope">
+              The graph stays in sync as you code in this conversation.
             </p>
             <a
               class="button primary"

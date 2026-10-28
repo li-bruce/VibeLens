@@ -1,0 +1,633 @@
+{
+  "kind": "scripted-user-requests-through-real-cli-and-browser",
+  "dialogue": [
+    {
+      "speaker": "user",
+      "message": "$vibelens for this project",
+      "command": "activate",
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "result": {
+          "active": true,
+          "session": "8957b3a65be2c68b59bd41604c3cd8be",
+          "graph_url": "http://127.0.0.1:62272/graph?vl_session=8957b3a65be2c68b59bd41604c3cd8be"
+        }
+      }
+    },
+    {
+      "speaker": "user",
+      "message": "/vibelens status",
+      "command": "status",
+      "exit_code": 1,
+      "result": {
+        "valid": false,
+        "error": "Invoke $vibelens in this conversation before using controls"
+      }
+    },
+    {
+      "speaker": "user",
+      "message": "只看上传和审核",
+      "command": "apply",
+      "exit_code": 1,
+      "result": {
+        "valid": false,
+        "error": "Viewer controls require an explicit /vibelens prefix in this user message"
+      }
+    },
+    {
+      "speaker": "user",
+      "message": "/vibelens 只看上传到审核的主要过程，保留业务节点和流程关系",
+      "command": "apply",
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "result": {
+          "schema": "vibelens-control-session/v1",
+          "session": "8957b3a65be2c68b59bd41604c3cd8be",
+          "root": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\conversation-controls\\post-design-browser\\project",
+          "conversation": "control-browser-a",
+          "project_id": "afterlight-case",
+          "active": true,
+          "revision": 1,
+          "plan": {
+            "schema": "vibelens-control-plan/v1",
+            "base": {
+              "project_id": "afterlight-case",
+              "model_revision": "1",
+              "model_hash": "ab4a75525dbe98cc9cad09cef4cc41a7d0d43d8c4893c954998158407813f376",
+              "build_id": "16b767ae4397879574de38f48a396266301332a07065abcb185268afdc33e4ec"
+            },
+            "action": "view",
+            "label": "Upload and approval",
+            "anchors": [
+              "upload",
+              "publish"
+            ],
+            "node_ids": [
+              "publish",
+              "review",
+              "upload"
+            ],
+            "edge_ids": [
+              "upload:review:flow",
+              "review:publish:flow"
+            ],
+            "boundaries": [
+              {
+                "id": "api.upload:upload:call",
+                "from": "api.upload",
+                "to": "upload",
+                "type": "flow",
+                "label": "Handles request",
+                "code_relation": "handles",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "api.review:review:call",
+                "from": "api.review",
+                "to": "review",
+                "type": "flow",
+                "label": "Handles request",
+                "code_relation": "handles",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "api.publish:publish:call",
+                "from": "api.publish",
+                "to": "publish",
+                "type": "flow",
+                "label": "Handles request",
+                "code_relation": "handles",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:exhibit:flow",
+                "from": "publish",
+                "to": "exhibit",
+                "type": "flow",
+                "label": "Next step",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "upload:image-check:call",
+                "from": "upload",
+                "to": "image-check",
+                "type": "flow",
+                "label": "Checks content",
+                "code_relation": "calls",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:review-policy:call",
+                "from": "publish",
+                "to": "review-policy",
+                "type": "flow",
+                "label": "Evaluates request",
+                "code_relation": "calls",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:choose-version:call",
+                "from": "publish",
+                "to": "choose-version",
+                "type": "flow",
+                "label": "Selects version",
+                "code_relation": "calls",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "state.empty:upload:guard",
+                "from": "state.empty",
+                "to": "upload",
+                "type": "guard",
+                "label": "Before first upload",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "upload:state.pending:flow",
+                "from": "upload",
+                "to": "state.pending",
+                "type": "flow",
+                "label": "Awaits review",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "state.pending:publish:guard",
+                "from": "state.pending",
+                "to": "publish",
+                "type": "guard",
+                "label": "Review candidate",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:state.displayed:flow",
+                "from": "publish",
+                "to": "state.displayed",
+                "type": "flow",
+                "label": "Committed",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "db-edge:publish:contains:read-artwork",
+                "from": "publish",
+                "to": "read-artwork",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:upload:contains:save-upload",
+                "from": "upload",
+                "to": "save-upload",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:publish:contains:save-exhibition",
+                "from": "publish",
+                "to": "save-exhibition",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:publish:contains:review-transaction",
+                "from": "publish",
+                "to": "review-transaction",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:publish:contains:version-selection",
+                "from": "publish",
+                "to": "version-selection",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              }
+            ],
+            "limits_hit": false,
+            "filters": {
+              "nodes": [
+                "business"
+              ],
+              "regions": [
+                "business"
+              ],
+              "edges": [
+                "flow"
+              ]
+            },
+            "layout": "layered",
+            "recording": null,
+            "view_id": "72104a78bf39a798",
+            "id": "control-af5534f00e6a7ecf5c97"
+          },
+          "result": null
+        }
+      }
+    },
+    {
+      "speaker": "user",
+      "message": "/vibelens status",
+      "command": "status",
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "result": {
+          "schema": "vibelens-control-session/v1",
+          "session": "8957b3a65be2c68b59bd41604c3cd8be",
+          "project_id": "afterlight-case",
+          "active": true,
+          "revision": 1,
+          "plan": {
+            "schema": "vibelens-control-plan/v1",
+            "base": {
+              "project_id": "afterlight-case",
+              "model_revision": "1",
+              "model_hash": "ab4a75525dbe98cc9cad09cef4cc41a7d0d43d8c4893c954998158407813f376",
+              "build_id": "16b767ae4397879574de38f48a396266301332a07065abcb185268afdc33e4ec"
+            },
+            "action": "view",
+            "label": "Upload and approval",
+            "anchors": [
+              "upload",
+              "publish"
+            ],
+            "node_ids": [
+              "publish",
+              "review",
+              "upload"
+            ],
+            "edge_ids": [
+              "upload:review:flow",
+              "review:publish:flow"
+            ],
+            "boundaries": [
+              {
+                "id": "api.upload:upload:call",
+                "from": "api.upload",
+                "to": "upload",
+                "type": "flow",
+                "label": "Handles request",
+                "code_relation": "handles",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "api.review:review:call",
+                "from": "api.review",
+                "to": "review",
+                "type": "flow",
+                "label": "Handles request",
+                "code_relation": "handles",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "api.publish:publish:call",
+                "from": "api.publish",
+                "to": "publish",
+                "type": "flow",
+                "label": "Handles request",
+                "code_relation": "handles",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:exhibit:flow",
+                "from": "publish",
+                "to": "exhibit",
+                "type": "flow",
+                "label": "Next step",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "upload:image-check:call",
+                "from": "upload",
+                "to": "image-check",
+                "type": "flow",
+                "label": "Checks content",
+                "code_relation": "calls",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:review-policy:call",
+                "from": "publish",
+                "to": "review-policy",
+                "type": "flow",
+                "label": "Evaluates request",
+                "code_relation": "calls",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:choose-version:call",
+                "from": "publish",
+                "to": "choose-version",
+                "type": "flow",
+                "label": "Selects version",
+                "code_relation": "calls",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "state.empty:upload:guard",
+                "from": "state.empty",
+                "to": "upload",
+                "type": "guard",
+                "label": "Before first upload",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "upload:state.pending:flow",
+                "from": "upload",
+                "to": "state.pending",
+                "type": "flow",
+                "label": "Awaits review",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "state.pending:publish:guard",
+                "from": "state.pending",
+                "to": "publish",
+                "type": "guard",
+                "label": "Review candidate",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:state.displayed:flow",
+                "from": "publish",
+                "to": "state.displayed",
+                "type": "flow",
+                "label": "Committed",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "db-edge:publish:contains:read-artwork",
+                "from": "publish",
+                "to": "read-artwork",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:upload:contains:save-upload",
+                "from": "upload",
+                "to": "save-upload",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:publish:contains:save-exhibition",
+                "from": "publish",
+                "to": "save-exhibition",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:publish:contains:review-transaction",
+                "from": "publish",
+                "to": "review-transaction",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:publish:contains:version-selection",
+                "from": "publish",
+                "to": "version-selection",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              }
+            ],
+            "limits_hit": false,
+            "filters": {
+              "nodes": [
+                "business"
+              ],
+              "regions": [
+                "business"
+              ],
+              "edges": [
+                "flow"
+              ]
+            },
+            "layout": "layered",
+            "recording": null,
+            "view_id": "72104a78bf39a798",
+            "id": "control-af5534f00e6a7ecf5c97"
+          },
+          "result": {
+            "revision": 1,
+            "status": "applied",
+            "view_id": "custom-vl-8957b3a6-72104a78bf39a798",
+            "nodes": [
+              "upload",
+              "review",
+              "publish"
+            ],
+            "events": [],
+            "error": ""
+          }
+        }
+      }
+    },
+    {
+      "speaker": "user",
+      "message": "/vibelens 在这段记录里只回放审核判定与相邻参数，循环播放",
+      "command": "apply",
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "result": {
+          "schema": "vibelens-control-session/v1",
+          "session": "8957b3a65be2c68b59bd41604c3cd8be",
+          "root": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\conversation-controls\\post-design-browser\\project",
+          "conversation": "control-browser-a",
+          "project_id": "afterlight-case",
+          "active": true,
+          "revision": 2,
+          "plan": {
+            "schema": "vibelens-control-plan/v1",
+            "base": {
+              "project_id": "afterlight-case",
+              "model_revision": "1",
+              "model_hash": "ab4a75525dbe98cc9cad09cef4cc41a7d0d43d8c4893c954998158407813f376",
+              "build_id": "16b767ae4397879574de38f48a396266301332a07065abcb185268afdc33e4ec"
+            },
+            "action": "replay",
+            "label": "Approval detail",
+            "anchors": [
+              "review-policy"
+            ],
+            "node_ids": [
+              "choose-version",
+              "publish",
+              "review-policy"
+            ],
+            "edge_ids": [
+              "publish:review-policy:call",
+              "publish:choose-version:call",
+              "review-policy:choose-version:guard"
+            ],
+            "boundaries": [
+              {
+                "id": "api.publish:publish:call",
+                "from": "api.publish",
+                "to": "publish",
+                "type": "flow",
+                "label": "Handles request",
+                "code_relation": "handles",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "review:publish:flow",
+                "from": "review",
+                "to": "publish",
+                "type": "flow",
+                "label": "Next step",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:exhibit:flow",
+                "from": "publish",
+                "to": "exhibit",
+                "type": "flow",
+                "label": "Next step",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "state.pending:publish:guard",
+                "from": "state.pending",
+                "to": "publish",
+                "type": "guard",
+                "label": "Review candidate",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "publish:state.displayed:flow",
+                "from": "publish",
+                "to": "state.displayed",
+                "type": "flow",
+                "label": "Committed",
+                "evidence": "Authored mapping to the bound request handlers, domain calls and state declaration"
+              },
+              {
+                "id": "db-edge:publish:contains:read-artwork",
+                "from": "publish",
+                "to": "read-artwork",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:publish:contains:save-exhibition",
+                "from": "publish",
+                "to": "save-exhibition",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:publish:contains:review-transaction",
+                "from": "publish",
+                "to": "review-transaction",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              },
+              {
+                "id": "db-edge:publish:contains:version-selection",
+                "from": "publish",
+                "to": "version-selection",
+                "type": "contains",
+                "label": "contains",
+                "evidence": "database catalog and configured source binding",
+                "managed_by": "bo-database/v1"
+              }
+            ],
+            "limits_hit": false,
+            "filters": {
+              "nodes": [
+                "business",
+                "data",
+                "decision",
+                "function"
+              ],
+              "regions": [
+                "business",
+                "data",
+                "decision",
+                "function"
+              ],
+              "edges": [
+                "call",
+                "data",
+                "flow",
+                "guard"
+              ]
+            },
+            "layout": "cluster",
+            "recording": {
+              "id": "144128b587454176b8505d911744054f",
+              "build_id": "16b767ae4397879574de38f48a396266301332a07065abcb185268afdc33e4ec",
+              "event_ids": [
+                "d430bc1c917c47d6b31cf40c3ee6d560:4d386a1abf8740b68766cae2d0a05e51:42",
+                "d430bc1c917c47d6b31cf40c3ee6d560:4d386a1abf8740b68766cae2d0a05e51:46",
+                "d430bc1c917c47d6b31cf40c3ee6d560:4d386a1abf8740b68766cae2d0a05e51:47",
+                "d430bc1c917c47d6b31cf40c3ee6d560:4d386a1abf8740b68766cae2d0a05e51:48",
+                "d430bc1c917c47d6b31cf40c3ee6d560:4d386a1abf8740b68766cae2d0a05e51:51",
+                "d430bc1c917c47d6b31cf40c3ee6d560:4d386a1abf8740b68766cae2d0a05e51:59"
+              ],
+              "events_hash": "a6dd5cb28885a4b7d66da376ef559450861f594d865ca45b5486582d563205ee",
+              "selected_events": 6,
+              "total_events": 82,
+              "loop": true
+            },
+            "view_id": "fb41fabb007ed969",
+            "id": "control-20603cd830275610c2da"
+          },
+          "result": null
+        }
+      }
+    },
+    {
+      "speaker": "user",
+      "message": "/vibelens stop",
+      "command": "end",
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "result": {
+          "active": false,
+          "session": "8957b3a65be2c68b59bd41604c3cd8be"
+        }
+      }
+    },
+    {
+      "speaker": "user",
+      "message": "/vibelens show approval",
+      "command": "apply",
+      "exit_code": 1,
+      "result": {
+        "valid": false,
+        "error": "VibeLens is not active in this conversation"
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=story-6";
-import { messages, chapters } from "./case-messages.mjs?rev=story-6";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=controls-1";
+import { messages, chapters } from "./case-messages.mjs?rev=controls-1";
 import { scrollStory } from "./scroll-story.mjs?rev=story-3";
 import { companion } from "./case-companion.mjs?rev=story-6";
 

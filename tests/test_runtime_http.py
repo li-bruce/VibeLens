@@ -103,6 +103,7 @@ class RuntimeTests(unittest.TestCase):
                         self.assertIn("canvas-host", page.read().decode())
                     # Every shipped module must be reachable from this older HTTP adapter.
                     for name, mime in (
+                        ("conversation-controls.js", "javascript"),
                         ("detail-panel.js", "javascript"),
                         ("change-panel.js", "javascript"),
                         ("edge-panel.js", "javascript"),
@@ -117,6 +118,61 @@ class RuntimeTests(unittest.TestCase):
                                     example / "observer_generated/static" / name
                                 ).read_bytes(),
                             )
+                    # Use the shipped integration's actual view and scoped preference routes.
+                    # These requests must not create a business event.
+                    observed_before = view()["events"]
+
+                    def control_cli(action, message):
+                        completed = subprocess.run(
+                            [
+                                sys.executable,
+                                "-B",
+                                "-X",
+                                "utf8",
+                                str(ROOT / "skills/vibelens/scripts/bo_control.py"),
+                                action,
+                                "--root",
+                                str(example),
+                                "--url",
+                                base,
+                                "--message",
+                                message,
+                            ],
+                            capture_output=True,
+                            text=True,
+                            encoding="utf-8",
+                            check=True,
+                        )
+                        return json.loads(completed.stdout)["result"]
+
+                    activation = control_cli("activate", "$vibelens for this project")
+                    token = activation["session"]
+                    with urlopen(
+                        base + "/api/vibelens/control?vl_session=" + token, timeout=5
+                    ) as response:
+                        self.assertTrue(json.load(response)["active"])
+                    with urlopen(
+                        base + "/api/preferences?vl_session=" + token, timeout=5
+                    ) as response:
+                        private = json.load(response)
+                    request = Request(
+                        base + "/api/preferences?vl_session=" + token,
+                        data=json.dumps(private).encode(),
+                        headers={"Content-Type": "application/json"},
+                    )
+                    with urlopen(request, timeout=5) as response:
+                        self.assertGreater(
+                            json.load(response)["revision"], private["revision"]
+                        )
+                    self.assertTrue(
+                        (
+                            example
+                            / "bo_stategraph/config/views/conversations"
+                            / (token + ".json")
+                        ).exists()
+                    )
+                    self.assertEqual(view()["events"], observed_before)
+                    control_cli("end", "/vibelens stop")
                     command("execute")
                     result, _ = finish()
                     self.assertEqual(result["authority"]["state"], "waiting")

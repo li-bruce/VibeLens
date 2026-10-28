@@ -17,6 +17,7 @@
 | 位置 | 负责什么 |
 |---|---|
 | [SKILL.md](../skills/vibelens/SKILL.md) | 开发对话、业务图确认、迭代检查的操作流程。 |
+| [scripts/bo_observer/control](../skills/vibelens/scripts/bo_observer/control/) | 对话与项目范围、视图及回放计划校验，以及控制命令入口。 |
 | [scripts/bo.py](../skills/vibelens/scripts/bo.py) | 原生项目的启动、校验、源码检索与导出入口。 |
 | [scripts/bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) | 独立状态声明、观测到的实例与完整关系结构导出。 |
 | [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | 参数类型、状态层次、活动状态计算和声明的严格校验。 |

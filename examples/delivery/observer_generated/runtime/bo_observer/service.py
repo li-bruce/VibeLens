@@ -42,6 +42,8 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
             previous.root, previous.path.relative_to(previous.root).as_posix()
         ),
     )
+    session.web.control_view = session.view
+    session.web.control_recording = session.recordings.get
 
     def consistent_request(method):
         """Finish each request against one session while a watcher may replace the build."""
@@ -49,6 +51,8 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
         @wraps(method)
         def handle(handler):
             with host.borrow() as current:
+                current.web.control_view = current.view
+                current.web.control_recording = current.recordings.get
                 return method(handler, current)
 
         return handle
@@ -136,7 +140,11 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                 if path in ("/api/stategraph", "/api/stategraph/export"):
                     return self.reply(200, session.export())
                 if path == "/api/preferences":
-                    return self.reply(200, session.preferences.read())
+                    return self.reply(
+                        200, session.web.preferences_for(self.path, session.preferences).read()
+                    )
+                if path == "/api/vibelens/control":
+                    return self.reply(200, session.web.get(self.path))
                 if path == "/api/design":
                     return self.reply(200, session.web.design.snapshot())
                 if path == "/api/versions":
@@ -188,12 +196,17 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                 if not 0 < size <= (24576 if ingest else 2 * 1024 * 1024):
                     raise ValueError("invalid payload size")
                 body = json.loads(self.rfile.read(size))
+                control = session.web.control_reply(self.path, body)
+                if control is not None:
+                    return self.reply(200, control)
                 if path == "/api/bo/events":
                     return self.reply(200, session.event(body))
                 if path == "/api/bo/snapshots":
                     return self.reply(200, session.snapshot(body))
                 if path == "/api/preferences":
-                    return self.reply(200, session.preferences.save(body))
+                    return self.reply(
+                        200, session.web.preferences_for(self.path, session.preferences).save(body)
+                    )
                 if path == "/api/recordings/start":
                     return self.reply(
                         200, session.recordings.start(body.get("label", ""), body.get("scope"))

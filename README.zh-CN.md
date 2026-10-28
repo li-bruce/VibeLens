@@ -75,7 +75,8 @@ python tools/install_skill.py --project /path/to/your-project
 脚本安装完整目录到项目的 `.agents/skills/vibelens`，已有目录会停止，避免覆盖修改。然后在该项目的新对话中输入：
 
 ```text
-在这个项目中使用 $vibelens。
+$vibelens
+在当前对话和项目中使用。
 我想开发：[描述你的项目]。
 先在对话中展示业务图，并提供可打开的 Web 地址。
 确认没有理解偏差后，再开始实现，并持续更新图和检查。
@@ -88,6 +89,20 @@ python tools/install_skill.py --project /path/to/your-project
 依赖与完整命令见[使用说明](docs/usage.zh-CN.md)和[英文首页](README.md)。本地产品介绍可通过 `python -m http.server 8862 --bind 127.0.0.1` 启动，然后打开[介绍页](http://127.0.0.1:8862/docs/site/?lang=zh-CN)。
 
 [独立交互演示](https://li-bruce.github.io/VibeLens/demo.html?lang=zh-CN)用真实前后端项目的录制结果，展示“确认、记录、定位、修改、复测”全过程。沿八层关系定位一次旧版本审核错误，并在原版二维、三维视窗中对照修复后的运行。首版缺陷为演示预设，对话为模拟。可[运行项目](examples/exhibition-review/README.zh-CN.md)，或查看[对话与验收材料](docs/review/pages-case/README.md)。[源码导览](docs/source-guide.zh-CN.md)说明整体模块职责。
+
+## 在对话中控制视图
+
+安装后通过 `$vibelens` 在当前对话和项目中显式启用。其他对话独立启用，各自保存视图配置。
+
+```text
+/vibelens 只观察上传到审核的业务链路，保留业务节点和判断节点
+/vibelens 展开审核规则及其参数，查看两层关联
+/vibelens 在记录 RECORDING_ID 中只回放审核链路，并循环播放
+```
+
+AI 根据当前图匹配具体节点，遇到重名或多份记录时先确认，再生成自定义视图并整理布局。打开返回的专属图地址即可查看；二维、三维使用同一筛选，原图和原始记录保持完整。正常业务编码仍会维护图、埋点和映射检查。
+
+`/vibelens` 是 Skill 识别的对话前缀。客户端若拦截这类输入，可以使用 `$vibelens /vibelens …`。手动控制视图需要前缀，控制工具只处理展示与回放。详见[范围、命令与边界](skills/vibelens/references/conversation-controls.md)。
 
 ## 当前边界
 

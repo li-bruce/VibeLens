@@ -13,6 +13,7 @@ import subprocess
 import sys
 from urllib.parse import urlsplit, parse_qs
 from ..code_graph.service import CodeGraph
+from ..control.scope import ControlScope
 
 try:
     from ...bo_design import BODesign
@@ -51,6 +52,49 @@ class BOWeb:
         self.design = BODesign(self.root, discovery)
         self.graph_routes = set(graph_routes)
         self.code_graph = CodeGraph(self.root)
+        self.control = ControlScope(self.root)
+        self.control_view = None
+        self.control_recording = None
+
+    def preferences_for(self, path, fallback):
+        """Use a conversation's private view file only for an explicitly scoped URL."""
+        session = parse_qs(urlsplit(path).query).get("vl_session", [None])[0]
+        return self.control.preferences(session, fallback) if session else fallback
+
+    def control_reply(self, path, value=None):
+        """Control polling and acknowledgements never execute a business operation."""
+        parsed = urlsplit(path)
+        if parsed.path != "/api/vibelens/control":
+            return None
+        session = parse_qs(parsed.query).get("vl_session", [None])[0]
+        if value is not None:
+            return self.control.acknowledge(session, value)
+        result = self.control.for_view(session)
+        if result["plan"]:
+            from ..control.selection import validate_evidence
+
+            try:
+                if not self.control_view:
+                    raise ValueError("This observer integration has not connected its control view")
+                plan = result["plan"]
+                recording = (
+                    self.control_recording(plan["recording"]["id"])
+                    if plan["recording"] and self.control_recording
+                    else None
+                )
+                validate_evidence(plan, self.control_view(), recording)
+            except (ValueError, KeyError, TypeError) as error:
+                result["result"] = {
+                    "revision": result["revision"],
+                    "status": "rejected",
+                    "view_id": "",
+                    "nodes": [],
+                    "events": [],
+                    "error": str(error)[:1000],
+                }
+                self.control.acknowledge(session, result["result"])
+                result["plan"] = None
+        return result
 
     def status(self):
         value = read(self.config) if self.config.exists() else {"schema": 1, "mode": "visible"}
@@ -94,6 +138,9 @@ class BOWeb:
         return raw.replace(b"data-bo-entry", b"data-bo-entry hidden")
 
     def get(self, path):
+        control = self.control_reply(path)
+        if control is not None:
+            return control
         parsed = urlsplit(path)
         if parsed.path == "/api/code/graph":
             query = parse_qs(parsed.query)
@@ -116,6 +163,7 @@ def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
     web = BOWeb(root, assets=assets, discovery=discovery, graph_routes=("/", "/graph", "/graph/"))
     root = web.root
     initial = web.design.view()  # Validate before listening; no fabricated business engine.
+    web.control_view = web.design.view
     if not web.status()["enabled"]:
         raise ValueError("Web is disabled; restore it with mode visible")
     cfg = read(Path(root) / "sync.json") if (Path(root) / "sync.json").exists() else {}
@@ -162,7 +210,7 @@ def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
                 if path == "/api/view":
                     return self.reply(200, web.design.view())
                 if path == "/api/preferences":
-                    return self.reply(200, preferences.read())
+                    return self.reply(200, web.preferences_for(self.path, preferences).read())
                 name = "index.html" if path in web.graph_routes else path[1:]
                 if not name or "/" in name or "\\" in name or name.startswith("."):
                     return self.reply(404, {"error": "Page not found"})
@@ -193,8 +241,11 @@ def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
                 value = json.loads(self.rfile.read(size))
                 if not isinstance(value, dict):
                     raise ValueError("The request must be an object")
+                control = web.control_reply(self.path, value)
+                if control is not None:
+                    return self.reply(200, control)
                 if path == "/api/preferences":
-                    return self.reply(200, preferences.save(value))
+                    return self.reply(200, web.preferences_for(self.path, preferences).save(value))
                 return self.reply(
                     405,
                     {"error": "The graph is read-only; request changes in the coding conversation"},
