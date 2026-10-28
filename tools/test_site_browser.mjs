@@ -61,6 +61,13 @@ try {
     );
     assert.equal(await page.locator("html").getAttribute("lang"), language);
     assert.match(await page.locator(".brand").innerText(), /^VibeLens/);
+    await page.waitForFunction(() =>
+      [...document.querySelectorAll(".brand-mark")].every(
+        (image) => image.complete && image.naturalWidth > 0,
+      ),
+    );
+    const brand = await page.locator(".brand .brand-mark").getAttribute("src");
+    assert.equal(brand, await page.locator('link[rel="icon"]').getAttribute("href"));
     assert.equal(
       await page.locator("a.github").getAttribute("href"),
       "https://github.com/li-bruce/VibeLens",

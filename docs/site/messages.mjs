@@ -42,19 +42,10 @@ export const extra = {
   "controls.loading": ["Preparing the view…", "正在整理视图…"],
   "controls.preview": ["Conversation-selected graph preview", "通过对话筛选的图"],
   "controls.copy": ["Copy command", "复制指令"],
-  "controls.prefix": [
-    "If your client intercepts /vibelens, use $vibelens /vibelens …",
-    "客户端若拦截 /vibelens，可写 $vibelens /vibelens …",
-  ],
-  "controls.example": ["Recorded example", "录制示例"],
   "controls.dimensions": ["View dimensions", "视图维度"],
   "install.body": [
     "Install VibeLens, then start with $vibelens in the conversation where you want to use it.",
     "安装 VibeLens，在准备使用它的对话中输入 $vibelens。",
-  ],
-  "install.scope": [
-    "Activated for this conversation and project. The graph follows your code.",
-    "启用范围是当前对话和项目，图会随开发持续更新。",
   ],
   "tour.aria": ["Viewer tour", "图分析页面演示"],
   "tour.kicker": ["Inside VibeLens", "看看 VibeLens 界面"],
