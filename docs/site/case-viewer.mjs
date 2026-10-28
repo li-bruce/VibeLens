@@ -199,7 +199,7 @@ if (!controlMode) {
     artifact.codeFocus.publish,
   );
 }
-await import("./viewer/viewer.js?rev=controls-1");
+await import("./viewer/viewer.js?rev=clarity-1");
 const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-6");
 const runtimeView = structuredClone(view);
 const designView = {

@@ -4,6 +4,7 @@ import { DemoSession } from "../docs/site/demo-model.mjs";
 import { extra, chinese } from "../docs/site/messages.mjs";
 import { messages } from "../docs/site/demo-messages.mjs";
 import { messages as caseMessages } from "../docs/site/case-messages.mjs";
+import { messages as homeMessages } from "../docs/site/home-messages.mjs";
 
 const sample = new DemoSession();
 assert.equal(sample.operate("approve"), false, "Review requires an uploaded, checked image");
@@ -83,12 +84,21 @@ for (const name of ["index.html", "demo.html", "practice.html"]) {
   const keys = [...html.matchAll(/data-i18n(?:-aria)?="([^"]+)"/g)].map((match) => match[1]);
   for (const key of keys) {
     assert.ok(
-      extra[key]?.[1] || chinese[key] || messages[key]?.[1] || caseMessages[key]?.[1],
+      extra[key]?.[1] ||
+        chinese[key] ||
+        messages[key]?.[1] ||
+        caseMessages[key]?.[1] ||
+        homeMessages[key]?.[1],
       name + ": Chinese copy missing for " + key,
     );
   }
 }
-for (const [key, pair] of Object.entries({ ...extra, ...messages, ...caseMessages })) {
+for (const [key, pair] of Object.entries({
+  ...extra,
+  ...messages,
+  ...caseMessages,
+  ...homeMessages,
+})) {
   assert.equal(pair.length, 2, "Two locales required: " + key);
   assert.ok(
     pair.every((value) => typeof value === "string" && value.trim()),

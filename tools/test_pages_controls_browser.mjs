@@ -59,7 +59,7 @@ try {
     await page.waitForFunction(
       () => document.querySelector("#conversation-controls").dataset.applied === "business",
     );
-    const child = page.frames().find((frame) => frame.url().includes("controls=1"));
+    let child = page.frames().find((frame) => frame.url().includes("controls=1"));
     assert.ok(child);
     await child.waitForFunction(
       () => graphDebug.graph?.boxes.length === 3 && !graphDebug.layoutBusy,
@@ -85,6 +85,28 @@ try {
     await page
       .locator("#conversation-controls")
       .screenshot({ path: path.join(output, language + "-business.png") });
+    assert.equal(
+      await page.locator("[data-control-preset]").count(),
+      0,
+      "Homepage keeps one example",
+    );
+    await page.locator("#install").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+    assert.match(await page.locator("#install-prompt").textContent(), /^\$vibelens\n/);
+    await page.click("#copy-prompt");
+    assert.equal(
+      (await page.evaluate(() => navigator.clipboard.readText())).replaceAll("\r\n", "\n"),
+      await page.locator("#install-prompt").textContent(),
+    );
+    await page
+      .locator("#install")
+      .screenshot({ path: path.join(output, language + "-activation.png") });
+    await page.goto(base + "/demo.html?lang=" + language + "#conversation-controls");
+    await page.waitForFunction(
+      () => document.querySelector("#conversation-controls").dataset.applied === "business",
+    );
+    child = page.frames().find((frame) => frame.url().includes("controls=1"));
+    assert.equal(await page.locator("[data-control-preset]").count(), 3);
     await page.click('[data-control-preset="details"]');
     await page.waitForFunction(
       () => document.querySelector("#conversation-controls").dataset.applied === "details",
@@ -129,17 +151,6 @@ try {
     await page
       .locator("#conversation-controls")
       .screenshot({ path: path.join(output, language + "-replay.png") });
-    await page.locator("#install").scrollIntoViewIfNeeded();
-    await page.waitForTimeout(400);
-    assert.match(await page.locator("#install-prompt").textContent(), /^\$vibelens\n/);
-    await page.click("#copy-prompt");
-    assert.equal(
-      (await page.evaluate(() => navigator.clipboard.readText())).replaceAll("\r\n", "\n"),
-      await page.locator("#install-prompt").textContent(),
-    );
-    await page
-      .locator("#install")
-      .screenshot({ path: path.join(output, language + "-activation.png") });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator("#conversation-controls").scrollIntoViewIfNeeded();
     await page.click('[data-control-preset="business"]');
@@ -176,7 +187,7 @@ try {
     await page.setViewportSize({ width: 1440, height: 1000 });
   }
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto(base + "/index.html?lang=en#conversation-controls");
+  await page.goto(base + "/demo.html?lang=en#conversation-controls");
   await page.waitForFunction(
     () => document.querySelector("#conversation-controls").dataset.applied === "business",
   );
