@@ -1,5 +1,61 @@
 // Bilingual product copy.
 export const extra = {
+  "controls.nav": ["How to use", "使用方法"],
+  "controls.kicker": ["From your conversation", "在对话中调整视图"],
+  "controls.title": ["Your view,\nin a sentence", "一句话，\n聚焦你关心的链路"],
+  "controls.body": [
+    "Tell Codex which path to keep in view. A focused view appears in VibeLens.",
+    "告诉 Codex 想观察哪条链路，VibeLens 就会整理出对应视图。",
+  ],
+  "controls.choose": ["Choose an example", "选择一个示例"],
+  "controls.business": ["Focus a path", "聚焦链路"],
+  "controls.details": ["Go deeper", "展开细节"],
+  "controls.replay": ["Filter a recording", "筛选回放"],
+  "controls.description.business": [
+    "Keep the main steps and the connections between them.",
+    "保留主要业务环节和它们之间的流转关系。",
+  ],
+  "controls.description.details": [
+    "Open the decision and the values it uses.",
+    "展开相关判断，查看它使用的参数。",
+  ],
+  "controls.description.replay": [
+    "Record in VibeLens, then narrow the replay from your conversation.",
+    "先在 VibeLens 录制操作，再通过对话筛选要回放的部分。",
+  ],
+  "controls.command.business": [
+    "/vibelens Focus the upload-to-approval path. Keep business nodes and flow connections, and arrange the layout.",
+    "/vibelens 只看上传到审核的主要过程，保留业务节点和流程关系，整理布局。",
+  ],
+  "controls.command.details": [
+    "/vibelens Show the approval decision and its input and output values.",
+    "/vibelens 展开审核判断，查看输入和输出参数。",
+  ],
+  "controls.command.replay": [
+    "/vibelens In my last recording, replay only the approval path and its related parameters. Loop the selection.",
+    "/vibelens 在上一段记录里，只回放审核链路和相关参数，循环播放。",
+  ],
+  "controls.result.business": ["Upload → Review → Approve", "上传 → 查看 → 审核"],
+  "controls.result.details": ["Approval and the values it uses", "审核判断与相关参数"],
+  "controls.result.replay": ["Approval replay", "审核链路回放"],
+  "controls.events": ["events", "条事件"],
+  "controls.loading": ["Preparing the view…", "正在整理视图…"],
+  "controls.preview": ["Conversation-selected graph preview", "通过对话筛选的图"],
+  "controls.copy": ["Copy command", "复制指令"],
+  "controls.prefix": [
+    "If your client intercepts /vibelens, use $vibelens /vibelens …",
+    "客户端若拦截 /vibelens，可写 $vibelens /vibelens …",
+  ],
+  "controls.example": ["Recorded example", "录制示例"],
+  "controls.dimensions": ["View dimensions", "视图维度"],
+  "install.body": [
+    "Install VibeLens, then start with $vibelens in the conversation where you want to use it.",
+    "安装 VibeLens，在准备使用它的对话中输入 $vibelens。",
+  ],
+  "install.scope": [
+    "Activated for this conversation and project. The graph follows your code.",
+    "启用范围是当前对话和项目，图会随开发持续更新。",
+  ],
   "tour.aria": ["Viewer tour", "图分析页面演示"],
   "tour.kicker": ["Inside VibeLens", "看看 VibeLens 界面"],
   "tour.title": ["Record the run\nReplay the change", "看见流转，\n回到出错的一步"],
@@ -113,8 +169,8 @@ export const extra = {
   "copy.done": ["Copied", "已复制"],
   "copy.failed": ["Select the prompt to copy it.", "请选中文字复制。"],
   "install.prompt": [
-    "Use $vibelens for this project.\\nI want to build: [describe your project].\\nShow me the first business graph in this conversation and its Web address. Let's confirm the flow before implementation.",
-    "在这个项目中使用 $vibelens。\\n我想开发：[描述你的项目]。\\n请先在对话中展示业务图，并给我 Web 查看地址。确认流程后再开始实现。",
+    "$vibelens\nI want to build: [describe your project].\nShow the first business graph in this conversation and give me its Web address.\nConfirm the flow with me before implementation, then keep the graph in sync as we code.",
+    "$vibelens\n我想开发：[描述你的项目]。\n先在对话中展示业务图，并给我 Web 查看地址。\n一起确认流程后再开始实现，开发时持续更新图。",
   ],
   "hero.title": ["Know your program\nShape the next iteration", "看清程序，\n掌握每次迭代"],
   "hero.body": [

@@ -17,6 +17,24 @@ The Skill first posts a concise business graph directly in the conversation and 
 
 At first use, explicitly choose **drive** or **observe**. Both maintain observation and mapping checks. Business ambiguities come to you; the coding agent resolves implementation bindings against source and tests. See the [Python/Node/React/Vue example](../examples/multilanguage/README.md) and [protocol reference](../skills/vibelens/references/multilanguage.md).
 
+## Control a view from your conversation
+
+Start with `$vibelens` in each conversation where you want to use it. Activation is specific to that conversation and project. Normal business requests continue the coding workflow, keeping the graph, source mappings and probes in sync.
+
+For a manual view or replay change, start your message with `/vibelens`:
+
+```text
+/vibelens Focus the upload-to-approval path. Keep business nodes and flow connections.
+/vibelens Show the approval decision and its input and output values.
+/vibelens In my last recording, replay only the approval path and its related parameters. Loop the selection.
+```
+
+The agent checks the current graph and recordings, asks about ambiguous matches, then creates a saved custom view and arranges its layout. Open the conversation-specific graph address it returns. 2D and 3D share the selection. Original graph facts and recorded events remain available.
+
+Use the recording buttons in VibeLens to start and stop an interval before filtering it. View instructions control presentation and replay; business development continues in ordinary language. A manual viewer request without the prefix returns a copyable prefixed example.
+
+`/vibelens` is a skill-local text prefix. If the client intercepts it, use `$vibelens /vibelens …`. Existing applications need the matching observer runtime and viewer. See [conversation controls](../skills/vibelens/references/conversation-controls.md) for integration and supported operations.
+
 ## Read the graph
 
 The viewer is named **VibeLens**. It starts in English and follows the language recorded
