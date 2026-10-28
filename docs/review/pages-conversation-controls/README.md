@@ -46,6 +46,20 @@ and [package result](package.log).
 
 ## Publication
 
-Publication receipts and a browser run against the public URL are retained after
-deployment. This update changes Pages and usage documentation; it does not create
-a release tag or replace the project's observer runtime.
+Merged and pushed to `main` at `603c05c36f86ba1114f4921edeead14e9b5710c9`.
+[Pages deployment](https://github.com/li-bruce/VibeLens/actions/runs/40700562853)
+completed successfully. The [public usage section](https://liblog.vip/VibeLens/index.html?lang=en#conversation-controls)
+passed the same bilingual browser test as the local site. See
+[public browser result](public/result.json) and [deployment receipt](publication/ci.json).
+
+[Published-file checks](publication/pages.json) passed: 75 exact byte comparisons
+and the complete 66-file digest mapping. The first metadata check compared JSON
+bytes and failed because Windows and Linux enumerated directory entries in
+different orders; every file digest was identical. The final check compares that
+mapping by key and additionally downloads every canonical viewer file except the
+rewritten entry HTML, which has its own exact comparison. The
+[first receipt](publication/pages-first.json) is retained.
+
+This Pages update does not create a release tag. The repository-wide GitHub
+`Checks` workflow was still running when the deployment receipt was captured;
+the local checks and public browser results above are complete.
