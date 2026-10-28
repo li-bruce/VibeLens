@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="Understand the software you build with AI. Explore its business flows, inspect state and value changes, and follow an operation into the code."
+      content="Understand AI-built software with a state graph. Confirm the flow, follow running values and trace a result to its source."
     />
-    <title>VibeLens — Understand what you build</title>
+    <title>VibeLens — See how your code works</title>
     <link rel="stylesheet" href="site.css?rev=story-6" />
     <link rel="stylesheet" href="scroll-story.css?rev=story-3" />
-    <link rel="stylesheet" href="product-story.css?rev=story-3" />
-    <link rel="stylesheet" href="conversation-tour.css?rev=controls-1" />
+    <link rel="stylesheet" href="conversation-tour.css?rev=clarity-1" />
+    <link rel="stylesheet" href="homepage.css?rev=clarity-1" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <script type="module" src="site.js?rev=controls-1"></script>
+    <script type="module" src="site.js?rev=clarity-1"></script>
   </head>
-  <body class="product-story">
+  <body class="landing">
     <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
     <header class="wrap nav">
       <a class="brand" href="index.html" data-local-link
@@ -25,9 +25,8 @@
         ></a
       >
       <nav aria-label="Main navigation" data-i18n-aria="navigation">
-        <a href="#explore" data-i18n="nav.explore">Explore</a
+        <a href="#workflow" data-i18n="nav.explore">Explore</a
         ><a href="demo.html" data-local-link data-i18n="nav.demo">Try the demo</a
-        ><a href="#conversation-controls" data-i18n="controls.nav">How to use</a
         ><a class="github" href="https://github.com/li-bruce/VibeLens">GitHub ↗</a
         ><button class="language" id="language" type="button" aria-label="Switch to Chinese">
           中文
@@ -38,536 +37,264 @@
     <main id="main">
       <section class="wrap hero">
         <div class="hero-copy">
-          <p class="eyebrow" data-i18n="hero.kicker">A graph for your next coding conversation</p>
-          <h1 data-i18n="hero.title">Know your program<br />Shape the next iteration</h1>
-          <p class="lead" data-i18n="hero.body">
-            One state graph connects your business, code and running program.
+          <p class="eyebrow" data-i18n="home.kicker">A Skill for understanding AI-built software</p>
+          <h1 data-i18n="home.title">AI writes the code<br />See how it works</h1>
+          <p class="lead" data-i18n="home.lead">
+            Confirm the business flow in conversation. Follow its states, decisions and code in
+            VibeLens as your project grows.
           </p>
           <div class="actions">
             <a class="button primary" href="#install" data-i18n="hero.start">Use the Skill</a
-            ><a class="button quiet" href="demo.html" data-local-link data-i18n="hero.demo"
-              >Explore a short demo ↗</a
+            ><a class="button quiet" href="demo.html" data-local-link data-i18n="home.demo"
+              >Follow a real example ↗</a
             >
           </div>
-          <p class="platforms">
-            Python <span>·</span> Node.js <span>·</span> React <span>·</span> Vue
-          </p>
         </div>
-        <figure class="hero-figure">
-          <svg viewBox="0 0 600 510" role="img" aria-labelledby="hero-caption">
-            <defs>
-              <marker
-                id="hero-arrow"
-                markerWidth="7"
-                markerHeight="7"
-                refX="6"
-                refY="3.5"
-                orient="auto"
-              >
-                <path d="M0 0L7 3.5L0 7" fill="#2457db" />
-              </marker>
-            </defs>
-            <circle cx="318" cy="240" r="192" class="business-region" />
-            <circle cx="318" cy="240" r="139" class="inner-region" />
-            <path d="M88 240H126M510 240H556" class="hero-path" />
-            <g class="svg-business"><circle cx="60" cy="240" r="27" /></g>
-            <text x="60" y="295" text-anchor="middle" data-i18n="diagram.request">Request</text>
-            <text x="318" y="89" text-anchor="middle" class="svg-title" data-i18n="diagram.flow">
-              Business flow
-            </text>
-            <path
-              d="M238 221L315 168L391 221M238 221L268 308M391 221L367 308M268 308H367"
-              class="hero-inner"
-            />
-            <g class="svg-state"><circle cx="238" cy="221" r="24" /></g>
-            <text x="216" y="268" text-anchor="middle" data-i18n="diagram.state">State</text>
-            <g class="svg-decision"><path d="M315 144L339 168L315 192L291 168Z" /></g>
-            <text x="315" y="128" text-anchor="middle" data-i18n="diagram.rule">Decision</text>
-            <g class="svg-function"><path d="M391 196L414 209V235L391 248L368 235V209Z" /></g>
-            <text x="414" y="268" text-anchor="middle" data-i18n="diagram.function">Function</text>
-            <g class="svg-value">
-              <rect x="228" y="291" width="80" height="36" rx="8" />
-              <text x="268" y="314" text-anchor="middle">before</text>
-              <rect x="327" y="291" width="80" height="36" rx="8" />
-              <text x="367" y="314" text-anchor="middle">after</text>
-            </g>
-            <path d="M318 380V437" class="source-path" />
-            <rect x="224" y="437" width="188" height="43" rx="8" class="code-card" />
-            <text x="318" y="464" text-anchor="middle" class="mono" data-i18n="diagram.source">
-              &lt;/&gt; Source code
-            </text>
-          </svg>
-          <figcaption id="hero-caption" data-i18n="hero.caption">
-            From the flow to the value that changed.
+        <figure class="product-capture" id="product-capture">
+          <div class="capture-bar">
+            <span class="capture-brand"><i></i>VibeLens</span
+            ><span data-i18n="home.screenshot">VibeLens · image-review example</span>
+            <div role="group" aria-label="View dimensions" data-i18n-aria="controls.dimensions">
+              <button data-capture="source" aria-pressed="true">2D</button
+              ><button data-capture="layers" aria-pressed="false">3D</button>
+            </div>
+          </div>
+          <img
+            id="hero-screenshot"
+            data-product-image="source"
+            src="images/source-en.png"
+            width="1650"
+            height="840"
+            alt="Real VibeLens view with recorded approval inputs and highlighted function source"
+            fetchpriority="high"
+          />
+          <figcaption data-i18n="home.image.caption">
+            One operation, from its inputs to the function that handled it
           </figcaption>
         </figure>
       </section>
-      <section class="wrap problem section-rule">
-        <p class="eyebrow" data-i18n="problem.kicker">Follow the change</p>
-        <div class="problem-grid">
-          <h2 data-i18n="problem.title">Every change has a path</h2>
-          <p data-i18n="problem.body">
-            Trace an action through its rules, values and source. Understand how the result took
-            shape.
+      <section class="problem-band" id="problem">
+        <div class="wrap problem-copy">
+          <div>
+            <p class="eyebrow" data-i18n="home.problem.kicker">The challenge of vibe coding</p>
+            <h2 data-i18n="home.problem.title">The app works<br />How did it reach that result?</h2>
+          </div>
+          <p data-i18n="home.problem.body">
+            AI keeps changing the code. A working screen tells you little about the conditions it
+            checked, the state it changed or the data it wrote.
           </p>
         </div>
       </section>
-      <section class="wrap section-space" id="workflow">
+      <section class="wrap landing-section" id="workflow">
         <div class="section-heading">
           <div>
-            <p class="eyebrow" data-i18n="workflow.kicker">Begin with the business</p>
-            <h2 data-i18n="workflow.title">Agree on the graph<br />Then build</h2>
+            <p class="eyebrow" data-i18n="home.workflow.kicker">The approach</p>
+            <h2 data-i18n="home.workflow.title">Connect the intent,<br />the code and the run</h2>
           </div>
-          <p data-i18n="workflow.body">
-            Confirm the business and states in conversation. Explore the running program in
-            VibeLens, then bring your findings into the next coding iteration.
+          <p data-i18n="home.workflow.body">
+            Start with the flow you confirm. Add implementation links while coding, then use
+            recorded behavior to understand and refine it.
           </p>
         </div>
-        <svg
-          class="workflow-schematic"
-          viewBox="0 0 1000 150"
-          role="img"
-          aria-label="Confirm a connected business flow"
+        <div
+          class="workflow-map"
+          role="group"
+          aria-label="A confirmed request connects to the state graph and running code"
+          data-i18n-aria="home.diagram.aria"
         >
-          <path
-            d="M150 65H350M400 65H600M650 65H850"
-            fill="none"
-            stroke="#9eb4ed"
-            stroke-width="2"
-          />
-          <g fill="#eef3ff" stroke="#315eef" stroke-width="2">
-            <circle cx="125" cy="65" r="25" />
-            <circle cx="375" cy="65" r="25" />
-            <circle cx="625" cy="65" r="25" />
-            <circle cx="875" cy="65" r="25" />
-          </g>
-          <g fill="#536b91" text-anchor="middle" font-size="16">
-            <text x="125" y="125" data-i18n="workflow.1.title">Confirm the flow</text>
-            <text x="375" y="125" data-i18n="workflow.2.title">Build and stay in sync</text>
-            <text x="625" y="125" data-i18n="workflow.3.title">Explore in VibeLens</text>
-            <text x="875" y="125" data-i18n="workflow.4.title">Refine through conversation</text>
-          </g>
-        </svg>
-        <ol class="workflow-steps">
+          <div class="map-dialog">
+            <span class="map-heading" data-i18n="home.diagram.chat"
+              >In your coding conversation</span
+            >
+            <p class="map-request" data-i18n="home.diagram.request">
+              Show an image after a reviewer approves it
+            </p>
+            <div class="map-reply">
+              <span>Codex</span>
+              <p data-i18n="home.diagram.reply">Upload → pending review → approve → exhibit</p>
+            </div>
+            <p class="map-confirm">
+              <span aria-hidden="true">✓</span
+              ><span data-i18n="home.diagram.confirm">Confirm the flow and its states</span>
+            </p>
+          </div>
+          <svg class="map-arrow" viewBox="0 0 32 24" aria-hidden="true">
+            <path d="M1 12H29M23 6L29 12L23 18" />
+          </svg>
+          <div class="map-network">
+            <span class="map-heading" data-i18n="home.diagram.graph">The project's state graph</span
+            ><svg viewBox="0 0 400 220" aria-hidden="true">
+              <defs>
+                <marker
+                  id="map-tip"
+                  markerWidth="6"
+                  markerHeight="6"
+                  refX="5"
+                  refY="3"
+                  orient="auto"
+                >
+                  <path d="M0 0L6 3L0 6Z" fill="#6d89b0" />
+                </marker>
+              </defs>
+              <ellipse cx="200" cy="105" rx="189" ry="101" fill="#f4f7ff" stroke="#cfdbf3" />
+              <g fill="none" stroke="#6d89b0" stroke-width="1.5" marker-end="url(#map-tip)">
+                <path d="M72 75H173" />
+                <path d="M227 75H328" />
+              </g>
+              <g fill="#e4ecff" stroke="#315eef" stroke-width="1.5">
+                <circle cx="50" cy="75" r="21" />
+                <circle cx="200" cy="75" r="21" />
+                <circle cx="350" cy="75" r="21" />
+              </g>
+              <g fill="none" stroke="#315eef" stroke-width="1.5">
+                <path d="M50 85V65M43 72L50 65L57 72" />
+                <path d="M200 64L209 68V76Q208 83 200 87Q192 83 191 76V68Z M196 75L199 78L205 71" />
+                <rect x="340" y="67" width="20" height="16" rx="2" />
+                <path d="M341 79L347 73L351 77L355 73L359 77" />
+              </g>
+              <g class="map-label" text-anchor="middle">
+                <text x="50" y="119" data-i18n="home.diagram.upload">Upload</text>
+                <text x="200" y="119" data-i18n="home.diagram.review">Review</text>
+                <text x="350" y="119" data-i18n="home.diagram.exhibit">Exhibit</text>
+              </g>
+              <path
+                d="M200 132V150M155 169H245"
+                fill="none"
+                stroke="#ad9acb"
+                stroke-dasharray="4 4"
+              />
+              <g fill="#f2edf9" stroke="#cbbadd">
+                <rect x="78" y="150" width="90" height="36" rx="18" />
+                <rect x="232" y="150" width="90" height="36" rx="18" />
+              </g>
+              <g class="map-state-label" text-anchor="middle">
+                <text x="123" y="173" data-i18n="home.diagram.pending">Pending</text>
+                <text x="277" y="173" data-i18n="home.diagram.approved">Approved</text>
+              </g>
+            </svg>
+          </div>
+          <svg class="map-arrow" viewBox="0 0 32 24" aria-hidden="true">
+            <path d="M1 12H29M23 6L29 12L23 18" />
+          </svg>
+          <div class="map-code">
+            <span class="map-heading" data-i18n="home.diagram.code">Code and running values</span>
+            <div class="map-source">
+              <span>policy.py</span><code>approval_policy(…)</code>
+              <p>actor <b>reviewer</b></p>
+              <p>verdict <b>allowed</b></p>
+            </div>
+          </div>
+          <div class="map-return">
+            <svg viewBox="0 0 1000 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M920 1V12Q920 32 900 32H100Q80 32 80 12V1M74 8L80 1L86 8" /></svg
+            ><span data-i18n="home.diagram.return"
+              >Inspect the result, then refine the code together</span
+            >
+          </div>
+        </div>
+        <ol class="development-loop">
           <li>
-            <span class="step-index">01</span>
-            <h3 data-i18n="workflow.1.title">Confirm the flow</h3>
-            <p data-i18n="workflow.1.body">
-              Clarify tasks, permissions and states in the conversation.
+            <span>01</span>
+            <h3 data-i18n="home.step.confirm">Agree on the behavior</h3>
+            <p data-i18n="home.step.confirm.body">
+              VibeLens clarifies your description and shows the first flow for you to confirm.
             </p>
           </li>
           <li>
-            <span class="step-index">02</span>
-            <h3 data-i18n="workflow.2.title">Build and stay in sync</h3>
-            <p data-i18n="workflow.2.body">
-              As coding progresses, connect the flow to states, functions, parameters and data.
+            <span>02</span>
+            <h3 data-i18n="home.step.build">Keep the implementation visible</h3>
+            <p data-i18n="home.step.build.body">
+              As AI changes the project, the graph follows its functions, parameters, API and data
+              relationships.
             </p>
           </li>
           <li>
-            <span class="step-index">03</span>
-            <h3 data-i18n="workflow.3.title">Explore in VibeLens</h3>
-            <p data-i18n="workflow.3.body">
-              Record your application actions, replay changes and build your own focused view.
-            </p>
-          </li>
-          <li>
-            <span class="step-index">04</span>
-            <h3 data-i18n="workflow.4.title">Refine through conversation</h3>
-            <p data-i18n="workflow.4.body">
-              Discuss a fix or a changed flow. The graph follows the new code; return to VibeLens to
-              check it.
+            <span>03</span>
+            <h3 data-i18n="home.step.inspect">Find and verify the next change</h3>
+            <p data-i18n="home.step.inspect.body">
+              Record an operation, inspect its path and describe the issue to AI. Check the next run
+              after the repair.
             </p>
           </li>
         </ol>
       </section>
-      <section class="product-depth" id="explore">
-        <div class="wrap section-heading depth-heading">
-          <div>
-            <p class="eyebrow" data-i18n="explore.kicker">Choose your level of detail</p>
-            <h2 data-i18n="explore.title">Start with the flow<br />Go deeper</h2>
-          </div>
-          <p data-i18n="explore.body">
-            Expand the part that matters. Keep its rules, values and source in view.
-          </p>
-        </div>
-        <div class="wrap depth-story">
-          <div class="depth-scenes">
-            <section class="depth-stage" data-depth-view="business" id="depth-business">
-              <span class="depth-index" aria-hidden="true">01</span>
-              <h3 data-i18n="depth.business.title">Business comes first</h3>
-              <p data-i18n="depth.business.body">Start with the tasks and states you agreed on.</p>
-            </section>
-            <section class="depth-stage" data-depth-view="state" id="depth-state">
-              <span class="depth-index" aria-hidden="true">02</span>
-              <h3 data-i18n="depth.state.title">Understand the decision</h3>
-              <p data-i18n="depth.state.body">See the states and rules behind an action.</p>
-            </section>
-            <section class="depth-stage" data-depth-view="function" id="depth-function">
-              <span class="depth-index" aria-hidden="true">03</span>
-              <h3 data-i18n="depth.function.title">Follow the values</h3>
-              <p data-i18n="depth.function.body">
-                Trace the core functions, inputs and data operations.
-              </p>
-            </section>
-            <section class="depth-stage" data-depth-view="source" id="depth-source">
-              <span class="depth-index" aria-hidden="true">04</span>
-              <h3 data-i18n="depth.source.title">Arrive at the source</h3>
-              <p data-i18n="depth.source.body">
-                Open the local implementation when you need the detail.
-              </p>
-            </section>
-          </div>
-          <div class="depth-visual">
-            <div class="explorer">
-              <div
-                class="view-tabs"
-                role="tablist"
-                aria-label="Graph views"
-                data-i18n-aria="explore.tabs"
-              >
-                <button
-                  role="tab"
-                  id="tab-business"
-                  aria-controls="view-panel"
-                  aria-selected="true"
-                  tabindex="0"
-                  data-view="business"
-                  data-i18n="view.business"
-                >
-                  Business</button
-                ><button
-                  role="tab"
-                  id="tab-state"
-                  aria-controls="view-panel"
-                  aria-selected="false"
-                  tabindex="-1"
-                  data-view="state"
-                  data-i18n="view.state"
-                >
-                  States</button
-                ><button
-                  role="tab"
-                  id="tab-decision"
-                  aria-controls="view-panel"
-                  aria-selected="false"
-                  tabindex="-1"
-                  data-view="decision"
-                  data-i18n="view.decision"
-                >
-                  Decisions</button
-                ><button
-                  role="tab"
-                  id="tab-function"
-                  aria-controls="view-panel"
-                  aria-selected="false"
-                  tabindex="-1"
-                  data-view="function"
-                  data-i18n="view.function"
-                >
-                  Functions & values</button
-                ><button
-                  role="tab"
-                  id="tab-data"
-                  aria-controls="view-panel"
-                  aria-selected="false"
-                  tabindex="-1"
-                  data-view="data"
-                  data-i18n="view.data"
-                >
-                  Data</button
-                ><button
-                  role="tab"
-                  id="tab-source"
-                  aria-controls="view-panel"
-                  aria-selected="false"
-                  tabindex="-1"
-                  data-view="source"
-                  data-i18n="view.source"
-                >
-                  Source</button
-                ><button
-                  role="tab"
-                  id="tab-mixed"
-                  aria-controls="view-panel"
-                  aria-selected="false"
-                  tabindex="-1"
-                  data-view="mixed"
-                  data-i18n="view.mixed"
-                >
-                  Your own view
-                </button>
-              </div>
-              <div
-                class="graph-panel"
-                id="view-panel"
-                role="tabpanel"
-                tabindex="0"
-                aria-labelledby="tab-business"
-              >
-                <div class="graph-surface">
-                  <span class="surface-caption" data-i18n="explore.caption">CONNECTED VIEWS</span>
-                  <div id="concept-graph"></div>
-                </div>
-                <div class="level-explanation">
-                  <span class="level-number" id="level-number">01 / 07</span>
-                  <h3 id="level-title"></h3>
-                  <p id="level-body"></p>
-                  <fieldset id="mix-filters" hidden>
-                    <legend data-i18n="mix.legend">Include in this view</legend>
-                    <label
-                      ><input type="checkbox" value="state" checked /><span data-i18n="view.state"
-                        >state</span
-                      ></label
-                    ><label
-                      ><input type="checkbox" value="decision" checked /><span
-                        data-i18n="view.decision"
-                        >decision</span
-                      ></label
-                    ><label
-                      ><input type="checkbox" value="function" checked /><span
-                        data-i18n="view.function"
-                        >function</span
-                      ></label
-                    >
-                  </fieldset>
-                </div>
-              </div>
+      <section class="depth-section" id="explore">
+        <div class="wrap">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow" data-i18n="home.depth.kicker">From overview to implementation</p>
+              <h2 data-i18n="home.depth.title">Follow the part<br />you need to understand</h2>
             </div>
-            <p class="preset-note" data-i18n="explore.presets">
-              Choose a preset or save your own combination.
+            <p data-i18n="home.depth.body">
+              A business step opens into its states and decisions, then into functions, inputs, API
+              calls, data and source.
             </p>
           </div>
+          <div class="depth-key">
+            <div>
+              <i class="business-key"></i>
+              <h3 data-i18n="home.depth.overview">Business flow</h3>
+              <p data-i18n="home.depth.overview.body">Where did the operation go?</p>
+            </div>
+            <div>
+              <i class="decision-key"></i>
+              <h3 data-i18n="home.depth.logic">States and decisions</h3>
+              <p data-i18n="home.depth.logic.body">Which condition decided the result?</p>
+            </div>
+            <div>
+              <i class="code-key"></i>
+              <h3 data-i18n="home.depth.code">Functions, data and source</h3>
+              <p data-i18n="home.depth.code.body">What handled these values?</p>
+            </div>
+          </div>
+          <figure class="source-capture">
+            <img
+              data-product-image="source"
+              src="images/source-en.png"
+              width="1650"
+              height="840"
+              alt="Real VibeLens view with recorded approval inputs and highlighted function source"
+              loading="lazy"
+            />
+            <figcaption data-i18n="home.depth.caption">
+              Recorded inputs beside their mapped source
+            </figcaption>
+          </figure>
         </div>
       </section>
-      <section
-        class="wrap section-space viewer-tour record-section"
-        id="viewer-tour"
-        data-step="overview"
-        aria-label="Viewer tour"
-        data-i18n-aria="tour.aria"
-      >
-        <div class="section-heading">
+      <section class="wrap landing-section modes-compact" id="modes">
+        <h2 data-i18n="home.modes.title">Build with the graph<br />or observe your own design</h2>
+        <div class="mode-options">
           <div>
-            <p class="eyebrow" data-i18n="tour.kicker">Inside VibeLens</p>
-            <h2 data-i18n="tour.title">Your program,<br />within reach</h2>
-          </div>
-          <p data-i18n="tour.body">Move, expand, annotate and replay the same graph in 2D or 3D.</p>
-        </div>
-        <div class="record-strip">
-          <span><i class="record-dot"></i><b data-i18n="record.start">Start recording</b></span
-          ><span class="strip-arrow" aria-hidden="true">→</span
-          ><span data-i18n="record.operate">Use your application</span
-          ><span class="strip-arrow" aria-hidden="true">→</span
-          ><span data-i18n="record.stop">Stop & replay</span>
-        </div>
-        <div class="tour-window">
-          <div class="tour-top">
-            <strong>◉ VibeLens</strong
-            ><span data-tour-copy="tour.illustration">Illustrated tour</span
-            ><span class="tour-window-dots" aria-hidden="true">● ● ●</span>
-          </div>
-          <div class="tour-toolbar">
-            <span data-tour-copy="tour.business">Business flow</span
-            ><span class="tour-record-icon" aria-hidden="true">●</span
-            ><span aria-hidden="true">■</span><span aria-hidden="true">⊘</span
-            ><span class="tour-record-label" data-tour-copy="tour.recording">Recording</span
-            ><span class="tour-replay-label" data-tour-copy="tour.replay">Step 2 of 3</span>
-          </div>
-          <svg
-            class="tour-canvas"
-            viewBox="0 0 960 340"
-            role="img"
-            aria-label="Expand a flow and inspect its state and values"
-            data-i18n-aria="tour.graph"
-          >
-            <defs>
-              <marker
-                id="tour-arrow"
-                markerWidth="6"
-                markerHeight="6"
-                refX="5"
-                refY="3"
-                orient="auto"
-              >
-                <path d="M0 0L6 3L0 6Z" fill="#748cba" />
-              </marker>
-            </defs>
-            <g stroke="#748cba" fill="none" stroke-width="2" marker-end="url(#tour-arrow)">
-              <path d="M211 172H333" />
-              <path d="M628 172H749" />
-            </g>
-            <g class="tour-overview-node">
-              <circle cx="480" cy="172" r="35" fill="#e4ecff" stroke="#356dca" stroke-width="2" />
-              <text x="480" y="233" text-anchor="middle" data-tour-copy="node.process">
-                Process
-              </text>
-              <text x="480" y="178" text-anchor="middle" class="tour-plus">+</text>
-            </g>
-            <g class="tour-expanded">
-              <circle cx="480" cy="172" r="144" fill="#f0f5ff" stroke="#b2c8ef" stroke-width="2" />
-              <text
-                x="480"
-                y="62"
-                text-anchor="middle"
-                font-weight="600"
-                data-tour-copy="node.process"
-              >
-                Process
-              </text>
-              <path
-                class="tour-active-edge"
-                d="M421 155L538 155"
-                stroke="#55a49a"
-                stroke-width="2"
-                marker-end="url(#tour-arrow)"
-              />
-              <path
-                d="M400 182L465 242M551 180L495 240"
-                stroke="#a299c2"
-                fill="none"
-                stroke-dasharray="5 4"
-              />
-              <path
-                d="M395 126L421 141V170L395 185L369 170V141Z"
-                fill="#d8f1eb"
-                stroke="#298578"
-                stroke-width="2"
-              />
-              <text x="395" y="210" text-anchor="middle" class="tour-code">validate()</text>
-              <circle
-                class="tour-state-node"
-                cx="565"
-                cy="155"
-                r="28"
-                fill="#eee6f8"
-                stroke="#8b69ac"
-                stroke-width="2"
-              />
-              <text x="565" y="210" text-anchor="middle" data-tour-copy="tour.state">State</text>
-              <path d="M455 225H505V269H455Z" fill="#fff2d9" stroke="#c4974b" stroke-width="2" />
-              <text x="480" y="254" text-anchor="middle" class="tour-code">3</text>
-              <text x="480" y="292" text-anchor="middle" class="tour-code">count</text>
-              <circle class="tour-pulse" cx="480" cy="155" r="6" fill="#298578" />
-            </g>
-            <g>
-              <circle cx="175" cy="172" r="35" fill="#e4ecff" stroke="#356dca" stroke-width="2" />
-              <text x="175" y="233" text-anchor="middle" data-tour-copy="node.request">
-                Request
-              </text>
-              <circle cx="785" cy="172" r="35" fill="#e4ecff" stroke="#356dca" stroke-width="2" />
-              <text x="785" y="233" text-anchor="middle" data-tour-copy="node.result">Result</text>
-            </g>
-            <g class="tour-note">
-              <rect x="592" y="67" width="155" height="104" rx="8" fill="#fff" stroke="#d6deea" />
-              <text x="608" y="95" font-weight="600" data-tour-copy="tour.note">Name / note</text>
-              <text x="608" y="124" data-tour-copy="tour.core">★ Mark as core</text>
-              <text x="608" y="152" data-tour-copy="tour.pin">Pin position</text>
-            </g>
-            <g class="tour-cursor" transform="translate(502 178)">
-              <path
-                d="M0 0V25L7 19L13 30L18 27L12 17L23 15Z"
-                fill="#263449"
-                stroke="white"
-                stroke-width="2"
-              />
-            </g>
-          </svg>
-          <div class="tour-values">
-            <span class="tour-change" data-tour-copy="tour.change"
-              >State: ready → complete · count: 2 → 3</span
-            ><span class="tour-hint" data-tour-copy="tour.hint">Right-click a node for actions</span
-            ><span class="tour-legend" data-tour-copy="tour.legend"
-              >● Flow · ⬡ Function · ● State</span
-            >
-          </div>
-        </div>
-        <div class="tour-controls">
-          <p id="tour-caption"></p>
-          <span id="tour-count"></span
-          ><button id="tour-play" type="button" aria-label="Pause tour">Ⅱ</button
-          ><button id="tour-next" type="button" aria-label="Next step">→</button>
-        </div>
-      </section>
-
-      <section class="wrap section-space modes-section" id="modes">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow" data-i18n="modes.kicker">Your choice at the start</p>
-            <h2 data-i18n="modes.title">One graph<br />Two ways to build</h2>
-          </div>
-          <p data-i18n="modes.body">Choose the role of the graph in your project.</p>
-        </div>
-        <div class="modes-grid">
-          <article class="mode">
-            <span class="mode-label" data-i18n="modes.drive.label">DRIVE</span>
-            <h3 data-i18n="modes.drive.title">Develop from the state graph</h3>
-            <p data-i18n="modes.drive.body">Build around confirmed states and transitions.</p>
-          </article>
-          <article class="mode observe">
-            <span class="mode-label" data-i18n="modes.observe.label">OBSERVE</span>
-            <h3 data-i18n="modes.observe.title">Observe your existing logic</h3>
-            <p data-i18n="modes.observe.body">
-              Keep your architecture and follow its behavior through the graph.
+            <h3 data-i18n="home.modes.drive">Drive</h3>
+            <p data-i18n="home.modes.drive.body">
+              Use the confirmed states and transitions to structure execution.
             </p>
-          </article>
-        </div>
-      </section>
-      <aside class="wrap demo-invitation" id="try-demo">
-        <div>
-          <p class="eyebrow" data-i18n="demoLink.kicker">Explore VibeLens</p>
-          <h2 data-i18n="demoLink.title">From the first graph<br />to the next repair</h2>
-          <p data-i18n="demoLink.body">
-            Try progressive inspection, a saved focus view and a verified iteration.
+          </div>
+          <div>
+            <h3 data-i18n="home.modes.observe">Observe</h3>
+            <p data-i18n="home.modes.observe.body">
+              Keep your architecture and map its behavior into the same graph.
+            </p>
+          </div>
+          <p class="mode-shared" data-i18n="home.modes.shared">
+            Both keep code mappings and runtime observations in sync.
           </p>
         </div>
-        <a class="button primary" href="demo.html" data-local-link data-i18n="demoLink.button"
-          >Explore the demo ↗</a
-        >
-      </aside>
-      <section class="wrap conversation-tour section-space" id="conversation-controls">
+      </section>
+      <section class="wrap conversation-tour landing-section" id="conversation-controls">
         <div class="section-heading">
           <div>
             <p class="eyebrow" data-i18n="controls.kicker">From your conversation</p>
-            <h2 data-i18n="controls.title">Your view,<br />in a sentence</h2>
+            <h2 data-i18n="home.controls.title">Ask for the path<br />you want to see</h2>
           </div>
-          <p data-i18n="controls.body">
-            Tell Codex which path to keep in view. A focused view appears in VibeLens.
+          <p data-i18n="home.controls.body">
+            Describe what to keep in view from the conversation where you activated VibeLens.
           </p>
         </div>
         <div class="conversation-tour-grid">
           <div class="conversation-tour-copy">
-            <div
-              class="control-choices"
-              role="group"
-              aria-label="Choose an example"
-              data-i18n-aria="controls.choose"
-            >
-              <button
-                type="button"
-                data-control-preset="business"
-                aria-pressed="true"
-                data-i18n="controls.business"
-              >
-                Focus a path
-              </button>
-              <button
-                type="button"
-                data-control-preset="details"
-                aria-pressed="false"
-                data-i18n="controls.details"
-              >
-                Go deeper
-              </button>
-              <button
-                type="button"
-                data-control-preset="replay"
-                aria-pressed="false"
-                data-i18n="controls.replay"
-              >
-                Filter a recording
-              </button>
-            </div>
-            <p id="control-description"></p>
+            <span class="command-speaker" data-i18n="home.speaker">You → Codex</span>
             <div class="control-command">
               <pre id="control-command"></pre>
               <button
@@ -588,35 +315,30 @@
                 </svg>
               </button>
             </div>
-            <span id="control-copy-status" class="control-copy-status" role="status"></span>
-            <p class="control-prefix-note" data-i18n="controls.prefix">
-              If your client intercepts /vibelens, use $vibelens /vibelens …
-            </p>
+            <span id="control-copy-status" class="control-copy-status" role="status"></span
+            ><a
+              class="text-link"
+              href="demo.html#conversation-controls"
+              data-local-link
+              data-i18n="home.controls.more"
+              >Try view controls and replay filtering ↗</a
+            >
           </div>
           <div class="control-preview-window">
             <div class="control-preview-bar">
-              <strong>◉ VibeLens</strong>
-              <span data-i18n="controls.example">Recorded example</span>
-              <div
-                class="control-dimensions"
-                role="group"
-                aria-label="View dimensions"
-                data-i18n-aria="controls.dimensions"
-              >
-                <button type="button" data-control-mode="2d" aria-pressed="true">2D</button>
-                <button type="button" data-control-mode="3d" aria-pressed="false">3D</button>
-              </div>
+              <strong>◉ VibeLens</strong><span data-i18n="controls.example">Recorded example</span>
             </div>
             <iframe
               id="control-preview"
               title="Conversation-selected graph preview"
+              tabindex="-1"
               referrerpolicy="same-origin"
             ></iframe>
             <p id="control-result" role="status"></p>
           </div>
         </div>
       </section>
-      <section class="install section-space" id="install">
+      <section class="install landing-section" id="install">
         <div class="wrap install-grid">
           <div>
             <p class="eyebrow" data-i18n="install.kicker">Start with your own project</p>
@@ -648,7 +370,6 @@
     </main>
     <footer class="wrap footer">
       <a href="https://github.com/li-bruce/VibeLens/releases/tag/v0.8.1">VibeLens v0.8.1 ↗</a>
-      <span>VibeLens</span>
       <div>
         <a
           id="source-link"
@@ -656,12 +377,11 @@
           data-i18n="footer.source"
           >Source guide</a
         ><a
-          href="https://github.com/li-bruce/VibeLens/blob/main/docs/review/english-gallery/README.md"
+          href="https://github.com/li-bruce/VibeLens/tree/main/docs/review"
           data-i18n="footer.evidence"
           >Test records</a
         ><a href="https://github.com/li-bruce/VibeLens/blob/main/LICENSE">MIT License</a>
       </div>
     </footer>
-    <script type="module" src="viewer-tour.mjs?rev=story-6"></script>
   </body>
 </html>

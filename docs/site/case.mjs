@@ -1,8 +1,10 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=controls-1";
-import { messages, chapters } from "./case-messages.mjs?rev=controls-1";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=clarity-1";
+import { messages, chapters } from "./case-messages.mjs?rev=clarity-1";
 import { scrollStory } from "./scroll-story.mjs?rev=story-3";
 import { companion } from "./case-companion.mjs?rev=story-6";
+
+import { mountConversationTour } from "./conversation-tour.mjs?rev=clarity-1";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -322,3 +324,9 @@ document.querySelectorAll("[data-case-lens]").forEach((button) => {
 });
 onLanguageChange(render);
 initialize(messages);
+mountConversationTour();
+// Story sections are created after HTML parsing; restore direct links afterward.
+if (location.hash === "#conversation-controls")
+  requestAnimationFrame(() =>
+    document.getElementById("conversation-controls").scrollIntoView({ behavior: "instant" }),
+  );

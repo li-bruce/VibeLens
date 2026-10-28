@@ -1,7 +1,7 @@
 /** The intent diagram proposed inside the scripted requirement conversation.
  * Stable identities link this proposal to the later implementation graph.
  */
-import { t } from "./site-ui.mjs?rev=controls-1";
+import { t } from "./site-ui.mjs?rev=clarity-1";
 const svgNS = "http://www.w3.org/2000/svg";
 function svgNode(tag, attributes = {}, text) {
   const element = document.createElementNS(svgNS, tag);

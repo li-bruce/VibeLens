@@ -1,5 +1,5 @@
 /** Canned chat examples drive checked plans through the native viewer's controller. */
-import { t, locale, onLanguageChange } from "./site-ui.mjs?rev=controls-1";
+import { t, locale, onLanguageChange } from "./site-ui.mjs?rev=clarity-1";
 
 export function mountConversationTour() {
   const section = document.getElementById("conversation-controls");
@@ -13,9 +13,8 @@ export function mountConversationTour() {
   const send = (value) => ready && frame.contentWindow.postMessage(value, location.origin);
   function render() {
     document.getElementById("control-command").textContent = t("controls.command." + preset);
-    document.getElementById("control-description").textContent = t(
-      "controls.description." + preset,
-    );
+    const description = document.getElementById("control-description");
+    if (description) description.textContent = t("controls.description." + preset);
     document.getElementById("control-copy-status").textContent = "";
     frame.title = t("controls.preview");
     for (const button of section.querySelectorAll("[data-control-preset]"))
@@ -33,7 +32,7 @@ export function mountConversationTour() {
       lang: locale(),
       controls: "1",
       vl_session: "c".repeat(32),
-      rev: "controls-1",
+      rev: "clarity-1",
     });
     frame.src = url.href;
     result.textContent = t("controls.loading");

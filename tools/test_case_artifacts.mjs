@@ -1,6 +1,7 @@
 /** Keep the published story honest when its source or exported evidence changes. */
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {createHash} from "node:crypto";
 import {transferEdges} from "../skills/vibelens/assets/stategraph-viewer/recording.js";
 const base = new URL("../docs/site/case-data/", import.meta.url);
 const artifacts = [1, 2].map((version) =>
@@ -59,6 +60,20 @@ assert.deepEqual(
   artifacts[1].view.model.nodes.map((node) => node.id).sort(),
   "The repair must retain graph identities",
 );
+const captures = JSON.parse(fs.readFileSync(new URL("../docs/site/images/capture-proof.json",import.meta.url)));
+assert.equal(captures.captures.length,2);
+for (const capture of captures.captures) {
+  assert.equal(capture.evidence.build,artifacts[0].view.manifest.build_id);
+  assert.ok(capture.evidence.nodes.includes("review-policy"));
+  assert.equal(capture.files.length,2);
+  for (const file of capture.files) {
+    const bytes=fs.readFileSync(new URL("../"+file.file,import.meta.url));
+    assert.equal(createHash("sha256").update(bytes).digest("hex"),file.sha256,"Published screenshot changed: "+file.file);
+    assert.equal(bytes.subarray(1,4).toString(),"PNG");
+    assert.equal(bytes.readUInt32BE(16),1650);
+    assert.equal(bytes.readUInt32BE(20),840);
+  }
+}
 console.log(
   "PASS: actual mismatch, red/green outcomes, recorded transformations, source freshness, separate builds and stable graph IDs.",
 );
