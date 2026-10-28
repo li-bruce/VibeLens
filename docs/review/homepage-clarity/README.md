@@ -41,5 +41,18 @@ control result above.
 ![Concrete development loop](zh-CN-workflow.png)
 ![Single homepage command](zh-CN-single-example.png)
 
-Publication checks are added after deployment. Observer runtime and project
-business code are unchanged by this presentation update.
+## Publication
+
+Merged into `main` at `913853a9479ce74941300becb540b1c779ba9f1c`.
+[Pages deployment](https://github.com/li-bruce/VibeLens/actions/runs/40706306123)
+completed successfully. The public homepage and detailed controls passed the same
+browser checks in both languages: [homepage](public-home.json),
+[controls](public-controls.json).
+
+[Published resource checks](publication/pages.json) passed all 83 comparisons,
+including the real image bytes and complete native viewer asset digest mapping.
+The [deployment receipt](publication/ci.json) distinguishes Pages success from the
+repository-wide CI run, which was still running when captured.
+
+Observer runtime and project business code are unchanged by this presentation
+update. No release tag was created.
