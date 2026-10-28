@@ -1,6 +1,6 @@
 /** A short product overview; detailed native interactions live in demo.html. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=clarity-1";
-import { messages } from "./home-messages.mjs?rev=clarity-1";
+import { messages } from "./home-messages.mjs?rev=brand-1";
 import { revealSections } from "./scroll-story.mjs?rev=story-3";
 import { mountConversationTour } from "./conversation-tour.mjs?rev=clarity-1";
 function render() {
