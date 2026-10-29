@@ -9,6 +9,7 @@ from ..sources import scan
 from ..workflow.bo_sync import source_inventory
 from .index import build
 from .query import query
+from .filesystem import inventory as project_inventory
 
 
 class CodeGraph:
@@ -58,8 +59,9 @@ class CodeGraph:
         with self.lock:
             cfg, model = self.inputs()
             inventory = source_inventory(self.root, cfg)
+            project = project_inventory(self.root, cfg, inventory)
             # Source inventory reports hidden implementation separately from parser errors.
-            fingerprint = digest(inventory)
+            fingerprint = digest([inventory, project])
             from ..sources import adapter_identity
 
             fingerprint = digest([fingerprint, adapter_identity()])
@@ -73,10 +75,12 @@ class CodeGraph:
                     {"path": p, "error": "Excluded entrypoint", "details": value}
                     for p, value in inventory["excluded_entrypoints"].items()
                 ]
-                self.previous, self.graph = index, build(index)
+                index["errors"] += project["errors"]
+                self.previous, self.graph = index, build(index, project, self.root)
                 self.graph["scope"] = {
                     "files": list(inventory["files"]),
                     "excluded": inventory["excluded"],
+                    "project_excluded": project["excluded"],
                 }
                 self.fingerprint = fingerprint
                 if self.persist:
@@ -115,6 +119,7 @@ class CodeGraph:
                 "bindings",
                 "symbols",
                 "files",
+                "project",
                 "scope",
                 "revision",
                 "errors",
@@ -155,6 +160,7 @@ def main():
     parser.add_argument("--focus")
     parser.add_argument("--depth", type=int, default=1)
     parser.add_argument("--limit", type=int, default=400)
+    parser.add_argument("--projection", choices=["all", "project"], default="all")
     parser.add_argument("--out")
     args = parser.parse_args()
     service = CodeGraph(args.root, persist=args.command != "check")
@@ -164,7 +170,9 @@ def main():
         return int(not result["valid"])
     graph, _ = service.refresh()
     result = (
-        service.view(focus=args.focus, depth=args.depth, limit=args.limit)
+        service.view(
+            focus=args.focus, depth=args.depth, limit=args.limit, projection=args.projection
+        )
         if args.command == "query"
         else graph
     )

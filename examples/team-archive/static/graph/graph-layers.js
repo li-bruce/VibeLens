@@ -8,7 +8,8 @@ export const layers = [
   { id: "operations", label: "Data operations", color: 0x3b839c },
   { id: "execution", label: "Functions and values", color: 0x477b9c },
   { id: "data", label: "Data structure", color: 0x638b98 },
-  { id: "code", label: "Source code", color: 0x8172a3 },
+  { id: "project", label: "Project structure", color: 0x997c4f },
+  { id: "code", label: "Code symbols", color: 0x8172a3 },
 ];
 
 /** Classify facts by their declared role, never by an AI-generated display name. */
@@ -17,6 +18,8 @@ export function layerOf(node) {
   if (["query", "transform"].includes(node.data_role || node.capture_owner_role))
     return "operations";
   if (node.code_role === "endpoint") return "api";
+  if (["directory", "file"].includes(node.code_role) || node.reference_scope === "project")
+    return "project";
   if (node.code_role || ["python-ast", "source-ast"].includes(node.origin)) return "code";
   if (type === "business") return "business";
   if (["state", "wait"].includes(type)) return "state";
@@ -28,10 +31,12 @@ export function layerOf(node) {
 export function cleanLayers(value) {
   const only = layers.some((layer) => layer.id === value?.only) ? value.only : "all";
   const ids = layers.map((layer) => layer.id);
-  const order = [...new Set([...(Array.isArray(value?.order) ? value.order : []), ...ids])].filter(
-    (id) => ids.includes(id),
-  );
+  const priorOrder = Array.isArray(value?.order) ? [...value.order] : [];
+  if (value?.schema !== 2 && !priorOrder.includes("project") && priorOrder.includes("code"))
+    priorOrder.splice(priorOrder.indexOf("code"), 0, "project");
+  const order = [...new Set([...priorOrder, ...ids])].filter((id) => ids.includes(id));
   return {
+    schema: 2,
     enabled: value?.enabled === true,
     drawer: value?.drawer === true,
     compact: value?.compact === true,
@@ -40,7 +45,17 @@ export function cleanLayers(value) {
     order,
     only,
     visible: Array.isArray(value?.visible)
-      ? layers.filter((layer) => value.visible.includes(layer.id)).map((layer) => layer.id)
+      ? layers
+          .filter(
+            (layer) =>
+              value.visible.includes(layer.id) ||
+              (layer.id === "project" &&
+                value.schema !== 2 &&
+                layers
+                  .filter((item) => item.id !== "project")
+                  .every((item) => value.visible.includes(item.id))),
+          )
+          .map((layer) => layer.id)
       : layers.filter((layer) => only === "all" || only === layer.id).map((layer) => layer.id),
     projections: value?.projections !== false,
   };

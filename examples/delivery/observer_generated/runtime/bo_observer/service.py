@@ -98,8 +98,14 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
             if origin in origins:
                 self.send_header("Access-Control-Allow-Origin", origin)
                 self.send_header("Vary", "Origin")
-            self.end_headers()
-            self.wfile.write(raw)
+            try:
+                self.end_headers()
+                self.wfile.write(raw)
+            except ConnectionError:
+                # Changing focus or reloading cancels in-flight source requests.
+                # The connection is gone; sending an error response would fail
+                # again and misreport a normal cancellation as an application error.
+                self.close_connection = True
 
         def do_OPTIONS(self):
             """Grant preflight only to the explicitly configured application origins."""

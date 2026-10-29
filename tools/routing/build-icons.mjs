@@ -19,6 +19,7 @@ const names = {
   transform: "transform",
   "code-endpoint": "api",
   "code-file": "file-code",
+  "code-directory": "folder",
   "code-class": "cube",
   "code-function": "code",
   "code-parameter": "brackets",

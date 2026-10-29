@@ -42,12 +42,30 @@ def anchors(model, graph, focus):
     return selected, links
 
 
-def query(graph, model, *, focus=None, depth=1, limit=400):
+def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
     """Return a stable slice, preserving truncated relations as named boundaries."""
     if type(depth) is not int or not 0 <= depth <= 3:
         raise ValueError("Code depth must be an integer from 0 to 3")
     if type(limit) is not int or not 1 <= limit <= 5000:
         raise ValueError("Code limit must be an integer from 1 to 5000")
+    if projection not in {"all", "project"}:
+        raise ValueError("Code projection must be all or project")
+    if projection == "project":
+        keep = {
+            n["id"]
+            for n in graph["nodes"]
+            if n.get("code_role") in {"directory", "file"} or n.get("reference_scope") == "project"
+        }
+        graph = {
+            **graph,
+            "nodes": [n for n in graph["nodes"] if n["id"] in keep],
+            "symbols": {
+                symbol: identity("file", symbol.split("::", 1)[0])
+                for symbol in graph["symbols"]
+                if identity("file", symbol.split("::", 1)[0]) in keep
+            },
+            "edges": [e for e in graph["edges"] if e["from"] in keep and e["to"] in keep],
+        }
     nodes = {n["id"]: n for n in graph["nodes"]}
     links = []
     if focus:
@@ -65,7 +83,15 @@ def query(graph, model, *, focus=None, depth=1, limit=400):
         for _ in range(depth):
             current = set(wanted)
             for edge in graph["edges"]:
-                if edge["code_relation"] in {"calls", "inherits", "handles"}:
+                if edge["code_relation"] in {
+                    "calls",
+                    "inherits",
+                    "handles",
+                    "imports",
+                    "exports",
+                    "dependency",
+                    "links",
+                }:
                     if edge["from"] in current or edge["to"] in current:
                         wanted.update((edge["from"], edge["to"]))
         # Context is an ancestor, never a fabricated direct call.
@@ -95,7 +121,7 @@ def query(graph, model, *, focus=None, depth=1, limit=400):
     ordered = sorted(
         wanted,
         key=lambda k: (
-            nodes[k].get("source", {}).get("path", ""),
+            nodes[k].get("project_path", nodes[k].get("source", {}).get("path", "")),
             nodes[k].get("source", {}).get("line", 0),
             k,
         ),
@@ -111,6 +137,9 @@ def query(graph, model, *, focus=None, depth=1, limit=400):
             omitted_edges += 1
             continue
         missing = ends - selected
+        # Ancestor context must not pull unrelated siblings into a focused tree.
+        if focus and edge["code_relation"] == "contains" and edge["to"] not in wanted:
+            continue
         # Bound payload size even when one function has thousands of callers.
         if missing and boundary_count + len(missing - result.keys()) > 80:
             omitted_edges += 1
@@ -125,6 +154,18 @@ def query(graph, model, *, focus=None, depth=1, limit=400):
         if n.get("parent") not in result:
             n.pop("parent", None)
     relations += [e for e in links if e["to"] in result]
+    project = graph.get("project", {})
+    paths = {n.get("project_path") for n in result.values()}
+    entries = {p: fact for p, fact in project.get("entries", {}).items() if p in paths}
+    cycles = [cycle for cycle in project.get("file_cycles", []) if set(cycle) <= result.keys()]
+    project_summary = {
+        "entries": entries,
+        "total_entries": len(project.get("entries", {})),
+        "omitted_entries": len(project.get("entries", {})) - len(entries),
+        "file_dependencies": project.get("file_dependencies", 0),
+        "file_cycles": cycles,
+        "omitted_file_cycles": len(project.get("file_cycles", [])) - len(cycles),
+    }
     return {
         "schema": graph["schema"],
         "revision": graph["revision"],
@@ -132,6 +173,8 @@ def query(graph, model, *, focus=None, depth=1, limit=400):
         "edges": relations,
         "bindings": {k: v for k, v in graph["bindings"].items() if k in result},
         "focus": focus,
+        "projection": projection,
+        "project": project_summary,
         "depth": depth,
         "total_nodes": len(wanted),
         "loaded_nodes": len(selected),

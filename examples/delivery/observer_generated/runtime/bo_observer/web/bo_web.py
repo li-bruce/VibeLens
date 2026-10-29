@@ -148,6 +148,7 @@ class BOWeb:
                 focus=query.get("focus", [None])[0],
                 depth=int(query.get("depth", [1])[0]),
                 limit=int(query.get("limit", [400])[0]),
+                projection=query.get("projection", ["all"])[0],
             )
         if parsed.path == "/api/code/source":
             query = parse_qs(parsed.query)

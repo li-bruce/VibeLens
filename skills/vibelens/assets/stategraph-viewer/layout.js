@@ -14,7 +14,7 @@ export function emptyFilters() {
   return {
     containmentTypes: 1,
     dataTypes: 1,
-    codeTypes: 2,
+    codeTypes: 3,
     nodes: Object.keys(nodeTypes),
     edges: [
       "call",
@@ -298,6 +298,9 @@ export function selectionContext(graph, id) {
 }
 export const nodeCenter = (b) => ({ x: b.x + b.w / 2, y: b.y + 31 });
 const nodeRadius = (b) => Math.hypot(b.w / 2, Math.max(31, b.h - 31)) + 10;
+const containmentRelation = (edge) =>
+  ["contains", "code-contains"].includes(edge.type) ||
+  (edge.origin === "code-index" && edge.code_relation === "contains");
 export function hasSelfRelation(graph, id) {
   const edges = [
     ...(graph.rawEdges || []),
@@ -306,7 +309,8 @@ export function hasSelfRelation(graph, id) {
   const inside = (key) => key === id || ancestorsToReveal(graph.all, key).includes(id);
   return edges.some(
     (e) =>
-      e.type !== "contains" && ((e.from === id && inside(e.to)) || (e.to === id && inside(e.from))),
+      !containmentRelation(e) &&
+      ((e.from === id && inside(e.to)) || (e.to === id && inside(e.from))),
   );
 }
 function encloseCircles(circles) {
@@ -398,6 +402,15 @@ export function refreshHierarchy(graph) {
 }
 export { relationType };
 export const relationStyles = {
+  "code-contains": { label: boTranslate("Contains"), color: 0x997c4f, dash: [2, 5], arrow: "none" },
+  "code-exports": { label: boTranslate("Re-exports"), color: 0x8172a3, dash: [], arrow: "open" },
+  "code-links": { label: boTranslate("File link"), color: 0x997c4f, dash: [3, 4], arrow: "open" },
+  "code-dependency": {
+    label: boTranslate("Package dependency"),
+    color: 0x8172a3,
+    dash: [],
+    arrow: "open",
+  },
   "code-handles": { label: boTranslate("Handled by"), color: 0x986345, dash: [], arrow: "open" },
   "code-defines": { label: boTranslate("Defines"), color: 0x83929e, dash: [2, 5], arrow: "none" },
   "code-calls": { label: boTranslate("Static call"), color: 0x2476ad, dash: [], arrow: "open" },
@@ -463,7 +476,7 @@ export function compoundEdges(graph) {
     return out;
   };
   for (const edge of graph.edges) {
-    if (edge.type === "contains" && !graph.layered) continue; // The enclosure already shows containment.
+    if (containmentRelation(edge) && !graph.layered) continue; // The enclosure already shows containment.
     const a = chain(edge.from),
       b = chain(edge.to);
     const from = edge.from,
@@ -594,8 +607,8 @@ export function elementCoverage(graph, presentation) {
       !presentation.filters.hiddenEdges.includes(e.id) &&
       owners.has(e.from) &&
       owners.has(e.to) &&
-      (e.type === "contains" || (owners.get(e.from) === owners.get(e.to) && e.from !== e.to)) &&
-      (e.type === "contains" || presentation.filters.edges.includes(relationType(e))),
+      (containmentRelation(e) || (owners.get(e.from) === owners.get(e.to) && e.from !== e.to)) &&
+      (containmentRelation(e) || presentation.filters.edges.includes(relationType(e))),
   );
   return {
     nodes: graph.all.size,

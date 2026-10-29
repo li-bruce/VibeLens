@@ -1,5 +1,50 @@
 # Optional code structure
 
+## Engineering tree and code symbols
+
+The **Project structure** view ends at directories/files and named dependency
+boundaries. The **Code structure** view continues through classes, functions and
+declared parameters. Both are projections of the same source index and share IDs
+with focused code neighborhoods. The project tree is scanned after coding; it is
+not a model that the AI must design or maintain by hand.
+
+The engineering layer uses `code_role: directory|file`, `project_path`, and one
+physical `parent`. `code-contains` is containment; `code-imports` and
+`code-exports` retain literal module references and source locations.
+`code-dependency` comes from direct `package.json` or PEP 621 `pyproject.toml`
+declarations. Explicit `workspace:`, `file:` and `link:` dependencies resolve to
+in-scope manifest files; matching a package name alone is insufficient. Other
+names remain boundary nodes. `code-links` represents filesystem links to
+in-scope entries, without recursively following them. `code-defines` connects
+files to the existing code-symbol layer. Static edges do not claim execution.
+
+The tree includes empty directories and non-code files under the declared
+`source_scope.roots`, respects explicit exclusions, and prunes dependency/cache
+trees. Observer view preferences do not invalidate its revision. Existing source
+coverage checks still reject hidden implementations and unsupported adapters.
+File/folder IDs survive content edits; moves create new path identities. Existing
+layout migration handles explicit ID aliases, without guessing that identical
+files are renames.
+
+File dependency counts and strongly connected components are static metrics.
+Folded regions retain underlying file-edge members. They do not establish
+whether the project violates its architecture; that requires explicit boundaries.
+
+```bash
+python SKILL/scripts/bo_code.py query --root PROJECT --projection project --limit 400 --out review/project-tree.json
+```
+
+The same projection is available at `/api/code/graph?projection=project`.
+Full scans export `project.entries`, `project.file_cycles` and scope exclusions;
+bounded queries report omitted project entries and cycles explicitly.
+The live file reader remains revision-bound and exposes indexed source, HTML,
+CSS, SQL and supported package manifests. Other files remain structural entries.
+
+Current dependency resolution covers Python syntax and literal JS/TS/React/Vue
+imports/re-exports, including relative resource imports. Unresolved aliases stay
+unresolved. HTML/CSS reference extraction, arbitrary build-tool configuration and
+transitive lockfile dependency analysis are not implemented.
+
 Use the existing source adapters and viewer. Keep business labels and runtime
 state in the authored model; source-derived declarations are a separate projection
 within the same graph. The feature is available in both drive and observe modes.

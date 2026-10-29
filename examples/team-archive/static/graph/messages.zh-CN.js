@@ -1,5 +1,15 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "Project structure": "工程结构",
+  "Dependency cycle": "循环依赖",
+  "Code symbols": "代码功能",
+  "Directory": "目录",
+  "Project directory and its files": "目录及其文件",
+  "Re-exports": "重新导出",
+  "File link": "文件链接",
+  "Package dependency": "包依赖",
+  "Files: {0}": "文件：{0}",
+  "Dependencies: {0} outgoing, {1} incoming": "依赖：引用 {0}，被引用 {1}",
   "Not evaluated": "未求值",
   "Evaluation error": "求值出错",
   "Unknown": "未知",

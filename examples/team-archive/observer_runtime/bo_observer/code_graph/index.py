@@ -7,6 +7,8 @@ dispatch, or data flow from a syntactic call.
 from pathlib import PurePosixPath
 from copy import deepcopy
 from .endpoints import endpoints
+from .structure import attach_tree, analyze
+from .manifests import dependencies
 from ..sources import SOURCE_SUFFIXES
 from ..graph.code_structure import module_name
 from ..graph.behavior_model import digest
@@ -17,10 +19,14 @@ def identity(role, value):
     return "code:" + role + ":" + digest(value)[:24]
 
 
-def import_target(path, reference, units):
+def import_target(path, reference, units, modules=None):
     """Resolve only project-local imports supported by the indexed source scope."""
     if isinstance(reference, str):
-        modules = {module_name(p): p for p in units if p.endswith(".py")}
+        modules = (
+            modules
+            if modules is not None
+            else {module_name(p): p for p in units if p.endswith(".py")}
+        )
         parts = reference.split(".")
         for size in range(len(parts), 0, -1):
             if ".".join(parts[:size]) in modules:
@@ -49,7 +55,7 @@ def import_target(path, reference, units):
     return next((p for p in candidates if p in units), None)
 
 
-def build(index):
+def build(index, project=None, root=None):
     """Project files, declarations, parameters, imports and call occurrences."""
     index = deepcopy(index)
     for path, unit in index["units"].items():
@@ -90,7 +96,18 @@ def build(index):
     nodes, edges, bindings = {}, [], {}
     units, symbols = index["units"], index["symbols"]
     symbol_ids = {key: identity("symbol", key) for key in symbols}
-    file_ids = {path: identity("file", path) for path in units}
+    if project is None:
+        entries = {".": {"kind": "directory"}, **{p: {"kind": "file"} for p in units}}
+        for path in units:
+            for parent in PurePosixPath(path).parents:
+                entries[parent.as_posix()] = {"kind": "directory"}
+        project = {"entries": entries, "text_files": {}, "readable_files": {}}
+    file_ids = {
+        path: identity("file", path)
+        for path, fact in project["entries"].items()
+        if fact["kind"] != "directory"
+    }
+    project_modules = {module_name(p): p for p in file_ids if p.endswith(".py")}
     counts = {}
 
     def edge(source, target, relation, label, evidence=None):
@@ -128,14 +145,18 @@ def build(index):
         nodes[key] = value
         return value
 
-    for path, unit in sorted(units.items()):
+    for path in sorted(file_ids):
         node(
             file_ids[path],
             path,
             "file",
-            {"path": path, "line": 1, "symbol": "<file>"},
-            summary=unit.get("language", "source"),
+            (
+                {"path": path, "line": 1, "symbol": "<file>"}
+                if path in units or path in project["readable_files"]
+                else None
+            ),
         )
+    attach_tree(project, nodes, edge, identity)
     for key, symbol in sorted(symbols.items()):
         prefix = symbol["symbol"].rsplit(".", 1)[0] if "." in symbol["symbol"] else None
         parent = symbol_ids.get(symbol["path"] + "::" + str(prefix), file_ids[symbol["path"]])
@@ -179,9 +200,12 @@ def build(index):
             edge(pid, value["id"], "parameter", "Parameter")
 
     for path, unit in sorted(units.items()):
-        for alias, reference in sorted(unit.get("imports", {}).items()):
-            target = import_target(path, reference, units)
-            name = reference if isinstance(reference, str) else reference["module"]
+        references = unit.get("file_references", [])
+        for reference in references:
+            name = reference["module"]
+            target = import_target(
+                path, name if unit["language"] == "python" else reference, file_ids, project_modules
+            )
             if target:
                 tid = file_ids[target]
             else:
@@ -193,12 +217,18 @@ def build(index):
                     parent=file_ids[path],
                     summary="External or unresolved import",
                 )
-            # The alias may contain a source offset for a side-effect import.
+                nodes[tid]["reference_scope"] = "project"
             edge(
                 file_ids[path],
                 tid,
-                "imports",
-                "Imports " + (name if alias.startswith("<side-effect:") else alias),
+                reference["relation"],
+                "Re-exports" if reference["relation"] == "exports" else "Imports",
+                {
+                    "path": path,
+                    "line": reference["line"],
+                    "module": name,
+                    "kind": "source-reference",
+                },
             )
         for symbol in unit["symbols"].values():
             for base in symbol.get("bases", []):
@@ -243,16 +273,25 @@ def build(index):
             call["expression"],
             {k: call[k] for k in ("line", "column", "evidence") if k in call},
         )
+    if root is not None:
+        index["errors"] += dependencies(root, project, nodes, edge, identity)
+    analysis = analyze(nodes, edges)
     result = {
         "schema": "bo-code-graph/v1",
         "nodes": list(nodes.values()),
         "edges": edges,
         "bindings": bindings,
-        "files": {p: u["file_hash"] for p, u in sorted(units.items())},
+        "files": {
+            **project["readable_files"],
+            **{p: u["file_hash"] for p, u in sorted(units.items())},
+        },
+        "project": {"entries": project["entries"], **analysis},
         "symbols": symbol_ids,
         "errors": index["errors"],
         "limits": index["limits"],
         "incremental": index["incremental"],
     }
-    result["revision"] = digest({k: result[k] for k in ("nodes", "edges", "files", "errors")})
+    result["revision"] = digest(
+        {k: result[k] for k in ("nodes", "edges", "files", "project", "errors")}
+    )
     return result

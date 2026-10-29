@@ -849,7 +849,7 @@ function updateActions() {
   $("code-local").disabled =
     view?.stage === "design" ||
     !!recording ||
-    ["code", "api"].includes(analysisId) ||
+    ["project", "code", "api"].includes(analysisId) ||
     (!b && !analysisSettings?.codeFocus);
   $("reference-origin").hidden = !b?.node.referenceOf;
   $("core-toggle").disabled = !b;
@@ -1568,18 +1568,20 @@ async function poll() {
     const codeEnabled =
       !recording &&
       next.stage !== "design" &&
-      (["code", "api"].includes(analysisId) || !!analysisSettings.codeFocus);
+      (["project", "code", "api"].includes(analysisId) || !!analysisSettings.codeFocus);
     let codeSlice = null;
+    let sourceNeedsLayout = false;
     try {
       const previousCodeFocus = codeLayer.slice?.focus;
       codeSlice = await codeLayer.load({
         enabled: codeEnabled,
-        focus: ["code", "api"].includes(analysisId) ? null : analysisSettings.codeFocus,
+        focus: ["project", "code", "api"].includes(analysisId) ? null : analysisSettings.codeFocus,
         limit: codeLimit,
+        projection: analysisId === "project" ? "project" : "all",
       });
       if (codeSlice?.focus && codeSlice.focus !== previousCodeFocus)
         for (const node of codeSlice.nodes)
-          if (["file", "class"].includes(node.code_role)) expanded.add(node.id);
+          if (["directory", "file", "class"].includes(node.code_role)) expanded.add(node.id);
       $("code-status").textContent = codeSummary(codeSlice, boTranslate);
       $("code-status").title = codeSlice ? JSON.stringify(codeSlice.errors) : "";
     } catch (error) {
@@ -1591,7 +1593,7 @@ async function poll() {
     $("code-local").disabled =
       next.stage === "design" ||
       !!recording ||
-      ["code", "api"].includes(analysisId) ||
+      ["project", "code", "api"].includes(analysisId) ||
       (!selected && !analysisSettings.codeFocus);
     const key = renderRevision(next, [
       version,
@@ -1653,6 +1655,18 @@ async function poll() {
       }
       first = true;
     }
+    if (codeSlice && !analysisSettings.sourceTreeInitialized?.includes(analysisId)) {
+      sourceNeedsLayout =
+        ["project", "code", "api"].includes(analysisId) &&
+        !codeSlice.nodes.some((node) => preferences.positions[node.id]);
+      analysisSettings.sourceTreeInitialized ||= [];
+      for (const node of codeSlice.nodes)
+        if (node.code_role === "directory" && (analysisId === "code" || node.project_path === "."))
+          expanded.add(node.id);
+      analysisSettings.sourceTreeInitialized.push(analysisId);
+      saveAnalysis();
+    }
+
     const cases = next.available_cases || [];
     if (JSON.stringify([cases, version]) !== $("case").dataset.options) {
       $("case").replaceChildren(
@@ -1712,9 +1726,9 @@ async function poll() {
       select.value = choice;
       const hasPositions = Object.keys(preferences.positions).length > 0;
       project();
-      if (first) {
+      if (first || sourceNeedsLayout) {
         first = false;
-        if (!hasPositions) arrange(true);
+        if (!hasPositions || sourceNeedsLayout) arrange(true);
         else if (!preferences.camera || analysisSettings?.layers?.enabled) fit();
       }
       saveSoon();
@@ -1780,6 +1794,9 @@ function loadAnalysis(baseKey) {
     annotations: null,
     layers: cleanLayers(saved?.layers),
     routing: cleanRoute(saved?.routing),
+    sourceTreeInitialized: Array.isArray(saved?.sourceTreeInitialized)
+      ? saved.sourceTreeInitialized.filter((id) => typeof id === "string").slice(0, 40)
+      : [],
     replays: saved?.replays && typeof saved.replays === "object" ? saved.replays : {},
   };
   updateLayerControls();
@@ -1900,7 +1917,7 @@ function updateAnalysisOptions() {
     ...[...presets, ...analysisSettings.custom].map((p) => {
       const option = new Option(p.label, p.id);
       // The lazy source index is current-source evidence, not a recorded frame.
-      option.disabled = !!recording && ["code", "api"].includes(p.id);
+      option.disabled = !!recording && ["project", "code", "api"].includes(p.id);
       if (option.disabled)
         option.title = boTranslate("Return to live view to browse code structure");
       return option;
@@ -1911,7 +1928,12 @@ function updateAnalysisOptions() {
   $("delete-view").hidden = !analysisId.startsWith("custom-");
 }
 function changeAnalysis(id) {
-  if (!analysisSettings || id === analysisId || (recording && ["code", "api"].includes(id))) return;
+  if (
+    !analysisSettings ||
+    id === analysisId ||
+    (recording && ["project", "code", "api"].includes(id))
+  )
+    return;
   stopPlayback();
   cancelLayout();
   save();
@@ -2482,7 +2504,8 @@ async function openRecording(id) {
       throw Error(boTranslate("Unsupported recording format"));
     if (latestLive && !recordingMatches(saved, latestLive))
       throw Error(boTranslate("This recording belongs to an earlier graph version."));
-    if (!recording) replayReturnAnalysis = ["code", "api"].includes(analysisId) ? analysisId : null;
+    if (!recording)
+      replayReturnAnalysis = ["project", "code", "api"].includes(analysisId) ? analysisId : null;
     recording = saved;
     $("record-list").value = saved.id;
     replayItems = timeline(saved);
@@ -2490,7 +2513,7 @@ async function openRecording(id) {
     $("replay").hidden = false;
     document.body.classList.add("is-replay");
     for (const id of ["version", "case", "attempt", "step"]) $(id).disabled = true;
-    if (["code", "api"].includes(analysisId)) changeAnalysis("overview");
+    if (["project", "code", "api"].includes(analysisId)) changeAnalysis("overview");
     updateAnalysisOptions();
     $("code-local").disabled = true;
     $("code-more").hidden = true;

@@ -492,6 +492,7 @@ export function wrapText(text, width = 47) {
   return out;
 }
 export const nodeTypes = {
+  "code-directory": { label: boTranslate("Directory"), glyph: "D", color: 0x997c4f },
   "code-endpoint": { label: boTranslate("API endpoint"), glyph: "API", color: 0x986345 },
   "code-file": { label: boTranslate("Source file"), glyph: "F", color: 0x657ca5 },
   "code-class": { label: boTranslate("Class"), glyph: "C", color: 0x9371a6 },
@@ -734,7 +735,9 @@ export function layoutGraph(
         ? target.kind === "state"
           ? boTranslate("State membership")
           : boTranslate("Contains")
-        : e.label;
+        : e.origin === "code-index"
+          ? boTranslate(e.code_relation === "imports" && e.label === "Imports" ? "Import" : e.label)
+          : e.label;
     if (configuration && e.type === "resource") {
       const state = configuration.activities?.[e.to];
       observed = !!state && state !== "pending";

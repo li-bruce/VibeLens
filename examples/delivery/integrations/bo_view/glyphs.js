@@ -2,6 +2,7 @@ import { iconFor } from "./node-icons.js";
 import { t as boTranslate } from "./i18n.js";
 // One geometry source for WebGL nodes and the SVG legend.
 export const meanings = {
+  "code-directory": boTranslate("Project directory and its files"),
   "code-endpoint": boTranslate("HTTP route and its handler"),
   "code-file": boTranslate("Indexed source file"),
   "code-class": boTranslate("Declared class and its methods"),

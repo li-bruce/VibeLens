@@ -18,6 +18,7 @@ export const objectNames = {
   transform: "data-funnel",
   "code-endpoint": "connected-plugs",
   "code-file": "source-document",
+  "code-directory": "file-folder",
   "code-class": "class-cabinet",
   "code-function": "function-chip",
   "code-parameter": "parameter-dial",
@@ -154,6 +155,17 @@ export function nodeGeometry(type, dense = false) {
       box(1.22, 0.25, 1.65);
       for (const z of [-0.4, 0, 0.4]) box(0.78, 0.13, 0.08, -0.04, 0.2, z);
       ball(0.12, 0.5, 0.19, -0.7);
+      break;
+    case "code-directory":
+      box(1.7, 0.22, 1.25, 0, -0.35);
+      box(1.7, 0.95, 0.16, 0, 0.1, -0.62);
+      box(0.65, 0.3, 0.16, -0.5, 0.65, -0.62);
+      box(1.7, 0.7, 0.16, 0, -0.1, 0.58);
+      if (!dense) {
+        box(0.12, 0.7, 1.2, -0.8, -0.1);
+        box(0.12, 0.7, 1.2, 0.8, -0.1);
+        for (const z of [-0.3, 0, 0.3]) box(1.4, 0.08, 0.85, 0, 0.16 + z / 5, z);
+      }
       break;
     case "code-class":
       box(1.45, 1.5, 0.95);

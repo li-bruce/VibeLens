@@ -58,6 +58,7 @@ function parseUnit(path, original) {
   const text = (n) => (n ? n.getText(sf) : "");
   const line = (n) => sf.getLineAndCharacterOfPosition(n.getStart(sf)).line + 1;
   const imports = {},
+    fileReferences = [],
     symbols = {},
     names = new Map();
   const counts = new Map();
@@ -85,6 +86,25 @@ function parseUnit(path, original) {
     return `<callback:${slot}:${count}>`;
   }
   function register(n, owner = "", className = null) {
+    // Preserve file-level syntax separately from symbol/call resolution. This
+    // includes re-exports, side effects and literal dynamic imports/resources.
+    if (
+      (ts.isImportDeclaration(n) || ts.isExportDeclaration(n)) &&
+      n.moduleSpecifier &&
+      ts.isStringLiteral(n.moduleSpecifier)
+    )
+      fileReferences.push({
+        module: n.moduleSpecifier.text,
+        relation: ts.isExportDeclaration(n) ? "exports" : "imports",
+        line: line(n),
+      });
+    if (
+      ts.isCallExpression(n) &&
+      (text(n.expression) === "require" || n.expression.kind === ts.SyntaxKind.ImportKeyword) &&
+      n.arguments.length === 1 &&
+      ts.isStringLiteral(n.arguments[0])
+    )
+      fileReferences.push({ module: n.arguments[0].text, relation: "imports", line: line(n) });
     // CommonJS declarations share import facts with ES modules. Dynamic require
     // expressions remain unresolved rather than executing a module to discover it.
     if (
@@ -374,6 +394,7 @@ function parseUnit(path, original) {
   }
   return {
     imports,
+    file_references: fileReferences,
     symbols,
     declarations: [],
     shadowed_globals: [],

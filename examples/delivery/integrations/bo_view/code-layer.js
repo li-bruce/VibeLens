@@ -1,6 +1,7 @@
 // Optional source structure is a display projection, separate from recorded facts.
 import { mergeGraph } from "./graph-links.js";
 export const codeTypes = [
+  "code-directory",
   "code-file",
   "code-endpoint",
   "code-class",
@@ -9,6 +10,10 @@ export const codeTypes = [
   "code-unresolved",
 ];
 export const codeRelations = [
+  "code-contains",
+  "code-exports",
+  "code-links",
+  "code-dependency",
   "code-defines",
   "code-handles",
   "code-calls",
@@ -32,23 +37,57 @@ export function codeSummary(slice, translate) {
 }
 
 export function migrateCodeFilters(value) {
-  if (!value || value.codeTypes === 2) return value;
-  const next = { ...value, codeTypes: 2 };
+  if (!value || value.codeTypes === 3) return value;
+  const next = { ...value, codeTypes: 3 };
   // Upgrade prior all-code selections once. Preserve deliberate narrow/empty filters.
   if (value.codeTypes === 1) {
     for (const key of ["nodes", "regions"])
       if (
-        codeTypes
-          .filter((type) => type !== "code-endpoint")
-          .every((type) => value[key]?.includes(type))
+        ["code-file", "code-class", "code-function", "code-parameter", "code-unresolved"].every(
+          (type) => value[key]?.includes(type),
+        )
       )
         next[key] = [...new Set([...value[key], "code-endpoint"])];
     if (
-      codeRelations
-        .filter((type) => type !== "code-handles")
-        .every((type) => value.edges?.includes(type))
+      [
+        "code-defines",
+        "code-calls",
+        "code-imports",
+        "code-inherits",
+        "code-parameter",
+        "code-maps",
+      ].every((type) => value.edges?.includes(type))
     )
       next.edges = [...new Set([...value.edges, "code-handles"])];
+  }
+  if ([1, 2].includes(value.codeTypes)) {
+    for (const key of ["nodes", "regions"])
+      if (
+        codeTypes
+          .filter((type) => type !== "code-directory")
+          .every((type) => next[key]?.includes(type))
+      )
+        next[key] = [...new Set([...next[key], "code-directory"])];
+    if (
+      [
+        "code-defines",
+        "code-calls",
+        "code-imports",
+        "code-inherits",
+        "code-parameter",
+        "code-maps",
+        "code-handles",
+      ].every((type) => next.edges?.includes(type))
+    )
+      next.edges = [
+        ...new Set([
+          ...next.edges,
+          "code-contains",
+          "code-exports",
+          "code-links",
+          "code-dependency",
+        ]),
+      ];
   }
   return next;
 }
@@ -87,7 +126,7 @@ export class CodeLayer {
     this.controller?.abort();
     this.slice = null;
   }
-  async load({ enabled, focus = null, limit = 400, depth = 1 }) {
+  async load({ enabled, focus = null, limit = 400, depth = 1, projection = "all" }) {
     if (!enabled) {
       this.clear();
       return null;
@@ -95,7 +134,7 @@ export class CodeLayer {
     const epoch = ++this.epoch;
     this.controller?.abort();
     this.controller = new AbortController();
-    const query = new URLSearchParams({ limit, depth });
+    const query = new URLSearchParams({ limit, depth, projection });
     if (focus) query.set("focus", focus);
     try {
       const response = await this.fetcher("/api/code/graph?" + query, {

@@ -49,6 +49,18 @@ recording service and removes one stopped interval after version and identity ch
 
 An inspection does not advance the accepted baseline. Acceptance is the explicit boundary after all configured checks succeed.
 
+The optional source view adds a physical **Project structure** layer above code
+symbols. [filesystem.py](../skills/vibelens/scripts/bo_observer/code_graph/filesystem.py)
+scans directories/files; [manifests.py](../skills/vibelens/scripts/bo_observer/code_graph/manifests.py)
+reads declared package dependencies. [structure.py](../skills/vibelens/scripts/bo_observer/code_graph/structure.py)
+attaches containment and computes file dependency counts/cycles.
+[index.py](../skills/vibelens/scripts/bo_observer/code_graph/index.py) joins these
+facts to parser declarations; [query.py](../skills/vibelens/scripts/bo_observer/code_graph/query.py)
+returns bounded engineering or code neighborhoods. The shared
+[service.py](../skills/vibelens/scripts/bo_observer/code_graph/service.py) handles
+refresh, revision-bound source reading and independent saved-index checks.
+See [the interface and supported relationships](../skills/vibelens/references/code-structure.md).
+
 ### 2. A program operation appears in the graph
 
 1. The application makes its business decision and calls its native adapter's BOProbe.record with selected values: [Python](../skills/vibelens/scripts/bo_observer/adapters/python/bo_probe.py) or [JavaScript](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs).

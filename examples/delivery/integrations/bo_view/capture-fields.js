@@ -88,6 +88,17 @@ export function nodeExplanation(node, all) {
     ];
   }
   const result = [];
+  if (node.project_cycle) result.push(t("Dependency cycle"));
+  if (node.project_metrics?.files !== undefined)
+    result.push(t("Files: {0}", node.project_metrics.files));
+  if (node.project_metrics?.imports !== undefined)
+    result.push(
+      t(
+        "Dependencies: {0} outgoing, {1} incoming",
+        node.project_metrics.imports,
+        node.project_metrics.imported_by,
+      ),
+    );
   if (node.machine_state) result.push(t("Executable state: {0}", node.value));
   if (["query", "transform"].includes(node.data_role))
     result.push(t("Data operation · {0}", node.data_metadata?.action || node.data_role));

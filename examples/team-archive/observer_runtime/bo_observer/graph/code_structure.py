@@ -43,9 +43,25 @@ def parse_unit(path, source):
     tree = ast.parse(source, filename=path)
     source_lines = source.splitlines()
     imports, symbols, shadowed_globals = {}, {}, set()
+    file_references = []
     package = module_name(path).split(".")
     if not path.endswith("/__init__.py"):
         package = package[:-1]
+    # File dependencies include conditional/local imports, independently of the
+    # narrower name resolution used for call targets below.
+    for declaration in ast.walk(tree):
+        if isinstance(declaration, ast.Import):
+            targets = [item.name for item in declaration.names]
+        elif isinstance(declaration, ast.ImportFrom):
+            prefix = package[: len(package) - declaration.level + 1] if declaration.level else []
+            base = ".".join(prefix + ([declaration.module] if declaration.module else []))
+            targets = [".".join(filter(None, [base, item.name])) for item in declaration.names]
+        else:
+            continue
+        file_references.extend(
+            {"module": target, "relation": "imports", "line": declaration.lineno}
+            for target in targets
+        )
     for node in tree.body:
         if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
@@ -234,6 +250,7 @@ def parse_unit(path, source):
     ModuleCalls().visit(tree)
     return {
         "imports": imports,
+        "file_references": file_references,
         "symbols": symbols,
         "declarations": declarations,
         "shadowed_globals": sorted(shadowed_globals),
