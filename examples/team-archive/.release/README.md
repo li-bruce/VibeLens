@@ -31,3 +31,7 @@ The current record is `policy-native-protocol-20261029`. It installs the canonic
 当前本地活动记录为 `assessment-fixes`，覆盖 2026-10-22 复评的六项问题及严格声明、实际投影检查；旧记录保留。每次修改都重新执行正常验收；本轮日志和截图见 [修复材料](../../../docs/review/assessment-fixes-20261022/README.md)。修改项目时继续正常变更流程，不要覆盖已发布记录。
 
 当前本地活动记录更新为 `web-continuity`：同一图贯穿对话设计和运行，Web 保持只读；提供入口隐藏、Web 关闭、核心包导出及类型填充。旧检查和业务预期保留；证据见 [本轮材料](../../../docs/review/web-continuity-20261022/README.md)。
+
+## Canonical conversation-control ancestry (2026-10-29)
+
+The frozen `control-ancestry-20261029` record reviews the native controller correction. Requested nested nodes retain declaration ancestry when switching views; incomplete selections are rejected. Business source, states, observations and independent expectations are unchanged.

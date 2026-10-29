@@ -41,3 +41,7 @@ Mapping, state rules, business expectations and project checks passed. See the
 [failure, repair and retest evidence](../../../docs/review/db-vis/delivery-acceptance.md).
 This receipt records source consistency and executed checks; it is not a digital
 signature or a proof of every possible behavior.
+
+## Canonical conversation-control ancestry (2026-10-29)
+
+The frozen `control-ancestry-20261029` record reviews the native controller correction. Requested nested nodes retain declaration ancestry when switching views; incomplete selections are rejected. Business source, states, observations and independent expectations are unchanged.

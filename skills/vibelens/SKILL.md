@@ -121,6 +121,8 @@ For exercised drive-mode transitions, compare the native executor's actual event
 
 Verify that unsynchronized source changes fail; every feature and required field has actual evidence; key values match independent reads; business effects agree with observation on, off, failing, and queue-limited; viewer/recording controls create no business events; filtered views retain relations; export and Web removal preserve business execution. Run architecture checks, existing gates, and new language cases without weakening prior checks.
 
+For `/vibelens` controls, resolve containment from the canonical model and verify that every requested node is visible before reporting application success. Test switching from a simplified boundary view into nested rules or business steps; a display projection must not replace declaration ancestry.
+
 For configured databases, check a real schema change, actual query targets and selected values, a transformation, commit and applicable rollback/error cases, and observer-query exclusion. Verify source links, data relations, replay, saved layout, and obsolete-recording removal after a build change. Missing drivers or services are unrun checks. Keep mapping results separate from business outcomes and unverified schema details.
 
 Keep failures, fixes, retests, and limitations. Deliver an accessible graph, reproducible commands, and usage guidance. Distinguish scripted dialogue, independent AI trials, and human testing. Open or message another conversation only with user authorization.

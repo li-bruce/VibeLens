@@ -95,8 +95,16 @@ export function createControlBridge({ apply, request = fetch, url = location.hre
   };
 }
 
-/** Include projected values and required ancestors without duplicating identities. */
-export function controlSelection(all, plan) {
+/** Restore declaration ancestry while retaining generated fields from the display inventory. */
+function controlInventory(all, modelNodes) {
+  const nodes = new Map(all);
+  for (const node of modelNodes) nodes.set(node.id, { ...nodes.get(node.id), ...node });
+  return nodes;
+}
+
+/** Include projected values and canonical ancestors without changing the current display. */
+export function controlSelection(all, plan, modelNodes = []) {
+  if (modelNodes.length) all = controlInventory(all, modelNodes);
   const selected = new Set(plan.node_ids),
     keep = new Set();
   for (const node of all.values()) {
@@ -120,4 +128,41 @@ export function controlSelection(all, plan) {
     }
   }
   return keep;
+}
+
+/** Resolve one control request independently of the view that happened to be open. */
+export function controlProjection(all, plan, modelNodes = []) {
+  const nodes = controlInventory(all, modelNodes),
+    keep = controlSelection(nodes, plan),
+    expanded = new Set();
+  // An explicitly selected nested business node also needs its containers open.
+  // Business-only requests need not open that node's captured parameters.
+  for (const id of plan.node_ids) {
+    let parent = nodes.get(id)?.parent;
+    const seen = new Set();
+    while (parent && nodes.has(parent) && !seen.has(parent)) {
+      seen.add(parent);
+      expanded.add(parent);
+      parent = nodes.get(parent).parent;
+    }
+  }
+  if (plan.filters.nodes.some((type) => type !== "business"))
+    for (const id of keep) {
+      const parent = nodes.get(id)?.parent;
+      if (parent && keep.has(parent)) expanded.add(parent);
+    }
+  const advanced = plan.node_ids.some((id) => {
+    const node = nodes.get(id);
+    return (
+      node?.analysis_level === "advanced" || ["python-ast", "source-ast"].includes(node?.origin)
+    );
+  });
+  return { nodes, keep, expanded: [...expanded], advanced };
+}
+
+/** A successful command receipt requires every explicitly requested node to be visible. */
+export function requireVisibleControlNodes(graph, plan) {
+  const missing = plan.node_ids.filter((id) => !graph.byId.has(id));
+  if (missing.length)
+    throw Error("Requested nodes are hidden in the resulting view: " + missing.join(", "));
 }
