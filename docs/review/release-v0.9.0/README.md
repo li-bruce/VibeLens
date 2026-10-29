@@ -20,3 +20,7 @@ The [file-sharing review](../file-sharing-demo/README.md) indexes scripted conve
 The complete full-gate log and exact source receipt are in [integration log](../file-sharing-demo/checks/integration-full.log) and [receipt](../file-sharing-demo/checks/integration-result.json). The final three-file presentation delta is tested separately; the full-gate receipt is not relabeled as a later source tree. [Case browser](../file-sharing-demo/checks/browser-five-stage-flat-save/summary.json), [homepage](../file-sharing-demo/checks/home-five-stage/result.json), [controls](../file-sharing-demo/checks/controls-five-stage/result.json), [transitions](../file-sharing-demo/checks/transitions-five-stage/result.json).
 
 Graph-writing instructions and display-only copy cleanup retain actual business conditions, source identities and recording facts. The final story contains five chapters; complete test conversations remain in the review. [Copy criteria](../file-sharing-demo/checks/copy-review.json).
+
+## Cloud test fixture correction
+
+The older shared-policy CI runs exposed an inherited host-ID assumption in the HTTP test. [Failure and correction](ci-host-context/README.md) preserve the original cloud failure, explicit simulated host context and added missing-host rejection. Both updated test modules pass without an outer Codex host ID. The production Skill and native acceptance remain unchanged.

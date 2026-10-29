@@ -65,6 +65,14 @@ class ControlTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), provenance["sha256"])
         self.assertIn("review-policy", {node["id"] for node in self.view["model"]["nodes"]})
 
+    def test_missing_host_identity_does_not_activate_a_global_scope(self):
+        isolated = ControlScope(self.root / "without-host")
+        with patch.dict(os.environ):
+            os.environ.pop("CODEX_THREAD_ID", None)
+            with self.assertRaisesRegex(ValueError, "host conversation ID is required"):
+                isolated.activate("$vibelens for this project", self.project)
+        self.assertFalse(isolated.directory.exists())
+
     def test_prefix_is_required_for_every_mutation(self):
         plan = build_plan(self.view, self.spec)
         before = self.scope.for_view(self.active["session"])

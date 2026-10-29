@@ -1,6 +1,7 @@
 """Verify the shipped HTTP example against live states and committed SQLite rows."""
 
 import json
+import os
 from contextlib import closing
 from pathlib import Path
 import queue
@@ -141,6 +142,8 @@ class RuntimeTests(unittest.TestCase):
                             capture_output=True,
                             text=True,
                             encoding="utf-8",
+                            # Simulate a host conversation independently of shell/CI.
+                            env={**os.environ, "CODEX_THREAD_ID": "runtime-http-test"},
                             check=True,
                         )
                         return json.loads(completed.stdout)["result"]
