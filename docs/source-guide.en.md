@@ -10,6 +10,7 @@ Read this guide when you want to change the Skill, inspect a recorded value, or 
 |---|---|
 | [SKILL.md](../skills/vibelens/SKILL.md) | The conversation and iteration workflow followed by the coding agent. |
 | [scripts/bo_observer/control](../skills/vibelens/scripts/bo_observer/control/) | Explicit conversation/project scope, validated view/replay plans and the control CLI. |
+| [scripts/bo_observer/policy](../skills/vibelens/scripts/bo_observer/policy/) | Shared rule declarations, projection into the main graph, native evaluations and source/event verification. |
 | [scripts/bo.py](../skills/vibelens/scripts/bo.py) | Entry point for serving, validating, inspecting, and exporting a native project. |
 | [scripts/bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) | Independent state declaration, observed instances, and complete graph export. |
 | [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | Value types, state hierarchy, active-state calculation, and strict declaration checks. |
@@ -25,6 +26,8 @@ Read this guide when you want to change the Skill, inspect a recorded value, or 
 Most Python files directly under scripts are small import/CLI entry points retained for installed projects. Follow their imports into bo_observer to edit the implementation. The independent state module and its two contract files are deliberately kept importable without the observer service.
 
 ## Three paths through the implementation
+
+For a rule change, start with [policy/definition.py](../skills/vibelens/scripts/bo_observer/policy/definition.py). [projection.py](../skills/vibelens/scripts/bo_observer/policy/projection.py) creates rule nodes and source links in the main graph; [runtime.py](../skills/vibelens/scripts/bo_observer/policy/runtime.py) is the optional Python evaluator. [bindings.py](../skills/vibelens/scripts/bo_observer/policy/bindings.py) checks the loaded callable against its source without executing the file. [evidence.py](../skills/vibelens/scripts/bo_observer/policy/evidence.py) checks actual paths and original graph events. [sync.py](../skills/vibelens/scripts/bo_observer/policy/sync.py) joins the existing coding maintenance cycle. See the [shared-rule workflow](../skills/vibelens/references/shared-policy.md) and [executable example](../examples/policy-network/).
 
 The viewer's [controls.js](../skills/vibelens/assets/stategraph-viewer/controls.js) owns
 SVG icons and context-menu keyboard behavior. [i18n.js](../skills/vibelens/assets/stategraph-viewer/i18n.js)

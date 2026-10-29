@@ -51,6 +51,8 @@ def main():
     run(ROOT, "tests/test_requirements_dialogue.py")
     run(ROOT, "tests/test_clarification_gate.py")
     run(ROOT, "tests/test_whitebox.py")
+    run(ROOT, "tests/test_policy_network.py")
+    subprocess.run(["node", "tools/test_policy_view.mjs"], cwd=ROOT, check=True)
     run(ROOT, "tests/test_focus_bundle.py")
     run(ROOT, "tools/test_stategraph_module.py")
     run(ROOT, "tools/test_recording.py")

@@ -1,0 +1,128 @@
+{
+  "valid": true,
+  "errors": [],
+  "checks": [
+    {
+      "check": "valid-grant-values",
+      "rule": "grant-conditions",
+      "requirement": "R2",
+      "case": "normal",
+      "node": "grant",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "eligible_grant"
+      },
+      "events": [
+        "37a4bd1dc7d5:4",
+        "37a4bd1dc7d5:18"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "revoked-alternative",
+      "rule": "grant-conditions",
+      "requirement": "R2",
+      "case": "alternative",
+      "node": "grant",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "eligible_grant"
+      },
+      "events": [
+        "cb25da48690b:6",
+        "cb25da48690b:21"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "valid-alternative",
+      "rule": "grant-conditions",
+      "requirement": "R2",
+      "case": "alternative",
+      "node": "grant",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "eligible_grant"
+      },
+      "events": [
+        "cb25da48690b:7",
+        "cb25da48690b:22"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "alternative-any",
+      "rule": "role-and-any",
+      "requirement": "R2",
+      "case": "alternative",
+      "node": "authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "authorized"
+      },
+      "events": [
+        "cb25da48690b:8",
+        "cb25da48690b:23"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "scope-short-circuit",
+      "rule": "grant-conditions",
+      "requirement": "R2",
+      "case": "bad_scope",
+      "node": "grant",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "eligible_grant"
+      },
+      "events": [
+        "5fbb5ccaff16:5"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "role-short-circuit",
+      "rule": "role-and-any",
+      "requirement": "R2",
+      "case": "bad_role",
+      "node": "authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "authorized"
+      },
+      "events": [
+        "c0033bed8071:5"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "expiry-boundary",
+      "rule": "grant-conditions",
+      "requirement": "R2",
+      "case": "expired",
+      "node": "grant",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "eligible_grant"
+      },
+      "events": [
+        "63b6af3dde94:18"
+      ],
+      "status": "passed",
+      "errors": []
+    }
+  ],
+  "coverage": {
+    "rules": 2,
+    "checks": 7,
+    "passed": 7
+  },
+  "scope": "Declared source bindings and observed values; missing evidence never passes."
+}

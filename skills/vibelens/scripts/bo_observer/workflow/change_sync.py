@@ -50,6 +50,10 @@ def verify(root, cfg, change):
 def structural_errors(root, cfg, snap):
     """Check source scope, model bindings, probes, declarations, and test contracts together."""
     errors = list(snap["structure"]["errors"])
+    if snap["model"].get("policy"):
+        from ..policy.evidence import binding_errors
+
+        errors.extend(binding_errors(snap["model"]["policy"], snap["structure"]))
     if cfg.get("reconciliation"):
         from ..development import reconciliation_errors
 

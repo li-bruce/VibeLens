@@ -1,0 +1,391 @@
+{
+  "schema": "bo-policy/v1",
+  "revision": "shared-example-1",
+  "stage": "bound",
+  "inputs": {
+    "actor": "string",
+    "owner": "string",
+    "parent_owner": "string",
+    "recipient": "string",
+    "logged_in": "boolean",
+    "grant_active": "boolean",
+    "role_allowed": "boolean",
+    "changes_owner": "boolean"
+  },
+  "predicates": [
+    {
+      "id": "same_identity",
+      "parameters": {
+        "left": "string",
+        "right": "string"
+      },
+      "source": {
+        "path": "predicates.py",
+        "symbol": "same_identity"
+      },
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "flag_enabled",
+      "parameters": {
+        "value": "boolean"
+      },
+      "source": {
+        "path": "predicates.py",
+        "symbol": "flag_enabled"
+      },
+      "source_refs": [
+        "U1"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "actor",
+      "op": "input",
+      "name": "actor",
+      "label": "actor",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "owner",
+      "op": "input",
+      "name": "owner",
+      "label": "owner",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "parent_owner",
+      "op": "input",
+      "name": "parent_owner",
+      "label": "parent owner",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "recipient",
+      "op": "input",
+      "name": "recipient",
+      "label": "recipient",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "logged_in",
+      "op": "input",
+      "name": "logged_in",
+      "label": "logged in",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "grant_active",
+      "op": "input",
+      "name": "grant_active",
+      "label": "grant active",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "role_allowed",
+      "op": "input",
+      "name": "role_allowed",
+      "label": "role allowed",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "changes_owner",
+      "op": "input",
+      "name": "changes_owner",
+      "label": "changes owner",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "signed_in",
+      "op": "predicate",
+      "predicate": "flag_enabled",
+      "arguments": {
+        "value": "logged_in"
+      },
+      "label": "signed in",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "is_owner",
+      "op": "predicate",
+      "predicate": "same_identity",
+      "arguments": {
+        "left": "actor",
+        "right": "owner"
+      },
+      "label": "is owner",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "is_parent_owner",
+      "op": "predicate",
+      "predicate": "same_identity",
+      "arguments": {
+        "left": "actor",
+        "right": "parent_owner"
+      },
+      "label": "is parent owner",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "is_recipient",
+      "op": "predicate",
+      "predicate": "same_identity",
+      "arguments": {
+        "left": "actor",
+        "right": "recipient"
+      },
+      "label": "is recipient",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "active_grant",
+      "op": "predicate",
+      "predicate": "flag_enabled",
+      "arguments": {
+        "value": "grant_active"
+      },
+      "label": "active grant",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "role_grant",
+      "op": "predicate",
+      "predicate": "flag_enabled",
+      "arguments": {
+        "value": "role_allowed"
+      },
+      "label": "role grant",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "owner_change",
+      "op": "predicate",
+      "predicate": "flag_enabled",
+      "arguments": {
+        "value": "changes_owner"
+      },
+      "label": "owner change",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "owned_session",
+      "op": "all",
+      "inputs": [
+        "signed_in",
+        "is_owner"
+      ],
+      "label": "owned session",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "received_active",
+      "op": "all",
+      "inputs": [
+        "is_recipient",
+        "active_grant"
+      ],
+      "label": "received active",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "file_access",
+      "op": "any",
+      "inputs": [
+        "is_owner",
+        "received_active"
+      ],
+      "label": "file access",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "download_allowed",
+      "op": "all",
+      "inputs": [
+        "signed_in",
+        "file_access"
+      ],
+      "label": "download allowed",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "parent_session",
+      "op": "all",
+      "inputs": [
+        "signed_in",
+        "is_parent_owner"
+      ],
+      "label": "parent session",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "ordinary_edit",
+      "op": "not",
+      "inputs": [
+        "owner_change"
+      ],
+      "label": "ordinary edit",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "transfer_edit",
+      "op": "all",
+      "inputs": [
+        "owner_change",
+        "is_parent_owner"
+      ],
+      "label": "transfer edit",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "role_edit",
+      "op": "all",
+      "inputs": [
+        "ordinary_edit",
+        "role_grant"
+      ],
+      "label": "role edit",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "edit_basis",
+      "op": "any",
+      "inputs": [
+        "transfer_edit",
+        "role_edit"
+      ],
+      "label": "edit basis",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "edit_allowed",
+      "op": "all",
+      "inputs": [
+        "signed_in",
+        "edit_basis"
+      ],
+      "label": "edit allowed",
+      "source_refs": [
+        "U1"
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "id": "share",
+      "root": "owned_session",
+      "business_nodes": [
+        "share"
+      ],
+      "cases": [
+        "share-case"
+      ],
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "revoke",
+      "root": "owned_session",
+      "business_nodes": [
+        "revoke"
+      ],
+      "cases": [
+        "revoke-case"
+      ],
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "download",
+      "root": "download_allowed",
+      "business_nodes": [
+        "download"
+      ],
+      "cases": [
+        "download-case"
+      ],
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "transfer",
+      "root": "parent_session",
+      "business_nodes": [
+        "transfer"
+      ],
+      "cases": [
+        "transfer-case"
+      ],
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "edit",
+      "root": "edit_allowed",
+      "business_nodes": [
+        "edit"
+      ],
+      "cases": [
+        "edit-case"
+      ],
+      "source_refs": [
+        "U1"
+      ]
+    }
+  ]
+}

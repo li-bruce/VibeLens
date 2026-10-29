@@ -18,6 +18,8 @@ Read [conversation controls](references/conversation-controls.md) for the scoped
 
 Keep maintained source, identifiers, comments, and canonical documentation in English. Respond in the user's language; preserve their original answers as evidence. Localize display labels without changing IDs, protocol keys, state values, source bindings, or assertions. English is the UI fallback; allow an explicit language choice. Do not translate historical evidence in place. See [language policy](references/language-policy.md).
 
+Use the scripts as interfaces and inspect focused results. Keep generated manifests, full source indexes, copied runtimes and recording payloads in files; read only the affected symbols or failed checks into the coding conversation.
+
 ## 1. Confirm intent and development mode
 
 Read the request, project conventions, and existing decisions. Use task, business, and state graphs to express the user's current intent. Clarifying questions and counterexamples resolve actual ambiguity; they do not recommend additional business rules. Do not repeat settled questions or treat silence as confirmation. Read [requirements dialogue](references/requirements-dialogue.md).
@@ -28,6 +30,8 @@ Before behavior implementation, show a compact business-network diagram directly
 
 Route business ownership, permissions, and state meaning to the user. Reconcile parameter bindings, callback targets, types, and capture locations with the coding process. Implementation answers must reference current source and an actual verification case; prose is not runtime evidence. Keep unresolved dynamic targets unknown.
 
+When permissions or other decision rules are in scope, build their shared network alongside the business flow in `discovery.policy`. Reuse confirmed conditions across operations; distinguish the same predicate with different arguments. Show the focused rule graph for confirmation, asking only about ambiguous current intent. Read [shared rule networks](references/shared-policy.md).
+
 Before sharing the first graph URL, record the conversation language with `bo_design.py language` as described in step 4. The user can override it in the page.
 
 When the requested software stores data, reuse its database choice or run `bo_db.py guide --root PROJECT` to prepare a short selection question. Recommend a database that fits the stated workload, explain the tradeoff, and record the user's choice. Keep confirmed business scope unchanged. See [database observation](references/database-observation.md) for supported stores and model layers.
@@ -37,6 +41,8 @@ When the requested software stores data, reuse its database choice or run `bo_db
 Read [multilanguage architecture and protocols](references/multilanguage.md). Python provides shared graph validation, source aggregation, recording, querying, export, and the complete viewer. The application keeps native execution and authoritative state; both sides exchange versioned JSON.
 
 New projects store a `bo-project/v1` document in `bo_stategraph/project.json`, including the mode decision and complete model. `model.machine` is the state declaration; drive mode binds it to the selected executor. Bind functions through stable source references; do not embed executable function code in JSON. Existing Python projects may retain a v3 graph and a shared `bo_stategraph/machine.json` consumed by their real executor and graph generator. Never edit generated copies independently.
+
+Carry confirmed rule identities into `model.policy`, bind native predicate functions and parameters, and register independent operation cases. `bo_policy.py sync` generates their nodes, shared dependencies and business/source links in the same graph. Drive may use the native evaluator; observe captures the application's actual evaluation. Record each check separately and retain skipped, unknown and error evidence. See the rule reference for the JSON and probe interfaces.
 
 - **drive:** a project-local executor consumes the declaration. Reject unsupported semantics or connect a suitable native engine; never silently omit behavior.
 - **observe:** the application's own logic runs. Read its actual state without simulating a second authoritative result.
@@ -106,6 +112,8 @@ When requested, hide the debug Web UI with `bo_web.py mode` or use the verified 
 For each batch, use the changed graph region and its incoming/outgoing dependencies to select regression cases. Follow the [iteration graph checks](references/iteration-graph-checks.md): retain independent expectations, run affected and neighboring feature cases, and test one relevant omission or incorrect value in an isolated copy. A static relation selects a case; actual execution establishes its evidence. Preserve the existing project-wide checks.
 
 Report **implementation mapping**, **state constraints**, **business rules**, and **project checks** separately. A graph may accurately expose a business bug: mapping can pass while business checks fail. Missing evidence and unrun tests are not passes. Reject invalid declarations, types, projections, engines, or guard wiring before loading. Preserve actual invalid runtime values with diagnostics; never correct observations to fit the model.
+
+For a configured policy network, scan/inspect/verify must check its exact projection, independent source signatures, actual per-check evaluations and their matching graph events. Include every configured operation case. Recheck shared dependents after composition, function, parameter or fact-basis changes; keep business expectations independent from recorded predicate truth.
 
 For exercised drive-mode transitions, compare the native executor's actual event, before/after states and evaluated guards with public queries and recording frames. A complete declaration or final state alone is not path evidence. Report an empty or incomplete journal/trace as a mapping gap; verify a deliberately removed transition witness is detected.
 

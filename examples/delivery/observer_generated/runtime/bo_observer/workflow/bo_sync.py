@@ -96,6 +96,34 @@ def source_inventory(root, cfg):
                 continue
             if path.is_symlink() or not path.resolve().is_relative_to(root):
                 raise ValueError("source symlink escapes declared project: " + name)
+            # This is an optional native dependency, not observer activity. Only
+            # exact managed copies of this tool's own library are excluded from
+            # application coverage. A changed file returns to normal inspection.
+            parts = Path(name).parts
+            if len(parts) == 3 and parts[1] == "policy" and parts[0].isidentifier():
+                metadata = root / parts[0] / "runtime-version.json"
+                canonical = Path(__file__).resolve().parents[1] / "policy" / parts[2]
+                if (
+                    metadata.is_file()
+                    and canonical.is_file()
+                    and parts[2]
+                    in {
+                        "__init__.py",
+                        "definition.py",
+                        "projection.py",
+                        "bindings.py",
+                        "runtime.py",
+                    }
+                ):
+                    managed = json.loads(metadata.read_text(encoding="utf-8")).get("files", {})
+                    actual = hashlib.sha256(path.read_bytes()).hexdigest()
+                    if (
+                        managed.get(name)
+                        == actual
+                        == hashlib.sha256(canonical.read_bytes()).hexdigest()
+                    ):
+                        excluded[name] = "Managed native policy dependency; exact bundled source"
+                        continue
             reason = next(
                 (v for pattern, v in exclusions.items() if fnmatch.fnmatchcase(name, pattern)), None
             )
@@ -186,6 +214,16 @@ def source_inventory(root, cfg):
 def maintenance_task(root, cfg, previous=None):
     """Compare source with the accepted baseline and describe the mapping work still needed."""
     from ..data.sync import synchronize
+    from ..policy.sync import synchronize as sync_policy
+
+    policy = sync_policy(root, model_path=cfg.get("model", "bo_stategraph/project.json"))
+    if not policy["valid"]:
+        return {
+            "schema": "bo-maintenance/v1",
+            "status": "needs_update",
+            "policy": policy,
+            "internal_prompt": "Repair invalid policy declarations before regenerating the graph.",
+        }
 
     database = synchronize(root, model_path=cfg.get("model", "bo_stategraph/project.json"))
     # The optional code index follows edits once the developer has enabled it.
@@ -230,6 +268,7 @@ def maintenance_task(root, cfg, previous=None):
         "unregistered_files": unregistered,
         "implementation_gaps": gaps,
         "database": database,
+        "policy": policy,
         "status": (
             "needs_update"
             if changed

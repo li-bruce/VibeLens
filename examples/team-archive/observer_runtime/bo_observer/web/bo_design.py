@@ -181,17 +181,23 @@ class BODesign:
         )
         project = project or doc.get("project_id") or self.root.name
         machine = {"values": [], "labels": {}, "transitions": []}
+        model = {
+            "project_id": project,
+            "nodes": nodes,
+            "edges": edges,
+            "machine": machine,
+            "graph_roots": [n["id"] for n in nodes if not n.get("parent")],
+            "presentation": {"subject": doc.get("title", "Project design")},
+        }
+        if doc.get("policy"):
+            from ..policy.projection import project as project_policy
+
+            model["policy"] = doc["policy"]
+            model = project_policy(model, bound=False)
         return {
             "stage": "design",
             "layout_id": doc.get("layout_id", project),
-            "model": {
-                "project_id": project,
-                "nodes": nodes,
-                "edges": edges,
-                "machine": machine,
-                "graph_roots": [n["id"] for n in nodes if not n.get("parent")],
-                "presentation": {"subject": doc.get("title", "Project design")},
-            },
+            "model": model,
             "manifest": {"build_id": bo_digest(doc), "bindings": {}},
             "binding_status": {"status": "design"},
             "events": [],
