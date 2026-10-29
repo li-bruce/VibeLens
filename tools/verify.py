@@ -82,6 +82,8 @@ def main():
     subprocess.run(["node", "tools/test_routing_controls.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_spatial_objects.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_product_demo.mjs"], cwd=ROOT, check=True)
+    run(ROOT, "tests/test_trial_dialogue_export.py")
+    run(ROOT, "tools/test_file_example.py")
     prepare()  # Refuse stale source/review before any re-verification.
     run(EXAMPLE, "tooling/dev.py", "verify")
     run(EXAMPLE, "tooling/dev.py", "accept")

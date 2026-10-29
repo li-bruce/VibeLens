@@ -1,0 +1,748 @@
+{
+  "schema": "bo-implementation/v1",
+  "features": [
+    {
+      "id": "login",
+      "label": "Sign in",
+      "business_node": "login",
+      "nodes": [
+        "login",
+        "http_login"
+      ],
+      "sources": [
+        "app/service.py::SharingService.authenticate",
+        "app/web.py::login"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.authenticate",
+          "name": "username",
+          "node": "login",
+          "direction": "in",
+          "field": "username",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.authenticate",
+          "name": "password",
+          "node": "login",
+          "direction": "in",
+          "field": "password_present",
+          "policy": "derived",
+          "reason": "Capture only a Boolean presence flag; credentials are never observed."
+        }
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "login",
+          "phase": "decision"
+        }
+      ],
+      "requirements": [
+        "R_LOGIN"
+      ]
+    },
+    {
+      "id": "logout",
+      "label": "Sign out",
+      "business_node": "logout",
+      "nodes": [
+        "logout",
+        "http_logout"
+      ],
+      "sources": [
+        "app/service.py::SharingService.logout",
+        "app/web.py::logout"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.logout",
+          "name": "actor",
+          "node": "logout",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "logout",
+          "phase": "commit"
+        }
+      ],
+      "requirements": [
+        "R_LOGIN"
+      ]
+    },
+    {
+      "id": "users",
+      "label": "Existing recipients",
+      "business_node": "users",
+      "nodes": [
+        "users",
+        "db_users"
+      ],
+      "sources": [
+        "app/service.py::SharingService.list_users"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.list_users",
+          "name": "actor",
+          "node": "users",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "users",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_SHARE"
+      ]
+    },
+    {
+      "id": "upload",
+      "label": "Upload file",
+      "business_node": "upload",
+      "nodes": [
+        "upload",
+        "http_upload",
+        "db_metadata",
+        "db_upload_tx",
+        "db_insert_file"
+      ],
+      "sources": [
+        "app/service.py::SharingService.upload",
+        "app/web.py::upload"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.upload",
+          "name": "actor",
+          "node": "upload",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.upload",
+          "name": "filename",
+          "node": "upload",
+          "direction": "in",
+          "field": "filename",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.upload",
+          "name": "content",
+          "node": "upload",
+          "direction": "in",
+          "field": "size",
+          "policy": "derived",
+          "reason": "Capture byte length, never content."
+        }
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "upload",
+          "phase": "commit"
+        }
+      ],
+      "requirements": [
+        "R_UPLOAD"
+      ]
+    },
+    {
+      "id": "share",
+      "label": "Share with user",
+      "business_node": "share",
+      "nodes": [
+        "share",
+        "http_share",
+        "db_share_tx",
+        "db_insert_share"
+      ],
+      "sources": [
+        "app/service.py::SharingService.share",
+        "app/web.py::share"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.share",
+          "name": "actor",
+          "node": "share",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.share",
+          "name": "file_id",
+          "node": "share",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.share",
+          "name": "recipient_id",
+          "node": "share",
+          "direction": "in",
+          "field": "recipient_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/web.py::share",
+          "name": "file_id",
+          "node": "share",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "share",
+          "phase": "commit"
+        }
+      ],
+      "requirements": [
+        "R_SHARE"
+      ]
+    },
+    {
+      "id": "revoke",
+      "label": "Revoke recipient access",
+      "business_node": "revoke",
+      "nodes": [
+        "revoke",
+        "http_revoke",
+        "db_revoke_tx",
+        "db_delete_share",
+        "db_revoke_state"
+      ],
+      "sources": [
+        "app/service.py::SharingService.revoke",
+        "app/web.py::revoke"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.revoke",
+          "name": "actor",
+          "node": "revoke",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.revoke",
+          "name": "file_id",
+          "node": "revoke",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.revoke",
+          "name": "recipient_id",
+          "node": "revoke",
+          "direction": "in",
+          "field": "recipient_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/web.py::revoke",
+          "name": "file_id",
+          "node": "revoke",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "revocation",
+          "node": "revoke",
+          "phase": "commit"
+        }
+      ],
+      "requirements": [
+        "R_REVOKE"
+      ]
+    },
+    {
+      "id": "view",
+      "label": "View metadata",
+      "business_node": "view",
+      "nodes": [
+        "view"
+      ],
+      "sources": [
+        "app/service.py::SharingService.view"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.view",
+          "name": "actor",
+          "node": "view",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.view",
+          "name": "file_id",
+          "node": "view",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "view",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_READ"
+      ]
+    },
+    {
+      "id": "list",
+      "label": "Visible file list",
+      "business_node": "list",
+      "nodes": [
+        "list",
+        "http_dashboard",
+        "http_list_files",
+        "db_list"
+      ],
+      "sources": [
+        "app/service.py::SharingService.list_files",
+        "app/web.py::dashboard",
+        "app/web.py::list_files"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.list_files",
+          "name": "actor",
+          "node": "list",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "list",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_READ"
+      ]
+    },
+    {
+      "id": "download",
+      "label": "Download file",
+      "business_node": "download",
+      "nodes": [
+        "download",
+        "http_download"
+      ],
+      "sources": [
+        "app/service.py::SharingService.download",
+        "app/web.py::download"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.download",
+          "name": "actor",
+          "node": "download",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.download",
+          "name": "file_id",
+          "node": "download",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/web.py::download",
+          "name": "file_id",
+          "node": "download",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "download",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_READ"
+      ]
+    },
+    {
+      "id": "authorize",
+      "label": "Check permission",
+      "business_node": "authorize",
+      "nodes": [
+        "authorize",
+        "policy:network",
+        "policy:fact_actor",
+        "policy:fact_owner",
+        "policy:fact_logged_in",
+        "policy:fact_is_recipient",
+        "policy:function:flag_enabled",
+        "policy:signed_in",
+        "policy:function:same_identity",
+        "policy:is_owner",
+        "policy:received_share",
+        "policy:owned_session",
+        "policy:file_access",
+        "policy:read_allowed",
+        "db_file",
+        "db_grants"
+      ],
+      "sources": [
+        "app/service.py::SharingService.authorize"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::SharingService.authorize",
+          "name": "operation",
+          "node": "authorize",
+          "direction": "in",
+          "field": "operation",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.authorize",
+          "name": "actor",
+          "node": "authorize",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::SharingService.authorize",
+          "name": "row",
+          "node": "authorize",
+          "direction": "in",
+          "field": "owner_id",
+          "policy": "derived",
+          "reason": "Only the selected owner identifier is captured."
+        },
+        {
+          "source": "app/service.py::SharingService.authorize",
+          "name": "grants",
+          "node": "authorize",
+          "direction": "in",
+          "field": "grant_count",
+          "policy": "derived",
+          "reason": "Only the selected grant count is captured."
+        }
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "authorize",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:fact_actor",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:fact_owner",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:fact_logged_in",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:fact_is_recipient",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:signed_in",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:is_owner",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:received_share",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:owned_session",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:file_access",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:read_allowed",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "authorize",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:fact_actor",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:fact_owner",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:fact_logged_in",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:fact_is_recipient",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:signed_in",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:is_owner",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:received_share",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:owned_session",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:file_access",
+          "phase": "decision"
+        },
+        {
+          "case": "revocation",
+          "node": "policy:read_allowed",
+          "phase": "decision"
+        }
+      ],
+      "requirements": [
+        "R_SHARE"
+      ]
+    }
+  ],
+  "support": {
+    "app/ports.py::NullTrace.record": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/ports.py::NullTrace.policy": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/ports.py::NullTrace.state": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/ports.py::NullData.execute": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/ports.py::NullData.transaction": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/ports.py::NullData.transform": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/predicates.py::same_identity": {
+      "node": "authorize",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/predicates.py::flag_enabled": {
+      "node": "authorize",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/predicates.py::operation_allowed": {
+      "node": "authorize",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/predicates.py::has_recipients": {
+      "node": "authorize",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/service.py::DomainError.__init__": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/service.py::metadata_values": {
+      "node": "upload",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/service.py::SharingService.__init__": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/service.py::SharingService.share.persist_share": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::enable_foreign_keys": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.__init__": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.initialize": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.write_transaction": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.query": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.user": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.all_users": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.file": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.grants": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.visible_candidates": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/storage.py::Store.snapshots": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/web.py::service": {
+      "node": "login",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/web.py::current_actor": {
+      "node": "login",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/web.py::csrf_token": {
+      "node": "login",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/web.py::check_csrf": {
+      "node": "login",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/web.py::handle_error": {
+      "node": "login",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/web.py::secure_headers": {
+      "node": "login",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "app/web.py::create_app": {
+      "node": "login",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "bo_stategraph/native_executor.py::bo_list": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "bo_stategraph/native_executor.py::BOExecutor.__init__": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "bo_stategraph/native_executor.py::BOExecutor.step": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "bo_stategraph/native_executor.py::BOExecutor.step.guard": {
+      "node": "share",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "bo_stategraph/workflow.py::FileWorkflow.__init__": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "bo_stategraph/workflow.py::FileWorkflow.step": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "bo_stategraph/workflow.py::file_context": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    },
+    "bo_stategraph/workflow.py::machine_snapshot": {
+      "node": "file",
+      "reason": "Explicit support implementation; static source mapping does not claim runtime execution."
+    }
+  },
+  "excluded": {}
+}

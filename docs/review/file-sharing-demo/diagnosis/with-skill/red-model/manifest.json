@@ -1,0 +1,2186 @@
+{
+  "schema_version": 3,
+  "build_id": "206520c81b9f2adc70268f88ac3dd39867566f217d628062851c72591abe35bf",
+  "files": {
+    "app/__init__.py": "1db21855685cb645befeb8a501c46c9d2f4178ed6b555bc5a6ca742f0162ac90",
+    "app/models.py": "fc3d7b294136dc70253deeb19140073e677cd55d8c5dcfd86c9cf097eb410b5a",
+    "app/ports.py": "7211cd76943f177b071928575bb3d9959f9508a62077ed396432974a4c2e1cba",
+    "app/predicates.py": "f0fa627c413a22d5055bbcfb381bcb865be559b3deeb7cb3daa610e3950e5163",
+    "app/service.py": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a",
+    "app/storage.py": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84",
+    "app/web.py": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83",
+    "bo_stategraph/database-catalog.json": "728db39e774b84c078335108939e1ab25c19f8c3496a319dadaa03550bf5276b",
+    "bo_stategraph/databases.json": "10c1253231dea428e0c8a91dbea1dfbe1c46668e06b1952b1abbf622f4f8f440",
+    "bo_stategraph/model-catalog.json": "2e655bbf9908aa07b3da4dcaeede46da787062c65f9b07581467970a598dd309",
+    "bo_stategraph/native_executor.py": "56ee5f17e8d9d0820f12f4a1b922a750338c3a97887a59f227b45e8f1ee6aab6",
+    "bo_stategraph/workflow.py": "1373e67fc648bf029f72c2f7fb944609d531501138a0dd1aa291cfadfbeb5a5a",
+    "integrations/__init__.py": "ba7c03ed068a2090ffed2819a30e2fb7add849263ea0c83aed3d0f5a5eec003a",
+    "integrations/bo_adapter.py": "c17cd24e475234e24f5d9be9d8796a5584dfb2b4319166e32e647c89eedd8667",
+    "integrations/bo_view.py": "aa5f3ebb83e83b95fd8e868dbf20b88526f66d47d27ddf36b2513168946709c1",
+    "run.py": "4f289cc6ade8b24c91593e6e9ecbbef9b8eb8334cba39302bb8dd01824e2aba6",
+    "static/app.css": "00dad49b4d1bcdae3c7639c5cf1aa681c094e8157addd161e46a4be1d0d87c32",
+    "templates/base.html": "fc871d6e99c9e7057699213aaf1889a4de529280ea1f1e6af445a6db43624200",
+    "templates/dashboard.html": "1d9a9684546c0501bc071706f6d4f4a74a91b607d7ba7b015628be751fde44e5",
+    "templates/error.html": "eedf9f674ed86b0f090ee83cee76b2b49a3c7c20543a7ed4fee1657837c78e52",
+    "templates/login.html": "41200d8eae801e7d7f8d4e07958e5ee77189c045fa49f35de022b6c0cedd60e3",
+    "tests/test_sharing.py": "83fb8409ecf8c72bb59a29054e2b83efe71cbf43422993a4f8e53ae329999402",
+    "tooling/browser_check.py": "bdc37a302c0f1063fd500bc4b756e94162382eade1cfe62640b2c618185ede21",
+    "tooling/browser_revoke_check.py": "71878e37087f70c7d167ceb124f62a7f61ae694fca63581625f6df3231a027b7",
+    "tooling/build_model.py": "ca0ce1eb3f7c69880716304b36942524f11a4221c3616491de79a6628f406b0d",
+    "tooling/check_evidence.py": "429592afb26a93562d5b9e2ee4cb7a9feefdac6791d625e351bfdc520a8d9eb0",
+    "tooling/export_models.py": "d03a40b65e0c033d01a93c5cf3b67efc5b825f374dcfce7262fe67a8c1e41e21",
+    "tooling/observe.py": "fe1fcce729f7ea8ea675ea40d3faf4e9b8a61796e95c81b6407044dd182268e6",
+    "tooling/reconcile.py": "17bcc99ecca825be7971de7812ab9b92669f6d9e5e627c05e4ba2efa3fd5fe0f",
+    "tooling/refresh_graph.py": "441c93d7b0dd7c4116f2ff1f9b5a2269b7038a721d90d069fe30c2739b95e496",
+    "tooling/scenarios.py": "3bfcc62a4178570413e59a75f06bbb32c38a7d4a3e3005d85a93626bab0d8917",
+    "tooling/verify.py": "afd1e2ff1939c49e298caf5977513f6a3620fd98ab12bc50ec53fd20db93f61c"
+  },
+  "model_hash": "a2a381511984ab6133b3ae15a78c63edce718a4d141aa57720bc80443742b6b1",
+  "intent_hash": "69c936ee2129d506a4e2f0e9f8cdd4dfd8e9cc3c675954acb245ebce9fe9204b",
+  "model_revision": "2",
+  "bindings": {
+    "login": {
+      "path": "app/service.py",
+      "symbol": "SharingService.authenticate",
+      "line": 34,
+      "end_line": 40,
+      "signature": "self, username: str, password: str",
+      "ast_sha256": "c133f6694ed8d1c556edc4889b9174f934a95a3f3b94941c2bf2f0a90c2e8530",
+      "snippet": "    def authenticate(self, username: str, password: str):\n        user = self.store.user(username)\n        allowed = bool(user and check_password_hash(user[\"password_hash\"], password))\n        self.bo_trace.record(\"login\", \"decision\", lambda: {\"inputs\": {\"username\": username, \"password_present\": bool(password)}, \"outputs\": {\"allowed\": allowed}})\n        if not allowed:\n            raise DomainError(\"invalid_credentials\", 401)\n        return {\"id\": user[\"id\"], \"display_name\": user[\"display_name\"]}",
+      "calls": [
+        "DomainError",
+        "bool",
+        "check_password_hash",
+        "self.bo_trace.record",
+        "self.store.user"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "not allowed"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "logout": {
+      "path": "app/service.py",
+      "symbol": "SharingService.logout",
+      "line": 42,
+      "end_line": 43,
+      "signature": "self, actor: str",
+      "ast_sha256": "0ec4869aec8ac646813903cbd694024c9d93be25c3c1d21ce7f9cddbadb9f9db",
+      "snippet": "    def logout(self, actor: str):\n        self.bo_trace.record(\"logout\", \"commit\", lambda: {\"inputs\": {\"actor\": actor}, \"outputs\": {\"signed_out\": True}})",
+      "calls": [
+        "self.bo_trace.record"
+      ],
+      "guards": [],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "users": {
+      "path": "app/service.py",
+      "symbol": "SharingService.list_users",
+      "line": 45,
+      "end_line": 50,
+      "signature": "self, actor: str",
+      "ast_sha256": "cae0c38d3d1c13e0c0e3d66df4e15167f150c676e1929e5955fb580718803a90",
+      "snippet": "    def list_users(self, actor: str):\n        if not self.store.user(actor):\n            raise DomainError(\"login_required\", 401)\n        result = self.store.all_users()\n        self.bo_trace.record(\"users\", \"return\", lambda: {\"inputs\": {\"actor\": actor}, \"outputs\": {\"count\": len(result)}})\n        return result",
+      "calls": [
+        "DomainError",
+        "len",
+        "self.bo_trace.record",
+        "self.store.all_users",
+        "self.store.user"
+      ],
+      "guards": [
+        {
+          "line": 46,
+          "expression": "not self.store.user(actor)"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "upload": {
+      "path": "app/service.py",
+      "symbol": "SharingService.upload",
+      "line": 67,
+      "end_line": 90,
+      "signature": "self, actor: str, filename: str, content: bytes",
+      "ast_sha256": "19dc5ab1acb5ef83ab9fe6f462e66a0d954500226006b78a06332fe8cb1419aa",
+      "snippet": "    def upload(self, actor: str, filename: str, content: bytes):\n        self.authorize(\"upload\", actor, {}, [])\n        filename = filename.replace(\"\\\\\", \"/\").rsplit(\"/\", 1)[-1].strip()\n        if not filename or len(filename) > 180 or any(ord(char) < 32 for char in filename):\n            raise DomainError(\"invalid_filename\", 400)\n        if len(content) > 16 * 1024 * 1024:\n            raise DomainError(\"file_too_large\", 413)\n        selected = self.store.bo_data.transform(\"db_metadata\", metadata_values,\n            {\"filename\": filename, \"content\": content}, before=lambda value: {\"filename\": value[\"filename\"]},\n            after=lambda value: value)\n        row = {\"id\": uuid.uuid4().hex, \"owner_id\": actor, **selected, \"grant_count\": 0}\n        transition = self.workflow.step(\"empty\", \"upload\", file_context(row), True)\n        journal = [{\"seq\": 1, \"event\": \"upload\", \"before\": \"empty\", \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n        with self.store.bo_data.transaction(\"db_upload_tx\", self.store.write_transaction()) as connection:\n            self.store.bo_data.execute(\"db_insert_file\", lambda: connection.execute(files.insert().values(\n                **{k: v for k, v in row.items() if k != \"grant_count\"}, content=content,\n                state=transition[\"state\"], revision=1, journal=json.dumps(journal))),\n                connection=connection, statement=str(files.insert()), language=\"sql\", parameters={\"file_id\": row[\"id\"]}, summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=1, journal=journal)\n        witness = self.bo_trace.record(\"upload\", \"commit\", lambda: {\"inputs\": {\"actor\": actor, \"filename\": filename, \"size\": len(content)},\n            \"outputs\": {\"file_id\": row[\"id\"], \"owner_id\": actor, \"state\": row[\"state\"], \"revision\": 1}},\n            entity=row[\"id\"], attempt=row[\"id\"], scope=\"entity\", revision=1)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "any",
+        "connection.execute",
+        "file_context",
+        "filename.replace",
+        "filename.replace('\\\\', '/').rsplit",
+        "filename.replace('\\\\', '/').rsplit('/', 1)[-1].strip",
+        "files.insert",
+        "files.insert().values",
+        "json.dumps",
+        "len",
+        "ord",
+        "row.items",
+        "row.update",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.bo_data.transform",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 70,
+          "expression": "not filename or len(filename) > 180 or any((ord(char) < 32 for char in filename))"
+        },
+        {
+          "line": 72,
+          "expression": "len(content) > 16 * 1024 * 1024"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "share": {
+      "path": "app/service.py",
+      "symbol": "SharingService.share",
+      "line": 92,
+      "end_line": 117,
+      "signature": "self, actor: str, file_id: str, recipient_id: str",
+      "ast_sha256": "eca60648d0e24e115a5f9050873d43d955c8d1eace969b66e8377bd52e1f2a08",
+      "snippet": "    def share(self, actor: str, file_id: str, recipient_id: str):\n        with self.store.bo_data.transaction(\"db_share_tx\", self.store.write_transaction()) as connection:\n            row = self.store.file(connection, file_id)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"share\", actor, row, grants)\n            target = self.store.query(\"db_users\", connection, select(users.c.id).where(users.c.id == recipient_id), {\"user_id\": recipient_id})\n            if not target:\n                raise DomainError(\"recipient_not_found\", 400)\n            existing = any(grant[\"recipient_id\"] == recipient_id for grant in grants)\n            row[\"grant_count\"] = len(grants) + (0 if existing else 1)\n            transition = self.workflow.step(row[\"state\"], \"share\", file_context(row), True)\n            revision = row[\"revision\"] + 1\n            journal = json.loads(row[\"journal\"]) + [{\"seq\": revision, \"event\": \"share\", \"before\": row[\"state\"], \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n            def persist_share():\n                if not existing:\n                    connection.execute(shares.insert().values(file_id=file_id, recipient_id=recipient_id))\n                return connection.execute(files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal)))\n            self.store.bo_data.execute(\"db_insert_share\", persist_share, connection=connection,\n                statement=str(shares.insert()) + \"; \" + str(files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal))), language=\"sql\", parameters={\"file_id\": file_id, \"recipient_id\": recipient_id}, summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=revision, journal=journal)\n        witness = self.bo_trace.record(\"share\", \"commit\", lambda: {\"inputs\": {\"actor\": actor, \"file_id\": file_id, \"recipient_id\": recipient_id},\n            \"outputs\": {\"state\": row[\"state\"], \"revision\": revision, \"grant_count\": row[\"grant_count\"]}}, entity=file_id, attempt=file_id, scope=\"entity\", revision=revision)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "any",
+        "connection.execute",
+        "file_context",
+        "files.update",
+        "files.update().where",
+        "files.update().where(files.c.id == file_id).values",
+        "json.dumps",
+        "json.loads",
+        "len",
+        "row.update",
+        "select",
+        "select(users.c.id).where",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.file",
+        "self.store.grants",
+        "self.store.query",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "shares.insert",
+        "shares.insert().values",
+        "str"
+      ],
+      "guards": [
+        {
+          "line": 95,
+          "expression": "row is None"
+        },
+        {
+          "line": 100,
+          "expression": "not target"
+        },
+        {
+          "line": 108,
+          "expression": "not existing"
+        },
+        {
+          "line": 103,
+          "expression": "existing"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "revoke": {
+      "path": "app/service.py",
+      "symbol": "SharingService.revoke",
+      "line": 134,
+      "end_line": 162,
+      "signature": "self, actor: str, file_id: str, recipient_id: str",
+      "ast_sha256": "4159a9d1ce1509215ea0ea8dd2b4fc7bd86151afd1e123cc80bb77a34e37746d",
+      "snippet": "    def revoke(self, actor: str, file_id: str, recipient_id: str):\n        with self.store.bo_data.transaction(\"db_revoke_tx\", self.store.write_transaction()) as connection:\n            row = self.store.file(connection, file_id)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"revoke\", actor, row, grants)\n            statement = shares.delete().where((shares.c.file_id == file_id) & (shares.c.recipient_id == recipient_id))\n            result = self.store.bo_data.execute(\"db_delete_share\", lambda: connection.execute(statement),\n                connection=connection, statement=str(statement), language=\"sql\",\n                parameters={\"file_id\": file_id, \"recipient_id\": recipient_id},\n                summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n            removed = result.rowcount > 0\n            row[\"grant_count\"] = len(self.store.grants(connection, file_id))\n            transition = self.workflow.step(row[\"state\"], \"revoke\", file_context(row), True)\n            revision = row[\"revision\"] + 1\n            journal = json.loads(row[\"journal\"]) + [{\"seq\": revision, \"event\": \"revoke\",\n                \"before\": row[\"state\"], \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n            update = files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal))\n            self.store.bo_data.execute(\"db_revoke_state\", lambda: connection.execute(update),\n                connection=connection, statement=str(update), language=\"sql\", parameters={\"file_id\": file_id},\n                summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=revision, journal=journal)\n        witness = self.bo_trace.record(\"revoke\", \"commit\", lambda: {\n            \"inputs\": {\"actor\": actor, \"file_id\": file_id, \"recipient_id\": recipient_id},\n            \"outputs\": {\"state\": row[\"state\"], \"revision\": revision, \"grant_count\": row[\"grant_count\"], \"removed\": removed}},\n            entity=file_id, attempt=file_id, scope=\"entity\", revision=revision)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "connection.execute",
+        "file_context",
+        "files.update",
+        "files.update().where",
+        "files.update().where(files.c.id == file_id).values",
+        "json.dumps",
+        "json.loads",
+        "len",
+        "row.update",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.file",
+        "self.store.grants",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "shares.delete",
+        "shares.delete().where",
+        "str"
+      ],
+      "guards": [
+        {
+          "line": 137,
+          "expression": "row is None"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "view": {
+      "path": "app/service.py",
+      "symbol": "SharingService.view",
+      "line": 119,
+      "end_line": 132,
+      "signature": "self, actor: str, file_id: str",
+      "ast_sha256": "78ba904842bcf38b21c68bb2daf1803cf57e996fc70e8902eb27c8001c730426",
+      "snippet": "    def view(self, actor: str, file_id: str):\n        with self.store.engine.connect() as connection:\n            row = self.store.file(connection, file_id)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"view\", actor, row, grants)\n            owner = self.store.user(row[\"owner_id\"])\n            result = {\"id\": file_id, \"filename\": row[\"filename\"], \"size\": row[\"size\"],\n                \"owner_id\": row[\"owner_id\"], \"owner_name\": owner[\"display_name\"], \"state\": row[\"state\"],\n                \"is_owner\": actor == row[\"owner_id\"], \"recipients\": grants if actor == row[\"owner_id\"] else []}\n        self.bo_trace.record(\"view\", \"return\", lambda: {\"inputs\": {\"actor\": actor, \"file_id\": file_id},\n            \"outputs\": {\"owner_id\": result[\"owner_id\"], \"filename\": result[\"filename\"], \"size\": result[\"size\"], \"can_share\": result[\"is_owner\"]}}, entity=file_id, attempt=file_id, scope=\"entity\")\n        return result",
+      "calls": [
+        "DomainError",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.store.engine.connect",
+        "self.store.file",
+        "self.store.grants",
+        "self.store.user"
+      ],
+      "guards": [
+        {
+          "line": 122,
+          "expression": "row is None"
+        },
+        {
+          "line": 129,
+          "expression": "actor == row['owner_id']"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "list": {
+      "path": "app/service.py",
+      "symbol": "SharingService.list_files",
+      "line": 164,
+      "end_line": 169,
+      "signature": "self, actor: str",
+      "ast_sha256": "9a4d27432ea0decafad11cc5af7b56eb1208f2308b95c8c630d289575c87e841",
+      "snippet": "    def list_files(self, actor: str):\n        if not self.store.user(actor):\n            raise DomainError(\"login_required\", 401)\n        result = [self.view(actor, row[\"id\"]) for row in self.store.visible_candidates(actor)]\n        self.bo_trace.record(\"list\", \"return\", lambda: {\"inputs\": {\"actor\": actor}, \"outputs\": {\"count\": len(result)}})\n        return result",
+      "calls": [
+        "DomainError",
+        "len",
+        "self.bo_trace.record",
+        "self.store.user",
+        "self.store.visible_candidates",
+        "self.view"
+      ],
+      "guards": [
+        {
+          "line": 165,
+          "expression": "not self.store.user(actor)"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "download": {
+      "path": "app/service.py",
+      "symbol": "SharingService.download",
+      "line": 171,
+      "end_line": 181,
+      "signature": "self, actor: str, file_id: str",
+      "ast_sha256": "6190fe7b2c0e14e087000a07e68d08b904650b48e80029e50a04838eb5feb834",
+      "snippet": "    def download(self, actor: str, file_id: str):\n        with self.store.engine.connect() as connection:\n            row = self.store.file(connection, file_id, include_content=True)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"download\", actor, row, grants)\n            content = bytes(row[\"content\"])\n        self.bo_trace.record(\"download\", \"return\", lambda: {\"inputs\": {\"actor\": actor, \"file_id\": file_id},\n            \"outputs\": {\"size\": len(content), \"sha256\": hashlib.sha256(content).hexdigest()}}, entity=file_id, attempt=file_id, scope=\"entity\")\n        return row[\"filename\"], content",
+      "calls": [
+        "DomainError",
+        "bytes",
+        "hashlib.sha256",
+        "hashlib.sha256(content).hexdigest",
+        "len",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.store.engine.connect",
+        "self.store.file",
+        "self.store.grants"
+      ],
+      "guards": [
+        {
+          "line": 174,
+          "expression": "row is None"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "authorize": {
+      "path": "app/service.py",
+      "symbol": "SharingService.authorize",
+      "line": 52,
+      "end_line": 65,
+      "signature": "self, operation: str, actor: str, row: dict, grants: list",
+      "ast_sha256": "9f636ef95eeeff74e29a606148a9c93ee2e2b4a3aa96832f8325f01d49e03375",
+      "snippet": "    def authorize(self, operation: str, actor: str, row: dict, grants: list):\n        facts = {\"actor\": actor, \"owner\": row.get(\"owner_id\", \"\"),\n                 \"logged_in\": bool(actor and self.store.user(actor)),\n                 \"is_recipient\": any(grant[\"recipient_id\"] == actor for grant in grants)}\n        result = evaluate(self.policy, operation, facts,\n            {\"same_identity\": same_identity, \"flag_enabled\": flag_enabled},\n            fact_revision=f\"{row.get('id', 'new')}:{row.get('revision', 0)}:{uuid.uuid4().hex}\", source_root=self.root)\n        self.bo_trace.policy(self.policy, result, row.get(\"id\", \"application\"))\n        self.bo_trace.record(\"authorize\", \"decision\", lambda: {\n            \"inputs\": {\"operation\": operation, \"actor\": actor, \"owner_id\": row.get(\"owner_id\", \"\"), \"grant_count\": len(grants)},\n            \"outputs\": {\"allowed\": result[\"value\"] is True, \"decision\": result[\"decision\"]}})\n        if result[\"value\"] is not True:\n            raise DomainError(\"permission_denied\", 403 if actor else 401)\n        return True",
+      "calls": [
+        "DomainError",
+        "any",
+        "bool",
+        "evaluate",
+        "len",
+        "row.get",
+        "self.bo_trace.policy",
+        "self.bo_trace.record",
+        "self.store.user",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 63,
+          "expression": "result['value'] is not True"
+        },
+        {
+          "line": 64,
+          "expression": "actor"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "owner": {
+      "path": "app/storage.py",
+      "symbol": "Store.snapshots",
+      "line": 79,
+      "end_line": 86,
+      "signature": "self",
+      "ast_sha256": "6dc4f0fc50977ffb7a017f60a5180712fbaf607bdb373b0ec030fc0baf8efd71",
+      "snippet": "    def snapshots(self):\n        \"\"\"Read selected authoritative values for independent checks and unified queries.\"\"\"\n        with self.engine.connect() as connection:\n            rows = [dict(row) for row in connection.execute(select(*[c for c in files.c if c.name != \"content\"])).mappings()]\n            for row in rows:\n                row[\"grant_count\"] = connection.execute(select(func.count()).select_from(shares).where(shares.c.file_id == row[\"id\"])).scalar_one()\n                row[\"journal\"] = json.loads(row[\"journal\"])\n            return rows",
+      "calls": [
+        "connection.execute",
+        "connection.execute(select(*[c for c in files.c if c.name != 'content'])).mappings",
+        "connection.execute(select(func.count()).select_from(shares).where(shares.c.file_id == row['id'])).scalar_one",
+        "dict",
+        "func.count",
+        "json.loads",
+        "select",
+        "select(func.count()).select_from",
+        "select(func.count()).select_from(shares).where",
+        "self.engine.connect"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "file": {
+      "path": "app/storage.py",
+      "symbol": "Store.snapshots",
+      "line": 79,
+      "end_line": 86,
+      "signature": "self",
+      "ast_sha256": "6dc4f0fc50977ffb7a017f60a5180712fbaf607bdb373b0ec030fc0baf8efd71",
+      "snippet": "    def snapshots(self):\n        \"\"\"Read selected authoritative values for independent checks and unified queries.\"\"\"\n        with self.engine.connect() as connection:\n            rows = [dict(row) for row in connection.execute(select(*[c for c in files.c if c.name != \"content\"])).mappings()]\n            for row in rows:\n                row[\"grant_count\"] = connection.execute(select(func.count()).select_from(shares).where(shares.c.file_id == row[\"id\"])).scalar_one()\n                row[\"journal\"] = json.loads(row[\"journal\"])\n            return rows",
+      "calls": [
+        "connection.execute",
+        "connection.execute(select(*[c for c in files.c if c.name != 'content'])).mappings",
+        "connection.execute(select(func.count()).select_from(shares).where(shares.c.file_id == row['id'])).scalar_one",
+        "dict",
+        "func.count",
+        "json.loads",
+        "select",
+        "select(func.count()).select_from",
+        "select(func.count()).select_from(shares).where",
+        "self.engine.connect"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "recipient": {
+      "path": "app/storage.py",
+      "symbol": "Store.snapshots",
+      "line": 79,
+      "end_line": 86,
+      "signature": "self",
+      "ast_sha256": "6dc4f0fc50977ffb7a017f60a5180712fbaf607bdb373b0ec030fc0baf8efd71",
+      "snippet": "    def snapshots(self):\n        \"\"\"Read selected authoritative values for independent checks and unified queries.\"\"\"\n        with self.engine.connect() as connection:\n            rows = [dict(row) for row in connection.execute(select(*[c for c in files.c if c.name != \"content\"])).mappings()]\n            for row in rows:\n                row[\"grant_count\"] = connection.execute(select(func.count()).select_from(shares).where(shares.c.file_id == row[\"id\"])).scalar_one()\n                row[\"journal\"] = json.loads(row[\"journal\"])\n            return rows",
+      "calls": [
+        "connection.execute",
+        "connection.execute(select(*[c for c in files.c if c.name != 'content'])).mappings",
+        "connection.execute(select(func.count()).select_from(shares).where(shares.c.file_id == row['id'])).scalar_one",
+        "dict",
+        "func.count",
+        "json.loads",
+        "select",
+        "select(func.count()).select_from",
+        "select(func.count()).select_from(shares).where",
+        "self.engine.connect"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "policy:function:flag_enabled": {
+      "path": "app/predicates.py",
+      "symbol": "flag_enabled",
+      "line": 8,
+      "end_line": 9,
+      "signature": "value: bool",
+      "ast_sha256": "51adf340151bad1bae5299c71f2c5a5871dcf57ab3bb6d4e555e803cff6d5260",
+      "snippet": "def flag_enabled(value: bool) -> bool:\n    return value is True",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "f0fa627c413a22d5055bbcfb381bcb865be559b3deeb7cb3daa610e3950e5163"
+    },
+    "policy:signed_in": {
+      "path": "app/predicates.py",
+      "symbol": "flag_enabled",
+      "line": 8,
+      "end_line": 9,
+      "signature": "value: bool",
+      "ast_sha256": "51adf340151bad1bae5299c71f2c5a5871dcf57ab3bb6d4e555e803cff6d5260",
+      "snippet": "def flag_enabled(value: bool) -> bool:\n    return value is True",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "f0fa627c413a22d5055bbcfb381bcb865be559b3deeb7cb3daa610e3950e5163"
+    },
+    "policy:function:same_identity": {
+      "path": "app/predicates.py",
+      "symbol": "same_identity",
+      "line": 4,
+      "end_line": 5,
+      "signature": "left: str, right: str",
+      "ast_sha256": "bbced668bda02a49239e3204c518f92612d7e278c4ac911fa999f8f2632a2067",
+      "snippet": "def same_identity(left: str, right: str) -> bool:\n    return bool(left) and left == right",
+      "calls": [
+        "bool"
+      ],
+      "guards": [],
+      "file_sha256": "f0fa627c413a22d5055bbcfb381bcb865be559b3deeb7cb3daa610e3950e5163"
+    },
+    "policy:is_owner": {
+      "path": "app/predicates.py",
+      "symbol": "same_identity",
+      "line": 4,
+      "end_line": 5,
+      "signature": "left: str, right: str",
+      "ast_sha256": "bbced668bda02a49239e3204c518f92612d7e278c4ac911fa999f8f2632a2067",
+      "snippet": "def same_identity(left: str, right: str) -> bool:\n    return bool(left) and left == right",
+      "calls": [
+        "bool"
+      ],
+      "guards": [],
+      "file_sha256": "f0fa627c413a22d5055bbcfb381bcb865be559b3deeb7cb3daa610e3950e5163"
+    },
+    "policy:received_share": {
+      "path": "app/predicates.py",
+      "symbol": "flag_enabled",
+      "line": 8,
+      "end_line": 9,
+      "signature": "value: bool",
+      "ast_sha256": "51adf340151bad1bae5299c71f2c5a5871dcf57ab3bb6d4e555e803cff6d5260",
+      "snippet": "def flag_enabled(value: bool) -> bool:\n    return value is True",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "f0fa627c413a22d5055bbcfb381bcb865be559b3deeb7cb3daa610e3950e5163"
+    },
+    "http_login": {
+      "path": "app/web.py",
+      "symbol": "login",
+      "line": 36,
+      "end_line": 44,
+      "signature": "",
+      "ast_sha256": "53531e7a0f16316152b55ef5c3523026f416e7d55fbb41f636ea0727db888831",
+      "snippet": "@pages.route(\"/login\", methods=[\"GET\", \"POST\"])\ndef login():\n    if request.method == \"POST\":\n        user = service().authenticate(request.form.get(\"username\", \"\"), request.form.get(\"password\", \"\"))\n        session.clear()\n        session[\"user_id\"] = user[\"id\"]\n        csrf_token()\n        return redirect(url_for(\"pages.dashboard\"))\n    return render_template(\"login.html\", demo_users=DEMO_USERS)",
+      "calls": [
+        "csrf_token",
+        "pages.route",
+        "redirect",
+        "render_template",
+        "request.form.get",
+        "service",
+        "service().authenticate",
+        "session.clear",
+        "url_for"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "request.method == 'POST'"
+        }
+      ],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "http_logout": {
+      "path": "app/web.py",
+      "symbol": "logout",
+      "line": 95,
+      "end_line": 99,
+      "signature": "",
+      "ast_sha256": "0991e7d031a060b9f3d4d42ca01fc959243b0f19401edebb0d0214b948cd1005",
+      "snippet": "@pages.post(\"/logout\")\ndef logout():\n    service().logout(current_actor())\n    session.clear()\n    return redirect(url_for(\"pages.login\"))",
+      "calls": [
+        "current_actor",
+        "pages.post",
+        "redirect",
+        "service",
+        "service().logout",
+        "session.clear",
+        "url_for"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "http_upload": {
+      "path": "app/web.py",
+      "symbol": "upload",
+      "line": 64,
+      "end_line": 71,
+      "signature": "",
+      "ast_sha256": "52c5b1b5bb8be15e4d0180d63325eab5151a67247a7dc4f9fafe55d1e99108c5",
+      "snippet": "@pages.post(\"/upload\")\ndef upload():\n    upload_file = request.files.get(\"file\")\n    if upload_file is None:\n        raise DomainError(\"file_required\", 400)\n    service().upload(current_actor(), upload_file.filename or \"\", upload_file.read(16 * 1024 * 1024 + 1))\n    flash(\"文件已上传。你是这个文件的所有者。\")\n    return redirect(url_for(\"pages.dashboard\"))",
+      "calls": [
+        "DomainError",
+        "current_actor",
+        "flash",
+        "pages.post",
+        "redirect",
+        "request.files.get",
+        "service",
+        "service().upload",
+        "upload_file.read",
+        "url_for"
+      ],
+      "guards": [
+        {
+          "line": 67,
+          "expression": "upload_file is None"
+        }
+      ],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "http_share": {
+      "path": "app/web.py",
+      "symbol": "share",
+      "line": 74,
+      "end_line": 78,
+      "signature": "file_id: str",
+      "ast_sha256": "f8b77c298bf4cae3f29f7692f29c6ea542295e9148cbd1fd4ac0a743717f470e",
+      "snippet": "@pages.post(\"/files/<file_id>/share\")\ndef share(file_id: str):\n    service().share(current_actor(), file_id, request.form.get(\"recipient_id\", \"\"))\n    flash(\"共享成功。接收者现在可以查看文件信息和下载。\")\n    return redirect(url_for(\"pages.dashboard\"))",
+      "calls": [
+        "current_actor",
+        "flash",
+        "pages.post",
+        "redirect",
+        "request.form.get",
+        "service",
+        "service().share",
+        "url_for"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "http_revoke": {
+      "path": "app/web.py",
+      "symbol": "revoke",
+      "line": 88,
+      "end_line": 92,
+      "signature": "file_id: str",
+      "ast_sha256": "3c64f04e6793e523fe5de1b38b8c23bd6177138a12f4f6e931486e28847ece9b",
+      "snippet": "@pages.post(\"/files/<file_id>/revoke\")\ndef revoke(file_id: str):\n    service().revoke(current_actor(), file_id, request.form.get(\"recipient_id\", \"\"))\n    flash(\"共享已取消。该接收者不能再下载此文件，你仍可查看和下载。\")\n    return redirect(url_for(\"pages.dashboard\"))",
+      "calls": [
+        "current_actor",
+        "flash",
+        "pages.post",
+        "redirect",
+        "request.form.get",
+        "service",
+        "service().revoke",
+        "url_for"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "http_dashboard": {
+      "path": "app/web.py",
+      "symbol": "dashboard",
+      "line": 47,
+      "end_line": 61,
+      "signature": "",
+      "ast_sha256": "92281491c35f1a15802aca3c940aed651c39897f34851957d523025a8a0784de",
+      "snippet": "@pages.get(\"/\")\ndef dashboard():\n    actor = current_actor()\n    if not actor:\n        return redirect(url_for(\"pages.login\"))\n    user = service().store.user(actor)\n    if not user:\n        session.clear()\n        return redirect(url_for(\"pages.login\"))\n    items = service().list_files(actor)\n    recipients = [user for user in service().list_users(actor) if user[\"id\"] != actor]\n    return render_template(\"dashboard.html\", user=user,\n        owned=[item for item in items if item[\"is_owner\"]],\n        received=[item for item in items if not item[\"is_owner\"]], users=recipients,\n        graph_url=current_app.config.get(\"GRAPH_URL\"))",
+      "calls": [
+        "current_actor",
+        "current_app.config.get",
+        "pages.get",
+        "redirect",
+        "render_template",
+        "service",
+        "service().list_files",
+        "service().list_users",
+        "service().store.user",
+        "session.clear",
+        "url_for"
+      ],
+      "guards": [
+        {
+          "line": 50,
+          "expression": "not actor"
+        },
+        {
+          "line": 53,
+          "expression": "not user"
+        }
+      ],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "http_list_files": {
+      "path": "app/web.py",
+      "symbol": "list_files",
+      "line": 102,
+      "end_line": 104,
+      "signature": "",
+      "ast_sha256": "b607980ca524b9b0e07b734300585d92475d7fd19fb8065341e6e57b0c0d1889",
+      "snippet": "@pages.get(\"/api/files\")\ndef list_files():\n    return jsonify(service().list_files(current_actor()))",
+      "calls": [
+        "current_actor",
+        "jsonify",
+        "pages.get",
+        "service",
+        "service().list_files"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "http_download": {
+      "path": "app/web.py",
+      "symbol": "download",
+      "line": 81,
+      "end_line": 85,
+      "signature": "file_id: str",
+      "ast_sha256": "f268e95aa64c192f843aed4d68844d43dcb015dbbc15168dd2aa85c7daa9f187",
+      "snippet": "@pages.get(\"/files/<file_id>/download\")\ndef download(file_id: str):\n    filename, content = service().download(current_actor(), file_id)\n    return send_file(io.BytesIO(content), mimetype=\"application/octet-stream\", as_attachment=True,\n                     download_name=filename, max_age=0)",
+      "calls": [
+        "current_actor",
+        "io.BytesIO",
+        "pages.get",
+        "send_file",
+        "service",
+        "service().download"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "db_users": {
+      "path": "app/storage.py",
+      "symbol": "Store.query",
+      "line": 48,
+      "end_line": 52,
+      "signature": "self, operation, connection, statement, parameters=None",
+      "ast_sha256": "85298b71184041e8f72435f9c971b1ac8aca227a2f35ff452343de2be0db867f",
+      "snippet": "    def query(self, operation, connection, statement, parameters=None):\n        return self.bo_data.execute(operation,\n            lambda: [dict(row) for row in connection.execute(statement).mappings()],\n            connection=connection, statement=str(statement), language=\"sql\",\n            parameters=parameters or {}, summarize=lambda result: {\"rows\": len(result), \"result\": {\"row_count\": len(result)}})",
+      "calls": [
+        "connection.execute",
+        "connection.execute(statement).mappings",
+        "dict",
+        "len",
+        "self.bo_data.execute",
+        "str"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "db_file": {
+      "path": "app/storage.py",
+      "symbol": "Store.file",
+      "line": 63,
+      "end_line": 66,
+      "signature": "self, connection, file_id: str, include_content=False",
+      "ast_sha256": "6da843ab23832fd72de81f9505e8ae0046557d3137d4aacbffb9511ed067f264",
+      "snippet": "    def file(self, connection, file_id: str, include_content=False):\n        columns = list(files.c) if include_content else [column for column in files.c if column.name != \"content\"]\n        result = self.query(\"db_file\", connection, select(*columns).where(files.c.id == file_id), {\"file_id\": file_id})\n        return result[0] if result else None",
+      "calls": [
+        "list",
+        "select",
+        "select(*columns).where",
+        "self.query"
+      ],
+      "guards": [
+        {
+          "line": 64,
+          "expression": "include_content"
+        },
+        {
+          "line": 66,
+          "expression": "result"
+        }
+      ],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "db_grants": {
+      "path": "app/storage.py",
+      "symbol": "Store.grants",
+      "line": 68,
+      "end_line": 71,
+      "signature": "self, connection, file_id: str",
+      "ast_sha256": "ac57527dbe520c91effc7d703ef2289eca377eacb4f92a31b10ee0fef8575596",
+      "snippet": "    def grants(self, connection, file_id: str):\n        return self.query(\"db_grants\", connection,\n            select(shares.c.recipient_id, users.c.display_name).join(users, users.c.id == shares.c.recipient_id)\n            .where(shares.c.file_id == file_id).order_by(shares.c.id), {\"file_id\": file_id})",
+      "calls": [
+        "select",
+        "select(shares.c.recipient_id, users.c.display_name).join",
+        "select(shares.c.recipient_id, users.c.display_name).join(users, users.c.id == shares.c.recipient_id).where",
+        "select(shares.c.recipient_id, users.c.display_name).join(users, users.c.id == shares.c.recipient_id).where(shares.c.file_id == file_id).order_by",
+        "self.query"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "db_list": {
+      "path": "app/storage.py",
+      "symbol": "Store.visible_candidates",
+      "line": 73,
+      "end_line": 77,
+      "signature": "self, actor: str",
+      "ast_sha256": "c5602a60de574c99d8b14761382719dffc9364db88ff3f6258e106f233dec7a5",
+      "snippet": "    def visible_candidates(self, actor: str):\n        with self.engine.connect() as connection:\n            received = select(shares.c.file_id).where(shares.c.recipient_id == actor)\n            return self.query(\"db_list\", connection,\n                select(files.c.id).where((files.c.owner_id == actor) | files.c.id.in_(received)), {\"actor\": actor})",
+      "calls": [
+        "files.c.id.in_",
+        "select",
+        "select(files.c.id).where",
+        "select(shares.c.file_id).where",
+        "self.engine.connect",
+        "self.query"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "db_metadata": {
+      "path": "app/service.py",
+      "symbol": "SharingService.upload",
+      "line": 67,
+      "end_line": 90,
+      "signature": "self, actor: str, filename: str, content: bytes",
+      "ast_sha256": "19dc5ab1acb5ef83ab9fe6f462e66a0d954500226006b78a06332fe8cb1419aa",
+      "snippet": "    def upload(self, actor: str, filename: str, content: bytes):\n        self.authorize(\"upload\", actor, {}, [])\n        filename = filename.replace(\"\\\\\", \"/\").rsplit(\"/\", 1)[-1].strip()\n        if not filename or len(filename) > 180 or any(ord(char) < 32 for char in filename):\n            raise DomainError(\"invalid_filename\", 400)\n        if len(content) > 16 * 1024 * 1024:\n            raise DomainError(\"file_too_large\", 413)\n        selected = self.store.bo_data.transform(\"db_metadata\", metadata_values,\n            {\"filename\": filename, \"content\": content}, before=lambda value: {\"filename\": value[\"filename\"]},\n            after=lambda value: value)\n        row = {\"id\": uuid.uuid4().hex, \"owner_id\": actor, **selected, \"grant_count\": 0}\n        transition = self.workflow.step(\"empty\", \"upload\", file_context(row), True)\n        journal = [{\"seq\": 1, \"event\": \"upload\", \"before\": \"empty\", \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n        with self.store.bo_data.transaction(\"db_upload_tx\", self.store.write_transaction()) as connection:\n            self.store.bo_data.execute(\"db_insert_file\", lambda: connection.execute(files.insert().values(\n                **{k: v for k, v in row.items() if k != \"grant_count\"}, content=content,\n                state=transition[\"state\"], revision=1, journal=json.dumps(journal))),\n                connection=connection, statement=str(files.insert()), language=\"sql\", parameters={\"file_id\": row[\"id\"]}, summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=1, journal=journal)\n        witness = self.bo_trace.record(\"upload\", \"commit\", lambda: {\"inputs\": {\"actor\": actor, \"filename\": filename, \"size\": len(content)},\n            \"outputs\": {\"file_id\": row[\"id\"], \"owner_id\": actor, \"state\": row[\"state\"], \"revision\": 1}},\n            entity=row[\"id\"], attempt=row[\"id\"], scope=\"entity\", revision=1)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "any",
+        "connection.execute",
+        "file_context",
+        "filename.replace",
+        "filename.replace('\\\\', '/').rsplit",
+        "filename.replace('\\\\', '/').rsplit('/', 1)[-1].strip",
+        "files.insert",
+        "files.insert().values",
+        "json.dumps",
+        "len",
+        "ord",
+        "row.items",
+        "row.update",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.bo_data.transform",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 70,
+          "expression": "not filename or len(filename) > 180 or any((ord(char) < 32 for char in filename))"
+        },
+        {
+          "line": 72,
+          "expression": "len(content) > 16 * 1024 * 1024"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "db_upload_tx": {
+      "path": "app/service.py",
+      "symbol": "SharingService.upload",
+      "line": 67,
+      "end_line": 90,
+      "signature": "self, actor: str, filename: str, content: bytes",
+      "ast_sha256": "19dc5ab1acb5ef83ab9fe6f462e66a0d954500226006b78a06332fe8cb1419aa",
+      "snippet": "    def upload(self, actor: str, filename: str, content: bytes):\n        self.authorize(\"upload\", actor, {}, [])\n        filename = filename.replace(\"\\\\\", \"/\").rsplit(\"/\", 1)[-1].strip()\n        if not filename or len(filename) > 180 or any(ord(char) < 32 for char in filename):\n            raise DomainError(\"invalid_filename\", 400)\n        if len(content) > 16 * 1024 * 1024:\n            raise DomainError(\"file_too_large\", 413)\n        selected = self.store.bo_data.transform(\"db_metadata\", metadata_values,\n            {\"filename\": filename, \"content\": content}, before=lambda value: {\"filename\": value[\"filename\"]},\n            after=lambda value: value)\n        row = {\"id\": uuid.uuid4().hex, \"owner_id\": actor, **selected, \"grant_count\": 0}\n        transition = self.workflow.step(\"empty\", \"upload\", file_context(row), True)\n        journal = [{\"seq\": 1, \"event\": \"upload\", \"before\": \"empty\", \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n        with self.store.bo_data.transaction(\"db_upload_tx\", self.store.write_transaction()) as connection:\n            self.store.bo_data.execute(\"db_insert_file\", lambda: connection.execute(files.insert().values(\n                **{k: v for k, v in row.items() if k != \"grant_count\"}, content=content,\n                state=transition[\"state\"], revision=1, journal=json.dumps(journal))),\n                connection=connection, statement=str(files.insert()), language=\"sql\", parameters={\"file_id\": row[\"id\"]}, summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=1, journal=journal)\n        witness = self.bo_trace.record(\"upload\", \"commit\", lambda: {\"inputs\": {\"actor\": actor, \"filename\": filename, \"size\": len(content)},\n            \"outputs\": {\"file_id\": row[\"id\"], \"owner_id\": actor, \"state\": row[\"state\"], \"revision\": 1}},\n            entity=row[\"id\"], attempt=row[\"id\"], scope=\"entity\", revision=1)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "any",
+        "connection.execute",
+        "file_context",
+        "filename.replace",
+        "filename.replace('\\\\', '/').rsplit",
+        "filename.replace('\\\\', '/').rsplit('/', 1)[-1].strip",
+        "files.insert",
+        "files.insert().values",
+        "json.dumps",
+        "len",
+        "ord",
+        "row.items",
+        "row.update",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.bo_data.transform",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 70,
+          "expression": "not filename or len(filename) > 180 or any((ord(char) < 32 for char in filename))"
+        },
+        {
+          "line": 72,
+          "expression": "len(content) > 16 * 1024 * 1024"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "db_insert_file": {
+      "path": "app/service.py",
+      "symbol": "SharingService.upload",
+      "line": 67,
+      "end_line": 90,
+      "signature": "self, actor: str, filename: str, content: bytes",
+      "ast_sha256": "19dc5ab1acb5ef83ab9fe6f462e66a0d954500226006b78a06332fe8cb1419aa",
+      "snippet": "    def upload(self, actor: str, filename: str, content: bytes):\n        self.authorize(\"upload\", actor, {}, [])\n        filename = filename.replace(\"\\\\\", \"/\").rsplit(\"/\", 1)[-1].strip()\n        if not filename or len(filename) > 180 or any(ord(char) < 32 for char in filename):\n            raise DomainError(\"invalid_filename\", 400)\n        if len(content) > 16 * 1024 * 1024:\n            raise DomainError(\"file_too_large\", 413)\n        selected = self.store.bo_data.transform(\"db_metadata\", metadata_values,\n            {\"filename\": filename, \"content\": content}, before=lambda value: {\"filename\": value[\"filename\"]},\n            after=lambda value: value)\n        row = {\"id\": uuid.uuid4().hex, \"owner_id\": actor, **selected, \"grant_count\": 0}\n        transition = self.workflow.step(\"empty\", \"upload\", file_context(row), True)\n        journal = [{\"seq\": 1, \"event\": \"upload\", \"before\": \"empty\", \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n        with self.store.bo_data.transaction(\"db_upload_tx\", self.store.write_transaction()) as connection:\n            self.store.bo_data.execute(\"db_insert_file\", lambda: connection.execute(files.insert().values(\n                **{k: v for k, v in row.items() if k != \"grant_count\"}, content=content,\n                state=transition[\"state\"], revision=1, journal=json.dumps(journal))),\n                connection=connection, statement=str(files.insert()), language=\"sql\", parameters={\"file_id\": row[\"id\"]}, summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=1, journal=journal)\n        witness = self.bo_trace.record(\"upload\", \"commit\", lambda: {\"inputs\": {\"actor\": actor, \"filename\": filename, \"size\": len(content)},\n            \"outputs\": {\"file_id\": row[\"id\"], \"owner_id\": actor, \"state\": row[\"state\"], \"revision\": 1}},\n            entity=row[\"id\"], attempt=row[\"id\"], scope=\"entity\", revision=1)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "any",
+        "connection.execute",
+        "file_context",
+        "filename.replace",
+        "filename.replace('\\\\', '/').rsplit",
+        "filename.replace('\\\\', '/').rsplit('/', 1)[-1].strip",
+        "files.insert",
+        "files.insert().values",
+        "json.dumps",
+        "len",
+        "ord",
+        "row.items",
+        "row.update",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.bo_data.transform",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 70,
+          "expression": "not filename or len(filename) > 180 or any((ord(char) < 32 for char in filename))"
+        },
+        {
+          "line": 72,
+          "expression": "len(content) > 16 * 1024 * 1024"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "db_share_tx": {
+      "path": "app/service.py",
+      "symbol": "SharingService.share",
+      "line": 92,
+      "end_line": 117,
+      "signature": "self, actor: str, file_id: str, recipient_id: str",
+      "ast_sha256": "eca60648d0e24e115a5f9050873d43d955c8d1eace969b66e8377bd52e1f2a08",
+      "snippet": "    def share(self, actor: str, file_id: str, recipient_id: str):\n        with self.store.bo_data.transaction(\"db_share_tx\", self.store.write_transaction()) as connection:\n            row = self.store.file(connection, file_id)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"share\", actor, row, grants)\n            target = self.store.query(\"db_users\", connection, select(users.c.id).where(users.c.id == recipient_id), {\"user_id\": recipient_id})\n            if not target:\n                raise DomainError(\"recipient_not_found\", 400)\n            existing = any(grant[\"recipient_id\"] == recipient_id for grant in grants)\n            row[\"grant_count\"] = len(grants) + (0 if existing else 1)\n            transition = self.workflow.step(row[\"state\"], \"share\", file_context(row), True)\n            revision = row[\"revision\"] + 1\n            journal = json.loads(row[\"journal\"]) + [{\"seq\": revision, \"event\": \"share\", \"before\": row[\"state\"], \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n            def persist_share():\n                if not existing:\n                    connection.execute(shares.insert().values(file_id=file_id, recipient_id=recipient_id))\n                return connection.execute(files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal)))\n            self.store.bo_data.execute(\"db_insert_share\", persist_share, connection=connection,\n                statement=str(shares.insert()) + \"; \" + str(files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal))), language=\"sql\", parameters={\"file_id\": file_id, \"recipient_id\": recipient_id}, summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=revision, journal=journal)\n        witness = self.bo_trace.record(\"share\", \"commit\", lambda: {\"inputs\": {\"actor\": actor, \"file_id\": file_id, \"recipient_id\": recipient_id},\n            \"outputs\": {\"state\": row[\"state\"], \"revision\": revision, \"grant_count\": row[\"grant_count\"]}}, entity=file_id, attempt=file_id, scope=\"entity\", revision=revision)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "any",
+        "connection.execute",
+        "file_context",
+        "files.update",
+        "files.update().where",
+        "files.update().where(files.c.id == file_id).values",
+        "json.dumps",
+        "json.loads",
+        "len",
+        "row.update",
+        "select",
+        "select(users.c.id).where",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.file",
+        "self.store.grants",
+        "self.store.query",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "shares.insert",
+        "shares.insert().values",
+        "str"
+      ],
+      "guards": [
+        {
+          "line": 95,
+          "expression": "row is None"
+        },
+        {
+          "line": 100,
+          "expression": "not target"
+        },
+        {
+          "line": 108,
+          "expression": "not existing"
+        },
+        {
+          "line": 103,
+          "expression": "existing"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "db_insert_share": {
+      "path": "app/service.py",
+      "symbol": "SharingService.share",
+      "line": 92,
+      "end_line": 117,
+      "signature": "self, actor: str, file_id: str, recipient_id: str",
+      "ast_sha256": "eca60648d0e24e115a5f9050873d43d955c8d1eace969b66e8377bd52e1f2a08",
+      "snippet": "    def share(self, actor: str, file_id: str, recipient_id: str):\n        with self.store.bo_data.transaction(\"db_share_tx\", self.store.write_transaction()) as connection:\n            row = self.store.file(connection, file_id)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"share\", actor, row, grants)\n            target = self.store.query(\"db_users\", connection, select(users.c.id).where(users.c.id == recipient_id), {\"user_id\": recipient_id})\n            if not target:\n                raise DomainError(\"recipient_not_found\", 400)\n            existing = any(grant[\"recipient_id\"] == recipient_id for grant in grants)\n            row[\"grant_count\"] = len(grants) + (0 if existing else 1)\n            transition = self.workflow.step(row[\"state\"], \"share\", file_context(row), True)\n            revision = row[\"revision\"] + 1\n            journal = json.loads(row[\"journal\"]) + [{\"seq\": revision, \"event\": \"share\", \"before\": row[\"state\"], \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n            def persist_share():\n                if not existing:\n                    connection.execute(shares.insert().values(file_id=file_id, recipient_id=recipient_id))\n                return connection.execute(files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal)))\n            self.store.bo_data.execute(\"db_insert_share\", persist_share, connection=connection,\n                statement=str(shares.insert()) + \"; \" + str(files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal))), language=\"sql\", parameters={\"file_id\": file_id, \"recipient_id\": recipient_id}, summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=revision, journal=journal)\n        witness = self.bo_trace.record(\"share\", \"commit\", lambda: {\"inputs\": {\"actor\": actor, \"file_id\": file_id, \"recipient_id\": recipient_id},\n            \"outputs\": {\"state\": row[\"state\"], \"revision\": revision, \"grant_count\": row[\"grant_count\"]}}, entity=file_id, attempt=file_id, scope=\"entity\", revision=revision)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "any",
+        "connection.execute",
+        "file_context",
+        "files.update",
+        "files.update().where",
+        "files.update().where(files.c.id == file_id).values",
+        "json.dumps",
+        "json.loads",
+        "len",
+        "row.update",
+        "select",
+        "select(users.c.id).where",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.file",
+        "self.store.grants",
+        "self.store.query",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "shares.insert",
+        "shares.insert().values",
+        "str"
+      ],
+      "guards": [
+        {
+          "line": 95,
+          "expression": "row is None"
+        },
+        {
+          "line": 100,
+          "expression": "not target"
+        },
+        {
+          "line": 108,
+          "expression": "not existing"
+        },
+        {
+          "line": 103,
+          "expression": "existing"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "db_revoke_tx": {
+      "path": "app/service.py",
+      "symbol": "SharingService.revoke",
+      "line": 134,
+      "end_line": 162,
+      "signature": "self, actor: str, file_id: str, recipient_id: str",
+      "ast_sha256": "4159a9d1ce1509215ea0ea8dd2b4fc7bd86151afd1e123cc80bb77a34e37746d",
+      "snippet": "    def revoke(self, actor: str, file_id: str, recipient_id: str):\n        with self.store.bo_data.transaction(\"db_revoke_tx\", self.store.write_transaction()) as connection:\n            row = self.store.file(connection, file_id)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"revoke\", actor, row, grants)\n            statement = shares.delete().where((shares.c.file_id == file_id) & (shares.c.recipient_id == recipient_id))\n            result = self.store.bo_data.execute(\"db_delete_share\", lambda: connection.execute(statement),\n                connection=connection, statement=str(statement), language=\"sql\",\n                parameters={\"file_id\": file_id, \"recipient_id\": recipient_id},\n                summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n            removed = result.rowcount > 0\n            row[\"grant_count\"] = len(self.store.grants(connection, file_id))\n            transition = self.workflow.step(row[\"state\"], \"revoke\", file_context(row), True)\n            revision = row[\"revision\"] + 1\n            journal = json.loads(row[\"journal\"]) + [{\"seq\": revision, \"event\": \"revoke\",\n                \"before\": row[\"state\"], \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n            update = files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal))\n            self.store.bo_data.execute(\"db_revoke_state\", lambda: connection.execute(update),\n                connection=connection, statement=str(update), language=\"sql\", parameters={\"file_id\": file_id},\n                summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=revision, journal=journal)\n        witness = self.bo_trace.record(\"revoke\", \"commit\", lambda: {\n            \"inputs\": {\"actor\": actor, \"file_id\": file_id, \"recipient_id\": recipient_id},\n            \"outputs\": {\"state\": row[\"state\"], \"revision\": revision, \"grant_count\": row[\"grant_count\"], \"removed\": removed}},\n            entity=file_id, attempt=file_id, scope=\"entity\", revision=revision)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "connection.execute",
+        "file_context",
+        "files.update",
+        "files.update().where",
+        "files.update().where(files.c.id == file_id).values",
+        "json.dumps",
+        "json.loads",
+        "len",
+        "row.update",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.file",
+        "self.store.grants",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "shares.delete",
+        "shares.delete().where",
+        "str"
+      ],
+      "guards": [
+        {
+          "line": 137,
+          "expression": "row is None"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "db_delete_share": {
+      "path": "app/service.py",
+      "symbol": "SharingService.revoke",
+      "line": 134,
+      "end_line": 162,
+      "signature": "self, actor: str, file_id: str, recipient_id: str",
+      "ast_sha256": "4159a9d1ce1509215ea0ea8dd2b4fc7bd86151afd1e123cc80bb77a34e37746d",
+      "snippet": "    def revoke(self, actor: str, file_id: str, recipient_id: str):\n        with self.store.bo_data.transaction(\"db_revoke_tx\", self.store.write_transaction()) as connection:\n            row = self.store.file(connection, file_id)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"revoke\", actor, row, grants)\n            statement = shares.delete().where((shares.c.file_id == file_id) & (shares.c.recipient_id == recipient_id))\n            result = self.store.bo_data.execute(\"db_delete_share\", lambda: connection.execute(statement),\n                connection=connection, statement=str(statement), language=\"sql\",\n                parameters={\"file_id\": file_id, \"recipient_id\": recipient_id},\n                summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n            removed = result.rowcount > 0\n            row[\"grant_count\"] = len(self.store.grants(connection, file_id))\n            transition = self.workflow.step(row[\"state\"], \"revoke\", file_context(row), True)\n            revision = row[\"revision\"] + 1\n            journal = json.loads(row[\"journal\"]) + [{\"seq\": revision, \"event\": \"revoke\",\n                \"before\": row[\"state\"], \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n            update = files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal))\n            self.store.bo_data.execute(\"db_revoke_state\", lambda: connection.execute(update),\n                connection=connection, statement=str(update), language=\"sql\", parameters={\"file_id\": file_id},\n                summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=revision, journal=journal)\n        witness = self.bo_trace.record(\"revoke\", \"commit\", lambda: {\n            \"inputs\": {\"actor\": actor, \"file_id\": file_id, \"recipient_id\": recipient_id},\n            \"outputs\": {\"state\": row[\"state\"], \"revision\": revision, \"grant_count\": row[\"grant_count\"], \"removed\": removed}},\n            entity=file_id, attempt=file_id, scope=\"entity\", revision=revision)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "connection.execute",
+        "file_context",
+        "files.update",
+        "files.update().where",
+        "files.update().where(files.c.id == file_id).values",
+        "json.dumps",
+        "json.loads",
+        "len",
+        "row.update",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.file",
+        "self.store.grants",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "shares.delete",
+        "shares.delete().where",
+        "str"
+      ],
+      "guards": [
+        {
+          "line": 137,
+          "expression": "row is None"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "db_revoke_state": {
+      "path": "app/service.py",
+      "symbol": "SharingService.revoke",
+      "line": 134,
+      "end_line": 162,
+      "signature": "self, actor: str, file_id: str, recipient_id: str",
+      "ast_sha256": "4159a9d1ce1509215ea0ea8dd2b4fc7bd86151afd1e123cc80bb77a34e37746d",
+      "snippet": "    def revoke(self, actor: str, file_id: str, recipient_id: str):\n        with self.store.bo_data.transaction(\"db_revoke_tx\", self.store.write_transaction()) as connection:\n            row = self.store.file(connection, file_id)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"revoke\", actor, row, grants)\n            statement = shares.delete().where((shares.c.file_id == file_id) & (shares.c.recipient_id == recipient_id))\n            result = self.store.bo_data.execute(\"db_delete_share\", lambda: connection.execute(statement),\n                connection=connection, statement=str(statement), language=\"sql\",\n                parameters={\"file_id\": file_id, \"recipient_id\": recipient_id},\n                summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n            removed = result.rowcount > 0\n            row[\"grant_count\"] = len(self.store.grants(connection, file_id))\n            transition = self.workflow.step(row[\"state\"], \"revoke\", file_context(row), True)\n            revision = row[\"revision\"] + 1\n            journal = json.loads(row[\"journal\"]) + [{\"seq\": revision, \"event\": \"revoke\",\n                \"before\": row[\"state\"], \"after\": transition[\"state\"], \"guards\": transition[\"guards\"]}]\n            update = files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal))\n            self.store.bo_data.execute(\"db_revoke_state\", lambda: connection.execute(update),\n                connection=connection, statement=str(update), language=\"sql\", parameters={\"file_id\": file_id},\n                summarize=lambda result: {\"rows\": result.rowcount, \"result\": {\"row_count\": result.rowcount}})\n        row.update(state=transition[\"state\"], revision=revision, journal=journal)\n        witness = self.bo_trace.record(\"revoke\", \"commit\", lambda: {\n            \"inputs\": {\"actor\": actor, \"file_id\": file_id, \"recipient_id\": recipient_id},\n            \"outputs\": {\"state\": row[\"state\"], \"revision\": revision, \"grant_count\": row[\"grant_count\"], \"removed\": removed}},\n            entity=file_id, attempt=file_id, scope=\"entity\", revision=revision)\n        self.bo_trace.state(row, witness, transition)\n        return row",
+      "calls": [
+        "DomainError",
+        "connection.execute",
+        "file_context",
+        "files.update",
+        "files.update().where",
+        "files.update().where(files.c.id == file_id).values",
+        "json.dumps",
+        "json.loads",
+        "len",
+        "row.update",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.bo_trace.state",
+        "self.store.bo_data.execute",
+        "self.store.bo_data.transaction",
+        "self.store.file",
+        "self.store.grants",
+        "self.store.write_transaction",
+        "self.workflow.step",
+        "shares.delete",
+        "shares.delete().where",
+        "str"
+      ],
+      "guards": [
+        {
+          "line": 137,
+          "expression": "row is None"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "code.4c09320fe7da5081": {
+      "path": "app/service.py",
+      "symbol": "SharingService.authorize",
+      "line": 52,
+      "end_line": 65,
+      "signature": "self, operation: str, actor: str, row: dict, grants: list",
+      "ast_sha256": "9f636ef95eeeff74e29a606148a9c93ee2e2b4a3aa96832f8325f01d49e03375",
+      "snippet": "    def authorize(self, operation: str, actor: str, row: dict, grants: list):\n        facts = {\"actor\": actor, \"owner\": row.get(\"owner_id\", \"\"),\n                 \"logged_in\": bool(actor and self.store.user(actor)),\n                 \"is_recipient\": any(grant[\"recipient_id\"] == actor for grant in grants)}\n        result = evaluate(self.policy, operation, facts,\n            {\"same_identity\": same_identity, \"flag_enabled\": flag_enabled},\n            fact_revision=f\"{row.get('id', 'new')}:{row.get('revision', 0)}:{uuid.uuid4().hex}\", source_root=self.root)\n        self.bo_trace.policy(self.policy, result, row.get(\"id\", \"application\"))\n        self.bo_trace.record(\"authorize\", \"decision\", lambda: {\n            \"inputs\": {\"operation\": operation, \"actor\": actor, \"owner_id\": row.get(\"owner_id\", \"\"), \"grant_count\": len(grants)},\n            \"outputs\": {\"allowed\": result[\"value\"] is True, \"decision\": result[\"decision\"]}})\n        if result[\"value\"] is not True:\n            raise DomainError(\"permission_denied\", 403 if actor else 401)\n        return True",
+      "calls": [
+        "DomainError",
+        "any",
+        "bool",
+        "evaluate",
+        "len",
+        "row.get",
+        "self.bo_trace.policy",
+        "self.bo_trace.record",
+        "self.store.user",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 63,
+          "expression": "result['value'] is not True"
+        },
+        {
+          "line": 64,
+          "expression": "actor"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "code.37065fedf12f2220": {
+      "path": "bo_stategraph/workflow.py",
+      "symbol": "file_context",
+      "line": 19,
+      "end_line": 20,
+      "signature": "row: dict",
+      "ast_sha256": "130ffa4a087f905fdc8037ad8ef704ce704fbe3b51f02f07dfede87953b5dd08",
+      "snippet": "def file_context(row: dict):\n    return {name: row[name] for name in (\"owner_id\", \"filename\", \"size\", \"grant_count\")}",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1373e67fc648bf029f72c2f7fb944609d531501138a0dd1aa291cfadfbeb5a5a"
+    },
+    "code.26a775225fa57058": {
+      "path": "app/service.py",
+      "symbol": "SharingService.authorize",
+      "line": 52,
+      "end_line": 65,
+      "signature": "self, operation: str, actor: str, row: dict, grants: list",
+      "ast_sha256": "9f636ef95eeeff74e29a606148a9c93ee2e2b4a3aa96832f8325f01d49e03375",
+      "snippet": "    def authorize(self, operation: str, actor: str, row: dict, grants: list):\n        facts = {\"actor\": actor, \"owner\": row.get(\"owner_id\", \"\"),\n                 \"logged_in\": bool(actor and self.store.user(actor)),\n                 \"is_recipient\": any(grant[\"recipient_id\"] == actor for grant in grants)}\n        result = evaluate(self.policy, operation, facts,\n            {\"same_identity\": same_identity, \"flag_enabled\": flag_enabled},\n            fact_revision=f\"{row.get('id', 'new')}:{row.get('revision', 0)}:{uuid.uuid4().hex}\", source_root=self.root)\n        self.bo_trace.policy(self.policy, result, row.get(\"id\", \"application\"))\n        self.bo_trace.record(\"authorize\", \"decision\", lambda: {\n            \"inputs\": {\"operation\": operation, \"actor\": actor, \"owner_id\": row.get(\"owner_id\", \"\"), \"grant_count\": len(grants)},\n            \"outputs\": {\"allowed\": result[\"value\"] is True, \"decision\": result[\"decision\"]}})\n        if result[\"value\"] is not True:\n            raise DomainError(\"permission_denied\", 403 if actor else 401)\n        return True",
+      "calls": [
+        "DomainError",
+        "any",
+        "bool",
+        "evaluate",
+        "len",
+        "row.get",
+        "self.bo_trace.policy",
+        "self.bo_trace.record",
+        "self.store.user",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 63,
+          "expression": "result['value'] is not True"
+        },
+        {
+          "line": 64,
+          "expression": "actor"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "code.6fe3b4fc12ae2087": {
+      "path": "bo_stategraph/workflow.py",
+      "symbol": "file_context",
+      "line": 19,
+      "end_line": 20,
+      "signature": "row: dict",
+      "ast_sha256": "130ffa4a087f905fdc8037ad8ef704ce704fbe3b51f02f07dfede87953b5dd08",
+      "snippet": "def file_context(row: dict):\n    return {name: row[name] for name in (\"owner_id\", \"filename\", \"size\", \"grant_count\")}",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1373e67fc648bf029f72c2f7fb944609d531501138a0dd1aa291cfadfbeb5a5a"
+    },
+    "code.0b302fd22b7d848b": {
+      "path": "app/service.py",
+      "symbol": "SharingService.authorize",
+      "line": 52,
+      "end_line": 65,
+      "signature": "self, operation: str, actor: str, row: dict, grants: list",
+      "ast_sha256": "9f636ef95eeeff74e29a606148a9c93ee2e2b4a3aa96832f8325f01d49e03375",
+      "snippet": "    def authorize(self, operation: str, actor: str, row: dict, grants: list):\n        facts = {\"actor\": actor, \"owner\": row.get(\"owner_id\", \"\"),\n                 \"logged_in\": bool(actor and self.store.user(actor)),\n                 \"is_recipient\": any(grant[\"recipient_id\"] == actor for grant in grants)}\n        result = evaluate(self.policy, operation, facts,\n            {\"same_identity\": same_identity, \"flag_enabled\": flag_enabled},\n            fact_revision=f\"{row.get('id', 'new')}:{row.get('revision', 0)}:{uuid.uuid4().hex}\", source_root=self.root)\n        self.bo_trace.policy(self.policy, result, row.get(\"id\", \"application\"))\n        self.bo_trace.record(\"authorize\", \"decision\", lambda: {\n            \"inputs\": {\"operation\": operation, \"actor\": actor, \"owner_id\": row.get(\"owner_id\", \"\"), \"grant_count\": len(grants)},\n            \"outputs\": {\"allowed\": result[\"value\"] is True, \"decision\": result[\"decision\"]}})\n        if result[\"value\"] is not True:\n            raise DomainError(\"permission_denied\", 403 if actor else 401)\n        return True",
+      "calls": [
+        "DomainError",
+        "any",
+        "bool",
+        "evaluate",
+        "len",
+        "row.get",
+        "self.bo_trace.policy",
+        "self.bo_trace.record",
+        "self.store.user",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 63,
+          "expression": "result['value'] is not True"
+        },
+        {
+          "line": 64,
+          "expression": "actor"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "code.6c8439cf038712f1": {
+      "path": "bo_stategraph/workflow.py",
+      "symbol": "file_context",
+      "line": 19,
+      "end_line": 20,
+      "signature": "row: dict",
+      "ast_sha256": "130ffa4a087f905fdc8037ad8ef704ce704fbe3b51f02f07dfede87953b5dd08",
+      "snippet": "def file_context(row: dict):\n    return {name: row[name] for name in (\"owner_id\", \"filename\", \"size\", \"grant_count\")}",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1373e67fc648bf029f72c2f7fb944609d531501138a0dd1aa291cfadfbeb5a5a"
+    },
+    "code.d32d619482f9ae96": {
+      "path": "app/service.py",
+      "symbol": "SharingService.authorize",
+      "line": 52,
+      "end_line": 65,
+      "signature": "self, operation: str, actor: str, row: dict, grants: list",
+      "ast_sha256": "9f636ef95eeeff74e29a606148a9c93ee2e2b4a3aa96832f8325f01d49e03375",
+      "snippet": "    def authorize(self, operation: str, actor: str, row: dict, grants: list):\n        facts = {\"actor\": actor, \"owner\": row.get(\"owner_id\", \"\"),\n                 \"logged_in\": bool(actor and self.store.user(actor)),\n                 \"is_recipient\": any(grant[\"recipient_id\"] == actor for grant in grants)}\n        result = evaluate(self.policy, operation, facts,\n            {\"same_identity\": same_identity, \"flag_enabled\": flag_enabled},\n            fact_revision=f\"{row.get('id', 'new')}:{row.get('revision', 0)}:{uuid.uuid4().hex}\", source_root=self.root)\n        self.bo_trace.policy(self.policy, result, row.get(\"id\", \"application\"))\n        self.bo_trace.record(\"authorize\", \"decision\", lambda: {\n            \"inputs\": {\"operation\": operation, \"actor\": actor, \"owner_id\": row.get(\"owner_id\", \"\"), \"grant_count\": len(grants)},\n            \"outputs\": {\"allowed\": result[\"value\"] is True, \"decision\": result[\"decision\"]}})\n        if result[\"value\"] is not True:\n            raise DomainError(\"permission_denied\", 403 if actor else 401)\n        return True",
+      "calls": [
+        "DomainError",
+        "any",
+        "bool",
+        "evaluate",
+        "len",
+        "row.get",
+        "self.bo_trace.policy",
+        "self.bo_trace.record",
+        "self.store.user",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 63,
+          "expression": "result['value'] is not True"
+        },
+        {
+          "line": 64,
+          "expression": "actor"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "code.19068c1b65b48bbd": {
+      "path": "app/service.py",
+      "symbol": "SharingService.view",
+      "line": 119,
+      "end_line": 132,
+      "signature": "self, actor: str, file_id: str",
+      "ast_sha256": "78ba904842bcf38b21c68bb2daf1803cf57e996fc70e8902eb27c8001c730426",
+      "snippet": "    def view(self, actor: str, file_id: str):\n        with self.store.engine.connect() as connection:\n            row = self.store.file(connection, file_id)\n            if row is None:\n                raise DomainError(\"file_not_found\", 404)\n            grants = self.store.grants(connection, file_id)\n            self.authorize(\"view\", actor, row, grants)\n            owner = self.store.user(row[\"owner_id\"])\n            result = {\"id\": file_id, \"filename\": row[\"filename\"], \"size\": row[\"size\"],\n                \"owner_id\": row[\"owner_id\"], \"owner_name\": owner[\"display_name\"], \"state\": row[\"state\"],\n                \"is_owner\": actor == row[\"owner_id\"], \"recipients\": grants if actor == row[\"owner_id\"] else []}\n        self.bo_trace.record(\"view\", \"return\", lambda: {\"inputs\": {\"actor\": actor, \"file_id\": file_id},\n            \"outputs\": {\"owner_id\": result[\"owner_id\"], \"filename\": result[\"filename\"], \"size\": result[\"size\"], \"can_share\": result[\"is_owner\"]}}, entity=file_id, attempt=file_id, scope=\"entity\")\n        return result",
+      "calls": [
+        "DomainError",
+        "self.authorize",
+        "self.bo_trace.record",
+        "self.store.engine.connect",
+        "self.store.file",
+        "self.store.grants",
+        "self.store.user"
+      ],
+      "guards": [
+        {
+          "line": 122,
+          "expression": "row is None"
+        },
+        {
+          "line": 129,
+          "expression": "actor == row['owner_id']"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "code.dea7c7923da58946": {
+      "path": "app/service.py",
+      "symbol": "SharingService.authorize",
+      "line": 52,
+      "end_line": 65,
+      "signature": "self, operation: str, actor: str, row: dict, grants: list",
+      "ast_sha256": "9f636ef95eeeff74e29a606148a9c93ee2e2b4a3aa96832f8325f01d49e03375",
+      "snippet": "    def authorize(self, operation: str, actor: str, row: dict, grants: list):\n        facts = {\"actor\": actor, \"owner\": row.get(\"owner_id\", \"\"),\n                 \"logged_in\": bool(actor and self.store.user(actor)),\n                 \"is_recipient\": any(grant[\"recipient_id\"] == actor for grant in grants)}\n        result = evaluate(self.policy, operation, facts,\n            {\"same_identity\": same_identity, \"flag_enabled\": flag_enabled},\n            fact_revision=f\"{row.get('id', 'new')}:{row.get('revision', 0)}:{uuid.uuid4().hex}\", source_root=self.root)\n        self.bo_trace.policy(self.policy, result, row.get(\"id\", \"application\"))\n        self.bo_trace.record(\"authorize\", \"decision\", lambda: {\n            \"inputs\": {\"operation\": operation, \"actor\": actor, \"owner_id\": row.get(\"owner_id\", \"\"), \"grant_count\": len(grants)},\n            \"outputs\": {\"allowed\": result[\"value\"] is True, \"decision\": result[\"decision\"]}})\n        if result[\"value\"] is not True:\n            raise DomainError(\"permission_denied\", 403 if actor else 401)\n        return True",
+      "calls": [
+        "DomainError",
+        "any",
+        "bool",
+        "evaluate",
+        "len",
+        "row.get",
+        "self.bo_trace.policy",
+        "self.bo_trace.record",
+        "self.store.user",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 63,
+          "expression": "result['value'] is not True"
+        },
+        {
+          "line": 64,
+          "expression": "actor"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "code.c21791a7306e17ed": {
+      "path": "app/web.py",
+      "symbol": "service",
+      "line": 14,
+      "end_line": 15,
+      "signature": "",
+      "ast_sha256": "22722783da293fcd087584ace07d9ff7105b8c375d736225a660ee39f7e875c3",
+      "snippet": "def service():\n    return current_app.extensions[\"sharing\"]",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.524cf8a5b7659b35": {
+      "path": "app/web.py",
+      "symbol": "csrf_token",
+      "line": 22,
+      "end_line": 25,
+      "signature": "",
+      "ast_sha256": "ff04e8c42ada4ae00f0538437db4b037ea12df859ca1db8d0e42d72035c3b7af",
+      "snippet": "def csrf_token():\n    if \"csrf\" not in session:\n        session[\"csrf\"] = secrets.token_urlsafe(24)\n    return session[\"csrf\"]",
+      "calls": [
+        "secrets.token_urlsafe"
+      ],
+      "guards": [
+        {
+          "line": 23,
+          "expression": "'csrf' not in session"
+        }
+      ],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.f00270b21b3dc3e9": {
+      "path": "app/web.py",
+      "symbol": "service",
+      "line": 14,
+      "end_line": 15,
+      "signature": "",
+      "ast_sha256": "22722783da293fcd087584ace07d9ff7105b8c375d736225a660ee39f7e875c3",
+      "snippet": "def service():\n    return current_app.extensions[\"sharing\"]",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.3a8420975cfcca65": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 18,
+      "end_line": 19,
+      "signature": "",
+      "ast_sha256": "faeb1f4e3c39a7d3a8667e4d96de3162fb51374233573ea63bc1a3c9be4a89fb",
+      "snippet": "def current_actor():\n    return session.get(\"user_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.53a99fec35abd7b8": {
+      "path": "app/web.py",
+      "symbol": "service",
+      "line": 14,
+      "end_line": 15,
+      "signature": "",
+      "ast_sha256": "22722783da293fcd087584ace07d9ff7105b8c375d736225a660ee39f7e875c3",
+      "snippet": "def service():\n    return current_app.extensions[\"sharing\"]",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.f3330709628c458a": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 18,
+      "end_line": 19,
+      "signature": "",
+      "ast_sha256": "faeb1f4e3c39a7d3a8667e4d96de3162fb51374233573ea63bc1a3c9be4a89fb",
+      "snippet": "def current_actor():\n    return session.get(\"user_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.bc8b8680a8c4f330": {
+      "path": "app/web.py",
+      "symbol": "service",
+      "line": 14,
+      "end_line": 15,
+      "signature": "",
+      "ast_sha256": "22722783da293fcd087584ace07d9ff7105b8c375d736225a660ee39f7e875c3",
+      "snippet": "def service():\n    return current_app.extensions[\"sharing\"]",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.5cb09ba18b3e67f1": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 18,
+      "end_line": 19,
+      "signature": "",
+      "ast_sha256": "faeb1f4e3c39a7d3a8667e4d96de3162fb51374233573ea63bc1a3c9be4a89fb",
+      "snippet": "def current_actor():\n    return session.get(\"user_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.01d17ca2bb8eceba": {
+      "path": "app/web.py",
+      "symbol": "service",
+      "line": 14,
+      "end_line": 15,
+      "signature": "",
+      "ast_sha256": "22722783da293fcd087584ace07d9ff7105b8c375d736225a660ee39f7e875c3",
+      "snippet": "def service():\n    return current_app.extensions[\"sharing\"]",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.707f1779e66e98bc": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 18,
+      "end_line": 19,
+      "signature": "",
+      "ast_sha256": "faeb1f4e3c39a7d3a8667e4d96de3162fb51374233573ea63bc1a3c9be4a89fb",
+      "snippet": "def current_actor():\n    return session.get(\"user_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.52f5d4fff525a657": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 18,
+      "end_line": 19,
+      "signature": "",
+      "ast_sha256": "faeb1f4e3c39a7d3a8667e4d96de3162fb51374233573ea63bc1a3c9be4a89fb",
+      "snippet": "def current_actor():\n    return session.get(\"user_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.51172be5ab384548": {
+      "path": "app/web.py",
+      "symbol": "service",
+      "line": 14,
+      "end_line": 15,
+      "signature": "",
+      "ast_sha256": "22722783da293fcd087584ace07d9ff7105b8c375d736225a660ee39f7e875c3",
+      "snippet": "def service():\n    return current_app.extensions[\"sharing\"]",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.7753eb1135792120": {
+      "path": "app/web.py",
+      "symbol": "service",
+      "line": 14,
+      "end_line": 15,
+      "signature": "",
+      "ast_sha256": "22722783da293fcd087584ace07d9ff7105b8c375d736225a660ee39f7e875c3",
+      "snippet": "def service():\n    return current_app.extensions[\"sharing\"]",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.e15da64575eed6fe": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 18,
+      "end_line": 19,
+      "signature": "",
+      "ast_sha256": "faeb1f4e3c39a7d3a8667e4d96de3162fb51374233573ea63bc1a3c9be4a89fb",
+      "snippet": "def current_actor():\n    return session.get(\"user_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "code.8af59e6381116c3b": {
+      "path": "app/storage.py",
+      "symbol": "Store.query",
+      "line": 48,
+      "end_line": 52,
+      "signature": "self, operation, connection, statement, parameters=None",
+      "ast_sha256": "85298b71184041e8f72435f9c971b1ac8aca227a2f35ff452343de2be0db867f",
+      "snippet": "    def query(self, operation, connection, statement, parameters=None):\n        return self.bo_data.execute(operation,\n            lambda: [dict(row) for row in connection.execute(statement).mappings()],\n            connection=connection, statement=str(statement), language=\"sql\",\n            parameters=parameters or {}, summarize=lambda result: {\"rows\": len(result), \"result\": {\"row_count\": len(result)}})",
+      "calls": [
+        "connection.execute",
+        "connection.execute(statement).mappings",
+        "dict",
+        "len",
+        "self.bo_data.execute",
+        "str"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "code.7cd88691ac09ae4f": {
+      "path": "app/storage.py",
+      "symbol": "Store.query",
+      "line": 48,
+      "end_line": 52,
+      "signature": "self, operation, connection, statement, parameters=None",
+      "ast_sha256": "85298b71184041e8f72435f9c971b1ac8aca227a2f35ff452343de2be0db867f",
+      "snippet": "    def query(self, operation, connection, statement, parameters=None):\n        return self.bo_data.execute(operation,\n            lambda: [dict(row) for row in connection.execute(statement).mappings()],\n            connection=connection, statement=str(statement), language=\"sql\",\n            parameters=parameters or {}, summarize=lambda result: {\"rows\": len(result), \"result\": {\"row_count\": len(result)}})",
+      "calls": [
+        "connection.execute",
+        "connection.execute(statement).mappings",
+        "dict",
+        "len",
+        "self.bo_data.execute",
+        "str"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "code.937c39b4bacc1933": {
+      "path": "app/storage.py",
+      "symbol": "Store.query",
+      "line": 48,
+      "end_line": 52,
+      "signature": "self, operation, connection, statement, parameters=None",
+      "ast_sha256": "85298b71184041e8f72435f9c971b1ac8aca227a2f35ff452343de2be0db867f",
+      "snippet": "    def query(self, operation, connection, statement, parameters=None):\n        return self.bo_data.execute(operation,\n            lambda: [dict(row) for row in connection.execute(statement).mappings()],\n            connection=connection, statement=str(statement), language=\"sql\",\n            parameters=parameters or {}, summarize=lambda result: {\"rows\": len(result), \"result\": {\"row_count\": len(result)}})",
+      "calls": [
+        "connection.execute",
+        "connection.execute(statement).mappings",
+        "dict",
+        "len",
+        "self.bo_data.execute",
+        "str"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "implementation.5ff474cd9fcc28b2": {
+      "path": "app/ports.py",
+      "symbol": "NullData.execute",
+      "line": 16,
+      "end_line": 17,
+      "signature": "self, node, callback, **kwargs",
+      "ast_sha256": "016f4cdcd3456a0584791f664c91463d6f1524c3bfdaa95c5330497d17f1d259",
+      "snippet": "    def execute(self, node, callback, **kwargs):\n        return callback()",
+      "calls": [
+        "callback"
+      ],
+      "guards": [],
+      "file_sha256": "7211cd76943f177b071928575bb3d9959f9508a62077ed396432974a4c2e1cba"
+    },
+    "implementation.fe94ea9164b15763": {
+      "path": "app/ports.py",
+      "symbol": "NullData.transaction",
+      "line": 19,
+      "end_line": 20,
+      "signature": "self, node, manager, **kwargs",
+      "ast_sha256": "b4db089346fc4b39363d24ed3bca80cbff5d1c6c5be57032fe885e418f66ba83",
+      "snippet": "    def transaction(self, node, manager, **kwargs):\n        return manager",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "7211cd76943f177b071928575bb3d9959f9508a62077ed396432974a4c2e1cba"
+    },
+    "implementation.767f4a03b7577b27": {
+      "path": "app/ports.py",
+      "symbol": "NullData.transform",
+      "line": 22,
+      "end_line": 23,
+      "signature": "self, node, function, value, **kwargs",
+      "ast_sha256": "d2872be6710b0a1d022d2e2d51ef897829c50771b37c066c81f1efd5df78d7eb",
+      "snippet": "    def transform(self, node, function, value, **kwargs):\n        return function(value)",
+      "calls": [
+        "function"
+      ],
+      "guards": [],
+      "file_sha256": "7211cd76943f177b071928575bb3d9959f9508a62077ed396432974a4c2e1cba"
+    },
+    "implementation.d90245723b5faf2c": {
+      "path": "app/ports.py",
+      "symbol": "NullTrace.policy",
+      "line": 8,
+      "end_line": 9,
+      "signature": "self, *args, **kwargs",
+      "ast_sha256": "33829ff73a1a87b92d3e0b8e54c1e7525975b631cb548f0585df76ded37aadb1",
+      "snippet": "    def policy(self, *args, **kwargs):\n        return None",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "7211cd76943f177b071928575bb3d9959f9508a62077ed396432974a4c2e1cba"
+    },
+    "implementation.28c1a20e6659e578": {
+      "path": "app/ports.py",
+      "symbol": "NullTrace.record",
+      "line": 5,
+      "end_line": 6,
+      "signature": "self, *args, **kwargs",
+      "ast_sha256": "7f04fe4230f979fe87067b4b60bf70b0b08df1df9c4710e3f9e62ccce2bf8365",
+      "snippet": "    def record(self, *args, **kwargs):\n        return None",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "7211cd76943f177b071928575bb3d9959f9508a62077ed396432974a4c2e1cba"
+    },
+    "implementation.fed2f68d8ffa8be8": {
+      "path": "app/ports.py",
+      "symbol": "NullTrace.state",
+      "line": 11,
+      "end_line": 12,
+      "signature": "self, *args, **kwargs",
+      "ast_sha256": "aaa30dd1cd3a39393c9b9d6e6985479f765fbfb319d8f349ae2fbae3c26154eb",
+      "snippet": "    def state(self, *args, **kwargs):\n        return None",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "7211cd76943f177b071928575bb3d9959f9508a62077ed396432974a4c2e1cba"
+    },
+    "implementation.c5f04d3e319a6c4b": {
+      "path": "app/predicates.py",
+      "symbol": "has_recipients",
+      "line": 16,
+      "end_line": 17,
+      "signature": "context: dict, payload: dict",
+      "ast_sha256": "1497d172880bba6d599bdf267af946fce992165c8bdc1f4503386175a0685b00",
+      "snippet": "def has_recipients(context: dict, payload: dict) -> bool:\n    return context[\"grant_count\"] > 0",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "f0fa627c413a22d5055bbcfb381bcb865be559b3deeb7cb3daa610e3950e5163"
+    },
+    "implementation.6d95fc86640a673c": {
+      "path": "app/predicates.py",
+      "symbol": "operation_allowed",
+      "line": 12,
+      "end_line": 13,
+      "signature": "context: dict, payload: dict",
+      "ast_sha256": "08aa4ab6d70eb7a614c22a10eeb219a3fed5f9bb2b73c3c6a80ea0b5982b73e0",
+      "snippet": "def operation_allowed(context: dict, payload: dict) -> bool:\n    return payload[\"allowed\"] is True",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "f0fa627c413a22d5055bbcfb381bcb865be559b3deeb7cb3daa610e3950e5163"
+    },
+    "implementation.a22ea555f3d810da": {
+      "path": "app/service.py",
+      "symbol": "DomainError.__init__",
+      "line": 17,
+      "end_line": 19,
+      "signature": "self, code: str, status=403",
+      "ast_sha256": "85044c4dec612c4f7566208959e144d1e55a0abcb8ab6b475efde2bbc686dec5",
+      "snippet": "    def __init__(self, code: str, status=403):\n        self.code, self.status = code, status\n        super().__init__(code)",
+      "calls": [
+        "super",
+        "super().__init__"
+      ],
+      "guards": [],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "implementation.ae37263cb15d919c": {
+      "path": "app/service.py",
+      "symbol": "SharingService.__init__",
+      "line": 28,
+      "end_line": 32,
+      "signature": "self, root: Path, store, bo_trace=None",
+      "ast_sha256": "b7cd205157865ed7596184ebf09bb6fc399f99ef22d73aa04a3fcde7999c9e03",
+      "snippet": "    def __init__(self, root: Path, store, bo_trace=None):\n        self.root, self.store = root, store\n        self.bo_trace = bo_trace or NullTrace()\n        self.workflow = FileWorkflow(root)\n        self.policy = self.workflow.project[\"model\"][\"policy\"]",
+      "calls": [
+        "FileWorkflow",
+        "NullTrace"
+      ],
+      "guards": [],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "implementation.903282fd277421e9": {
+      "path": "app/service.py",
+      "symbol": "SharingService.share.persist_share",
+      "line": 107,
+      "end_line": 110,
+      "signature": "",
+      "ast_sha256": "9c7a2d4a85c3fca02051c45d1a1fca025b3c2fbbef53e22a8631f904359e4ce9",
+      "snippet": "            def persist_share():\n                if not existing:\n                    connection.execute(shares.insert().values(file_id=file_id, recipient_id=recipient_id))\n                return connection.execute(files.update().where(files.c.id == file_id).values(state=transition[\"state\"], revision=revision, journal=json.dumps(journal)))",
+      "calls": [
+        "connection.execute",
+        "files.update",
+        "files.update().where",
+        "files.update().where(files.c.id == file_id).values",
+        "json.dumps",
+        "shares.insert",
+        "shares.insert().values"
+      ],
+      "guards": [
+        {
+          "line": 108,
+          "expression": "not existing"
+        }
+      ],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "implementation.9cc66e5948b07b82": {
+      "path": "app/service.py",
+      "symbol": "metadata_values",
+      "line": 22,
+      "end_line": 24,
+      "signature": "values: dict",
+      "ast_sha256": "d457f415cf7de9c54d7ddacae9a9870fb03cca68500a36acd1766cb616d938ee",
+      "snippet": "def metadata_values(values: dict):\n    return {\"filename\": values[\"filename\"], \"size\": len(values[\"content\"]),\n            \"sha256\": hashlib.sha256(values[\"content\"]).hexdigest()}",
+      "calls": [
+        "hashlib.sha256",
+        "hashlib.sha256(values['content']).hexdigest",
+        "len"
+      ],
+      "guards": [],
+      "file_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a"
+    },
+    "implementation.9a56a781ee69f8e7": {
+      "path": "app/storage.py",
+      "symbol": "Store.__init__",
+      "line": 21,
+      "end_line": 26,
+      "signature": "self, path: Path, bo_data=None",
+      "ast_sha256": "74b64e6c926fbbee45270d624a72a0ce764564433e0f27bc29ad7ece54833c45",
+      "snippet": "    def __init__(self, path: Path, bo_data=None):\n        self.path = Path(path)\n        self.path.parent.mkdir(parents=True, exist_ok=True)\n        self.bo_data = bo_data or NullData()\n        self.engine = create_engine(\"sqlite:///\" + str(self.path), connect_args={\"check_same_thread\": False})\n        event.listen(self.engine, \"connect\", enable_foreign_keys)",
+      "calls": [
+        "NullData",
+        "Path",
+        "create_engine",
+        "event.listen",
+        "self.path.parent.mkdir",
+        "str"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "implementation.09d90d701efc97e1": {
+      "path": "app/storage.py",
+      "symbol": "Store.all_users",
+      "line": 59,
+      "end_line": 61,
+      "signature": "self",
+      "ast_sha256": "c218dc64782aac50599eeddd181f88136091c5c46bc861ca77661a495363a574",
+      "snippet": "    def all_users(self):\n        with self.engine.connect() as connection:\n            return self.query(\"db_users\", connection, select(users.c.id, users.c.display_name).order_by(users.c.id), {\"user_id\": \"\"})",
+      "calls": [
+        "select",
+        "select(users.c.id, users.c.display_name).order_by",
+        "self.engine.connect",
+        "self.query"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "implementation.8cee59c854955a26": {
+      "path": "app/storage.py",
+      "symbol": "Store.initialize",
+      "line": 28,
+      "end_line": 35,
+      "signature": "self",
+      "ast_sha256": "d9c017d0ffe4ce0112dd6a9850a22d8bfc61f7ddba319745bc6a2c19b73704bf",
+      "snippet": "    def initialize(self):\n        metadata.create_all(self.engine)\n        with self.engine.begin() as connection:\n            existing = set(connection.execute(select(users.c.id)).scalars())\n            for user_id, display_name in DEMO_USERS:\n                if user_id not in existing:\n                    connection.execute(users.insert().values(id=user_id, display_name=display_name,\n                        password_hash=generate_password_hash(DEMO_PASSWORD)))",
+      "calls": [
+        "connection.execute",
+        "connection.execute(select(users.c.id)).scalars",
+        "generate_password_hash",
+        "metadata.create_all",
+        "select",
+        "self.engine.begin",
+        "set",
+        "users.insert",
+        "users.insert().values"
+      ],
+      "guards": [
+        {
+          "line": 33,
+          "expression": "user_id not in existing"
+        }
+      ],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "implementation.7eb765be2a8e7895": {
+      "path": "app/storage.py",
+      "symbol": "Store.user",
+      "line": 54,
+      "end_line": 57,
+      "signature": "self, user_id: str",
+      "ast_sha256": "79a7287710e36525995ee696aa76a77b8ae9883ff2db4a7b732d76fc5389abd4",
+      "snippet": "    def user(self, user_id: str):\n        with self.engine.connect() as connection:\n            result = self.query(\"db_users\", connection, select(users).where(users.c.id == user_id), {\"user_id\": user_id})\n            return result[0] if result else None",
+      "calls": [
+        "select",
+        "select(users).where",
+        "self.engine.connect",
+        "self.query"
+      ],
+      "guards": [
+        {
+          "line": 57,
+          "expression": "result"
+        }
+      ],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "implementation.a558bdfc4ae87bcb": {
+      "path": "app/storage.py",
+      "symbol": "Store.write_transaction",
+      "line": 37,
+      "end_line": 46,
+      "signature": "self",
+      "ast_sha256": "902471de9d1c83278d90272e95860226e13b6f322f84d1ede3d75bacc5ade395",
+      "snippet": "    @contextmanager\n    def write_transaction(self):\n        with self.engine.connect() as connection:\n            connection.exec_driver_sql(\"BEGIN IMMEDIATE\")\n            try:\n                yield connection\n                connection.commit()\n            except BaseException:\n                connection.rollback()\n                raise",
+      "calls": [
+        "connection.commit",
+        "connection.exec_driver_sql",
+        "connection.rollback",
+        "self.engine.connect"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "implementation.7b214f5e662aee78": {
+      "path": "app/storage.py",
+      "symbol": "enable_foreign_keys",
+      "line": 15,
+      "end_line": 17,
+      "signature": "connection, record",
+      "ast_sha256": "7330ba75562b7596c3952561566fe44d41f452a9ad8b248999ae129fbd580a14",
+      "snippet": "def enable_foreign_keys(connection, record):\n    connection.execute(\"PRAGMA foreign_keys=ON\")\n    connection.execute(\"PRAGMA busy_timeout=5000\")",
+      "calls": [
+        "connection.execute"
+      ],
+      "guards": [],
+      "file_sha256": "b6573f9a97806294939a83c888627774847cfe81b557dce09fbcea5536e41b84"
+    },
+    "implementation.10b635f62797bc47": {
+      "path": "app/web.py",
+      "symbol": "check_csrf",
+      "line": 28,
+      "end_line": 33,
+      "signature": "",
+      "ast_sha256": "2dd5a63b6c504227256656a49dddcf3a0ed3a5a3802df8fd300133488b2d597e",
+      "snippet": "@pages.before_request\ndef check_csrf():\n    if request.method == \"POST\":\n        supplied = request.form.get(\"csrf\", \"\")\n        if not supplied or not secrets.compare_digest(supplied, session.get(\"csrf\", \"\")):\n            raise DomainError(\"csrf_invalid\", 400)",
+      "calls": [
+        "DomainError",
+        "request.form.get",
+        "secrets.compare_digest",
+        "session.get"
+      ],
+      "guards": [
+        {
+          "line": 30,
+          "expression": "request.method == 'POST'"
+        },
+        {
+          "line": 32,
+          "expression": "not supplied or not secrets.compare_digest(supplied, session.get('csrf', ''))"
+        }
+      ],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "implementation.acc8d3d67a2d2b0f": {
+      "path": "app/web.py",
+      "symbol": "create_app",
+      "line": 125,
+      "end_line": 146,
+      "signature": "root=None, database=None, bo_trace=None, bo_data=None, graph_url=None",
+      "ast_sha256": "0e30de5bb352f6ec478e7bbfdc8423cfb7c19e5304c3f2e8afac44fc25c75959",
+      "snippet": "def create_app(root=None, database=None, bo_trace=None, bo_data=None, graph_url=None):\n    root = Path(root or Path(__file__).resolve().parents[1])\n    app = Flask(__name__, template_folder=str(root / \"templates\"), static_folder=str(root / \"static\"))\n    data_path = root / \"data\"\n    data_path.mkdir(exist_ok=True)\n    secret_path = data_path / \"session.key\"\n    if not secret_path.exists():\n        try:\n            with secret_path.open(\"x\", encoding=\"ascii\") as secret_file:\n                secret_file.write(secrets.token_hex(32))\n        except FileExistsError:\n            pass\n    app.config.update(SECRET_KEY=secret_path.read_text(encoding=\"ascii\"), MAX_CONTENT_LENGTH=17 * 1024 * 1024,\n        SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE=\"Lax\", TRUSTED_HOSTS=[\"localhost\", \"127.0.0.1\"], GRAPH_URL=graph_url)\n    store = Store(Path(database or data_path / \"sharing.sqlite3\"), bo_data)\n    store.initialize()\n    app.extensions[\"sharing\"] = SharingService(root, store, bo_trace)\n    app.jinja_env.globals[\"csrf_token\"] = csrf_token\n    app.register_blueprint(pages)\n    app.register_error_handler(DomainError, handle_error)\n    app.after_request(secure_headers)\n    return app",
+      "calls": [
+        "Flask",
+        "Path",
+        "Path(__file__).resolve",
+        "SharingService",
+        "Store",
+        "app.after_request",
+        "app.config.update",
+        "app.register_blueprint",
+        "app.register_error_handler",
+        "data_path.mkdir",
+        "secret_file.write",
+        "secret_path.exists",
+        "secret_path.open",
+        "secret_path.read_text",
+        "secrets.token_hex",
+        "store.initialize",
+        "str"
+      ],
+      "guards": [
+        {
+          "line": 131,
+          "expression": "not secret_path.exists()"
+        }
+      ],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "implementation.189e6586e4f22536": {
+      "path": "app/web.py",
+      "symbol": "handle_error",
+      "line": 107,
+      "end_line": 114,
+      "signature": "error",
+      "ast_sha256": "14bc639e010756a1bc6f0c9d4233057ea1bb1d4e4a081d88ba93a24d9afd4b0a",
+      "snippet": "def handle_error(error):\n    messages = {\"invalid_credentials\": \"账号或密码不正确。\", \"permission_denied\": \"你没有操作这个文件的权限。\",\n        \"login_required\": \"请先登录。\", \"file_not_found\": \"文件不存在。\", \"recipient_not_found\": \"接收者不存在。\",\n        \"invalid_filename\": \"文件名无效或过长。\", \"file_too_large\": \"文件不能超过 16 MB。\",\n        \"csrf_invalid\": \"页面凭证已过期，请返回登录页重新操作。\", \"file_required\": \"请先选择文件。\"}\n    if request.path.startswith(\"/api/\"):\n        return jsonify(error=error.code), error.status\n    return render_template(\"error.html\", message=messages.get(error.code, \"操作未完成。\"), status=error.status), error.status",
+      "calls": [
+        "jsonify",
+        "messages.get",
+        "render_template",
+        "request.path.startswith"
+      ],
+      "guards": [
+        {
+          "line": 112,
+          "expression": "request.path.startswith('/api/')"
+        }
+      ],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "implementation.bc3eb32599f28f2a": {
+      "path": "app/web.py",
+      "symbol": "secure_headers",
+      "line": 117,
+      "end_line": 122,
+      "signature": "response",
+      "ast_sha256": "21f4128fde15566f0562aee1802aed46073fa25df8b13eaddb2894662e1c5646",
+      "snippet": "def secure_headers(response):\n    response.headers[\"Cache-Control\"] = \"no-store\"\n    response.headers[\"X-Content-Type-Options\"] = \"nosniff\"\n    response.headers[\"Referrer-Policy\"] = \"same-origin\"\n    response.headers[\"Content-Security-Policy\"] = \"default-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'\"\n    return response",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "1002cc0831edfa33741acb3f825af9e7a5abaa5dbbbc8eebcf413392a2b2ee83"
+    },
+    "implementation.275707c05e9a26e5": {
+      "path": "bo_stategraph/native_executor.py",
+      "symbol": "BOExecutor.__init__",
+      "line": 19,
+      "end_line": 29,
+      "signature": "self, machine, guards=None",
+      "ast_sha256": "a9255d15702cdf4b7f60faef88c61426a8f91dce0c4169dff908cb0e25cad7d5",
+      "snippet": "    def __init__(self, machine, guards=None):\n        \"\"\"Validate the supported flat-state definition and every supplied guard before use.\"\"\"\n        self.bo_guards = guards or {}\n        if machine.get(\"engine\") != \"bo.fsm\" or machine.get(\"version\") != \"1\":\n            raise ValueError(\"unsupported native engine/version\")\n        validate_runtime_definition(\n            machine, loaded_engine=\"bo.fsm\", loaded_version=\"1\", guard_names=self.bo_guards\n        )\n        if any(not callable(f) for f in self.bo_guards.values()):\n            raise ValueError(\"guard implementation must be callable\")\n        self.bo_definition = deepcopy(machine)",
+      "calls": [
+        "ValueError",
+        "any",
+        "callable",
+        "deepcopy",
+        "machine.get",
+        "self.bo_guards.values",
+        "validate_runtime_definition"
+      ],
+      "guards": [
+        {
+          "line": 22,
+          "expression": "machine.get('engine') != 'bo.fsm' or machine.get('version') != '1'"
+        },
+        {
+          "line": 27,
+          "expression": "any((not callable(f) for f in self.bo_guards.values()))"
+        }
+      ],
+      "file_sha256": "56ee5f17e8d9d0820f12f4a1b922a750338c3a97887a59f227b45e8f1ee6aab6"
+    },
+    "implementation.3680bd814170e543": {
+      "path": "bo_stategraph/native_executor.py",
+      "symbol": "BOExecutor.step",
+      "line": 31,
+      "end_line": 79,
+      "signature": "self, state, event, context, payload=None",
+      "ast_sha256": "d393a01eedd6c59cad78c04d336bfedae045310acf1d70f38c1e4afda67f32a8",
+      "snippet": "    def step(self, state, event, context, payload=None):\n        \"\"\"Evaluate one declared transition using typed context, payload, and synchronous guards.\n\n        Return the destination and guard evidence. The application remains responsible\n        for committing its state and effects.\n        \"\"\"\n        m = self.bo_definition\n        payload = {} if payload is None else payload\n        if state not in m[\"states\"] or event not in m[\"events\"]:\n            raise ValueError(\"unknown state/event\")\n        if set(context) - set(m[\"context\"]):\n            raise ValueError(\"unknown context field\")\n        for key, spec in m[\"context\"].items():\n            if key not in context:\n                raise ValueError(\"missing context\")\n            errors = value_errors(context[key], spec, key)\n            if errors:\n                raise ValueError(\"; \".join(errors))\n        fields = m[\"events\"][event][\"payload\"]\n        if set(payload) != set(fields):\n            raise ValueError(\"event payload fields differ from declaration\")\n        for key, spec in fields.items():\n            errors = value_errors(payload[key], spec, key)\n            if errors:\n                raise ValueError(\"; \".join(errors))\n        evaluated = {}\n\n        def guard(name):\n            if name not in evaluated:\n                value = self.bo_guards[name](deepcopy(context), deepcopy(payload))\n                if type(value) is not bool:\n                    raise ValueError(\"guard must return boolean synchronously\")\n                evaluated[name] = value\n            return evaluated[name]\n\n        for t in m[\"transitions\"]:\n            if t[\"trigger\"] == event and (\n                state in bo_list(t[\"source\"]) or \"*\" in bo_list(t[\"source\"])\n            ):\n                if all(guard(n) for n in bo_list(t.get(\"conditions\"))) and all(\n                    not guard(n) for n in bo_list(t.get(\"unless\"))\n                ):\n                    return {\n                        \"state\": state if t[\"dest\"] is None else t[\"dest\"],\n                        \"guards\": evaluated,\n                        \"event\": event,\n                        \"payload\": deepcopy(payload),\n                    }\n        raise ValueError(\"no enabled transition\")",
+      "calls": [
+        "'; '.join",
+        "ValueError",
+        "all",
+        "bo_list",
+        "deepcopy",
+        "fields.items",
+        "guard",
+        "m['context'].items",
+        "self.bo_guards[name]",
+        "set",
+        "t.get",
+        "type",
+        "value_errors"
+      ],
+      "guards": [
+        {
+          "line": 39,
+          "expression": "state not in m['states'] or event not in m['events']"
+        },
+        {
+          "line": 41,
+          "expression": "set(context) - set(m['context'])"
+        },
+        {
+          "line": 50,
+          "expression": "set(payload) != set(fields)"
+        },
+        {
+          "line": 38,
+          "expression": "payload is None"
+        },
+        {
+          "line": 44,
+          "expression": "key not in context"
+        },
+        {
+          "line": 47,
+          "expression": "errors"
+        },
+        {
+          "line": 54,
+          "expression": "errors"
+        },
+        {
+          "line": 59,
+          "expression": "name not in evaluated"
+        },
+        {
+          "line": 67,
+          "expression": "t['trigger'] == event and (state in bo_list(t['source']) or '*' in bo_list(t['source']))"
+        },
+        {
+          "line": 61,
+          "expression": "type(value) is not bool"
+        },
+        {
+          "line": 70,
+          "expression": "all((guard(n) for n in bo_list(t.get('conditions')))) and all((not guard(n) for n in bo_list(t.get('unless'))))"
+        },
+        {
+          "line": 74,
+          "expression": "t['dest'] is None"
+        }
+      ],
+      "file_sha256": "56ee5f17e8d9d0820f12f4a1b922a750338c3a97887a59f227b45e8f1ee6aab6"
+    },
+    "implementation.88498c8c56b7324c": {
+      "path": "bo_stategraph/native_executor.py",
+      "symbol": "BOExecutor.step.guard",
+      "line": 58,
+      "end_line": 64,
+      "signature": "name",
+      "ast_sha256": "862786c03bc89f7984e7bca1257ee394842ac80b816d2a5212afc1cc66b32b89",
+      "snippet": "        def guard(name):\n            if name not in evaluated:\n                value = self.bo_guards[name](deepcopy(context), deepcopy(payload))\n                if type(value) is not bool:\n                    raise ValueError(\"guard must return boolean synchronously\")\n                evaluated[name] = value\n            return evaluated[name]",
+      "calls": [
+        "ValueError",
+        "deepcopy",
+        "self.bo_guards[name]",
+        "type"
+      ],
+      "guards": [
+        {
+          "line": 59,
+          "expression": "name not in evaluated"
+        },
+        {
+          "line": 61,
+          "expression": "type(value) is not bool"
+        }
+      ],
+      "file_sha256": "56ee5f17e8d9d0820f12f4a1b922a750338c3a97887a59f227b45e8f1ee6aab6"
+    },
+    "implementation.ae9009abb0cd76a9": {
+      "path": "bo_stategraph/native_executor.py",
+      "symbol": "bo_list",
+      "line": 14,
+      "end_line": 15,
+      "signature": "value",
+      "ast_sha256": "e240dc1ef91dd998a04228fb7f626cedc8ae025a65c05afd9b46fd3177dc2757",
+      "snippet": "def bo_list(value):\n    return value if isinstance(value, list) else [] if value is None else [value]",
+      "calls": [
+        "isinstance"
+      ],
+      "guards": [
+        {
+          "line": 15,
+          "expression": "isinstance(value, list)"
+        },
+        {
+          "line": 15,
+          "expression": "value is None"
+        }
+      ],
+      "file_sha256": "56ee5f17e8d9d0820f12f4a1b922a750338c3a97887a59f227b45e8f1ee6aab6"
+    },
+    "implementation.d4226e7d86de3a32": {
+      "path": "bo_stategraph/workflow.py",
+      "symbol": "FileWorkflow.__init__",
+      "line": 10,
+      "end_line": 13,
+      "signature": "self, root: Path",
+      "ast_sha256": "090fd15ec3780f658733774a87f88602877778ac9f89e07eb3f154edf6333df2",
+      "snippet": "    def __init__(self, root: Path):\n        self.project = json.loads((root / \"bo_stategraph/project.json\").read_text(encoding=\"utf-8\"))\n        self.machine = self.project[\"model\"][\"machine\"]\n        self.executor = BOExecutor(self.machine, {\"operation_allowed\": operation_allowed, \"has_recipients\": has_recipients})",
+      "calls": [
+        "(root / 'bo_stategraph/project.json').read_text",
+        "BOExecutor",
+        "json.loads"
+      ],
+      "guards": [],
+      "file_sha256": "1373e67fc648bf029f72c2f7fb944609d531501138a0dd1aa291cfadfbeb5a5a"
+    },
+    "implementation.eb3bba42f32e106a": {
+      "path": "bo_stategraph/workflow.py",
+      "symbol": "FileWorkflow.step",
+      "line": 15,
+      "end_line": 16,
+      "signature": "self, state: str, event: str, context: dict, allowed: bool",
+      "ast_sha256": "9f879bb03073ca114459d73046fce2315b9748d9672d054ee81a0e59569401fe",
+      "snippet": "    def step(self, state: str, event: str, context: dict, allowed: bool):\n        return self.executor.step(state, event, context, {\"allowed\": allowed})",
+      "calls": [
+        "self.executor.step"
+      ],
+      "guards": [],
+      "file_sha256": "1373e67fc648bf029f72c2f7fb944609d531501138a0dd1aa291cfadfbeb5a5a"
+    },
+    "implementation.897974abffb7c6eb": {
+      "path": "bo_stategraph/workflow.py",
+      "symbol": "machine_snapshot",
+      "line": 23,
+      "end_line": 27,
+      "signature": "rows: list, build_id: str",
+      "ast_sha256": "55f32ecb807b204253831fef1eaffc22f7538827d01e65f18a919e48b54abbf4",
+      "snippet": "def machine_snapshot(rows: list, build_id: str):\n    return {\"configurations\": [{\"attempt\": row[\"id\"], \"phase\": row[\"state\"],\n        \"state_revision\": row[\"revision\"], \"revision\": row[\"revision\"], \"param_version\": 1,\n        \"run_build_id\": build_id, \"context\": file_context(row), \"journal\": row[\"journal\"]}\n        for row in rows]}",
+      "calls": [
+        "file_context"
+      ],
+      "guards": [],
+      "file_sha256": "1373e67fc648bf029f72c2f7fb944609d531501138a0dd1aa291cfadfbeb5a5a"
+    }
+  },
+  "python": "3.13.13",
+  "unknowns": [
+    "Simulated local trial; no production or independent human acceptance.",
+    "Static unresolved calls remain candidates; recorded calls establish actual execution.",
+    "Revocation applies to new download requests after its transaction commits; in-flight transfer cancellation is outside this request.",
+    "AST evidence does not prove value flow, guard dominance or behavioral equivalence",
+    "External dependencies, interpreter, dynamic patching and omitted files are not attested"
+  ]
+}

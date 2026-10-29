@@ -27,7 +27,7 @@ python tools/build_site_viewer.py
 node tools/test_case_browser.mjs
 ```
 
-The browser tools require Playwright and Chromium (`npm install playwright`, then `npx playwright install chromium`), or the existing workspace runtime. Set `BO_BROWSER_EXECUTABLE` for an installed Chrome. `BO_CASE_EVIDENCE` selects a fresh output directory. The first browser tool executes v1 and v2 in separate project directories and exports the actual recordings to `docs/site/case-data`. The second serves Pages locally and tests its real embedded viewer. Regenerating fixtures is an explicit review action.
+The browser tools require Playwright and Chromium (`npm install playwright`, then `npx playwright install chromium`), or the existing workspace runtime. Set `BO_BROWSER_EXECUTABLE` for an installed Chrome. `BO_CASE_EVIDENCE` selects a fresh output directory. The gallery regression executes v1 and v2 in separate project directories and exports recordings under that run's `case-data/`; `BO_CASE_EXPORT` can select another explicit destination. The public walkthrough now uses [file sharing](../file-sharing/README.md). Controller regressions retain their original gallery input in `tests/fixtures/conversation-control-case.json`. Regenerating these fixtures is an explicit review action.
 
 V1 is deliberately faulty: its policy omits the version comparison. Its business test must be red. V2 must reject the stale review, leave the exhibition unchanged, and publish after a fresh review. A successful test tool exit means this red/green teaching sequence behaved as expected; it does not mean the faulty v1 was correct.
 

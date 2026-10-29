@@ -1,0 +1,222 @@
+{
+  "phase": "red",
+  "context": "controlled fault diagnosis",
+  "timestamp": "2026-10-29T09:28:29.081592+08:00",
+  "base_url": "http://127.0.0.1:8854",
+  "app_sha256": "3b9839e88192a681c51129503ff63007717a9fe2861bbf3eed05480f0e1a8abe",
+  "headless": true,
+  "checks": [
+    {
+      "name": "Upload status",
+      "actual": 201,
+      "expected": 201,
+      "passed": true
+    },
+    {
+      "name": "Share with 许宁",
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    {
+      "name": "Share with 周岚",
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    {
+      "name": "Bytes in recipient-before-cancel.txt",
+      "actual": "436f6e74726f6c6c656420646961676e6f7369732073616d706c653a20617574686f72697a6174696f6e20666f6c6c6f7773207468652073656c656374656420726563697069656e742e0a",
+      "expected": "436f6e74726f6c6c656420646961676e6f7369732073616d706c653a20617574686f72697a6174696f6e20666f6c6c6f7773207468652073656c656374656420726563697069656e742e0a",
+      "passed": true
+    },
+    {
+      "name": "Cancel response status",
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    {
+      "name": "Recipient document is unchanged during cancellation",
+      "actual": 1793237311323.8,
+      "expected": 1793237311323.8,
+      "passed": true
+    },
+    {
+      "name": "Recipient makes no requests during cancellation",
+      "actual": [],
+      "expected": [],
+      "passed": true
+    },
+    {
+      "name": "Old file row remains visible",
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "name": "Stale-page download must be rejected",
+      "actual": 200,
+      "expected": 403,
+      "passed": false
+    },
+    {
+      "name": "Stale-page download must not create a download event",
+      "actual": 1,
+      "expected": 0,
+      "passed": false
+    },
+    {
+      "name": "Recipient still uses the original document",
+      "actual": 1793237311323.8,
+      "expected": 1793237311323.8,
+      "passed": true
+    },
+    {
+      "name": "Only the download request occurs before the stale-page result",
+      "actual": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8854/api/files/1/download"
+        }
+      ],
+      "expected": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8854/api/files/1/download"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "Only Xu Ning's grant is removed",
+      "actual": [
+        {
+          "file_id": 1,
+          "recipient_id": 2
+        },
+        {
+          "file_id": 1,
+          "recipient_id": 3
+        }
+      ],
+      "expected": [
+        {
+          "file_id": 1,
+          "recipient_id": 3
+        }
+      ],
+      "passed": false
+    },
+    {
+      "name": "Bytes in owner-after-cancel.txt",
+      "actual": "436f6e74726f6c6c656420646961676e6f7369732073616d706c653a20617574686f72697a6174696f6e20666f6c6c6f7773207468652073656c656374656420726563697069656e742e0a",
+      "expected": "436f6e74726f6c6c656420646961676e6f7369732073616d706c653a20617574686f72697a6174696f6e20666f6c6c6f7773207468652073656c656374656420726563697069656e742e0a",
+      "passed": true
+    },
+    {
+      "name": "Bytes in other-recipient-after-cancel.txt",
+      "actual": "436f6e74726f6c6c656420646961676e6f7369732073616d706c653a20617574686f72697a6174696f6e20666f6c6c6f7773207468652073656c656374656420726563697069656e742e0a",
+      "expected": "436f6e74726f6c6c656420646961676e6f7369732073616d706c653a20617574686f72697a6174696f6e20666f6c6c6f7773207468652073656c656374656420726563697069656e742e0a",
+      "passed": true
+    },
+    {
+      "name": "Canceled file disappears after refresh",
+      "actual": 1,
+      "expected": 0,
+      "passed": false
+    },
+    {
+      "name": "Original share API still responds",
+      "actual": 200,
+      "expected": 200,
+      "passed": true
+    },
+    {
+      "name": "Bytes in recipient-after-reshare.txt",
+      "actual": "436f6e74726f6c6c656420646961676e6f7369732073616d706c653a20617574686f72697a6174696f6e20666f6c6c6f7773207468652073656c656374656420726563697069656e742e0a",
+      "expected": "436f6e74726f6c6c656420646961676e6f7369732073616d706c653a20617574686f72697a6174696f6e20666f6c6c6f7773207468652073656c656374656420726563697069656e742e0a",
+      "passed": true
+    },
+    {
+      "name": "No JavaScript exceptions",
+      "actual": [],
+      "expected": [],
+      "passed": true
+    }
+  ],
+  "browser_errors": [],
+  "browser": "156.0.8078.47",
+  "file_id": 1,
+  "before_download_sha256": "35687ea5631269f4298e8cb76f042e4fa267b51e1332177ee794dda17250aabc",
+  "database_before_cancel": {
+    "file": {
+      "id": 1,
+      "owner_id": 1,
+      "name": "controlled-revocation.txt",
+      "size": 75,
+      "storage_key": "7fc9ce9085a0b3e25c08260e77ee223745c67301fe079620"
+    },
+    "shares": [
+      {
+        "file_id": 1,
+        "recipient_id": 2
+      },
+      {
+        "file_id": 1,
+        "recipient_id": 3
+      }
+    ]
+  },
+  "cancel_response": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "file_id": 1,
+      "recipient_id": 2,
+      "shared": false
+    }
+  },
+  "owner_success_message": "Sharing with 许宁 was canceled. Your file is still available to you.",
+  "database_after_cancel": {
+    "file": {
+      "id": 1,
+      "owner_id": 1,
+      "name": "controlled-revocation.txt",
+      "size": 75,
+      "storage_key": "7fc9ce9085a0b3e25c08260e77ee223745c67301fe079620"
+    },
+    "shares": [
+      {
+        "file_id": 1,
+        "recipient_id": 2
+      },
+      {
+        "file_id": 1,
+        "recipient_id": 3
+      }
+    ]
+  },
+  "stale_page": {
+    "http_status": 200,
+    "same_document": true,
+    "requests_through_download": [
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8854/api/files/1/download"
+      }
+    ],
+    "download_events": 1,
+    "message": "Downloaded controlled-revocation.txt"
+  },
+  "owner_after_cancel_sha256": "35687ea5631269f4298e8cb76f042e4fa267b51e1332177ee794dda17250aabc",
+  "other_recipient_sha256": "35687ea5631269f4298e8cb76f042e4fa267b51e1332177ee794dda17250aabc",
+  "reshare_method": "API duplicate grant; faulty cancellation left recipient already authorized",
+  "reshared_download_sha256": "35687ea5631269f4298e8cb76f042e4fa267b51e1332177ee794dda17250aabc",
+  "passed": false,
+  "status": "failed",
+  "error": "Independent cancellation expectations failed; see recorded actual and expected values.",
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\diagnosis-without-skill-20261029\\review\\diagnosis\\run_checks.py\", line 232, in browser_checks\n    witness(base_url, server.database, temporary_root, directory / \"witness\", result)\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\diagnosis-without-skill-20261029\\review\\diagnosis\\run_checks.py\", line 210, in witness\n    assert result[\"passed\"], \"Independent cancellation expectations failed; see recorded actual and expected values.\"\n           ~~~~~~^^^^^^^^^^\nAssertionError: Independent cancellation expectations failed; see recorded actual and expected values.\n",
+  "finished_at": "2026-10-29T09:28:35.092546+08:00",
+  "server_stopped": true
+}

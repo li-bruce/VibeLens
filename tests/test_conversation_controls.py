@@ -1,6 +1,7 @@
 """Presentation controls require this conversation's explicit intent and preserve facts."""
 
 from copy import deepcopy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -39,7 +40,7 @@ class ControlTests(unittest.TestCase):
         self.environment.start()
         self.addCleanup(self.environment.stop)
         self.artifact = json.loads(
-            (ROOT / "docs/site/case-data/v1.json").read_text(encoding="utf-8")
+            (ROOT / "tests/fixtures/conversation-control-case.json").read_text(encoding="utf-8")
         )
         self.view = self.artifact["view"]
         self.project = (
@@ -57,6 +58,12 @@ class ControlTests(unittest.TestCase):
             "edges": ["flow", "guard", "data", "call"],
             "layout": "layered",
         }
+
+    def test_fixture_remains_the_original_controller_input(self):
+        path = ROOT / "tests/fixtures/conversation-control-case.json"
+        provenance = json.loads(path.with_suffix(".provenance.json").read_text(encoding="utf-8"))
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), provenance["sha256"])
+        self.assertIn("review-policy", {node["id"] for node in self.view["model"]["nodes"]})
 
     def test_prefix_is_required_for_every_mutation(self):
         plan = build_plan(self.view, self.spec)
@@ -210,9 +217,10 @@ class ControlTests(unittest.TestCase):
         plan = build_plan(view, spec)
         validate_evidence(plan, view)
         self.assertEqual(plan["base"]["model_revision"], view["manifest"]["build_id"])
-        with patch("bo_observer.control.cli.get", return_value=view), redirect_stdout(
-            io.StringIO()
-        ) as output:
+        with (
+            patch("bo_observer.control.cli.get", return_value=view),
+            redirect_stdout(io.StringIO()) as output,
+        ):
             code = control_main(
                 [
                     "activate",
@@ -229,9 +237,10 @@ class ControlTests(unittest.TestCase):
         (project / "sync.json").write_text(
             json.dumps({"model": "behavior.json", "discovery": "discovery.json"}), encoding="utf-8"
         )
-        with patch("bo_observer.control.cli.get", return_value=view), redirect_stdout(
-            io.StringIO()
-        ) as output:
+        with (
+            patch("bo_observer.control.cli.get", return_value=view),
+            redirect_stdout(io.StringIO()) as output,
+        ):
             code = control_main(
                 [
                     "activate",
@@ -244,9 +253,10 @@ class ControlTests(unittest.TestCase):
                 ]
             )
         self.assertEqual(code, 0, output.getvalue())
-        with patch("bo_observer.control.cli.get", return_value=view), redirect_stdout(
-            io.StringIO()
-        ) as output:
+        with (
+            patch("bo_observer.control.cli.get", return_value=view),
+            redirect_stdout(io.StringIO()) as output,
+        ):
             code = control_main(
                 [
                     "inspect",

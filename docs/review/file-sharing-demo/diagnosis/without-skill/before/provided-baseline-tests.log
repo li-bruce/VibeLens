@@ -1,0 +1,118 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+test_data_and_permissions_survive_a_new_server_instance (test_app.FileSharingTests.test_data_and_permissions_survive_a_new_server_instance) ... 127.0.0.1 - - [29/Oct/2026 08:45:59] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:45:59] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:45:59] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:45:59] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:45:59] "POST /api/files/1/shares HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:45:59] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:45:59] "GET /api/files/1/download HTTP/1.1" 200 -
+ok
+test_every_account_can_upload_its_own_private_file (test_app.FileSharingTests.test_every_account_can_upload_its_own_private_file) ... 127.0.0.1 - - [29/Oct/2026 08:46:00] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "GET /api/files/2/download HTTP/1.1" 403 -
+ok
+test_file_names_and_storage_do_not_expose_arbitrary_paths (test_app.FileSharingTests.test_file_names_and_storage_do_not_expose_arbitrary_paths) ... 127.0.0.1 - - [29/Oct/2026 08:46:00] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "GET /api/files/3/download HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "GET /data/app.sqlite3 HTTP/1.1" 404 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "GET /../app.py HTTP/1.1" 404 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "GET /static/../app.py HTTP/1.1" 404 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "GET /api/files/not-a-number/download HTTP/1.1" 404 -
+127.0.0.1 - - [29/Oct/2026 08:46:00] "GET /api/files/3 HTTP/1.1" 200 -
+ok
+test_invalid_recipient_and_duplicate_share (test_app.FileSharingTests.test_invalid_recipient_and_duplicate_share) ... 127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files/4/shares HTTP/1.1" 400 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files/4/shares HTTP/1.1" 400 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files/4/shares HTTP/1.1" 400 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files/4/shares HTTP/1.1" 400 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files/4/shares HTTP/1.1" 400 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files/4/shares HTTP/1.1" 400 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files/4/shares HTTP/1.1" 400 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files/4/shares HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files/4/shares HTTP/1.1" 200 -
+ok
+test_multipart_size_limits_and_empty_files (test_app.FileSharingTests.test_multipart_size_limits_and_empty_files) ... 127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files HTTP/1.1" 413 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "GET /api/files/5/download HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files HTTP/1.1" 415 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/files HTTP/1.1" 400 -
+ok
+test_mutations_require_csrf_and_same_origin (test_app.FileSharingTests.test_mutations_require_csrf_and_same_origin) ... 127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:01] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/files/6/shares HTTP/1.1" 403 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/files/6/shares HTTP/1.1" 403 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "GET /api/files/6/download HTTP/1.1" 403 -
+ok
+test_new_upload_does_not_inherit_another_files_recipients (test_app.FileSharingTests.test_new_upload_does_not_inherit_another_files_recipients) ... 127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/files/7/shares HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "GET /api/files/8/download HTTP/1.1" 403 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "GET /api/files/7/download HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "GET /api/files/8/download HTTP/1.1" 200 -
+ok
+test_non_owner_cannot_share_an_unshared_file (test_app.FileSharingTests.test_non_owner_cannot_share_an_unshared_file) ... 127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/files/9/shares HTTP/1.1" 403 -
+ok
+test_owner_id_cannot_be_assigned_by_the_upload_request (test_app.FileSharingTests.test_owner_id_cannot_be_assigned_by_the_upload_request) ... 127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:02] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/files HTTP/1.1" 201 -
+ok
+test_primary_story_owner_recipient_and_outsider (test_app.FileSharingTests.test_primary_story_owner_recipient_and_outsider) ... 127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "GET /api/files/11/download HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "GET /api/files/11/download HTTP/1.1" 403 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/files/11/shares HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "GET /api/files HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "GET /api/files HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "GET /api/files/11/download HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "GET /api/files HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "GET /api/files/11/download HTTP/1.1" 403 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "GET /api/files/11 HTTP/1.1" 403 -
+ok
+test_recipient_cannot_reshare_even_with_a_direct_request (test_app.FileSharingTests.test_recipient_cannot_reshare_even_with_a_direct_request) ... 127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/files/12/shares HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/files/12/shares HTTP/1.1" 403 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "GET /api/files/12/download HTTP/1.1" 403 -
+ok
+test_session_authentication_and_logout (test_app.FileSharingTests.test_session_authentication_and_logout) ... 127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:03] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "GET /api/files HTTP/1.1" 401 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "GET /api/users HTTP/1.1" 401 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "POST /api/files HTTP/1.1" 201 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "GET /api/files/13/download HTTP/1.1" 401 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "POST /api/login HTTP/1.1" 401 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "POST /api/logout HTTP/1.1" 200 -
+127.0.0.1 - - [29/Oct/2026 08:46:04] "GET /api/files/13/download HTTP/1.1" 401 -
+ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 5.292s
+
+OK

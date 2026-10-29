@@ -1,0 +1,328 @@
+{
+  "stage": "separate_product_material_export",
+  "origin": "Controlled supplied fault, then diagnosis and repair; not a naturally occurring AI initial-build defect.",
+  "archival_replay_only": true,
+  "packages": [
+    {
+      "phase": "red",
+      "build_id": "5c406702e65c3ca7c24f9f916543f5e536048cbc655f9dc825ba070825087a92",
+      "recording_id": "75e905967d1d4411b034fd892ce80784",
+      "recording_name": "Controlled red diagnosis",
+      "recording_file": "red/recording.json",
+      "events": 326,
+      "source_archive": "red/source.zip",
+      "source_archive_sha256": "2dd200f3ec79b0d1af57c3a187a43b0429a754125729d86d836b454879217aaa",
+      "business_result": "red/business-result.json",
+      "passed": false,
+      "file_id": "aa7034888d724dedb0f3aadfcfc35a9d",
+      "stages": [
+        {
+          "stage": "login",
+          "event_ids": [
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:242"
+          ],
+          "graph_node_ids": [
+            "login"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.authenticate"
+          ],
+          "screenshot": null
+        },
+        {
+          "stage": "upload",
+          "event_ids": [
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:283"
+          ],
+          "graph_node_ids": [
+            "upload"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.upload"
+          ],
+          "screenshot": null
+        },
+        {
+          "stage": "assign_recipient",
+          "event_ids": [
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:349"
+          ],
+          "graph_node_ids": [
+            "share"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.share"
+          ],
+          "screenshot": null
+        },
+        {
+          "stage": "recipient_page",
+          "event_ids": [
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:442",
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:465"
+          ],
+          "graph_node_ids": [
+            "view",
+            "download"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.download",
+            "app/service.py::SharingService.view"
+          ],
+          "screenshot": "application-screenshots/01-original-recipient-page.png"
+        },
+        {
+          "stage": "after_revoke",
+          "event_ids": [
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:481",
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:487"
+          ],
+          "graph_node_ids": [
+            "revoke",
+            "db_delete_share"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.revoke"
+          ],
+          "screenshot": "application-screenshots/02-success-notice-but-grant-remains.png"
+        },
+        {
+          "stage": "stale_page",
+          "event_ids": [
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:442",
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:487"
+          ],
+          "graph_node_ids": [
+            "view",
+            "revoke"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.revoke",
+            "app/service.py::SharingService.view"
+          ],
+          "screenshot": null
+        },
+        {
+          "stage": "stale_download",
+          "event_ids": [
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:550"
+          ],
+          "graph_node_ids": [
+            "download"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.download"
+          ],
+          "screenshot": "application-screenshots/03-stale-page-still-downloads.png"
+        },
+        {
+          "stage": "owner_download",
+          "event_ids": [
+            "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:565"
+          ],
+          "graph_node_ids": [
+            "download"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.download"
+          ],
+          "screenshot": null
+        }
+      ],
+      "db_delete_share": {
+        "event_id": "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:481",
+        "rows": 0,
+        "source_symbol": "app/service.py::SharingService.revoke"
+      },
+      "revoke": {
+        "event_id": "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:487",
+        "removed": false,
+        "grant_count": 1,
+        "state": "shared",
+        "transition": [
+          "shared",
+          "shared"
+        ],
+        "source_symbol": "app/service.py::SharingService.revoke"
+      },
+      "code_graph": {
+        "file": "red/code-graph-status.json",
+        "errors": [],
+        "omitted_nodes": 0,
+        "nodes": 494,
+        "edges": 711,
+        "bindings": 208
+      },
+      "missing_application_screenshots": [
+        "login",
+        "upload",
+        "assign_recipient",
+        "stale_page",
+        "owner_download"
+      ],
+      "bundle_archive": "red.zip",
+      "bundle_archive_sha256": "a447ef49fa02c5b60674cbb24e6e4b31e472b7b8ef179bb3b6ee296d25080e15"
+    },
+    {
+      "phase": "green",
+      "build_id": "9a924db0cb5da491cab831248789b396dc6335178c53a649f70fed36bd2847e7",
+      "recording_id": "c00bff8c42104b7c82c0e1f0c90cce8e",
+      "recording_name": "Product materials green single-recipient sequence",
+      "recording_file": "green/recording.json",
+      "events": 654,
+      "source_archive": "green/source.zip",
+      "source_archive_sha256": "4ca6d71fdda0a0f411b5ab6c7b15814ef755430aaa3bdbfed815e1a96a6b0e13",
+      "business_result": "green/business-result.json",
+      "passed": true,
+      "file_id": "fc04cfbc716d4f558603defa71294b4d",
+      "stages": [
+        {
+          "stage": "login",
+          "event_ids": [
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:1915"
+          ],
+          "graph_node_ids": [
+            "login"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.authenticate"
+          ],
+          "screenshot": "application-screenshots/01-owner-signed-in.png"
+        },
+        {
+          "stage": "upload",
+          "event_ids": [
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2024"
+          ],
+          "graph_node_ids": [
+            "upload"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.upload"
+          ],
+          "screenshot": "application-screenshots/02-uploaded-private-file.png"
+        },
+        {
+          "stage": "assign_recipient",
+          "event_ids": [
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2158"
+          ],
+          "graph_node_ids": [
+            "share"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.share"
+          ],
+          "screenshot": "application-screenshots/03-recipient-assigned.png"
+        },
+        {
+          "stage": "recipient_page",
+          "event_ids": [
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2376",
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2399"
+          ],
+          "graph_node_ids": [
+            "view",
+            "download"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.download",
+            "app/service.py::SharingService.view"
+          ],
+          "screenshot": "application-screenshots/04-recipient-page-before-revoke.png"
+        },
+        {
+          "stage": "after_revoke",
+          "event_ids": [
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2415",
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2421"
+          ],
+          "graph_node_ids": [
+            "revoke",
+            "db_delete_share"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.revoke"
+          ],
+          "screenshot": "application-screenshots/05-owner-after-revoke-private.png"
+        },
+        {
+          "stage": "stale_page",
+          "event_ids": [
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2376",
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2421"
+          ],
+          "graph_node_ids": [
+            "view",
+            "revoke"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.revoke",
+            "app/service.py::SharingService.view"
+          ],
+          "screenshot": "application-screenshots/06-unrefreshed-recipient-page.png"
+        },
+        {
+          "stage": "stale_download",
+          "event_ids": [
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2550",
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2551"
+          ],
+          "graph_node_ids": [
+            "download",
+            "policy:read_allowed",
+            "authorize"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.authorize",
+            "app/service.py::SharingService.download"
+          ],
+          "screenshot": "application-screenshots/07-stale-download-rejected.png"
+        },
+        {
+          "stage": "owner_download",
+          "event_ids": [
+            "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2566"
+          ],
+          "graph_node_ids": [
+            "download"
+          ],
+          "source_symbols": [
+            "app/service.py::SharingService.download"
+          ],
+          "screenshot": "application-screenshots/08-owner-after-real-download.png"
+        }
+      ],
+      "db_delete_share": {
+        "event_id": "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2415",
+        "rows": 1,
+        "source_symbol": "app/service.py::SharingService.revoke"
+      },
+      "revoke": {
+        "event_id": "c982461aa06c4259a818ab17a4f5eaa3:999c6b5a37f442ccba0cad3282a20eaa:2421",
+        "removed": true,
+        "grant_count": 0,
+        "state": "private",
+        "transition": [
+          "shared",
+          "private"
+        ],
+        "source_symbol": "app/service.py::SharingService.revoke"
+      },
+      "code_graph": {
+        "file": "green/code-graph-status.json",
+        "errors": [],
+        "omitted_nodes": 0,
+        "nodes": 494,
+        "edges": 711,
+        "bindings": 208
+      },
+      "missing_application_screenshots": [],
+      "bundle_archive": "green.zip",
+      "bundle_archive_sha256": "fa548dcb3f6e2629a407a1d0621d5d44ab384b1abdfdab9a0659422a58f84639"
+    }
+  ],
+  "green_visual_capture": "A new real green single-recipient recording supplies all screenshots under one unchanged accepted build; original diagnosis archives are preserved.",
+  "sql_binding_boundary": "Recorded query parameters are selected request fields; independent driver binding evidence comes from a separately identified diagnostic run, not this primary recording.",
+  "export_seconds": 3.744383000070229
+}

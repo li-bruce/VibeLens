@@ -6,6 +6,8 @@ Read this guide when you want to change the Skill, inspect a recorded value, or 
 
 ## Repository map
 
+The product story is separate from the runtime. [export_file_case.py](../tools/export_file_case.py) validates immutable trial recordings, sources and screenshots before producing static case data. [case-viewer.mjs](site/case-viewer.mjs) serves those exports to the unchanged canonical viewer; [case-scene-player.mjs](site/case-scene-player.mjs) selects native views and replay positions. [case-copy.mjs](site/case-copy.mjs) removes known authoring boilerplate in display-only clones while preserving archived facts. [case-companion.mjs](site/case-companion.mjs) keeps development dialogue and event-bound application screenshots separate. [export_trial_dialogue.py](../tools/export_trial_dialogue.py) exports visible dialogue and named-turn usage counters for review.
+
 | Location | What to read or change here |
 |---|---|
 | [SKILL.md](../skills/vibelens/SKILL.md) | The conversation and iteration workflow followed by the coding agent. |

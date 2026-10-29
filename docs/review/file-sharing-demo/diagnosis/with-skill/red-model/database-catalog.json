@@ -1,0 +1,493 @@
+{
+  "protocol": "bo-database-bundle/v1",
+  "source_id": "1c600d257cef1f6877b5b4d26cb2da2ed71cb3f71f0859e189fb41a285d53fe1",
+  "catalog_id": "8d6f241efdfbdbbb148726979595530af150f129545ba15edded7998b141334d",
+  "catalogs": [
+    {
+      "protocol": "bo-data-catalog/v1",
+      "store_id": "sharing",
+      "engine": "sqlalchemy",
+      "origin": "database",
+      "coverage": "complete",
+      "limitations": [
+        "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+      ],
+      "resources": [
+        {
+          "key": "table:files",
+          "kind": "table",
+          "name": "files",
+          "fields": [
+            {
+              "name": "content",
+              "native_type": "BLOB",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "filename",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": true,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "journal",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "owner_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "revision",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "sha256",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "size",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "state",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "check",
+              "name": "file_revision_positive",
+              "fields": [],
+              "description": "revision >= 1"
+            },
+            {
+              "kind": "check",
+              "name": "file_size_nonnegative",
+              "fields": [],
+              "description": "size >= 0"
+            },
+            {
+              "kind": "check",
+              "name": "file_state_valid",
+              "fields": [],
+              "description": "state IN ('private', 'shared')"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "owner_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "table:shares",
+          "kind": "table",
+          "name": "shares",
+          "fields": [
+            {
+              "name": "file_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "id",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": true,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "recipient_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "file_id"
+              ],
+              "target": "table:files",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "recipient_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "unique",
+              "name": "unique_file_recipient",
+              "fields": [
+                "file_id",
+                "recipient_id"
+              ]
+            },
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "table:users",
+          "kind": "table",
+          "name": "users",
+          "fields": [
+            {
+              "name": "display_name",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": true,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "password_hash",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "protocol": "bo-data-catalog/v1",
+      "store_id": "sharing",
+      "engine": "sqlalchemy",
+      "origin": "declaration",
+      "coverage": "complete",
+      "limitations": [
+        "Declared SQLAlchemy metadata; this does not prove that migrations were applied.",
+        "Unspecified autoincrement and server-fetched defaults depend on the dialect and are not asserted as absent defaults."
+      ],
+      "resources": [
+        {
+          "key": "table:files",
+          "kind": "table",
+          "name": "files",
+          "fields": [
+            {
+              "name": "content",
+              "native_type": "BLOB",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "filename",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": true,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "journal",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "owner_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "revision",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "sha256",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "size",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "state",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "check",
+              "name": "file_revision_positive",
+              "fields": [],
+              "description": "revision >= 1"
+            },
+            {
+              "kind": "check",
+              "name": "file_size_nonnegative",
+              "fields": [],
+              "description": "size >= 0"
+            },
+            {
+              "kind": "check",
+              "name": "file_state_valid",
+              "fields": [],
+              "description": "state IN ('private', 'shared')"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "owner_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "table:shares",
+          "kind": "table",
+          "name": "shares",
+          "fields": [
+            {
+              "name": "file_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "id",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": true,
+              "generated": false
+            },
+            {
+              "name": "recipient_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "file_id"
+              ],
+              "target": "table:files",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "recipient_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "unique",
+              "name": "unique_file_recipient",
+              "fields": [
+                "file_id",
+                "recipient_id"
+              ]
+            },
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "table:users",
+          "kind": "table",
+          "name": "users",
+          "fields": [
+            {
+              "name": "display_name",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": true,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "password_hash",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

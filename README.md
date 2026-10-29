@@ -1,6 +1,6 @@
 # VibeLens
 
-**See what your coding agent built — and what the program actually does.**
+**Understand the code your agent builds and trace what it does.**
 
 Previously named Business Observer (`business-observer`). [Rename and migration](docs/rename-vibelens.md).
 
@@ -11,6 +11,8 @@ Vibe coding can produce a working screen while leaving its decisions, state chan
 ![Five connected views of one operation: business, state, decisions, functions and values, and source](docs/site/layers.svg)
 
 These are views of **one typed network** with shared nodes and typed relationships. Expand a region, follow a relation, or combine types to answer the question in front of you.
+
+Shared rule conditions connect permissions to the functions that implement them. Reuse an ownership check across actions, distinguish different parameter bindings, and inspect each request's actual inputs, result and skipped conditions. [Rule-network interface](skills/vibelens/references/shared-policy.md).
 
 Use **3D** for a perspective view of connected semantic layers. Rotate the graph, expand a region across layers, follow its colored containment projections, or focus one layer. Spatial positions and the camera are saved with the project. [Interaction and source guide](skills/vibelens/references/spatial-graph.md).
 
@@ -90,8 +92,9 @@ python tools/install_skill.py --project /path/to/your-project
 The installer writes `.agents/skills/vibelens` and stops if that directory exists, preserving local changes. Open a new Codex conversation in the target project:
 
 ```text
-Use $vibelens to build an image review gallery.
-A person uploads an image. A reviewer decides whether it appears in the exhibition.
+Use $vibelens to build a small file-sharing app.
+Users upload their own files and share them with named recipients who can view and download them.
+The owner can revoke a recipient's access; their next download must be rejected.
 Show the first business graph in this conversation and give me its Web address.
 Confirm unclear details before implementation, and keep the graph in sync while coding.
 ```
@@ -104,7 +107,7 @@ Alternatively, install with the Skills CLI:
 npx skills add li-bruce/VibeLens --skill vibelens
 ```
 
-You can also ask Codex's Skill installer to install from [the Skill directory](https://github.com/li-bruce/VibeLens/tree/main/skills/vibelens). Use `main` for current updates or `v0.8.1` for this fixed release. Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.8.1.md), [independent application trial](docs/review/release-v0.7.0/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
+You can also ask Codex's Skill installer to install from [the Skill directory](https://github.com/li-bruce/VibeLens/tree/main/skills/vibelens). Use `main` for current updates or `v0.9.0` for this fixed release. Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.9.0.md), [independent application trial](docs/review/release-v0.7.0/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
 
 English is the maintained source/documentation language. Conversation follows the user; the viewer offers English/Chinese and saves the preference in the project. Original answers and historical evidence retain their original language.
 

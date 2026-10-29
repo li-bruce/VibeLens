@@ -1,0 +1,125 @@
+{
+  "controlled_fault": true,
+  "reproduction_confirmed": true,
+  "business_expectation_passed": false,
+  "build_id": "5c406702e65c3ca7c24f9f916543f5e536048cbc655f9dc825ba070825087a92",
+  "file_id": "aa7034888d724dedb0f3aadfcfc35a9d",
+  "expected_stale_download_status": 403,
+  "actual_stale_download_status": 200,
+  "before": {
+    "owner_id": "linzhou",
+    "state": "shared",
+    "revision": 2,
+    "sha256": "f57720bdfeccddc42e9b98bd71544d409be52d32c1b2fd0cb6651f3c05cd8713",
+    "recipients": [
+      "xuning"
+    ]
+  },
+  "after": {
+    "owner_id": "linzhou",
+    "state": "shared",
+    "revision": 3,
+    "sha256": "f57720bdfeccddc42e9b98bd71544d409be52d32c1b2fd0cb6651f3c05cd8713",
+    "recipients": [
+      "xuning"
+    ]
+  },
+  "actual_states": [
+    "private",
+    "shared",
+    "shared"
+  ],
+  "recording": {
+    "id": "75e905967d1d4411b034fd892ce80784",
+    "label": "Controlled red diagnosis",
+    "status": "stopped",
+    "started_at": "2026-10-29T01:34:20.308449+00:00",
+    "ended_at": "2026-10-29T01:34:33.897103+00:00",
+    "build_id": "5c406702e65c3ca7c24f9f916543f5e536048cbc655f9dc825ba070825087a92",
+    "events": 326,
+    "commands": 0,
+    "gaps": [],
+    "capture": {
+      "mode": "all",
+      "nodes": null,
+      "roots": [],
+      "boundary_nodes": []
+    },
+    "capture_filtered": 0,
+    "graph_version": [
+      "5c406702e65c3ca7c24f9f916543f5e536048cbc655f9dc825ba070825087a92",
+      "d7a7c5dcad57e8d336409a1f62eaefca4755be17fe87f27458582fc8d683ec36"
+    ]
+  },
+  "screenshots": [
+    {
+      "file": "review/diagnosis/red-browser/01-original-recipient-page.png",
+      "sha256": "0d262b890da4a83d69cb62e34eca0465c2ebfc0cb7031b134ef1a98e20dc6e43"
+    },
+    {
+      "file": "review/diagnosis/red-browser/02-success-notice-but-grant-remains.png",
+      "sha256": "d8d89c8d19ef0c0683a5a1e7ed2ceb64669d73aa9fbfc7670501b88f84812975"
+    },
+    {
+      "file": "review/diagnosis/red-browser/03-stale-page-still-downloads.png",
+      "sha256": "0d262b890da4a83d69cb62e34eca0465c2ebfc0cb7031b134ef1a98e20dc6e43"
+    },
+    {
+      "file": "review/diagnosis/red-browser/04-actual-red-revoke-replay.png",
+      "sha256": "80f8f63df6f6e5f2918ce189a4d3b2aa9bb5b7f72b51f42ce9e212cb267ad08b"
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "name": "recording_started",
+      "time_unix": 1793237660.3276055,
+      "details": {
+        "build_id": "5c406702e65c3ca7c24f9f916543f5e536048cbc655f9dc825ba070825087a92"
+      }
+    },
+    {
+      "order": 2,
+      "name": "shared_file_downloaded_before_revoke",
+      "time_unix": 1793237661.8463457,
+      "details": {
+        "owner_id": "linzhou",
+        "state": "shared",
+        "revision": 2,
+        "sha256": "f57720bdfeccddc42e9b98bd71544d409be52d32c1b2fd0cb6651f3c05cd8713",
+        "recipients": [
+          "xuning"
+        ]
+      }
+    },
+    {
+      "order": 3,
+      "name": "controlled_failure_reproduced",
+      "time_unix": 1793237662.3253353,
+      "details": {
+        "expected": 403,
+        "actual": 200,
+        "page_unchanged": true,
+        "database_after": {
+          "owner_id": "linzhou",
+          "state": "shared",
+          "revision": 3,
+          "sha256": "f57720bdfeccddc42e9b98bd71544d409be52d32c1b2fd0cb6651f3c05cd8713",
+          "recipients": [
+            "xuning"
+          ]
+        }
+      }
+    },
+    {
+      "order": 4,
+      "name": "actual_failure_recording_replayed",
+      "time_unix": 1793237675.1395185,
+      "details": {
+        "recording_id": "75e905967d1d4411b034fd892ce80784",
+        "events": 326
+      }
+    }
+  ],
+  "console_or_page_errors": []
+}

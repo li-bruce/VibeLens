@@ -1,21 +1,28 @@
-/** Exact native graph identities selected for this demonstration's local views. */
-export function focusIds({ versions = true, effects = true, states = false } = {}) {
-  const ids = ["publish", "review-policy", "field:review-policy:out:verdict"];
-  if (versions)
-    ids.push("field:review-policy:in:reviewed_version", "field:review-policy:in:current_version");
-  if (effects)
-    ids.push(
-      "choose-version",
-      "field:choose-version:out:selected",
-      "version-selection",
-      "save-exhibition",
-      "db:gallery:table%3Aexhibition",
-    );
-  if (states) ids.push("state.pending", "state.displayed");
-  return new Set(ids);
+/** Select stable identities from the exported story, never from display labels. */
+export function focusIds({ inputs = true, effects = true, states = false } = {}, story) {
+  return new Set([
+    ...story.focus.core,
+    ...(inputs ? story.focus.inputs : []),
+    ...(effects ? story.focus.effects : []),
+    ...(states ? story.states : []),
+  ]);
 }
 
-export const focusTypes = ["state", "decision", "data", "query", "transform", "dataset"];
+export const focusTypes = [
+  "business",
+  "state",
+  "decision",
+  "data",
+  "function",
+  "query",
+  "transform",
+  "dataset",
+  "code-file",
+  "code-class",
+  "code-function",
+  "code-parameter",
+  "code-endpoint",
+];
 export const focusRelations = [
   "call",
   "flow",
@@ -25,5 +32,9 @@ export const focusRelations = [
   "reads",
   "writes",
   "transforms",
-  "maps",
+  "code-maps",
+  "code-calls",
+  "code-parameter",
+  "code-defines",
+  "code-handles",
 ];

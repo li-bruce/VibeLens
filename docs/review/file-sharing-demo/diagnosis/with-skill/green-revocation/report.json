@@ -1,0 +1,218 @@
+{
+  "valid": true,
+  "headless": true,
+  "browser": "156.0.8078.47",
+  "build_id_before": "9a924db0cb5da491cab831248789b396dc6335178c53a649f70fed36bd2847e7",
+  "build_id_after": "9a924db0cb5da491cab831248789b396dc6335178c53a649f70fed36bd2847e7",
+  "steps": [
+    {
+      "order": 1,
+      "name": "recording_started",
+      "time_unix": 1793237929.1616974,
+      "details": {
+        "build_id": "9a924db0cb5da491cab831248789b396dc6335178c53a649f70fed36bd2847e7"
+      }
+    },
+    {
+      "order": 2,
+      "name": "signed_in",
+      "time_unix": 1793237929.5688279,
+      "details": {
+        "user": "linzhou"
+      }
+    },
+    {
+      "order": 3,
+      "name": "uploaded_and_shared",
+      "time_unix": 1793237930.0569186,
+      "details": {
+        "file_id": "a0c270d76fff44c2b6668a54d0689cae",
+        "recipient": "xuning"
+      }
+    },
+    {
+      "order": 4,
+      "name": "signed_in",
+      "time_unix": 1793237930.4580128,
+      "details": {
+        "user": "xuning"
+      }
+    },
+    {
+      "order": 5,
+      "name": "recipient_downloaded_before_revoke",
+      "time_unix": 1793237931.0039277,
+      "details": null
+    },
+    {
+      "order": 6,
+      "name": "signed_in",
+      "time_unix": 1793237931.5867207,
+      "details": {
+        "user": "zhoulan"
+      }
+    },
+    {
+      "order": 7,
+      "name": "recipient_and_outsider_revoke_rejected",
+      "time_unix": 1793237931.6931834,
+      "details": {
+        "statuses": [
+          403,
+          403
+        ]
+      }
+    },
+    {
+      "order": 8,
+      "name": "owner_revoked_selected_recipient",
+      "time_unix": 1793237932.0984693,
+      "details": {
+        "before": {
+          "owner_id": "linzhou",
+          "filename": "revocation-note-1793237929569468800.txt",
+          "size": 46,
+          "sha256": "2ae3b30d48c549700f7a54f2341a344085ed56832615b27358f746e54e3e3f3f",
+          "state": "shared",
+          "revision": 2,
+          "recipients": [
+            "xuning"
+          ]
+        },
+        "after": {
+          "owner_id": "linzhou",
+          "filename": "revocation-note-1793237929569468800.txt",
+          "size": 46,
+          "sha256": "2ae3b30d48c549700f7a54f2341a344085ed56832615b27358f746e54e3e3f3f",
+          "state": "private",
+          "revision": 3,
+          "recipients": []
+        }
+      }
+    },
+    {
+      "order": 9,
+      "name": "clicked_same_stale_link_and_received_403",
+      "time_unix": 1793237932.3816326,
+      "details": {
+        "status": 403,
+        "old_dom_sha256": "1b4aaa2a6a808dc66b46e987c3936f0d5ed3d232cb3f7d75200498cd410e3286"
+      }
+    },
+    {
+      "order": 10,
+      "name": "owner_downloaded_identical_bytes_after_revoke",
+      "time_unix": 1793237932.6890733,
+      "details": {
+        "sha256": "2ae3b30d48c549700f7a54f2341a344085ed56832615b27358f746e54e3e3f3f"
+      }
+    },
+    {
+      "order": 11,
+      "name": "actual_revocation_and_private_state_captured",
+      "time_unix": 1793237953.5400493,
+      "details": {
+        "states": [
+          "private",
+          "shared",
+          "private"
+        ]
+      }
+    },
+    {
+      "order": 12,
+      "name": "recording_stopped_and_replayed",
+      "time_unix": 1793237955.0532422,
+      "details": {
+        "recording_id": "7bba52f9f018443eaf4a44402c67577d",
+        "events": 551
+      }
+    }
+  ],
+  "checks": {
+    "obsolete_version_recordings_hidden": true,
+    "nonowner_revoke_denied_without_effects": true,
+    "recipient_page_remained_unchanged": true,
+    "stale_page_download_denied_after_commit": true,
+    "owner_download_and_file_content_preserved": true,
+    "revoked_file_absent_after_refresh": true,
+    "revocation_step_selected_in_replay": true,
+    "recording_replayed": true
+  },
+  "screenshots": [
+    {
+      "file": "review/diagnosis/green-revocation/01-owner-before-revoke.png",
+      "sha256": "01acd9e5d8006f96ac26c8f307e2b2f8a08c64747e7823f0137ed627a1566db5"
+    },
+    {
+      "file": "review/diagnosis/green-revocation/02-recipient-before-revoke.png",
+      "sha256": "97f52400a8d006ec52eb63144874684c93fd8a38dc398c11bfe11799a701c258"
+    },
+    {
+      "file": "review/diagnosis/green-revocation/03-owner-after-revoke.png",
+      "sha256": "ac60c4e1db9d6bdb292c0dcdbf51ec5131a73c15694d5ac180938f1d06255246"
+    },
+    {
+      "file": "review/diagnosis/green-revocation/04-unchanged-stale-page.png",
+      "sha256": "97f52400a8d006ec52eb63144874684c93fd8a38dc398c11bfe11799a701c258"
+    },
+    {
+      "file": "review/diagnosis/green-revocation/05-stale-download-denied.png",
+      "sha256": "f9baf35f39e1caf2b106610f3718d6be4840846348f89900a9e6118834a00a8b"
+    },
+    {
+      "file": "review/diagnosis/green-revocation/06-recipient-after-refresh.png",
+      "sha256": "b29c1efc670a2cb0627fb3d98fb1d3531ca16cc7ef4c089355c095de906be446"
+    },
+    {
+      "file": "review/diagnosis/green-revocation/07-revocation-replay.png",
+      "sha256": "1feb63ec838c6098fcfbd52cbb69f5ea996770603e963cc6ea907033a4de408f"
+    }
+  ],
+  "file_id": "a0c270d76fff44c2b6668a54d0689cae",
+  "before": {
+    "owner_id": "linzhou",
+    "filename": "revocation-note-1793237929569468800.txt",
+    "size": 46,
+    "sha256": "2ae3b30d48c549700f7a54f2341a344085ed56832615b27358f746e54e3e3f3f",
+    "state": "shared",
+    "revision": 2,
+    "recipients": [
+      "xuning"
+    ]
+  },
+  "after": {
+    "owner_id": "linzhou",
+    "filename": "revocation-note-1793237929569468800.txt",
+    "size": 46,
+    "sha256": "2ae3b30d48c549700f7a54f2341a344085ed56832615b27358f746e54e3e3f3f",
+    "state": "private",
+    "revision": 3,
+    "recipients": []
+  },
+  "recording": {
+    "id": "7bba52f9f018443eaf4a44402c67577d",
+    "label": "Owner revocation stale-page acceptance",
+    "status": "stopped",
+    "started_at": "2026-10-29T01:38:49.136343+00:00",
+    "ended_at": "2026-10-29T01:39:13.651666+00:00",
+    "build_id": "9a924db0cb5da491cab831248789b396dc6335178c53a649f70fed36bd2847e7",
+    "events": 551,
+    "commands": 0,
+    "gaps": [],
+    "capture": {
+      "mode": "all",
+      "nodes": null,
+      "roots": [],
+      "boundary_nodes": []
+    },
+    "capture_filtered": 0,
+    "graph_version": [
+      "9a924db0cb5da491cab831248789b396dc6335178c53a649f70fed36bd2847e7",
+      "a2a381511984ab6133b3ae15a78c63edce718a4d141aa57720bc80443742b6b1"
+    ]
+  },
+  "page_errors": [],
+  "application": "http://127.0.0.1:8852",
+  "graph": "http://127.0.0.1:8853"
+}

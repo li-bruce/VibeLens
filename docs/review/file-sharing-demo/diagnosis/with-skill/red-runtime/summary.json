@@ -1,0 +1,369 @@
+{
+  "controlled_fault": true,
+  "build_id": "ace05688e237a670238d3a990e0fa0f8a69220f0f35c0840580661995c06d647",
+  "file_id": "2fdc773a96b3447692a65884d26753fa",
+  "before": {
+    "owner_id": "linzhou",
+    "filename": "controlled-diagnosis.txt",
+    "state": "shared",
+    "revision": 2,
+    "sha256": "3f1cb81c9a038d07fa71abfd3a0aeec398ff7eec4e6b683e8bc7ee2ebe0c324d",
+    "journal": [
+      {
+        "seq": 1,
+        "event": "upload",
+        "before": "empty",
+        "after": "private",
+        "guards": {
+          "operation_allowed": true
+        }
+      },
+      {
+        "seq": 2,
+        "event": "share",
+        "before": "private",
+        "after": "shared",
+        "guards": {
+          "operation_allowed": true
+        }
+      }
+    ],
+    "grants": [
+      [
+        "2fdc773a96b3447692a65884d26753fa",
+        "xuning"
+      ]
+    ]
+  },
+  "after": {
+    "owner_id": "linzhou",
+    "filename": "controlled-diagnosis.txt",
+    "state": "shared",
+    "revision": 3,
+    "sha256": "3f1cb81c9a038d07fa71abfd3a0aeec398ff7eec4e6b683e8bc7ee2ebe0c324d",
+    "journal": [
+      {
+        "seq": 1,
+        "event": "upload",
+        "before": "empty",
+        "after": "private",
+        "guards": {
+          "operation_allowed": true
+        }
+      },
+      {
+        "seq": 2,
+        "event": "share",
+        "before": "private",
+        "after": "shared",
+        "guards": {
+          "operation_allowed": true
+        }
+      },
+      {
+        "seq": 3,
+        "event": "revoke",
+        "before": "shared",
+        "after": "shared",
+        "guards": {
+          "operation_allowed": true,
+          "has_recipients": true
+        }
+      }
+    ],
+    "grants": [
+      [
+        "2fdc773a96b3447692a65884d26753fa",
+        "xuning"
+      ]
+    ]
+  },
+  "http": {
+    "before_download": 200,
+    "revoke": 302,
+    "success_notice_shown": true,
+    "stale_download_after_revoke": 200,
+    "owner_download_after_revoke": 200,
+    "stale_bytes_match_prior_download": true
+  },
+  "observer_errors": {
+    "adapter": 0,
+    "transport": 0,
+    "dropped": 0,
+    "data": 0
+  },
+  "relevant_runtime_events": [
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:53",
+      "node": "policy:read_allowed",
+      "phase": "decision",
+      "entity": "2fdc773a96b3447692a65884d26753fa",
+      "inputs": {
+        "bo_check": "16f1303d31214a50b851995ec87b75b9",
+        "bo_basis": "2fdc773a96b3447692a65884d26753fa:2:1ee10ad758a64b8fa5d384003128b724"
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:55",
+      "node": "download",
+      "phase": "return",
+      "entity": "2fdc773a96b3447692a65884d26753fa",
+      "inputs": {
+        "actor": "xuning",
+        "file_id": "2fdc773a96b3447692a65884d26753fa"
+      },
+      "outputs": {
+        "size": 30,
+        "sha256": "3f1cb81c9a038d07fa71abfd3a0aeec398ff7eec4e6b683e8bc7ee2ebe0c324d"
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:70",
+      "node": "db_delete_share",
+      "phase": "enter",
+      "entity": "application",
+      "inputs": {
+        "operation": "write",
+        "statement": "DELETE FROM shares WHERE shares.file_id = :file_id_1 AND shares.recipient_id = :recipient_id_1",
+        "parameters": {
+          "file_id": "2fdc773a96b3447692a65884d26753fa",
+          "recipient_id": "xuning"
+        }
+      },
+      "outputs": {
+        "status": "started",
+        "duration_ms": 0.005,
+        "transaction_id": "4f5547de80bf4b1ca702b1171e3e8933",
+        "targets": [
+          "table:shares"
+        ],
+        "unknown_targets": [],
+        "target_source": "parsed_sql",
+        "target_access": [
+          {
+            "target": "table:shares",
+            "action": "write"
+          }
+        ]
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:71",
+      "node": "db_delete_share",
+      "phase": "return",
+      "entity": "application",
+      "inputs": {
+        "operation": "write",
+        "statement": "DELETE FROM shares WHERE shares.file_id = :file_id_1 AND shares.recipient_id = :recipient_id_1",
+        "parameters": {
+          "file_id": "2fdc773a96b3447692a65884d26753fa",
+          "recipient_id": "xuning"
+        }
+      },
+      "outputs": {
+        "status": "returned",
+        "duration_ms": 1.107,
+        "rows": 0,
+        "rows_known": true,
+        "result": {
+          "row_count": 0
+        },
+        "transaction_id": "4f5547de80bf4b1ca702b1171e3e8933",
+        "targets": [
+          "table:shares"
+        ],
+        "unknown_targets": [],
+        "target_source": "parsed_sql",
+        "target_access": [
+          {
+            "target": "table:shares",
+            "action": "write"
+          }
+        ]
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:74",
+      "node": "db_revoke_state",
+      "phase": "enter",
+      "entity": "application",
+      "inputs": {
+        "operation": "write",
+        "statement": "UPDATE files SET state = :state, revision = :revision, journal = :journal WHERE files.id = :id_1",
+        "parameters": {
+          "file_id": "2fdc773a96b3447692a65884d26753fa"
+        }
+      },
+      "outputs": {
+        "status": "started",
+        "duration_ms": 0.002,
+        "transaction_id": "4f5547de80bf4b1ca702b1171e3e8933",
+        "targets": [
+          "table:files"
+        ],
+        "unknown_targets": [],
+        "target_source": "parsed_sql",
+        "target_access": [
+          {
+            "target": "table:files",
+            "action": "write"
+          }
+        ]
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:75",
+      "node": "db_revoke_state",
+      "phase": "return",
+      "entity": "application",
+      "inputs": {
+        "operation": "write",
+        "statement": "UPDATE files SET state = :state, revision = :revision, journal = :journal WHERE files.id = :id_1",
+        "parameters": {
+          "file_id": "2fdc773a96b3447692a65884d26753fa"
+        }
+      },
+      "outputs": {
+        "status": "returned",
+        "duration_ms": 1.832,
+        "rows": 1,
+        "rows_known": true,
+        "result": {
+          "row_count": 1
+        },
+        "transaction_id": "4f5547de80bf4b1ca702b1171e3e8933",
+        "targets": [
+          "table:files"
+        ],
+        "unknown_targets": [],
+        "target_source": "parsed_sql",
+        "target_access": [
+          {
+            "target": "table:files",
+            "action": "write"
+          }
+        ]
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:77",
+      "node": "revoke",
+      "phase": "commit",
+      "entity": "2fdc773a96b3447692a65884d26753fa",
+      "inputs": {
+        "actor": "linzhou",
+        "file_id": "2fdc773a96b3447692a65884d26753fa",
+        "recipient_id": "xuning"
+      },
+      "outputs": {
+        "state": "shared",
+        "revision": 3,
+        "grant_count": 1,
+        "removed": false
+      },
+      "revision": 3
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:96",
+      "node": "policy:read_allowed",
+      "phase": "decision",
+      "entity": "2fdc773a96b3447692a65884d26753fa",
+      "inputs": {
+        "bo_check": "9658df9dc2a043b3bc3a21248b3ba6bf",
+        "bo_basis": "2fdc773a96b3447692a65884d26753fa:3:1134f75863a844d8a8b333fbf7f00dbf"
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:121",
+      "node": "policy:read_allowed",
+      "phase": "decision",
+      "entity": "2fdc773a96b3447692a65884d26753fa",
+      "inputs": {
+        "bo_check": "304a0b74b8614157ab935c4b486d6c9e",
+        "bo_basis": "2fdc773a96b3447692a65884d26753fa:3:f0007093550f498999332671e32d0a1d"
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:123",
+      "node": "download",
+      "phase": "return",
+      "entity": "2fdc773a96b3447692a65884d26753fa",
+      "inputs": {
+        "actor": "xuning",
+        "file_id": "2fdc773a96b3447692a65884d26753fa"
+      },
+      "outputs": {
+        "size": 30,
+        "sha256": "3f1cb81c9a038d07fa71abfd3a0aeec398ff7eec4e6b683e8bc7ee2ebe0c324d"
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:136",
+      "node": "policy:read_allowed",
+      "phase": "decision",
+      "entity": "2fdc773a96b3447692a65884d26753fa",
+      "inputs": {
+        "bo_check": "cb3472d0e6e548f1afe0903ab22cda91",
+        "bo_basis": "2fdc773a96b3447692a65884d26753fa:3:f919318f71e94905b4d63c5ef6d5dbae"
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "revision": null
+    },
+    {
+      "id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:138",
+      "node": "download",
+      "phase": "return",
+      "entity": "2fdc773a96b3447692a65884d26753fa",
+      "inputs": {
+        "actor": "linzhou",
+        "file_id": "2fdc773a96b3447692a65884d26753fa"
+      },
+      "outputs": {
+        "size": 30,
+        "sha256": "3f1cb81c9a038d07fa71abfd3a0aeec398ff7eec4e6b683e8bc7ee2ebe0c324d"
+      },
+      "revision": null
+    }
+  ],
+  "actual_native_states": [
+    "private",
+    "shared",
+    "shared"
+  ],
+  "actual_native_guards": [
+    {
+      "operation_allowed": true
+    },
+    {
+      "operation_allowed": true
+    },
+    {
+      "operation_allowed": true,
+      "has_recipients": true
+    }
+  ]
+}

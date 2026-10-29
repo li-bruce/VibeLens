@@ -1,0 +1,137 @@
+{
+  "provenance": "actual_agent_headless_browser_operations_not_human_acceptance",
+  "stages": [
+    {
+      "stage": "01-upload",
+      "screenshot": "review\\browser-v2-native-final\\01-upload.png",
+      "event_id": "819b4a7900074a518dc1d8a7aeeef1e2:a8e6d4b6a1564b68915d9de1b0715b89:42",
+      "node": "upload",
+      "inputs": {
+        "actor_id": "lin",
+        "filename": "撤销共享验证.txt",
+        "size": 49
+      },
+      "outputs": {
+        "file_id": "54e6f8651ba84fc78d61909df20176f6",
+        "owner_id": "lin",
+        "state": "private",
+        "revision": 1
+      },
+      "build_id": "fe7fc960f0f82829dd809f2658947413c90b21847e6224962f07276b063d5b91"
+    },
+    {
+      "stage": "02-shared",
+      "screenshot": "review\\browser-v2-native-final\\02-shared.png",
+      "event_id": "819b4a7900074a518dc1d8a7aeeef1e2:a8e6d4b6a1564b68915d9de1b0715b89:111",
+      "node": "share",
+      "inputs": {
+        "actor_id": "lin",
+        "file_id": "54e6f8651ba84fc78d61909df20176f6",
+        "recipient_id": "xu"
+      },
+      "outputs": {
+        "state": "shared",
+        "revision": 2,
+        "active": true,
+        "before_state": "private",
+        "event": "share",
+        "guards": {
+          "is_owner": true
+        }
+      },
+      "build_id": "fe7fc960f0f82829dd809f2658947413c90b21847e6224962f07276b063d5b91"
+    },
+    {
+      "stage": "03-recipient-details",
+      "screenshot": "review\\browser-v2-native-final\\03-recipient-details.png",
+      "event_id": "819b4a7900074a518dc1d8a7aeeef1e2:a8e6d4b6a1564b68915d9de1b0715b89:191",
+      "node": "view",
+      "inputs": {
+        "actor_id": "xu",
+        "file_id": "54e6f8651ba84fc78d61909df20176f6"
+      },
+      "outputs": {
+        "name": "撤销共享验证.txt",
+        "size": 49,
+        "owner_id": "lin"
+      },
+      "build_id": "fe7fc960f0f82829dd809f2658947413c90b21847e6224962f07276b063d5b91"
+    },
+    {
+      "stage": "04-allowed-before",
+      "screenshot": "review\\browser-v2-native-final\\04-allowed-before.png",
+      "event_id": "819b4a7900074a518dc1d8a7aeeef1e2:a8e6d4b6a1564b68915d9de1b0715b89:206",
+      "node": "policy-check",
+      "inputs": {
+        "operation": "download",
+        "actor_id": "xu",
+        "owner_id": "lin",
+        "file_id": "54e6f8651ba84fc78d61909df20176f6",
+        "bo_check": "f0c1078bbcb44602bf7c531f49782465",
+        "fact_revision": "54e6f8651ba84fc78d61909df20176f6:2:209893cfe3304c42855fba8bb649d2a6"
+      },
+      "outputs": {
+        "allowed": true,
+        "decision": "allow"
+      },
+      "build_id": "fe7fc960f0f82829dd809f2658947413c90b21847e6224962f07276b063d5b91"
+    },
+    {
+      "stage": "06-owner-revoked",
+      "screenshot": "review\\browser-v2-native-final\\06-owner-revoked.png",
+      "event_id": "819b4a7900074a518dc1d8a7aeeef1e2:a8e6d4b6a1564b68915d9de1b0715b89:241",
+      "node": "revoke",
+      "inputs": {
+        "actor_id": "lin",
+        "file_id": "54e6f8651ba84fc78d61909df20176f6",
+        "recipient_id": "xu"
+      },
+      "outputs": {
+        "state": "private",
+        "revision": 3,
+        "active": false,
+        "before_state": "shared",
+        "event": "revoke",
+        "guards": {
+          "is_owner": true,
+          "has_remaining": false
+        }
+      },
+      "build_id": "fe7fc960f0f82829dd809f2658947413c90b21847e6224962f07276b063d5b91"
+    },
+    {
+      "stage": "07-stale-download-denied",
+      "screenshot": "review\\browser-v2-native-final\\07-stale-download-denied.png",
+      "event_id": "819b4a7900074a518dc1d8a7aeeef1e2:a8e6d4b6a1564b68915d9de1b0715b89:290",
+      "node": "policy-check",
+      "inputs": {
+        "operation": "download",
+        "actor_id": "xu",
+        "owner_id": "lin",
+        "file_id": "54e6f8651ba84fc78d61909df20176f6",
+        "bo_check": "b6d2eb9055b34c43b1609edce00185ff",
+        "fact_revision": "54e6f8651ba84fc78d61909df20176f6:3:a84234005bd046ba8cf1457c5b0aa93e"
+      },
+      "outputs": {
+        "allowed": false,
+        "decision": "deny"
+      },
+      "build_id": "fe7fc960f0f82829dd809f2658947413c90b21847e6224962f07276b063d5b91"
+    },
+    {
+      "stage": "08-owner-still-downloads",
+      "screenshot": "review\\browser-v2-native-final\\08-owner-still-downloads.png",
+      "event_id": "819b4a7900074a518dc1d8a7aeeef1e2:a8e6d4b6a1564b68915d9de1b0715b89:304",
+      "node": "download",
+      "inputs": {
+        "actor_id": "lin",
+        "file_id": "54e6f8651ba84fc78d61909df20176f6"
+      },
+      "outputs": {
+        "size": 49,
+        "sha256": "77756b6e064ef6043741895cba81d4f65bce209545e54675bb0f585503a9d710"
+      },
+      "build_id": "fe7fc960f0f82829dd809f2658947413c90b21847e6224962f07276b063d5b91"
+    }
+  ]
+}

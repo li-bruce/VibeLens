@@ -1,5 +1,5 @@
 /** Canned chat examples drive checked plans through the native viewer's controller. */
-import { t, locale, onLanguageChange } from "./site-ui.mjs?rev=clarity-1";
+import { t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
 
 export function mountConversationTour() {
   const section = document.getElementById("conversation-controls");
@@ -32,7 +32,7 @@ export function mountConversationTour() {
       lang: locale(),
       controls: "1",
       vl_session: "c".repeat(32),
-      rev: "clarity-1",
+      rev: "files-1",
     });
     frame.src = url.href;
     result.textContent = t("controls.loading");
@@ -90,7 +90,10 @@ export function mountConversationTour() {
     (entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting && !loaded) load();
-        send({ type: "vibelens-controls-visibility", visible: entry.isIntersecting });
+        send({
+          type: "vibelens-controls-visibility",
+          visible: entry.isIntersecting,
+        });
       }
     },
     { rootMargin: "180px 0px" },

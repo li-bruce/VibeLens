@@ -1,0 +1,49 @@
+{
+  "controlled_fault": true,
+  "evidence_order": [
+    "Independent original tests reproduced five failures",
+    "Native state/rule/data events and independent SQLite facts narrowed the failure to persistence",
+    "Source inspection found actor used in the recipient predicate",
+    "Independent DBAPI execution listener confirmed actual linzhou binding"
+  ],
+  "graph_contributions": [
+    {
+      "type": "state_network",
+      "fact": "private -> shared -> shared; has_recipients=true after revoke",
+      "meaning": "The machine accurately reflects the surviving grant; forcing private would conceal the persistence error.",
+      "source": "red-runtime/observations.json"
+    },
+    {
+      "type": "rule_network",
+      "fact": "revoke uses owned_session; post-revoke xuning has is_owner=false and received_share=true, so read_allowed=true",
+      "meaning": "The rule network explains the actual permission result from live facts; it does not prove that the intended relation was removed.",
+      "source": "red-runtime/observations.json"
+    },
+    {
+      "type": "data_runtime",
+      "event_id": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:71",
+      "fact": "db_delete_share returned rows=0; revoke committed removed=false, grant_count=1",
+      "meaning": "This localizes the failure to the selected share deletion and its downstream state, independently corroborated by SQLite.",
+      "source": "red-runtime/summary.json"
+    }
+  ],
+  "limits": [
+    {
+      "type": "captured_parameter_boundary",
+      "fact": "The graph records requested recipient_id=xuning. That field is the explicit application-selected request parameter, not the DBAPI compiled bind value.",
+      "meaning": "The graph alone did not expose the exact actor-versus-recipient expression."
+    },
+    {
+      "type": "source_and_driver_confirmation",
+      "fact": "app/service.py line 141 compares shares.recipient_id to actor; the DBAPI listener sees recipient_id_1=linzhou.",
+      "meaning": "Exact root cause required source inspection and independent driver binding evidence.",
+      "source": "sql-binding-before.json"
+    }
+  ],
+  "planned_repair": "Compare the share recipient column with recipient_id; retain owner authorization, file scope, transaction, actual remaining-grant state logic, per-request download checks, all independent expectations, and all observer code.",
+  "red_event_ids": {
+    "revoke": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:77",
+    "delete": "c7cfd965ea164d03986b6d991d80466b:f566fe7e8dd3495cb0d4914c0e01f4d7:71"
+  },
+  "original_project_access": "Only the explicitly permitted dependency executable is used; all inspected business source/data/evidence belongs to this copy."
+}

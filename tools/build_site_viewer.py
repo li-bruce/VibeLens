@@ -5,6 +5,7 @@ and the static-case entrypoint; renderer, layout and interaction code is unchang
 """
 
 import hashlib
+import argparse
 import json
 from pathlib import Path
 import shutil
@@ -15,10 +16,10 @@ SOURCE = ROOT / "skills/vibelens/assets/stategraph-viewer"
 TARGET = ROOT / "docs/site/viewer"
 
 
-def build():
+def build(artifact_path=None):
     """Copy canonical files and retain their hashes for reproducibility checks."""
     TARGET.mkdir(parents=True, exist_ok=True)
-    build_controls()
+    build_controls(artifact_path)
     hashes = {}
     for source in SOURCE.iterdir():
         if not source.is_file():
@@ -28,11 +29,17 @@ def build():
         hashes[source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
     html = (SOURCE / "index.html").read_text(encoding="utf-8")
     html = html.replace('href="/', 'href="./').replace('src="/', 'src="./')
-    html = html.replace('src="./viewer.js"', 'src="../case-viewer.mjs?rev=clarity-1"')
+    html = html.replace('src="./viewer.js"', 'src="../case-viewer.mjs?rev=files-1"')
     (TARGET / "index.html").write_text(html, encoding="utf-8")
-    (TARGET / "asset-proof.json").write_text(json.dumps(hashes, indent=2) + "\n", encoding="utf-8")
+    (TARGET / "asset-proof.json").write_text(
+        json.dumps(hashes, indent=2) + "\n", encoding="utf-8"
+    )
     print(f"Built Pages case viewer from {len(hashes)} canonical files")
 
 
 if __name__ == "__main__":
-    build()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--artifact", type=Path, help="Explicit recorded case for a local export check"
+    )
+    build(parser.parse_args().artifact)

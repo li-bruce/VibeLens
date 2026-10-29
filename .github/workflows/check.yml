@@ -38,6 +38,7 @@ jobs:
         with:
           node-version: '22'
       - run: python -m pip install -r examples/delivery/requirements.txt
+      - run: python -m pip install -r examples/file-sharing/requirements.txt
       - run: python -m pip install -r skills/vibelens/requirements.txt -r skills/vibelens/requirements-database.txt
       - run: python tools/setup_adapters.py
       - run: npm ci --prefix examples/multilanguage

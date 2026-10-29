@@ -1,0 +1,132 @@
+{
+  "valid": true,
+  "controlled_fault": true,
+  "finished_at": "2026-10-29T01:42:24.235937+00:00",
+  "candidate_id": "514b0b030e8f888f6b3ef8b8bea1c0890c29a03fa3dd6529ba9ee2c40748fc85",
+  "build_id": "9a924db0cb5da491cab831248789b396dc6335178c53a649f70fed36bd2847e7",
+  "verification_hash": "d3496f779dd635bc9a424ddebc01455dd514f4287c73bec6208ac2c7017342d2",
+  "root_cause": "The DELETE predicate compared recipient_id to actor instead of the selected recipient_id.",
+  "business_source_fix": "app/service.py:141",
+  "original_tests_unchanged": true,
+  "original_expectations_unchanged": true,
+  "observers_unchanged": true,
+  "red_reports": {
+    "mapping": "failed",
+    "state_rules": "not_run",
+    "project_checks": "failed",
+    "business": "not_run"
+  },
+  "green_reports": {
+    "mapping": {
+      "status": "passed",
+      "errors": [],
+      "database": {
+        "configured": true,
+        "valid": true,
+        "errors": [],
+        "changed": false,
+        "source_id": "de95d7d29d58f5cf603c254ec7fabc506ea12384b5af229fd5195601451cd714",
+        "catalog_id": "8d6f241efdfbdbbb148726979595530af150f129545ba15edded7998b141334d",
+        "stores": [
+          {
+            "id": "sharing",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "code_structure": {
+        "enabled": false,
+        "valid": true,
+        "status": "not_enabled",
+        "errors": []
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+      "policy": {
+        "valid": true,
+        "errors": []
+      },
+      "stategraph_export": "checked",
+      "witnesses": 27,
+      "projection_checks": 69,
+      "implementation": {
+        "errors": [],
+        "events_checked": 248,
+        "features": 10
+      }
+    },
+    "state_rules": {
+      "status": "passed",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "passed",
+      "errors": [],
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "passed",
+      "errors": [],
+      "assertions": {
+        "required": 84,
+        "executed": 84
+      },
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    }
+  },
+  "application_tests": 16,
+  "business_assertions": 84,
+  "evidence_checks": 10,
+  "browser": {
+    "red_stale_download_status": 200,
+    "green_stale_download_status": 403,
+    "owner_download_preserved": true,
+    "other_recipient_preserved": true,
+    "reshare_restores_access": true,
+    "screenshots": 21
+  },
+  "recordings": [
+    {
+      "phase": "red-browser",
+      "id": "75e905967d1d4411b034fd892ce80784",
+      "events": 326,
+      "gaps": [],
+      "sha256": "3956f93ce780debf097e6c978c0ff0eaf02b5969bc14dcfec226ce2227003d75",
+      "file": "review/diagnosis/red-browser/recording.json"
+    },
+    {
+      "phase": "green-regression",
+      "id": "6c57b1947f5d41bb9a1f08180bbf4bf1",
+      "events": 342,
+      "gaps": [],
+      "sha256": "2823e5a84922c358173e0a71558609060a2eed75ac4b12ebe3f7fe019ea692b0",
+      "file": "review/diagnosis/green-regression/recording.json"
+    },
+    {
+      "phase": "green-revocation",
+      "id": "7bba52f9f018443eaf4a44402c67577d",
+      "events": 551,
+      "gaps": [],
+      "sha256": "c93bb75dd5906284b868ed6305c3c904a49ef6336dc00282e34ffabb500f21a0",
+      "file": "review/diagnosis/green-revocation/recording.json"
+    },
+    {
+      "phase": "green-other-recipient",
+      "id": "2d1bbcb92ce6478092286ef4cd89a422",
+      "events": 957,
+      "gaps": [],
+      "sha256": "64fd408c363cd7dc53423890d181724f6498767eeee9c97e9dcf9697bfca0aec",
+      "file": "review/diagnosis/green-other-recipient/recording.json"
+    }
+  ],
+  "graph_limit": "Recorded requested recipient_id is not the actual SQL driver bind; exact root cause required source and independent DBAPI binding evidence.",
+  "protected_files_unchanged": 206,
+  "application": "http://127.0.0.1:8852/",
+  "graph": "http://127.0.0.1:8853/graph",
+  "framework_status": "User-selected unreleased native candidate; no compatibility patch and no upstream release claim.",
+  "current_failures": [],
+  "isolation": "Only this copy's business source/data/services/artifacts were operated on. Original dependency executable is used by permission; no original investigation artifact, other trial/chat, or maintenance source was used for diagnosis.",
+  "stopped_after_requested_diagnosis": true
+}

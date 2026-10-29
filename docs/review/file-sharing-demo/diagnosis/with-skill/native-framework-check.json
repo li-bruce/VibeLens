@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "-c",
+    "from pathlib import Path\nimport sys,json\nroot=Path.cwd();sys.path.insert(0,str(root/'observer_runtime'))\nfrom bo_observer.protocol import validate_project,schema_check\nfrom bo_observer.policy.projection import project\ndoc=json.loads((root/'bo_stategraph/project.json').read_text(encoding='utf-8'))\nvalidate_project(doc)\nassert project(doc['model'])==doc['model']\nassert not hasattr(schema_check,'bo_maps_compat')\nassert not any('bo_schema_compat' in key for key in sys.modules)\nprint(json.dumps({'valid':True,'native_protocol':True,'projection_idempotent':True,'schema_or_projection_shim_loaded':False}))\n"
+  ],
+  "returncode": 0,
+  "duration_seconds": 0.36621759994886816,
+  "stdout": "{\"valid\": true, \"native_protocol\": true, \"projection_idempotent\": true, \"schema_or_projection_shim_loaded\": false}\n",
+  "stderr": "Failed to find real location of C:\\Users\\Lvi_P\\miniforge3\\python.exe\n"
+}

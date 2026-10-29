@@ -5,17 +5,21 @@ import { createRequire } from "node:module";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 const { chromium } = createRequire(import.meta.url)("playwright");
-const base = "http://127.0.0.1:8891";
+const artifact = JSON.parse(await readFile("docs/site/case-data/v1.json", "utf8"));
+const anchor = artifact.view.model.nodes.find((node) => node.id === artifact.story.inspection_node);
+const base = process.env.BO_SITE_URL || "http://127.0.0.1:8891";
 const output = "docs/site/images";
 await mkdir(output, { recursive: true });
 const python =
   process.env.BO_PYTHON ||
   (process.platform === "win32" ? ".venv/Scripts/python.exe" : ".venv/bin/python");
-const server = spawn(
-  python,
-  ["-B", "-m", "http.server", "8891", "--bind", "127.0.0.1", "--directory", "docs/site"],
-  { windowsHide: true, stdio: "ignore" },
-);
+const server = process.env.BO_SITE_URL
+  ? null
+  : spawn(
+      python,
+      ["-B", "-m", "http.server", "8891", "--bind", "127.0.0.1", "--directory", "docs/site"],
+      { windowsHide: true, stdio: "ignore" },
+    );
 let browser;
 const captures = [];
 try {
@@ -59,20 +63,24 @@ try {
           scene: "drill",
           mode: "2d",
           compact: true,
-          options: { versions: true, effects: false, states: false },
+          options: { inputs: true, effects: false, states: false },
         },
         location.origin,
       );
     });
     await page.waitForFunction(() => document.body.dataset.captureReady === "drill");
-    await page.waitForFunction(() =>
-      document.querySelector("#source-code mark")?.textContent.includes("approval_policy"),
+    await page.waitForFunction(
+      (symbol) =>
+        [...document.querySelectorAll("#source-code mark")].some((mark) =>
+          mark.textContent.includes(symbol),
+        ),
+      anchor.source.symbol.split(".").at(-1),
     );
     await page.waitForTimeout(300);
     const two = `${output}/source-${locale}.png`;
     await page.screenshot({ path: two });
     const source = await page.locator("#source-code").textContent();
-    assert.ok(source.includes('return "allowed" if actor == "reviewer"'));
+    assert.ok(source.includes(artifact.story.source_excerpt));
     await page.evaluate(() => {
       document.body.dataset.captureReady = "";
       postMessage(
@@ -81,7 +89,7 @@ try {
           scene: "watch",
           mode: "3d",
           compact: true,
-          options: { versions: true, effects: false, states: false },
+          options: { inputs: true, effects: true, states: true },
         },
         location.origin,
       );
@@ -96,6 +104,7 @@ try {
     await page.mouse.down();
     await page.mouse.move(655, 195, { steps: 18 });
     await page.mouse.up();
+    await page.mouse.move(5, 5);
     await page.waitForTimeout(500);
     const three = `${output}/layers-${locale}.png`;
     await page.screenshot({ path: three });
@@ -105,7 +114,7 @@ try {
       camera: graphDebug.spatial.camera,
       event: graphDebug.view.replay?.event?.id,
     }));
-    assert.ok(evidence.nodes.includes("review-policy"));
+    assert.ok(evidence.nodes.includes(artifact.story.inspection_node));
     assert.deepEqual(errors, []);
     captures.push({
       locale,
@@ -135,6 +144,6 @@ try {
   );
 } finally {
   await browser?.close();
-  server.kill();
+  server?.kill();
 }
 console.log("PASS: captured real bilingual source and 3D views");

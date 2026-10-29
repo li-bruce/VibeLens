@@ -1,0 +1,316 @@
+{
+  "version": 1,
+  "source_stage": "red-controlled-diagnosis",
+  "teaching_defect": true,
+  "recording": "recording.json",
+  "business_result": "business-result.json",
+  "story": {
+    "business_anchors": [
+      "login",
+      "upload",
+      "share",
+      "view",
+      "revoke",
+      "download"
+    ],
+    "states": [
+      "state_private",
+      "state_shared"
+    ],
+    "inspection_node": "revoke",
+    "inspection_event": "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:487",
+    "source_focus": "revoke",
+    "source_excerpt": "shares.c.recipient_id == actor",
+    "focus": {
+      "core": [
+        "revoke",
+        "db_delete_share"
+      ],
+      "inputs": [
+        "field:revoke:in:actor",
+        "field:revoke:in:recipient_id",
+        "field:db_delete_share:out:rows"
+      ],
+      "region_types": [],
+      "effects": [
+        "authorize",
+        "download",
+        "policy:read_allowed",
+        "db:sharing:table%3Ashares",
+        "http_revoke",
+        "code:symbol:a83c58a947a5bda0f66807fc"
+      ]
+    },
+    "playback_nodes": [
+      "share",
+      "revoke",
+      "download",
+      "policy:signed_in",
+      "policy:is_owner",
+      "policy:received_share",
+      "policy:owned_session",
+      "policy:file_access",
+      "policy:read_allowed"
+    ],
+    "actions": [
+      {
+        "id": "download-before",
+        "node": "download",
+        "phase": "return",
+        "event_ids": [
+          "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:465"
+        ],
+        "label": [
+          "Receive file",
+          "收到文件"
+        ]
+      },
+      {
+        "id": "revoke",
+        "node": "revoke",
+        "phase": "commit",
+        "event_ids": [
+          "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:487"
+        ],
+        "label": [
+          "Cancel sharing",
+          "取消共享"
+        ]
+      },
+      {
+        "id": "download-after",
+        "node": "download",
+        "phase": "return",
+        "event_ids": [
+          "c3de581868cf4382a56b8d003ad432fb:14935ee270c94f1487e8b45b3867e16e:550"
+        ],
+        "label": [
+          "Try download",
+          "再次下载"
+        ]
+      }
+    ],
+    "captions": {
+      "login": [
+        "Sign in",
+        "登录"
+      ],
+      "upload": [
+        "Upload file",
+        "上传文件"
+      ],
+      "share": [
+        "Share",
+        "共享文件"
+      ],
+      "view": [
+        "View details",
+        "查看信息"
+      ],
+      "download": [
+        "Download",
+        "下载文件"
+      ],
+      "revoke": [
+        "Cancel sharing",
+        "取消共享"
+      ],
+      "file": [
+        "File",
+        "文件"
+      ],
+      "owner": [
+        "Owner",
+        "所有者"
+      ],
+      "recipient": [
+        "Recipient",
+        "接收者"
+      ],
+      "authorize": [
+        "Check access",
+        "检查权限"
+      ],
+      "state_empty": [
+        "Not uploaded",
+        "尚未上传"
+      ],
+      "state_private": [
+        "Private",
+        "仅自己可见"
+      ],
+      "state_shared": [
+        "Shared",
+        "已共享"
+      ],
+      "db_delete_share": [
+        "Delete recipient grant",
+        "删除接收者权限"
+      ],
+      "db:sharing:table%3Ashares": [
+        "Recipient grants",
+        "接收者权限"
+      ],
+      "db:sharing:store": [
+        "File data",
+        "文件数据"
+      ],
+      "policy:network": [
+        "Access rules",
+        "访问规则"
+      ],
+      "field:revoke:in:actor": [
+        "Actor",
+        "操作者"
+      ],
+      "field:revoke:in:recipient_id": [
+        "Selected recipient",
+        "选中的接收者"
+      ],
+      "field:db_delete_share:out:result": [
+        "Write result",
+        "写入结果"
+      ],
+      "field:db_delete_share:out:result:row_count": [
+        "Deleted rows",
+        "删除行数"
+      ],
+      "field:db_delete_share:out:rows": [
+        "Deleted rows",
+        "删除行数"
+      ],
+      "policy:fact_actor": [
+        "Current user",
+        "当前用户"
+      ],
+      "policy:fact_owner": [
+        "File owner",
+        "文件所有者"
+      ],
+      "policy:fact_logged_in": [
+        "Session present",
+        "有登录状态"
+      ],
+      "policy:fact_is_recipient": [
+        "Has a share",
+        "拥有共享关系"
+      ],
+      "policy:signed_in": [
+        "Signed in",
+        "已登录"
+      ],
+      "policy:is_owner": [
+        "Is owner",
+        "是所有者"
+      ],
+      "policy:received_share": [
+        "Is recipient",
+        "是接收者"
+      ],
+      "policy:owned_session": [
+        "May manage sharing",
+        "可管理共享"
+      ],
+      "policy:file_access": [
+        "Owner or recipient",
+        "所有者或接收者"
+      ],
+      "policy:read_allowed": [
+        "May read",
+        "可查看与下载"
+      ],
+      "code:symbol:a83c58a947a5bda0f66807fc": [
+        "revoke(…)",
+        "revoke(…)"
+      ],
+      "http_revoke": [
+        "Cancellation API",
+        "取消共享接口"
+      ]
+    },
+    "control_anchors": {
+      "business": [
+        "upload",
+        "share",
+        "download"
+      ],
+      "details": [
+        "policy:read_allowed",
+        "authorize",
+        "download"
+      ]
+    },
+    "maintained_sources": [
+      "app/service.py",
+      "app/models.py",
+      "app/predicates.py",
+      "app/storage.py",
+      "app/web.py"
+    ],
+    "telemetry": [
+      {
+        "label": [
+          "Removed",
+          "已移除"
+        ],
+        "direction": "outputs",
+        "field": "removed"
+      },
+      {
+        "label": [
+          "Recipients left",
+          "剩余接收者"
+        ],
+        "direction": "outputs",
+        "field": "grant_count"
+      },
+      {
+        "label": [
+          "State",
+          "状态"
+        ],
+        "direction": "outputs",
+        "field": "state"
+      }
+    ]
+  },
+  "application_stages": [
+    "recipient_page",
+    "after_revoke",
+    "stale_download"
+  ],
+  "frame_captions": {
+    "login": [
+      "Owner signed in",
+      "所有者已登录"
+    ],
+    "upload": [
+      "Uploaded privately",
+      "文件已上传，仅自己可见"
+    ],
+    "assign_recipient": [
+      "Shared with Xu Ning",
+      "已共享给许宁"
+    ],
+    "recipient_page": [
+      "The recipient can download",
+      "接收者可以下载"
+    ],
+    "after_revoke": [
+      "Cancellation response",
+      "取消共享后的页面"
+    ],
+    "stale_page": [
+      "Recipient’s unchanged page",
+      "接收者未刷新的页面"
+    ],
+    "stale_download": [
+      "Recipient’s next download",
+      "接收者再次下载"
+    ],
+    "owner_download": [
+      "Owner keeps access",
+      "所有者仍可下载"
+    ]
+  }
+}

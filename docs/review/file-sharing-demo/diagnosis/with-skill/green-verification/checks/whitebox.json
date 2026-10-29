@@ -1,0 +1,112 @@
+{
+  "valid": true,
+  "errors": [],
+  "checks": [
+    {
+      "check": "owner-id",
+      "rule": "upload-owner",
+      "requirement": "R_UPLOAD",
+      "case": "workflow",
+      "node": "upload",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.upload"
+      },
+      "events": [
+        "33312c35c2bc49729fc457e6fd185bbc:0c94730b84484eaab8d5a7af0747fbb0:26"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "deny-nonowner-share",
+      "rule": "share-owner",
+      "requirement": "R_SHARE",
+      "case": "workflow",
+      "node": "authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.authorize"
+      },
+      "events": [
+        "33312c35c2bc49729fc457e6fd185bbc:0c94730b84484eaab8d5a7af0747fbb0:87",
+        "33312c35c2bc49729fc457e6fd185bbc:0c94730b84484eaab8d5a7af0747fbb0:102"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "download-size",
+      "rule": "download-content",
+      "requirement": "R_READ",
+      "case": "workflow",
+      "node": "download",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.download"
+      },
+      "events": [
+        "33312c35c2bc49729fc457e6fd185bbc:0c94730b84484eaab8d5a7af0747fbb0:175"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "owner-revoke-commit",
+      "rule": "revoke-effect",
+      "requirement": "R_REVOKE",
+      "case": "revocation",
+      "node": "revoke",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.revoke"
+      },
+      "events": [
+        "1970b2d47b6a42aea8b7d1190eba32bb:dc65288b6b60419e9284d29e78148ff5:166",
+        "1970b2d47b6a42aea8b7d1190eba32bb:dc65288b6b60419e9284d29e78148ff5:319"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "reject-nonowner-revoke",
+      "rule": "revoke-authority",
+      "requirement": "R_REVOKE",
+      "case": "revocation",
+      "node": "authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.authorize"
+      },
+      "events": [
+        "1970b2d47b6a42aea8b7d1190eba32bb:dc65288b6b60419e9284d29e78148ff5:86",
+        "1970b2d47b6a42aea8b7d1190eba32bb:dc65288b6b60419e9284d29e78148ff5:101",
+        "1970b2d47b6a42aea8b7d1190eba32bb:dc65288b6b60419e9284d29e78148ff5:111"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "other-recipient-remains-shared",
+      "rule": "revoke-effect",
+      "requirement": "R_REVOKE",
+      "case": "revocation",
+      "node": "revoke",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.revoke"
+      },
+      "events": [
+        "1970b2d47b6a42aea8b7d1190eba32bb:dc65288b6b60419e9284d29e78148ff5:361"
+      ],
+      "status": "passed",
+      "errors": []
+    }
+  ],
+  "coverage": {
+    "rules": 5,
+    "checks": 6,
+    "passed": 6
+  },
+  "scope": "Declared source bindings and observed values; missing evidence never passes."
+}

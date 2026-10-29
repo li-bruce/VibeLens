@@ -1,0 +1,278 @@
+{
+  "inputs": {
+    "actor_id": "string",
+    "logged_in": "boolean",
+    "owner_id": "string",
+    "received_share": "boolean",
+    "recipient_exists": "boolean"
+  },
+  "nodes": [
+    {
+      "id": "actor",
+      "label": "当前用户",
+      "name": "actor_id",
+      "op": "input",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "owner",
+      "label": "文件所有者",
+      "name": "owner_id",
+      "op": "input",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "logged_in",
+      "label": "本次请求有登录会话",
+      "name": "logged_in",
+      "op": "input",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "received_share",
+      "label": "该文件已共享给当前用户",
+      "name": "received_share",
+      "op": "input",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "recipient_exists",
+      "label": "所选接收者存在",
+      "name": "recipient_exists",
+      "op": "input",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "arguments": {
+        "value": "logged_in"
+      },
+      "id": "signed_in",
+      "label": "已登录",
+      "op": "predicate",
+      "predicate": "flag_enabled",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "arguments": {
+        "left": "actor",
+        "right": "owner"
+      },
+      "id": "is_owner",
+      "label": "当前用户是所有者",
+      "op": "predicate",
+      "predicate": "same_identity",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "arguments": {
+        "value": "received_share"
+      },
+      "id": "has_share",
+      "label": "当前用户是接收者",
+      "op": "predicate",
+      "predicate": "flag_enabled",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "arguments": {
+        "value": "recipient_exists"
+      },
+      "id": "known_recipient",
+      "label": "接收者是已有用户",
+      "op": "predicate",
+      "predicate": "flag_enabled",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "owner_or_recipient",
+      "inputs": [
+        "is_owner",
+        "has_share"
+      ],
+      "label": "所有者或接收者",
+      "op": "any",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "share_allowed",
+      "inputs": [
+        "signed_in",
+        "is_owner",
+        "known_recipient"
+      ],
+      "label": "已登录、是所有者且接收者存在",
+      "op": "all",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "access_allowed",
+      "inputs": [
+        "signed_in",
+        "owner_or_recipient"
+      ],
+      "label": "已登录且为所有者或接收者",
+      "op": "all",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "business_nodes": [
+        "upload"
+      ],
+      "cases": [
+        "upload_signed_in",
+        "upload_anonymous"
+      ],
+      "id": "upload",
+      "root": "signed_in",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "business_nodes": [
+        "share"
+      ],
+      "cases": [
+        "share_owner",
+        "share_recipient_denied",
+        "share_unrelated_denied",
+        "share_anonymous_denied"
+      ],
+      "id": "share",
+      "root": "share_allowed",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "business_nodes": [
+        "received_list"
+      ],
+      "cases": [
+        "view_owner",
+        "view_recipient",
+        "view_unrelated_denied",
+        "view_anonymous_denied"
+      ],
+      "id": "view",
+      "root": "access_allowed",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "business_nodes": [
+        "download"
+      ],
+      "cases": [
+        "download_owner",
+        "download_recipient",
+        "download_unrelated_denied",
+        "download_anonymous_denied"
+      ],
+      "id": "download",
+      "root": "access_allowed",
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "business_nodes": [
+        "revoke"
+      ],
+      "cases": [
+        "revoke_owner",
+        "revoke_nonowner_denied",
+        "revoke_anonymous_denied",
+        "revoke_idempotent",
+        "revoke_last_recipient",
+        "revoke_reshare",
+        "revoke_other_file_retained",
+        "revoke_unknown_recipient"
+      ],
+      "id": "revoke",
+      "root": "share_allowed",
+      "source_refs": [
+        "U4"
+      ]
+    }
+  ],
+  "predicates": [
+    {
+      "id": "same_identity",
+      "implementation_node": "predicate.same_identity",
+      "parameters": {
+        "left": "string",
+        "right": "string"
+      },
+      "source": {
+        "path": "app/predicates.py",
+        "symbol": "same_identity"
+      },
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "flag_enabled",
+      "implementation_node": "predicate.flag_enabled",
+      "parameters": {
+        "value": "boolean"
+      },
+      "source": {
+        "path": "app/predicates.py",
+        "symbol": "flag_enabled"
+      },
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    }
+  ],
+  "revision": "initial-v1",
+  "schema": "bo-policy/v1",
+  "stage": "bound"
+}

@@ -1,8 +1,8 @@
 /** A short product overview; detailed native interactions live in demo.html. */
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=clarity-1";
-import { messages } from "./home-messages.mjs?rev=brand-1";
-import { revealSections } from "./scroll-story.mjs?rev=story-3";
-import { mountConversationTour } from "./conversation-tour.mjs?rev=clarity-1";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
+import { messages } from "./home-messages.mjs?rev=files-1";
+import { revealSections } from "./scroll-story.mjs?rev=files-1";
+import { mountConversationTour } from "./conversation-tour.mjs?rev=files-1";
 function render() {
   document.title =
     locale() === "en" ? "VibeLens — See how your code works" : "VibeLens · 看清 AI 写出的程序";

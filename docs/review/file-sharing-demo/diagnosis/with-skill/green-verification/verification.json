@@ -1,0 +1,96 @@
+{
+  "valid": true,
+  "errors": [],
+  "candidate_id": "514b0b030e8f888f6b3ef8b8bea1c0890c29a03fa3dd6529ba9ee2c40748fc85",
+  "reports": {
+    "mapping": {
+      "status": "passed",
+      "errors": [],
+      "database": {
+        "configured": true,
+        "valid": true,
+        "errors": [],
+        "changed": false,
+        "source_id": "de95d7d29d58f5cf603c254ec7fabc506ea12384b5af229fd5195601451cd714",
+        "catalog_id": "8d6f241efdfbdbbb148726979595530af150f129545ba15edded7998b141334d",
+        "stores": [
+          {
+            "id": "sharing",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "code_structure": {
+        "enabled": false,
+        "valid": true,
+        "status": "not_enabled",
+        "errors": []
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+      "policy": {
+        "valid": true,
+        "errors": []
+      },
+      "stategraph_export": "checked",
+      "witnesses": 27,
+      "projection_checks": 69,
+      "implementation": {
+        "errors": [],
+        "events_checked": 248,
+        "features": 10
+      }
+    },
+    "state_rules": {
+      "status": "passed",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "passed",
+      "errors": [],
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "passed",
+      "errors": [],
+      "assertions": {
+        "required": 84,
+        "executed": 84
+      },
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    }
+  },
+  "review_hash": "81307581357c2d7753b70ae081bbd4d46e62a18cb1e1ea4388bb85069a8816f5",
+  "observations_hash": "e6da5363e52a1aa5413c1f37567153de57bf7bb21b4f36e9304cabd2e6f73b7a",
+  "tests": [
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tooling/check_evidence.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "checked_at": "2026-10-29T01:36:39.028477+00:00",
+  "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+}

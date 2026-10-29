@@ -1,0 +1,159 @@
+{
+  "run_id": "v2-live-headless",
+  "version": "v2",
+  "timestamp": "2026-10-29T07:42:13.802564+08:00",
+  "status": "passed",
+  "headless": true,
+  "data_mode": "running demo; samples retained",
+  "regression": {
+    "status": "passed",
+    "checks": [
+      {
+        "name": "Owner uploads a private file through the UI",
+        "result": "passed",
+        "file_id": 2
+      },
+      {
+        "name": "Recipient cannot download before being selected",
+        "result": "passed",
+        "http_status": 403
+      },
+      {
+        "name": "Owner selects Xu Ning and sees the explicit grant",
+        "result": "passed"
+      },
+      {
+        "name": "Recipient sees name, size, owner and downloads identical bytes",
+        "result": "passed",
+        "sha256": "0586fce88f67685d3652ce257f11404f89c9916a5f460271dc5e00648a648d7e"
+      },
+      {
+        "name": "Recipient has no sharing control",
+        "result": "passed"
+      },
+      {
+        "name": "Zhou Lan sees no grant and direct download returns 403",
+        "result": "passed",
+        "http_status": 403
+      },
+      {
+        "name": "Recipient cannot share through a forged direct request",
+        "result": "passed",
+        "http_status": 403
+      },
+      {
+        "name": "Reload preserves the authenticated user and stored grant",
+        "result": "passed"
+      },
+      {
+        "name": "Narrow browser viewport has no page-level horizontal overflow",
+        "result": "passed"
+      },
+      {
+        "name": "Sign out invalidates authenticated download",
+        "result": "passed",
+        "http_status": 401
+      },
+      {
+        "name": "No browser JavaScript exceptions",
+        "result": "passed"
+      }
+    ],
+    "browser_errors": [],
+    "screenshots": "review\\browser-runs\\v2-live-headless\\regression\\screenshots",
+    "browser": "156.0.8078.47",
+    "file_id": 2
+  },
+  "revocation": {
+    "status": "passed",
+    "checks": [
+      {
+        "name": "Owner uploads, shares and sees a recipient-specific cancellation control",
+        "result": "passed"
+      },
+      {
+        "name": "Recipient can download before cancellation and has no cancellation control",
+        "result": "passed",
+        "sha256": "2e73eb3aaa2eaa9bdc3358c4933e59125ce8157734a2aa3d200c5110c9ace41e"
+      },
+      {
+        "name": "Non-owner xuning cannot cancel through a direct request",
+        "result": "passed",
+        "http_status": 403
+      },
+      {
+        "name": "Non-owner zhoulan cannot cancel through a direct request",
+        "result": "passed",
+        "http_status": 403
+      },
+      {
+        "name": "Owner cancels while recipient remains on the same unrefreshed document with the old row",
+        "result": "passed"
+      },
+      {
+        "name": "Clicking the stale download button returns 403, displays rejection and creates no download",
+        "result": "passed",
+        "http_status": 403
+      },
+      {
+        "name": "Owner keeps the file and downloads identical bytes after cancellation",
+        "result": "passed",
+        "sha256": "2e73eb3aaa2eaa9bdc3358c4933e59125ce8157734a2aa3d200c5110c9ace41e"
+      },
+      {
+        "name": "Refreshing the recipient list removes the canceled file",
+        "result": "passed"
+      },
+      {
+        "name": "Original sharing and downloading work again after the owner regrants access",
+        "result": "passed"
+      },
+      {
+        "name": "Final demo state retains the owner's file with recipient access canceled",
+        "result": "passed"
+      },
+      {
+        "name": "No browser JavaScript exceptions during revocation acceptance",
+        "result": "passed"
+      }
+    ],
+    "browser_errors": [],
+    "recipient_requests_after_cancel": [
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8767/api/files/3/download"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8767/api/files"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8767/api/files"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8767/api/files/3/download"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8767/api/files"
+      }
+    ],
+    "file_id": 3,
+    "stale_page_proof": {
+      "same_document_time_origin": 1793230942440.9,
+      "no_recipient_requests_during_cancellation": true,
+      "old_row_visible_before_download": true,
+      "requests_through_rejection": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8767/api/files/3/download"
+        }
+      ],
+      "download_events_after_cancellation": 0
+    }
+  },
+  "base_url": "http://127.0.0.1:8767",
+  "finished_at": "2026-10-29T07:42:25.972698+08:00"
+}

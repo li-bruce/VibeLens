@@ -1,0 +1,11 @@
+--- before/app.py
++++ after/app.py
+@@ -350,7 +350,7 @@
+             if recipient_id == user["id"]:
+                 raise RequestError(400, "You already own this file. Choose another user.")
+             if action == "revoke":
+-                db.execute("DELETE FROM shares WHERE file_id = ? AND recipient_id = ?", (file_id, user["id"]))
++                db.execute("DELETE FROM shares WHERE file_id = ? AND recipient_id = ?", (file_id, recipient_id))
+             else:
+                 db.execute("INSERT OR IGNORE INTO shares (file_id, recipient_id, created_at) VALUES (?, ?, ?)",
+                            (file_id, recipient_id, int(time.time())))

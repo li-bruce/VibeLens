@@ -1,0 +1,65 @@
+{
+  "run_id": "v1-live-headless",
+  "timestamp": "2026-10-29T07:34:39.571591+08:00",
+  "status": "passed",
+  "headless": true,
+  "sample_name": "demo-project-notes.txt",
+  "data_mode": "running demo; sample retained",
+  "base_url": "http://127.0.0.1:8767",
+  "checks": [
+    {
+      "name": "Owner uploads a private file through the UI",
+      "result": "passed",
+      "file_id": 1
+    },
+    {
+      "name": "Recipient cannot download before being selected",
+      "result": "passed",
+      "http_status": 403
+    },
+    {
+      "name": "Owner selects Xu Ning and sees the explicit grant",
+      "result": "passed"
+    },
+    {
+      "name": "Recipient sees name, size, owner and downloads identical bytes",
+      "result": "passed",
+      "sha256": "0586fce88f67685d3652ce257f11404f89c9916a5f460271dc5e00648a648d7e"
+    },
+    {
+      "name": "Recipient has no sharing control",
+      "result": "passed"
+    },
+    {
+      "name": "Zhou Lan sees no grant and direct download returns 403",
+      "result": "passed",
+      "http_status": 403
+    },
+    {
+      "name": "Recipient cannot share through a forged direct request",
+      "result": "passed",
+      "http_status": 403
+    },
+    {
+      "name": "Reload preserves the authenticated user and stored grant",
+      "result": "passed"
+    },
+    {
+      "name": "Narrow browser viewport has no page-level horizontal overflow",
+      "result": "passed"
+    },
+    {
+      "name": "Sign out invalidates authenticated download",
+      "result": "passed",
+      "http_status": 401
+    },
+    {
+      "name": "No browser JavaScript exceptions",
+      "result": "passed"
+    }
+  ],
+  "browser_errors": [],
+  "screenshots": "review\\browser-runs\\v1-live-headless\\screenshots",
+  "browser": "156.0.8078.47",
+  "file_id": 1
+}

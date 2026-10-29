@@ -1,0 +1,159 @@
+{
+  "build_id": "843e214363b362d939aba82229a7abf66f6ed128d52b978b4867f03ccb22cf67",
+  "scope": "Synthetic trial; counterexamples alter evidence in memory or temporary copies, never the application.",
+  "checks": {
+    "missing_capture_field": {
+      "rejected": true,
+      "errors": [
+        {
+          "feature_value_mismatch": "download",
+          "case": "normal",
+          "field": "sha256",
+          "error": "'sha256'"
+        },
+        {
+          "feature_field_not_observed": "download",
+          "node": "download",
+          "direction": "out",
+          "field": "sha256"
+        }
+      ]
+    },
+    "incorrect_captured_value": {
+      "rejected": true,
+      "errors": [
+        {
+          "feature_value_mismatch": "download",
+          "case": "normal",
+          "field": "size",
+          "error": "captured value differs from independent observation"
+        }
+      ]
+    },
+    "missing_revoke_capture": {
+      "rejected": true,
+      "errors": [
+        {
+          "feature_value_mismatch": "revoke",
+          "case": "revoke_owner",
+          "field": "remaining_recipient_ids",
+          "error": "'remaining_recipient_ids'"
+        },
+        {
+          "feature_field_not_observed": "revoke",
+          "node": "revoke",
+          "direction": "out",
+          "field": "remaining_recipient_ids"
+        }
+      ]
+    },
+    "wrong_revoke_target": {
+      "rejected": true,
+      "errors": [
+        {
+          "feature_value_mismatch": "revoke",
+          "case": "revoke_owner",
+          "field": "recipient_id",
+          "error": "captured value differs from independent observation"
+        }
+      ]
+    },
+    "wrong_revoke_output_echo": {
+      "rejected": true,
+      "reason": ""
+    },
+    "missing_exported_instance": {
+      "rejected": true,
+      "reason": "scenario instances differ from its runtime machine"
+    },
+    "unsynchronized_source": {
+      "rejected": true,
+      "changed_files": [
+        "app/predicates.py"
+      ]
+    },
+    "real_schema_change": {
+      "rejected": true,
+      "differences": [
+        {
+          "resource": "table:files",
+          "field": "filename",
+          "problem": "declared field absent or unverified"
+        }
+      ],
+      "operation": "A real SQLite column rename in an isolated database copy."
+    },
+    "removed_transition_witness": {
+      "rejected": true,
+      "reason": "Missing exact transition frame."
+    },
+    "removed_revoke_transition_witness": {
+      "rejected": true,
+      "reason": "Missing exact transition frame."
+    }
+  },
+  "capture_contract_scope": "The native declared value witness binds the input recipient_id. The selected output echo is type-checked but has no native value witness; this supplementary independent audit compares both input and output against the scenario's requested target. The initial unbound-output counterexample remains preserved in evidence-checks-unbound-echo-attempt.json.",
+  "secondary_transition_paths": [
+    [
+      "pending",
+      "upload",
+      "private"
+    ],
+    [
+      "private",
+      "share",
+      "shared"
+    ],
+    [
+      "shared",
+      "revoke",
+      "private"
+    ],
+    [
+      "private",
+      "share",
+      "shared"
+    ]
+  ],
+  "public_exports": {
+    "application": {
+      "validated": true,
+      "instances": 10
+    },
+    "observer": {
+      "validated": true,
+      "instances": 2
+    }
+  },
+  "real_transition_paths": [
+    [
+      "pending",
+      "upload",
+      "private"
+    ],
+    [
+      "private",
+      "share",
+      "shared"
+    ],
+    [
+      "shared",
+      "share",
+      "shared"
+    ],
+    [
+      "shared",
+      "revoke",
+      "shared"
+    ],
+    [
+      "shared",
+      "share",
+      "shared"
+    ]
+  ],
+  "baseline_sha256": "8339139b0637be9abdea6611a1952bccce286954ea2ceca351ec0293456c79f7",
+  "revocation_baseline_sha256": "e4c0ca6310436c999793c0c92a6570e01d9fdd29074bf948b48858c9d5d5f16c",
+  "preserved_source_files": 29,
+  "status": "passed"
+}

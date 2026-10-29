@@ -1,4 +1,4 @@
-import { extra, chinese } from "./messages.mjs?rev=clarity-1";
+import { extra, chinese } from "./messages.mjs?rev=files-1";
 
 const defaults = new Map(
   [...document.querySelectorAll("[data-i18n]")].map((element) => [

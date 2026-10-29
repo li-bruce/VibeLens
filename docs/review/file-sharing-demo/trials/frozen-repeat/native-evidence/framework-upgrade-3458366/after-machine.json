@@ -1,0 +1,88 @@
+{
+  "context": {
+    "filename": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "recipient_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "sha256": {
+      "type": "string"
+    },
+    "size": {
+      "min": 0,
+      "type": "integer"
+    }
+  },
+  "engine": "bo.fsm",
+  "events": {
+    "revoke": {
+      "payload": {}
+    },
+    "share": {
+      "payload": {}
+    },
+    "upload": {
+      "payload": {}
+    }
+  },
+  "guards": {
+    "has_recipients": "The same transaction's remaining recipient list is nonempty.",
+    "permission_granted": "The current native policy evaluation returned true."
+  },
+  "initial": "pending",
+  "state_type": "enum",
+  "states": [
+    "pending",
+    "private",
+    "shared"
+  ],
+  "transitions": [
+    {
+      "conditions": "permission_granted",
+      "dest": "private",
+      "source": "pending",
+      "trigger": "upload"
+    },
+    {
+      "conditions": "permission_granted",
+      "dest": "shared",
+      "source": "private",
+      "trigger": "share"
+    },
+    {
+      "conditions": "permission_granted",
+      "dest": "shared",
+      "source": "shared",
+      "trigger": "share"
+    },
+    {
+      "conditions": [
+        "permission_granted",
+        "has_recipients"
+      ],
+      "dest": "shared",
+      "source": "shared",
+      "trigger": "revoke"
+    },
+    {
+      "conditions": "permission_granted",
+      "dest": "private",
+      "source": "shared",
+      "trigger": "revoke",
+      "unless": "has_recipients"
+    }
+  ],
+  "values": [
+    "pending",
+    "private",
+    "shared"
+  ],
+  "version": "1"
+}

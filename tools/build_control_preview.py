@@ -9,32 +9,34 @@ sys.path.insert(0, str(ROOT / "skills/vibelens/scripts"))
 from bo_observer.control.selection import build_plan, validate_evidence
 
 
-def build():
+def build(artifact_path=None):
     """Select original case identities with the same controller used by a project."""
-    artifact = json.loads((ROOT / "docs/site/case-data/v1.json").read_text(encoding="utf-8"))
+    source = artifact_path or ROOT / "docs/site/case-data/v1.json"
+    artifact = json.loads(Path(source).read_text(encoding="utf-8"))
+    story = artifact["story"]
     result = {"case": 1, "locales": {}}
     for language, labels in {
-        "en": ["Upload and approval", "Approval and parameters", "Approval replay"],
-        "zh-CN": ["上传与审核", "审核与参数", "审核链路回放"],
+        "en": ["File sharing", "Download permission", "Download replay"],
+        "zh-CN": ["文件共享", "下载权限", "下载链路回放"],
     }.items():
         specs = {
             "business": {
                 "action": "view",
                 "label": labels[0],
-                "anchors": ["upload", "publish"],
+                "anchors": story["control_anchors"]["business"],
                 "depth": 0,
-                "direction": "forward",
+                "direction": "both",
                 "nodes": ["business"],
-                "edges": ["flow"],
+                "edges": ["flow", "data", "guard"],
                 "layout": "layered",
             },
             "details": {
                 "action": "view",
                 "label": labels[1],
-                "anchors": ["publish", "review-policy"],
+                "anchors": story["control_anchors"]["details"],
                 "depth": 0,
                 "nodes": ["business", "decision", "data", "function"],
-                "edges": ["call", "flow", "guard", "data"],
+                "edges": ["call", "flow", "guard", "data", "maps"],
                 "layout": "layered",
             },
         }
@@ -42,7 +44,7 @@ def build():
             **specs["details"],
             "action": "replay",
             "label": labels[2],
-            "anchors": ["review-policy"],
+            "anchors": [story["inspection_node"]],
             "depth": 1,
             "loop": True,
         }
@@ -54,7 +56,9 @@ def build():
         result["locales"][language] = plans
     target = ROOT / "docs/site/control-plans.json"
     target.write_text(
-        json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
+        json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
     )
     return result
 

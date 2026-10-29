@@ -1,6 +1,6 @@
 /** Scripted development dialogue and a separate, event-bound application preview. */
-import { locale, t } from "./site-ui.mjs?rev=clarity-1";
-import { proposedFlow } from "./case-flow.mjs?rev=story-6";
+import { locale, t } from "./site-ui.mjs?rev=files-1";
+import { proposedFlow } from "./case-flow.mjs?rev=files-1";
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
 function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -8,24 +8,7 @@ function node(tag, className, text) {
   if (text !== undefined) element.textContent = text;
   return element;
 }
-/** Reconstruct only completed responses at or before the selected event. */
-export function applicationAt(artifact, eventId) {
-  const events = artifact.recording.events;
-  const index = events.findIndex((event) => event.id === eventId);
-  const state = { image: 0, reviewed: 0, published: 0, status: "empty", eventId };
-  for (const event of events.slice(0, index + 1)) {
-    if (event.phase !== "return") continue;
-    const output = event.outputs || {};
-    if (event.node === "upload" && output.image_version) state.image = output.image_version;
-    if (event.node === "review" && output.reviewed_version)
-      state.reviewed = output.reviewed_version;
-    if (event.node === "exhibit" && Object.hasOwn(output, "published_version"))
-      state.published = output.published_version || 0;
-    if (["upload", "review", "publish"].includes(event.node) && output.status)
-      state.status = output.status;
-  }
-  return state;
-}
+import { applicationAt } from "./case-application.mjs?rev=files-1";
 export function companion({ host, chapters, artifacts, send, begin }) {
   let chapter = 0,
     source = 0,
@@ -68,7 +51,8 @@ export function companion({ host, chapters, artifacts, send, begin }) {
         node("span", "conversation-speaker", role === "user" ? t("case.user") : "Codex"),
         node("p", "", copy(text)),
       );
-      if (foundation && index === 3) turn.append(proposedFlow(progress >= dialogue.length));
+      if (foundation && index === 3)
+        turn.append(proposedFlow(progress >= dialogue.length, artifacts[0]));
       turns.append(turn);
     });
     next.hidden = !foundation;
@@ -111,45 +95,56 @@ export function companion({ host, chapters, artifacts, send, begin }) {
   minimize.onclick = () => app.classList.toggle("is-collapsed");
   heading.append(minimize);
   app.append(heading);
-  const rooms = node("div", "app-rooms"),
-    fields = {};
-  for (const [key, action, label] of [
-    ["image", "upload", "case.app.artist"],
-    ["reviewed", "review", "case.app.reviewer"],
-    ["published", "exhibit", "case.app.exhibition"],
-  ]) {
-    const room = node("div", "app-room");
-    room.dataset.appRoom = key;
-    const picture = node("div", "app-picture"),
-      image = node("img", ""),
-      empty = node("span", "app-empty", "+");
-    image.alt = t(label);
-    image.hidden = true;
-    empty.setAttribute("aria-hidden", "true");
-    picture.append(image, empty);
-    const caption = node("span", "app-caption"),
-      button = node("button", "", t(label));
+  const screenshot = node("img", "app-frame");
+  screenshot.alt = t("case.app.name");
+  screenshot.hidden = true;
+  screenshot.tabIndex = 0;
+  screenshot.setAttribute("role", "button");
+  screenshot.setAttribute("aria-label", t("case.app.open"));
+  const capture = node("dialog", "app-capture-dialog");
+  const closeCapture = node("button", "app-capture-close", "×");
+  closeCapture.type = "button";
+  closeCapture.setAttribute("aria-label", t("case.app.close"));
+  closeCapture.onclick = () => capture.close();
+  const fullCapture = node("img", "");
+  fullCapture.alt = t("case.app.name");
+  capture.append(closeCapture, fullCapture);
+  document.body.append(capture);
+  screenshot.onclick = () => {
+    fullCapture.src = screenshot.src;
+    capture.showModal();
+  };
+  screenshot.onkeydown = (event) => {
+    if (["Enter", " "].includes(event.key)) {
+      event.preventDefault();
+      screenshot.click();
+    }
+  };
+  const empty = node("p", "app-frame-empty", t("case.app.empty"));
+  const actions = node("div", "app-actions");
+  for (const action of artifacts[0].story.actions) {
+    const button = node("button", "", copy(action.label));
     button.type = "button";
+    button.dataset.appAction = action.id;
     button.title = t("case.app.seek");
-    button.dataset.appAction = action;
-    button.onclick = () => send({ action: "application", node: action });
-    room.append(picture, button, caption);
-    rooms.append(room);
-    fields[key] = { room, image, empty, caption, button };
+    button.onclick = () => {
+      const selected = artifacts[chapters[chapter].version - 1].story.actions.find(
+        (item) => item.id === action.id,
+      );
+      send({
+        action: "application",
+        node: selected.node,
+        phase: selected.phase,
+        eventIds: selected.event_ids,
+      });
+    };
+    actions.append(button);
   }
-  const footer = node("div", "app-footer"),
-    status = node("span", "app-status");
-  const approve = node("button", "app-approve", t("case.app.approve"));
-  approve.type = "button";
-  approve.dataset.appAction = "publish";
-  approve.title = t("case.app.seek");
-  approve.onclick = () => send({ action: "application", node: "publish" });
-  const restart = node("button", "app-restart", "↻");
+  const status = node("p", "app-status");
+  const restart = node("button", "app-restart", t("case.app.replay"));
   restart.type = "button";
-  restart.setAttribute("aria-label", t("case.app.replay"));
   restart.onclick = () => send({ action: "play" });
-  footer.append(status, approve, restart);
-  app.append(rooms, footer);
+  app.append(screenshot, empty, actions, status, restart);
   function place() {
     const current = document.getElementById(chapters[chapter].id);
     const target = current?.querySelector(".scene-companion-slot");
@@ -181,25 +176,28 @@ export function companion({ host, chapters, artifacts, send, begin }) {
     }
   }
   function update(eventId) {
-    const state = applicationAt(
-      artifacts[chapters[chapter].version - 1],
-      chapter === 0 ? null : eventId,
-    );
-    app.dataset.eventId = state.eventId || "";
-    app.dataset.status = state.status;
-    status.textContent = t("case.app." + state.status);
-    for (const [key, field] of Object.entries(fields)) {
-      const version = state[key];
-      field.room.dataset.version = version;
-      field.image.hidden = !version;
-      field.empty.hidden = !!version;
-      const url = version ? `case-data/image-${version}.png` : null;
-      if (url && field.image.getAttribute("src") !== url) field.image.src = url;
-      if (!url) field.image.removeAttribute("src");
-      field.caption.textContent = version ? `${t("case.app.image")} ${version}` : "—";
-      field.button.disabled = chapter === 0;
+    const artifact = artifacts[chapters[chapter].version - 1];
+    let frame = applicationAt(artifact, chapter ? eventId : null, locale());
+    if (chapter > 0 && !eventId && (artifact.application_start || artifact.application_overview)) {
+      const initial = artifact.application_start || artifact.application_overview;
+      frame = {
+        ...initial,
+        image: initial.images[locale()] || initial.images.en,
+      };
     }
-    approve.disabled = chapter === 0 || !state.reviewed;
+    app.dataset.eventId = frame?.eventId || "";
+    app.dataset.frameEvent = frame?.event_id || "";
+    app.dataset.status = frame?.status || "ready";
+    screenshot.hidden = !frame;
+    empty.hidden = !!frame;
+    if (frame) {
+      if (screenshot.getAttribute("src") !== frame.image) screenshot.src = frame.image;
+      status.textContent = copy(frame.caption);
+    } else {
+      screenshot.removeAttribute("src");
+      status.textContent = "";
+    }
+    for (const button of actions.querySelectorAll("button")) button.disabled = chapter === 0;
   }
   function stage(index) {
     chapter = index;
@@ -221,6 +219,7 @@ export function companion({ host, chapters, artifacts, send, begin }) {
       narrow.removeEventListener("change", place);
       conversation.remove();
       app.remove();
+      capture.remove();
     },
   };
 }

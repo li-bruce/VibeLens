@@ -1,0 +1,161 @@
+{
+  "model": "bo_stategraph/project.json",
+  "manifest": "manifest.json",
+  "code_files": [
+    "app/__init__.py",
+    "app/models.py",
+    "app/ports.py",
+    "app/predicates.py",
+    "app/service.py",
+    "app/storage.py",
+    "app/web.py",
+    "bo_stategraph/workflow.py",
+    "bo_stategraph/native_executor.py"
+  ],
+  "watch_files": [
+    "app/__init__.py",
+    "app/models.py",
+    "app/ports.py",
+    "app/predicates.py",
+    "app/service.py",
+    "app/storage.py",
+    "app/web.py",
+    "bo_stategraph/__init__.py",
+    "bo_stategraph/databases.json",
+    "bo_stategraph/native_executor.py",
+    "bo_stategraph/workflow.py",
+    "implementation.json",
+    "integrations/__init__.py",
+    "integrations/bo_adapter.py",
+    "integrations/bo_view.py",
+    "requirements.txt",
+    "run.py",
+    "static/app.css",
+    "templates/base.html",
+    "templates/dashboard.html",
+    "templates/error.html",
+    "templates/login.html",
+    "tests/test_sharing.py",
+    "tooling/browser_check.py",
+    "tooling/browser_revoke_check.py",
+    "tooling/build_model.py",
+    "tooling/check_evidence.py",
+    "tooling/export_models.py",
+    "tooling/observe.py",
+    "tooling/reconcile.py",
+    "tooling/refresh_graph.py",
+    "tooling/scenarios.py",
+    "tooling/verify.py"
+  ],
+  "source_scope": {
+    "roots": [
+      "."
+    ],
+    "require_symbol_classification": true,
+    "exclude": {
+      ".venv/**": "Project-local third-party runtime; dependency versions are pinned.",
+      "review/**": "Private review records and test outputs, never business source.",
+      ".stategraph/**": "Synchronization receipts and immutable baselines.",
+      "data/**": "Private application storage and local secrets.",
+      "static/graph/**": "Managed complete VibeLens viewer.",
+      "observer_runtime/**": "Managed local Skill runtime; checked by managed hashes.",
+      "tooling/**": "Versioned verification and model-generation entrypoints.",
+      "tests/**": "Independent verification entrypoints.",
+      "integrations/**": "Isolated observer adapters; versioned and checked separately.",
+      "bo_stategraph/__init__.py": "Managed native state core; copy parity is independently checked.",
+      "bo_stategraph/bo_contracts.py": "Managed native state core; copy parity is independently checked.",
+      "bo_stategraph/execution_contract.py": "Managed native state core; copy parity is independently checked.",
+      "run.py": "Development service launcher; no domain operation implementation."
+    }
+  },
+  "stategraph": {
+    "module": "bo_stategraph/__init__.py",
+    "development_mode": "drive",
+    "execution_mode": "drive",
+    "decision_source": "user",
+    "decision": "【模拟用户回答】\n查看先简单一点：在收到共享的列表里看到文件名、大小和是谁共享的，点下载就能拿到文件；不用在线预览。接收者只能查看和下载，不能转发共享，也不能改文件。上传的人就是所有者，选择一个已有用户共享给他。使用 drive 模式，Python 和 SQLite 可以。演示账号用三个：林舟上传，许宁接收，周岚没有收到共享。\n\n你展示的登录→上传→指定接收者→查看和下载这条主线符合我的想法，按这个来。先把这一版做出来，不做删除。之后我还要能取消共享，取消后对方即使页面没刷新也不能再下载；请将这作为下一轮迭代，保留前后图的变化。先完成初版并运行测试，给我访问地址，再等待我发迭代任务。保留此条模拟答案的原文。\n"
+  },
+  "require_mapping_witnesses": true,
+  "mapping_contract": "mapping.json",
+  "whitebox": "whitebox.json",
+  "discovery": "discovery.json",
+  "acceptance": "acceptance.json",
+  "slice_depth": 1,
+  "probe_callees": [
+    "bo_trace.record",
+    "self.bo_trace.record"
+  ],
+  "required_probes": [
+    {
+      "symbol": "app/service.py::SharingService.upload",
+      "node": "upload",
+      "phase": "commit"
+    },
+    {
+      "symbol": "app/service.py::SharingService.share",
+      "node": "share",
+      "phase": "commit"
+    },
+    {
+      "symbol": "app/service.py::SharingService.revoke",
+      "node": "revoke",
+      "phase": "commit"
+    }
+  ],
+  "required_runtime_probes": [
+    {
+      "case": "workflow",
+      "node": "upload",
+      "phase": "commit"
+    },
+    {
+      "case": "workflow",
+      "node": "share",
+      "phase": "commit"
+    },
+    {
+      "case": "workflow",
+      "node": "download",
+      "phase": "return"
+    },
+    {
+      "case": "revocation",
+      "node": "revoke",
+      "phase": "commit"
+    }
+  ],
+  "probe_modes": [
+    "on",
+    "off",
+    "fault"
+  ],
+  "observations_command": [
+    "{python}",
+    "-B",
+    "-X",
+    "utf8",
+    "tooling/observe.py"
+  ],
+  "test_commands": [
+    [
+      "{python}",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ],
+    [
+      "{python}",
+      "-B",
+      "-X",
+      "utf8",
+      "tooling/check_evidence.py"
+    ]
+  ],
+  "timeout_seconds": 180
+}

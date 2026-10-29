@@ -1,275 +1,487 @@
-/** Native scroll, real replay and saved focus views on local or published Pages. */
+/** Exercise the recorded file-sharing story through native viewer interactions. */
 import assert from "node:assert/strict";
-import {spawn} from "node:child_process";
-import {createRequire} from "node:module";
-import {mkdir, writeFile} from "node:fs/promises";
+import { spawn } from "node:child_process";
+import { createRequire } from "node:module";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-const {chromium} = createRequire(import.meta.url)("playwright");
+const { chromium } = createRequire(import.meta.url)("playwright");
 const base = (process.env.BO_SITE_URL || "http://127.0.0.1:8897").replace(/\/$/, "");
-const output = path.resolve(process.env.BO_CASE_BROWSER_EVIDENCE || ".validation/scroll-demo/browser");
-await mkdir(output, {recursive: true});
-const python = process.env.BO_PYTHON || path.resolve(".venv", process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
-const server = process.env.BO_SITE_URL ? null : spawn(python, ["-B", "-m", "http.server", "8897", "--bind", "127.0.0.1", "--directory", "docs/site"], {windowsHide: true, stdio: "ignore"});
+const output = path.resolve(
+  process.env.BO_CASE_BROWSER_EVIDENCE || ".validation/file-story/browser",
+);
+await mkdir(output, { recursive: true });
+const artifacts = await Promise.all(
+  [1, 2].map(async (version) =>
+    JSON.parse(await readFile(`docs/site/case-data/v${version}.json`, "utf8")),
+  ),
+);
+const first = artifacts[0],
+  fixed = artifacts[1];
+const inspection = (artifact) =>
+  artifact.recording.events.find((event) => event.id === artifact.story.inspection_event);
+const python =
+  process.env.BO_PYTHON ||
+  path.resolve(".venv", process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
+const server = process.env.BO_SITE_URL
+  ? null
+  : spawn(
+      python,
+      ["-B", "-m", "http.server", "8897", "--bind", "127.0.0.1", "--directory", "docs/site"],
+      { windowsHide: true, stdio: "ignore" },
+    );
 let browser, page, scene;
-const errors = [], receipts = [];
+const errors = [],
+  receipts = [];
+async function frame() {
+  const child = page.frame({ url: /viewer\/index.html\?case=/ });
+  assert.ok(child);
+  await child.waitForFunction(() => window.graphDebug?.graph?.boxes.length > 0);
+  return child;
+}
+async function go(id) {
+  scene = id;
+  await page.locator("#" + id).scrollIntoViewIfNeeded();
+  await page.waitForFunction((id) => document.body.dataset.sceneReady === id, id, {
+    timeout: 45000,
+  });
+  assert.equal(await page.getAttribute("#case-context", "data-scene"), id);
+  const coding = ["foundation", "iterate"].includes(id);
+  assert.equal(await page.locator("#case-conversation .conversation-turns").isVisible(), coding);
+  assert.equal(
+    await page.getAttribute("#case-conversation", "data-mode"),
+    coding ? "current" : "history",
+  );
+  assert.equal(await page.locator(".case-playback").isVisible(), ["run", "verify"].includes(id));
+  return frame();
+}
+async function shot(name) {
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: path.join(output, name + ".png") });
+}
+// Count what the two renderers actually display. The layout inventory can retain
+// source-boundary boxes whose type is hidden and has no glyph or accessible button.
+const boxIds = async (child) => {
+  await child.waitForFunction(() => {
+    const visible = new Set([
+      ...graphDebug.presentation.glyphs.keys(),
+      ...graphDebug.presentation.regions.keys(),
+    ]);
+    const semantic = [...document.querySelectorAll("#semantic [data-node-id]")];
+    return (
+      semantic.length === visible.size && semantic.every((node) => visible.has(node.dataset.nodeId))
+    );
+  });
+  return child.evaluate(() =>
+    [
+      ...new Set([
+        ...graphDebug.presentation.glyphs.keys(),
+        ...graphDebug.presentation.regions.keys(),
+      ]),
+    ].sort(),
+  );
+};
+/** Keep gestures inside the visible canvas, away from clipped iframe edges and toolbars. */
+async function cameraPoint(child) {
+  const canvas = await child.locator(".spatial-canvas").boundingBox(),
+    viewport = page.viewportSize(),
+    top = Math.max(0, canvas.y),
+    bottom = Math.min(viewport.height, canvas.y + canvas.height),
+    left = Math.max(0, canvas.x),
+    right = Math.min(viewport.width, canvas.x + canvas.width);
+  assert.ok(bottom - top > 180 && right - left > 240, "A visible canvas must receive the gesture");
+  for (const ratio of [0.17, 0.78, 0.32]) {
+    const point = { x: left + (right - left) * ratio, y: top + 135 };
+    const onCanvas = await child.evaluate(
+      ({ point, canvas }) => {
+        const element = document.querySelector(".spatial-canvas"),
+          local = element.getBoundingClientRect();
+        return (
+          document.elementFromPoint(local.x + point.x - canvas.x, local.y + point.y - canvas.y) ===
+          element
+        );
+      },
+      { point, canvas },
+    );
+    if (
+      onCanvas &&
+      (await page.evaluate(
+        (point) => document.elementFromPoint(point.x, point.y)?.id === "case-graph",
+        point,
+      ))
+    )
+      return point;
+  }
+  throw Error("The camera gesture is covered by another element");
+}
 try {
-  for (let i = 0; i < 60; i++) {try {if ((await fetch(base)).ok) break;} catch {} await new Promise((resolve) => setTimeout(resolve, 200));}
-  browser = await chromium.launch({headless: true, args: ["--enable-unsafe-swiftshader"], ...(process.env.BO_BROWSER_EXECUTABLE ? {executablePath: process.env.BO_BROWSER_EXECUTABLE} : {})});
-  page = await browser.newPage({viewport: {width: 1536, height: 1050}});
+  for (let attempt = 0; attempt < 60; attempt++) {
+    try {
+      if ((await fetch(base)).ok) break;
+    } catch {}
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+  browser = await chromium.launch({
+    headless: true,
+    args: ["--enable-unsafe-swiftshader"],
+    ...(process.env.BO_BROWSER_EXECUTABLE
+      ? { executablePath: process.env.BO_BROWSER_EXECUTABLE }
+      : {}),
+  });
+  page = await browser.newPage({ viewport: { width: 1536, height: 1050 } });
   page.on("pageerror", (error) => errors.push(error.message));
-  page.on("console", (message) => {if (message.type() === "error") errors.push(message.text());});
-  page.on("response", (response) => {if (response.status() >= 400) errors.push(response.status() + " " + response.url());});
-  await page.route("**/case-viewer.mjs*", async (route) => {await new Promise((resolve) => setTimeout(resolve, 400)); await route.continue();});
-  async function frame() {
-    const child = page.frame({url: /viewer\/index.html/}); assert.ok(child);
-    await child.waitForFunction(() => window.graphDebug?.graph?.boxes.length > 0);
-    return child;
-  }
-  async function go(id) {
-    scene = id;
-    await page.locator("#" + id).scrollIntoViewIfNeeded();
-    await page.waitForFunction((id) => document.body.dataset.sceneReady === id, id, {timeout: 30000});
-    assert.equal(await page.getAttribute("#case-context", "data-scene"), id);
-    const coding = ['foundation','build','iterate'].includes(id);
-    assert.equal(await page.locator('#case-conversation .conversation-turns').isVisible(), coding);
-    assert.equal(await page.getAttribute('#case-conversation','data-mode'), coding ? 'current' : 'history');
-    if (!coding) assert.ok(await page.locator('#'+id+' .scene-steps li').count() >= 2);
-    assert.equal(await page.locator('.case-playback').isVisible(), ['run','watch','verify'].includes(id));
-    return frame();
-  }
-  async function shot(name) {await page.waitForTimeout(300); await page.screenshot({path: path.join(output, name + ".png"), fullPage: false});}
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) errors.push(response.status() + " " + response.url());
+  });
+  await page.route("**/case-viewer.mjs*", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    await route.continue();
+  });
   for (const language of ["en", "zh-CN"]) {
     await page.goto(base + "/demo.html?lang=" + language);
-    await page.waitForSelector("#foundation");
-    assert.equal(await page.locator("[data-case-scene]").count(), 7);
-    assert.equal(await page.getAttribute("html", "lang"), language);
-    for (const title of await page.locator("h1,h2,h3").allTextContents()) assert.ok(!/[.。]$/.test(title.trim()), title);
     let child = await go("foundation");
-    assert.deepEqual(await child.evaluate(() => graphDebug.graph.boxes.map((box) => box.id).sort()), ["exhibit", "publish", "review", "upload"]);
+    assert.equal(await page.locator("[data-case-scene]").count(), 5);
+    for (const title of await page.locator("h1,h2,h3").allTextContents())
+      assert.ok(!/[.。]$/.test(title.trim()));
+    assert.deepEqual(await boxIds(child), first.story.business.slice().sort());
     assert.equal(await child.evaluate(() => graphDebug.view.stage), "design");
-    assert.equal(await page.getAttribute('[data-app-room="published"]', 'data-version'), '0');
-    assert.equal(await page.locator('.case-application').isVisible(), false);
-    assert.equal(await page.locator('#case-conversation [data-speaker]').count(),1);
-    assert.equal(await page.locator('.conversation-flow').count(),0);
-    for (let turn=0; turn<3; turn++) await page.click('#conversation-next');
-    assert.equal(await page.locator('.conversation-flow[data-confirmed="false"]').count(),1);
-    assert.equal(await page.locator('[data-intent-node]').count(),6);
-    await shot(language+'-proposed-flow');
-    await page.click('#conversation-next');
-    assert.equal(await page.locator('.conversation-flow[data-confirmed="true"]').count(),1);
-    await shot(language+'-confirmed-flow');
-    await page.click('#conversation-next');
-    child = await go('build');
-    await page.waitForTimeout(450);
-    const graphArea = await page.locator('.case-visual').boundingBox();
-    const chatArea = await page.locator('#case-conversation').boundingBox();
-    const appArea = await page.locator('#case-application').boundingBox();
-    assert.ok(chatArea.x+chatArea.width <= graphArea.x+1, 'Conversation must not cover the graph');
-    assert.ok(appArea.x >= graphArea.x+graphArea.width-1, 'Application must not cover the graph');
-    assert.equal(await child.evaluate(()=>graphDebug.graph.boxes.length),4);
-    await shot(language+'-three-surfaces');
+    assert.equal(await page.locator(".case-application").isVisible(), false);
+    assert.equal(await page.locator("#case-conversation [data-speaker]").count(), 1);
+    assert.equal(await page.locator(".conversation-flow").count(), 0);
+    for (let turn = 0; turn < 3; turn++) await page.click("#conversation-next");
+    assert.equal(await page.locator('.conversation-flow[data-confirmed="false"]').count(), 1);
+    assert.deepEqual(
+      (
+        await page
+          .locator("[data-intent-node]")
+          .evaluateAll((nodes) => nodes.map((node) => node.dataset.intentNode))
+      ).sort(),
+      first.story.business.slice().sort(),
+    );
+    await shot(language + "-proposed-flow");
+    await page.click("#conversation-next");
+    assert.equal(await page.locator('.conversation-flow[data-confirmed="true"]').count(), 1);
+    await page.click("#conversation-next");
+    child = await go("run");
+    await page.click("#case-play");
+    const area = await page.locator(".case-visual").boundingBox(),
+      chat = await page.locator("#case-conversation").boundingBox(),
+      app = await page.locator("#case-application").boundingBox();
+    assert.ok(chat.x + chat.width <= area.x + 1);
+    assert.ok(app.x >= area.x + area.width - 1);
     await page.click('[data-case-lens="states"]');
-    await child.waitForFunction(()=>['state.empty','state.pending','state.displayed'].every(id=>graphDebug.graph.boxes.some(box=>box.id===id)));
-    assert.ok(await child.evaluate(()=>graphDebug.graph.edges.length>0));
+    await child.waitForFunction(
+      (ids) => ids.every((id) => graphDebug.graph.boxes.some((box) => box.id === id)),
+      first.story.states,
+    );
+    assert.ok(await child.evaluate(() => graphDebug.graph.edges.length > 0));
     await page.click('[data-case-lens="business"]');
-    await child.waitForFunction(()=>graphDebug.graph.boxes.length===4);
-    // Compact 3D accepts native camera gestures without the Full tools switch.
-    await page.click('#case-3d');
+    await child.waitForFunction(
+      (count) => graphDebug.graph.boxes.length === count,
+      first.story.business.length,
+    );
+    await page.click("#case-3d");
     await child.waitForFunction(() => graphDebug.spatial?.perspective && !graphDebug.layoutBusy);
     await page.waitForTimeout(350);
     const camera = () => child.evaluate(() => graphDebug.spatial.camera);
-    const orbitBefore = await camera();
-    const canvas = await child.locator('.spatial-canvas').boundingBox();
-    const x = canvas.x + 28, y = canvas.y + canvas.height - 30;
-    await page.mouse.move(x, y); await page.mouse.down();
-    await page.mouse.move(x + 110, y - 70, {steps: 16}); await page.mouse.up();
-    await page.waitForTimeout(400);
-    const orbitAfter = await camera();
-    assert.notDeepEqual(orbitAfter.position, orbitBefore.position, 'Dragging must rotate the real 3D camera');
+    const before = await camera(),
+      { x, y } = await cameraPoint(child);
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x + 110, y - 70, { steps: 16 });
+    await page.mouse.up();
+    await page.waitForTimeout(350);
+    const rotated = await camera();
+    assert.notDeepEqual(rotated.position, before.position);
     await page.mouse.move(x + 30, y - 20);
-    const scrollBeforeZoom = await page.evaluate(() => scrollY);
-    await page.mouse.wheel(0, -180); await page.waitForTimeout(400);
-    const zoomAfter = await camera();
-    const distance = ({position, target}) => Math.hypot(...position.map((value, i) => value - target[i]));
-    assert.ok(distance(zoomAfter) < distance(orbitAfter), 'The wheel must zoom the camera');
-    assert.equal(await page.evaluate(() => scrollY), scrollBeforeZoom, '3D zoom must not scroll the page');
-    await page.mouse.down({button:'right'});
-    await page.mouse.move(x + 95, y - 50, {steps: 12}); await page.mouse.up({button:'right'});
-    await page.waitForTimeout(400);
-    assert.notDeepEqual((await camera()).target, zoomAfter.target, 'Right-drag must pan the camera');
-    await shot(language + '-camera-gestures');
+    const scroll = await page.evaluate(() => scrollY);
+    await page.mouse.wheel(0, -180);
+    await page.waitForTimeout(350);
+    const zoomed = await camera(),
+      distance = (value) => Math.hypot(...value.position.map((n, i) => n - value.target[i]));
+    assert.ok(distance(zoomed) < distance(rotated));
+    assert.equal(await page.evaluate(() => scrollY), scroll);
+    await page.mouse.down({ button: "right" });
+    await page.mouse.move(x + 95, y - 50, { steps: 12 });
+    await page.mouse.up({ button: "right" });
+    await page.waitForTimeout(350);
+    assert.notDeepEqual((await camera()).target, zoomed.target);
+    await shot(language + "-camera");
     await page.click('[data-case-lens="implementation"]');
-    await child.waitForFunction(()=>graphDebug.graph.boxes.some(box=>box.id==='field:review-policy:in:current_version'));
-    const implementationIds = await child.evaluate(()=>graphDebug.graph.boxes.map(box=>box.id));
-    assert.ok(implementationIds.length<=8);
-    await shot(language+'-development-3d');
-    await page.click('#case-2d');
-    await child.waitForFunction(()=>!graphDebug.layers.enabled);
-    await child.waitForFunction(()=>{
-      const g=graphDebug.displayGraph,{scale,pan}=graphDebug.camera,v=document.querySelector('#viewport');
-      return g.minX*scale+pan.x>=-2 && g.minY*scale+pan.y>=-2 && (g.minX+g.width)*scale+pan.x<=v.clientWidth+2 && (g.minY+g.height)*scale+pan.y<=v.clientHeight+2;
-    });
-    await shot(language+'-development-2d');
+    await child.waitForFunction(
+      (id) => graphDebug.graph.boxes.some((box) => box.id === id),
+      first.story.focus.inputs[0],
+    );
+    await page.click("#case-2d");
+    await child.waitForFunction(() => !graphDebug.layers.enabled);
     await page.click('[data-case-lens="business"]');
-    await child.waitForFunction(()=>graphDebug.graph.boxes.length===4);
-    // The graph's visible region must not trap normal page wheel scrolling.
-    const area = await page.locator("#case-graph").boundingBox();
-    await page.mouse.move(area.x + area.width / 2, area.y + area.height / 2);
-    const beforeScroll = await page.evaluate(() => scrollY);
-    await page.mouse.wheel(0, 200); await page.waitForTimeout(200);
-    assert.ok(await page.evaluate((before) => scrollY > before + 20, beforeScroll));
+    const viewport = await page.locator("#case-graph").boundingBox();
+    await page.mouse.move(viewport.x + viewport.width / 2, viewport.y + viewport.height / 2);
+    const oldScroll = await page.evaluate(() => scrollY);
+    await page.mouse.wheel(0, 200);
+    await page.waitForTimeout(200);
+    assert.ok(await page.evaluate((old) => scrollY > old + 20, oldScroll));
+    // Camera exploration changed the lens; re-enter the story's recorded path.
+    await go("foundation");
     child = await go("run");
-    await child.waitForFunction(() => graphDebug.view.replay?.event?.node);
-    const first = await child.evaluate(() => graphDebug.view.replay.index);
+    await page.click('[data-scene-action="case.run"]');
+    await child.waitForFunction(() => graphDebug.view.replay?.event?.id);
+    const start = await child.evaluate(() => graphDebug.view.replay.index);
     await page.waitForTimeout(1100);
-    assert.ok(await child.evaluate((first) => graphDebug.view.replay.index > first, first), "Recorded playback must advance");
-    await child.waitForFunction(() => JSON.parse(document.querySelector('#renderer').dataset.animatedEdges || '[]').some(id => id.includes('|flow|') || id.endsWith(':flow')), null, {timeout:20000});
-    const movingEdges = await child.evaluate(() => JSON.parse(document.querySelector('#renderer').dataset.animatedEdges));
-    assert.ok(movingEdges.length > 0);
-    const motionBefore = await child.locator('#viewport canvas').first().screenshot();
+    assert.ok(await child.evaluate((start) => graphDebug.view.replay.index > start, start));
+    // This case witnesses rule dependencies and data transfers, not invented
+    // business causality between independent HTTP requests.
+    await child.waitForFunction(
+      () =>
+        JSON.parse(document.querySelector("#renderer").dataset.animatedEdges || "[]").length > 0,
+      null,
+      { timeout: 30000 },
+    );
+    const motion = await child.locator("#viewport canvas").first().screenshot();
     await page.waitForTimeout(180);
-    const motionAfter = await child.locator('#viewport canvas').first().screenshot();
-    assert.notDeepEqual(motionBefore, motionAfter, 'Native edge playback must visibly move');
-    await writeFile(path.join(output,language+'-flow-motion.png'),motionBefore);
-    await writeFile(path.join(output,language+'-flow-motion-next.png'),motionAfter);
-    const eventCount = await child.evaluate(async () => (await (await fetch("/api/view")).json()).events.length);
-    // App controls seek original responses, including backward wrap and repair.
-    async function appAction(action) {
-      const previous = await child.evaluate(() => graphDebug.view.replay?.event?.id);
-      await page.click(`[data-app-action="${action}"]`);
-      await child.waitForFunction(({node, previous}) => graphDebug.view.replay?.event?.id !== previous && graphDebug.view.replay?.event?.node === node && graphDebug.view.replay.event.phase === 'return', {node:action, previous});
-      await page.waitForFunction(() => document.querySelector('.case-application').dataset.eventId === document.querySelector('#case-graph').contentWindow.graphDebug.view.replay.event.id);
+    assert.notDeepEqual(motion, await child.locator("#viewport canvas").first().screenshot());
+    await writeFile(path.join(output, language + "-motion.png"), motion);
+    const raw = await child.evaluate(async () => (await (await fetch("/api/view")).json()).events);
+    async function appAction(id, artifact = first) {
+      const action = artifact.story.actions.find((action) => action.id === id);
+      await page.click(`[data-app-action="${id}"]`);
+      await child.waitForFunction(
+        (ids) => ids.includes(graphDebug.view.replay?.event?.id),
+        action.event_ids,
+      );
+      await page.waitForFunction(
+        (ids) => ids.includes(document.querySelector("#case-application").dataset.eventId),
+        action.event_ids,
+      );
     }
-    await page.locator('#case-position').fill('0');
-    await appAction('upload');
-    assert.equal(await page.getAttribute('[data-app-room="image"]', 'data-version'), '1');
-    assert.equal(await page.getAttribute('[data-app-room="published"]', 'data-version'), '0');
-    await appAction('review'); await appAction('upload');
-    assert.equal(await page.getAttribute('[data-app-room="image"]', 'data-version'), '2');
-    assert.equal(await page.getAttribute('[data-app-room="reviewed"]', 'data-version'), '1');
-    await appAction('publish'); await appAction('exhibit');
-    assert.equal(await page.getAttribute('[data-app-room="published"]', 'data-version'), '2');
-    await shot(language + '-app-defect');
-    await page.locator('#case-position').fill('0');
-    await page.waitForFunction(() => document.querySelector('[data-app-room="published"]').dataset.version === '0');
+    for (const id of ["download-before", "revoke", "download-after", "download-before"])
+      await appAction(id);
+    assert.ok(
+      await child.evaluate(
+        (eventId) => graphDebug.view.replay.event.id === eventId,
+        first.story.actions[0].event_ids[0],
+      ),
+    );
+    assert.deepEqual(
+      await child.evaluate(async () => (await (await fetch("/api/view")).json()).events),
+      raw,
+    );
     child = await go("drill");
-    await child.waitForFunction(() => graphDebug.view.replay?.event?.node === "review-policy" && graphDebug.view.replay.event.phase === "return");
-    assert.equal(await child.evaluate(() => graphDebug.view.replay.event.outputs.verdict), "allowed");
-    await page.waitForFunction(()=>document.querySelector('#case-telemetry').textContent.includes('allowed'));
-    assert.deepEqual(await page.locator('#case-telemetry strong').allTextContents(), ['1','2','allowed']);
-    assert.equal(await child.locator('#step-changes').isVisible(), false);
-    await child.waitForFunction(()=>document.querySelector('#source-code').textContent.includes('return "allowed" if actor == "reviewer"'));
-    assert.equal(await child.locator('#source-code').isVisible(), true);
-    assert.ok((await child.locator('#source-code mark').allTextContents()).join(' ').includes('approval_policy'));
-    const sourceCanvas = await child.locator('#viewport').boundingBox();
-    const sourcePanel = await child.locator('#node-details').boundingBox();
-    assert.ok(sourceCanvas.x + sourceCanvas.width <= sourcePanel.x + 2,'The source panel must not cover the graph canvas');
-    const drillIds = await child.evaluate(() => graphDebug.graph.boxes.map((box) => box.id));
-    assert.ok(drillIds.length <= 8, JSON.stringify(drillIds));
-    assert.ok(drillIds.includes("field:review-policy:in:reviewed_version"));
-    assert.ok(drillIds.includes("field:review-policy:in:current_version"));
-    await shot(language + "-02-drill");
-    child = await go("watch");
-    await page.locator('[data-watch="effects"]').uncheck();
-    await child.waitForFunction(() => !graphDebug.graph.boxes.some((box) => box.id === "save-exhibition"));
+    await child.waitForFunction(
+      (id) => graphDebug.view.replay?.event?.id === id,
+      first.story.inspection_event,
+    );
+    await page.waitForFunction(() =>
+      document.querySelector("#case-telemetry").textContent.includes("shared"),
+    );
+    assert.deepEqual(
+      await page.locator("#case-telemetry strong").allTextContents(),
+      first.story.telemetry.map((field) => String(inspection(first).outputs[field.field])),
+    );
+    await child.waitForFunction(
+      (excerpt) => document.querySelector("#source-code").textContent.includes(excerpt),
+      first.story.source_excerpt,
+    );
+    assert.ok(
+      (await child.locator("#source-code mark").allTextContents()).join(" ").includes("revoke"),
+    );
+    const graphBounds = await child.locator("#viewport").boundingBox(),
+      sourceBounds = await child.locator("#node-details").boundingBox();
+    assert.ok(graphBounds.x + graphBounds.width <= sourceBounds.x + 2);
+    const focused = await boxIds(child);
+    assert.ok(focused.length <= 18);
+    for (const id of first.story.focus.inputs) assert.ok(focused.includes(id));
+    await page.locator("#case-application .app-frame").click();
+    assert.ok(await page.locator(".app-capture-dialog").isVisible());
+    await page.keyboard.press("Escape");
+    await shot(language + "-source");
+    await page.locator(".view-editor summary").click();
+    const effect = first.story.focus.effects[0];
     await page.locator('[data-watch="effects"]').check();
-    await child.waitForFunction(() => graphDebug.graph.boxes.some((box) => box.id === "save-exhibition"));
+    await child.waitForFunction(
+      (id) => graphDebug.graph.boxes.some((box) => box.id === id),
+      effect,
+    );
+    await page.locator('[data-watch="effects"]').uncheck();
+    await child.waitForFunction(
+      (id) => !graphDebug.graph.boxes.some((box) => box.id === id),
+      effect,
+    );
+    await page.locator('[data-watch="effects"]').check();
+    await child.waitForFunction(
+      (id) => graphDebug.graph.boxes.some((box) => box.id === id),
+      effect,
+    );
     await page.locator('[data-watch="states"]').check();
-    await child.waitForFunction(() => graphDebug.graph.boxes.some((box) => box.id === "state.pending"));
-    const customName = language === "en" ? "Exhibition review" : "展览审核";
-    await page.fill("#watch-name", "Alternate path"); await page.click("#save-watch");
+    await child.waitForFunction(
+      (id) => graphDebug.graph.boxes.some((box) => box.id === id),
+      first.story.states[0],
+    );
+    await page.fill("#watch-name", "Alternate path");
+    await page.click("#save-watch");
     await page.waitForFunction(() => document.body.dataset.savedView?.startsWith("custom-"));
-    const alternateId = await page.getAttribute("body", "data-saved-view");
-    await page.fill("#watch-name", customName); await page.click("#save-watch");
-    await page.waitForFunction((previous) => document.body.dataset.savedView?.startsWith("custom-") && document.body.dataset.savedView !== previous, alternateId);
-    const savedId = await page.getAttribute("body", "data-saved-view");
-    await child.waitForFunction((id) => document.querySelector("#analysis-view").value === id, savedId);
-    const savedNodes = await child.evaluate(() => graphDebug.graph.boxes.map((box) => box.id).sort());
-    assert.ok(savedNodes.length <= 12, JSON.stringify(savedNodes));
+    const alternate = await page.getAttribute("body", "data-saved-view");
+    const name = language === "en" ? "Revocation analysis" : "取消共享排查";
+    await page.fill("#watch-name", name);
+    await page.click("#save-watch");
+    await page.waitForFunction(
+      (previous) => document.body.dataset.savedView !== previous,
+      alternate,
+    );
+    const saved = await page.getAttribute("body", "data-saved-view"),
+      savedNodes = await boxIds(child);
+    assert.ok(savedNodes.length <= 30);
     assert.ok(await child.evaluate(() => graphDebug.graph.edges.length > 4));
-    await shot(language + "-03-saved-view");
-    await child.waitForFunction(async (name) => {
-      const stored = (await (await fetch("/api/preferences")).json()).entries;
-      return JSON.stringify(stored).includes(name);
-    }, customName);
+    await child.waitForFunction(
+      async (name) =>
+        JSON.stringify((await (await fetch("/api/preferences")).json()).entries).includes(name),
+      name,
+    );
     child = await go("iterate");
-    await child.waitForFunction((id) => document.querySelector("#analysis-view").value === id && graphDebug.view.replay?.event?.outputs?.verdict === "stale_review", savedId);
-    await page.waitForFunction(()=>document.querySelector('#case-telemetry').textContent.includes('stale_review'));
-    await shot(language+'-updated-graph');
+    await child.waitForFunction(
+      ({ saved, id }) =>
+        document.querySelector("#analysis-view").value === saved &&
+        graphDebug.view.replay?.event?.id === id,
+      { saved, id: fixed.story.inspection_event },
+    );
+    await page.waitForFunction(() =>
+      document.querySelector("#case-telemetry").textContent.includes("private"),
+    );
+    assert.deepEqual(
+      await page.locator("#case-telemetry strong").allTextContents(),
+      fixed.story.telemetry.map((field) => String(inspection(fixed).outputs[field.field])),
+    );
     await page.click('[data-scene-action="case.repair"]');
-    await child.waitForFunction(()=>document.querySelector('#source-code').textContent.includes('if reviewed_version != current_version:'));
-    assert.equal(await child.getAttribute("body","data-policy-comparison"),"true");
-    assert.deepEqual(await child.evaluate(() => graphDebug.graph.boxes.map((box) => box.id).sort()), savedNodes);
-    await shot(language + "-04-iteration");
-    await page.reload(); child = await go("iterate");
-    await child.waitForFunction((id) => document.querySelector("#analysis-view").value === id && graphDebug.view.replay?.event?.outputs?.verdict === "stale_review", savedId);
-    assert.deepEqual(await child.evaluate(() => graphDebug.graph.boxes.map((box) => box.id).sort()), savedNodes);
+    await child.waitForFunction(
+      (excerpt) => document.querySelector("#source-code").textContent.includes(excerpt),
+      fixed.story.source_excerpt,
+    );
+    assert.deepEqual(await boxIds(child), savedNodes);
+    // Opening source must locate the relevant function even when a saved view
+    // contains large expanded regions. The view membership itself is unchanged.
+    await child.waitForFunction((id) => {
+      const box = graphDebug.graph.byId.get(id),
+        { scale, pan } = graphDebug.camera,
+        viewport = document.querySelector("#viewport"),
+        x = (box.x + box.w / 2) * scale + pan.x,
+        y = (box.y + box.h / 2) * scale + pan.y;
+      return x > 0 && y > 0 && x < viewport.clientWidth && y < viewport.clientHeight;
+    }, fixed.story.inspection_node);
+    await shot(language + "-repair");
+    await page.reload();
+    child = await go("iterate");
+    await child.waitForFunction(
+      (saved) => document.querySelector("#analysis-view").value === saved,
+      saved,
+    );
+    assert.deepEqual(await boxIds(child), savedNodes);
     child = await go("verify");
-    await child.waitForFunction(() => graphDebug.view.replay?.event?.node);
-    assert.equal(await child.getAttribute('body','data-policy-comparison'),'true');
-    assert.match(await page.locator('.rule-change').textContent(), /role.*image|角色.*图片/i);
-    await shot(language+'-verify-logic');
-    await page.locator('#case-position').fill('0');
-    await appAction('upload'); await appAction('review'); await appAction('upload');
-    await appAction('publish'); await appAction('exhibit');
-    assert.equal(await page.getAttribute('.case-application', 'data-status'), 'stale_review');
-    assert.equal(await page.getAttribute('[data-app-room="published"]', 'data-version'), '0');
-    await appAction('review'); await appAction('publish'); await appAction('exhibit');
-    assert.equal(await page.getAttribute('[data-app-room="reviewed"]', 'data-version'), '2');
-    assert.equal(await page.getAttribute('[data-app-room="published"]', 'data-version'), '2');
-    await shot(language + '-app-repaired');
+    assert.equal(await child.getAttribute("body", "data-policy-comparison"), "true");
+    assert.match(await page.locator(".rule-change").textContent(), /recipient|接收者/);
+    await appAction("download-after", fixed);
+    assert.equal(await child.evaluate(() => graphDebug.view.replay.event.outputs.allowed), false);
     await page.click("#case-tools");
-    await child.waitForFunction(() => document.body.dataset.caseCompact === "false");
     await child.click("#replay-live");
-    assert.equal(await child.evaluate(async () => (await (await fetch("/api/view")).json()).events.length), 138);
-    for (const view of ["api", "business", "states", "permission", "functions", "data-operations", "database", "code"]) {
-      await child.click("#show-all");
-      await child.selectOption("#analysis-view", view);
+    for (const profile of [
+      "business",
+      "states",
+      "functions",
+      "permission",
+      "data-operations",
+      "database",
+      "code",
+      "api",
+    ]) {
+      await child.selectOption("#analysis-view", profile);
       await child.click("#expand");
-      await child.waitForFunction((view) => document.querySelector("#analysis-view").value === view && graphDebug.graph.boxes.length > 0, view);
-      assert.ok(await child.evaluate(() => graphDebug.graph.edges.length > 0), "Missing relationships: " + view);
+      await child.waitForFunction(
+        (profile) =>
+          document.querySelector("#analysis-view").value === profile &&
+          graphDebug.graph.boxes.length > 0 &&
+          !graphDebug.layoutBusy,
+        profile,
+        { timeout: 45000 },
+      );
+      assert.ok(
+        await child.evaluate(() => graphDebug.graph.edges.length > 0),
+        "Missing relations: " + profile,
+      );
     }
-    await child.selectOption("#analysis-view", "overview"); await child.click("#show-all"); await child.click("#expand");
+    await page.click('[data-case-lens="all"]');
+    await page.waitForFunction(() => document.body.dataset.lensReady === "all");
+    await child.waitForFunction(
+      (count) => graphDebug.view.code_structure?.loaded_nodes === count && !graphDebug.layoutBusy,
+      fixed.code.nodes.length,
+    );
     await page.click("#case-3d");
     await child.waitForFunction(() => graphDebug.spatial?.perspective && !graphDebug.layoutBusy);
     const layers = await child.evaluate(() => graphDebug.spatial.layerPlanes);
     assert.equal(layers.length, 8);
-    await shot(language + "-05-explore-3d");
-    await page.click("#case-2d"); await child.waitForFunction(() => !graphDebug.layers.enabled);
+    await shot(language + "-all-layers");
+    await page.click("#case-2d");
+    await child.waitForFunction(() => !graphDebug.layers.enabled);
     await page.click("#case-tools");
-    await page.setViewportSize({width: 390, height: 844}); await go("watch");
+    await page.setViewportSize({ width: 390, height: 844 });
+    child = await go("drill");
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2));
-    assert.equal(await page.locator('#watch .case-application').count(), 1);
-    await page.locator('#case-application').scrollIntoViewIfNeeded();
+    assert.equal(await page.locator("#drill .case-application").count(), 1);
     await shot(language + "-mobile");
-    await page.click('#language');
+    await page.click("#language");
     await page.waitForFunction((previous) => document.documentElement.lang !== previous, language);
-    await go('watch');
-    assert.equal(await page.locator('#watch .case-application').count(), 1);
-    await page.click('#language'); await go('watch');
-    await page.setViewportSize({width: 1536, height: 1050});
-    receipts.push({language, stages: 7, coding_conversations: 3, manual_vibelens_stages: 4, manual_steps_show_previous_development_only: true, progressive_flow_confirmation: true, nonoverlapping_three_surfaces: true, conditional_playback: true, implementation_nodes: implementationIds, app_response_replay: true, backward_seek_clears_future_values: true, stale_approval_rejected_after_repair: true, compact_3d_rotate_zoom_pan: true, camera_before: orbitBefore, camera_after_orbit: orbitAfter, camera_after_zoom: zoomAfter, mobile_companion: true, mobile_language_switch: true, initial_business_nodes: 4, focused_nodes: drillIds.length, custom_nodes: savedNodes.length, saved_view_id: savedId, retained_across_builds: true, retained_after_reload: true, source_and_layer_presets: 8, real_3d_layers: layers.length, native_scroll: true, events_before_replay: eventCount});
+    await go("drill");
+    assert.equal(await page.locator("#drill .case-application").count(), 1);
+    await page.click("#language");
+    await go("drill");
+    await page.setViewportSize({ width: 1536, height: 1050 });
+    receipts.push({
+      language,
+      stages: 5,
+      confirmed_nodes: first.story.business.length,
+      focused_nodes: focused.length,
+      saved_nodes: savedNodes.length,
+      saved_view: saved,
+      original_recording_preserved: true,
+      real_motion: true,
+      actual_source_and_capture: true,
+      saved_across_builds_and_reload: true,
+      rotate_zoom_pan: true,
+      presets: 8,
+      code_nodes: fixed.code.nodes.length,
+      layers: layers.length,
+      mobile: true,
+    });
   }
-  await page.setViewportSize({width:390,height:844});
-  await page.goto(base+'/demo.html?lang=zh-CN'); await go('foundation');
-  for (let turn=0;turn<3;turn++) await page.click('#conversation-next');
-  assert.equal(await page.locator('.conversation-flow svg').getAttribute('viewBox'),'0 0 340 590');
-  await page.locator('.conversation-flow').scrollIntoViewIfNeeded();
-  await shot('mobile-flow-confirmation');
-  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));
-  await page.setViewportSize({width:1536,height:1050});
-  await page.emulateMedia({reducedMotion: "reduce"});
-  await page.goto(base + "/demo.html?lang=en"); await go("run");
-  const child = await frame(); await page.waitForTimeout(600);
-  assert.ok(!(await child.locator("#replay-play").getAttribute("aria-label"))?.match(/Pause|暂停/));
-  assert.equal(errors.length, 0, errors.join("\n"));
-  await writeFile(path.join(output, "summary.json"), JSON.stringify({passed: true, receipts, reduced_motion: true, errors}, null, 2));
-  console.log(JSON.stringify({passed: true, receipts}));
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(base + "/demo.html?lang=en");
+  const child = await go("run");
+  await page.waitForTimeout(600);
+  assert.ok(!/Pause|暂停/.test(await child.locator("#replay-play").getAttribute("aria-label")));
+  assert.deepEqual(errors, []);
+  await writeFile(
+    path.join(output, "summary.json"),
+    JSON.stringify({ passed: true, receipts, reduced_motion: true, errors }, null, 2),
+  );
+  console.log(JSON.stringify({ passed: true, receipts }));
 } catch (error) {
-  await page?.screenshot({path:path.join(output,"failure.png")});
-  const state = await page?.evaluate(() => ({chapter: document.body.dataset.chapter, ready: document.body.dataset.sceneReady, scroll: scrollY}));
-  const child = page?.frame({url:/viewer\/index.html/});
-  const graph = await child?.evaluate(() => ({view:document.querySelector('#analysis-view').value, nodes:window.graphDebug?.graph?.boxes.map(box=>box.id), stage:window.graphDebug?.view?.stage}));
-  await writeFile(path.join(output, "failure.json"), JSON.stringify({scene, state, graph, error: String(error.stack), errors}, null, 2)); throw error;
+  await page?.screenshot({ path: path.join(output, "failure.png") });
+  const child = page?.frame({ url: /viewer\/index.html\?case=/ });
+  const graph = await child?.evaluate(() => ({
+    nodes: window.graphDebug?.graph?.boxes.map((box) => box.id),
+    view: document.querySelector("#analysis-view")?.value,
+    stage: window.graphDebug?.view?.stage,
+    replay: window.graphDebug?.view?.replay?.id,
+    layout_busy: window.graphDebug?.layoutBusy,
+    record_choice: document.querySelector("#record-list")?.value,
+    source_disabled: document.querySelector("#source")?.disabled,
+  }));
+  await writeFile(
+    path.join(output, "failure.json"),
+    JSON.stringify({ scene, error: String(error.stack), graph, errors }, null, 2),
+  );
+  throw error;
+} finally {
+  await browser?.close();
+  server?.kill();
 }
-finally {await browser?.close(); server?.kill(); await writeFile(path.join(output, "errors.json"), JSON.stringify(errors, null, 2));}

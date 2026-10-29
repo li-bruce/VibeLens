@@ -1,10 +1,10 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
-import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=clarity-1";
-import { messages, chapters } from "./case-messages.mjs?rev=clarity-1";
-import { scrollStory } from "./scroll-story.mjs?rev=story-3";
-import { companion } from "./case-companion.mjs?rev=story-6";
+import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
+import { messages, chapters } from "./case-messages.mjs?rev=files-1";
+import { scrollStory } from "./scroll-story.mjs?rev=files-1";
+import { companion } from "./case-companion.mjs?rev=files-1";
 
-import { mountConversationTour } from "./conversation-tour.mjs?rev=clarity-1";
+import { mountConversationTour } from "./conversation-tour.mjs?rev=files-1";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -17,7 +17,7 @@ let chapter = 0,
   context;
 let interacting = false,
   tools = false;
-let options = { versions: true, effects: true, states: false };
+let options = { inputs: true, effects: false, states: false };
 const values = await Promise.all(
   [1, 2].map(async (version) => (await fetch(`case-data/v${version}.json`)).json()),
 );
@@ -41,10 +41,9 @@ function stage(index) {
   setInteraction(mode === "3d" || tools);
   context?.stage(index);
   const current = chapters[index];
-  document.querySelector(".case-playback").hidden = !["run", "watch", "verify"].includes(
-    current.id,
-  );
-  const lens = ["foundation", "build", "run"].includes(current.id) ? "business" : "implementation";
+  $("save-watch").disabled = true;
+  document.querySelector(".case-playback").hidden = !["run", "verify"].includes(current.id);
+  const lens = ["foundation", "run"].includes(current.id) ? "business" : "implementation";
   document
     .querySelectorAll("[data-case-lens]")
     .forEach((button) =>
@@ -55,14 +54,14 @@ function stage(index) {
     scene: chapters[index].id,
     mode,
     compact: !tools,
-    options: current.id === "drill" ? { versions: true, effects: false, states: false } : options,
+    options,
     name: $("watch-name")?.value || t("case.viewName"),
   };
   const key = version + ":" + locale();
   $("case-view-name").textContent = t(
-    ["foundation", "build", "run"].includes(current.id)
+    ["foundation", "run"].includes(current.id)
       ? "case.graph"
-      : ["watch", "iterate", "verify"].includes(current.id)
+      : ["drill", "iterate", "verify"].includes(current.id)
         ? "case.viewName"
         : "case.core",
   );
@@ -72,7 +71,7 @@ function stage(index) {
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=story-7`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=files-1`;
   } else send(message);
   document.body.dataset.chapter = String(index);
 }
@@ -135,13 +134,13 @@ function render() {
     const appSlot = document.createElement("div");
     appSlot.className = "scene-app-slot";
     section.append(appSlot);
-    if (current.id === "build")
-      button(section, "case.build", () => send({ action: "implementation" }));
     if (current.id === "run") button(section, "case.run", () => send({ action: "play" }));
     if (current.id === "drill") {
       const trace = document.createElement("div");
       trace.className = "source-trail";
-      const owner = values[0].view.model.nodes.find((node) => node.id === "review-policy");
+      const owner = values[0].view.model.nodes.find(
+        (node) => node.id === values[0].story.inspection_node,
+      );
       for (const text of [owner.source.symbol + "()", owner.source.path]) {
         const item = document.createElement("span");
         item.textContent = text;
@@ -150,7 +149,12 @@ function render() {
       section.append(trace);
       button(section, "case.drill", () => send({ action: "source" }));
     }
-    if (current.id === "watch") {
+    if (current.id === "drill") {
+      const editor = document.createElement("details");
+      editor.className = "view-editor";
+      const summary = document.createElement("summary");
+      summary.textContent = t("case.customize");
+      editor.append(summary);
       const fieldset = document.createElement("fieldset");
       fieldset.className = "watch-options";
       const legend = document.createElement("legend");
@@ -158,7 +162,7 @@ function render() {
       fieldset.append(legend);
       for (const [key, prop] of [
         ["case.rule", null],
-        ["case.versions", "versions"],
+        ["case.inputs", "inputs"],
         ["case.effects", "effects"],
         ["case.status", "states"],
       ]) {
@@ -172,6 +176,8 @@ function render() {
           input.onchange = () => {
             options = { ...options, [prop]: input.checked };
             $("save-watch").textContent = t("case.save");
+            $("save-watch").disabled = true;
+            delete document.body.dataset.sceneReady;
             send({ action: "preview", options });
           };
         }
@@ -184,15 +190,15 @@ function render() {
       name.value = t("case.viewName");
       name.maxLength = 40;
       name.setAttribute("aria-label", t("case.name"));
-      section.append(fieldset, name);
+      editor.append(fieldset, name);
       const save = button(
-        section,
+        editor,
         "case.save",
         () => send({ action: "save", name: name.value }),
         "watch-save",
       );
       save.id = "save-watch";
-      button(section, "case.replay", () => send({ action: "play" }));
+      section.append(editor);
     }
     if (current.id === "iterate") {
       button(section, "case.repair", () => send({ action: "source" }));
@@ -244,6 +250,7 @@ window.addEventListener("message", (event) => {
   if (data.type === "vibelens-scene-ready") {
     $("case-graph").dataset.ready = "true";
     document.body.dataset.sceneReady = data.scene;
+    $("save-watch").disabled = false;
   }
   if (data.type === "vibelens-view-saved") {
     $("save-watch").textContent = t("case.saved");
@@ -254,10 +261,11 @@ window.addEventListener("message", (event) => {
     $("case-step").textContent = data.error;
     console.error(data.error);
   }
+  if (data.type === "vibelens-lens-ready") document.body.dataset.lensReady = data.lens;
   if (data.type === "vibelens-case-state") {
     context?.update(data.eventId);
     document.querySelector(".case-playback").hidden =
-      !data.playing && !["run", "watch", "verify"].includes(chapters[chapter].id);
+      !data.playing && !["run", "verify"].includes(chapters[chapter].id);
     $("case-position").value = data.progress || 0;
     $("case-play").innerHTML = data.playing
       ? '<span aria-hidden="true">Ⅱ</span>'
@@ -270,26 +278,22 @@ window.addEventListener("message", (event) => {
     $("case-graph").dataset.visibleNodes = data.nodes;
     document.body.dataset.nativeView = data.viewId;
     if (
-      ["watch", "iterate", "verify"].includes(chapters[chapter].id) &&
+      ["drill", "iterate", "verify"].includes(chapters[chapter].id) &&
       data.viewId?.startsWith("custom-")
     )
       $("case-view-name").textContent = data.viewName;
-    if (["drill", "watch", "iterate"].includes(chapters[chapter].id)) {
-      const inputs = data.inputs || {},
+    if (["drill", "iterate"].includes(chapters[chapter].id)) {
+      const currentStory = values[chapters[chapter].version - 1].story,
         host = $("case-telemetry");
       host.replaceChildren();
-      for (const [key, value] of [
-        ["case.reviewed", inputs.reviewed_version],
-        ["case.current", inputs.current_version],
-        ["case.verdict", data.outputs?.verdict],
-      ]) {
-        if (data.node !== "review-policy" || value === undefined) continue;
+      for (const field of currentStory.telemetry || []) {
+        const value = data[field.direction]?.[field.field];
+        if (data.node !== currentStory.inspection_node || value === undefined) continue;
         const span = document.createElement("span");
-        span.textContent = t(key);
+        span.textContent = copy(field.label);
         const strong = document.createElement("strong");
         strong.textContent = value;
         span.append(strong);
-        if (key === "case.current") span.className = "mismatch";
         host.append(span);
       }
     }
@@ -316,10 +320,12 @@ $("case-position").oninput = (event) =>
   send({ action: "seek", progress: Number(event.target.value) });
 document.querySelectorAll("[data-case-lens]").forEach((button) => {
   button.onclick = () => {
+    delete document.body.dataset.lensReady;
     document
       .querySelectorAll("[data-case-lens]")
       .forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
     send({ action: button.dataset.caseLens });
+    if (button.dataset.caseLens === "all") $("case-view-name").textContent = t("case.layered");
   };
 });
 onLanguageChange(render);

@@ -15,7 +15,8 @@ const python =
 const out = path.resolve(
   process.env.BO_CASE_EVIDENCE || ".validation/exhibition-case-" + Date.now(),
 );
-const exported = path.resolve("docs/site/case-data");
+// Legacy regression exports belong to their evidence run, separate from Pages.
+const exported = path.resolve(process.env.BO_CASE_EXPORT || path.join(out, "case-data"));
 await mkdir(out, { recursive: true });
 await mkdir(exported, { recursive: true });
 

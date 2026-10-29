@@ -1,4 +1,4 @@
-"""Serve immutable real gallery captures for control/browser acceptance.
+"""Serve the frozen controller fixture for native API/browser acceptance.
 
 This fixture runs the actual control and preference services. It replays existing
 execution evidence; it neither runs the gallery business engine nor emits events.
@@ -19,7 +19,9 @@ from bo_observer.web.view_preferences import Preferences, PreferenceConflict
 
 
 def make_server(project):
-    artifact = json.loads((ROOT / "docs/site/case-data/v1.json").read_text(encoding="utf-8"))
+    artifact = json.loads(
+        (ROOT / "tests/fixtures/conversation-control-case.json").read_text(encoding="utf-8")
+    )
     project.mkdir(parents=True, exist_ok=True)
     definition = project / "bo_stategraph/project.json"
     definition.parent.mkdir(exist_ok=True)

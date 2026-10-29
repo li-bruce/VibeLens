@@ -61,14 +61,12 @@ try {
     );
     let child = page.frames().find((frame) => frame.url().includes("controls=1"));
     assert.ok(child);
-    await child.waitForFunction(
-      () => graphDebug.graph?.boxes.length === 3 && !graphDebug.layoutBusy,
-    );
+    await child.waitForFunction(() => graphDebug.graph?.boxes.length > 0 && !graphDebug.layoutBusy);
     assert.deepEqual(
       await child.evaluate(() => graphDebug.graph.boxes.map((box) => box.id).sort()),
-      ["publish", "review", "upload"],
+      plans.locales[language].business.node_ids.slice().sort(),
     );
-    assert.equal(await child.evaluate(() => graphDebug.graph.edges.length), 2);
+    assert.ok(await child.evaluate(() => graphDebug.graph.edges.length > 0));
     await page.waitForTimeout(500);
     assert.equal(
       await page
@@ -112,12 +110,9 @@ try {
       () => document.querySelector("#conversation-controls").dataset.applied === "details",
     );
     assert.ok(
-      await child.evaluate(() =>
-        [
-          "review-policy",
-          "field:review-policy:in:reviewed_version",
-          "field:review-policy:in:current_version",
-        ].every((id) => graphDebug.graph.boxes.some((box) => box.id === id)),
+      await child.evaluate(
+        (ids) => ids.every((id) => graphDebug.graph.boxes.some((box) => box.id === id)),
+        plans.locales[language].details.node_ids,
       ),
     );
     await page.click('[data-control-mode="3d"]');
@@ -173,8 +168,8 @@ try {
     );
     receipts.push({
       language,
-      original_relations: 2,
-      business_nodes: 3,
+      original_relations: plans.locales[language].business.edge_ids.length,
+      business_nodes: plans.locales[language].business.node_ids.length,
       parameters_visible: true,
       native_3d: true,
       replay_events: selected.selected_events,

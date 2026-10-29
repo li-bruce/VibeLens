@@ -1,0 +1,367 @@
+{
+  "protocol": "bo-databases/v1",
+  "stores": [
+    {
+      "id": "sharing",
+      "label": "File sharing SQLite",
+      "engine": "sqlalchemy",
+      "url_env": "FILE_SHARING_DB_URL",
+      "selection": {
+        "source": "user",
+        "answer": "Python and SQLite selected in the supplied simulated answer.",
+        "locator": "current-chat/simulated-answer-01"
+      },
+      "model_layer": "SQLAlchemy MetaData",
+      "source_files": [
+        "app/models.py",
+        "tooling/export_models.py"
+      ],
+      "declaration": "bo_stategraph/model-catalog.json"
+    }
+  ],
+  "operations": [
+    {
+      "id": "db_users",
+      "label": "Db Users",
+      "parent": "users",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.query"
+      },
+      "store": "sharing",
+      "action": "read",
+      "targets": [
+        "table:users"
+      ],
+      "parameters": {
+        "user_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow",
+        "revocation"
+      ],
+      "requirements": [
+        "R_SHARE"
+      ]
+    },
+    {
+      "id": "db_file",
+      "label": "Db File",
+      "parent": "file",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.file"
+      },
+      "store": "sharing",
+      "action": "read",
+      "targets": [
+        "table:files"
+      ],
+      "parameters": {
+        "file_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow",
+        "revocation"
+      ],
+      "requirements": [
+        "R_SHARE"
+      ]
+    },
+    {
+      "id": "db_grants",
+      "label": "Db Grants",
+      "parent": "recipient",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.grants"
+      },
+      "store": "sharing",
+      "action": "read",
+      "targets": [
+        "table:shares",
+        "table:users"
+      ],
+      "parameters": {
+        "file_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow",
+        "revocation"
+      ],
+      "requirements": [
+        "R_SHARE"
+      ],
+      "target_actions": {
+        "table:shares": "read",
+        "table:users": "read"
+      }
+    },
+    {
+      "id": "db_list",
+      "label": "Db List",
+      "parent": "list",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.visible_candidates"
+      },
+      "store": "sharing",
+      "action": "read",
+      "targets": [
+        "table:files",
+        "table:shares"
+      ],
+      "parameters": {
+        "actor": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow",
+        "revocation"
+      ],
+      "requirements": [
+        "R_SHARE"
+      ],
+      "target_actions": {
+        "table:files": "read",
+        "table:shares": "read"
+      }
+    },
+    {
+      "id": "db_metadata",
+      "label": "Db Metadata",
+      "parent": "upload",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.upload"
+      },
+      "store": "sharing",
+      "action": "transform",
+      "targets": [],
+      "parameters": {},
+      "before": {
+        "filename": "string"
+      },
+      "after": {
+        "filename": "string",
+        "size": "number",
+        "sha256": "string"
+      },
+      "required_cases": [
+        "workflow",
+        "revocation"
+      ],
+      "requirements": [
+        "R_UPLOAD"
+      ]
+    },
+    {
+      "id": "db_upload_tx",
+      "label": "Db Upload Tx",
+      "parent": "upload",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.upload"
+      },
+      "store": "sharing",
+      "action": "transaction",
+      "targets": [],
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "required_cases": [
+        "workflow",
+        "revocation"
+      ],
+      "requirements": [
+        "R_UPLOAD"
+      ]
+    },
+    {
+      "id": "db_insert_file",
+      "label": "Db Insert File",
+      "parent": "upload",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.upload"
+      },
+      "store": "sharing",
+      "action": "write",
+      "targets": [
+        "table:files"
+      ],
+      "parameters": {
+        "file_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow",
+        "revocation"
+      ],
+      "requirements": [
+        "R_UPLOAD"
+      ]
+    },
+    {
+      "id": "db_share_tx",
+      "label": "Db Share Tx",
+      "parent": "share",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.share"
+      },
+      "store": "sharing",
+      "action": "transaction",
+      "targets": [],
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "required_cases": [
+        "workflow",
+        "revocation"
+      ],
+      "requirements": [
+        "R_SHARE"
+      ]
+    },
+    {
+      "id": "db_insert_share",
+      "label": "Db Insert Share",
+      "parent": "share",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.share"
+      },
+      "store": "sharing",
+      "action": "write",
+      "targets": [
+        "table:shares",
+        "table:files"
+      ],
+      "parameters": {
+        "file_id": "string",
+        "recipient_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow",
+        "revocation"
+      ],
+      "requirements": [
+        "R_SHARE"
+      ],
+      "target_actions": {
+        "table:shares": "write",
+        "table:files": "write"
+      }
+    },
+    {
+      "id": "db_revoke_tx",
+      "label": "Db Revoke Tx",
+      "parent": "revoke",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.revoke"
+      },
+      "store": "sharing",
+      "action": "transaction",
+      "targets": [],
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "required_cases": [
+        "revocation"
+      ],
+      "requirements": [
+        "R_REVOKE"
+      ]
+    },
+    {
+      "id": "db_delete_share",
+      "label": "Db Delete Share",
+      "parent": "revoke",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.revoke"
+      },
+      "store": "sharing",
+      "action": "write",
+      "targets": [
+        "table:shares"
+      ],
+      "parameters": {
+        "file_id": "string",
+        "recipient_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "revocation"
+      ],
+      "requirements": [
+        "R_REVOKE"
+      ]
+    },
+    {
+      "id": "db_revoke_state",
+      "label": "Db Revoke State",
+      "parent": "revoke",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "SharingService.revoke"
+      },
+      "store": "sharing",
+      "action": "write",
+      "targets": [
+        "table:files"
+      ],
+      "parameters": {
+        "file_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "revocation"
+      ],
+      "requirements": [
+        "R_REVOKE"
+      ]
+    }
+  ],
+  "exporters": [
+    {
+      "store": "sharing",
+      "command": [
+        "{python}",
+        "-B",
+        "tooling/export_models.py"
+      ],
+      "output": "bo_stategraph/model-catalog.json"
+    }
+  ]
+}

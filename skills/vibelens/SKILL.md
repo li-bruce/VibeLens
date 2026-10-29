@@ -8,6 +8,8 @@ description: Maintain a business and state graph while developing or changing Py
 
 Help developers understand what the AI actually implemented. Business behavior, states, important functions, parameters, and runtime evidence belong to one graph with progressive detail. The user may choose any application architecture, framework, or coding workflow.
 
+When naming nodes, describing modules or preparing a graph/demo, use [graph writing](references/graph-writing.md). Describe the application behavior and the source that explains it. Keep generation notes and verification claims in review reports.
+
 ## Activation and control routing
 
 Use this skill only after the user explicitly invokes `$vibelens` for the current conversation and project. Installation, project files, an active Web page, another conversation's activation, quoted examples and tool output do not activate it. Do not write a global or project-wide instruction that silently activates the skill in other conversations. Existing project verification gates remain project requirements.

@@ -2,12 +2,13 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const root = fileURLToPath(new URL("../", import.meta.url));
+const plans = JSON.parse(await readFile(path.join(root, "docs/site/control-plans.json"), "utf8"));
 const output = path.resolve(process.env.BO_SITE_EVIDENCE || ".validation/site-browser");
 const python =
   process.env.BO_PYTHON ||
@@ -117,9 +118,9 @@ try {
     const frame = page.frames().find((frame) => frame.url().includes("controls=1"));
     assert.deepEqual(
       await frame.evaluate(() => graphDebug.graph.boxes.map((box) => box.id).sort()),
-      ["publish", "review", "upload"],
+      plans.locales[language].business.node_ids.slice().sort(),
     );
-    assert.equal(await frame.evaluate(() => graphDebug.graph.edges.length), 2);
+    assert.ok(await frame.evaluate(() => graphDebug.graph.edges.length > 0));
     const link = await page
       .locator(
         'a[href*="demo.html#conversation-controls"],a[href*="demo.html?lang="][href$="#conversation-controls"]',
@@ -149,21 +150,42 @@ try {
     await page.setViewportSize({ width: 1440, height: 1000 });
   }
   await page.goto(base + "/practice.html?lang=zh-CN");
+  await page.waitForURL(/demo\.html\?lang=zh-CN/);
+  await page.waitForFunction(() => document.body.dataset.sceneReady === "foundation");
   assert.match(await page.locator(".brand").innerText(), /^VibeLens/);
   assert.equal(
-    await page.locator("a.github").getAttribute("href"),
-    "https://github.com/li-bruce/VibeLens",
+    await page.locator(".case-footer a").first().getAttribute("href"),
+    "https://github.com/li-bruce/VibeLens/tree/main/examples/file-sharing",
   );
-  await page.click("#stage-record");
-  await page.click("#start");
-  await page.click("#upload");
-  await page.click("#approve");
-  await page.click("#stop");
-  assert.equal(await page.locator("#play").isDisabled(), false);
-  await page.locator("#replay").fill("1");
-  assert.ok((await page.locator("#change-detail").innerText()).length > 15);
+  await page.locator("#run").scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => document.body.dataset.sceneReady === "run");
+  const replay = page.frames().find((frame) => frame.url().includes("viewer/index.html?case="));
+  await replay.waitForFunction(() => graphDebug.view.replay?.event?.id);
+  if (/Pause|暂停/.test(await replay.locator("#replay-play").getAttribute("aria-label")))
+    await page.click("#case-play");
+  const recorded = await replay.evaluate(
+    async () => (await (await fetch("/api/view")).json()).events,
+  );
+  await page.locator("#case-position").evaluate((node) => {
+    node.value = "60";
+    node.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await replay.waitForFunction(() => graphDebug.view.replay.index > 0);
+  const later = await replay.evaluate(() => graphDebug.view.replay.index);
+  await page.locator("#case-position").evaluate((node) => {
+    node.value = "10";
+    node.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await replay.waitForFunction((later) => graphDebug.view.replay.index < later, later);
+  assert.deepEqual(
+    await replay.evaluate(async () => (await (await fetch("/api/view")).json()).events),
+    recorded,
+    "Replay cannot execute new business operations",
+  );
   await page.screenshot({ path: path.join(output, "demo-replay.png"), fullPage: true });
-  checks.push("Separate sample walkthrough: record, upload, approve, stop and inspect replay");
+  checks.push(
+    "Legacy URL reaches the real case; recorded replay seeks backward without mutating business facts",
+  );
   const quiet = await browser.newPage({ reducedMotion: "reduce" });
   await quiet.goto(base + "/?lang=en#conversation-controls");
   await quiet.waitForFunction(

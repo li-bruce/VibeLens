@@ -1,0 +1,11 @@
+--- controlled-fault/app/service.py
++++ repaired/app/service.py
+@@ -138,7 +138,7 @@
+                 raise DomainError("file_not_found", 404)
+             grants = self.store.grants(connection, file_id)
+             self.authorize("revoke", actor, row, grants)
+-            statement = shares.delete().where((shares.c.file_id == file_id) & (shares.c.recipient_id == actor))
++            statement = shares.delete().where((shares.c.file_id == file_id) & (shares.c.recipient_id == recipient_id))
+             result = self.store.bo_data.execute("db_delete_share", lambda: connection.execute(statement),
+                 connection=connection, statement=str(statement), language="sql",
+                 parameters={"file_id": file_id, "recipient_id": recipient_id},

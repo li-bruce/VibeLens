@@ -5,15 +5,24 @@
 const params = new URLSearchParams(location.search);
 const version = params.get("case") === "2" ? 2 : 1;
 const controlMode = params.get("controls") === "1";
+const { expandCodeSlice } = await import("./case-code.mjs?rev=files-1");
+const { presentCase } = await import("./case-copy.mjs?rev=files-1");
 const nativeFetch = window.fetch.bind(window);
-const artifact = await (
+const captured = await (
   await nativeFetch(new URL(`./case-data/v${version}.json`, import.meta.url))
 ).json();
+// Only display summaries change. The exported record and source files stay original.
+const artifact = presentCase(captured);
 let view = structuredClone(artifact.view);
 // A nonzero revision keeps the canonical viewer from migrating unrelated local
 // project layouts into this separately namespaced, bilingual demonstration.
-let preferences = { schema: 1, project_id: view.layout_id, revision: 1, entries: {} };
-const preferenceKey = `vibelens.case.${controlMode ? "controls-1" : "gallery-story-6"}.${params.get("lang") || "en"}`;
+let preferences = {
+  schema: 1,
+  project_id: view.layout_id,
+  revision: 1,
+  entries: {},
+};
+const preferenceKey = `vibelens.case.${controlMode ? "controls-1" : "files-story-1"}.${params.get("lang") || "en"}`;
 const controlPlans = controlMode
   ? (await (await nativeFetch(new URL("./control-plans.json", import.meta.url))).json()).locales[
       params.get("lang") || "en"
@@ -33,7 +42,10 @@ try {
   /* Optional browser preferences. */
 }
 const reply = (value, status = 200) =>
-  new Response(JSON.stringify(value), { status, headers: { "Content-Type": "application/json" } });
+  new Response(JSON.stringify(value), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
 
 /** Serve only known, immutable case endpoints; unknown requests fail visibly. */
 window.fetch = async (input, init = {}) => {
@@ -71,7 +83,10 @@ window.fetch = async (input, init = {}) => {
   if (route === "/api/versions") return reply([]);
   if (route === "/api/preferences") {
     if (init.method === "POST") {
-      preferences = { ...JSON.parse(init.body), revision: preferences.revision + 1 };
+      preferences = {
+        ...JSON.parse(init.body),
+        revision: preferences.revision + 1,
+      };
       try {
         localStorage.setItem(preferenceKey, JSON.stringify(preferences));
       } catch {
@@ -101,7 +116,7 @@ window.fetch = async (input, init = {}) => {
     const focus = url.searchParams.get("focus");
     if (!focus) return reply(artifact.code);
     return artifact.codeFocus[focus]
-      ? reply(artifact.codeFocus[focus])
+      ? reply(expandCodeSlice(artifact.code, artifact.codeFocus[focus]))
       : reply(
           {
             error:
@@ -126,29 +141,7 @@ window.fetch = async (input, init = {}) => {
 const { emptyLayout, layoutKey } = await import("./viewer/layout.js");
 const { profileFor } = await import("./viewer/analysis.js");
 const chinese = params.get("lang") === "zh-CN";
-const hasComparison = artifact.sources["policy.py"].includes(
-  "if reviewed_version != current_version:",
-);
-if (hasComparison !== (version === 2))
-  throw Error("The policy caption differs from the captured source");
-const captions = {
-  upload: ["Upload", "上传图片"],
-  review: ["Open image", "查看图片"],
-  publish: ["Approve", "通过审核"],
-  exhibit: ["Exhibition", "展览"],
-  "review-policy": [
-    hasComparison ? "Role + image" : "Role check",
-    hasComparison ? "角色与图片一致" : "检查角色",
-  ],
-  "state.empty": ["No image", "尚未上传"],
-  "state.pending": ["Pending", "待审核"],
-  "state.displayed": ["Published", "已发布"],
-  "field:review-policy:in:reviewed_version": ["Opened image", "已查看图片"],
-  "field:review-policy:in:current_version": ["Current image", "当前图片"],
-  "field:review-policy:out:verdict": ["Result", "判断结果"],
-  "save-exhibition": ["Write exhibition", "写入展览"],
-  "db:gallery:table%3Aexhibition": ["Exhibition table", "展览表"],
-};
+const captions = artifact.story.captions;
 const baseKey = layoutKey(view.model, preferences.project_id);
 if (controlMode) {
   // Separate the layers in this preview; the native viewer keeps its own controls.
@@ -171,7 +164,7 @@ for (const id of [
   const key = baseKey + (id === "overview" ? "" : ":view:" + id);
   if (!preferences.entries[key]) {
     const layout = emptyLayout();
-    layout.algorithm = "layered";
+    layout.algorithm = id === "overview" ? "stress" : "layered";
     layout.filters = profileFor(id);
     preferences.entries[key] = JSON.stringify(layout);
   }
@@ -182,25 +175,25 @@ for (const [key, raw] of Object.entries(preferences.entries)) {
   state.annotations ||= {};
   for (const [id, pair] of Object.entries(captions)) {
     const existing = state.annotations[id];
-    const previousPolicy = ["Role check", "检查角色", "Role + image", "角色与图片一致"];
-    if (!existing?.label || (id === "review-policy" && previousPolicy.includes(existing.label)))
+    if (!existing?.label || id === artifact.story.inspection_node)
       state.annotations[id] = { ...existing, label: pair[chinese ? 1 : 0] };
   }
   preferences.entries[key] = JSON.stringify(state);
 }
-document.body.dataset.policyComparison = String(hasComparison);
+document.body.dataset.policyComparison = String(artifact.business.passed);
 
 // Load after installing the transport: localization and preferences also use it.
 const { mergeGraph } = await import("./viewer/graph-links.js");
 if (!controlMode) {
-  view.model = mergeGraph(view.model, artifact.codeFocus.publish);
-  artifact.recording.context.model = mergeGraph(
-    artifact.recording.context.model,
-    artifact.codeFocus.publish,
+  const sourceRegion = expandCodeSlice(
+    artifact.code,
+    artifact.codeFocus[artifact.story.source_focus],
   );
+  view.model = mergeGraph(view.model, sourceRegion);
+  artifact.recording.context.model = mergeGraph(artifact.recording.context.model, sourceRegion);
 }
-await import("./viewer/viewer.js?rev=clarity-1");
-const { scenePlayer } = await import("./case-scene-player.mjs?rev=story-6");
+await import("./viewer/viewer.js?rev=files-1");
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=files-1");
 const runtimeView = structuredClone(view);
 const designView = {
   ...structuredClone(artifact.recording.context),
@@ -259,7 +252,7 @@ window.addEventListener("message", (event) => {
 });
 const style = document.createElement("link");
 style.rel = "stylesheet";
-style.href = new URL("./case-canvas.css?rev=story-3", import.meta.url).href;
+style.href = new URL("./case-canvas.css?rev=files-1", import.meta.url).href;
 document.head.append(style);
 document.body.dataset.caseCompact = "true";
 // Keep the captured provenance visible; recording and project-write controls are
@@ -276,7 +269,9 @@ function labelFinalState() {
   const final = recordingChoice.querySelector('option[value=""]');
   if (final && final.textContent !== recordedLabel) final.textContent = recordedLabel;
 }
-new MutationObserver(labelFinalState).observe(recordingChoice, { childList: true });
+new MutationObserver(labelFinalState).observe(recordingChoice, {
+  childList: true,
+});
 labelFinalState();
 for (let attempt = 0; attempt < 250 && !window.graphDebug.graph; attempt++)
   await new Promise((resolve) => setTimeout(resolve, 40));

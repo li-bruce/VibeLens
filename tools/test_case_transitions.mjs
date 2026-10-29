@@ -53,15 +53,15 @@ try {
       });
       await page.goto(`${base}/demo.html?lang=${language}`);
       await page.waitForFunction(() => document.body.dataset.sceneReady === "foundation");
-      await page.locator("#build").scrollIntoViewIfNeeded();
-      await page.waitForFunction(() => document.body.dataset.sceneReady === "build");
+      await page.locator("#run").scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => document.body.dataset.sceneReady === "run");
       if (mode === "3d") {
         await page.click("#case-3d");
         await page
           .frame({ url: /viewer\/index.html/ })
           .waitForFunction(() => graphDebug.spatial?.perspective);
       }
-      let stage = "build";
+      let stage = "run";
       const frames = [],
         client = await page.context().newCDPSession(page);
       client.on("Page.screencastFrame", (event) => {
@@ -74,18 +74,7 @@ try {
         maxHeight: 1000,
         everyNthFrame: 1,
       });
-      const stages = [
-        "run",
-        "drill",
-        "watch",
-        "iterate",
-        "verify",
-        "iterate",
-        "watch",
-        "drill",
-        "run",
-        "build",
-      ];
+      const stages = ["run", "drill", "iterate", "verify", "iterate", "drill", "run", "foundation"];
       const sizes = [];
       for (const id of stages) {
         stage = id;

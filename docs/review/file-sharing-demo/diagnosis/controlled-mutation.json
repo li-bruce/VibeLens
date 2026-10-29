@@ -1,0 +1,28 @@
+{
+  "scope": "Explicitly seeded isolated fault, not an organic defect.",
+  "common_fault": "Revocation targets the acting owner instead of the selected recipient.",
+  "original_apps_edited": false,
+  "expectations_changed": false,
+  "cases": [
+    {
+      "trial": "without-skill",
+      "project": "diagnosis-without-skill-20261029",
+      "file": "app.py",
+      "before_sha256": "c1aa62ae5a1df5514b842d78c56b0664a59159b3ae958e4beed6c52c3082a7b3",
+      "after_sha256": "3b9839e88192a681c51129503ff63007717a9fe2861bbf3eed05480f0e1a8abe",
+      "before": "(\"DELETE FROM shares WHERE file_id = ? AND recipient_id = ?\", (file_id, recipient_id))",
+      "after": "(\"DELETE FROM shares WHERE file_id = ? AND recipient_id = ?\", (file_id, user[\"id\"]))",
+      "tests_exit_code": 1
+    },
+    {
+      "trial": "with-skill",
+      "project": "diagnosis-with-skill-native-20261029",
+      "file": "app/service.py",
+      "before_sha256": "234b002c7ff13ce42dd4c9fead740efb6d62e061c252d74bb2ddd244a1f6093a",
+      "after_sha256": "003f2f586cecfced94f6325c6d84591a3dc799760697081bf0555b530ab96c10",
+      "before": "(shares.c.recipient_id == recipient_id)",
+      "after": "(shares.c.recipient_id == actor)",
+      "tests_exit_code": 1
+    }
+  ]
+}
