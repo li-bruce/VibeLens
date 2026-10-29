@@ -54,7 +54,8 @@ export class SemanticView {
       el.setAttribute("aria-pressed", String(selected === box.id));
       el.onclick = () => this.onSelect(box.id);
       el.onfocus = () => {
-        if (selected !== box.id) this.onSelect(box.id);
+        // Selection feedback can change without rebuilding these controls.
+        if (this.selected !== box.id) this.onSelect(box.id);
       };
       this.nodes.append(el);
       this.nodeElements.set(box.id, el);

@@ -1,5 +1,11 @@
 # Reviewed release records
 
+The current record is `semantic-focus-20261029`. Restoring keyboard focus to an already selected node keeps its source/detail panel open. Business code, state and policy declarations, probes and expected results are unchanged. Both examples completed normal inspect, verify, accept and check before these receipts were frozen.
+
+## Previous records
+
+# Reviewed release records
+
 The current record is `policy-presets-20261029`. The authorization preset recognizes native policy declarations and their existing business boundaries. The preceding replay record follows explicitly witnessed Boolean child results within the same evaluation and basis. Business code, state definitions, probes and independent expectations remain unchanged. Mapping, state, business and project checks were rerun through the normal review process.
 
 ## Previous record

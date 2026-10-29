@@ -415,4 +415,35 @@ probe.record('advance','read',()=>({{}}));probe.record('advance','read',()=>({{}
             self.assertIsInstance(session.recordings.get(saved['id'])['sources']['worker.py'],str)
         finally:server.shutdown();server.server_close();session.close()
 
+    def test_old_recording_source_is_rejected_after_a_new_build(self):
+        """Old records leave the current view; source lookup must keep that boundary."""
+        original = GraphSession(self.root)
+        original_text = (self.root / 'worker.py').read_text(encoding='utf-8')
+        original_build = original.manifest['build_id']
+        original.recordings.start('Before source update')
+        saved = original.recordings.stop()
+        original.close()
+        (self.root / 'worker.py').write_text(
+            original_text + '\n# A later build of the same function.\n', encoding='utf-8'
+        )
+        current = GraphSession(self.root)
+        self.assertNotEqual(current.manifest['build_id'], original_build)
+        server = make_server(current, 0)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            base = f'http://127.0.0.1:{server.server_port}/api/source?path=worker.py'
+            with self.assertRaises(HTTPError) as rejected:
+                urlopen(base + '&recording=' + saved['id'])
+            self.assertEqual(rejected.exception.code, 400)
+            self.assertIn('earlier graph version', json.load(rejected.exception)['error'])
+            with urlopen(base) as response:
+                live = json.load(response)
+            self.assertEqual(live['build_id'], current.manifest['build_id'])
+            self.assertEqual(live['source'], original_text + '\n# A later build of the same function.\n')
+            self.assertEqual(current.sequence, 0, 'Reading source is not a business event')
+        finally:
+            server.shutdown()
+            server.server_close()
+            current.close()
+
 if __name__=='__main__':unittest.main()
