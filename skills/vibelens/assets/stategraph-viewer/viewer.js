@@ -29,7 +29,11 @@ import { iconButton, installIcons, createContextMenu } from "./controls.js";
 import { createGraphRenderer, nodePoint, bezierAt } from "./renderer.js";
 import { pickRoutes } from "./route-picking.js";
 import { createConversationFocus, discussionContext } from "./conversation.js";
-import { createControlBridge, controlSelection } from "./conversation-controls.js";
+import {
+  createControlBridge,
+  controlProjection,
+  requireVisibleControlNodes,
+} from "./conversation-controls.js";
 import { projectStorage } from "./preferences.js";
 import { createPoller } from "./polling.js";
 import { migrateNodeIds } from "./layout.js";
@@ -1826,21 +1830,19 @@ async function applyConversationControl(plan, session) {
     analysisSettings.custom.length >= 20
   )
     throw Error("Delete an unused custom view before creating another");
-  const keep = controlSelection(graph.all, plan);
+  const projection = controlProjection(graph.all, plan, view.model.nodes),
+    { nodes: available, keep } = projection;
   const original = structuredClone(preferences);
   original.filters = cleanFilters({
     ...original.filters,
     ...plan.filters,
     depth: "all",
-    hiddenNodes: [...graph.all.keys()].filter((key) => !keep.has(key)),
+    hiddenNodes: [...available.keys()].filter((key) => !keep.has(key)),
     hiddenEdges: [],
   });
   original.algorithm = plan.layout;
-  const detailed = plan.filters.nodes.some((type) => type !== "business");
-  const parents = new Set(
-    [...graph.all.values()].filter((node) => keep.has(node.id)).map((node) => node.parent),
-  );
-  original.expanded = detailed ? [...keep].filter((key) => parents.has(key)) : [];
+  original.expanded = projection.expanded;
+  analysisSettings.advanced ||= projection.advanced;
   const profile = { ...cleanProfile(original.filters), hierarchical: false, id, label: plan.label };
   analysisSettings.custom = analysisSettings.custom
     .filter((item) => item.id !== id)
@@ -1871,6 +1873,7 @@ async function applyConversationControl(plan, session) {
     });
     if (boPlan.length) seek(boPlan[0]);
   }
+  requireVisibleControlNodes(graph, plan);
   save();
   if (!(await storage.flush()))
     throw Error("The conversation view could not be saved; refresh before retrying");

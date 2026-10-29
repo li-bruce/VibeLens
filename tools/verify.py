@@ -34,6 +34,7 @@ def main():
     run(ROOT, "tests/test_document_links.py")
     run(ROOT, "tests/test_conversation_controls.py")
     subprocess.run(["node", "tools/test_conversation_controls.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_control_projection.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_detail_panel.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_semantic_focus.mjs"], cwd=ROOT, check=True)
     run(ROOT, "tests/test_database_guidance.py")
