@@ -282,7 +282,8 @@ class PolicyTests(unittest.TestCase):
             first = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
             self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
             source.write_text(
-                source.read_text().replace("return value", "return not value"), encoding="utf-8"
+                source.read_text(encoding="utf-8").replace("return value", "return not value"),
+                encoding="utf-8",
             )
             second = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
             self.assertNotEqual(second.returncode, 0)
@@ -421,7 +422,7 @@ class PolicyTests(unittest.TestCase):
                     synchronize(root, model_path="project.json", update=False)["valid"]
                 )
                 self.assertTrue(synchronize(root, model_path="project.json")["valid"])
-                current = json.loads(path.read_text())
+                current = json.loads(path.read_text(encoding="utf-8"))
                 self.assertEqual(projection_errors(current), [])
                 self.assertEqual(
                     {n["id"] for n in current["nodes"]}, {n["id"] for n in model["nodes"]}
@@ -429,7 +430,9 @@ class PolicyTests(unittest.TestCase):
                 model = current
 
     def test_design_web_contains_shared_rules_before_source_exists(self):
-        doc = json.loads((ROOT / "skills/vibelens/assets/discovery.example.json").read_text())
+        doc = json.loads(
+            (ROOT / "skills/vibelens/assets/discovery.example.json").read_text(encoding="utf-8")
+        )
         source_id = doc["sources"][0]["id"]
         raw = doc["networks"][0]["nodes"][0]
         anchor = (raw.get("model_nodes") or [raw["id"]])[0]
@@ -462,14 +465,18 @@ class PolicyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=TEMP) as directory:
             root = Path(directory)
             path = root / "predicates.py"
-            path.write_text((EXAMPLE / "predicates.py").read_text(), encoding="utf-8")
+            path.write_text(
+                (EXAMPLE / "predicates.py").read_text(encoding="utf-8"), encoding="utf-8"
+            )
             module = load(path, "fresh_policy_predicates")
             callbacks = {"same_identity": module.same_identity, "flag_enabled": module.flag_enabled}
             evaluate(
                 self.policy, "share", self.inputs, callbacks, source_root=root, fact_revision="1"
             )
             path.write_text(
-                path.read_text().replace("return left == right", "return left != right"),
+                path.read_text(encoding="utf-8").replace(
+                    "return left == right", "return left != right"
+                ),
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "loaded policy function differs"):
@@ -502,7 +509,7 @@ class PolicyTests(unittest.TestCase):
             path = root / "predicates.py"
             text = (
                 (EXAMPLE / "predicates.py")
-                .read_text()
+                .read_text(encoding="utf-8")
                 .replace("return value", "raise OSError('reader offline')")
             )
             path.write_text(text, encoding="utf-8")
@@ -578,7 +585,7 @@ class PolicyTests(unittest.TestCase):
             error_root = Path(directory)
             (error_root / "predicates.py").write_text(
                 (EXAMPLE / "predicates.py")
-                .read_text()
+                .read_text(encoding="utf-8")
                 .replace("return value", "raise ValueError('unavailable')"),
                 encoding="utf-8",
             )
@@ -649,7 +656,7 @@ class PolicyTests(unittest.TestCase):
                 "import sys,json; from pathlib import Path; "
                 f"sys.path.insert(0,{str(root)!r}); sys.path.insert(0,{str(EXAMPLE)!r}); "
                 "from bo_stategraph.policy.runtime import evaluate; import predicates; "
-                "p=json.loads(Path('policy.json').read_text()); "
+                "p=json.loads(Path('policy.json').read_text(encoding='utf-8')); "
                 f"r=evaluate(p,'share',{self.inputs!r},{{'same_identity':predicates.same_identity,'flag_enabled':predicates.flag_enabled}},source_root={str(EXAMPLE)!r},fact_revision='1'); "
                 "assert r['value'] is True; assert not any(k.startswith('bo_observer') for k in sys.modules); "
                 "print('core-policy-ok')"
@@ -675,7 +682,7 @@ class PolicyTests(unittest.TestCase):
                     "import sys,json;from pathlib import Path;"
                     f"sys.path.insert(0,{str(root / 'observer_runtime')!r});"
                     "from bo_observer.protocol import validate_project;"
-                    "validate_project(json.loads(Path('project.json').read_text()));print('native-project-ok')",
+                    "validate_project(json.loads(Path('project.json').read_text(encoding='utf-8')));print('native-project-ok')",
                 ],
                 cwd=root,
                 text=True,
@@ -689,7 +696,7 @@ class PolicyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=TEMP) as directory:
             root = Path(directory)
             (root / "predicates.py").write_text(
-                (EXAMPLE / "predicates.py").read_text(), encoding="utf-8"
+                (EXAMPLE / "predicates.py").read_text(encoding="utf-8"), encoding="utf-8"
             )
             native = load(root / "predicates.py", "iterative_native")
             policy = deepcopy(self.policy)
@@ -734,7 +741,7 @@ class PolicyTests(unittest.TestCase):
                 current_check = synchronize(root, model_path="project.json", update=False)
                 self.assertEqual(current_check["valid"], version == 0)
                 self.assertTrue(synchronize(root, model_path="project.json")["valid"])
-                model = json.loads(path.read_text())
+                model = json.loads(path.read_text(encoding="utf-8"))
                 validate_graph(model)
                 ids = {n["id"] for n in model["nodes"]}
                 self.assertTrue(previous_ids <= ids)
@@ -826,11 +833,12 @@ class PolicyTests(unittest.TestCase):
             self.assertNotIn(relative, inventory["files"])
             path = root / relative
             path.write_text(
-                path.read_text() + "\ndef application_feature():\n    return 1\n", encoding="utf-8"
+                path.read_text(encoding="utf-8") + "\ndef application_feature():\n    return 1\n",
+                encoding="utf-8",
             )
             # A forged local fingerprint alone cannot make application code an SDK.
             manifest = root / "bo_stategraph/runtime-version.json"
-            data = json.loads(manifest.read_text())
+            data = json.loads(manifest.read_text(encoding="utf-8"))
             data["files"][relative] = hashlib.sha256(path.read_bytes()).hexdigest()
             manifest.write_text(json.dumps(data), encoding="utf-8")
             inventory = source_inventory(root, cfg)

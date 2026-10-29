@@ -1,0 +1,190 @@
+{
+  "valid": true,
+  "errors": [],
+  "checks": [
+    {
+      "check": "scope-actual-true",
+      "rule": "scope",
+      "requirement": "R02",
+      "case": "scope_direct_manager",
+      "node": "scope_check",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "is_direct_manager"
+      },
+      "events": [
+        "ec7a8549677e:1"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "scope-actual-false",
+      "rule": "scope",
+      "requirement": "R02",
+      "case": "scope_ancestor_only",
+      "node": "scope_check",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "is_direct_manager"
+      },
+      "events": [
+        "221f3c3f34d2:1"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "candidate-target-version",
+      "rule": "candidate",
+      "requirement": "R03",
+      "case": "approval_target_other_version",
+      "node": "approval_candidate",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "candidate_allowed"
+      },
+      "events": [
+        "5e8ac3dc7441:2"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "candidate-expiry",
+      "rule": "candidate",
+      "requirement": "R03",
+      "case": "approval_at_deadline",
+      "node": "approval_candidate",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "candidate_allowed"
+      },
+      "events": [
+        "83c1067477b0:2"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "candidate-self",
+      "rule": "candidate",
+      "requirement": "R03",
+      "case": "approval_self",
+      "node": "approval_candidate",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "candidate_allowed"
+      },
+      "events": [
+        "054c403957a1:2"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "content-secret",
+      "rule": "content",
+      "requirement": "R04",
+      "case": "secret_content",
+      "node": "content_check",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "check_content"
+      },
+      "events": [
+        "401a215b51a5:14"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "index-missing",
+      "rule": "index",
+      "requirement": "R04",
+      "case": "missing_index",
+      "node": "index_check",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "check_index"
+      },
+      "events": [
+        "09fc672107f9:14"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "commit-actual-version",
+      "rule": "commit",
+      "requirement": "R13",
+      "case": "archive_snapshot",
+      "node": "archive_commit",
+      "source": {
+        "path": "archive_app/service.py",
+        "symbol": "ArchiveService.try_commit"
+      },
+      "events": [
+        "7a0d41cc8816:39"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "size-exact-bytes",
+      "rule": "size",
+      "requirement": "R14",
+      "case": "size_equal",
+      "node": "size_guard",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "check_size"
+      },
+      "events": [
+        "e7240ef531ce:9",
+        "e7240ef531ce:23",
+        "e7240ef531ce:30"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "size-multibyte-over",
+      "rule": "size",
+      "requirement": "R14",
+      "case": "size_utf8_over",
+      "node": "size_guard",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "check_size"
+      },
+      "events": [
+        "554215acc56a:9"
+      ],
+      "status": "passed",
+      "errors": []
+    },
+    {
+      "check": "size-final-limit",
+      "rule": "size",
+      "requirement": "R14",
+      "case": "size_commit_fresh",
+      "node": "size_guard",
+      "source": {
+        "path": "archive_app/policy.py",
+        "symbol": "check_size"
+      },
+      "events": [
+        "6e4422e25c19:38"
+      ],
+      "status": "passed",
+      "errors": []
+    }
+  ],
+  "coverage": {
+    "rules": 6,
+    "checks": 11,
+    "passed": 11
+  },
+  "scope": "Declared source bindings and observed values; missing evidence never passes."
+}

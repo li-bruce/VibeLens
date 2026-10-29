@@ -65,4 +65,6 @@ Existing `change_sync inspect/verify` adds policy checks when configured:
 
 Report mapping and business outcomes separately. A correctly bound predicate can contain a business bug; an accurate observation should expose its actual arguments and result. Do not declare behavioral equivalence from an AST hash or a matching label.
 
+Exercise the authorization preset and an actual recorded evaluation. Shared expressions must remain connected to their real operation endpoints without extra legacy role tags. Animate only witnessed child results within the same check and basis; skipped expressions and unrelated requests have no invented transfer. Keep these viewer checks alongside source, runtime and independent business checks.
+
 Reference methods: [OpenFGA configuration language](https://openfga.dev/docs/configuration-language), [Cedar validation](https://docs.cedarpolicy.com/policies/validation.html), and [Cedar diagnostics](https://docs.cedarpolicy.com/auth/authorization.html). No generic OpenFGA/Cedar engine adapter is claimed by this module.
