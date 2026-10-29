@@ -1,0 +1,264 @@
+{
+  "valid": true,
+  "layers": [
+    {
+      "id": "api",
+      "nodes": 9,
+      "edges": 9,
+      "crossing": 9,
+      "samples": [
+        {
+          "id": "code:endpoint:9ced03e18a1d9aff81c891eb",
+          "label": "GET /",
+          "source": {
+            "path": "app/web.py",
+            "symbol": "dashboard",
+            "line": 48,
+            "end_line": 61
+          }
+        },
+        {
+          "id": "code:endpoint:32c6900cbc050c595c10b44f",
+          "label": "GET /files/<file_id>/download",
+          "source": {
+            "path": "app/web.py",
+            "symbol": "download",
+            "line": 82,
+            "end_line": 85
+          }
+        },
+        {
+          "id": "code:endpoint:7e6998a8dfc316f69083fb49",
+          "label": "GET /api/files",
+          "source": {
+            "path": "app/web.py",
+            "symbol": "list_files",
+            "line": 103,
+            "end_line": 104
+          }
+        }
+      ]
+    },
+    {
+      "id": "business",
+      "nodes": 14,
+      "edges": 279,
+      "crossing": 251,
+      "samples": [
+        {
+          "id": "login",
+          "label": "Sign in",
+          "source": {
+            "path": "app/service.py",
+            "symbol": "SharingService.authenticate"
+          }
+        },
+        {
+          "id": "logout",
+          "label": "Sign out",
+          "source": {
+            "path": "app/service.py",
+            "symbol": "SharingService.logout"
+          }
+        },
+        {
+          "id": "users",
+          "label": "Existing recipients",
+          "source": {
+            "path": "app/service.py",
+            "symbol": "SharingService.list_users"
+          }
+        }
+      ]
+    },
+    {
+      "id": "state",
+      "nodes": 3,
+      "edges": 19,
+      "crossing": 3,
+      "samples": [
+        {
+          "id": "state_empty",
+          "label": "Empty"
+        },
+        {
+          "id": "state_private",
+          "label": "Private"
+        },
+        {
+          "id": "state_shared",
+          "label": "Shared"
+        }
+      ]
+    },
+    {
+      "id": "rules",
+      "nodes": 7,
+      "edges": 95,
+      "crossing": 77,
+      "samples": [
+        {
+          "id": "policy:network",
+          "label": "Rules"
+        },
+        {
+          "id": "policy:signed_in",
+          "label": "已登录",
+          "source": {
+            "path": "app/predicates.py",
+            "symbol": "flag_enabled"
+          }
+        },
+        {
+          "id": "policy:is_owner",
+          "label": "当前用户是所有者",
+          "source": {
+            "path": "app/predicates.py",
+            "symbol": "same_identity"
+          }
+        }
+      ]
+    },
+    {
+      "id": "operations",
+      "nodes": 281,
+      "edges": 608,
+      "crossing": 71,
+      "samples": [
+        {
+          "id": "db_users",
+          "label": "Db Users",
+          "source": {
+            "path": "app/storage.py",
+            "symbol": "Store.query"
+          }
+        },
+        {
+          "id": "db_file",
+          "label": "Db File",
+          "source": {
+            "path": "app/storage.py",
+            "symbol": "Store.file"
+          }
+        },
+        {
+          "id": "db_grants",
+          "label": "Db Grants",
+          "source": {
+            "path": "app/storage.py",
+            "symbol": "Store.grants"
+          }
+        }
+      ]
+    },
+    {
+      "id": "execution",
+      "nodes": 107,
+      "edges": 279,
+      "crossing": 247,
+      "samples": [
+        {
+          "id": "policy:fact_actor",
+          "label": "当前用户"
+        },
+        {
+          "id": "policy:fact_owner",
+          "label": "文件所有者"
+        },
+        {
+          "id": "policy:fact_logged_in",
+          "label": "已登录"
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "nodes": 19,
+      "edges": 54,
+      "crossing": 12,
+      "samples": [
+        {
+          "id": "db:sharing:store",
+          "label": "File sharing SQLite"
+        },
+        {
+          "id": "db:sharing:table%3Afiles",
+          "label": "files"
+        },
+        {
+          "id": "db:sharing:table%3Afiles:field:content",
+          "label": "content"
+        }
+      ]
+    },
+    {
+      "id": "project",
+      "nodes": 83,
+      "edges": 255,
+      "crossing": 69,
+      "samples": [
+        {
+          "id": "code:file:e6b307961e27ac82bdfc7b0e",
+          "label": "__init__.py",
+          "source": {
+            "path": "app/__init__.py",
+            "line": 1,
+            "symbol": "<file>"
+          }
+        },
+        {
+          "id": "code:file:583410937ea606a3751d7b5a",
+          "label": "models.py",
+          "source": {
+            "path": "app/models.py",
+            "line": 1,
+            "symbol": "<file>"
+          }
+        },
+        {
+          "id": "code:file:ebc7b2e063120d0188d80a33",
+          "label": "ports.py",
+          "source": {
+            "path": "app/ports.py",
+            "line": 1,
+            "symbol": "<file>"
+          }
+        }
+      ]
+    },
+    {
+      "id": "code",
+      "nodes": 523,
+      "edges": 1254,
+      "crossing": 269,
+      "samples": [
+        {
+          "id": "policy:function:flag_enabled",
+          "label": "flag_enabled",
+          "source": {
+            "path": "app/predicates.py",
+            "symbol": "flag_enabled"
+          }
+        },
+        {
+          "id": "policy:function:same_identity",
+          "label": "same_identity",
+          "source": {
+            "path": "app/predicates.py",
+            "symbol": "same_identity"
+          }
+        },
+        {
+          "id": "code.4c09320fe7da5081",
+          "label": "SharingService.authorize",
+          "source": {
+            "path": "app/service.py",
+            "symbol": "SharingService.authorize"
+          }
+        }
+      ]
+    }
+  ],
+  "nodes": 1046,
+  "edges": 2348
+}

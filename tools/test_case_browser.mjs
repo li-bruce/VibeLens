@@ -142,6 +142,7 @@ try {
   for (const language of ["en", "zh-CN"]) {
     await page.goto(base + "/demo.html?lang=" + language);
     let child = await go("foundation");
+    assert.equal(await child.evaluate(() => graphDebug.layoutAlgorithm), "cluster");
     assert.equal(await page.locator("[data-case-scene]").count(), 5);
     for (const title of await page.locator("h1,h2,h3").allTextContents())
       assert.ok(!/[.。]$/.test(title.trim()));
@@ -418,7 +419,20 @@ try {
     await page.click("#case-3d");
     await child.waitForFunction(() => graphDebug.spatial?.perspective && !graphDebug.layoutBusy);
     const layers = await child.evaluate(() => graphDebug.spatial.layerPlanes);
-    assert.equal(layers.length, 8);
+    assert.deepEqual(
+      layers.map((layer) => layer.id).sort(),
+      [
+        "api",
+        "business",
+        "state",
+        "rules",
+        "operations",
+        "execution",
+        "data",
+        "project",
+        "code",
+      ].sort(),
+    );
     await shot(language + "-all-layers");
     await page.click("#case-2d");
     await child.waitForFunction(() => !graphDebug.layers.enabled);

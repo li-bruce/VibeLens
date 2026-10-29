@@ -7,10 +7,11 @@ import path from "node:path";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const output = process.env.BO_BROWSER_EVIDENCE || "docs/review/spatial-objects/clusters";
 await mkdir(output, { recursive: true });
-const base = "http://127.0.0.1:8896";
+const port = process.env.BO_CLUSTER_PORT || "8896";
+const base = "http://127.0.0.1:" + port;
 const server = spawn(
   ".venv/Scripts/python.exe",
-  ["-B", "-X", "utf8", "tools/database_demo.py", "--port", "8896"],
+  ["-B", "-X", "utf8", "tools/database_demo.py", "--port", port],
   { windowsHide: true },
 );
 let logs = "",
@@ -41,7 +42,10 @@ try {
     { id: "bridge:one", from: "cluster:0", to: "cluster:12", type: "data" },
     { id: "bridge:two", from: "cluster:1", to: "cluster:24", type: "guard" },
   );
-  const sample = { ...live, model: { ...live.model, nodes, edges, capture: [] } };
+  const sample = {
+    ...live,
+    model: { ...live.model, nodes, edges, capture: [] },
+  };
   browser = await chromium.launch({
     headless: true,
     executablePath: process.env.BO_BROWSER_EXECUTABLE,
@@ -99,8 +103,19 @@ try {
     pin,
     "Explicit pins remain exact after cluster layout",
   );
+  const planar = await page.evaluate(() =>
+    graphDebug.graph.boxes
+      .filter((n) => n.id.startsWith("cluster:"))
+      .map((n) => ({ id: n.id, x: n.x + n.w / 2, z: n.y + 31 })),
+  );
   await page.click("#layered-toggle");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
+  const spatial = await page.evaluate(() => graphDebug.spatialPositions);
+  for (const node of planar) {
+    assert.equal(spatial[node.id].x, node.x, "Initial 3D X matches the displayed 2D center");
+    assert.equal(spatial[node.id].z, node.z, "Initial 3D Z matches the displayed 2D center");
+  }
+  result.sharedCoordinates = true;
   await page.mouse.move(950, 580);
   await page.mouse.down();
   await page.mouse.move(1100, 660, { steps: 12 });

@@ -1,5 +1,12 @@
 # Spatial graph
 
+New spatial views reuse known planar node centers as their initial X/Z coordinates.
+Arrange uses the same semantic cluster/subtree solver in both dimensions. Existing
+spatial edits take precedence during incremental refresh; explicit spatial pins
+also survive Arrange. Cameras and subsequent manual edits remain independent.
+Bridge nodes keep their local packing distribution and receive a bounded outward
+bias, so many links to one neighboring type do not collapse onto one rim point.
+
 The 3D viewport is another renderer of the existing graph. It uses a real perspective camera, ray picking and orbit/pan/zoom controls. The business/state model and recorded evidence are unchanged.
 
 ## Module ownership

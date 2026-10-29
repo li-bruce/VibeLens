@@ -36,7 +36,10 @@ export function clusterUnits(units, edges) {
     const a = byId.get(e.from),
       b = byId.get(e.to);
     if (a && b && a.type !== b.type)
-      groupEdges.set([a.type, b.type].sort().join(":"), { source: a.type, target: b.type });
+      groupEdges.set([a.type, b.type].sort().join(":"), {
+        source: a.type,
+        target: b.type,
+      });
   }
   const coarse = forceSimulation(clusters, 2)
     .stop()
@@ -45,10 +48,10 @@ export function clusterUnits(units, edges) {
       "links",
       forceLink([...groupEdges.values()])
         .id((n) => n.id)
-        .distance((e) => e.source.radius + e.target.radius + 100)
+        .distance((e) => e.source.radius + e.target.radius + 180)
         .strength(0.07),
     )
-    .force("collision", forceCollide((n) => n.radius + 55).iterations(3))
+    .force("collision", forceCollide((n) => n.radius + 90).iterations(3))
     .force("x", forceX(0).strength(0.008))
     .force("y", forceY(0).strength(0.008));
   coarse.tick(160);
@@ -61,6 +64,12 @@ export function clusterUnits(units, edges) {
       outside.get(b.id).push(centers.get(a.type));
     }
   }
+  const bridgeCounts = new Map(
+    clusters.map((group) => [
+      group.id,
+      group.members.filter((unit) => outside.get(unit.id).length).length,
+    ]),
+  );
   const nodes = [];
   for (const group of clusters)
     group.members
@@ -75,9 +84,18 @@ export function clusterUnits(units, edges) {
           const x = neighbors.reduce((s, p) => s + p.x - group.x, 0),
             y = neighbors.reduce((s, p) => s + p.y - group.y, 0),
             length = Math.hypot(x, y) || 1;
-          const rim = Math.max(0, group.radius - unit.radius - 15);
-          dx = (x / length) * rim;
-          dy = (y / length) * rim;
+          // Keep the packing distribution when many members share a neighbor.
+          // Replacing every target with the same rim point makes collision
+          // forces eject bridge nodes into another type's neighborhood.
+          if (bridgeCounts.get(group.id) <= Math.max(2, group.members.length * 0.25)) {
+            const rim = Math.max(0, group.radius - unit.radius - 15);
+            dx = (x / length) * rim;
+            dy = (y / length) * rim;
+          } else {
+            const bias = group.radius * 0.22;
+            dx += (x / length) * bias;
+            dy += (y / length) * bias;
+          }
         }
         const tx = group.x + dx,
           ty = group.y + dy;
@@ -101,7 +119,7 @@ export function clusterUnits(units, edges) {
       forceLink(links)
         .id((n) => n.id)
         .distance((e) => e.source.radius + e.target.radius + 65)
-        .strength((e) => (e.source.type === e.target.type ? 0.035 : 0.006)),
+        .strength((e) => (e.source.type === e.target.type ? 0.035 : 0.002)),
     )
     .force("collision", forceCollide((n) => n.radius + 22).iterations(3))
     .force("x", forceX((n) => n.tx).strength(0.16))

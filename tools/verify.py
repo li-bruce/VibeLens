@@ -14,9 +14,7 @@ from setup_adapters import configure
 
 def run(cwd, *args):
     """Stop at the first failed check and preserve its actual exit status."""
-    subprocess.run(
-        [sys.executable, "-B", "-X", "utf8", *map(str, args)], cwd=cwd, check=True
-    )
+    subprocess.run([sys.executable, "-B", "-X", "utf8", *map(str, args)], cwd=cwd, check=True)
 
 
 def main():
@@ -47,10 +45,17 @@ def main():
     subprocess.run(["node", "tools/test_viewer_semantics.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_spatial_workspace.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_spatial_planes.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_shared_layout.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_replay_owners.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_ruler_controls.mjs"], cwd=ROOT, check=True)
     if args.database:
         run(ROOT, "tools/verify_databases.py")
+        run(
+            ROOT,
+            "tools/test_layered_project.py",
+            "--out",
+            ".validation/layered-project-" + uuid.uuid4().hex[:8],
+        )
     run(ROOT, "tests/test_ast_fingerprint.py")
     run(ROOT, "tests/test_requirements_dialogue.py")
     run(ROOT, "tests/test_clarification_gate.py")
@@ -95,8 +100,7 @@ def main():
     with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
         with zipfile.ZipFile(EXAMPLE / package) as archive:
             assert not any(
-                n.startswith(("observer_generated/", "integrations/"))
-                for n in archive.namelist()
+                n.startswith(("observer_generated/", "integrations/")) for n in archive.namelist()
             )
             archive.extractall(folder)
         result = subprocess.run(
@@ -128,8 +132,7 @@ def main():
     with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
         with zipfile.ZipFile(archive_example / archive_package) as archive:
             assert not any(
-                n.startswith(("observer_runtime/", "integrations/"))
-                for n in archive.namelist()
+                n.startswith(("observer_runtime/", "integrations/")) for n in archive.namelist()
             )
             archive.extractall(folder)
         # This recorded independent smoke test imports only the extracted business core.

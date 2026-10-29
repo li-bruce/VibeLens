@@ -1,7 +1,13 @@
 import { strokeSegments } from "./route-shapes.js";
 import { edgeCurve } from "./spatial-paths.js";
 import * as T from "./spatial-three.vendor.js";
-import { spatialModel, containmentVolumes, descendants, nodeElevation } from "./spatial-model.js";
+import {
+  spatialModel,
+  containmentVolumes,
+  descendants,
+  nodeElevation,
+  planarSeeds,
+} from "./spatial-model.js";
 import { cleanLayers, layerHeights } from "./graph-layers.js";
 import { cleanRoute, polylineAt } from "./edge-routing.js";
 import { RoutingClient } from "./routing-client.js";
@@ -69,7 +75,9 @@ export class SpatialRenderer {
     this.epoch = 0;
     this.frames = [];
     this.frameCount = 0;
-    this.worker = new Worker(new URL("./spatial-worker.js", import.meta.url), { type: "module" });
+    this.worker = new Worker(new URL("./spatial-worker.js", import.meta.url), {
+      type: "module",
+    });
     this.worker.onmessage = ({ data }) => {
       if (data.epoch !== this.epoch || this.disposed) return;
       this.busy = false;
@@ -199,7 +207,7 @@ export class SpatialRenderer {
   }
 
   /** Send constrained layout work off-thread; only explicit Arrange releases saved positions. */
-  layout(arrange = false) {
+  layout(arrange = false, shared = null) {
     if (!this.model) return;
     this.busy = true;
     // Newly added nodes are not fixed; saved manual positions and pins survive.
@@ -215,6 +223,7 @@ export class SpatialRenderer {
       gap: this.settings.gap,
       settings: this.settings,
       positions: existing,
+      planar: shared || planarSeeds(this.input.graph, this.input.preferences.positions),
       arrange,
     });
     this.settled = new Set([...(this.settled || []), ...this.model.nodes.map((n) => n.id)]);
@@ -507,7 +516,12 @@ export class SpatialRenderer {
       el.textContent = transfer?.label || edge.label || relationStyle(edge).label;
       el.onclick = () => this.callbacks.onEdge?.(edge);
       this.labels.append(el);
-      this.labelItems.push({ el, edge: edge.id, position: curve.getPoint(0.5), offset: -10 });
+      this.labelItems.push({
+        el,
+        edge: edge.id,
+        position: curve.getPoint(0.5),
+        offset: -10,
+      });
     }
   }
 
@@ -622,7 +636,11 @@ export class SpatialRenderer {
         positions.push(a.x, a.y, a.z, b.x, b.y, b.z);
         colors.push(color.r, color.g, color.b, color.r, color.g, color.b);
       }
-      this.edgeSegments.push({ edge, start: segmentStart, end: positions.length / 6 });
+      this.edgeSegments.push({
+        edge,
+        start: segmentStart,
+        end: positions.length / 6,
+      });
       if (!edge.guide) arrows.push({ edge, curve, color });
     }
     if (positions.length) {
@@ -686,7 +704,10 @@ export class SpatialRenderer {
           new T.Vector3(),
         );
         if (q && Math.hypot(q.x - p.x, q.z - p.z) <= 28)
-          targets.push({ id: node.id, distance: q.distanceTo(this.raycaster.ray.origin) });
+          targets.push({
+            id: node.id,
+            distance: q.distanceTo(this.raycaster.ray.origin),
+          });
       }
     if (targets.length) return targets.sort((a, b) => a.distance - b.distance)[0];
     const under = [];
@@ -697,7 +718,10 @@ export class SpatialRenderer {
         new T.Vector3(),
       );
       if (point && Math.hypot(point.x - volume.center.x, point.z - volume.center.z) < volume.radius)
-        under.push({ ...volume, distance: point.distanceTo(this.raycaster.ray.origin) });
+        under.push({
+          ...volume,
+          distance: point.distanceTo(this.raycaster.ray.origin),
+        });
     }
     // Visible edge strokes take precedence over empty region space. Test the
     // projected segments, not isolated samples that leave gaps in the hit target.
@@ -722,7 +746,9 @@ export class SpatialRenderer {
     }
     if (choices.length) return { edge: { ...choices[0], alternatives: choices } };
     if (under.length)
-      return { region: under.sort((a, b) => a.distance - b.distance || a.radius - b.radius)[0].id };
+      return {
+        region: under.sort((a, b) => a.distance - b.distance || a.radius - b.radius)[0].id,
+      };
     return null;
   }
 
@@ -731,7 +757,13 @@ export class SpatialRenderer {
     if (event.button !== 0) return;
     event.preventDefault();
     const id = hit?.id || hit?.region;
-    this.pointer = { x: event.clientX, y: event.clientY, id, hit, moved: false };
+    this.pointer = {
+      x: event.clientX,
+      y: event.clientY,
+      id,
+      hit,
+      moved: false,
+    };
     if (!id) return;
     const rect = this.canvas.getBoundingClientRect();
     this.raycaster.setFromCamera(
@@ -828,7 +860,10 @@ export class SpatialRenderer {
   screenEdge(id) {
     const curve = this.curves?.get(id);
     return curve
-      ? { start: this.screen(curve.getPoint(0)), end: this.screen(curve.getPoint(1)) }
+      ? {
+          start: this.screen(curve.getPoint(0)),
+          end: this.screen(curve.getPoint(1)),
+        }
       : {};
   }
 
@@ -908,7 +943,9 @@ export class SpatialRenderer {
     );
     for (const item of this.labelItems || [])
       if (owners.has(item.id))
-        item.el.animate?.([{ opacity: 0.4 }, { opacity: 1 }, { opacity: 1 }], { duration: 650 });
+        item.el.animate?.([{ opacity: 0.4 }, { opacity: 1 }, { opacity: 1 }], {
+          duration: 650,
+        });
     this.schedule();
   }
   stopAnimation() {
@@ -996,7 +1033,10 @@ export class SpatialRenderer {
   snapshot() {
     return {
       positions: structuredClone(this.positions),
-      camera: { position: this.camera.position.toArray(), target: this.controls.target.toArray() },
+      camera: {
+        position: this.camera.position.toArray(),
+        target: this.controls.target.toArray(),
+      },
     };
   }
   /** Cancel an in-flight solve before restoring a user's previous spatial layout. */

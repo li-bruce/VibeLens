@@ -1,5 +1,20 @@
 import { layerOf, layers } from "./graph-layers.js";
 
+/** Lift planar node centers into X/Z without changing either saved layout.
+ * Box coordinates use a top-left origin; spatial objects use their center.
+ * Only known planar identities qualify, so newly exposed children can still settle.
+ */
+export function planarSeeds(graph, positions = {}) {
+  return Object.fromEntries(
+    graph.boxes
+      .filter((box) => positions[box.id])
+      .map((box) => {
+        const p = positions[box.id];
+        return [box.id, { x: p.x + box.w / 2, z: p.y + 31 }];
+      }),
+  );
+}
+
 /** Hierarchy uses containment on the plane; it never changes semantic elevation. */
 export function nodeElevation(_node, _byId, base, _gap) {
   return base;

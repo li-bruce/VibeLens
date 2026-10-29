@@ -27,6 +27,7 @@ export function solveSpatial({
   gap,
   settings,
   positions = {},
+  planar = {},
   arrange = false,
 }) {
   const layerY = layerHeights(settings || { gap }, layers);
@@ -48,24 +49,34 @@ export function solveSpatial({
     roots.map((id, i) => {
       const angle = i * 2.399963229728653,
         radius = spacing * Math.sqrt(i + 1);
-      return [id, positions[id] || { x: Math.cos(angle) * radius, z: Math.sin(angle) * radius }];
+      return [
+        id,
+        positions[id] || {
+          x: Math.cos(angle) * radius,
+          z: Math.sin(angle) * radius,
+        },
+      ];
     }),
   );
   const work = nodes.map((node) => {
     const center = centers.get(rootOf(node)),
-      saved = positions[node.id];
+      saved = positions[node.id],
+      shared = planar[node.id];
     const angle = seed(node.id) * Math.PI * 2,
       radius = node.parent ? 90 + seed(node.id + "r") * 150 : 0;
     const y = nodeElevation(node, byId, layerY.get(node.layer), gap);
     return {
       ...node,
-      x: saved?.x ?? center.x + Math.cos(angle) * radius,
+      x: saved?.x ?? shared?.x ?? center.x + Math.cos(angle) * radius,
       y: y,
-      z: saved?.z ?? center.z + Math.sin(angle) * radius,
+      z: saved?.z ?? shared?.z ?? center.z + Math.sin(angle) * radius,
       tx: center.x + Math.cos(angle) * radius,
       ty: y,
       tz: center.z + Math.sin(angle) * radius,
       ...(saved && (!arrange || saved.pinned) ? { fx: saved.x, fz: saved.z } : {}),
+      // A shared planar result is already collision-tested. Preserve its exact
+      // X/Z coordinates instead of pulling connected layers back into one knot.
+      ...((!saved || (arrange && !saved.pinned)) && shared ? { fx: shared.x, fz: shared.z } : {}),
       fy: y,
     };
   });

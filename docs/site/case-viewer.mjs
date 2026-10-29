@@ -22,7 +22,7 @@ let preferences = {
   revision: 1,
   entries: {},
 };
-const preferenceKey = `vibelens.case.${controlMode ? "controls-1" : "files-story-1"}.${params.get("lang") || "en"}`;
+const preferenceKey = `vibelens.case.${controlMode ? "controls-1" : "files-story-clusters-2"}.${params.get("lang") || "en"}`;
 const controlPlans = controlMode
   ? (await (await nativeFetch(new URL("./control-plans.json", import.meta.url))).json()).locales[
       params.get("lang") || "en"
@@ -136,7 +136,7 @@ window.fetch = async (input, init = {}) => {
   );
 };
 
-// Seed readable captions and the native ELK layered layout. These are private
+// Seed readable captions and the native semantic cluster layout. These are private
 // presentation preferences; the exported model, sources and events stay intact.
 const { emptyLayout, layoutKey } = await import("./viewer/layout.js");
 const { profileFor } = await import("./viewer/analysis.js");
@@ -164,7 +164,7 @@ for (const id of [
   const key = baseKey + (id === "overview" ? "" : ":view:" + id);
   if (!preferences.entries[key]) {
     const layout = emptyLayout();
-    layout.algorithm = id === "overview" ? "stress" : "layered";
+    layout.algorithm = "cluster";
     layout.filters = profileFor(id);
     preferences.entries[key] = JSON.stringify(layout);
   }

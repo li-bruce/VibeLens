@@ -3,6 +3,7 @@ import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files
 import { messages } from "./home-messages.mjs?rev=files-1";
 import { revealSections } from "./scroll-story.mjs?rev=files-1";
 import { mountConversationTour } from "./conversation-tour.mjs?rev=files-1";
+import { mountLayerExplorer } from "./layer-explorer.mjs?rev=layers-1";
 function render() {
   document.title =
     locale() === "en" ? "VibeLens — See how your code works" : "VibeLens · 看清 AI 写出的程序";
@@ -31,6 +32,10 @@ document.getElementById("copy-prompt").addEventListener("click", async () => {
 onLanguageChange(render);
 initialize(messages);
 mountConversationTour();
+mountLayerExplorer(document.getElementById("layer-explorer"), {
+  locale,
+  onLanguageChange,
+});
 revealSections(document.querySelectorAll("main > section"));
 // The progress line follows native scrolling without intercepting input.
 let scheduled = false;

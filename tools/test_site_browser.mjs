@@ -78,7 +78,7 @@ try {
       assert.ok(!/[.。]$/.test(title.trim()), title);
     assert.equal(await page.locator("[data-control-preset]").count(), 0);
     assert.equal(await page.locator(".development-loop > li").count(), 3);
-    assert.equal(await page.locator(".depth-key > div").count(), 3);
+    assert.equal(await page.locator("[data-layer-tabs] [role=tab]").count(), 9);
     await page.screenshot({ path: path.join(output, language + "-hero.png") });
     await page.locator('[data-capture="layers"]').focus();
     await page.keyboard.press("Enter");

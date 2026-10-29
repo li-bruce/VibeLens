@@ -247,36 +247,34 @@
               API calls and data handling them. One run stays connected across every layer.
             </p>
           </div>
-          <div class="depth-key">
-            <div>
-              <i class="business-key"></i>
-              <h3 data-i18n="home.depth.overview">Business flow</h3>
-              <p data-i18n="home.depth.overview.body">Where did the operation go?</p>
+          <div class="layer-explorer" id="layer-explorer">
+            <div
+              class="layer-tabs"
+              data-layer-tabs
+              role="tablist"
+              aria-label="Graph layers"
+              aria-orientation="vertical"
+            ></div>
+            <div class="layer-stage" data-layer-stage>
+              <p class="layer-hint" data-layer-hint>Drag to orbit · Select a layer</p>
+              <button class="layer-reset" data-layer-reset type="button">Reset view ↗</button>
             </div>
-            <div>
-              <i class="decision-key"></i>
-              <h3 data-i18n="home.depth.logic">States and decisions</h3>
-              <p data-i18n="home.depth.logic.body">Which condition decided the result?</p>
-            </div>
-            <div>
-              <i class="code-key"></i>
-              <h3 data-i18n="home.depth.code">Functions, data and source</h3>
-              <p data-i18n="home.depth.code.body">What handled these values?</p>
+            <div
+              class="layer-description"
+              id="layer-description"
+              data-layer-description
+              role="tabpanel"
+              tabindex="0"
+            >
+              <p class="eyebrow" data-layer-group>Intent</p>
+              <h3>What should the application do?</h3>
+              <p data-layer-body>
+                The actions and paths you confirm in conversation become the starting graph.
+              </p>
+              <p class="layer-examples" data-layer-examples>Upload → Share → Download</p>
+              <a href="demo.html" data-local-link data-i18n="home.depth.try">Follow a path ↗</a>
             </div>
           </div>
-          <figure class="source-capture">
-            <img
-              data-product-image="source"
-              src="images/source-en.png"
-              width="1650"
-              height="840"
-              alt="VibeLens download permissions and highlighted function source"
-              loading="lazy"
-            />
-            <figcaption data-i18n="home.depth.caption">
-              Recorded inputs beside their mapped source
-            </figcaption>
-          </figure>
         </div>
       </section>
       <section class="wrap landing-section modes-compact" id="modes">

@@ -10,7 +10,7 @@ import { LayerRuler } from "./layer-ruler.js";
 import { cleanRoute } from "./edge-routing.js";
 import { cleanReplaySelection, selectedReplayPlan, nextReplayIndex } from "./replay-selection.js";
 import { SemanticView } from "./semantic-view.js";
-import { prepareSpatialHierarchy } from "./spatial-model.js";
+import { prepareSpatialHierarchy, planarSeeds } from "./spatial-model.js";
 import { layers, cleanLayers, layerSlice } from "./graph-layers.js";
 import { spatialLegend } from "./spatial-geometry.js";
 import { SpatialRenderer } from "./spatial-renderer.js";
@@ -118,7 +118,12 @@ let layoutEpoch = 0,
   undo = null,
   detailMode = null,
   saveTimer = null;
-let focusContext = { active: false, nodes: new Set(), edges: new Set(), regions: new Set() },
+let focusContext = {
+    active: false,
+    nodes: new Set(),
+    edges: new Set(),
+    regions: new Set(),
+  },
   renderedEdges = [],
   presentation = null;
 let analysisId = "overview",
@@ -175,7 +180,9 @@ let legacyStorage;
 try {
   legacyStorage = window.localStorage;
 } catch {}
-const conversationControls = createControlBridge({ apply: applyConversationControl });
+const conversationControls = createControlBridge({
+  apply: applyConversationControl,
+});
 const storage = await projectStorage(
   conversationControls.legacy(legacyStorage),
   (message) => {
@@ -342,7 +349,11 @@ function updateLayerControls() {
 function changeLayers(visible) {
   if (!analysisSettings || !graph) return;
   stopAnimation();
-  analysisSettings.layers = cleanLayers({ ...analysisSettings.layers, only: "all", visible });
+  analysisSettings.layers = cleanLayers({
+    ...analysisSettings.layers,
+    only: "all",
+    visible,
+  });
   updateLayerControls();
   updatePresentation();
   updateSemantic();
@@ -381,7 +392,11 @@ $("layered-toggle").onclick = () => {
   contextMenu.close();
   save();
   const config = cleanLayers(analysisSettings.layers);
-  analysisSettings.layers = { ...config, enabled: !config.enabled, camera: "top" };
+  analysisSettings.layers = {
+    ...config,
+    enabled: !config.enabled,
+    camera: "top",
+  };
   if (!analysisSettings.layers.enabled) project();
   updateLayerControls();
   updatePresentation();
@@ -395,7 +410,10 @@ $("layered-toggle").onclick = () => {
 };
 $("top-view").onclick = () => {
   if (analysisSettings)
-    analysisSettings.layers = { ...cleanLayers(analysisSettings.layers), camera: "top" };
+    analysisSettings.layers = {
+      ...cleanLayers(analysisSettings.layers),
+      camera: "top",
+    };
   fit();
 };
 let legendMode = null;
@@ -627,7 +645,27 @@ async function arrange(initial = false) {
       undo = { mode: "3D", snapshot: spatial.snapshot() };
       $("undo-layout").disabled = false;
     }
-    spatial.layout(true);
+    const epoch = ++layoutEpoch,
+      scope = storageKey,
+      key = topologyKey(graph);
+    layoutBusy = true;
+    try {
+      const positions = await calculateLayout(
+        elk,
+        graph,
+        preferences,
+        preferences.algorithm || "cluster",
+      );
+      if (epoch !== layoutEpoch || scope !== storageKey || key !== topologyKey(graph)) return;
+      // Arrange uses the same subtree/type solver in both dimensions. The 3D
+      // camera and manually saved 2D positions remain independent preferences.
+      spatial.layout(true, planarSeeds(graph, positions));
+    } catch (error) {
+      console.error(error);
+      layoutError = boTranslate("Layout failed; keeping previous positions");
+    } finally {
+      if (epoch === layoutEpoch) layoutBusy = false;
+    }
     return;
   }
   const epoch = ++layoutEpoch,
@@ -875,7 +913,13 @@ function updateActions() {
 }
 /** Both rendering modes expose the same keyboard and screen-reader graph. */
 function updateSemantic() {
-  semanticView.render({ graph, presentation, preferences, selected, spatial: spatialActive() });
+  semanticView.render({
+    graph,
+    presentation,
+    preferences,
+    selected,
+    spatial: spatialActive(),
+  });
 }
 function updateSemanticGeometry() {
   semanticView.geometry({
@@ -1087,7 +1131,11 @@ app.canvas.addEventListener("pointerdown", (e) => {
   app.canvas.style.cursor = owner ? "grabbing" : "move";
 });
 app.canvas.addEventListener("pointermove", (e) => {
-  const move = gesture.move({ pointerId: e.pointerId, x: e.clientX, y: e.clientY });
+  const move = gesture.move({
+    pointerId: e.pointerId,
+    x: e.clientX,
+    y: e.clientY,
+  });
   if (!move) return;
   if (move.kind === "node") {
     setPosition(graph, preferences, move.id, move.x, move.y);
@@ -1121,7 +1169,10 @@ app.canvas.addEventListener(
   (e) => {
     e.preventDefault();
     const r = app.canvas.getBoundingClientRect();
-    zoom(Math.exp(-e.deltaY * 0.0015), { x: e.clientX - r.left, y: e.clientY - r.top });
+    zoom(Math.exp(-e.deltaY * 0.0015), {
+      x: e.clientX - r.left,
+      y: e.clientY - r.top,
+    });
   },
   { passive: false },
 );
@@ -1168,9 +1219,12 @@ $("viewport").addEventListener("keydown", (e) => {
     detailMode = null;
     clearCanvasFocus();
   }
-  const delta = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[
-    e.key
-  ];
+  const delta = {
+    ArrowLeft: [-1, 0],
+    ArrowRight: [1, 0],
+    ArrowUp: [0, -1],
+    ArrowDown: [0, 1],
+  }[e.key];
   if (delta) {
     e.preventDefault();
     const b = graph?.byId.get(selected),
@@ -1460,7 +1514,10 @@ function revealResult(id) {
   else if (box) {
     scale = Math.max(0.8, scale);
     const p = point(box);
-    pan = { x: app.screen.width / 2 - p.x * scale, y: app.screen.height / 2 - p.y * scale };
+    pan = {
+      x: app.screen.width / 2 - p.x * scale,
+      y: app.screen.height / 2 - p.y * scale,
+    };
   }
   $("search-results").hidden = true;
   save();
@@ -1819,7 +1876,11 @@ function loadAnalysis(baseKey) {
           /^custom-[a-z0-9-]+$/.test(p.id) &&
           typeof p.label === "string",
       )
-      .map((p) => ({ ...cleanProfile(p), id: p.id, label: p.label.slice(0, 40) }));
+      .map((p) => ({
+        ...cleanProfile(p),
+        id: p.id,
+        label: p.label.slice(0, 40),
+      }));
     for (const [id, p] of Object.entries(saved.overrides || {}))
       if (presets.some((x) => x.id === id) || analysisSettings.custom.some((x) => x.id === id))
         analysisSettings.overrides[id] = cleanProfile(p);
@@ -1860,7 +1921,12 @@ async function applyConversationControl(plan, session) {
   original.algorithm = plan.layout;
   original.expanded = projection.expanded;
   analysisSettings.advanced ||= projection.advanced;
-  const profile = { ...cleanProfile(original.filters), hierarchical: false, id, label: plan.label };
+  const profile = {
+    ...cleanProfile(original.filters),
+    hierarchical: false,
+    id,
+    label: plan.label,
+  };
   analysisSettings.custom = analysisSettings.custom
     .filter((item) => item.id !== id)
     .concat(profile);
@@ -2003,12 +2069,20 @@ $("analysis-details").onclick = () => {
 };
 $("analysis-view").onchange = (e) => changeAnalysis(e.target.value);
 $("filter-scope").onchange = (e) => {
-  analysisOverride = { ...currentProfile(), scope: e.target.value, hierarchical: false };
+  analysisOverride = {
+    ...currentProfile(),
+    scope: e.target.value,
+    hierarchical: false,
+  };
   applyFilters();
   arrange();
 };
 $("filter-query").onchange = (e) => {
-  analysisOverride = { ...currentProfile(), query: e.target.value, hierarchical: false };
+  analysisOverride = {
+    ...currentProfile(),
+    query: e.target.value,
+    hierarchical: false,
+  };
   applyFilters();
   arrange();
 };
@@ -2179,7 +2253,13 @@ function boUpdateLive(before, after) {
   const known = new Set(before.events.map((e) => e.id)),
     events = after.events.filter((e) => !known.has(e.id));
   if (!events.length) return;
-  const sample = { context: before, final: after, events, commands: [], status: "recording" },
+  const sample = {
+      context: before,
+      final: after,
+      events,
+      commands: [],
+      status: "recording",
+    },
     items = timeline(sample);
   boDetail = boStepDetail(sample, items, items.length - 1, 0, graph.all, boVisible());
   boShowChanges();
@@ -2604,7 +2684,9 @@ $("replay-play").onclick = () => {
 $("replay-export").onclick = () => {
   if (!recording) return;
   const url = URL.createObjectURL(
-    new Blob([JSON.stringify(recording, null, 2)], { type: "application/json" }),
+    new Blob([JSON.stringify(recording, null, 2)], {
+      type: "application/json",
+    }),
   );
   const link = document.createElement("a");
   link.href = url;
@@ -2628,6 +2710,9 @@ window.graphDebug = {
   },
   get layers() {
     return { ...analysisSettings?.layers };
+  },
+  get layoutAlgorithm() {
+    return preferences.algorithm || "cluster";
   },
   get camera() {
     return { scale, pan: { ...pan } };
@@ -2677,5 +2762,7 @@ const conversation = createConversationFocus({
     saveAnalysis();
   },
 });
-const poller = createPoller(poll, { enabled: () => !disposed && !document.hidden });
+const poller = createPoller(poll, {
+  enabled: () => !disposed && !document.hidden,
+});
 poller.run();

@@ -140,7 +140,9 @@
 }
 .workflow-map {
   display: grid;
-  grid-template-columns: minmax(205px, 1fr) 28px minmax(320px, 1.6fr) 28px minmax(205px, 0.9fr);
+  grid-template-columns:
+    minmax(205px, 1fr) 28px minmax(320px, 1.6fr)
+    28px minmax(205px, 0.9fr);
   gap: 12px;
   align-items: center;
   padding-block: 25px 5px;
@@ -281,46 +283,180 @@
   background: #f5f7fa;
   scroll-margin-top: 80px;
 }
-.depth-key {
+.layer-explorer {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 260px;
+  gap: 18px;
+  align-items: center;
+}
+.layer-tabs {
   display: flex;
-  gap: 50px;
-  margin-bottom: 30px;
-}
-.depth-key > div {
-  flex: 1;
+  flex-direction: column;
+  gap: 3px;
   position: relative;
-  padding-left: 18px;
+  z-index: 2;
 }
-.depth-key h3 {
-  font-size: 17px;
-  margin-bottom: 6px;
+.layer-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  text-align: left;
+  padding: 12px 4px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
 }
-.depth-key p {
-  font-size: 13px;
+.layer-tabs button span {
+  font: 11px var(--mono);
   color: var(--muted);
 }
-.depth-key i {
+.layer-tabs button strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.layer-tabs button[aria-selected="true"] {
+  color: var(--ink);
+  border-color: var(--layer-color);
+}
+.layer-tabs button[aria-selected="true"] span {
+  color: var(--layer-color);
+}
+.layer-tabs button:focus-visible,
+.layer-reset:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+}
+.layer-stage {
+  height: 580px;
+  position: relative;
+  min-width: 0;
+}
+.layer-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.layer-stage canvas:active {
+  cursor: grabbing;
+}
+.layer-hint {
   position: absolute;
+  bottom: 6px;
   left: 0;
-  top: 6px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+  font-size: 11px;
+  color: var(--muted);
+  pointer-events: none;
 }
-.business-key {
-  background: var(--blue);
+.layer-reset {
+  position: absolute;
+  bottom: 3px;
+  right: 0;
+  padding: 4px 0;
+  color: var(--ink);
+  font-size: 11px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
-.decision-key {
-  background: var(--amber);
+.layer-scene-label {
+  position: absolute;
+  top: -6px;
+  left: 8px;
+  pointer-events: none;
+  font: 10px var(--mono);
+  color: #657583;
+  opacity: 0.65;
 }
-.code-key {
-  background: var(--teal);
+.layer-scene-label.active {
+  color: var(--ink);
+  font-weight: 700;
+  opacity: 1;
 }
-.source-capture {
-  background: #fff;
-  border: 1px solid #dce5ef;
-  border-radius: 10px;
-  overflow: hidden;
+.layer-node-caption {
+  position: absolute;
+  top: 16px;
+  left: -36px;
+  min-width: 72px;
+  text-align: center;
+  pointer-events: none;
+  color: var(--ink);
+  font: 10px var(--mono);
+}
+.layer-description {
+  position: relative;
+  z-index: 2;
+}
+.layer-description h3 {
+  font-size: clamp(23px, 2.2vw, 30px);
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  margin: 14px 0;
+}
+.layer-description > p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.85;
+}
+.layer-description .layer-examples {
+  font-family: var(--mono);
+  font-size: 11px;
+  margin-block: 28px;
+  color: var(--ink);
+}
+.layer-description a {
+  font-size: 13px;
+  color: var(--blue);
+}
+.layer-explorer[data-webgl="unavailable"] .layer-stage {
+  height: 100px;
+}
+@media (max-width: 1100px) {
+  .layer-explorer {
+    grid-template-columns: 160px minmax(0, 1fr);
+  }
+  .layer-stage {
+    height: 500px;
+  }
+  .layer-description {
+    grid-column: 2;
+    margin-top: -25px;
+    padding-bottom: 22px;
+  }
+}
+@media (max-width: 700px) {
+  .layer-explorer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .layer-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px 12px;
+  }
+  .layer-tabs button {
+    padding: 10px 0;
+    gap: 7px;
+  }
+  .layer-tabs button strong {
+    font-size: 11px;
+  }
+  .layer-tabs button span {
+    font-size: 9px;
+  }
+  .layer-stage {
+    height: 410px;
+    margin-top: -20px;
+  }
+  .layer-description {
+    margin-top: 0;
+    min-height: 220px;
+  }
 }
 .modes-compact {
   display: grid;
@@ -381,7 +517,9 @@
 }
 @media (max-width: 1100px) {
   .workflow-map {
-    grid-template-columns: minmax(180px, 1fr) 20px minmax(260px, 1.4fr) 20px minmax(180px, 1fr);
+    grid-template-columns:
+      minmax(180px, 1fr) 20px minmax(260px, 1.4fr)
+      20px minmax(180px, 1fr);
     gap: 6px;
   }
   .map-arrow {
@@ -474,10 +612,6 @@
   }
   .development-loop h3 {
     margin-block: 8px;
-  }
-  .depth-key {
-    flex-direction: column;
-    gap: 20px;
   }
   .landing .conversation-tour-grid {
     grid-template-columns: 1fr;
