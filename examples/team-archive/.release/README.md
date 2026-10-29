@@ -1,5 +1,17 @@
 # Reviewed release records
 
+The current record is `policy-presets-20261029`. The authorization preset recognizes native policy declarations and their existing business boundaries. The preceding replay record follows explicitly witnessed Boolean child results within the same evaluation and basis. Business code, state definitions, probes and independent expectations remain unchanged. Mapping, state, business and project checks were rerun through the normal review process.
+
+## Previous record
+
+# Reviewed release records
+
+The current record is `policy-replay-20261029`. The canonical viewer now follows explicitly witnessed Boolean child results within the same evaluation and basis. Business code, state definitions, probes and independent expectations remain unchanged. Mapping, state, business and project checks were rerun through the normal review process.
+
+## Previous record
+
+# Reviewed release records
+
 The current record is `policy-native-protocol-20261029`. It installs the canonical project/model schema repair and stable policy/data projection. This archive example has no policy declaration, so no unused native policy core is installed. Existing business source, state definitions, probes and independent scenarios remain unchanged. The new inspect/verify/accept/check record passes mapping, state constraints, business and project checks. Historical records are preserved below. See the [shared-policy review](../../../docs/review/shared-policy/README.md).
 
 ## Historical release notes

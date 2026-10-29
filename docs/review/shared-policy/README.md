@@ -46,6 +46,10 @@ The first clean-export check lacked installed JavaScript parser dependencies. It
 
 ## Boundaries
 
+The later real-recording review found and corrected missing Boolean-guard animation and a blank authorization preset for native policy nodes. See the [failure explanation](../../development/policy-failures.md#actual-playback-and-authorization-preset). Explicit dependencies remain mandatory; recorded inputs, truth values and declaration semantics are unchanged. New tests include skipped/missing/cross-check negatives and an untagged native rule linked to its real business endpoint.
+
+The policy tests now decode their UTF-8 fixtures explicitly and pass all 27 cases with Python UTF-8 mode disabled. The original encoding failure and subsequent checks are retained in `checks/`.
+
 The evaluator currently supports scalar string/Boolean/number inputs and acyclic Boolean composition. Native functions own relationship traversal and database reads. A shared definition does not cache an authorization grant between requests. A supplied fact revision identifies the application's read basis; it does not create transactional isolation.
 
 The portable protocol can describe native results from other implementations. This branch supplies a Python evaluator and recorder; it does not claim a tested integration with every external policy engine or language. Mapping checks establish selected source/evidence consistency. Independent business cases still determine whether a predicate and its resulting effects satisfy the confirmed requirement.

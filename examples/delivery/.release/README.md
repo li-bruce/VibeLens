@@ -1,3 +1,15 @@
+# Reviewed release records
+
+The current record is `policy-presets-20261029`. The authorization preset recognizes native policy declarations and their existing business boundaries. The preceding replay record follows explicitly witnessed Boolean child results within the same evaluation and basis. Business code, state definitions, probes and independent expectations remain unchanged. Mapping, state, business and project checks were rerun through the normal review process.
+
+## Previous record
+
+# Reviewed release records
+
+The current record is `policy-replay-20261029`. The canonical viewer now follows explicitly witnessed Boolean child results within the same evaluation and basis. Business code, state definitions, probes and independent expectations remain unchanged. Mapping, state, business and project checks were rerun through the normal review process.
+
+## Previous record
+
 # Reviewed starting point
 
 The current snapshot is `policy-native-protocol-20261029`. It binds the published delivery example

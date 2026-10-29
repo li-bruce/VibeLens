@@ -158,7 +158,8 @@ export function matchingNodes(all, view, events, profile, statusOf, relations = 
     raw = relations;
   if (profile.scope === "permission") {
     for (const n of all.values())
-      if (n.semantic_roles?.includes("permission")) scopeNodes.add(n.id);
+      if (n.semantic_roles?.includes("permission") || n.origin === "policy-definition")
+        scopeNodes.add(n.id);
     const seeds = new Set(scopeNodes);
     for (const e of raw)
       if (["guard", "data"].includes(e.type) && (seeds.has(e.to) || seeds.has(e.from))) {

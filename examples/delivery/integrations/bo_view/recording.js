@@ -202,13 +202,31 @@ export function transferEdges(event, events, edges, all, configuration = null) {
                 (event.depends || []).some(
                   (d) =>
                     d.event === e.id &&
-                    (d.type === member.type || (member.type === "flow" && d.type === "control")),
+                    (d.type === member.type ||
+                      (member.type === "flow" && d.type === "control") ||
+                      witnessedRuleInput(member, e, event, d, all)),
                 ),
             )
           );
         }),
     )
     .map((e) => e.id);
+}
+/** A Boolean rule consumes child results; its graph edge describes the logic.
+ * Only an explicit dependency in the same evaluation witnesses that transfer.
+ * The root-to-business requirement is deliberately excluded.
+ */
+function witnessedRuleInput(member, source, target, dependency, all) {
+  return (
+    member.origin === "policy-definition" &&
+    member.type === "guard" &&
+    dependency.type === "data" &&
+    ["all", "any", "not"].includes(all.get(member.to)?.operator) &&
+    Boolean(source.inputs?.bo_check) &&
+    Boolean(source.inputs?.bo_basis) &&
+    source.inputs.bo_check === target.inputs?.bo_check &&
+    source.inputs.bo_basis === target.inputs?.bo_basis
+  );
 }
 export async function recordingRequest(path, body) {
   const response = await fetch(
