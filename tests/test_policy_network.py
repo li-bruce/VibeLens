@@ -23,7 +23,7 @@ from bo_contracts import validate_graph
 from bo_observer.web.bo_design import BODesign
 from bo_observer.workflow.requirements_dialogue import assess as assess_dialogue
 from bo_observer.adapters.python.bo_probe import BOProbe
-from bo_observer.protocol import validate_event
+from bo_observer.protocol import validate_event, validate_project
 from bo_upgrade import apply as upgrade_runtime
 from bo_observer.workflow.bo_sync import source_inventory
 import hashlib
@@ -95,6 +95,118 @@ class PolicyTests(unittest.TestCase):
                 "policy": self.policy,
             }
         )
+
+    def native_project(self, model=None):
+        model = deepcopy(model or self.graph())
+        model["scope"]["observable"] = ["Synthetic rule cases"]
+        model["nodes"].append(
+            {
+                "id": "state.idle",
+                "kind": "state",
+                "layer": "state",
+                "value": "idle",
+                "label": "Idle",
+                "summary": "Declared idle state",
+            }
+        )
+        model["machine"] = {
+            "engine": "python.explicit",
+            "version": "1",
+            "state_type": "enum",
+            "states": ["idle"],
+            "values": ["idle"],
+            "initial": "idle",
+            "context": {},
+            "events": {},
+            "transitions": [],
+        }
+        return {
+            "protocol": "bo-project/v1",
+            "project_id": "policy-test",
+            "selection": {
+                "mode": "observe",
+                "source": "user",
+                "answer": "Synthetic protocol fixture",
+                "locator": "fixture",
+            },
+            "model": model,
+        }
+
+    def test_unmodified_native_project_protocol_accepts_exact_rules_and_rejects_forged_maps(self):
+        project_doc = self.native_project()
+        self.assertEqual(validate_project(project_doc), project_doc)
+        forged = deepcopy(project_doc)
+        forged["model"]["edges"].append(
+            {
+                "id": "forged",
+                "from": "share",
+                "to": "download",
+                "type": "maps",
+                "evidence": "Synthetic forged mapping",
+            }
+        )
+        with self.assertRaisesRegex(ValueError, "policy"):
+            validate_project(forged)
+        missing = deepcopy(project_doc)
+        missing["model"]["nodes"] = [
+            n for n in missing["model"]["nodes"] if n["id"] != "policy:is_owner"
+        ]
+        with self.assertRaisesRegex(ValueError, "policy"):
+            validate_project(missing)
+        ordinary = deepcopy(project_doc)
+        ordinary["model"].pop("policy")
+        ordinary["model"]["nodes"] = [
+            n for n in ordinary["model"]["nodes"] if n.get("origin") != "policy-definition"
+        ]
+        ordinary["model"]["edges"] = [
+            {
+                "id": "ordinary-data",
+                "from": "share",
+                "to": "download",
+                "type": "data",
+                "evidence": "Synthetic ordinary relation",
+            }
+        ]
+        validate_project(ordinary)
+        ordinary["model"]["edges"].append(
+            {
+                "id": "unscoped",
+                "from": "share",
+                "to": "download",
+                "type": "maps",
+                "evidence": "Synthetic unscoped mapping",
+            }
+        )
+        with self.assertRaisesRegex(ValueError, "policy"):
+            validate_project(ordinary)
+
+    def test_native_project_rejects_orphaned_rules_when_declaration_is_removed(self):
+        project_doc = self.native_project()
+        project_doc["model"].pop("policy")
+        with self.assertRaisesRegex(ValueError, "policy"):
+            validate_project(project_doc)
+
+    def test_policy_and_database_projection_composition_is_idempotent(self):
+        from test_database_protocol import data_fixture
+
+        model = self.graph()
+        model["nodes"].append(
+            {
+                "id": "advance",
+                "kind": "function",
+                "label": "Fixture operation",
+                "summary": "Native data operation fixture",
+                "source": {"path": "worker.py", "symbol": "advance"},
+            }
+        )
+        model["source_files"].append("worker.py")
+        initial = data_fixture({"model": model})["model"]
+        candidate = deepcopy(initial)
+        for _ in range(4):
+            candidate = project(data_fixture({"model": project(candidate)})["model"])
+            self.assertEqual(candidate, initial)
+            self.assertEqual(projection_errors(candidate), [])
+        validate_project(self.native_project(candidate))
 
     def test_shared_definition_and_distinct_bindings(self):
         index = validate(self.policy)
@@ -461,6 +573,73 @@ class PolicyTests(unittest.TestCase):
         finally:
             probe.close()
 
+    def test_unknown_and_error_paths_survive_native_capture_and_verification(self):
+        with tempfile.TemporaryDirectory(dir=TEMP) as directory:
+            error_root = Path(directory)
+            (error_root / "predicates.py").write_text(
+                (EXAMPLE / "predicates.py")
+                .read_text()
+                .replace("return value", "raise ValueError('unavailable')"),
+                encoding="utf-8",
+            )
+            native = load(error_root / "predicates.py", "capture_errors")
+            unknown_inputs = {**self.inputs, "actor": "Ning"}
+            unknown_inputs.pop("grant_active")
+            cases = [
+                (EXAMPLE, self.callbacks, unknown_inputs),
+                (
+                    error_root,
+                    {"same_identity": native.same_identity, "flag_enabled": native.flag_enabled},
+                    self.inputs,
+                ),
+            ]
+            for source_root, callbacks, inputs in cases:
+                document = self.native_project()
+                runs = []
+                for operation in self.policy["operations"]:
+                    report = evaluate(
+                        self.policy,
+                        operation["id"],
+                        inputs,
+                        callbacks,
+                        source_root=source_root,
+                        fact_revision="current-inputs",
+                    )
+                    events = []
+                    collector = BOProbe(
+                        document, "native-capture", sink=lambda event, kind: events.append(event)
+                    )
+                    record_evaluation(
+                        self.policy,
+                        report,
+                        collector,
+                        entity="file-1",
+                        attempt=report["check_id"],
+                        basis={"param_version": 1},
+                    )
+                    self.assertTrue(collector.flush())
+                    self.assertEqual(collector.bo_errors, 0)
+                    collector.close()
+                    self.assertEqual(len(events), len(report["trace"]))
+                    for event in events:
+                        validate_event(event, document, "native-capture")
+                    runs.append(
+                        {
+                            "case": operation["cases"][0],
+                            "mode": "on",
+                            "events": events,
+                            "policy_evaluations": [report],
+                        }
+                    )
+                manifest = {
+                    "files": {
+                        "predicates.py": hashlib.sha256(
+                            (source_root / "predicates.py").read_bytes()
+                        ).hexdigest()
+                    }
+                }
+                self.assertEqual(runtime_errors(self.policy, {"runs": runs}, manifest=manifest), [])
+
     def test_upgraded_core_executes_rules_without_observer_imports(self):
         with tempfile.TemporaryDirectory(dir=TEMP) as directory:
             root = Path(directory)
@@ -484,6 +663,27 @@ class PolicyTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("core-policy-ok", result.stdout)
+            (root / "project.json").write_text(json.dumps(self.native_project()), encoding="utf-8")
+            sdk = subprocess.run(
+                [
+                    sys.executable,
+                    "-I",
+                    "-B",
+                    "-X",
+                    "utf8",
+                    "-c",
+                    "import sys,json;from pathlib import Path;"
+                    f"sys.path.insert(0,{str(root / 'observer_runtime')!r});"
+                    "from bo_observer.protocol import validate_project;"
+                    "validate_project(json.loads(Path('project.json').read_text()));print('native-project-ok')",
+                ],
+                cwd=root,
+                text=True,
+                encoding="utf-8",
+                capture_output=True,
+            )
+            self.assertEqual(sdk.returncode, 0, sdk.stdout + sdk.stderr)
+            self.assertIn("native-project-ok", sdk.stdout)
 
     def test_semantic_rule_addition_and_source_move_refresh_three_rounds(self):
         with tempfile.TemporaryDirectory(dir=TEMP) as directory:

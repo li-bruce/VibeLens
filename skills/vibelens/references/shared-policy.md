@@ -35,6 +35,8 @@ python SKILL/scripts/bo_policy.py check --root PROJECT
 
 The existing `bo_sync scan/watch` refreshes the projection and emits internal maintenance tasks. The active coding AI reconciles changed source, bindings, cases and business meaning before its ordinary completion gate. This does not depend on a user manually maintaining the graph, and it does not wake unrelated conversations.
 
+The project envelope references the bundled canonical model schema. Python registers this schema resource locally; it does not fetch the schema URI. External JSON Schema consumers should register the bundled model resource by its `$id` before validating a project. Rule and database projectors retain existing element order, so composing their refreshes does not change a build merely by moving unchanged elements.
+
 Do not weaken source checks for ordinary nodes. Only an exact validated policy projection can contain source-free logical composition. Its `maps` edges connect rule expressions to actual function nodes; its `guard` edges retain shared dependencies and business-action links. Static mappings do not prove runtime execution.
 
 ## Execute or observe

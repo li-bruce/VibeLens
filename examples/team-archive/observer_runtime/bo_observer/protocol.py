@@ -24,6 +24,7 @@ def schema_check(value, name):
     """Validate a protocol envelope and its JSON number range before processing it."""
     try:
         from jsonschema import Draft202012Validator
+        from referencing import Registry, Resource
     except ImportError as exc:
         raise ValueError(
             "Install the Skill requirements.txt before using the JSON service"
@@ -33,8 +34,15 @@ def schema_check(value, name):
         # Copied project runtime carries the protocol beside its Python package.
         path = Path(__file__).parent / "schemas" / (name + ".schema.json")
     schema = json.loads(path.read_text(encoding="utf-8"))
+    registry = Registry()
+    if name == "project":
+        # Project envelopes reference the same model contract as standalone
+        # models. Register the bundled resource; validation never fetches it.
+        model = json.loads((SCHEMAS / "model.schema.json").read_text(encoding="utf-8"))
+        registry = registry.with_resource(model["$id"], Resource.from_contents(model))
     errors = sorted(
-        Draft202012Validator(schema).iter_errors(value), key=lambda e: str(list(e.path))
+        Draft202012Validator(schema, registry=registry).iter_errors(value),
+        key=lambda e: str(list(e.path)),
     )
     if errors:
         raise ValueError("; ".join(f"{list(e.path)}: {e.message}" for e in errors[:12]))
@@ -57,6 +65,11 @@ def schema_check(value, name):
 def validate_project(project):
     """Check project identity, mode choice, and machine declaration; return a detached copy."""
     schema_check(project, "project")
+    from .policy.projection import projection_errors
+
+    policy_errors = projection_errors(project["model"])
+    if policy_errors:
+        raise ValueError("Invalid policy graph: " + "; ".join(policy_errors))
     validate_chart, _, _ = _shared()
     validate_chart(project["model"])
     from .data.protocol import validate_data_projection

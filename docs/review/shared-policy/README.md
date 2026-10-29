@@ -22,9 +22,27 @@ Branch: `feat/shared-policy-graph`, based on `9796ca3`. Implementation and regre
 | Installed delivery and archive examples | Inspect/verify/accept/check pass | [Review run](checks/policy-release-review-retest.log) |
 | Complete repository release command | Pass, including observer-free packages | [Final run](checks/policy-release-final.log) |
 | Clean Git export with frozen approvals | Both examples pass; no regeneration or reapproval | [Report](checks/policy-clean-export.json) |
-| Independent design-to-run file-sharing trial | V1 passed; V2 in progress | `01a18332-cb51-7471-83f8-990d88886b9d` |
+| Independent design-to-run file-sharing trial | V1 and V2 passed with a documented project adapter; native compatibility retested below | `01a18332-cb51-7471-83f8-990d88886b9d` |
 
 Failures, repairs and their scope are described in [the development record](../../development/policy-failures.md). The [first whole-release attempt](checks/policy-release-retest-2.log) and [first example review](checks/policy-release-review.log) remain available.
+
+## Native protocol repair and second complete acceptance
+
+The first implementation's full suite did not cover a native project containing both policy and database projections. The isolated diagnosis setup exposed the old project-schema enum and alternating projector order. The independent application had documented a compatibility hook; its adapted pass was not a native-framework pass.
+
+The project envelope now references the canonical model schema, resolved from bundled resources offline. Exact rule projection checks reject orphaned or forged mapping edges. Policy/data refreshes preserve existing element order. Prior state, source, business and capture requirements remain in place.
+
+| Check | Result | Record |
+|---|---|---|
+| New tests against clean `088514b` source | Both regressions fail as intended | [Original failure](checks/native-protocol-before-tests.log) |
+| Updated policy suite, including unknown/error capture and copied runtime | 27 tests pass | [Retest](checks/policy-native-capture-27.log) |
+| New reviewed changes in both installed examples | Inspect, verify, accept and check pass | [Review](checks/native-protocol-reviewed-examples.log) |
+| Complete repository release command after repair | Pass | [Full retest](checks/policy-native-release-final.log) |
+| Maintained Python/JavaScript syntax and lint | Pass | [Source report](checks/policy-native-source.json) |
+| Clean staged-source export and frozen approvals | Both examples pass without regeneration/reapproval | [Clean export](checks/policy-native-clean-export.json) |
+| Independent application's shim and CLI wrapper removed | 16 tests, 84 business assertions, 10 evidence checks and actual browser recordings pass | [Native trial](checks/trial-native-final-review.md) |
+
+The first clean-export check lacked installed JavaScript parser dependencies. Its [failure](checks/policy-native-clean-export-missing-deps.json) remains available. The retest supplied the existing `npm ci` dependencies from an identical lockfile; it changed no exported source or frozen approval. Compatibility repair and retest costs are [separate from business iteration](checks/trial-native-development-costs.json).
 
 ## Boundaries
 

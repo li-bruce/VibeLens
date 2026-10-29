@@ -1,0 +1,33 @@
+{
+  "scope": "Framework compatibility regression only; excluded from V2 business iteration cost.",
+  "normal_upgrades": 1,
+  "upgrade_command_seconds": 0.24076299997977912,
+  "business_additions": 0,
+  "full_gate_invocations": 2,
+  "verification_rounds": [
+    {
+      "candidate_id": "25552298b212ef6e5fa8d977b22f6eb12e87deb2d37d6dfadd694b81c8f96f3b",
+      "passed": true,
+      "duration_seconds": 33.52845139987767
+    },
+    {
+      "candidate_id": "19d36de8a1332bd8328ff8408cf0c5d39441a38b86d9961f29d645e27c1e246b",
+      "passed": true,
+      "duration_seconds": 35.22722340002656
+    }
+  ],
+  "browser_regression_invocations": 1,
+  "browser_revocation_invocations": 1,
+  "failures_and_retests": [
+    {
+      "record": "change-begin-attempt-01.json",
+      "failure": "New canonical begin rejected the previous installed snapshot before upgrade.",
+      "resolution": "All archived V2 source hashes matched; the previous installed adapter established its exact accepted baseline before the normal upgrade. No baseline was reset."
+    },
+    {
+      "failure": "The first compatibility archive-label implementation reused the receipt variable as the history scope label.",
+      "resolution": "Corrected the local variable; no assertion failed. Re-ran the full gate for the final source."
+    }
+  ],
+  "measurement_boundary": "Measured command wall times are separate from unknown developer effort. Previous V2 costs and evidence remain byte-identical."
+}

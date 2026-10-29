@@ -1,6 +1,6 @@
 # Reviewed release records
 
-The current record is `shared-policy-20261029`. It installs shared-policy protocol support and current replay behavior. This archive example has no policy declaration, so no unused native policy core is installed. Existing business source, state definitions, probes and independent scenarios remain unchanged. The new inspect/verify/accept/check record passes mapping, state constraints, business and project checks. Historical records are preserved below. See the [shared-policy review](../../../docs/review/shared-policy/README.md).
+The current record is `policy-native-protocol-20261029`. It installs the canonical project/model schema repair and stable policy/data projection. This archive example has no policy declaration, so no unused native policy core is installed. Existing business source, state definitions, probes and independent scenarios remain unchanged. The new inspect/verify/accept/check record passes mapping, state constraints, business and project checks. Historical records are preserved below. See the [shared-policy review](../../../docs/review/shared-policy/README.md).
 
 ## Historical release notes
 
