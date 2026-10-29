@@ -171,6 +171,14 @@ def verify(root, cfg, change, *, inspect, snapshot):
     else:
         try:
             payload = json.loads(observation["stdout"])
+            if current["model"].get("policy"):
+                from ..policy.evidence import runtime_errors as policy_runtime_errors
+
+                policy_errors = policy_runtime_errors(
+                    current["model"]["policy"], payload, manifest=capture(root, current["model"])
+                )
+                mapping_errors.extend(policy_errors)
+                reports["mapping"]["policy"] = {"valid": not policy_errors, "errors": policy_errors}
             if not cfg.get("stategraph"):
                 mapping_errors.extend(database_runtime_errors(root, payload, current["model"]))
             if payload.get("build_id") != capture(root, current["model"])["build_id"]:

@@ -339,6 +339,22 @@ def active_states(chart, value):
 
 
 def validate_graph(model):
+    # Only an exact, validated policy projection may contain source-free logical
+    # expressions. Ordinary executable-node checks remain unchanged.
+    policy_nodes, policy_edges = set(), set()
+    if model.get("policy"):
+        try:
+            from .policy.projection import projection_errors, ORIGIN
+        except ImportError:
+            try:
+                from .bo_observer.policy.projection import projection_errors, ORIGIN
+            except ImportError:
+                from bo_observer.policy.projection import projection_errors, ORIGIN
+        errors = projection_errors(model)
+        if errors:
+            raise ValueError("; ".join(errors))
+        policy_nodes = {n["id"] for n in model["nodes"] if n.get("origin") == ORIGIN}
+        policy_edges = {e["id"] for e in model["edges"] if e.get("origin") == ORIGIN}
     if model.get("schema_version") == 3:
         for key in ("revision", "intent", "source_files", "nodes", "edges", "overview", "scope"):
             if not model.get(key):
@@ -369,7 +385,11 @@ def validate_graph(model):
                 raise ValueError("invalid node kind")
             if not node.get("label") or not node.get("summary"):
                 raise ValueError("node lacks developer explanation")
-            if node["kind"] not in {"data", "state"} and not node.get("source"):
+            if (
+                node["kind"] not in {"data", "state"}
+                and not node.get("source")
+                and node["id"] not in policy_nodes
+            ):
                 raise ValueError("executable node lacks source: " + node["id"])
     edges = set()
     for edge in model.get("edges", []):
@@ -377,7 +397,10 @@ def validate_graph(model):
             raise ValueError("duplicate/dangling edge")
         edges.add(edge["id"])
         if model.get("schema_version") == 3 and (
-            edge.get("type") not in {"flow", "data", "guard", "contains", "resource", "join"}
+            (
+                edge.get("type") not in {"flow", "data", "guard", "contains", "resource", "join"}
+                and not (edge["id"] in policy_edges and edge.get("type") == "maps")
+            )
             or not edge.get("evidence")
         ):
             raise ValueError("edge needs type and provenance")

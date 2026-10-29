@@ -8,6 +8,8 @@
 
 ## 先找到对应目录
 
+规则部分从 [policy/definition.py](../skills/vibelens/scripts/bo_observer/policy/definition.py) 开始。`projection.py` 将共享条件和源码映射接入整体图；`runtime.py` 是可选的 Python 执行器，`bindings.py` 核对实际加载函数与当前源码。`evidence.py` 校验真实求值路径及原始图事件，`sync.py` 接入现有开发同步流程。操作说明见[共享规则网](../skills/vibelens/references/shared-policy.md)，可运行内容见[示例](../examples/policy-network/)。
+
 图标与右键菜单的键盘操作位于 `assets/stategraph-viewer/controls.js`。
 `i18n.js` 决定页面语言的优先级，`web/interface_language.py` 校验并保存对话语言。
 它们不修改图身份或业务数据。清空记录由记录服务处理，只删除经过身份与版本校验的单条已停止记录。

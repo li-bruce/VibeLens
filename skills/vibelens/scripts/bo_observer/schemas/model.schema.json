@@ -120,7 +120,8 @@
               "guard",
               "contains",
               "resource",
-              "join"
+              "join",
+              "maps"
             ]
           },
           "evidence": {
@@ -129,6 +130,11 @@
           }
         }
       }
+    },
+    "policy": {
+      "type": "object",
+      "required": ["schema", "revision", "stage", "inputs", "predicates", "nodes", "operations"],
+      "properties": {"schema": {"const": "bo-policy/v1"}}
     },
     "machine": {
       "type": "object",

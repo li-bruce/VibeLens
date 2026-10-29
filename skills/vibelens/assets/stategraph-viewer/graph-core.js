@@ -106,7 +106,13 @@ export function sourceBinding(view, all, id) {
   return owner ? { ...owner, selection: undefined, provenance: "capture-owner" } : undefined;
 }
 export function nodeEvents(node, events) {
-  return events.filter((e) => e.node === (node.event_node || node.id));
+  const policy = node.policy_node || node.capture_owner_policy;
+  // A condition skipped in the selected check must not inherit an earlier
+  // request's result. Prefix replay arrays naturally select the earlier check.
+  const check = policy ? events.findLast((event) => event.inputs?.bo_check)?.inputs.bo_check : null;
+  return events.filter(
+    (e) => e.node === (node.event_node || node.id) && (!policy || e.inputs?.bo_check === check),
+  );
 }
 export function callValues(node, events) {
   const calls = nodeEvents(node, events),
@@ -244,6 +250,10 @@ export function status(node, view, events, choice, configuration = null) {
     last.outputs.safe === false
   )
     return "blocked";
+  if (node.policy_node && !node.field) {
+    if (last.outputs.status === "error" || last.outputs.value === false) return "blocked";
+    if (last.outputs.status === "unknown" || last.outputs.value === null) return "declared";
+  }
   return last.phase === "enter" ? "active" : "ok";
 }
 export function lines(node, view, events, choice, configuration = null) {
@@ -268,6 +278,26 @@ export function lines(node, view, events, choice, configuration = null) {
         : []),
     ];
   if (view.stage === "design") return node.summary ? [{ text: node.summary, role: "muted" }] : [];
+  if (node.policy_node && !node.field) {
+    const last = nodeEvents(node, events).at(-1);
+    return [
+      {
+        text: !last
+          ? boTranslate("Not evaluated")
+          : last.outputs.status === "error"
+            ? boTranslate("Evaluation error")
+            : last.outputs.value === null
+              ? boTranslate("Unknown")
+              : compact(last.outputs.value),
+        role:
+          !last || last.outputs.value === null
+            ? "muted"
+            : last.outputs.value === false
+              ? "bad"
+              : "value",
+      },
+    ];
+  }
   if (node.field) {
     const values = callValues(node, events)[node.direction === "in" ? "inputs" : "outputs"];
     return [

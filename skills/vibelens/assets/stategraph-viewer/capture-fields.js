@@ -12,7 +12,9 @@ export function captureFields(owner) {
       path.map((key) => ":" + encodeURIComponent(key)).join("");
     const record = spec && typeof spec === "object" && !Array.isArray(spec);
     const diagnostic =
-      advanced || (database && (!primary.has(field) || (record && !Object.keys(spec).length)));
+      advanced ||
+      owner.capture_metadata?.[direction]?.includes(field) ||
+      (database && (!primary.has(field) || (record && !Object.keys(spec).length)));
     nodes.push({
       id,
       label: path.at(-1) || field,
@@ -27,6 +29,7 @@ export function captureFields(owner) {
       origin: "capture-field",
       capture_role: diagnostic ? "diagnostic" : "value",
       capture_owner_role: owner.data_role,
+      ...(owner.policy_node ? { capture_owner_policy: owner.policy_node } : {}),
       ...(diagnostic ? { analysis_level: "advanced" } : {}),
       summary: t(direction === "in" ? "Recorded input" : "Recorded output"),
     });

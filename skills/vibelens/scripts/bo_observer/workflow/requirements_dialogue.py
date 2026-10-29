@@ -92,6 +92,27 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
     if not text(doc.get("goal")):
         error("missing_goal", "discovery")
     sources = records(doc.get("sources"), "sources")
+    if doc.get("policy"):
+        from ..policy.definition import validate as validate_policy
+
+        try:
+            policy = validate_policy(doc["policy"], bound=False)
+            for item in [
+                *policy["nodes"].values(),
+                *policy["predicates"].values(),
+                *policy["operations"].values(),
+            ]:
+                if set(item["source_refs"]) - set(sources):
+                    error("policy_source_missing", item["id"])
+            if model is not None:
+                if not model.get("policy"):
+                    error("policy_model_missing", "confirmed rule network")
+                else:
+                    mapped = validate_policy(model["policy"])
+                    if set(policy["operations"]) - set(mapped["operations"]):
+                        error("policy_operation_missing", "confirmed operation")
+        except (ValueError, KeyError, TypeError) as exc:
+            error("invalid_policy", str(exc))
     for sid, source in sources.items():
         if (
             source.get("kind") not in SOURCE_KINDS

@@ -35,6 +35,8 @@ PROTOCOLS = {
     "database_config": "bo-databases/v1",
     "database_catalog": "bo-data-catalog/v1",
     "database_projection": "bo-database/v1",
+    "policy": "bo-policy/v1",
+    "policy_evaluation": "bo-policy-evaluation/v1",
 }
 CORE = {
     "bo_stategraph.py": "__init__.py",
@@ -84,7 +86,16 @@ def portable_files(files):
     return result
 
 
-def plan(root, *, runtime, module="bo_stategraph", viewers=(), baseline=None, source=None):
+def plan(
+    root,
+    *,
+    runtime,
+    module="bo_stategraph",
+    viewers=(),
+    baseline=None,
+    source=None,
+    policy_core=None,
+):
     """Compare maintained runtime files with the installed baseline and list safe updates/conflicts."""
     root = Path(root).absolute().resolve()
     runtime = relative_name(runtime)
@@ -115,6 +126,22 @@ def plan(root, *, runtime, module="bo_stategraph", viewers=(), baseline=None, so
     }
     sources.update({runtime + "/" + name: bridge_source(name, module) for name in CORE})
     sources.update({module + "/" + target: source / name for name, target in CORE.items()})
+    # Core exports retain policy validation/execution without importing the Web
+    # service, collector or application modules.
+    if policy_core is None:
+        config = read(root / "sync.json") if (root / "sync.json").is_file() else {}
+        candidates = [config.get("model", "bo_stategraph/project.json"), "discovery.json"]
+        policy_core = False
+        for candidate in candidates:
+            path = contained(root, candidate)
+            if path.is_file():
+                document = read(path)
+                if isinstance(document, dict) and document.get("model", document).get("policy"):
+                    policy_core = True
+    if policy_core:
+        policy_source = source / "bo_observer/policy"
+        for name in ("__init__.py", "definition.py", "projection.py", "bindings.py", "runtime.py"):
+            sources[module + "/policy/" + name] = policy_source / name
     for viewer in viewers:
         sources.update(
             {
@@ -211,6 +238,12 @@ def main():
     parser.add_argument("--viewer", action="append", default=[])
     parser.add_argument("--baseline", help="Preserved change_sync baseline for first migration")
     parser.add_argument(
+        "--policy-core",
+        action="store_true",
+        default=None,
+        help="Include the native policy executor before a project declaration exists",
+    )
+    parser.add_argument(
         "--source", help="Canonical Skill scripts directory, if this is a copied tool"
     )
     args = parser.parse_args()
@@ -220,6 +253,7 @@ def main():
         viewers=args.viewer,
         baseline=args.baseline,
         source=args.source,
+        policy_core=args.policy_core,
     )
     result = apply(args.root, **options) if args.command == "apply" else plan(args.root, **options)
     print(

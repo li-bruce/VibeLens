@@ -1,7 +1,9 @@
 # Reviewed starting point
 
-The current snapshot is `source-flow-20261026`. It binds the published delivery example
+The current snapshot is `shared-policy-20261029`. It binds the published delivery example
 to its reviewed source, graph, copied runtime and verification results.
+
+This record installs the shared-policy protocol and current replay support. This example has no policy declaration, so no unused native policy core is installed. Existing business source and independent expectations remain unchanged. The reviewed candidate passed inspect, verify, accept and check; prior records remain intact. See the [shared-policy review](../../../docs/review/shared-policy/README.md).
 
 `tools/demo.py` restores this snapshot only for a fresh checkout, then checks the
 current source. It does not approve local edits. `tools/verify.py` reruns the tests
