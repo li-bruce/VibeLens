@@ -115,6 +115,8 @@ Report **implementation mapping**, **state constraints**, **business rules**, an
 
 For a configured policy network, scan/inspect/verify must check its exact projection, independent source signatures, actual per-check evaluations and their matching graph events. Include every configured operation case. Recheck shared dependents after composition, function, parameter or fact-basis changes; keep business expectations independent from recorded predicate truth.
 
+Run the canonical protocol and CLI without replacing their validators or projectors. Project-native data and engine adapters translate actual application structures. A compatibility hook that changes canonical validation or projection is a framework gap: preserve its reproduction and report native-framework checks as blocked until the canonical implementation is repaired. Adapted success is separate evidence.
+
 For exercised drive-mode transitions, compare the native executor's actual event, before/after states and evaluated guards with public queries and recording frames. A complete declaration or final state alone is not path evidence. Report an empty or incomplete journal/trace as a mapping gap; verify a deliberately removed transition witness is detected.
 
 Verify that unsynchronized source changes fail; every feature and required field has actual evidence; key values match independent reads; business effects agree with observation on, off, failing, and queue-limited; viewer/recording controls create no business events; filtered views retain relations; export and Web removal preserve business execution. Run architecture checks, existing gates, and new language cases without weakening prior checks.

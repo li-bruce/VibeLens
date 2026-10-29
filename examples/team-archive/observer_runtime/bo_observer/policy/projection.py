@@ -139,6 +139,11 @@ def project(model, *, bound=True):
     result["edges"] = [
         edge for edge in model.get("edges", []) if edge.get("origin") != ORIGIN
     ] + edges
+    # Other projectors retain their own elements. Preserve the existing order
+    # so composing policy/data refreshes cannot alternate the model's hash.
+    for name in ("nodes", "edges"):
+        order = {item["id"]: position for position, item in enumerate(model.get(name, []))}
+        result[name].sort(key=lambda item: order.get(item["id"], len(order)))
     ids = [node["id"] for node in result["nodes"]]
     edge_ids = [edge["id"] for edge in result["edges"]]
     if len(ids) != len(set(ids)) or len(edge_ids) != len(set(edge_ids)):
@@ -148,13 +153,23 @@ def project(model, *, bound=True):
 
 def projection_errors(model, *, bound=True):
     if not model.get("policy"):
-        return []
+        orphaned = any(node.get("origin") == ORIGIN for node in model.get("nodes", []))
+        orphaned |= any(
+            edge.get("origin") == ORIGIN or edge.get("type") == "maps"
+            for edge in model.get("edges", [])
+        )
+        return ["policy elements require a valid policy declaration"] if orphaned else []
     try:
         expected = project(model, bound=bound)
         actual_nodes = {n["id"]: n for n in model["nodes"] if n.get("origin") == ORIGIN}
         actual_edges = {e["id"]: e for e in model["edges"] if e.get("origin") == ORIGIN}
         expected_nodes = {n["id"]: n for n in expected["nodes"] if n.get("origin") == ORIGIN}
         expected_edges = {e["id"]: e for e in expected["edges"] if e.get("origin") == ORIGIN}
+        if any(
+            edge.get("type") == "maps" and expected_edges.get(edge["id"]) != edge
+            for edge in model.get("edges", [])
+        ):
+            return ["maps relation is outside the exact policy projection"]
         return (
             []
             if actual_nodes == expected_nodes and actual_edges == expected_edges

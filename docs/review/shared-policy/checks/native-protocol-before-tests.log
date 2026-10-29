@@ -1,0 +1,30 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+EF
+======================================================================
+ERROR: test_unmodified_native_project_protocol_accepts_exact_rules_and_rejects_forged_maps (test_policy_network.PolicyTests.test_unmodified_native_project_protocol_accepts_exact_rules_and_rejects_forged_maps)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\vibelens-policy-graph\.validation\native-protocol-before\tests\test_policy_network.py", line 137, in test_unmodified_native_project_protocol_accepts_exact_rules_and_rejects_forged_maps
+    self.assertEqual(validate_project(project_doc), project_doc)
+                     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\vibelens-policy-graph\.validation\native-protocol-before\skills\vibelens\scripts\bo_observer\protocol.py", line 59, in validate_project
+    schema_check(project, "project")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\vibelens-policy-graph\.validation\native-protocol-before\skills\vibelens\scripts\bo_observer\protocol.py", line 40, in schema_check
+    raise ValueError("; ".join(f"{list(e.path)}: {e.message}" for e in errors[:12]))
+ValueError: ['model', 'edges', 11, 'type']: 'maps' is not one of ['flow', 'data', 'guard', 'contains', 'resource', 'join']; ['model', 'edges', 15, 'type']: 'maps' is not one of ['flow', 'data', 'guard', 'contains', 'resource', 'join']; ['model', 'edges', 19, 'type']: 'maps' is not one of ['flow', 'data', 'guard', 'contains', 'resource', 'join']; ['model', 'edges', 23, 'type']: 'maps' is not one of ['flow', 'data', 'guard', 'contains', 'resource', 'join']; ['model', 'edges', 26, 'type']: 'maps' is not one of ['flow', 'data', 'guard', 'contains', 'resource', 'join']; ['model', 'edges', 29, 'type']: 'maps' is not one of ['flow', 'data', 'guard', 'contains', 'resource', 'join']; ['model', 'edges', 8, 'type']: 'maps' is not one of ['flow', 'data', 'guard', 'contains', 'resource', 'join']
+
+======================================================================
+FAIL: test_policy_and_database_projection_composition_is_idempotent (test_policy_network.PolicyTests.test_policy_and_database_projection_composition_is_idempotent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\vibelens-policy-graph\.validation\native-protocol-before\tests\test_policy_network.py", line 207, in test_policy_and_database_projection_composition_is_idempotent
+    self.assertEqual(candidate, initial)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'sch[679 chars]d': 'advance', 'kind': 'function', 'label': 'F[44534 chars]y']}} != {'sch[679 chars]d': 'policy:network', 'kind': 'decision', 'lay[44534 chars]y']}}
+Diff is 115363 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.191s
+
+FAILED (failures=1, errors=1)
