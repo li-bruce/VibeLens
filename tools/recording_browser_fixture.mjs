@@ -4,14 +4,30 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export async function serveRecording(recordingPath) {
+export async function serveRecording(
+  recordingPath,
+  { names = null, port = 0, preferences: initialPreferences = null } = {},
+) {
   const root = fileURLToPath(new URL("../", import.meta.url));
   const assets = path.join(root, "skills/vibelens/assets/stategraph-viewer");
   const bytes = await readFile(recordingPath);
   const recording = JSON.parse(bytes);
+  // Optional AI-authored presentation accompanies the immutable recorded facts.
+  const displayed = names
+    ? {
+        ...recording,
+        context: {
+          ...recording.context,
+          model: {
+            ...recording.context.model,
+            presentation: { ...recording.context.model.presentation, names },
+          },
+        },
+      }
+    : recording;
   const writes = [],
     requests = [];
-  let preferences = {
+  let preferences = initialPreferences || {
     schema: 1,
     project_id: recording.context.model.project_id,
     revision: 0,
@@ -49,14 +65,14 @@ export async function serveRecording(recordingPath) {
         return json({ source: recording.sources[name], build_id: recording.build_id });
       }
       if (route === "/api/view")
-        return json({ ...recording.context, ...recording.final, events: recording.events });
+        return json({ ...displayed.context, ...recording.final, events: recording.events });
       if (route === "/api/design") return json({ available: false });
       if (route === "/api/recordings")
         return json({
           active: null,
           recordings: [{ ...recording, events: recording.events.length }],
         });
-      if (route === "/api/recordings/" + recording.id) return json(recording);
+      if (route === "/api/recordings/" + recording.id) return json(displayed);
       if (route.startsWith("/api/")) return json({ error: "Unavailable in saved recording" }, 404);
       const file = path.resolve(
         assets,
@@ -76,7 +92,7 @@ export async function serveRecording(recordingPath) {
       json({ error: String(error) }, 404);
     }
   });
-  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  await new Promise((resolve) => server.listen(port, "127.0.0.1", resolve));
   return {
     recording,
     bytes,

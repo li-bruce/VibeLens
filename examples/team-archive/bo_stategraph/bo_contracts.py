@@ -338,7 +338,42 @@ def active_states(chart, value):
     return result
 
 
+def validate_names(model):
+    """Reject malformed names without changing IDs, source symbols or state values.
+
+    Node keys may include generated capture fields and lazily indexed source IDs.
+    Only exact IDs are looked up; names never create a node or a relationship.
+    """
+    names = model.get("presentation", {}).get("names", {})
+    if not isinstance(names, dict) or set(names) - {"nodes", "edges", "states", "events"}:
+        raise ValueError("invalid presentation.names categories")
+    for category, entries in names.items():
+        if not isinstance(entries, dict):
+            raise ValueError("presentation.names category must be an identity map")
+        for identity, value in entries.items():
+            if not isinstance(identity, str) or not identity.strip():
+                raise ValueError("presentation.names needs a nonempty identity")
+            if isinstance(value, dict):
+                if not value or set(value) - {"en", "zh-CN"}:
+                    raise ValueError("presentation.names supports en and zh-CN")
+                labels = value.values()
+            else:
+                labels = [value]
+            for label in labels:
+                if (
+                    not isinstance(label, str)
+                    or not label.strip()
+                    or label != label.strip()
+                    or len(label) > 60
+                    or any(ord(char) < 32 or ord(char) == 127 for char in label)
+                ):
+                    raise ValueError(
+                        "presentation.names labels need 1-60 plain, single-line characters"
+                    )
+
+
 def validate_graph(model):
+    validate_names(model)
     # Only an exact, validated policy projection may contain source-free logical
     # expressions. Ordinary executable-node checks remain unchanged.
     policy_nodes, policy_edges = set(), set()

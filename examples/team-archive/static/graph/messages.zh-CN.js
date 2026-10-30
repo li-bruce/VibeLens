@@ -1,5 +1,7 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "AI names": "易懂名称",
+  "Use concise AI explanations": "用简短说明解释节点、关系和状态",
   "Timeline": "时间轴",
   "Event data": "事件数据",
   "Call duration · Event · Source mapping": "调用耗时 · 事件 · 源码映射",

@@ -2,6 +2,7 @@ import { activeMachineStates } from "./machine-projection.js";
 import { graphInventory } from "./graph-inventory.js";
 export { stateNodeId } from "./graph-inventory.js";
 import { capturedValue } from "./capture-fields.js";
+import { explainedName } from "./graph-names.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   dataRoles,
@@ -30,6 +31,7 @@ export const stateLabels = {
   cancelled: boTranslate("Cancelled"),
 };
 export function phaseLabel(model, value) {
+  if (Array.isArray(value)) return value.map((state) => phaseLabel(model, state)).join(" · ");
   const labels = model?.machine?.labels;
   return labels && Object.hasOwn(labels, value) ? labels[value] : String(value);
 }
@@ -141,6 +143,9 @@ export function callValues(node, events) {
 }
 function activityName(view, id) {
   return view.model.nodes.find((n) => n.id === id)?.label || id;
+}
+function activityLabel(view, state) {
+  return view.model.presentation?.name_mode === "source" ? state : stateLabels[state] || state;
 }
 function activityColor(state) {
   return (
@@ -339,14 +344,14 @@ export function lines(node, view, events, choice, configuration = null) {
     if (node.execution_role === "activity") {
       const state = configuration.activities?.[node.id];
       result.push({
-        text: stateLabels[state] || state || boTranslate("Not recorded"),
+        text: activityLabel(view, state) || boTranslate("Not recorded"),
         role: state === "waiting" || state === "failed" || state === "rejected" ? "bad" : "good",
       });
       if (configuration.disposition === "interrupted")
         result[result.length - 1] = {
           text:
             boTranslate("Execution interrupted; last recorded state: \u201C") +
-            stateLabels[state] +
+            activityLabel(view, state) +
             "」",
           role: "muted",
         };
@@ -366,12 +371,14 @@ export function lines(node, view, events, choice, configuration = null) {
       }
       result.push({
         text:
-          {
-            waiting: boTranslate("Some activities are unfinished"),
-            enabled: boTranslate("Activities finished; checking results"),
-            passed: boTranslate("All activities passed"),
-            rejected: boTranslate("Some activities did not pass"),
-          }[j.state] || j.state,
+          view.model.presentation?.name_mode === "source"
+            ? j.state
+            : {
+                waiting: boTranslate("Some activities are unfinished"),
+                enabled: boTranslate("Activities finished; checking results"),
+                passed: boTranslate("All activities passed"),
+                rejected: boTranslate("Some activities did not pass"),
+              }[j.state] || j.state,
         role: j.state === "passed" ? "good" : "bad",
       });
       if (j.pending?.length)
@@ -397,7 +404,7 @@ export function lines(node, view, events, choice, configuration = null) {
     if (node.value === view.model.machine.execution?.within && configuration) {
       for (const [id, state] of Object.entries(configuration.activities || {}))
         result.push({
-          text: activityName(view, id) + "：" + stateLabels[state],
+          text: activityName(view, id) + "：" + activityLabel(view, state),
           role: state === "waiting" ? "bad" : "value",
         });
     }
@@ -413,7 +420,7 @@ export function lines(node, view, events, choice, configuration = null) {
           });
         for (const [id, state] of Object.entries(configuration.activities || {}))
           result.push({
-            text: activityName(view, id) + "：" + stateLabels[state],
+            text: activityName(view, id) + "：" + activityLabel(view, state),
             role: state === "waiting" || state === "failed" ? "bad" : "value",
           });
         for (const r of Object.values(configuration.resources || {}))
@@ -768,6 +775,9 @@ export function layoutGraph(
       (!sourceEvents.length ||
         sourceEvents.at(-1)?.basis.param_version === view.authority.basis.param_version);
     // Different relation types sharing endpoints remain separate edges.
+    if (view.model.presentation?.name_mode === "source")
+      label = e.event || e.code_relation || e.data_relation || e.type;
+    else label = explainedName(view.model.presentation?.names?.edges?.[e.id]) || label;
     const key = from + ">" + to + ":" + relationType(e) + ":" + (e.origin || "model");
     const member = { ...e, label, observed, current };
     if (edgeMap.has(key)) {

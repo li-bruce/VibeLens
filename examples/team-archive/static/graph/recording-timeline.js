@@ -6,6 +6,7 @@ import { boundWindow, zoomWindow, panWindow, nearestEvent } from "./trace-viewpo
 import { paintTrace, traceGeometry, timeLabel } from "./trace-paint.js";
 import { layers } from "./graph-layers.js";
 import { iconButton } from "./controls.js";
+import { boDisplayValue } from "./replay-steps.js";
 
 export function cleanTimeline(value) {
   return {
@@ -142,6 +143,8 @@ export class RecordingTimeline {
   /** Rebuild only on recording/topology/scope changes, never on each graph animation tick. */
   update({
     recording,
+    model = recording.context.model,
+    preferences,
     items,
     all,
     edges,
@@ -155,6 +158,9 @@ export class RecordingTimeline {
     selection,
   }) {
     const prior = this.settings;
+    this.model = model;
+    this.all = all;
+    this.preferences = preferences;
     this.settings = cleanTimeline(settings);
     this.raw = raw;
     this.transfers = [...transfers];
@@ -219,7 +225,7 @@ export class RecordingTimeline {
     this.find("health").title = issues.join("\n");
     this.canvas.setAttribute("aria-valuemax", String(items.length - 1));
     this.canvas.setAttribute("aria-valuenow", String(raw));
-    this.canvas.setAttribute("aria-valuetext", eventLabel(items[raw], recording.context.model));
+    this.canvas.setAttribute("aria-valuetext", eventLabel(items[raw], this.model));
     this.host.dataset.eventId = items[raw].id;
     this.host.dataset.rawIndex = String(raw);
     this.host.dataset.graphTransfers = JSON.stringify(this.transfers);
@@ -253,7 +259,7 @@ export class RecordingTimeline {
         : slice?.unfinished
           ? t("Open call")
           : "";
-    const title = `${eventLabel(event, this.index.recording.context.model)}${duration ? " · " + duration : ""}`;
+    const title = `${eventLabel(event, this.model)}${duration ? " · " + duration : ""}`;
     this.find("selected").textContent = title;
     this.find("selected").title = [
       title,
@@ -271,7 +277,7 @@ export class RecordingTimeline {
           .slice(0, 3)
           .map(
             (change) =>
-              `${change.field}: ${JSON.stringify(change.before) ?? "?"} → ${JSON.stringify(change.after)}`,
+              `${change.field}: ${boDisplayValue(change.before, this.model, change)} → ${boDisplayValue(change.after, this.model, change)}`,
           )
           .join(" · ")
       : Object.entries(event.outputs || {})
@@ -493,7 +499,7 @@ export class RecordingTimeline {
     const event = this.index.items[hit.raw],
       mark = this.index.rows.get(hit.row)?.marks.find((item) => item.raw === hit.raw);
     tooltip.textContent = [
-      eventLabel(event, this.index.recording.context.model),
+      eventLabel(event, this.model),
       event.observed_at,
       event.entity,
       mark?.projected ? t("Source mapping") : "",
@@ -581,6 +587,7 @@ export class RecordingTimeline {
     cancelAnimationFrame(this.drawFrame);
     this.seekFrame = this.drawFrame = null;
     this.pendingSeek = this.drag = this.index = null;
+    this.all = this.model = this.preferences = null;
     this.indexKey = this.rowKey = null;
     this.rows = [];
     this.points = [];

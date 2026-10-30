@@ -1,6 +1,7 @@
 import { machineProjection } from "./machine-projection.js";
 import { captureFields } from "./capture-fields.js";
 import { t as boTranslate } from "./i18n.js";
+import { nameNode, explainedName } from "./graph-names.js";
 
 export function stateNodeId(model, value) {
   return model.nodes.find((n) => n.kind === "state" && n.value === value)?.id || "state." + value;
@@ -48,6 +49,20 @@ export function graphInventory(
       label: boTranslate("Same node"),
       evidence: m.evidence,
     });
+  }
+  // Generated fields, machine states and shared references use the same policy.
+  for (const [id, node] of all) all.set(id, nameNode(node, view.model, view.manifest?.bindings));
+  for (let index = 0; index < rawEdges.length; index++) {
+    const edge = rawEdges[index],
+      explanation = explainedName(view.model.presentation?.names?.edges?.[edge.id]);
+    if (view.model.presentation?.name_mode === "source" || explanation)
+      rawEdges[index] = {
+        ...edge,
+        label:
+          view.model.presentation.name_mode === "source"
+            ? edge.event || edge.code_relation || edge.data_relation || edge.type
+            : explanation,
+      };
   }
   return { all, rawEdges };
 }

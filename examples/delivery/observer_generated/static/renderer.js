@@ -2,7 +2,7 @@ import { polylineAt, cleanRoute } from "./edge-routing.js";
 import { t as boTranslate } from "./i18n.js";
 // Graph drawing owns Pixi objects and hit geometry, but no fetching, storage or UI commands.
 import { colors as C, nodeTypes } from "./graph-core.js";
-import { annotationFor, displayName, relationStyle } from "./layout.js";
+import { annotationFor, displayName, relationStyle, relationName } from "./layout.js";
 import { drawGlyph, glyphAppearance } from "./glyphs.js";
 import { boKinds } from "./replay-steps.js";
 import { RoutingClient } from "./routing-client.js";
@@ -340,14 +340,8 @@ export function createGraphRenderer({
         );
       }
       if (!dim && scale > 0.24 && (highlight || scale > 0.38)) {
-        const details = [...e.labels].filter((label) => label !== e.type).join(" / "),
-          font = Math.max(11.5 / Math.sqrt(Math.min(1, scale)), 10 / scale),
-          description =
-            e.members.length > 1
-              ? `${style.label} × ${e.members.length}`
-              : scale < 0.45
-                ? style.label
-                : [style.label, details].filter(Boolean).join(" · ");
+        const font = Math.max(11.5 / Math.sqrt(Math.min(1, scale)), 10 / scale),
+          description = relationName(e, preferences);
         const payload = boTransfers.get(e.id);
         const caption = payload
           ? scale < 0.45

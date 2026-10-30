@@ -1,5 +1,6 @@
 /** Canvas-only timeline presentation. Geometry and hit targets share one transform. */
 import { t } from "./i18n.js";
+import { displayName } from "./layout.js";
 import { layers } from "./graph-layers.js";
 import { visibleSlices } from "./trace-viewport.js";
 import { marksInWindow } from "./trace-index.js";
@@ -276,7 +277,9 @@ export function paintTrace(canvas, state) {
     ctx.fillStyle = "#354d5e";
     const title = row.header
       ? (state.expanded.includes(row.layer) ? "▾ " : "▸ ") + t(row.label)
-      : row.node.label || row.id;
+      : state.preferences
+        ? displayName(state.all?.get(row.id) || row.node, state.preferences)
+        : row.node.label || row.id;
     clippedText(ctx, title, row.header ? 12 : 22, y + 18, left - (row.header ? 42 : 28));
     if (row.header) {
       ctx.fillStyle = "#71808e";

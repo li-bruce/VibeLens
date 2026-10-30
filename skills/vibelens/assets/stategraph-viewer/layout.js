@@ -120,6 +120,7 @@ export function annotationFor(state, id) {
   return state.annotations?.[id] || { label: "", note: "", core: false };
 }
 export function displayName(node, state) {
+  if (state?.nameMode === "source") return node.source_name || node.label;
   return annotationFor(state, node.referenceOf || node.id).label || node.label;
 }
 // Search the complete model, including nodes hidden by a collapsed parent.
@@ -134,7 +135,16 @@ export function searchNodes(all, state, query, limit = 20) {
     .map((node) => {
       const annotation = annotationFor(state, node.id),
         name = displayName(node, state);
-      const primary = normalize([name, node.label, node.id].join(" "));
+      const primary = normalize(
+        [
+          name,
+          node.label,
+          node.authored_label,
+          node.explained_name,
+          node.source_name,
+          node.id,
+        ].join(" "),
+      );
       const haystack = normalize(
         [
           primary,
@@ -459,6 +469,15 @@ export function relationStyle(edge) {
       dash: [3, 5],
     };
   return relationStyles[edge.type] || relationStyles.other;
+}
+/** One caption for planar, spatial, accessible and inspected relations. */
+export function relationName(edge, state) {
+  const labels = [...(edge.labels || [edge.label])].filter(Boolean);
+  const name =
+    state?.nameMode === "source"
+      ? labels.join(" / ") || edge.type
+      : labels.join(" / ") || relationStyle(edge).label;
+  return edge.members?.length > 1 ? `${name} × ${edge.members.length}` : name;
 }
 // Folding projects endpoints in graph-core. Keep already-visible inner endpoints:
 // an expanded cross-circle call must not turn into a new parent-to-parent call.

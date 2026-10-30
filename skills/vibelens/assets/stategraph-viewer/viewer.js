@@ -87,6 +87,7 @@ import {
 import { presets, profileFor, cleanProfile, matchingNodes, sharedMemberships } from "./analysis.js";
 import { legendGlyph, legendRelation, meanings } from "./glyphs.js";
 import { timeline, frame, eventLabel, transferEdges, recordingRequest } from "./recording.js";
+import { namedView } from "./graph-names.js";
 import { boDisplayValue, boStepPlan, boStepDetail, boTransferLabel } from "./replay-steps.js";
 const codeLayer = new CodeLayer();
 let codeLimit = 400;
@@ -619,6 +620,10 @@ function cancelLayout() {
 function project() {
   if (!view) return;
   if (!recording && latestLive) view = withCodeGraph(latestLive, codeLayer.slice);
+  view = namedView(view, analysisSettings?.explainedNames !== false);
+  preferences.nameMode = view.model.presentation.name_mode;
+  $("name-mode").disabled = false;
+  $("name-mode").setAttribute("aria-checked", String(preferences.nameMode !== "source"));
   const renamed = migrateNodeIds(
     preferences,
     view.model.presentation?.node_aliases,
@@ -1613,7 +1618,21 @@ function updateFacts() {
 }
 function frameLabel(entry) {
   const name = view.model.nodes.find((n) => n.id === entry.activity)?.label || entry.activity;
-  return `${entry.seq} · ${entry.event === "join" ? (entry.after.join.state === "passed" ? boTranslate("All checks passed") : boTranslate("Some checks did not pass")) : entry.event === "abort" ? boTranslate("Checks stopped") : name + "：" + (stateLabels[entry.after.activities[entry.activity]] || entry.event)}`;
+  const raw = entry.after.activities?.[entry.activity],
+    state = preferences.nameMode === "source" ? raw : stateLabels[raw] || raw;
+  const label =
+    entry.event === "join"
+      ? preferences.nameMode === "source"
+        ? entry.after.join.state
+        : boTranslate(
+            entry.after.join.state === "passed" ? "All checks passed" : "Some checks did not pass",
+          )
+      : entry.event === "abort"
+        ? preferences.nameMode === "source"
+          ? "abort"
+          : boTranslate("Checks stopped")
+        : `${name}：${state || entry.event}`;
+  return `${entry.seq} · ${label}`;
 }
 function showDatabaseWarning(next) {
   const warning = databaseWarning(next.database_status),
@@ -1872,6 +1891,7 @@ function loadAnalysis(baseKey) {
   analysisWasSaved = !!saved && typeof saved === "object";
   analysisSettings = {
     advanced: false,
+    explainedNames: saved?.explainedNames !== false,
     custom: [],
     overrides: Object.create(null),
     selected: "overview",
@@ -1925,6 +1945,17 @@ function currentProfile() {
   const p = analysisOverride || profileFor(analysisId, analysisSettings?.custom);
   return cleanProfile({ ...p, ...preferences?.filters });
 }
+/** Rename the presentation in place; keep the camera, event cursor and selection. */
+$("name-mode").onclick = () => {
+  if (!analysisSettings || !view) return;
+  analysisSettings.explainedNames = !analysisSettings.explainedNames;
+  boPlanKey = "";
+  replayEditorKey = "";
+  project();
+  updateFacts();
+  saveAnalysis();
+  saveSoon();
+};
 /** Apply a scoped presentation plan through the same state used by native UI actions. */
 async function applyConversationControl(plan, session) {
   if (!graph || !analysisSettings)
@@ -2226,6 +2257,7 @@ function boUpdateReplay() {
   const visible = boVisible(),
     key = JSON.stringify([
       recording.id,
+      analysisSettings.explainedNames,
       $("replay-grain").value,
       visible.map((b) => [b.id, b.type]),
       replaySelection(),
@@ -2240,10 +2272,7 @@ function boUpdateReplay() {
     $("replay-events").replaceChildren(
       ...boPlan.map(
         (raw, i) =>
-          new Option(
-            `${i + 1} · ${eventLabel(replayItems[raw], recording.context.model)}`,
-            String(raw),
-          ),
+          new Option(`${i + 1} · ${eventLabel(replayItems[raw], view.model)}`, String(raw)),
       ),
     );
   }
@@ -2278,6 +2307,8 @@ function boUpdateReplay() {
   $("replay-locate").disabled = !item.node;
   recordingTimeline.update({
     recording,
+    model: view.model,
+    preferences,
     items: replayItems,
     all: graph.all,
     edges: graph.rawEdges,
@@ -2535,13 +2566,18 @@ function changeReplaySelection(patch) {
 let replayEditorKey = "";
 function updateReplaySelection() {
   const selection = replaySelection();
-  const key = JSON.stringify([recording.id, boFullPlan, selection]);
+  const key = JSON.stringify([
+    recording.id,
+    boFullPlan,
+    selection,
+    analysisSettings.explainedNames,
+  ]);
   if (key === replayEditorKey) return;
   replayEditorKey = key;
   $("replay-loop").checked = selection.loop;
   const option = (raw) =>
     new Option(
-      `${boFullPlan.indexOf(raw) + 1} · ${eventLabel(replayItems[raw], recording.context.model)}`,
+      `${boFullPlan.indexOf(raw) + 1} · ${eventLabel(replayItems[raw], view.model)}`,
       replayItems[raw].id,
     );
   for (const id of ["replay-loop-from", "replay-loop-to"])
@@ -2561,10 +2597,7 @@ function updateReplaySelection() {
             ? replaySelection().skipped.filter((id) => id !== replayItems[raw].id)
             : [...replaySelection().skipped, replayItems[raw].id],
         });
-      label.append(
-        check,
-        `${index + 1} · ${eventLabel(replayItems[raw], recording.context.model)}`,
-      );
+      label.append(check, `${index + 1} · ${eventLabel(replayItems[raw], view.model)}`);
       return label;
     }),
   );

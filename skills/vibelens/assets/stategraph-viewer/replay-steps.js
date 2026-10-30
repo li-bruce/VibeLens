@@ -43,10 +43,13 @@ export function boValue(value) {
       : JSON.stringify(value);
 }
 export function boDisplayValue(value, model, row = {}) {
+  if (row.kind === "business" && (typeof value === "string" || Array.isArray(value)))
+    return phaseLabel(model, value);
   if (typeof value !== "string") return boValue(value);
-  if (row.kind === "business") return phaseLabel(model, value);
   if (row.kind === "state" && row.field === boTranslate("Activity"))
-    return Object.hasOwn(stateLabels, value) ? stateLabels[value] : value;
+    return model.presentation?.name_mode !== "source" && Object.hasOwn(stateLabels, value)
+      ? stateLabels[value]
+      : value;
   // Captured inputs/outputs are raw values. A string equal to a generic
   // activity enum is not evidence that the parameter has activity semantics.
   return value;

@@ -1,5 +1,5 @@
 /** Render original relation choices and their evidence without mutating graph facts. */
-import { relationStyle, displayName, edgePorts } from "./layout.js";
+import { relationName, displayName, edgePorts } from "./layout.js";
 import { dataRelationEvidence } from "./data-layer.js";
 import { t as boTranslate } from "./i18n.js";
 
@@ -33,10 +33,9 @@ export function renderEdgeDetail({
     panel.hidden = true;
     return false;
   }
-  const style = relationStyle(edge);
   $("edge-title").textContent = boTranslate(
     "{0} \u00B7 {1} relations",
-    style.label,
+    relationName(edge, preferences),
     edge.members.length,
   );
   $("edge-members").replaceChildren(
@@ -56,7 +55,7 @@ export function renderEdgeDetail({
       const item = document.createElement("li"),
         a = graph.all.get(member.from),
         b = graph.all.get(member.to);
-      item.textContent = `${a ? displayName(a, preferences) : member.from} → ${b ? displayName(b, preferences) : member.to}：${member.label || style.label}（${relationEvidence(member)}）`;
+      item.textContent = `${a ? displayName(a, preferences) : member.from} → ${b ? displayName(b, preferences) : member.to}：${relationName(member, preferences)}（${relationEvidence(member)}）`;
       const hide = document.createElement("button");
       hide.textContent = boTranslate("Hide relation");
       hide.onclick = () => {

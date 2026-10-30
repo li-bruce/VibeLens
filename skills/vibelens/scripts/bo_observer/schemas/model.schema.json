@@ -160,6 +160,157 @@
         "events",
         "context"
       ]
+    },
+    "presentation": {
+      "type": "object",
+      "properties": {
+        "names": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "nodes": {
+              "type": "object",
+              "propertyNames": {
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                  },
+                  {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": false,
+                    "properties": {
+                      "en": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                      },
+                      "zh-CN": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "edges": {
+              "type": "object",
+              "propertyNames": {
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                  },
+                  {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": false,
+                    "properties": {
+                      "en": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                      },
+                      "zh-CN": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "states": {
+              "type": "object",
+              "propertyNames": {
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                  },
+                  {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": false,
+                    "properties": {
+                      "en": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                      },
+                      "zh-CN": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "events": {
+              "type": "object",
+              "propertyNames": {
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                  },
+                  {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": false,
+                    "properties": {
+                      "en": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                      },
+                      "zh-CN": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   },
   "$id": "https://github.com/li-bruce/SoftwareStatusObserverSkill/protocol/model"

@@ -81,8 +81,13 @@ jobs:
       - run: node tools/test_timeline_performance.mjs
         env:
           BO_TIMELINE_EVIDENCE: .validation/timeline-performance
+      - run: node tools/test_graph_names_browser.mjs
+        env:
+          BO_NAMES_EVIDENCE: .validation/semantic-names-browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: recording-timeline-browser
-          path: .validation/timeline-*
+          path: |
+            .validation/timeline-*
+            .validation/semantic-names-*

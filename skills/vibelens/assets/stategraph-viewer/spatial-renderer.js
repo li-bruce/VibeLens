@@ -15,7 +15,7 @@ import { spatialScene } from "./routing-scene.js";
 import { nodeTypes } from "./graph-core.js";
 import { nodeGeometry } from "./spatial-geometry.js";
 import { regionLabelAnchor } from "./spatial-labels.js";
-import { relationStyle, displayName, annotationFor } from "./layout.js";
+import { relationStyle, relationName, displayName, annotationFor } from "./layout.js";
 import { t } from "./i18n.js";
 
 const vector = (p) => new T.Vector3(p.x, p.y, p.z);
@@ -162,8 +162,10 @@ export class SpatialRenderer {
       topology,
       input.selected,
       [...input.focusContext.nodes],
-      next.nodes.map((n) => [n.id, n.state, n.rows]),
+      next.nodes.map((n) => [n.id, n.label, n.state, n.rows]),
+      next.edges.map((edge) => [edge.id, [...(edge.labels || [edge.label])]]),
       input.preferences.annotations,
+      input.preferences.nameMode,
       this.settings.projections,
       input.routing,
       [...input.boTransfers],
@@ -461,6 +463,10 @@ export class SpatialRenderer {
     for (const item of this.labelItems || []) {
       const node = this.model.byId.get(item.id);
       if (!node) continue;
+      const name = displayName(graph.byId.get(item.id).node, preferences);
+      if (item.volume) item.el.firstChild.textContent = name;
+      else item.el.querySelector(".spatial-label-title").textContent = name;
+      item.el.title = name;
       item.el.classList.toggle("selected", item.id === selected);
       this.updateBadges(item.el, graph.byId.get(item.id));
       const values = node.rows
@@ -513,7 +519,7 @@ export class SpatialRenderer {
       if (!curve || this.labelItems.length >= 330) continue;
       const el = document.createElement("div");
       el.className = "spatial-label edge-label";
-      el.textContent = transfer?.label || edge.label || relationStyle(edge).label;
+      el.textContent = transfer?.label || relationName(edge, this.input.preferences);
       el.onclick = () => this.callbacks.onEdge?.(edge);
       this.labels.append(el);
       this.labelItems.push({

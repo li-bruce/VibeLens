@@ -112,6 +112,8 @@ export function eventLabel(item, model) {
   if (item.kind === "start") return boTranslate("Recording started \u00B7 initial state");
   if (item.kind === "end") return boTranslate("Recording stopped \u00B7 last recorded state");
   const label = model.nodes.find((n) => n.id === item.node)?.label || item.node || item.action;
+  if (model.presentation?.name_mode === "source")
+    return `${label} · ${item.kind === "command" ? item.status : item.phase}`;
   if (item.kind === "command")
     return boTranslate(
       "Operation {0} \u00B7 {1} \u00B7 {2}",

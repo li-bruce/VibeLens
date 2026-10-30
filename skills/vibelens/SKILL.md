@@ -8,7 +8,7 @@ description: Maintain a business and state graph while developing or changing Py
 
 Help developers understand what the AI actually implemented. Business behavior, states, important functions, parameters, and runtime evidence belong to one graph with progressive detail. The user may choose any application architecture, framework, or coding workflow.
 
-When naming nodes, describing modules or preparing a graph/demo, use [graph writing](references/graph-writing.md). Describe the application behavior and the source that explains it. Keep generation notes and verification claims in review reports.
+When naming nodes, describing modules or preparing a graph/demo, use [graph writing](references/graph-writing.md). Maintain concise AI names separately from exact source names for nodes, relations, states and transition events; update affected explanations alongside each coding batch. Describe the application behavior and the source that explains it. Keep generation notes and verification claims in review reports.
 
 ## Activation and control routing
 

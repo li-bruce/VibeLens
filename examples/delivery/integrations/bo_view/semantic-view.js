@@ -5,6 +5,7 @@ import {
   annotationFor,
   ancestorsToReveal,
   relationStyle,
+  relationName,
   edgePorts,
 } from "./layout.js";
 import { glyphAppearance } from "./glyphs.js";
@@ -65,7 +66,7 @@ export class SemanticView {
         style = relationStyle(edge);
       el.textContent = t(
         "{0}: {1} → {2}, {3} relations",
-        style.label,
+        relationName(edge, preferences),
         displayName(graph.byId.get(edge.from).node, preferences),
         displayName(graph.byId.get(edge.to).node, preferences),
         edge.members.length,
