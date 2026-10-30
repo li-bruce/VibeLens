@@ -65,22 +65,6 @@ export const layerContent = [
     ],
   },
   {
-    id: "operations",
-    color: 0x3b839c,
-    type: "query",
-    group: ["Implementation", "实现"],
-    name: ["Data operations", "数据处理"],
-    question: ["What was read, changed or committed?", "读取、处理和写入了什么？"],
-    body: [
-      "Queries, transformations and transactions reveal the data path and its recorded results.",
-      "沿着查询、转换与事务，核对数据流转和记录中的实际结果。",
-    ],
-    examples: [
-      ["Read grants", "Update access", "Commit"],
-      ["读取授权", "更新权限", "提交事务"],
-    ],
-  },
-  {
     id: "execution",
     color: 0x477b9c,
     type: "function",
@@ -97,19 +81,19 @@ export const layerContent = [
     ],
   },
   {
-    id: "data",
-    color: 0x638b98,
-    type: "store",
-    group: ["Structure", "结构"],
-    name: ["Data structure", "数据结构"],
-    question: ["How is the data connected?", "数据之间如何关联？"],
+    id: "operations",
+    color: 0x3b839c,
+    type: "query",
+    group: ["Implementation", "实现"],
+    name: ["Data operations", "数据处理"],
+    question: ["What was read, changed or committed?", "读取、处理和写入了什么？"],
     body: [
-      "Tables, collections, fields and relationships connect storage structure to the code that uses it.",
-      "表、集合、字段与关联关系，连接到使用它们的查询和函数。",
+      "Queries, transformations and transactions reveal the data path and its recorded results.",
+      "沿着查询、转换与事务，核对数据流转和记录中的实际结果。",
     ],
     examples: [
-      ["users", "files", "shares"],
-      ["users", "files", "shares"],
+      ["Read grants", "Update access", "Commit"],
+      ["读取授权", "更新权限", "提交事务"],
     ],
   },
   {
@@ -142,6 +126,22 @@ export const layerContent = [
     examples: [
       ["SharingService", "share()", "parameters"],
       ["SharingService", "share()", "参数"],
+    ],
+  },
+  {
+    id: "data",
+    color: 0x638b98,
+    type: "store",
+    group: ["Structure", "结构"],
+    name: ["Data structure", "数据结构"],
+    question: ["How is the data connected?", "数据之间如何关联？"],
+    body: [
+      "Tables, collections, fields and relationships connect storage structure to the code that uses it.",
+      "表、集合、字段与关联关系，连接到使用它们的查询和函数。",
+    ],
+    examples: [
+      ["users", "files", "shares"],
+      ["users", "files", "shares"],
     ],
   },
 ];

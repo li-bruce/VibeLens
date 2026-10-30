@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Align the introduction and native layer controls from business, states and rules
+  through API, core execution and source detail to data structure at the bottom.
+- Migrate old default orders while preserving custom order, visibility and layouts;
+  keep the canvas ruler and keyboard action tree aligned. See the
+  [layer-order checks](docs/review/layer-order/README.md).
+
 ## 0.8.1 — 2026-10-26
 
 - Retry temporary Windows sharing denial in the watcher test reader within its existing deadline. Keep update predicates and invalid-content failures strict; add transient/permanent-denial regressions.

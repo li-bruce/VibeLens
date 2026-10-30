@@ -17,6 +17,7 @@ export class LayerRuler {
     this.canvas.setAttribute("role", "group");
     this.canvas.setAttribute("aria-describedby", "layer-keyboard-help");
     const actions = document.createElement("div");
+    this.actions = actions;
     actions.className = "layer-accessibility";
     const help = document.createElement("span");
     help.id = "layer-keyboard-help";
@@ -81,7 +82,8 @@ export class LayerRuler {
         if (target && target !== drag.id) {
           const order = this.config.order.filter((id) => id !== drag.id);
           order.splice(this.config.order.indexOf(target), 0, drag.id);
-          this.change({ ...this.config, order });
+          this.focus = order.indexOf(drag.id);
+          this.change({ ...this.config, order, orderMode: "custom" });
         }
       } else if (drag.action === "collapse") document.getElementById("layers-toggle").click();
       else if (drag.action === "all") document.getElementById("layers-all").click();
@@ -123,9 +125,10 @@ export class LayerRuler {
     const order = [...this.config.order],
       i = order.indexOf(id),
       j = Math.max(0, Math.min(order.length - 1, i + delta));
+    if (i === j) return;
     [order[i], order[j]] = [order[j], order[i]];
     this.focus = j;
-    this.change({ ...this.config, order });
+    this.change({ ...this.config, order, orderMode: "custom" });
   }
   hit(event) {
     const rect = this.canvas.getBoundingClientRect(),
@@ -140,12 +143,17 @@ export class LayerRuler {
     this.config = cleanLayers(settings);
     this.selected = selected;
     this.host.dataset.mode = this.config.enabled ? "3D" : "2D";
-    for (const [id, row] of this.rows) {
+    const focused = document.activeElement;
+    for (const id of this.config.order) {
+      const row = this.rows.get(id);
+      // Keep the keyboard action tree in the same order as the painted ruler.
+      this.actions.append(row);
       row
         .querySelector("[data-layer]")
         .setAttribute("aria-pressed", String(this.config.visible.includes(id)));
       row.querySelector(".layer-select").setAttribute("aria-pressed", String(id === selected));
     }
+    if (focused && this.actions.contains(focused)) focused.focus({ preventScroll: true });
     this.draw();
   }
   draw() {

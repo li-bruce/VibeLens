@@ -1,16 +1,31 @@
 /** Semantic layers are shared by renderers, filters and the spatial layout worker. */
 import { nodeType } from "./graph-core.js";
 export const layers = [
-  { id: "api", label: "API", color: 0x986345 },
   { id: "business", label: "Business", color: 0x208b73 },
   { id: "state", label: "States", color: 0x8c57ad },
   { id: "rules", label: "Rules", color: 0xaf731c },
-  { id: "operations", label: "Data operations", color: 0x3b839c },
+  { id: "api", label: "API", color: 0x986345 },
   { id: "execution", label: "Functions and values", color: 0x477b9c },
-  { id: "data", label: "Data structure", color: 0x638b98 },
+  { id: "operations", label: "Data operations", color: 0x3b839c },
   { id: "project", label: "Project structure", color: 0x997c4f },
   { id: "code", label: "Code symbols", color: 0x8172a3 },
+  { id: "data", label: "Data structure", color: 0x638b98 },
 ];
+
+// Earlier releases stored the default order as an ordinary preference. Recognize
+// those exact defaults so an upgrade can improve them without sorting custom views.
+const legacyOrder = [
+  "api",
+  "business",
+  "state",
+  "rules",
+  "operations",
+  "execution",
+  "data",
+  "project",
+  "code",
+];
+const sameOrder = (a, b) => a.length === b.length && a.every((id, index) => id === b[index]);
 
 /** Classify facts by their declared role, never by an AI-generated display name. */
 export function layerOf(node) {
@@ -32,9 +47,18 @@ export function cleanLayers(value) {
   const only = layers.some((layer) => layer.id === value?.only) ? value.only : "all";
   const ids = layers.map((layer) => layer.id);
   const priorOrder = Array.isArray(value?.order) ? [...value.order] : [];
+  const defaultOrder =
+    value?.orderMode === "default" ||
+    (value?.orderMode !== "custom" &&
+      (!priorOrder.length ||
+        [ids, legacyOrder, legacyOrder.filter((id) => id !== "project")].some((order) =>
+          sameOrder(priorOrder, order),
+        )));
   if (value?.schema !== 2 && !priorOrder.includes("project") && priorOrder.includes("code"))
     priorOrder.splice(priorOrder.indexOf("code"), 0, "project");
-  const order = [...new Set([...priorOrder, ...ids])].filter((id) => ids.includes(id));
+  const order = defaultOrder
+    ? ids
+    : [...new Set([...priorOrder, ...ids])].filter((id) => ids.includes(id));
   return {
     schema: 2,
     enabled: value?.enabled === true,
@@ -43,6 +67,7 @@ export function cleanLayers(value) {
     camera: ["angled", "front", "side", "top"].includes(value?.camera) ? value.camera : "top",
     gap: Number.isFinite(value?.gap) ? Math.max(80, Math.min(600, value.gap)) : 260,
     order,
+    orderMode: defaultOrder ? "default" : "custom",
     only,
     visible: Array.isArray(value?.visible)
       ? layers

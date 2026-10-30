@@ -4,6 +4,7 @@ import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { layers as nativeLayers } from "../skills/vibelens/assets/stategraph-viewer/graph-layers.js";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = (process.env.BO_SITE_URL || "http://127.0.0.1:8897").replace(/\/$/, "");
 const output = path.resolve(
@@ -419,6 +420,10 @@ try {
     await page.click("#case-3d");
     await child.waitForFunction(() => graphDebug.spatial?.perspective && !graphDebug.layoutBusy);
     const layers = await child.evaluate(() => graphDebug.spatial.layerPlanes);
+    assert.deepEqual(
+      await child.evaluate(() => graphDebug.layers.order),
+      nativeLayers.map((layer) => layer.id),
+    );
     assert.deepEqual(
       layers.map((layer) => layer.id).sort(),
       [

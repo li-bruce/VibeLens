@@ -1,0 +1,9 @@
+Early command: python tools/check_package.py
+Exit code: 1
+
+AssertionError: docs\review\layer-order\README.md -> examples-final.json
+docs\review\layer-order\README.md -> validation.json
+
+The package check ran while example acceptance was still writing its receipt and
+before validation.json existed. Both links were resolved by writing the actual
+completed review reports. No link-check rules or acceptance gates were changed.

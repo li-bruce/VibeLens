@@ -9,6 +9,20 @@ bias, so many links to one neighboring type do not collapse onto one rim point.
 
 The 3D viewport is another renderer of the existing graph. It uses a real perspective camera, ray picking and orbit/pan/zoom controls. The business/state model and recorded evidence are unchanged.
 
+## Default reading order
+
+Business → States → Rules → API → Functions and values → Data operations →
+Project structure → Code symbols → Data structure. The product introduction and
+native 2D/3D controls use this order. It moves from intent and behavioral models
+through execution evidence and source detail to the physical storage foundation. These are connected
+perspectives, not nine sequential execution stages; states and rules constrain
+the same behavior, and a query can connect to both its function and stored data.
+
+Exact defaults from older releases migrate to the new order. Dragging or keyboard
+reordering marks the order as custom, which survives upgrades even if it matches
+an older default. Existing custom orders, visibility, coordinates, pins and notes
+remain intact. Only visible, populated layers consume height slots.
+
 ## Module ownership
 
 | Module | Responsibility |

@@ -34,7 +34,11 @@ assert.deepEqual(
   [["business", 0]],
   "Hidden layers do not reserve slots",
 );
-assert.equal(layerHeights({}).get("api"), (layers.length - 1) * 260, "Default uniform 260 gaps");
+assert.equal(
+  layerHeights({}).get("business"),
+  (layers.length - 1) * 260,
+  "Default uniform 260 gaps",
+);
 const positions = solveSpatial({
   nodes: [
     { id: "a", layer: "state" },

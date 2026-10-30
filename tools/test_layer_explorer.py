@@ -9,6 +9,17 @@ from pathlib import Path
 import threading
 
 ROOT = Path(__file__).resolve().parents[1]
+LAYER_ORDER = [
+    "business",
+    "state",
+    "rules",
+    "api",
+    "execution",
+    "operations",
+    "project",
+    "code",
+    "data",
+]
 
 
 def main():
@@ -47,6 +58,8 @@ def main():
                 )
                 tabs = host.get_by_role("tab")
                 assert tabs.count() == 9
+                order = tabs.evaluate_all("tabs => tabs.map(tab => tab.dataset.layer)")
+                assert order == LAYER_ORDER, order
                 descriptions = []
                 for index in range(9):
                     tabs.nth(index).click()
@@ -91,6 +104,7 @@ def main():
                     {
                         "locale": language,
                         "layers": 9,
+                        "order": order,
                         "keyboard": True,
                         "real_webgl_orbit": True,
                         "mobile": True,

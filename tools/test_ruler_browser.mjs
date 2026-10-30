@@ -7,6 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { timeline } from "../skills/vibelens/assets/stategraph-viewer/recording.js";
+import { layers } from "../skills/vibelens/assets/stategraph-viewer/graph-layers.js";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -83,6 +84,54 @@ try {
   page.on("pageerror", (error) => errors.push(String(error)));
   await page.goto(`http://127.0.0.1:${server.address().port}/graph?lang=en`);
   await page.waitForFunction(() => window.graphDebug?.graph);
+  const recommended = layers.map((layer) => layer.id);
+  assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), recommended);
+  assert.deepEqual(
+    await page
+      .locator("[data-layer-row]")
+      .evaluateAll((rows) => rows.map((row) => row.dataset.layerRow)),
+    recommended,
+    "The painted and keyboard layer lists share the recommended order",
+  );
+  const ruler = page.locator("#layer-controls canvas");
+  const bounds = await ruler.boundingBox();
+  await page.mouse.move(bounds.x + 80, bounds.y + 57);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + 80, bounds.y + 125, { steps: 12 });
+  await page.mouse.up();
+  const customOrder = ["state", "rules", "business", ...recommended.slice(3)];
+  await page.waitForFunction(
+    (order) => JSON.stringify(graphDebug.layers.order) === JSON.stringify(order),
+    customOrder,
+  );
+  await page.waitForFunction(async () => {
+    const saved = await (await fetch("/api/preferences")).json();
+    return Object.entries(saved.entries).some(
+      ([key, body]) => key.endsWith(":analysis") && JSON.parse(body).layers?.orderMode === "custom",
+    );
+  });
+  await page.reload();
+  await page.waitForFunction(() => window.graphDebug?.graph);
+  assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), customOrder);
+  assert.deepEqual(
+    await page
+      .locator("[data-layer-row]")
+      .evaluateAll((rows) => rows.map((row) => row.dataset.layerRow)),
+    customOrder,
+  );
+  // Returning to the recommended order is still an explicit user choice.
+  const reloadedBounds = await ruler.boundingBox();
+  await page.mouse.click(reloadedBounds.x + 80, reloadedBounds.y + 125);
+  await ruler.press("Alt+ArrowUp");
+  await ruler.press("Alt+ArrowUp");
+  assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), recommended);
+  assert.equal(await page.evaluate(() => graphDebug.layers.orderMode), "custom");
+  checks.push({
+    recommendedOrder: recommended,
+    draggedOrder: customOrder,
+    persisted: true,
+    keyboardOrder: true,
+  });
   await page.selectOption("#record-list", recording.id);
   await page.waitForSelector("#replay", { state: "visible" });
   await page.selectOption("#analysis-view", "states");
