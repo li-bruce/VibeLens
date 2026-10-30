@@ -1,6 +1,6 @@
 # Recording timeline
 
-The execution timeline is a second view of a saved recording. It shares the
+The execution timeline presents live observation, active capture and saved recordings. It shares the
 graph's event IDs, replay cursor, state reconstruction, playback speed and loop
 selection. Dragging the ruler or selecting a mark seeks the graph; playing the
 graph advances the same cursor in the timeline.
@@ -16,7 +16,7 @@ graph advances the same cursor in the timeline.
   not claim that an uninstrumented function ran.
 - Select a mark to inspect its inputs, outputs and timestamp beside the timeline.
   The graph's existing changes panel shows the corresponding state/value delta.
-  **Locate** focuses its graph node. Selected causal links use recorded parent
+  **Locate** focuses its graph node. Visible causal chains use recorded parent
   calls and dependencies; the graph's existing transfer validator still decides
   which graph edges animate.
 - Drag the ruler to scrub. Drag empty tracks to pan; wheel to scroll rows and
@@ -24,10 +24,21 @@ graph advances the same cursor in the timeline.
   dragging and resizing. Shift-drag selects a playback range; **Loop selection**
   sends its event IDs to the existing replay selection. Arrow keys seek, +/- zoom,
   Home/End select the first/last visible event, and Escape clears a range.
+- **Observation depth** retains a contiguous prefix of the chosen graph-layer order. **Single layer** isolates one layer; selecting **All layers** restores the combined view. Lower links disappear without shortcuts or data deletion.
 - The dock can be hidden and resized. Visibility, height, row expansion and scope
   are project preferences; event selection and viewport reset for another recording.
 
 ## Evidence and module boundaries
+
+`trace-context.js` clips already-open witnessed scopes at the observation boundary and preserves their original entry IDs. It does not replay completed pre-recording work.
+`trace-session.js` owns the bounded live baseline and retained event window.
+`trace-lifecycles.js` pairs invocation boundaries; `graph-activation.js` exposes
+persistent running/waiting/completed/failed states and concurrent counts.
+`trace-residencies.js` follows actual native state/activity frames, including
+active ancestors and waits. It does not infer lifetimes from static containment.
+`trace-flows.js` indexes causal geometry and omits hidden endpoints without
+manufactured shortcut calls. Explicit semantic parameter mappings resolve in
+`code_graph/query.py` through exact AST identities and never become runtime flows.
 
 `trace-evidence.js` owns invocation identity and parent-call lookup, shared by
 graph transfers and timeline indexing. `trace-index.js` builds immutable bars,
@@ -72,3 +83,18 @@ resize, zoom, scope changes, English/Chinese and a large recording. Compare the
 recording bytes and business event count before and after presentation actions.
 Retain failed runs, fixes and retests separately. Run the existing replay suite,
 managed-example acceptance, formatting/lint and exported-package checks.
+
+## Lifecycle extension
+
+Portable probes expose nested spans with `lifecycle: "span"`. Only real return or
+error closes an explicit span; intermediate commits and decisions keep it active.
+Legacy commit-only records remain readable. Begin the recording timestamp before
+reading its initial snapshot so concurrent delivery cannot move the first event
+before the start boundary. Historical boundary metadata is visually bounded by
+actual event times with a note; raw timestamps are unchanged. Invalid or reversed
+producer timestamps still use event order. Windows replacement sharing failures
+have four attempts and a 35 ms sleep budget, then retain the existing interruption
+and gap behavior.
+
+See [the capture and identity contract](../../skills/vibelens/references/lifecycles-and-representations.md)
+and [this iteration's evidence](../review/timeline-lifecycle/README.md).

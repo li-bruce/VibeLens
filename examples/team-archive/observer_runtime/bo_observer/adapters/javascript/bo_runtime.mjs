@@ -194,6 +194,53 @@ export function bo_selected(value, spec, depth = 0) {
 
 /** Queue observations separately from business decisions; delivery failures stay local. */
 export class BOProbe {
+  /** Own a real asynchronous lifetime. Explicit child scopes avoid ambient async leakage. */
+  async span(node, operation, { inputs = () => ({}), outputs = () => ({}), ...options } = {}) {
+    const activation = this.startSpan(node, () => ({ inputs: inputs() }), options);
+    try {
+      const result = await operation(activation);
+      activation.finish(() => ({ outputs: outputs(result) }));
+      return result;
+    } catch (error) {
+      activation.fail(() => ({ outputs: { error: error?.name || "Error" } }));
+      throw error;
+    }
+  }
+
+  /** Synchronous callers may finish explicitly; business results stay with the caller. */
+  startSpan(node, builder = () => ({}), options = {}) {
+    const context = {
+      ...options,
+      callId: options.callId || globalThis.crypto.randomUUID(),
+      lifecycle: "span",
+    };
+    let closed = false;
+    const record = (phase, values = () => ({})) => this.record(node, phase, values, context);
+    const finish = (phase, values) => {
+      if (closed) return null;
+      closed = true;
+      return record(phase, values);
+    };
+    const entryId = record("enter", builder);
+    return {
+      entryId,
+      callId: context.callId,
+      record,
+      finish: (values) => finish("return", values),
+      fail: (values) => finish("error", values),
+      child: (child, operation, settings = {}) =>
+        this.span(child, operation, {
+          ...Object.fromEntries(
+            ["entity", "attempt", "scope", "basis"]
+              .filter((key) => Object.hasOwn(context, key))
+              .map((key) => [key, context[key]]),
+          ),
+          parentCallId: context.callId,
+          ...settings,
+        }),
+    };
+  }
+
   constructor({
     project,
     buildId,
@@ -247,6 +294,7 @@ export class BOProbe {
       parentCallId = null,
       depends = [],
       revision = null,
+      lifecycle = null,
     } = {},
   ) {
     if (!this.bo_enabled) return null;
@@ -265,6 +313,8 @@ export class BOProbe {
       )
         throw Error("Unknown phase");
       const values = builder();
+      if (lifecycle !== null && lifecycle !== "span")
+        throw Error("Invalid lifecycle boundary mode");
       const seq = ++this.bo_seq,
         id = `${this.bo_run}:${this.bo_producer}:${seq}`;
       const event = {
@@ -294,6 +344,7 @@ export class BOProbe {
         if (!Number.isSafeInteger(revision) || revision < 0) throw Error("Invalid state revision");
         event.revision = revision;
       }
+      if (lifecycle !== null) event.lifecycle = lifecycle;
       if (new TextEncoder().encode(JSON.stringify(event)).length > 24576)
         throw Error("Event too large");
       if (this.bo_queue.length >= this.bo_capacity) {

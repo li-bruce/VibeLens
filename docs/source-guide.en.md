@@ -89,6 +89,10 @@ The HTTP adapter in `service.py` handles request authorization, routes and sessi
 | [edge-panel.js](../skills/vibelens/assets/stategraph-viewer/edge-panel.js) | Explain original relation members and delegate selection/hiding to the coordinator. |
 | [change-panel.js](../skills/vibelens/assets/stategraph-viewer/change-panel.js) | Present actual before/after changes and locate their graph owner. |
 | [graph-core.js](../skills/vibelens/assets/stategraph-viewer/graph-core.js) | Resolve node values, source bindings, event selection, and visible graph content. |
+| [trace-lifecycles.js](../skills/vibelens/assets/stategraph-viewer/trace-lifecycles.js), [graph-activation.js](../skills/vibelens/assets/stategraph-viewer/graph-activation.js) | Share actual invocation lifetimes with persistent graph states and concurrent counts. |
+| [trace-context.js](../skills/vibelens/assets/stategraph-viewer/trace-context.js) | Carry witnessed open operations across the observation boundary with their original entry IDs. |
+| [trace-residencies.js](../skills/vibelens/assets/stategraph-viewer/trace-residencies.js), [trace-flows.js](../skills/vibelens/assets/stategraph-viewer/trace-flows.js) | Index native state/activity intervals and causal call/return geometry. |
+| [trace-session.js](../skills/vibelens/assets/stategraph-viewer/trace-session.js), [recording-timeline.js](../skills/vibelens/assets/stategraph-viewer/recording-timeline.js) | Maintain bounded live inspection and the shared timeline's depth, range, zoom and cursor interaction. |
 | [layout.js](../skills/vibelens/assets/stategraph-viewer/layout.js) | Expand/collapse regions, position groups, apply filters, and retain annotations. |
 | [view-lifecycle.js](../skills/vibelens/assets/stategraph-viewer/view-lifecycle.js) | Keep project view identity stable across builds; compare recording and live graph versions. |
 | [renderer.js](../skills/vibelens/assets/stategraph-viewer/renderer.js) | Draw nodes, regions, and edges in Pixi; maintain hit regions for interaction. |

@@ -1,0 +1,32 @@
+{
+  "candidate_id": "3d44b5f1e3781c89b54842a1a93222bae45074a8b460b7bc313c2b005838c601",
+  "excluded_symbols": {
+    "app/ports.py::BOEvents": "Application-owned optional diagnostics boundary; its actual business callers remain mapped. The implementation plan already classifies its constructor and emitter as observer support.",
+    "app/ports.py::BOEvents.__init__": "Stores the optional diagnostics callback and error counter only. Existing implementation observer classification is retained; no business action is excluded.",
+    "app/ports.py::BOEvents.bo_emit": "Invokes the optional observer callback with its capture gate and isolates callback exceptions. All business calls and their required runtime values remain mapped.",
+    "app/service.py::Delivery": "Class container; its actual business methods remain in the existing graph and independent implementation inventory.",
+    "app/store.py::Store": "Storage class container; its query and effect methods remain mapped by the existing graph and support inventory.",
+    "bo_stategraph/workflow.py::ActivityExecution": "Execution class container; its activity, resource, join and state methods retain existing graph and runtime checks.",
+    "bo_stategraph/workflow.py::ActivityState": "Activity-state enumeration; declared states and actual execution values retain existing contract validation.",
+    "bo_stategraph/workflow.py::Phase": "Main-phase enumeration; machine declaration and transition validation retain existing checks."
+  },
+  "requirement_changes": {},
+  "decisions": {
+    "business": {
+      "action": "unchanged",
+      "reason": "Git comparison confirms byte-identical application code_files and unchanged protected requirements and scenarios. The isolated lifecycle browser application is separate evidence."
+    },
+    "state_machine": {
+      "action": "unchanged",
+      "reason": "No state, guard, transition, resource or join declaration changed."
+    },
+    "abstraction": {
+      "action": "updated",
+      "reason": "Shared invocation facts now feed graph activation states, timeline durations, waiting segments and causal call/return geometry. Native states retain occupancy intervals and witnessed transition links. Live inspection uses a frozen first snapshot; active and saved recordings share one read-only seek cursor. A contiguous bottom or single-layer filter retains original facts. Smooth zoom keeps its event anchor. Independent semantic parameter IDs resolve through explicit source references to unique AST parameter IDs; mapping metadata never creates calls. Original replay, identity and naming regressions pass. Native Python/SQLite browser cases verify actual work, exact frames and zero observer-generated business events; the 20k-event causal-chain component test retains its existing latency thresholds."
+    },
+    "probes": {
+      "action": "updated",
+      "reason": "Example business probe wiring and allowlists remain unchanged. Portable Python/JavaScript adapters add fault-isolated nested span helpers and an optional strict lifecycle marker; legacy events stay valid. New independent tests cover nested and concurrent scopes, wait/resume, same exception/results, observer on/off/fault/queue-limited modes and source-parameter rename rejection. No observation UI operation executes business functions. The capture start timestamp is now taken before its initial snapshot; a deterministic concurrent-start regression guards it. Bounded Windows atomic-replace retry preserves stopped recordings under a brief real file reader, while permanent failures remain explicit. Concurrent activations keep running and waiting counts independently; all-layer selection exits single-layer mode."
+    }
+  }
+}

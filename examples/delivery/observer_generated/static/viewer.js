@@ -4,6 +4,8 @@
  * application commands or rewrites recorded facts.
  */
 import { renderStepChanges } from "./change-panel.js";
+import { LiveTrace } from "./trace-session.js";
+import { parentEvent } from "./trace-evidence.js";
 import { RecordingTimeline, cleanTimeline } from "./recording-timeline.js";
 import { renderEdgeDetail } from "./edge-panel.js";
 import { createDetailPanel } from "./detail-panel.js";
@@ -144,6 +146,8 @@ let recording = null,
   recordActive = false,
   lastRecordPoll = 0,
   latestLive = null;
+const liveTrace = new LiveTrace();
+let liveTraceSource = null;
 let animationFrame = null,
   animationUntil = 0,
   animatedIds = [],
@@ -171,7 +175,7 @@ const detailPanel = createDetailPanel({
     selected,
     mode: detailMode,
     version,
-    recording,
+    recording: recording?.transient && recording.id.startsWith("live:") ? null : recording,
     scale,
     pan,
     screen: app.screen,
@@ -200,13 +204,30 @@ const recordingTimeline = new RecordingTimeline($("recording-timeline"), {
   onPause: () => stopPlayback(true),
   onSeek: (raw, locate) => {
     stopPlayback();
+    if (!recording && liveTraceSource) {
+      recording = { ...liveTraceSource, transient: true };
+      replayItems = timeline(recording);
+      boPlanKey = "";
+      $("replay").hidden = false;
+      document.body.classList.add("is-replay");
+      for (const id of ["version", "case", "attempt", "step"]) $(id).disabled = true;
+      updateAnalysisOptions();
+      $("code-local").disabled = true;
+      $("code-more").hidden = true;
+    }
     seek(raw, locate);
   },
-  onRange: (patch) => changeReplaySelection(patch),
+  onLive: () => leaveRecording(),
+  onRange: (patch) => {
+    if (!recording && patch.loop && liveTraceSource)
+      recordingTimeline.callbacks.onSeek(recordingTimeline.raw, false);
+    changeReplaySelection(patch);
+  },
   onSettings: (settings) => {
     if (!analysisSettings) return;
     analysisSettings.timeline = settings;
-    boUpdateReplay();
+    if (recording) boUpdateReplay();
+    else boUpdateLiveTimeline();
     saveSoon();
   },
 });
@@ -620,6 +641,7 @@ function cancelLayout() {
 function project() {
   if (!view) return;
   if (!recording && latestLive) view = withCodeGraph(latestLive, codeLayer.slice);
+  else if (recording?.transient) view = withCodeGraph(view, codeLayer.slice);
   view = namedView(view, analysisSettings?.explainedNames !== false);
   preferences.nameMode = view.model.presentation.name_mode;
   $("name-mode").disabled = false;
@@ -667,6 +689,7 @@ function project() {
   updateDetail();
   updateEdgeDetail();
   if (recording) boUpdateReplay();
+  else boUpdateLiveTimeline();
   schedule();
 }
 async function arrange(initial = false) {
@@ -1676,12 +1699,16 @@ async function poll() {
     let sourceNeedsLayout = false;
     try {
       const previousCodeFocus = codeLayer.slice?.focus;
-      codeSlice = await codeLayer.load({
-        enabled: codeEnabled,
-        focus: ["project", "code", "api"].includes(analysisId) ? null : analysisSettings.codeFocus,
-        limit: codeLimit,
-        projection: analysisId === "project" ? "project" : "all",
-      });
+      codeSlice = recording?.transient
+        ? codeLayer.slice
+        : await codeLayer.load({
+            enabled: codeEnabled,
+            focus: ["project", "code", "api"].includes(analysisId)
+              ? null
+              : analysisSettings.codeFocus,
+            limit: codeLimit,
+            projection: analysisId === "project" ? "project" : "all",
+          });
       if (codeSlice?.focus && codeSlice.focus !== previousCodeFocus)
         for (const node of codeSlice.nodes)
           if (["directory", "file", "class"].includes(node.code_role)) expanded.add(node.id);
@@ -1691,7 +1718,7 @@ async function poll() {
       $("code-status").textContent = boTranslate("Code structure unavailable");
       $("code-status").title = error.message;
     }
-    $("code-more").hidden = !codeSlice?.omitted_nodes || codeLimit >= 5000;
+    $("code-more").hidden = !!recording || !codeSlice?.omitted_nodes || codeLimit >= 5000;
     $("code-local").setAttribute("aria-pressed", String(!!analysisSettings.codeFocus));
     $("code-local").disabled =
       next.stage === "design" ||
@@ -1729,7 +1756,28 @@ async function poll() {
       $("program-link").hidden = next.stage === "design" || !safe;
       if (safe) $("program-link").href = url.href;
     }
-    if (next.stage !== "design") await refreshRecordings(next);
+    if (next.stage !== "design") {
+      const source = liveTrace.observe(next, graphVersion(next));
+      if (!recordActive) liveTraceSource = source;
+      await refreshRecordings(next);
+    } else {
+      liveTrace.reset();
+      liveTraceSource = null;
+      recordingTimeline.clear();
+    }
+    if (recording?.transient && liveTraceSource) {
+      const id = replayItems[replayIndex]?.id;
+      recording = { ...liveTraceSource, transient: true };
+      replayItems = timeline(recording);
+      replayIndex = Math.max(
+        0,
+        replayItems.findIndex((event) => event.id === id),
+      );
+      boPlanKey = "";
+      // Receiving new facts never advances the inspected graph cursor.
+      view = frame(recording, replayIndex, replayItems);
+      project();
+    }
     if (recording) {
       await conversationControls.refresh(next);
       $("connection").textContent = boTranslate("Connected \u00B7 recorded replay");
@@ -1844,6 +1892,7 @@ async function poll() {
       if (previousLive && lastLiveEvent) boUpdateLive(previousLive, next);
       lastLiveEvent = newest.id;
     }
+    if (!recording) boUpdateLiveTimeline();
   } catch (error) {
     if (disposed) return;
     console.error(error);
@@ -2240,7 +2289,9 @@ function boSetTransfers(events) {
       const reverse =
         edge.type === "resource"
           ? entry?.event !== "start"
-          : edge.type === "call" && ["return", "decision", "error"].includes(event.phase);
+          : ["call", "flow"].includes(edge.type) &&
+            ["return", "error"].includes(event.phase) &&
+            !!parentEvent(event, view.events);
       boTransfers.set(id, {
         event,
         label: boTransferLabel(edge, event, configuration),
@@ -2257,6 +2308,7 @@ function boUpdateReplay() {
   const visible = boVisible(),
     key = JSON.stringify([
       recording.id,
+      replayItems.length,
       analysisSettings.explainedNames,
       $("replay-grain").value,
       visible.map((b) => [b.id, b.type]),
@@ -2326,7 +2378,10 @@ function boUpdateReplay() {
 function boUpdateLive(before, after) {
   const known = new Set(before.events.map((e) => e.id)),
     events = after.events.filter((e) => !known.has(e.id));
-  if (!events.length) return;
+  if (!events.length) {
+    boUpdateLiveTimeline();
+    return;
+  }
   const sample = {
       context: before,
       final: after,
@@ -2339,7 +2394,34 @@ function boUpdateLive(before, after) {
   boShowChanges();
   boSetTransfers(events);
   animateEvent(events.at(-1));
+  boUpdateLiveTimeline();
   schedule();
+}
+/** Live and active capture use the same read-only index and graph seek as saved replay. */
+function boUpdateLiveTimeline() {
+  if (recording || !graph || !analysisSettings || !liveTraceSource) return;
+  const source = liveTraceSource,
+    items = timeline(source),
+    visible = boVisible();
+  const plan = boStepPlan(source, items, graph.all, visible, { mode: $("replay-grain").value });
+  recordingTimeline.update({
+    recording: source,
+    model: view.model,
+    preferences,
+    items,
+    all: graph.all,
+    edges: graph.rawEdges,
+    visible: new Set(visible.map((box) => box.id)),
+    order: cleanLayers(analysisSettings.layers).order,
+    plan,
+    raw: items.length - 1,
+    transfers: boTransfers.keys(),
+    settings: analysisSettings.timeline,
+    playing: true,
+    selection: null,
+    inspection: false,
+  });
+  $("replay-timeline").setAttribute("aria-pressed", String(analysisSettings.timeline.visible));
 }
 function boCaptureScope() {
   if ($("capture-mode").value === "all") return { mode: "all" };
@@ -2441,7 +2523,8 @@ function animateEvent(event) {
   animationFrame = requestAnimationFrame(tick);
 }
 async function refreshRecordings(next, force = false) {
-  $("record-clear").disabled = recordBusy || recordLoading || recordActive || !recording;
+  $("record-clear").disabled =
+    recordBusy || recordLoading || recordActive || !recording || !!recording.transient;
   $("record-start").disabled =
     recordBusy ||
     recordLoading ||
@@ -2454,9 +2537,14 @@ async function refreshRecordings(next, force = false) {
   try {
     const listing = await recordingRequest("");
     recordActive = !!listing.active;
+    if (listing.active) {
+      const active = await recordingRequest("/" + encodeURIComponent(listing.active.id));
+      liveTraceSource = { ...active, observed_until: new Date().toISOString() };
+    } else liveTraceSource = liveTrace.current;
     document.querySelector(".record-bar").dataset.recording = String(recordActive);
     $("record-start").setAttribute("aria-pressed", String(recordActive));
-    $("record-clear").disabled = recordBusy || recordLoading || recordActive || !recording;
+    $("record-clear").disabled =
+      recordBusy || recordLoading || recordActive || !recording || !!recording.transient;
     $("capture-mode").disabled = recordActive || !!recording;
     $("record-start").disabled ||= !!listing.active;
     $("record-stop").disabled = recordBusy || !listing.active;
@@ -2533,7 +2621,7 @@ $("record-stop").onclick = async () => {
   }
 };
 $("record-clear").onclick = async () => {
-  if (!recording || recordActive || recordBusy || recordLoading) return;
+  if (!recording || recording.transient || recordActive || recordBusy || recordLoading) return;
   recordBusy = true;
   $("record-clear").disabled = true;
   try {
@@ -2680,7 +2768,8 @@ async function openRecording(id) {
   } finally {
     if (requestId === recordLoadId) {
       recordLoading = false;
-      $("record-clear").disabled = recordBusy || recordActive || !recording;
+      $("record-clear").disabled =
+        recordBusy || recordActive || !recording || !!recording.transient;
     }
   }
 }
@@ -2692,6 +2781,10 @@ function leaveRecording() {
   stopAnimation();
   recording = null;
   recordingTimeline.clear();
+  if (latestLive) {
+    view = withCodeGraph(latestLive, codeLayer.slice);
+    project();
+  }
   updateAnalysisOptions();
   if (replayReturnAnalysis) changeAnalysis(replayReturnAnalysis);
   replayReturnAnalysis = null;

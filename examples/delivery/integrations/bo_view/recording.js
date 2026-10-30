@@ -149,6 +149,7 @@ export function transferEdges(event, events, edges, all, configuration = null) {
       (edge) =>
         edge.type !== "shared" &&
         edge.members?.some((member) => {
+          if (member.mapping_role === "equivalent") return false;
           if (observedDataTransfer(member, event, all)) return true;
           const source = canonical(member.from),
             target = canonical(member.to);
@@ -188,7 +189,12 @@ export function transferEdges(event, events, edges, all, configuration = null) {
                 ? Object.hasOwn(event.inputs || {}, all.get(member.from).field)
                 : Object.hasOwn(event.outputs || {}, all.get(member.to)?.field))
             );
-          if (edge.type === "call") return target === event.node && parent?.node === source;
+          if (
+            ["call", "flow"].includes(edge.type) &&
+            target === event.node &&
+            parent?.node === source
+          )
+            return true;
           return (
             !["python-ast", "source-ast"].includes(member.origin) &&
             target === event.node &&

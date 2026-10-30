@@ -26,7 +26,7 @@ Edge animation requires real dependency references, same-call parent identity, c
 
 ## Execution timeline
 
-Opening a saved recording shows the timeline below the graph. Its cursor uses the
+Live observation, active capture and saved replay share the timeline below the graph. Its cursor uses the
 same recorded step as graph playback in both 2D and 3D. Filled bars show matched
 entry/completion observations; diamonds show events and state/value changes.
 Hollow marks and dashed cross-layer connectors locate source mappings.
@@ -40,13 +40,13 @@ which events participate in navigation and playback.
 Shift-drag selects a range; **Loop selection** applies it to the existing replay
 controls. **Event data** shows captured inputs, outputs, before/after changes and
 the graph transfer IDs. Arrow keys seek; +/- zoom; Home/End select endpoints.
-The project view file retains dock visibility, height, scope and expanded layers.
+The project view file retains dock visibility, height, scope, expanded layers and observation depth. Choose a bottom layer to retain all layers above it, or use **Single layer**. Lower facts remain stored; their call/return extensions are hidden. The time ruler uses adaptive ticks and smooth zoom; reduced-motion preferences apply.
 
 Pair calls by build/run/producer/stream/entity/attempt/node/call identity and
 occurrence. Unfinished calls and overlapping ID reuse remain explicit. Invalid or
 reversed timestamps use event order; multiple producer clocks and recording gaps
 are reported. Static source mappings have no inferred duration. No additional
-business endpoint, recorder or playback clock is needed.
+business endpoint, recorder or playback clock is needed. See [lifecycles and representations](lifecycles-and-representations.md) for real operation spans, persistent graph states and independent cross-layer parameter mappings.
 
 ## Exact frames and shared resources
 

@@ -18,22 +18,33 @@ export function callKey(event) {
  * An ID in another worker or entity does not establish a parent call.
  */
 export function parentEvent(event, events) {
-  if (!event?.parent_call_id) return null;
+  if (!event) return null;
   const scope = callScope(event),
     at = events.findIndex((item) => item.id === event.id);
+  let parentId = event.parent_call_id;
+  if (!parentId && ["return", "error"].includes(event.phase)) {
+    // Producers may declare parentage at entry only. The completion must still
+    // match that exact invocation, not another node with a reused call ID.
+    for (let i = (at < 0 ? events.length : at) - 1; i >= 0; i--) {
+      const item = events[i];
+      if (callKey(item) !== callKey(event)) continue;
+      if (["return", "error"].includes(item.phase)) break;
+      if (item.phase === "enter") {
+        parentId = item.parent_call_id;
+        break;
+      }
+    }
+  }
+  if (!parentId) return null;
   for (let i = (at < 0 ? events.length : at) - 1; i >= 0; i--) {
     const item = events[i];
     if (
       ["return", "error"].includes(item.phase) &&
-      item.call_id === event.parent_call_id &&
+      item.call_id === parentId &&
       callScope(item) === scope
     )
       return null;
-    if (
-      item.phase === "enter" &&
-      item.call_id === event.parent_call_id &&
-      callScope(item) === scope
-    )
+    if (item.phase === "enter" && item.call_id === parentId && callScope(item) === scope)
       return item;
   }
   return null;

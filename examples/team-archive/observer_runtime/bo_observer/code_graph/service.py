@@ -8,7 +8,7 @@ from ..model_io import read_model
 from ..sources import scan
 from ..workflow.bo_sync import source_inventory
 from .index import build
-from .query import query
+from .query import query, representation_links
 from .filesystem import inventory as project_inventory
 
 
@@ -87,6 +87,7 @@ class CodeGraph:
                     from ..workflow.sync_io import write
 
                     write(self.cache, self.graph)
+            representation_links(model, self.graph)
             return self.graph, model
 
     def view(self, **options):

@@ -155,7 +155,17 @@ class Recordings:
             raise ValueError("Recording size limit reached")
         temporary = path.with_suffix(".tmp")
         temporary.write_text(data, encoding="utf-8", newline="\n")
-        temporary.replace(path)
+        # Windows readers can briefly deny replacement even after our own file
+        # handle has closed. Retry only those OS errors, with a 35 ms sleep budget.
+        # Exhaustion still reaches _save's explicit interruption/gap handling.
+        for delay in (0.005, 0.01, 0.02, None):
+            try:
+                temporary.replace(path)
+                break
+            except PermissionError as error:
+                if getattr(error, "winerror", None) not in {5, 32, 33} or delay is None:
+                    raise
+                time.sleep(delay)
         self.cached[value["id"]] = value
         self.catalog[value["id"]] = self.summary(value)
         while len(self.cached) > 8:
@@ -267,6 +277,9 @@ class Recordings:
             self._stream_events = {}
             self._starting = True
             self._stream_limited = False
+        # The stream listener is already retaining events. Stamp this boundary
+        # before the initial snapshot so work during that read cannot predate it.
+        started_at = timestamp()
         view = self.provider()
         if view.get("historical") or view["binding_status"]["status"] != "current":
             raise ValueError("Load the accepted current application first")
@@ -287,7 +300,7 @@ class Recordings:
             "id": uuid.uuid4().hex,
             "label": str(label).strip()[:80] or "Operation recording",
             "status": "recording",
-            "started_at": timestamp(),
+            "started_at": started_at,
             "ended_at": None,
             "build_id": view["manifest"]["build_id"],
             "run_id": health["run_id"],

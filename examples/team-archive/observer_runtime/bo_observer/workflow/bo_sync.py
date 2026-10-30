@@ -228,7 +228,13 @@ def maintenance_task(root, cfg, previous=None):
     database = synchronize(root, model_path=cfg.get("model", "bo_stategraph/project.json"))
     # The optional code index follows edits once the developer has enabled it.
     # Off means no extra index construction during ordinary maintenance.
-    if (Path(root) / ".stategraph/code-graph.json").is_file():
+    from ..model_io import read_model
+
+    declaration = Path(root) / cfg.get("model", "bo_stategraph/project.json")
+    declared = read_model(declaration) if declaration.is_file() else {}
+    if (Path(root) / ".stategraph/code-graph.json").is_file() or any(
+        node.get("represents") for node in declared.get("nodes", [])
+    ):
         from ..code_graph.service import CodeGraph
 
         CodeGraph(root).refresh()

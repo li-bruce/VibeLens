@@ -31,7 +31,7 @@ const nodes = [
 const at = ms => new Date(Date.UTC(2026,9,30) + ms).toISOString();
 const events = Array.from({length:20000},(_,i)=>({id:'event:'+i,seq:i+1,phase:i%2?'return':'enter',
 node:nodes[Math.floor(i/2)%nodes.length].id,call_id:'call:'+Math.floor(i/2),run_id:'run',producer_id:'worker',
-build_id:'build',entity:'file:'+Math.floor(i/100),attempt:'attempt',inputs:{},outputs:{value:i},depends:[],observed_at:at(i+1)}));
+build_id:'build',entity:'file:'+Math.floor(i/100),attempt:'attempt',inputs:{},outputs:{value:i},depends:i>1 && i%2===0 ? [{event:"event:"+(i-1),type:"control"}] : [],observed_at:at(i+1)}));
 const recording = {id:'load',status:'stopped',started_at:at(0),ended_at:at(20001),events,commands:[],gaps:[],
 context:{model:{nodes,edges:[],machine:{}},events:[],machine:{configurations:[]}},final:{machine:{configurations:[]}}};
 const items=timeline(recording), all=new Map(nodes.map(node=>[node.id,node]));
@@ -97,6 +97,8 @@ try {
     viewport: { width: 1440, height: 960 },
     kind: "synthetic Canvas component load; excludes graph reconstruction",
     eventCount: 20000,
+    causalLinks: 9999,
+    drawnFlows: perf.state.flows,
     initialMs: perf.initialMs,
     seekCount: perf.seeks.length,
     seekP95Ms: percentile(perf.seeks, 0.95),
@@ -112,6 +114,10 @@ try {
   assert.ok(report.initialMs < 2500);
   assert.ok(report.seekP95Ms < 100, "20k timeline seek/render p95 under 100 ms on this host");
   assert.ok(report.drawP95Ms < 60);
+  assert.ok(
+    report.drawnFlows > 0 && report.drawnFlows <= 1804,
+    "window/pixel culling bounds causal chain drawing",
+  );
   assert.ok(perf.state.painted < 6000, "pixel aggregation bounds drawing");
   assert.deepEqual(errors, []);
   await writeFile(path.join(out, "result.json"), JSON.stringify(report, null, 2));

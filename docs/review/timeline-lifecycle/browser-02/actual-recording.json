@@ -1,0 +1,979 @@
+{
+  "schema": "stategraph-recording/v1",
+  "id": "62412826439a47fe9883e8aa0683763a",
+  "label": "Operation recording",
+  "status": "stopped",
+  "started_at": "2026-10-30T13:30:47.878111+00:00",
+  "ended_at": "2026-10-30T13:30:53.607622+00:00",
+  "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+  "run_id": "785492e012a27420f106cbde",
+  "start_seq": 1,
+  "end_seq": 13,
+  "context": {
+    "authority": {
+      "entity": "job",
+      "state": "pending",
+      "basis": {},
+      "parameters": {
+        "slots": 1
+      },
+      "effects": []
+    },
+    "machine": {
+      "current": "pending",
+      "state_revision": 0,
+      "configurations": [
+        {
+          "attempt": "attempt-1",
+          "phase": "pending",
+          "param_version": 0,
+          "activities": {},
+          "resources": {},
+          "journal": []
+        }
+      ],
+      "journal": []
+    },
+    "health": {
+      "errors": 0,
+      "dropped": 0,
+      "run_id": "785492e012a27420f106cbde",
+      "attempted": 1,
+      "written": 1,
+      "enabled": true,
+      "runtime_frame_evictions": 0,
+      "retained_events": 1,
+      "evicted_events": 0,
+      "history_start_seq": 1,
+      "log_errors": 0,
+      "listener_errors": 0,
+      "retention": {
+        "memory_events": 10000,
+        "memory_seconds": 1800,
+        "log_bytes": 8388608,
+        "log_backups": 2
+      }
+    },
+    "binding_status": {
+      "status": "current",
+      "changed_files": [],
+      "model_changed": false,
+      "intent_changed": false,
+      "directly_affected": [],
+      "possibly_affected": []
+    },
+    "historical": true,
+    "busy": false,
+    "model": {
+      "schema_version": 3,
+      "revision": "1",
+      "project_id": "fixture",
+      "intent": "intent.json",
+      "source_files": [
+        "worker.py"
+      ],
+      "nodes": [
+        {
+          "id": "advance",
+          "kind": "action",
+          "layer": "business",
+          "label": "Share file",
+          "summary": "Share the file after checking its grant",
+          "source": {
+            "path": "worker.py",
+            "symbol": "advance"
+          },
+          "capture": {
+            "in": {
+              "state": "string"
+            },
+            "out": {
+              "state": "string",
+              "error": "string"
+            }
+          },
+          "requirements": [
+            "R1"
+          ]
+        },
+        {
+          "id": "check",
+          "kind": "decision",
+          "parent": "advance",
+          "label": "Check sharing permission",
+          "summary": "Check sharing permission",
+          "source": {
+            "path": "worker.py",
+            "symbol": "advance"
+          },
+          "capture": {
+            "in": {},
+            "out": {
+              "allowed": "boolean"
+            }
+          }
+        },
+        {
+          "id": "query",
+          "kind": "function",
+          "parent": "advance",
+          "label": "Read grant",
+          "summary": "Read grant",
+          "source": {
+            "path": "worker.py",
+            "symbol": "read_grant"
+          },
+          "capture": {
+            "in": {},
+            "out": {
+              "allowed": "boolean"
+            }
+          }
+        },
+        {
+          "id": "write",
+          "kind": "function",
+          "parent": "advance",
+          "label": "Save share",
+          "summary": "Save share",
+          "source": {
+            "path": "worker.py",
+            "symbol": "write_share"
+          },
+          "capture": {
+            "in": {},
+            "out": {
+              "count": "number"
+            }
+          }
+        },
+        {
+          "id": "state-parameter",
+          "kind": "data",
+          "label": "Sharing status",
+          "summary": "The state argument of advance",
+          "semantic_role": "state_parameter",
+          "event_node": "advance",
+          "field": "state",
+          "direction": "out",
+          "represents": {
+            "path": "worker.py",
+            "symbol": "advance",
+            "parameter": "state"
+          }
+        },
+        {
+          "id": "state-pending",
+          "kind": "state",
+          "layer": "state",
+          "value": "pending",
+          "label": "pending",
+          "summary": "Actual pending state"
+        },
+        {
+          "id": "state-waiting",
+          "kind": "state",
+          "layer": "state",
+          "value": "waiting",
+          "label": "waiting",
+          "summary": "Actual waiting state"
+        },
+        {
+          "id": "state-running",
+          "kind": "state",
+          "layer": "state",
+          "value": "running",
+          "label": "running",
+          "summary": "Actual running state"
+        },
+        {
+          "id": "state-done",
+          "kind": "state",
+          "layer": "state",
+          "value": "done",
+          "label": "done",
+          "summary": "Actual done state"
+        }
+      ],
+      "edges": [
+        {
+          "id": "check-sharing",
+          "from": "advance",
+          "to": "check",
+          "type": "flow",
+          "label": "check-sharing",
+          "evidence": "worker.py explicit nested spans"
+        },
+        {
+          "id": "query-grant",
+          "from": "check",
+          "to": "query",
+          "type": "flow",
+          "label": "query-grant",
+          "evidence": "worker.py explicit nested spans"
+        },
+        {
+          "id": "write-sharing",
+          "from": "advance",
+          "to": "write",
+          "type": "flow",
+          "label": "write-sharing",
+          "evidence": "worker.py explicit nested spans"
+        },
+        {
+          "id": "current-state",
+          "from": "advance",
+          "to": "state-parameter",
+          "type": "data",
+          "label": "current-state",
+          "evidence": "worker.py explicit nested spans"
+        }
+      ],
+      "overview": [
+        {
+          "node": "advance"
+        }
+      ],
+      "scope": {
+        "unknowns": []
+      },
+      "machine": {
+        "engine": "bo.fsm",
+        "version": "1",
+        "state_type": "enum",
+        "states": [
+          "pending",
+          "waiting",
+          "running",
+          "done"
+        ],
+        "values": [
+          "pending",
+          "waiting",
+          "running",
+          "done"
+        ],
+        "initial": "pending",
+        "transitions": [
+          {
+            "source": "pending",
+            "dest": "running",
+            "trigger": "start",
+            "conditions": "available"
+          },
+          {
+            "source": "pending",
+            "dest": "waiting",
+            "trigger": "start",
+            "unless": "available"
+          },
+          {
+            "source": "waiting",
+            "dest": "running",
+            "trigger": "resume",
+            "conditions": "available"
+          },
+          {
+            "source": "running",
+            "dest": "done",
+            "trigger": "finish"
+          }
+        ],
+        "events": {
+          "start": {
+            "payload": {}
+          },
+          "resume": {
+            "payload": {}
+          },
+          "finish": {
+            "payload": {}
+          }
+        },
+        "context": {
+          "slots": {
+            "type": "integer",
+            "min": 0
+          }
+        },
+        "guards": {
+          "available": "at least one slot"
+        },
+        "labels": {
+          "pending": "pending",
+          "waiting": "waiting",
+          "running": "running",
+          "done": "done"
+        }
+      },
+      "presentation": {
+        "subject": "fixture"
+      }
+    },
+    "manifest": {
+      "schema_version": 3,
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "files": {
+        "worker.py": "e03f04a0d5df5c9570d498c80df051bd7768d6b5b56df81bf4ef49f1ca215104"
+      },
+      "model_hash": "6b4afb9e73c8b1d11763951e2df07b6030782aaf0df154e162210bf7b9acb082",
+      "intent_hash": "0e560b565cd199cfffcd7519252f4ded8248573a5206f57c936ca81c5c7108ab",
+      "model_revision": "1",
+      "bindings": {
+        "advance": {
+          "path": "worker.py",
+          "symbol": "advance",
+          "line": 13,
+          "end_line": 35,
+          "signature": "state, probe, gate, path, engine, report",
+          "ast_sha256": "c2c3d0a66358caa204ccad68773e0bbefbeff9835333fcbe78166164bdbbaba2",
+          "snippet": "def advance(state, probe, gate, path, engine, report):\n    with probe.span(\"advance\", lambda: {\"inputs\": {\"state\": state}}, entity=\"job\", attempt=\"attempt-1\", scope=\"entity\") as operation:\n        state = engine.step(state, \"start\", {\"slots\": 1})[\"state\"]\n        report(state, 1, \"start\")\n        with closing(sqlite3.connect(path)) as db:\n            with probe.span(\"check\") as check:\n                with probe.span(\"query\") as query:\n                    allowed = bool(read_grant(db))\n                    query.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n                check.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n            if not allowed:\n                raise PermissionError(\"Share denied\")\n            operation.record(\"wait\", lambda: {\"outputs\": {\"state\": state}})\n            if not gate.wait(25):\n                raise TimeoutError(\"Sharing operation was not released\")\n            operation.record(\"read\", lambda: {\"outputs\": {\"state\": state}})\n            with probe.span(\"write\") as commit:\n                count = write_share(db)\n                commit.result(lambda: {\"outputs\": {\"count\": count}})\n        state = engine.step(state, \"finish\", {\"slots\": 1})[\"state\"]\n        report(state, 2, \"finish\")\n        operation.result(lambda: {\"outputs\": {\"state\": state}})\n        return state",
+          "calls": [
+            "PermissionError",
+            "TimeoutError",
+            "bool",
+            "check.result",
+            "closing",
+            "commit.result",
+            "engine.step",
+            "gate.wait",
+            "operation.record",
+            "operation.result",
+            "probe.span",
+            "query.result",
+            "read_grant",
+            "report",
+            "sqlite3.connect",
+            "write_share"
+          ],
+          "guards": [
+            {
+              "line": 23,
+              "expression": "not allowed"
+            },
+            {
+              "line": 26,
+              "expression": "not gate.wait(25)"
+            }
+          ],
+          "file_sha256": "e03f04a0d5df5c9570d498c80df051bd7768d6b5b56df81bf4ef49f1ca215104"
+        },
+        "check": {
+          "path": "worker.py",
+          "symbol": "advance",
+          "line": 13,
+          "end_line": 35,
+          "signature": "state, probe, gate, path, engine, report",
+          "ast_sha256": "c2c3d0a66358caa204ccad68773e0bbefbeff9835333fcbe78166164bdbbaba2",
+          "snippet": "def advance(state, probe, gate, path, engine, report):\n    with probe.span(\"advance\", lambda: {\"inputs\": {\"state\": state}}, entity=\"job\", attempt=\"attempt-1\", scope=\"entity\") as operation:\n        state = engine.step(state, \"start\", {\"slots\": 1})[\"state\"]\n        report(state, 1, \"start\")\n        with closing(sqlite3.connect(path)) as db:\n            with probe.span(\"check\") as check:\n                with probe.span(\"query\") as query:\n                    allowed = bool(read_grant(db))\n                    query.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n                check.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n            if not allowed:\n                raise PermissionError(\"Share denied\")\n            operation.record(\"wait\", lambda: {\"outputs\": {\"state\": state}})\n            if not gate.wait(25):\n                raise TimeoutError(\"Sharing operation was not released\")\n            operation.record(\"read\", lambda: {\"outputs\": {\"state\": state}})\n            with probe.span(\"write\") as commit:\n                count = write_share(db)\n                commit.result(lambda: {\"outputs\": {\"count\": count}})\n        state = engine.step(state, \"finish\", {\"slots\": 1})[\"state\"]\n        report(state, 2, \"finish\")\n        operation.result(lambda: {\"outputs\": {\"state\": state}})\n        return state",
+          "calls": [
+            "PermissionError",
+            "TimeoutError",
+            "bool",
+            "check.result",
+            "closing",
+            "commit.result",
+            "engine.step",
+            "gate.wait",
+            "operation.record",
+            "operation.result",
+            "probe.span",
+            "query.result",
+            "read_grant",
+            "report",
+            "sqlite3.connect",
+            "write_share"
+          ],
+          "guards": [
+            {
+              "line": 23,
+              "expression": "not allowed"
+            },
+            {
+              "line": 26,
+              "expression": "not gate.wait(25)"
+            }
+          ],
+          "file_sha256": "e03f04a0d5df5c9570d498c80df051bd7768d6b5b56df81bf4ef49f1ca215104"
+        },
+        "query": {
+          "path": "worker.py",
+          "symbol": "read_grant",
+          "line": 5,
+          "end_line": 6,
+          "signature": "db",
+          "ast_sha256": "b5156240f086f431966075cf5a103e8206ac1594452c325d3ce3996b48d996ef",
+          "snippet": "def read_grant(db):\n    return db.execute(\"select allowed from grants where actor = ?\", (\"owner\",)).fetchone()[0]",
+          "calls": [
+            "db.execute",
+            "db.execute('select allowed from grants where actor = ?', ('owner',)).fetchone"
+          ],
+          "guards": [],
+          "file_sha256": "e03f04a0d5df5c9570d498c80df051bd7768d6b5b56df81bf4ef49f1ca215104"
+        },
+        "write": {
+          "path": "worker.py",
+          "symbol": "write_share",
+          "line": 8,
+          "end_line": 11,
+          "signature": "db",
+          "ast_sha256": "78d079a8ce4e77694e9238de65f479bad7ca1c5ec951b0e54452d3a1e99814a5",
+          "snippet": "def write_share(db):\n    db.execute(\"insert into shares(file_id, recipient) values (?, ?)\", (\"file-1\", \"reader\"))\n    db.commit()\n    return db.execute(\"select count(*) from shares\").fetchone()[0]",
+          "calls": [
+            "db.commit",
+            "db.execute",
+            "db.execute('select count(*) from shares').fetchone"
+          ],
+          "guards": [],
+          "file_sha256": "e03f04a0d5df5c9570d498c80df051bd7768d6b5b56df81bf4ef49f1ca215104"
+        }
+      },
+      "python": "3.13.13",
+      "unknowns": [
+        "AST evidence does not prove value flow, guard dominance or behavioral equivalence",
+        "External dependencies, interpreter, dynamic patching and omitted files are not attested"
+      ]
+    },
+    "events": [
+      {
+        "protocol": "bo-event/v1",
+        "project_id": "fixture",
+        "model_revision": "1",
+        "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+        "run_id": "625939e2b7e942a384a4392c52221383",
+        "producer_id": "c986125123784e899b44ef98eafb9cb4",
+        "schema_version": 3,
+        "seq": 1,
+        "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:1",
+        "node": "advance",
+        "phase": "change",
+        "entity": "job",
+        "attempt": "attempt-1",
+        "scope": "entity",
+        "basis": {},
+        "call_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:1",
+        "parent_call_id": null,
+        "inputs": {},
+        "outputs": {
+          "state": "pending"
+        },
+        "depends": [],
+        "observed_at": "2026-10-30T13:30:46.624834+00:00",
+        "revision": 0,
+        "source_seq": 1,
+        "stream_id": "785492e012a27420f106cbde"
+      }
+    ]
+  },
+  "final": {
+    "authority": {
+      "entity": "job",
+      "state": "done",
+      "basis": {},
+      "parameters": {
+        "slots": 1
+      },
+      "effects": []
+    },
+    "machine": {
+      "current": "done",
+      "state_revision": 2,
+      "configurations": [
+        {
+          "attempt": "attempt-1",
+          "phase": "done",
+          "param_version": 2,
+          "activities": {},
+          "resources": {},
+          "journal": []
+        }
+      ],
+      "journal": [
+        {
+          "event": "finish",
+          "source": "running",
+          "target": "done",
+          "attempt": "attempt-1",
+          "evidence_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:12",
+          "revision": 2
+        }
+      ]
+    },
+    "health": {
+      "errors": 0,
+      "dropped": 0,
+      "run_id": "785492e012a27420f106cbde",
+      "attempted": 13,
+      "written": 13,
+      "enabled": true,
+      "runtime_frame_evictions": 0,
+      "retained_events": 13,
+      "evicted_events": 0,
+      "history_start_seq": 1,
+      "log_errors": 0,
+      "listener_errors": 0,
+      "retention": {
+        "memory_events": 10000,
+        "memory_seconds": 1800,
+        "log_bytes": 8388608,
+        "log_backups": 2
+      }
+    },
+    "binding_status": {
+      "status": "current",
+      "changed_files": [],
+      "model_changed": false,
+      "intent_changed": false,
+      "directly_affected": [],
+      "possibly_affected": []
+    },
+    "historical": true,
+    "busy": false
+  },
+  "sources": {
+    "worker.py": "\"\"\"Minimal sharing operation; all SQL acts on synthetic local records.\"\"\"\nimport sqlite3\nfrom contextlib import closing\n\ndef read_grant(db):\n    return db.execute(\"select allowed from grants where actor = ?\", (\"owner\",)).fetchone()[0]\n\ndef write_share(db):\n    db.execute(\"insert into shares(file_id, recipient) values (?, ?)\", (\"file-1\", \"reader\"))\n    db.commit()\n    return db.execute(\"select count(*) from shares\").fetchone()[0]\n\ndef advance(state, probe, gate, path, engine, report):\n    with probe.span(\"advance\", lambda: {\"inputs\": {\"state\": state}}, entity=\"job\", attempt=\"attempt-1\", scope=\"entity\") as operation:\n        state = engine.step(state, \"start\", {\"slots\": 1})[\"state\"]\n        report(state, 1, \"start\")\n        with closing(sqlite3.connect(path)) as db:\n            with probe.span(\"check\") as check:\n                with probe.span(\"query\") as query:\n                    allowed = bool(read_grant(db))\n                    query.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n                check.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n            if not allowed:\n                raise PermissionError(\"Share denied\")\n            operation.record(\"wait\", lambda: {\"outputs\": {\"state\": state}})\n            if not gate.wait(25):\n                raise TimeoutError(\"Sharing operation was not released\")\n            operation.record(\"read\", lambda: {\"outputs\": {\"state\": state}})\n            with probe.span(\"write\") as commit:\n                count = write_share(db)\n                commit.result(lambda: {\"outputs\": {\"count\": count}})\n        state = engine.step(state, \"finish\", {\"slots\": 1})[\"state\"]\n        report(state, 2, \"finish\")\n        operation.result(lambda: {\"outputs\": {\"state\": state}})\n        return state\n"
+  },
+  "events": [
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 2,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:2",
+      "node": "advance",
+      "phase": "enter",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "9d621d32a1474ec280fa5261d70f9c9c",
+      "parent_call_id": null,
+      "inputs": {
+        "state": "pending"
+      },
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:47.881593+00:00",
+      "lifecycle": "span",
+      "source_seq": 2,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 3,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:3",
+      "node": "advance",
+      "phase": "change",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:3",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "running"
+      },
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:47.881704+00:00",
+      "revision": 1,
+      "source_seq": 3,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 4,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:4",
+      "node": "check",
+      "phase": "enter",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "1b1eb3c229df41afbc2f2f7f62f84a45",
+      "parent_call_id": "9d621d32a1474ec280fa5261d70f9c9c",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:47.903870+00:00",
+      "lifecycle": "span",
+      "source_seq": 4,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 5,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:5",
+      "node": "query",
+      "phase": "enter",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "0f8c5fc0ca2247729fac10756a4b1b14",
+      "parent_call_id": "1b1eb3c229df41afbc2f2f7f62f84a45",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:47.903941+00:00",
+      "lifecycle": "span",
+      "source_seq": 5,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 6,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:6",
+      "node": "query",
+      "phase": "return",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "0f8c5fc0ca2247729fac10756a4b1b14",
+      "parent_call_id": "1b1eb3c229df41afbc2f2f7f62f84a45",
+      "inputs": {},
+      "outputs": {
+        "allowed": true
+      },
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:47.904759+00:00",
+      "lifecycle": "span",
+      "source_seq": 6,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 7,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:7",
+      "node": "check",
+      "phase": "return",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "1b1eb3c229df41afbc2f2f7f62f84a45",
+      "parent_call_id": "9d621d32a1474ec280fa5261d70f9c9c",
+      "inputs": {},
+      "outputs": {
+        "allowed": true
+      },
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:47.904798+00:00",
+      "lifecycle": "span",
+      "source_seq": 7,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 8,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:8",
+      "node": "advance",
+      "phase": "wait",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "9d621d32a1474ec280fa5261d70f9c9c",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "running"
+      },
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:47.904823+00:00",
+      "lifecycle": "span",
+      "source_seq": 8,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 9,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:9",
+      "node": "advance",
+      "phase": "read",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "9d621d32a1474ec280fa5261d70f9c9c",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "running"
+      },
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:53.372703+00:00",
+      "lifecycle": "span",
+      "source_seq": 9,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 10,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:10",
+      "node": "write",
+      "phase": "enter",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "31c3a70f03f94cbf923465d695b702db",
+      "parent_call_id": "9d621d32a1474ec280fa5261d70f9c9c",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:53.372834+00:00",
+      "lifecycle": "span",
+      "source_seq": 10,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 11,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:11",
+      "node": "write",
+      "phase": "return",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "31c3a70f03f94cbf923465d695b702db",
+      "parent_call_id": "9d621d32a1474ec280fa5261d70f9c9c",
+      "inputs": {},
+      "outputs": {
+        "count": 1
+      },
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:53.405218+00:00",
+      "lifecycle": "span",
+      "source_seq": 11,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 12,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:12",
+      "node": "advance",
+      "phase": "change",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:12",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "done"
+      },
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:53.405429+00:00",
+      "revision": 2,
+      "source_seq": 12,
+      "stream_id": "785492e012a27420f106cbde"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+      "run_id": "625939e2b7e942a384a4392c52221383",
+      "producer_id": "c986125123784e899b44ef98eafb9cb4",
+      "schema_version": 3,
+      "seq": 13,
+      "id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:13",
+      "node": "advance",
+      "phase": "return",
+      "entity": "job",
+      "attempt": "attempt-1",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "9d621d32a1474ec280fa5261d70f9c9c",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "done"
+      },
+      "depends": [],
+      "observed_at": "2026-10-30T13:30:53.421473+00:00",
+      "lifecycle": "span",
+      "source_seq": 13,
+      "stream_id": "785492e012a27420f106cbde"
+    }
+  ],
+  "commands": [],
+  "gaps": [],
+  "capture": {
+    "mode": "all",
+    "nodes": null,
+    "roots": [],
+    "boundary_nodes": []
+  },
+  "command_fields": [],
+  "runtime_frames": {
+    "schema": "stategraph-runtime-frames/v1",
+    "frames": [
+      {
+        "event_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:3",
+        "run_id": "625939e2b7e942a384a4392c52221383",
+        "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+        "revision": 1,
+        "machine": {
+          "current": "running",
+          "state_revision": 1,
+          "configurations": [
+            {
+              "attempt": "attempt-1",
+              "phase": "running",
+              "param_version": 1,
+              "activities": {},
+              "resources": {},
+              "journal": [],
+              "state_transition": {
+                "event": "start",
+                "source": "pending",
+                "target": "running",
+                "attempt": "attempt-1",
+                "evidence_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:3",
+                "revision": 1
+              }
+            }
+          ],
+          "journal": [
+            {
+              "event": "start",
+              "source": "pending",
+              "target": "running",
+              "attempt": "attempt-1",
+              "evidence_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:3",
+              "revision": 1
+            }
+          ]
+        },
+        "authority": {
+          "entity": "job",
+          "state": "running",
+          "basis": {},
+          "parameters": {
+            "slots": 1
+          },
+          "effects": []
+        }
+      },
+      {
+        "event_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:12",
+        "run_id": "625939e2b7e942a384a4392c52221383",
+        "build_id": "b97a5d45695250673629ff38761a03b7d8f241bc2ac38b5ad2684066441d063b",
+        "revision": 2,
+        "machine": {
+          "current": "done",
+          "state_revision": 2,
+          "configurations": [
+            {
+              "attempt": "attempt-1",
+              "phase": "done",
+              "param_version": 2,
+              "activities": {},
+              "resources": {},
+              "journal": [],
+              "state_transition": {
+                "event": "finish",
+                "source": "running",
+                "target": "done",
+                "attempt": "attempt-1",
+                "evidence_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:12",
+                "revision": 2
+              }
+            }
+          ],
+          "journal": [
+            {
+              "event": "finish",
+              "source": "running",
+              "target": "done",
+              "attempt": "attempt-1",
+              "evidence_id": "625939e2b7e942a384a4392c52221383:c986125123784e899b44ef98eafb9cb4:12",
+              "revision": 2
+            }
+          ]
+        },
+        "authority": {
+          "entity": "job",
+          "state": "done",
+          "basis": {},
+          "parameters": {
+            "slots": 1
+          },
+          "effects": []
+        }
+      }
+    ],
+    "partial": true
+  },
+  "scope_excluded": 0,
+  "capture_filtered": 0
+}

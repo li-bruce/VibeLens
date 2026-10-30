@@ -5,6 +5,40 @@ from copy import deepcopy
 from .index import identity
 
 
+def representation_links(model, graph):
+    """Resolve independent semantic nodes to one exact AST parameter identity.
+
+    A state value such as 'approved' is not equivalent to the status variable.
+    Missing or renamed parameters fail validation rather than matching by label.
+    """
+    code = {n["id"]: n for n in graph["nodes"]}
+    links = []
+    for node in model.get("nodes", []):
+        reference = node.get("represents")
+        if not reference:
+            continue
+        key = reference["path"] + "::" + reference["symbol"]
+        target = identity("parameter", [key, reference["parameter"]])
+        if target not in code or code[target].get("code_role") != "parameter":
+            raise ValueError("Missing equivalent source parameter: " + node["id"] + " -> " + key)
+        if node["id"] == target:
+            raise ValueError("Semantic and source parameter identities must be distinct")
+        links.append(
+            {
+                "id": identity("equivalent", [node["id"], target]),
+                "from": node["id"],
+                "to": target,
+                "type": "data",
+                "code_relation": "maps",
+                "mapping_role": "equivalent",
+                "label": "Equivalent representation",
+                "origin": "code-index",
+                "evidence": dict(reference),
+            }
+        )
+    return links
+
+
 def anchors(model, graph, focus):
     """Find source anchors below the chosen authored node, without guessing names."""
     authored = {n["id"]: n for n in model.get("nodes", [])}
@@ -24,7 +58,7 @@ def anchors(model, graph, focus):
             continue
         seen.add(key)
         pending.extend(children.get(key, []))
-        source = authored[key].get("source", {})
+        source = authored[key].get("source") or authored[key].get("represents", {})
         sid = graph["symbols"].get(source.get("path", "") + "::" + source.get("symbol", ""))
         if sid:
             selected.add(sid)
@@ -50,6 +84,7 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
         raise ValueError("Code limit must be an integer from 1 to 5000")
     if projection not in {"all", "project"}:
         raise ValueError("Code projection must be all or project")
+    equivalent = representation_links(model, graph)
     if projection == "project":
         keep = {
             n["id"]
@@ -70,6 +105,11 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
     links = []
     if focus:
         wanted, links = anchors(model, graph, focus)
+        related = [
+            e for e in equivalent if e["to"] in nodes and (e["from"] == focus or e["to"] in wanted)
+        ]
+        wanted.update(e["to"] for e in related)
+        links.extend(related)
         # Descend within the selected declaration (a file/class can be a focus).
         queue = deque(sorted(wanted))
         children = {}
@@ -102,6 +142,7 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
                 parent = nodes[parent].get("parent")
     else:
         wanted = set(nodes)
+        links.extend(equivalent)
         # Full code view retains each explicit authored-to-source mapping too.
         for item in model.get("nodes", []):
             source = item.get("source", {})

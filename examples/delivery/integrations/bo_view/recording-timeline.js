@@ -17,14 +17,16 @@ export function cleanTimeline(value) {
       ? value.expanded.filter((id) => layers.some((layer) => layer.id === id))
       : [],
     follow: value?.follow !== false,
+    depth: layers.some((layer) => layer.id === value?.depth) ? value.depth : "all",
+    layerMode: value?.layerMode === "single" ? "single" : "through",
   };
 }
 
 /** Own listeners, indexes and pending frames so leaving replay releases the whole dock. */
 export class RecordingTimeline {
-  constructor(host, { onSeek, onPause, onRange, onSettings }) {
+  constructor(host, { onSeek, onPause, onRange, onSettings, onLive = () => {} }) {
     this.host = host;
-    this.callbacks = { onSeek, onPause, onRange, onSettings };
+    this.callbacks = { onSeek, onPause, onRange, onSettings, onLive };
     this.abort = new AbortController();
     this.settings = cleanTimeline();
     this.window = { start: 0, end: 1 };
@@ -39,11 +41,11 @@ export class RecordingTimeline {
     this.host.innerHTML = `
       <div class="trace-resize" role="separator" tabindex="0" aria-orientation="horizontal"></div>
       <div class="trace-toolbar">
-        <strong></strong><span class="trace-key">━ · ◆ · ◇</span><select class="trace-scope"></select>
+        <strong></strong><span class="trace-key">━ · ◆ · ◇</span><select class="trace-scope"></select><select class="trace-depth"></select><button class="trace-single" aria-pressed="false"></button>
         <button class="trace-fit"></button><button class="trace-zoom-in"></button><button class="trace-zoom-out"></button>
         <label class="trace-follow"><input type="checkbox" /><span></span></label>
         <button class="trace-loop"></button><button class="trace-clear"></button>
-        <span class="trace-health" role="status"></span><button class="trace-close"></button>
+        <span class="trace-health" role="status"></span><button class="trace-live"></button><button class="trace-close"></button>
       </div>
       <div class="trace-body"><canvas tabindex="0" role="slider" aria-valuemin="0"></canvas>
         <div class="trace-tooltip" hidden></div><pre class="trace-payload" hidden tabindex="0"></pre></div>
@@ -52,11 +54,28 @@ export class RecordingTimeline {
     this.find = find;
     this.canvas = host.querySelector("canvas");
     find("toolbar").querySelector("strong").textContent = t("Timeline");
-    find("key").title = t("Call duration · Event · Source mapping");
+    find("key").title = t("Duration · Event · Context or source mapping");
     find("scope").replaceChildren(
       new Option(t("Current view"), "view"),
       new Option(t("Recorded nodes"), "all"),
     );
+    find("depth").setAttribute("aria-label", t("Observation depth"));
+    find("single").textContent = t("Single layer");
+    find("live").textContent = t("Live");
+    this.listen(find("depth"), "change", () =>
+      this.configure({
+        depth: find("depth").value,
+        ...(find("depth").value === "all" ? { layerMode: "through" } : {}),
+      }),
+    );
+    this.listen(find("single"), "click", () =>
+      this.configure({
+        layerMode: this.settings.layerMode === "single" ? "through" : "single",
+        depth:
+          this.settings.depth === "all" ? (this.order || ["business"])[0] : this.settings.depth,
+      }),
+    );
+    this.listen(find("live"), "click", onLive);
     find("scope").setAttribute("aria-label", t("Timeline scope"));
     find("follow").querySelector("span").textContent = t("Follow cursor");
     find("loop").textContent = t("Loop selection");
@@ -149,38 +168,74 @@ export class RecordingTimeline {
     all,
     edges,
     visible,
-    order,
+    order = layers.map((layer) => layer.id),
     plan,
     raw,
     transfers,
     settings,
     playing,
     selection,
+    inspection = true,
   }) {
     const prior = this.settings;
     this.model = model;
+    this.inspection = inspection;
     this.all = all;
     this.preferences = preferences;
     this.settings = cleanTimeline(settings);
     this.raw = raw;
+    this.order = order;
     this.transfers = [...transfers];
     this.plan = plan;
     const indexKey = JSON.stringify([
       recording.id,
+      items.length,
+      items.at(-1)?.id,
+      recording.status,
       [...all.keys()],
       edges.filter((edge) => edge.code_relation).map((edge) => [edge.id, edge.from, edge.to]),
     ]);
     if (indexKey !== this.indexKey) {
+      const same = this.index?.recording.id === recording.id;
+      const fitted =
+        this.index && this.window.start === 0 && this.window.end === this.index.axis.total;
       this.indexKey = indexKey;
       this.index = buildTraceIndex(recording, items, all, edges);
-      this.window = { start: 0, end: this.index.axis.total };
-      this.range = null;
-      this.scroll = 0;
+      if (!same || fitted) this.window = { start: 0, end: this.index.axis.total };
+      else this.window = boundWindow(this.window.start, this.window.end, this.index.axis.total);
+      if (!same) {
+        this.range = null;
+        this.scroll = 0;
+      }
       this.rowKey = null;
+    }
+    if (recording.observed_until && this.index.axis.ordered) {
+      const total = Math.max(
+        this.index.axis.total,
+        Date.parse(recording.observed_until) - this.index.axis.origin,
+      );
+      if (Number.isFinite(total) && total > this.index.axis.total) {
+        const fitted = this.window.start === 0 && this.window.end === this.index.axis.total;
+        this.index.axis.total = total;
+        for (const row of this.index.rows.values()) {
+          let max = -Infinity;
+          row.maxEnds = row.slices.map((slice) => {
+            if (slice.unfinished) {
+              slice.end = total;
+              if (slice.stages?.length) slice.stages.at(-1).end = total;
+            }
+            return (max = Math.max(max, slice.end));
+          });
+        }
+        if (fitted) this.window.end = total;
+        this.rowKey = null;
+      }
     }
     const rowKey = JSON.stringify([
       this.indexKey,
       this.settings.scope,
+      this.settings.depth,
+      this.settings.layerMode,
       this.settings.expanded,
       [...visible],
       order,
@@ -193,6 +248,8 @@ export class RecordingTimeline {
         order,
         scope: this.settings.scope,
         expanded: this.settings.expanded,
+        depth: this.settings.depth,
+        layerMode: this.settings.layerMode,
       });
       this.points = tracePoints(this.rows, this.index, plan);
       this.allowed = new Set(plan);
@@ -210,8 +267,26 @@ export class RecordingTimeline {
     }
     this.host.hidden = !this.settings.visible;
     this.find("scope").value = this.settings.scope;
+    const optionKey = order.join(":");
+    if (this.find("depth").dataset.order !== optionKey) {
+      this.find("depth").replaceChildren(
+        new Option(t("All layers"), "all"),
+        ...order.map((id) => new Option(t(layers.find((layer) => layer.id === id).label), id)),
+      );
+      this.find("depth").dataset.order = optionKey;
+    }
+    this.find("depth").value = this.settings.depth;
+    this.find("single").setAttribute("aria-pressed", String(this.settings.layerMode === "single"));
+    this.find("live").hidden = !recording.transient && recording.status !== "recording";
+    this.host.dataset.source = recording.transient
+      ? "live"
+      : recording.status === "recording"
+        ? "recording"
+        : "saved";
     this.find("follow").querySelector("input").checked = this.settings.follow;
     const issues = [...(recording.gaps || [])];
+    if (this.index.axis.boundaryAdjusted)
+      issues.push(t("Recording boundary overlaps event delivery"));
     if (!this.index.axis.ordered)
       issues.push(t("Timestamps unavailable or out of order; event-order axis"));
     if (recording.capture?.mode === "focused") issues.push(t("Focused recording"));
@@ -255,7 +330,7 @@ export class RecordingTimeline {
       ?.slices.find((item) => item.raw <= this.raw && item.last >= this.raw);
     const duration =
       slice?.duration !== null && slice?.duration !== undefined
-        ? timeLabel(slice.duration)
+        ? (slice.clippedStart ? "≥ " : "") + timeLabel(slice.duration)
         : slice?.unfinished
           ? t("Open call")
           : "";
@@ -268,6 +343,9 @@ export class RecordingTimeline {
       event.attempt,
       event.observed_at,
       slice?.ambiguous ? t("Overlapping call ID") : "",
+      slice?.context_entry
+        ? `${t("Before recording")} · ${slice.context_entry.id} · ${slice.context_entry.observed_at}`
+        : "",
     ]
       .filter(Boolean)
       .join("\n");
@@ -303,6 +381,7 @@ export class RecordingTimeline {
         depends: event.depends,
         changes,
         graph_transfers: this.transfers,
+        ...(slice?.context_entry ? { context_entry: slice.context_entry } : {}),
       },
       null,
       2,
@@ -328,14 +407,34 @@ export class RecordingTimeline {
       const width = this.find("body").clientWidth,
         height = this.find("body").clientHeight;
       if (!width || !height) return;
+      if (this.zoomMotion) {
+        const motion = this.zoomMotion;
+        const progress = Math.min(1, (performance.now() - motion.started) / 150);
+        const ease = 1 - (1 - progress) ** 3;
+        const span = Math.exp(
+          Math.log(motion.from.end - motion.from.start) * (1 - ease) +
+            Math.log(motion.to.end - motion.to.start) * ease,
+        );
+        const center =
+          ((motion.from.start + motion.from.end) / 2) * (1 - ease) +
+          ((motion.to.start + motion.to.end) / 2) * ease;
+        this.window = boundWindow(center - span / 2, center + span / 2, this.index.axis.total);
+        if (progress === 1) {
+          this.window = motion.to;
+          this.zoomMotion = null;
+        }
+      }
       const started = performance.now();
       this.geometry = paintTrace(this.canvas, {
         ...this,
         width,
         height,
         expanded: this.settings.expanded,
+        depth: this.settings.depth,
+        layerMode: this.settings.layerMode,
       });
       this.paintMs = performance.now() - started;
+      if (this.zoomMotion) this.schedule();
     });
   }
 
@@ -359,7 +458,7 @@ export class RecordingTimeline {
       this.seekFrame = null;
       const pending = this.pendingSeek;
       this.pendingSeek = null;
-      if (pending && (pending.raw !== this.raw || pending.locate))
+      if (pending && (pending.raw !== this.raw || pending.locate || !this.inspection))
         this.callbacks.onSeek(pending.raw, pending.locate);
     });
   }
@@ -373,6 +472,7 @@ export class RecordingTimeline {
     event.preventDefault();
     this.canvas.focus();
     this.callbacks.onPause();
+    this.zoomMotion = null;
     const p = this.point(event),
       g = this.geometry;
     this.find("tooltip").hidden = true;
@@ -498,11 +598,12 @@ export class RecordingTimeline {
     }
     const event = this.index.items[hit.raw],
       mark = this.index.rows.get(hit.row)?.marks.find((item) => item.raw === hit.raw);
+    const evidence = hit.contextEvent || mark?.contextEvent || event;
     tooltip.textContent = [
-      eventLabel(event, this.model),
-      event.observed_at,
-      event.entity,
-      mark?.projected ? t("Source mapping") : "",
+      eventLabel(evidence, this.model),
+      evidence.observed_at,
+      evidence.entity,
+      evidence !== event ? t("Before recording") : mark?.projected ? t("Source mapping") : "",
     ]
       .filter(Boolean)
       .join(" · ");
@@ -533,18 +634,19 @@ export class RecordingTimeline {
   }
   zoom(factor, anchor = null) {
     if (!this.index) return;
+    const base = this.zoomMotion?.to || this.window;
     if (anchor === null)
-      anchor =
-        (this.index.axis.times[this.raw] - this.window.start) /
-        (this.window.end - this.window.start);
-    this.window = zoomWindow(this.window, factor, anchor, this.index.axis.total);
+      anchor = (this.index.axis.times[this.raw] - base.start) / (base.end - base.start);
+    const target = zoomWindow(base, factor, anchor, this.index.axis.total);
+    this.animateWindow(target);
+  }
+  animateWindow(target) {
+    if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) this.window = target;
+    else this.zoomMotion = { from: { ...this.window }, to: target, started: performance.now() };
     this.schedule();
   }
   fit() {
-    if (this.index) {
-      this.window = { start: 0, end: this.index.axis.total };
-      this.schedule();
-    }
+    if (this.index) this.animateWindow({ start: 0, end: this.index.axis.total });
   }
   /** Reuse ID-based replay ranges so skipping/looping never rewrites recorded facts. */
   commitRange() {
@@ -586,7 +688,7 @@ export class RecordingTimeline {
     cancelAnimationFrame(this.seekFrame);
     cancelAnimationFrame(this.drawFrame);
     this.seekFrame = this.drawFrame = null;
-    this.pendingSeek = this.drag = this.index = null;
+    this.pendingSeek = this.drag = this.index = this.zoomMotion = null;
     this.all = this.model = this.preferences = null;
     this.indexKey = this.rowKey = null;
     this.rows = [];
@@ -622,7 +724,25 @@ export class RecordingTimeline {
           clock: this.index.axis.ordered ? "time" : "order",
           scroll: this.scroll,
           painted: this.geometry?.drawn,
+          flows: this.geometry?.flows,
+          source: this.host.dataset.source,
+          depth: this.settings.depth,
+          layerMode: this.settings.layerMode,
+          lifecycles: [...this.index.rows.values()].flatMap((row) =>
+            row.slices.map((slice) => ({
+              node: row.id,
+              start: slice.start,
+              end: slice.end,
+              duration: slice.duration,
+              unfinished: slice.unfinished,
+              clippedStart: !!slice.clippedStart,
+              entryEventId: slice.context_entry?.id || this.index.items[slice.raw]?.id,
+              raw: slice.raw,
+              last: slice.last,
+            })),
+          ),
           paintMs: this.paintMs,
+          zooming: !!this.zoomMotion,
           geometry: this.geometry && {
             left: this.geometry.left,
             plot: this.geometry.plot,

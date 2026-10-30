@@ -1,7 +1,7 @@
 """Bounded, fault-isolated JSON transport. Standard library only."""
 
 from contextvars import ContextVar
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 from datetime import datetime, timezone
 import json
 import math
@@ -22,6 +22,24 @@ except ImportError:
 
 
 _bo_internal = ContextVar("bo_transport_internal", default=False)
+_bo_span = ContextVar("bo_activation_scope", default=None)
+
+
+class BOActivation:
+    """One witnessed operation; the enclosing context owns its real completion."""
+
+    def __init__(self, probe, node, options):
+        self.bo_probe, self.bo_node, self.bo_options = probe, node, options
+        self.call_id = options["call_id"]
+        self.entry_id = None
+        self.bo_result = lambda: {}
+
+    def result(self, builder):
+        """Select completion values lazily; transport failures do not alter the result."""
+        self.bo_result = builder
+
+    def record(self, phase, builder):
+        return self.bo_probe.record(self.bo_node, phase, builder, **self.bo_options)
 
 
 def bo_selected(value, spec, depth=0):
@@ -53,6 +71,38 @@ def bo_selected(value, spec, depth=0):
 
 
 class BOProbe:
+    @contextmanager
+    def span(self, node, builder=lambda: {}, **options):
+        """Witness entry through completion, including awaited children and exceptions.
+
+        Use ``with`` in synchronous or asynchronous code. Nested spans inherit only
+        this probe's invocation context. Detached tasks must own a separate span.
+        """
+        parent = _bo_span.get()
+        if parent is not None and parent.bo_probe is self:
+            inherited = {
+                k: v
+                for k, v in parent.bo_options.items()
+                if k in {"entity", "attempt", "scope", "basis"}
+            }
+            inherited["parent_call_id"] = parent.call_id
+            options = {**inherited, **options}
+        options.setdefault("call_id", uuid.uuid4().hex)
+        options["lifecycle"] = "span"
+        activation = BOActivation(self, node, options)
+        activation.entry_id = activation.record("enter", builder)
+        token = _bo_span.set(activation)
+        try:
+            yield activation
+        except BaseException as error:
+            error_name = type(error).__name__
+            activation.record("error", lambda: {"outputs": {"error": error_name}})
+            raise
+        else:
+            activation.record("return", activation.bo_result)
+        finally:
+            _bo_span.reset(token)
+
     def __init__(
         self,
         project,
@@ -126,6 +176,7 @@ class BOProbe:
         parent_call_id=None,
         depends=(),
         revision=None,
+        lifecycle=None,
     ):
         """Build and enqueue a selected observation without changing the business result.
 
@@ -151,6 +202,8 @@ class BOProbe:
             }:
                 raise ValueError("invalid phase")
             values = builder()
+            if lifecycle not in (None, "span"):
+                raise ValueError("invalid lifecycle boundary mode")
             spec = self.bo_nodes[node]["capture"]
             with self.bo_lock:
                 self.bo_seq += 1
@@ -180,6 +233,8 @@ class BOProbe:
                     if type(revision) is not int or not 0 <= revision <= 9007199254740991:
                         raise ValueError("invalid state revision")
                     body["revision"] = revision
+                if lifecycle is not None:
+                    body["lifecycle"] = lifecycle
                 self.bo_put("events", body)
             return eid
         except queue.Full:

@@ -3,6 +3,7 @@ import { t } from "./i18n.js";
 import { displayName } from "./layout.js";
 import { layers } from "./graph-layers.js";
 import { visibleSlices } from "./trace-viewport.js";
+import { visibleFlows } from "./trace-flows.js";
 import { marksInWindow } from "./trace-index.js";
 
 export const traceGeometry = { overview: 26, ruler: 24, row: 28 };
@@ -147,8 +148,20 @@ export function paintTrace(canvas, state) {
       if (pixel === previousSlicePixel && !(slice.raw <= raw && raw <= slice.last)) continue;
       previousSlicePixel = pixel;
       ctx.globalAlpha = allowed.has(slice.raw) || allowed.has(slice.last) ? 0.75 : 0.23;
-      ctx.fillStyle = slice.unfinished || slice.ambiguous ? color + "12" : color;
+      ctx.fillStyle = slice.failed
+        ? "#bc5547"
+        : slice.unfinished || slice.ambiguous
+          ? color + "22"
+          : color;
       ctx.fillRect(sx, y + 8, Math.max(2, ex - sx), 12);
+      for (const stage of slice.stages || []) {
+        if (stage.phase !== "waiting") continue;
+        const start = Math.max(sx, x(stage.start)),
+          end = Math.min(ex, x(stage.end));
+        if (end <= start) continue;
+        ctx.fillStyle = "#b37c32";
+        ctx.fillRect(start, y + 16, Math.max(1, end - start), 4);
+      }
       if (slice.unfinished || slice.ambiguous) {
         ctx.strokeStyle = color;
         ctx.setLineDash([2, 2]);
@@ -157,9 +170,21 @@ export function paintTrace(canvas, state) {
         ctx.fillStyle = color;
         ctx.fillRect(sx, y + 8, 2, 12);
       }
+      if (!slice.ambiguous && slice.raw <= raw && (slice.unfinished || raw < slice.last)) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.6;
+        ctx.strokeRect(sx, y + 7, Math.max(2, ex - sx), 14);
+        ctx.lineWidth = 1;
+      }
       if (ex - sx > 65 && slice.duration !== null) {
         ctx.fillStyle = "#ffffff";
-        clippedText(ctx, timeLabel(slice.duration), sx + 5, y + 18, ex - sx - 10);
+        clippedText(
+          ctx,
+          (slice.clippedStart ? "≥ " : "") + timeLabel(slice.duration),
+          sx + 5,
+          y + 18,
+          ex - sx - 10,
+        );
       }
       hits.push({
         kind: "slice",
@@ -202,6 +227,7 @@ export function paintTrace(canvas, state) {
         .push({ x: px, y: y + 14, layer: row.layer, node: mark.node, projected: mark.projected });
       hits.push({
         kind: "mark",
+        contextEvent: mark.contextEvent,
         raw: mark.raw,
         row: row.id,
         x: px - 5,
@@ -233,30 +259,55 @@ export function paintTrace(canvas, state) {
     ctx.lineTo(target.x, target.y);
     ctx.stroke();
   }
-  // Only selected-event flows are drawn; thousands of simultaneous links never cover the trace.
-  for (const flow of index.links) {
-    if (flow.to !== raw && flow.from !== raw) continue;
-    if (Math.max(flow.to, flow.from) > raw) continue;
-    const from = positionFor(flow.from),
-      parentRow = index.rows.get(index.items[flow.to].node),
-      parentY = rowPositions.get(parentRow?.id) ?? rowPositions.get("layer:" + parentRow?.layer),
-      to =
-        flow.type === "return" && parentY !== undefined
-          ? { x: x(index.axis.times[flow.from]), y: parentY }
-          : positionFor(flow.to);
-    if (!from || !to || from.y === to.y) continue;
-    ctx.strokeStyle = flow.type === "data" ? "#208b73" : "#477b9c";
-    ctx.setLineDash(["call", "return", "data"].includes(flow.type) ? [] : [3, 3]);
+  // Cull by time/row and occupied pixels. Full causal chains remain visible while
+  // the selected event receives stronger emphasis; dense views aggregate pixels.
+  const pixels = new Set();
+  let flowCount = 0;
+  for (const flow of visibleFlows(index, rows, window)) {
+    const fy = top + flow.fromRow * g.row - scroll + 14;
+    const ty = top + flow.toRow * g.row - scroll + 14;
+    if (Math.max(fy, ty) < top || Math.min(fy, ty) > height) continue;
+    const fx = x(flow.fromTime),
+      tx = x(flow.toTime);
+    const selected =
+      flow.at === raw ||
+      (!["call", "return", "transition"].includes(flow.type) &&
+        (flow.to === raw || flow.from === raw));
+    const key = `${Math.round(fx / 3)}:${Math.round(tx / 3)}:${flow.fromRow}:${flow.toRow}:${flow.type}`;
+    if (!selected && (pixels.has(key) || flowCount >= 1800)) continue;
+    pixels.add(key);
+    ctx.globalAlpha = selected ? 1 : 0.38;
+    ctx.lineWidth = selected ? 1.8 : 1;
+    ctx.strokeStyle = flow.outlivesParent
+      ? "#c06a34"
+      : flow.type === "data"
+        ? "#208b73"
+        : flow.type === "transition"
+          ? "#8c57ad"
+          : "#477b9c";
+    ctx.setLineDash(
+      ["call", "return", "data", "control", "transition"].includes(flow.type) ? [] : [3, 3],
+    );
     ctx.beginPath();
-    ctx.moveTo(from.x, from.y);
-    ctx.bezierCurveTo(from.x + 18, from.y, to.x - 18, to.y, to.x, to.y);
+    ctx.moveTo(fx, fy);
+    if (Math.abs(fy - ty) < 1) {
+      const lift = Math.min(11, 4 + Math.abs(tx - fx) / 8);
+      ctx.bezierCurveTo(fx, fy - lift, tx, ty - lift, tx, ty);
+    } else if (Math.abs(fx - tx) < 1) {
+      ctx.lineTo(tx, ty);
+    } else ctx.bezierCurveTo(fx + 16, fy, tx - 16, ty, tx, ty);
     ctx.stroke();
+    const vertical = Math.abs(fx - tx) < 1 && fy !== ty;
+    const direction = Math.sign(ty - fy) || 1;
     ctx.beginPath();
-    ctx.moveTo(to.x - 5, to.y - 3);
-    ctx.lineTo(to.x, to.y);
-    ctx.lineTo(to.x - 5, to.y + 3);
+    ctx.moveTo(tx - (vertical ? 3 : 5), ty - (vertical ? 5 * direction : 3));
+    ctx.lineTo(tx, ty);
+    ctx.lineTo(tx + (vertical ? 3 : -5), ty - (vertical ? 5 * direction : -3));
     ctx.stroke();
+    flowCount++;
   }
+  ctx.globalAlpha = 1;
+  ctx.lineWidth = 1;
   ctx.setLineDash([]);
   const cursor = x(index.axis.times[raw] ?? 0);
   ctx.strokeStyle = "#2965cc";
@@ -329,5 +380,5 @@ export function paintTrace(canvas, state) {
     ctx.fillStyle = "#71808e";
     ctx.fillText(t("No recorded events in this view"), left + 20, top + 30);
   }
-  return { hits, left, plot, top, drawn, points: points.length };
+  return { hits, left, plot, top, drawn, flows: flowCount, points: points.length };
 }

@@ -37,6 +37,7 @@ export function layerOf(node) {
     return "project";
   if (node.code_role || ["python-ast", "source-ast"].includes(node.origin)) return "code";
   if (type === "business") return "business";
+  if (node.semantic_role === "state_parameter") return "state";
   if (["state", "wait"].includes(type)) return "state";
   if (["decision", "resource"].includes(type)) return "rules";
   if (["store", "dataset", "column"].includes(type)) return "data";

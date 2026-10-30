@@ -66,6 +66,9 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 |---|---|
 | [viewer.js](../skills/vibelens/assets/stategraph-viewer/viewer.js) | 页面按钮、数据刷新和记录选择的连接入口。 |
 | [graph-core.js](../skills/vibelens/assets/stategraph-viewer/graph-core.js) | 节点值、源码关联、事件筛选与图内容。 |
+| [trace-lifecycles.js](../skills/vibelens/assets/stategraph-viewer/trace-lifecycles.js)、[graph-activation.js](../skills/vibelens/assets/stategraph-viewer/graph-activation.js) | 解析真实调用周期，持续呈现执行、等待、完成、失败及并发数量。 |
+| [trace-residencies.js](../skills/vibelens/assets/stategraph-viewer/trace-residencies.js)、[trace-flows.js](../skills/vibelens/assets/stategraph-viewer/trace-flows.js) | 呈现原生状态和任务的持续区间，以及调用、返回和状态转换。 |
+| [trace-session.js](../skills/vibelens/assets/stategraph-viewer/trace-session.js)、[recording-timeline.js](../skills/vibelens/assets/stategraph-viewer/recording-timeline.js) | 管理实时查看的数据边界，以及时间轴的深度、选区、缩放和共同定位。 |
 | [layout.js](../skills/vibelens/assets/stategraph-viewer/layout.js) | 展开收起、分组位置、筛选和批注。 |
 | [view-lifecycle.js](../skills/vibelens/assets/stategraph-viewer/view-lifecycle.js) | 项目视图的稳定标识，以及录制与当前图版本的匹配。 |
 | [renderer.js](../skills/vibelens/assets/stategraph-viewer/renderer.js) | Pixi 绘制和鼠标可命中的区域。 |

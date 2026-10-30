@@ -400,6 +400,19 @@ def validate_graph(model):
     if not nodes or len(nodes) != len(model["nodes"]):
         raise ValueError("invalid node identities")
     for node in nodes.values():
+        representation = node.get("represents")
+        if representation is not None:
+            if (
+                not isinstance(representation, dict)
+                or set(representation) != {"path", "symbol", "parameter"}
+                or any(not isinstance(v, str) or not v.strip() for v in representation.values())
+                or representation["path"] not in model.get("source_files", [])
+                or node.get("code_role")
+                or node.get("kind") != "data"
+            ):
+                raise ValueError("semantic parameter needs one exact source parameter reference")
+        if node.get("semantic_role") == "state_parameter" and representation is None:
+            raise ValueError("state parameter requires an explicit representation mapping")
         seen = {node["id"]}
         parent = node.get("parent")
         while parent:

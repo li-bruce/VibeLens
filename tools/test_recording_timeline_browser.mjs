@@ -54,7 +54,7 @@ try {
   const canvas = page.locator("#recording-timeline canvas");
   await sameCursor();
   checks.push({
-    dock: "only visible in recording replay",
+    dock: "historical snapshot has no live capture; saved replay opens its timeline",
     realEvents: fixture.recording.events.length,
   });
 
@@ -89,7 +89,7 @@ try {
     await page.click(".trace-fit");
     // Zoom through real toolbar clicks, keeping the selected transition in view.
     for (let i = 0; i < 9; i++) await page.click(".trace-zoom-in");
-    await page.waitForTimeout(60);
+    await page.waitForFunction(() => !graphDebug.timeline.zooming);
     trace = await snapshot();
     const box = await canvas.boundingBox();
     const target = trace.points
@@ -126,7 +126,7 @@ try {
   }
 
   await page.click(".trace-fit");
-  await page.waitForTimeout(40);
+  await page.waitForFunction(() => !graphDebug.timeline.zooming);
   let trace = await snapshot(),
     box = await canvas.boundingBox();
   const width = trace.window.end - trace.window.start;
@@ -282,7 +282,7 @@ try {
   await touchPage.selectOption("#replay-events", String(commits[1]));
   await touchPage.click(".trace-fit");
   for (let i = 0; i < 7; i++) await touchPage.click(".trace-zoom-in");
-  await touchPage.waitForTimeout(50);
+  await touchPage.waitForFunction(() => !graphDebug.timeline.zooming);
   const touchTrace = await touchPage.evaluate(() => graphDebug.timeline);
   const touchBox = await touchPage.locator("#recording-timeline canvas").boundingBox();
   const touchTime = (touchTrace.window.start + touchTrace.window.end) / 2;
@@ -315,7 +315,7 @@ try {
   checks.push({
     chinese: true,
     mobile: true,
-    clearedOnLive: true,
+    returnedToLive: true,
     businessWrites: fixture.writes.length,
     recordingBytesUnchanged: true,
   });

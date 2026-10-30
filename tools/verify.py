@@ -51,6 +51,10 @@ def main():
     subprocess.run(["node", "tools/test_layer_order.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_recording_timeline.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_graph_names.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_trace_lifecycles.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_trace_context.mjs"], cwd=ROOT, check=True)
+    run(ROOT, "tools/test_trace_lifecycle.py")
+    run(ROOT, "tests/test_recording_atomicity.py")
     if args.database:
         run(ROOT, "tools/verify_databases.py")
         run(

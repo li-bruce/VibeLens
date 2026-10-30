@@ -1,100 +1,51 @@
 /** Immutable execution index. Static projections locate facts and never become calls. */
 import { boFacts } from "./replay-steps.js";
 import { layerOf, layers } from "./graph-layers.js";
-import { callKey, callScope, traceTime } from "./trace-evidence.js";
+import { traceTime } from "./trace-evidence.js";
+import { contextualLifecycles } from "./trace-context.js";
+import { stateResidencies, activityResidencies } from "./trace-residencies.js";
+import { indexFlows } from "./trace-flows.js";
 import { lowerBound } from "./trace-viewport.js";
 
 const canonical = (node) => node.referenceOf || node.event_node || node.id;
-const complete = new Set(["return", "error"]);
 
 /** Establish one axis without reordering the graph's authoritative replay ordinals. */
-function clock(items) {
+function clock(items, until) {
   const dates = items.map((item) => traceTime(item.observed_at));
-  const invalid = dates.some((value, i) => value === null || (i && value < dates[i - 1]));
-  const origin = dates.find((value) => value !== null) ?? 0;
-  const times = invalid ? items.map((_, i) => i) : dates.map((value) => value - origin);
+  const observed = dates.filter((_, i) => !["start", "end"].includes(items[i].kind));
+  const invalid =
+    dates.some((value) => value === null) ||
+    observed.some((value, i) => i && value < observed[i - 1]);
+  const visual = [...dates];
+  let boundaryAdjusted = false;
+  if (!invalid && visual.length) {
+    if (items[0].kind === "start" && observed.length && dates[0] > observed[0]) {
+      visual[0] = observed[0];
+      boundaryAdjusted = true;
+    }
+    if (items.at(-1).kind === "end" && observed.length && dates.at(-1) < observed.at(-1)) {
+      visual[visual.length - 1] = observed.at(-1);
+      boundaryAdjusted = true;
+    }
+  }
+  const minimum = visual.reduce(
+    (min, value) => (value === null ? min : Math.min(min, value)),
+    Infinity,
+  );
+  const origin = Number.isFinite(minimum) ? minimum : 0;
+  const times = invalid ? items.map((_, i) => i) : visual.map((value) => value - origin);
+  const tail = traceTime(until);
   return {
     dates,
     times,
     ordered: !invalid,
-    total: times.reduce((max, time) => Math.max(max, time), 1),
+    boundaryAdjusted,
+    total: times.reduce(
+      (max, time) => Math.max(max, time),
+      tail !== null && !invalid ? Math.max(1, tail - origin) : 1,
+    ),
     origin,
   };
-}
-
-/** Pair repeated IDs by occurrence. Overlapping reuse remains explicitly ambiguous. */
-function invocations(items, axis, all) {
-  const opened = new Map(),
-    slices = [],
-    activeParents = new Map(),
-    links = [];
-  const finish = (slice, raw, unfinished = false) => {
-    const start = axis.dates[slice.raw],
-      end = axis.dates[raw];
-    slices.push({
-      ...slice,
-      last: raw,
-      start: axis.times[slice.raw],
-      end: axis.times[raw],
-      unfinished,
-      duration:
-        !unfinished && !slice.ambiguous && start !== null && end !== null && end >= start
-          ? end - start
-          : null,
-    });
-  };
-  for (const [raw, event] of items.entries()) {
-    if (event.kind !== "probe") continue;
-    const key = callKey(event),
-      scope = callScope(event);
-    const parent =
-      event.parent_call_id &&
-      activeParents.get(JSON.stringify([scope, event.parent_call_id]))?.at(-1);
-    if (typeof parent === "number" && event.phase === "enter")
-      links.push({ from: parent, to: raw, type: "call" });
-    if (typeof parent === "number" && ["return", "decision", "error"].includes(event.phase))
-      links.push({ from: raw, to: parent, type: "return" });
-    if (!key) continue;
-    if (event.phase === "enter") {
-      const stack = opened.get(key) || [];
-      if (stack.at(-1)?.candidate !== null && stack.at(-1)?.candidate !== undefined) {
-        const previous = stack.pop();
-        finish(previous, previous.candidate);
-        activeParents.get(JSON.stringify([scope, event.call_id]))?.pop();
-      }
-      if (stack.length) for (const entry of stack) entry.ambiguous = true;
-      stack.push({ raw, node: event.node, ambiguous: stack.length > 0, candidate: null });
-      opened.set(key, stack);
-      const parentKey = JSON.stringify([scope, event.call_id]);
-      if (!activeParents.has(parentKey)) activeParents.set(parentKey, []);
-      activeParents.get(parentKey).push(raw);
-    } else if (opened.get(key)?.length) {
-      const stack = opened.get(key),
-        slice = stack.at(-1);
-      // The native data adapter completes transformations with change/transformed.
-      // A business parameter with the same text is not a terminal observation.
-      const transformed =
-        event.phase === "change" &&
-        all.get(event.node)?.data_role === "transform" &&
-        event.outputs?.status === "transformed";
-      if (complete.has(event.phase) || transformed) {
-        finish(stack.pop(), raw);
-        activeParents.get(JSON.stringify([scope, event.call_id]))?.pop();
-      } else if (["commit", "decision"].includes(event.phase)) slice.candidate = raw;
-    }
-  }
-  for (const stack of opened.values())
-    for (const slice of stack)
-      finish(slice, slice.candidate ?? items.length - 1, slice.candidate === null);
-  const byId = new Map(items.map((event, raw) => [event.id, raw]));
-  for (const [to, event] of items.entries())
-    for (const dependency of event.depends || []) {
-      const from = byId.get(dependency.event);
-      // Globally qualified explicit references may cross producer/run boundaries.
-      // Unlike a reused parent-call ID, the event ID identifies the exact fact.
-      if (from !== undefined && from < to) links.push({ from, to, type: dependency.type });
-    }
-  return { slices, links };
 }
 
 /** Build a reverse map from an observed identity to explicit source/capture projections. */
@@ -138,8 +89,8 @@ export function buildTraceIndex(
   all,
   edges = recording.context.model.edges || [],
 ) {
-  const axis = clock(items),
-    calls = invocations(items, axis, all),
+  const axis = clock(items, recording.observed_until),
+    calls = contextualLifecycles(recording, items, all),
     facts = boFacts(recording, items);
   const aliases = projections(all, edges),
     rows = new Map(),
@@ -191,24 +142,102 @@ export function buildTraceIndex(
     // Duration belongs to the instrumented node, never to a source mapping/ancestor.
     for (const node of aliases.get(slice.node) || []) {
       if (node.field || canonical(node) !== slice.node) continue;
-      rows.get(node.id)?.slices.push(slice);
+      if (!rows.has(node.id))
+        rows.set(node.id, { id: node.id, node, layer: layerOf(node), marks: [], slices: [] });
+      const start = axis.dates[slice.raw],
+        end = axis.dates[slice.last];
+      rows.get(node.id)?.slices.push({
+        ...slice,
+        start: axis.times[slice.raw],
+        end: slice.unfinished ? axis.total : axis.times[slice.last],
+        failed: items[slice.last]?.phase === "error" && !slice.unfinished,
+        stages: slice.stages.map((stage, i) => ({
+          ...stage,
+          start: axis.times[stage.raw],
+          end:
+            i + 1 < slice.stages.length
+              ? axis.times[slice.stages[i + 1].raw]
+              : slice.unfinished
+                ? axis.total
+                : axis.times[slice.last],
+        })),
+        duration:
+          !slice.unfinished && !slice.ambiguous && axis.ordered && start !== null && end !== null
+            ? end - start
+            : null,
+      });
     }
   }
+  for (const original of calls.contextSources)
+    for (const node of aliases.get(original.node) || []) {
+      if (node.field) continue;
+      add(node, 0, true);
+      rows.get(node.id).marks.find((mark) => mark.raw === 0).contextEvent = original;
+    }
+  const occupancy = stateResidencies(recording, items, facts.changes, all, axis);
+  for (const slice of [
+    ...occupancy.slices,
+    ...activityResidencies(recording, items, facts.changes, all, axis),
+  ]) {
+    // A directly instrumented activity already has its actual call interval.
+    if (
+      slice.role === "activity" &&
+      rows
+        .get(slice.node)
+        ?.slices.some(
+          (call) =>
+            items[call.raw].attempt === slice.scope &&
+            call.raw <= slice.raw &&
+            call.last >= slice.last,
+        )
+    )
+      continue;
+    add(all.get(slice.node), slice.raw, false);
+    if (slice.last !== slice.raw) add(all.get(slice.node), slice.last, false);
+    rows.get(slice.node).slices.push(slice);
+  }
   for (const row of rows.values()) {
+    row.marks.sort((a, b) => a.raw - b.raw);
     row.slices.sort((a, b) => a.start - b.start || a.raw - b.raw);
     let end = -Infinity;
     row.maxEnds = row.slices.map((slice) => (end = Math.max(end, slice.end)));
   }
-  return { recording, items, axis, rows, eventRows, changes: facts.changes, links: calls.links };
+  return {
+    recording,
+    items,
+    axis,
+    rows,
+    eventRows,
+    changes: facts.changes,
+    links: [...calls.links, ...occupancy.links],
+    flows: indexFlows([...calls.links, ...occupancy.links], axis.times),
+    lifecycles: calls,
+  };
 }
 
 /** Project the index to visible graph identities; hidden nodes do not reserve rows. */
 export function traceRows(
   index,
-  { visible, scope = "view", order = layers.map((layer) => layer.id), expanded = [] } = {},
+  {
+    visible,
+    scope = "view",
+    order = layers.map((layer) => layer.id),
+    expanded = [],
+    depth = "all",
+    layerMode = "through",
+  } = {},
 ) {
   const groups = new Map();
+  const boundary = order.indexOf(depth);
+  const included = new Set(
+    depth === "all" || boundary < 0
+      ? order
+      : layerMode === "single"
+        ? [depth]
+        : order.slice(0, boundary + 1),
+  );
   for (const row of index.rows.values()) {
+    if (!included.has(row.layer)) continue;
     if (scope === "view" && !visible?.has(row.id)) continue;
     if (!groups.has(row.layer)) groups.set(row.layer, []);
     groups.get(row.layer).push(row);
@@ -231,6 +260,7 @@ export function traceRows(
       label: layer.label,
       color: layer.color,
       count: children.length,
+      members: children.map((row) => row.id),
       marks: unique,
       slices,
       maxEnds: slices.map((slice) => (maxEnd = Math.max(maxEnd, slice.end))),

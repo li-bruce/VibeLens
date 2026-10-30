@@ -1,3 +1,4 @@
+import { activationFor } from "./graph-activation.js";
 import { activeMachineStates } from "./machine-projection.js";
 import { graphInventory } from "./graph-inventory.js";
 export { stateNodeId } from "./graph-inventory.js";
@@ -190,9 +191,20 @@ function staleBasis(node, view, last) {
   return fields.some((key) => last.basis?.[key] !== view.authority.basis?.[key]);
 }
 export function status(node, view, events, choice, configuration = null) {
-  if (node.code_role) return "declared";
+  if (node.code_role && !activationFor(node, view, events)) return "declared";
   if (view.stage === "design") return "declared";
   if (node.referenceOf) node = { ...node, id: node.referenceOf };
+  const ongoing = activationFor(node, view, events);
+  if (ongoing?.explicit && ["running", "waiting"].includes(ongoing.phase)) {
+    const last = nodeEvents(node, events).at(-1);
+    if (
+      view.binding_status.status !== "current" ||
+      choice !== "latest" ||
+      (last && staleBasis(node, view, last))
+    )
+      return "historical";
+    return ongoing.phase === "waiting" ? "blocked" : "active";
+  }
   if (["query", "transform"].includes(node.data_role)) {
     const last = nodeEvents(node, events).at(-1);
     const state = dataStatusClass(last?.outputs?.status);
@@ -259,9 +271,37 @@ export function status(node, view, events, choice, configuration = null) {
     if (last.outputs.status === "error" || last.outputs.value === false) return "blocked";
     if (last.outputs.status === "unknown" || last.outputs.value === null) return "declared";
   }
+  const life = activationFor(node, view, events);
+  if (life)
+    return {
+      running: "active",
+      waiting: "blocked",
+      failed: "blocked",
+      completed: "ok",
+      unknown: "declared",
+    }[life.phase];
   return last.phase === "enter" ? "active" : "ok";
 }
 export function lines(node, view, events, choice, configuration = null) {
+  const content = baseLines(node, view, events, choice, configuration);
+  const life = activationFor(node, view, events);
+  if (!life) return content;
+  const names = {
+    running: "Running",
+    waiting: "Waiting",
+    completed: "Completed",
+    failed: "Failed",
+    unknown: "Unknown lifecycle",
+  };
+  return [
+    {
+      text: boTranslate(names[life.phase]) + (life.activeCount > 1 ? " · " + life.activeCount : ""),
+      role: life.phase === "failed" ? "bad" : "value",
+    },
+    ...content,
+  ];
+}
+function baseLines(node, view, events, choice, configuration = null) {
   if (node.filter_context)
     return [
       {
@@ -548,6 +588,7 @@ export function viewTypes(n) {
     ...new Set([
       nodeType(n),
       ...(n.semantic_roles?.includes("business") ? ["business"] : []),
+      ...(n.semantic_role === "state_parameter" ? ["state"] : []),
       ...(n.source && n.kind !== "state" && !n.field ? ["function"] : []),
     ]),
   ];
@@ -691,6 +732,7 @@ export function layoutGraph(
           ? []
           : (children.get(id) || []).filter((id) => eligibleIds.has(id)),
         state: status(node, view, events, choice, configuration),
+        activation: activationFor(node, view, events),
         x: 80 + (i % 5) * 230,
         y: 70 + Math.floor(i / 5) * 180,
         w: 190,

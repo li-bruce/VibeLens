@@ -70,6 +70,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r skills/vibelens/requirements.txt
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -84,6 +88,13 @@ jobs:
       - run: node tools/test_graph_names_browser.mjs
         env:
           BO_NAMES_EVIDENCE: .validation/semantic-names-browser
+      - run: node tools/test_trace_lifecycle_browser.mjs
+        env:
+          BO_LIFECYCLE_EVIDENCE: .validation/lifecycle-browser
+      - run: node tools/test_trace_lifecycle_browser.mjs
+        env:
+          BO_LIFECYCLE_EVIDENCE: .validation/lifecycle-midspan
+          BO_RECORD_MIDSPAN: '1'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -91,3 +102,4 @@ jobs:
           path: |
             .validation/timeline-*
             .validation/semantic-names-*
+            .validation/lifecycle-*

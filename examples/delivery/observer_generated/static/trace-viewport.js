@@ -24,6 +24,17 @@ export function lowerBound(items, value, key = (item) => item) {
   }
   return lo;
 }
+/** First element strictly after the boundary, including fractional timestamps. */
+export function upperBound(items, value, key = (item) => item) {
+  let lo = 0,
+    hi = items.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (key(items[mid]) <= value) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+}
 /** Nearest allowed event, with a stable earlier-event tie break. */
 export function nearestEvent(points, value) {
   if (!points.length) return null;
@@ -33,7 +44,7 @@ export function nearestEvent(points, value) {
   return value - a.time <= b.time - value ? a : b;
 }
 export function visibleSlices(row, start, end) {
-  const stop = lowerBound(row.slices, end + Number.EPSILON, (item) => item.start);
+  const stop = upperBound(row.slices, end, (item) => item.start);
   let first = lowerBound(row.maxEnds, start);
   if (first > stop) first = stop;
   return row.slices.slice(first, stop).filter((item) => item.end >= start);

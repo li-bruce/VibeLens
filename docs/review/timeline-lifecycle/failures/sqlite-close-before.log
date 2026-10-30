@@ -1,0 +1,109 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.venv\Lib\site-packages\attr\_make.py:1325: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001FD9278E5C0>
+  def attrs(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+EEE
+======================================================================
+ERROR: test_equivalent_parameter_retains_distinct_ids_and_rejects_renames (__main__.LifecycleTests.test_equivalent_parameter_retains_distinct_ids_and_rejects_renames)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tools\test_trace_lifecycle.py", line 133, in test_equivalent_parameter_retains_distinct_ids_and_rejects_renames
+    graph = service.view(limit=400)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\service.py", line 95, in view
+    graph, model = self.refresh()
+                   ~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\service.py", line 60, in refresh
+    cfg, model = self.inputs()
+                 ~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\service.py", line 53, in inputs
+    read_model(model_path) if model_path.is_file() else {"nodes": [], "source_files": []}
+    ~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\model_io.py", line 12, in read_model
+    return validate_project(value)["model"]
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\protocol.py", line 77, in validate_project
+    validate_data_projection(project["model"])
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\data\protocol.py", line 330, in validate_data_projection
+    _object(
+    ~~~~~~~^
+        registry,
+        ^^^^^^^^^
+    ...<2 lines>...
+        "database registry",
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\data\protocol.py", line 48, in _object
+    _require(isinstance(value, dict), label + " needs an object")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\data\protocol.py", line 35, in _require
+    raise ValueError("invalid database projection: " + message)
+ValueError: invalid database projection: database registry needs an object
+
+======================================================================
+ERROR: test_malformed_semantic_parameter_cannot_pass (__main__.LifecycleTests.test_malformed_semantic_parameter_cannot_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\miniforge3\Lib\shutil.py", line 625, in _rmtree_unsafe
+    os.unlink(fullname)
+    ~~~~~~~~~^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp1u99ej8x\\sharing.sqlite'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tools\test_trace_lifecycle.py", line 107, in tearDown
+    self.temp.cleanup()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\tempfile.py", line 955, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\tempfile.py", line 935, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\Lvi_P\miniforge3\Lib\shutil.py", line 629, in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\tempfile.py", line 910, in onexc
+    _os.unlink(path)
+    ~~~~~~~~~~^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp1u99ej8x\\sharing.sqlite'
+
+======================================================================
+ERROR: test_nested_python_spans_and_exception_identity (__main__.LifecycleTests.test_nested_python_spans_and_exception_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\miniforge3\Lib\shutil.py", line 625, in _rmtree_unsafe
+    os.unlink(fullname)
+    ~~~~~~~~~^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpcq23g2e7\\sharing.sqlite'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tools\test_trace_lifecycle.py", line 107, in tearDown
+    self.temp.cleanup()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\tempfile.py", line 955, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\tempfile.py", line 935, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\shutil.py", line 790, in rmtree
+    return _rmtree_unsafe(path, onexc)
+  File "C:\Users\Lvi_P\miniforge3\Lib\shutil.py", line 629, in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\tempfile.py", line 910, in onexc
+    _os.unlink(path)
+    ~~~~~~~~~~^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpcq23g2e7\\sharing.sqlite'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.287s
+
+FAILED (errors=3)
