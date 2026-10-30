@@ -1,5 +1,6 @@
 /** Small, accessible controls shared by the graph toolbar and context menus. */
 const shapes = {
+  timeline: [["path", { d: "M5 3v18M3 7h18M8 11h7m-3 4h9M7 19h9", "stroke-width": 2 }]],
   record: [["circle", { cx: 12, cy: 12, r: 6, fill: "currentColor", stroke: "none" }]],
   stop: [
     ["rect", { x: 6, y: 6, width: 12, height: 12, rx: 1, fill: "currentColor", stroke: "none" }],

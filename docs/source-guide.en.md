@@ -93,6 +93,10 @@ The HTTP adapter in `service.py` handles request authorization, routes and sessi
 | [view-lifecycle.js](../skills/vibelens/assets/stategraph-viewer/view-lifecycle.js) | Keep project view identity stable across builds; compare recording and live graph versions. |
 | [renderer.js](../skills/vibelens/assets/stategraph-viewer/renderer.js) | Draw nodes, regions, and edges in Pixi; maintain hit regions for interaction. |
 | [recording.js](../skills/vibelens/assets/stategraph-viewer/recording.js) | Construct replay frames and evidence-supported transfers. |
+| [recording-timeline.js](../skills/vibelens/assets/stategraph-viewer/recording-timeline.js) | Timeline dock, pointer/keyboard gestures and requests to the shared replay cursor. |
+| [trace-evidence.js](../skills/vibelens/assets/stategraph-viewer/trace-evidence.js) | Invocation scope and parent-call evidence shared with graph animation. |
+| [trace-index.js](../skills/vibelens/assets/stategraph-viewer/trace-index.js) | Duration pairing, event/dependency indexes and explicit cross-layer projections. |
+| [trace-viewport.js](../skills/vibelens/assets/stategraph-viewer/trace-viewport.js) and [trace-paint.js](../skills/vibelens/assets/stategraph-viewer/trace-paint.js) | Pure window/search arithmetic and visible-range Canvas drawing. |
 | [runtime-frames.js](../skills/vibelens/assets/stategraph-viewer/runtime-frames.js) | Locate exact snapshots and compare state/resource changes. |
 | [replay-steps.js](../skills/vibelens/assets/stategraph-viewer/replay-steps.js) | Choose which recorded changes are meaningful at the current view level. |
 | [preferences.js](../skills/vibelens/assets/stategraph-viewer/preferences.js) | Save personal view state through the project preference API. |

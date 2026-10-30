@@ -4,6 +4,7 @@
  * application commands or rewrites recorded facts.
  */
 import { renderStepChanges } from "./change-panel.js";
+import { RecordingTimeline, cleanTimeline } from "./recording-timeline.js";
 import { renderEdgeDetail } from "./edge-panel.js";
 import { createDetailPanel } from "./detail-panel.js";
 import { LayerRuler } from "./layer-ruler.js";
@@ -194,12 +195,37 @@ const restoredLocaleURL = restoreLocale(storage, window.location.href);
 if (restoredLocaleURL) window.location.replace(restoredLocaleURL);
 translateShell(document);
 installIcons(document);
+const recordingTimeline = new RecordingTimeline($("recording-timeline"), {
+  onPause: () => stopPlayback(true),
+  onSeek: (raw, locate) => {
+    stopPlayback();
+    seek(raw, locate);
+  },
+  onRange: (patch) => changeReplaySelection(patch),
+  onSettings: (settings) => {
+    if (!analysisSettings) return;
+    analysisSettings.timeline = settings;
+    boUpdateReplay();
+    saveSoon();
+  },
+});
+$("replay-timeline").onclick = () =>
+  recordingTimeline.configure({ visible: !analysisSettings.timeline.visible });
 // Tool rows wrap with language and viewport width. Reserve their actual height
 // for legends and replay changes instead of overlapping them with fixed offsets.
-const toolObserver = new ResizeObserver(([entry]) => {
-  $("viewport").style.setProperty("--view-tools-height", entry.contentRect.height + "px");
+const toolObserver = new ResizeObserver((entries) => {
+  for (const entry of entries) {
+    const property =
+      entry.target.id === "layer-controls" ? "--layer-ruler-width" : "--view-tools-height";
+    $("viewport").style.setProperty(
+      property,
+      (entry.target.id === "layer-controls" ? entry.contentRect.width : entry.contentRect.height) +
+        "px",
+    );
+  }
 });
 toolObserver.observe(document.querySelector(".view-tools"));
+toolObserver.observe($("layer-controls"));
 const contextMenu = createContextMenu($("graph-menu"));
 $("language").value = locale();
 $("language").addEventListener("change", async (event) => {
@@ -548,6 +574,7 @@ window.addEventListener("pagehide", (event) => {
     resizeObserver.disconnect();
     spatial?.dispose();
     renderer.dispose();
+    recordingTimeline.dispose();
     renderer.clear();
     app.destroy(true, { children: true });
   }
@@ -1851,6 +1878,7 @@ function loadAnalysis(baseKey) {
     annotations: null,
     layers: cleanLayers(saved?.layers),
     routing: cleanRoute(saved?.routing),
+    timeline: cleanTimeline(saved?.timeline),
     sourceTreeInitialized: Array.isArray(saved?.sourceTreeInitialized)
       ? saved.sourceTreeInitialized.filter((id) => typeof id === "string").slice(0, 40)
       : [],
@@ -2248,6 +2276,21 @@ function boUpdateReplay() {
   $("replay-range").disabled = !boPlan.length;
   updateReplaySelection();
   $("replay-locate").disabled = !item.node;
+  recordingTimeline.update({
+    recording,
+    items: replayItems,
+    all: graph.all,
+    edges: graph.rawEdges,
+    visible: new Set(visible.map((box) => box.id)),
+    order: cleanLayers(analysisSettings.layers).order,
+    plan: boPlan,
+    raw: replayIndex,
+    transfers: boTransfers.keys(),
+    settings: analysisSettings.timeline,
+    playing: !!playTimer,
+    selection: replaySelection(),
+  });
+  $("replay-timeline").setAttribute("aria-pressed", String(analysisSettings.timeline.visible));
 }
 function boUpdateLive(before, after) {
   const known = new Set(before.events.map((e) => e.id)),
@@ -2615,6 +2658,7 @@ function leaveRecording() {
   stopPlayback();
   stopAnimation();
   recording = null;
+  recordingTimeline.clear();
   updateAnalysisOptions();
   if (replayReturnAnalysis) changeAnalysis(replayReturnAnalysis);
   replayReturnAnalysis = null;
@@ -2696,6 +2740,9 @@ $("replay-export").onclick = () => {
 };
 // Read-only debugging data; UI actions use the same pointer/keyboard handlers as users.
 window.graphDebug = {
+  get timeline() {
+    return recordingTimeline.diagnostics;
+  },
   get graph() {
     return graph;
   },

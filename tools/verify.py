@@ -49,6 +49,7 @@ def main():
     subprocess.run(["node", "tools/test_replay_owners.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_ruler_controls.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_layer_order.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_recording_timeline.mjs"], cwd=ROOT, check=True)
     if args.database:
         run(ROOT, "tools/verify_databases.py")
         run(

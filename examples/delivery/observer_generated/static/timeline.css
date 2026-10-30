@@ -1,0 +1,195 @@
+/* Execution timeline: one shared dock for the 2D and 3D graph renderers. */
+#recording-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  min-height: 180px;
+  max-height: 48dvh;
+  border-top: 1px solid #cad8e4;
+  background: #fff;
+  color: #354d5e;
+  contain: layout style;
+}
+.trace-resize {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: ns-resize;
+  z-index: 5;
+  touch-action: none;
+}
+.trace-resize::after {
+  content: "";
+  position: absolute;
+  width: 36px;
+  height: 2px;
+  left: calc(50% - 18px);
+  top: 3px;
+  background: #bdcbd6;
+  border-radius: 2px;
+}
+.trace-resize:hover::after,
+.trace-resize:focus-visible::after {
+  background: #2965cc;
+}
+.trace-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 34px;
+  padding: 4px 12px;
+  border-bottom: 1px solid #e7edf3;
+  font-size: 11px;
+}
+.trace-toolbar strong {
+  font-weight: 600;
+  margin-right: 6px;
+}
+.trace-key {
+  color: #71899b;
+  font-size: 10px;
+  margin-right: 5px;
+  white-space: nowrap;
+}
+.trace-toolbar button,
+.trace-toolbar select,
+.trace-detail button {
+  font-size: 11px;
+  min-height: 24px;
+}
+.trace-toolbar .icon-button,
+.trace-detail .icon-button {
+  width: 26px;
+  height: 24px;
+  min-height: 24px;
+  padding: 3px;
+}
+.trace-toolbar .icon-button svg,
+.trace-detail .icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+.trace-follow {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  white-space: nowrap;
+  margin: 0 6px;
+}
+.trace-follow input {
+  margin: 0;
+  accent-color: #2965cc;
+}
+.trace-health {
+  flex: 1;
+  text-align: right;
+  color: #917329;
+  font-size: 10px;
+}
+.trace-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.trace-body canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+.trace-body canvas:focus-visible {
+  outline: 2px solid #2965cc;
+  outline-offset: -2px;
+}
+.trace-tooltip {
+  position: absolute;
+  max-width: min(480px, calc(100% - 16px));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: #263c50f2;
+  color: #fff;
+  padding: 4px 7px;
+  border-radius: 3px;
+  font-size: 10px;
+  pointer-events: none;
+  z-index: 2;
+}
+.trace-detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 30px;
+  padding: 3px 12px;
+  border-top: 1px solid #e7edf3;
+  font-size: 11px;
+}
+.trace-payload {
+  position: absolute;
+  right: 8px;
+  bottom: 4px;
+  top: 30px;
+  width: min(480px, 85%);
+  margin: 0;
+  padding: 10px 12px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid #d2dfe9;
+  border-radius: 4px;
+  background: #fffffffa;
+  box-shadow: 0 4px 18px #24344518;
+  font:
+    11px/1.6 Consolas,
+    monospace;
+  z-index: 3;
+}
+.trace-selected {
+  flex: 0 1 45%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.trace-values {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font:
+    10px Consolas,
+    monospace;
+  color: #60798a;
+}
+@media (max-width: 650px) {
+  .trace-toolbar {
+    gap: 3px;
+    padding: 4px 7px;
+  }
+  .trace-toolbar strong,
+  .trace-key,
+  .trace-follow span,
+  .trace-health {
+    display: none;
+  }
+  .trace-follow {
+    margin: 0 3px;
+  }
+  .trace-scope {
+    max-width: 120px;
+  }
+  .trace-close {
+    margin-left: auto;
+  }
+  .trace-detail {
+    padding: 3px 7px;
+    gap: 6px;
+  }
+  .trace-selected {
+    flex-basis: 60%;
+  }
+}

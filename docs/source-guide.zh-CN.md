@@ -70,6 +70,10 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 | [view-lifecycle.js](../skills/vibelens/assets/stategraph-viewer/view-lifecycle.js) | 项目视图的稳定标识，以及录制与当前图版本的匹配。 |
 | [renderer.js](../skills/vibelens/assets/stategraph-viewer/renderer.js) | Pixi 绘制和鼠标可命中的区域。 |
 | [recording.js](../skills/vibelens/assets/stategraph-viewer/recording.js) | 回放步骤及运行证据支持的连线传递。 |
+| [recording-timeline.js](../skills/vibelens/assets/stategraph-viewer/recording-timeline.js) | 时间轴面板、鼠标与键盘交互；通过同一个回放游标联动 Graph。 |
+| [trace-evidence.js](../skills/vibelens/assets/stategraph-viewer/trace-evidence.js) | 图动画与时间轴共用的调用身份和父调用判定。 |
+| [trace-index.js](../skills/vibelens/assets/stategraph-viewer/trace-index.js) | 调用耗时配对、事件依赖索引和跨层映射。 |
+| [trace-viewport.js](../skills/vibelens/assets/stategraph-viewer/trace-viewport.js)、[trace-paint.js](../skills/vibelens/assets/stategraph-viewer/trace-paint.js) | 时间窗口运算、范围检索及可见区域绘制。 |
 | [runtime-frames.js](../skills/vibelens/assets/stategraph-viewer/runtime-frames.js) | 查找事件对应的精确快照，比较状态和资源。 |
 | [replay-steps.js](../skills/vibelens/assets/stategraph-viewer/replay-steps.js) | 按当前观察层级展示相关变化。 |
 | [preferences.js](../skills/vibelens/assets/stategraph-viewer/preferences.js) | 通过项目接口保存个人显示配置。 |

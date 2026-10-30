@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased — recording timeline
+
+- Add an execution timeline/Gantt dock linked to the 2D/3D graph's replay cursor,
+  actual state/value changes and evidence-supported transfers.
+- Group tracks by graph layer; expand nodes, drag to seek/pan, zoom the overview,
+  and select loop ranges with the existing playback controls.
+- Preserve project display settings and distinguish real durations, instant
+  changes, source projections and incomplete observations.
+- Add invocation/clock tests, native mouse/touch/browser acceptance, a real
+  two-iteration project trial and a 20,000-event load test.
+- See the [design](docs/development/recording-timeline.md) and
+  [review evidence](docs/review/recording-timeline/README.md).
+
 ## 0.10.0 — 2026-10-30
 
 - Add a scanned project-structure layer for directories, files, imports, dependencies

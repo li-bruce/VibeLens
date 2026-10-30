@@ -2,6 +2,7 @@ import { t as boTranslate } from "./i18n.js";
 import { observedDataTransfer } from "./data-layer.js";
 // Read-only replay. This module has no business-command endpoint.
 import { applyRuntimeFrame } from "./runtime-frames.js";
+import { parentEvent } from "./trace-evidence.js";
 const copy = (value) => structuredClone(value);
 const millis = (value) => (Number.isFinite(Date.parse(value)) ? Date.parse(value) : 0);
 /** Build the replay sequence from recorded events and its start/end boundaries. */
@@ -135,14 +136,7 @@ export function transferEdges(event, events, edges, all, configuration = null) {
   if (!event || event.kind === "command" || !event.node) return [];
   const dependencies = new Set((event.depends || []).map((d) => d.event));
   const prior = events.filter((e) => dependencies.has(e.id));
-  const parent =
-    event.parent_call_id &&
-    events.find(
-      (e) =>
-        e.call_id === event.parent_call_id &&
-        e.attempt === event.attempt &&
-        e.run_id === event.run_id,
-    );
+  const parent = parentEvent(event, events);
   if (parent) prior.push(parent);
   const canonical = (id) => all.get(id)?.referenceOf || all.get(id)?.event_node || id;
   const activityFrame = Number.isInteger(event.outputs?.revision)

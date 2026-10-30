@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import traceback
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -293,6 +294,24 @@ def map_iteration(root):
     write(root / "manifest.json", capture(root, document["model"]))
 
 
+def flush_observations(trace):
+    """Keep the existing deadline and expose the sender's state if it is exceeded."""
+    if trace.probe.flush(30):
+        return
+    worker = trace.probe.bo_worker
+    frame = sys._current_frames().get(worker.ident)
+    raise AssertionError(
+        {
+            "timeout_seconds": 30,
+            "pending": trace.probe.bo_queue.unfinished_tasks,
+            "transport_errors": trace.probe.bo_errors,
+            "dropped": trace.probe.bo_dropped,
+            "rejections": trace.rejections[:3],
+            "sender_stack": traceback.format_stack(frame) if frame else [],
+        }
+    )
+
+
 def verify(root, output, version, browser_path=None):
     """Independently compare actual requests/storage/state/parameters with observations."""
     os.chdir(root)
@@ -338,7 +357,7 @@ def verify(root, output, version, browser_path=None):
     checks, file_id = run_workflow(app)
     # This original workflow asserts bytes, permissions, SQL effects and state.
     assert checks and all(value is not False for value in checks.values()), checks
-    assert trace.probe.flush(30)
+    flush_observations(trace)
     runs = [{"case": "workflow", "mode": "on", "events": deepcopy(trace.events)}]
     start = len(trace.events)
     revoked_app = create_app(
@@ -346,7 +365,7 @@ def verify(root, output, version, browser_path=None):
     )
     revoked, _ = run_revocation(revoked_app)
     assert revoked and all(value is not False for value in revoked.values()), revoked
-    assert trace.probe.flush(30)
+    flush_observations(trace)
     runs.append({"case": "revocation", "mode": "on", "events": deepcopy(trace.events[start:])})
     revoked_app.extensions["sharing"].store.engine.dispose()
     start = len(trace.events)
@@ -398,10 +417,7 @@ def verify(root, output, version, browser_path=None):
         assert invalid.status_code == 400
         checks["rename_private"] = renamed_private.json
         checks["rename_invalid_denied"] = True
-    if not trace.probe.flush(30):
-        raise AssertionError(
-            {"transport_errors": trace.probe.bo_errors, "rejections": trace.rejections[:3]}
-        )
+    flush_observations(trace)
     if version == 2:
         runs.append({"case": "rename", "mode": "on", "events": deepcopy(trace.events[start:])})
     assert not runtime_errors(root, {"runs": runs}, session.model)
@@ -480,6 +496,38 @@ def verify(root, output, version, browser_path=None):
                     "graphDebug.graph.boxes.map(n => ({id:n.id,x:n.x,y:n.y}))"
                 )
                 page.screenshot(path=str(output / f"v{version}/business.png"))
+                # A freshly captured interval must drive the same native state in
+                # the timeline and graph, before optional source views are opened.
+                page.select_option("#record-list", saved_recording["id"])
+                page.wait_for_selector("#recording-timeline", state="visible")
+                page.select_option("#replay-grain", "events")
+                page.select_option(".trace-scope", "all")
+                items = page.evaluate(
+                    "async recording => (await import('/recording.js')).timeline(recording)",
+                    saved_recording,
+                )
+                ordinals = {item["id"]: index for index, item in enumerate(items)}
+                boundaries = saved_recording.get("runtime_frames", {}).get("frames", [])
+                assert boundaries, "Real state boundaries are required for timeline acceptance"
+                for boundary in boundaries:
+                    page.select_option("#replay-events", str(ordinals[boundary["event_id"]]))
+                    assert (
+                        page.get_attribute("#recording-timeline", "data-event-id")
+                        == boundary["event_id"]
+                    )
+                    assert (
+                        page.evaluate("graphDebug.view.machine.current")
+                        == boundary["machine"]["current"]
+                    )
+                page.screenshot(path=str(output / f"v{version}/timeline.png"))
+                result["timeline"] = {
+                    "recording": saved_recording["id"],
+                    "events": len(saved_recording["events"]),
+                    "exact_state_boundaries": len(boundaries),
+                    "shared_cursor": True,
+                }
+                page.click("#replay-live")
+                page.wait_for_function("graphDebug.view && !graphDebug.view.replay")
                 page.select_option("#analysis-view", "code")
                 page.wait_for_function(
                     "graphDebug.view.code_structure?.projection === 'all' && !graphDebug.layoutBusy"
@@ -500,6 +548,9 @@ def verify(root, output, version, browser_path=None):
                     assert all(now[p["id"]] == (p["x"], p["y"]) for p in previous)
                     result["browser"]["positions_preserved"] = True
                 assert not errors
+                assert (
+                    session.sequence == before
+                ), "Timeline and graph interactions must not create business events"
                 browser.close()
         finally:
             server.shutdown()

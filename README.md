@@ -75,6 +75,7 @@ flowchart LR
 
 - Watch actual state and value updates on the running graph.
 - Record a selected region, or record all **instrumented** events and filter afterwards. Capture scope and replay detail are separate.
+- Scrub the execution timeline to follow calls and state changes across layers. Its cursor, selected range and playback stay aligned with the 2D/3D graph.
 - Replay before/after states, values, decisions, and effects. Animate transfers only when actual call or dependency evidence supports them.
 - Expand typed regions, drag groups, pin nodes, search hidden details, rename display labels, and add notes or core markers.
 - Keep layouts and custom views in `bo_stategraph/config/views/local.json`. Graph regeneration preserves personal annotations by stable ID.

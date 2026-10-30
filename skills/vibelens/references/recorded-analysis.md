@@ -24,6 +24,30 @@ Saved records bind loaded model/source. Do not display new code as old implement
 
 Edge animation requires real dependency references, same-call parent identity, captured input/return, or exact activity resource/join evidence. Static calls/shared references/temporal adjacency are not transfers. Use a separate animation layer, stop when done, and handle background tabs, reduced motion, and disposal.
 
+## Execution timeline
+
+Opening a saved recording shows the timeline below the graph. Its cursor uses the
+same recorded step as graph playback in both 2D and 3D. Filled bars show matched
+entry/completion observations; diamonds show events and state/value changes.
+Hollow marks and dashed cross-layer connectors locate source mappings.
+
+Drag the ruler to seek, drag empty tracks to pan, and Ctrl/Command-wheel to zoom.
+The overview window can be moved and resized. Expand a layer to inspect its nodes.
+Choose **Current view** to follow graph filters or **Recorded nodes** to inspect
+the available recorded inventory. The existing **Step detail** selector controls
+which events participate in navigation and playback.
+
+Shift-drag selects a range; **Loop selection** applies it to the existing replay
+controls. **Event data** shows captured inputs, outputs, before/after changes and
+the graph transfer IDs. Arrow keys seek; +/- zoom; Home/End select endpoints.
+The project view file retains dock visibility, height, scope and expanded layers.
+
+Pair calls by build/run/producer/stream/entity/attempt/node/call identity and
+occurrence. Unfinished calls and overlapping ID reuse remain explicit. Invalid or
+reversed timestamps use event order; multiple producer clocks and recording gaps
+are reported. Static source mappings have no inferred duration. No additional
+business endpoint, recorder or playback clock is needed.
+
 ## Exact frames and shared resources
 
 Projects without machine.execution journals may supply runtime_frames with schema stategraph-runtime-frames/v1. Each frame contains event_id/run_id/build_id/integer revision and actual post-transaction machine/authority. Event revision and machine.state_revision must match. Validate identity and parameter allowlists; do not save out-of-scope frames or overwrite an old event with later values. Do not pass raw databases/arbitrary objects as projections.

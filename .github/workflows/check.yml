@@ -66,3 +66,23 @@ jobs:
           path: .validation/database-*
       - run: docker compose -f examples/database-observer/compose.yaml down
         if: always()
+  timeline-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: node tools/test_recording_timeline_browser.mjs
+        env:
+          BO_TIMELINE_EVIDENCE: .validation/timeline-browser
+      - run: node tools/test_timeline_performance.mjs
+        env:
+          BO_TIMELINE_EVIDENCE: .validation/timeline-performance
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: recording-timeline-browser
+          path: .validation/timeline-*
