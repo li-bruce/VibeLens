@@ -9,11 +9,21 @@ const { chromium } = createRequire(import.meta.url)("playwright");
 const out = path.resolve(process.env.BO_LIFECYCLE_EVIDENCE || ".validation/lifecycle-browser");
 await mkdir(out, { recursive: true });
 const trial = path.join(out, "project-" + Date.now());
+const registered = process.env.BO_REGISTERED_LIFECYCLE === "1";
 const python =
   process.env.BO_PYTHON || (process.platform === "win32" ? ".venv/Scripts/python.exe" : "python");
 const server = spawn(
   python,
-  ["-u", "-B", "-X", "utf8", "tools/test_trace_lifecycle.py", "--serve", trial],
+  [
+    "-u",
+    "-B",
+    "-X",
+    "utf8",
+    "tools/test_trace_lifecycle.py",
+    "--serve",
+    trial,
+    ...(registered ? ["--registered"] : []),
+  ],
   { stdio: ["ignore", "pipe", "pipe"] },
 );
 let stdout = "",
@@ -116,6 +126,19 @@ try {
       graphDebug.timeline.lifecycles.some((slice) => slice.node === "advance" && slice.unfinished),
   );
   const running = await trace();
+  if (registered) {
+    assert.equal(
+      await page.evaluate(
+        () => graphDebug.graph.boxes.find((box) => box.id === "advance")?.activation?.label,
+      ),
+      "Waiting for confirmation",
+    );
+    assert.ok(
+      running.lifecycles
+        .find((slice) => slice.node === "advance")
+        .stages.some((stage) => stage.state === "awaiting_release" && stage.registered),
+    );
+  }
   if (!midSpan) assert.ok(running.flows > 0);
   const duration = running.lifecycles.find((slice) => slice.node === "advance");
   await page.waitForFunction(
@@ -180,7 +203,7 @@ try {
     await page.evaluate(
       () => graphDebug.graph.boxes.find((box) => box.id === "advance")?.activation?.phase,
     ),
-    "completed",
+    registered ? "ended" : "returned",
   );
   const recordingId = await page.locator("#record-list").inputValue();
   const saved = await (
@@ -194,6 +217,122 @@ try {
   });
 
   const cursor = state.eventId;
+  if (registered) {
+    assert.equal(parent.terminal.state, "shared");
+    assert.equal(parent.terminal.termination, "return");
+    if (!state.rows.some((row) => row.id === "advance")) await page.click(".trace-tracks");
+    await page.waitForFunction(() => graphDebug.timeline.rows.some((row) => row.id === "advance"));
+    await page.click(".trace-maximize");
+    await page.waitForFunction(() =>
+      document.querySelector("#recording-timeline").classList.contains("trace-maximized"),
+    );
+    await page.waitForFunction(() => {
+      const canvas = document.querySelector("#recording-timeline canvas");
+      const geometry = graphDebug.timeline.geometry;
+      return geometry.plot === Math.max(1, canvas.clientWidth - geometry.left - 12);
+    });
+    state = await trace();
+    assert.ok(state.routes.some((route) => route.fromRow !== route.toRow));
+    assert.ok(
+      state.routes.some((route) => route.type === "control" && route.fromRow === route.toRow),
+      "the actual wait-to-resume dependency has a same-track connector",
+    );
+    if (!midSpan) {
+      // The actual SQL/check calls last microseconds. Inspect their real time
+      // scale rather than inflating them to look long in the full recording.
+      const entry = state.routes.find((route) => route.type === "call");
+      const check = state.lifecycles.find((slice) => slice.node === "check");
+      const factor = Math.max(
+        16,
+        (state.window.end - state.window.start) / Math.max(0.25, check.duration * 4),
+      );
+      const beforeZoom = state.window.end - state.window.start;
+      const bounds = await canvas.boundingBox();
+      await page.mouse.move(bounds.x + entry.route[0].x, bounds.y + 38);
+      await page.keyboard.down("Control");
+      await page.mouse.wheel(0, -Math.log(factor) / 0.005);
+      await page.keyboard.up("Control");
+      await page.waitForFunction(
+        (width) =>
+          !graphDebug.timeline.zooming &&
+          graphDebug.timeline.window.end - graphDebug.timeline.window.start < width / 10,
+        beforeZoom,
+      );
+      state = await trace();
+      await page.screenshot({ path: path.join(out, "local-call-lifetimes.png") });
+    }
+    const route = state.routes.find(
+      (route) =>
+        route.type === (midSpan ? "return" : "call") &&
+        route.fromRow !== route.toRow &&
+        route.route[1].y > state.geometry.top + 5,
+    );
+    assert.ok(route);
+    const point = {
+      x: (route.route[1].x + route.route[2].x) / 2,
+      y: (route.route[1].y + route.route[2].y) / 2,
+    };
+    const canvasBox = await canvas.boundingBox();
+    await page.mouse.move(canvasBox.x + point.x, canvasBox.y + point.y);
+    await page.waitForSelector(".trace-tooltip:not([hidden])");
+    assert.match(await page.locator(".trace-tooltip").innerText(), /→/);
+    await page.screenshot({ path: path.join(out, "causal-link-hover.png") });
+    await page.mouse.click(canvasBox.x + point.x, canvasBox.y + point.y);
+    await page.waitForFunction((raw) => graphDebug.timeline.raw === raw, route.raw);
+    const expectedEvent = saved.events.find(
+      (event) =>
+        event.node === (midSpan ? "write" : "check") &&
+        event.phase === (midSpan ? "return" : "enter"),
+    );
+    assert.equal(
+      (await trace()).eventId,
+      expectedEvent.id,
+      "clicked handoff matches the original captured boundary event",
+    );
+    const fixedEvent = (await trace()).eventId;
+    const xs = route.route.map((point) => point.x),
+      ys = route.route.map((point) => point.y);
+    const clip = {
+      x: canvasBox.x + Math.max(state.geometry.left, Math.min(...xs) - 5),
+      y: canvasBox.y + Math.max(state.geometry.top, Math.min(...ys) - 5),
+      width: Math.max(12, Math.max(...xs) - Math.min(...xs) + 10),
+      height: Math.max(12, Math.max(...ys) - Math.min(...ys) + 10),
+    };
+    await page.waitForTimeout(90);
+    const motionA = await page.screenshot({ path: path.join(out, "connector-motion-a.png"), clip });
+    await page.waitForTimeout(230);
+    const motionB = await page.screenshot({ path: path.join(out, "connector-motion-b.png"), clip });
+    assert.notDeepEqual(
+      motionA,
+      motionB,
+      "the selected connector moves while its raw event stays fixed",
+    );
+    assert.equal((await trace()).eventId, fixedEvent);
+    await canvas.focus();
+    await page.keyboard.press("End");
+    await page.waitForFunction(() => graphDebug.timeline.eventId === "end");
+    await page.click(".trace-fit");
+    await page.waitForFunction(
+      () => !graphDebug.timeline.zooming && graphDebug.timeline.window.start === 0,
+    );
+    state = await trace();
+    const sameTrack = state.routes.find(
+      (route) => route.type === "control" && route.fromRow === route.toRow,
+    );
+    const middle = {
+      x: (sameTrack.route[1].x + sameTrack.route[2].x) / 2,
+      y: sameTrack.route[1].y,
+    };
+    const fullBox = await canvas.boundingBox();
+    await page.mouse.move(fullBox.x + middle.x, fullBox.y + middle.y);
+    await page.waitForSelector(".trace-tooltip:not([hidden])");
+    assert.match(await page.locator(".trace-tooltip").innerText(), /Control transfer/);
+    await page.screenshot({ path: path.join(out, "same-track-link.png") });
+    await page.click(".trace-maximize");
+    checks.push(
+      "registered lifecycle stages and terminal meanings match actual values; node tracks expose directed handoff/return links with native hover and click-to-seek",
+    );
+  }
   await page.selectOption(".trace-depth", "rules");
   state = await trace();
   assert.ok(state.rows.every((row) => ["business", "state", "rules"].includes(row.layer)));

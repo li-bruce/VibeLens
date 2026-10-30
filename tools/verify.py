@@ -39,6 +39,8 @@ def main():
     run(ROOT, "tests/test_code_graph.py")
     run(ROOT, "tests/test_engineering_structure.py")
     run(ROOT, "tests/test_state_projection.py")
+    run(ROOT, "tests/test_lifecycle_definitions.py")
+    subprocess.run(["node", "tools/test_lifecycle_definitions.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_code_view.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_engineering_view.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_layered_view.mjs"], cwd=ROOT, check=True)

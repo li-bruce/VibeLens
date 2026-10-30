@@ -17,16 +17,16 @@ export function graphActivations(events, nodes) {
   )) {
     const last = items[slice.last],
       start = items[slice.raw];
-    const own = items[slice.observed];
+    const state = slice.unfinished ? slice.stages.at(-1) : slice.terminal;
     const phase = slice.ambiguous
       ? "unknown"
       : slice.unfinished
-        ? own?.phase === "wait"
+        ? state?.kind === "waiting"
           ? "waiting"
           : "running"
-        : last?.phase === "error"
-          ? "failed"
-          : "completed";
+        : state?.registered
+          ? "ended"
+          : state?.state || "boundary";
     const beginning = traceTime(start.observed_at),
       end = traceTime(last?.observed_at);
     const previous = states.get(slice.node);
@@ -37,6 +37,11 @@ export function graphActivations(events, nodes) {
       Number(slice.explicit && ["running", "waiting"].includes(phase));
     states.set(slice.node, {
       phase: runningCount ? "running" : waitingCount ? "waiting" : phase,
+      label: previous?.runningCount && phase !== "running" ? previous.label : state?.label,
+      state: previous?.runningCount && phase !== "running" ? previous.state : state?.state,
+      registered:
+        previous?.runningCount && phase !== "running" ? previous.registered : !!state?.registered,
+      termination: slice.terminal?.termination,
       explicit: explicitActive > 0 || slice.explicit,
       runningCount,
       waitingCount,
@@ -61,10 +66,11 @@ export function graphActivations(events, nodes) {
 }
 
 export function activationFor(node, view, events) {
-  if (node.field || node.kind === "state" || !view.model || !events.length) return null;
+  if (((node.field || node.kind === "state") && !node.lifecycle) || !view.model || !events.length)
+    return null;
   return (
     graphActivations(events, view.model.nodes).get(
-      node.referenceOf || node.event_node || node.id,
+      node.lifecycle ? node.id : node.referenceOf || node.event_node || node.id,
     ) || null
   );
 }

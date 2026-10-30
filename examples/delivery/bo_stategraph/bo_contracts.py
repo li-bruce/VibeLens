@@ -372,6 +372,102 @@ def validate_names(model):
                     )
 
 
+def validate_lifecycle(node, capture=None):
+    """Validate an optional observation vocabulary, never a second business executor.
+
+    Bindings name facts already present in the node's probe stream. Missing bindings
+    use neutral execution boundaries; labels never classify a business outcome.
+    """
+    if "lifecycle" not in node:
+        return
+    definition = node["lifecycle"]
+    if not isinstance(definition, dict) or set(definition) != {"states", "bindings"}:
+        raise ValueError("lifecycle requires states and bindings")
+    states, bindings = definition["states"], definition["bindings"]
+    if not isinstance(states, list) or not 1 <= len(states) <= 64:
+        raise ValueError("lifecycle needs 1-64 named states")
+    by_id = {}
+    for state in states:
+        if not isinstance(state, dict) or set(state) != {"id", "label", "kind"}:
+            raise ValueError("lifecycle state requires id, label and kind")
+        for key in ("id", "label"):
+            value = state[key]
+            if (
+                not isinstance(value, str)
+                or not 1 <= len(value) <= 60
+                or value != value.strip()
+                or any(ord(char) < 32 or ord(char) == 127 for char in value)
+            ):
+                raise ValueError("lifecycle names need 1-60 plain single-line characters")
+        if state["kind"] not in ("active", "waiting", "ended") or state["id"] in by_id:
+            raise ValueError("invalid or duplicate lifecycle state")
+        by_id[state["id"]] = state
+    if not isinstance(bindings, list) or not 1 <= len(bindings) <= 128:
+        raise ValueError("lifecycle needs 1-128 event bindings")
+    groups = {}
+    for binding in bindings:
+        if (
+            not isinstance(binding, dict)
+            or set(binding) - {"phase", "state", "boundary", "when"}
+            or not {"phase", "state", "boundary"} <= set(binding)
+            or binding["phase"]
+            not in ("enter", "return", "read", "decision", "wait", "commit", "change", "error")
+            or not isinstance(binding["state"], str)
+            or binding["state"] not in by_id
+            or binding["boundary"] not in ("start", "update", "end")
+        ):
+            raise ValueError("invalid lifecycle event binding")
+        ended = by_id[binding["state"]]["kind"] == "ended"
+        if ended != (binding["boundary"] == "end"):
+            raise ValueError("lifecycle end boundaries require an ended state")
+        if binding["phase"] in {"return", "error"} and binding["boundary"] != "end":
+            raise ValueError("return/error cannot keep an observed invocation open")
+        if binding["phase"] == "enter" and binding["boundary"] != "start":
+            raise ValueError("entry must start its observed lifecycle")
+        guard = binding.get("when")
+        if guard is not None:
+            if (
+                not isinstance(guard, dict)
+                or set(guard) != {"direction", "field", "equals"}
+                or guard["direction"] not in ("in", "out")
+                or not isinstance(guard["field"], str)
+            ):
+                raise ValueError("invalid lifecycle value selector")
+            spec = (
+                (capture if capture is not None else node.get("capture", {}))
+                .get(guard["direction"], {})
+                .get(guard["field"])
+            )
+            value = guard["equals"]
+            if spec not in ("string", "number", "boolean", "scalar"):
+                raise ValueError("lifecycle selector must reference a captured scalar field")
+            if value is not None and not (
+                (spec in {"string", "scalar"} and isinstance(value, str) and len(value) <= 256)
+                or (spec in {"boolean", "scalar"} and type(value) is bool)
+                or (
+                    spec in {"number", "scalar"}
+                    and type(value) in {int, float}
+                    and math.isfinite(value)
+                    and abs(value) <= 9007199254740991
+                )
+            ):
+                raise ValueError("lifecycle selector value does not match its capture type")
+        previous = groups.setdefault(binding["phase"], [])
+        for other in previous:
+            # A phase has one unconditional binding, or disjoint values of one field.
+            if (
+                guard is None
+                or other is None
+                or (guard["direction"], guard["field"]) != (other["direction"], other["field"])
+                or (
+                    type(guard["equals"]) is type(other["equals"])
+                    and guard["equals"] == other["equals"]
+                )
+            ):
+                raise ValueError("ambiguous lifecycle bindings for one event")
+        previous.append(guard)
+
+
 def validate_graph(model):
     validate_names(model)
     # Only an exact, validated policy projection may contain source-free logical
@@ -400,6 +496,8 @@ def validate_graph(model):
     if not nodes or len(nodes) != len(model["nodes"]):
         raise ValueError("invalid node identities")
     for node in nodes.values():
+        owner = nodes.get(node.get("event_node") or node.get("referenceOf"), node)
+        validate_lifecycle(node, capture=owner.get("capture", {}))
         representation = node.get("represents")
         if representation is not None:
             if (

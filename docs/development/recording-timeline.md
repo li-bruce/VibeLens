@@ -33,7 +33,9 @@ graph advances the same cursor in the timeline.
 `trace-context.js` clips already-open witnessed scopes at the observation boundary and preserves their original entry IDs. It does not replay completed pre-recording work.
 `trace-session.js` owns the bounded live baseline and retained event window.
 `trace-lifecycles.js` pairs invocation boundaries; `graph-activation.js` exposes
-persistent running/waiting/completed/failed states and concurrent counts.
+persistent execution observations and concurrent counts. `node-lifecycle.js`
+resolves registered phase/value bindings. Generic return and exception describe
+execution facts; project-defined success/failure names require their own evidence.
 `trace-residencies.js` follows actual native state/activity frames, including
 active ancestors and waits. It does not infer lifetimes from static containment.
 `trace-flows.js` indexes causal geometry and omits hidden endpoints without
@@ -86,8 +88,10 @@ managed-example acceptance, formatting/lint and exported-package checks.
 
 ## Lifecycle extension
 
-Portable probes expose nested spans with `lifecycle: "span"`. Only real return or
-error closes an explicit span; intermediate commits and decisions keep it active.
+Portable probes expose nested spans with `lifecycle: "span"`. Generic spans end
+at real return/error; intermediate commits and decisions keep them active. A
+registered conceptual lifecycle may also end at its explicitly bound value event.
+That boundary remains distinguished from a physical function return.
 Legacy commit-only records remain readable. Begin the recording timestamp before
 reading its initial snapshot so concurrent delivery cannot move the first event
 before the start boundary. Historical boundary metadata is visually bounded by
@@ -98,3 +102,10 @@ and gap behavior.
 
 See [the capture and identity contract](../../skills/vibelens/references/lifecycles-and-representations.md)
 and [this iteration's evidence](../review/timeline-lifecycle/README.md).
+
+The [registered lifecycle iteration](../review/declared-lifecycles/README.md) adds
+typed node declarations, independent semantic value intervals and neutral generic
+termination. `trace-bars.js` styles segments; `trace-routing.js` shares rounded
+orthogonal paths across drawing, picking and animated transfers; `trace-tooltip.js`
+formats concise evidence. Fresh preferences expose node tracks, while saved
+expansion choices remain intact. Enlarging the dock changes presentation only.

@@ -1,0 +1,32 @@
+{
+  "candidate_id": "46c96d9a67dc8fd1e8e9a3788cd4fa64dce0a036a3f999bdf71ca620e36a7560",
+  "excluded_symbols": {
+    "app/ports.py::BOEvents": "Application-owned optional diagnostics boundary; its actual business callers remain mapped. The implementation plan already classifies its constructor and emitter as observer support.",
+    "app/ports.py::BOEvents.__init__": "Stores the optional diagnostics callback and error counter only. Existing implementation observer classification is retained; no business action is excluded.",
+    "app/ports.py::BOEvents.bo_emit": "Invokes the optional observer callback with its capture gate and isolates callback exceptions. All business calls and their required runtime values remain mapped.",
+    "app/service.py::Delivery": "Class container; its actual business methods remain in the existing graph and independent implementation inventory.",
+    "app/store.py::Store": "Storage class container; its query and effect methods remain mapped by the existing graph and support inventory.",
+    "bo_stategraph/workflow.py::ActivityExecution": "Execution class container; its activity, resource, join and state methods retain existing graph and runtime checks.",
+    "bo_stategraph/workflow.py::ActivityState": "Activity-state enumeration; declared states and actual execution values retain existing contract validation.",
+    "bo_stategraph/workflow.py::Phase": "Main-phase enumeration; machine declaration and transition validation retain existing checks."
+  },
+  "requirement_changes": {},
+  "decisions": {
+    "business": {
+      "action": "unchanged",
+      "reason": "Git comparison confirms byte-identical application code_files and unchanged protected requirements and scenarios. The isolated lifecycle browser application is separate evidence."
+    },
+    "state_machine": {
+      "action": "unchanged",
+      "reason": "No state, guard, transition, resource or join declaration changed."
+    },
+    "abstraction": {
+      "action": "updated",
+      "reason": "Optional lifecycle.states and lifecycle.bindings are validated against captured scalar fields and disjoint event selectors. Registered semantic subjects keep independent IDs; owner entry cannot invent a parameter invocation. Generic execution distinguishes return, exception and incomplete evidence without judging business success/failure. Shared graph/timeline projections retain actual state residency, parent/child boundaries, original ordinals and timestamp endpoints. Duration tracks expand by default for fresh preferences; existing saved expansion/scope settings remain intact. Rounded handoff/return and same-track dependency routes, endpoint dots, waiting hatching, hover details, click-to-seek and enlarged inspection are exercised through actual browser controls. The channel stays inside time-axis bounds without moving endpoint times."
+    },
+    "probes": {
+      "action": "unchanged",
+      "reason": "Business probe wiring and capture allowlists are unchanged. Existing Python/JavaScript span events remain the source of execution facts; this iteration adds no mandatory runtime state executor. Independent declared-definition, neutral-return/exception, semantic parameter, actual SQLite and browser cases validate the new observational interpretation. Same-track sample control dependencies explicitly cite witnessed events. No viewer operation runs business commands; the actual sample confirms one SQL effect and zero observer-generated business events."
+    }
+  }
+}

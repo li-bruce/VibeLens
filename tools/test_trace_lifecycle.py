@@ -51,10 +51,13 @@ def advance(state, probe, gate, path, engine, report):
                 check.result(lambda: {"outputs": {"allowed": allowed}})
             if not allowed:
                 raise PermissionError("Share denied")
-            operation.record("wait", lambda: {"outputs": {"state": state}})
+            waiting_event = operation.record("wait", lambda: {"outputs": {"state": state}})
             if not gate.wait(25):
                 raise TimeoutError("Sharing operation was not released")
-            operation.record("read", lambda: {"outputs": {"state": state}})
+            probe.record("advance", "read", lambda: {"outputs": {"state": state}},
+                         entity="job", attempt="attempt-1", scope="entity",
+                         call_id=operation.call_id, lifecycle="span",
+                         depends=[{"event": waiting_event, "type": "control"}] if waiting_event else [])
             with probe.span("write") as commit:
                 count = write_share(db)
                 commit.result(lambda: {"outputs": {"count": count}})
@@ -65,7 +68,7 @@ def advance(state, probe, gate, path, engine, report):
 '''
 
 
-def prepare(root):
+def prepare(root, registered=False):
     root.mkdir(parents=True, exist_ok=True)
     project = project_fixture(root)
     (root / "worker.py").write_text(BUSINESS, encoding="utf-8")
@@ -128,6 +131,25 @@ def prepare(root):
             for value in model["machine"]["values"]
         ],
     ]
+    if registered:
+        model["nodes"][0]["lifecycle"] = {
+            "states": [
+                {"id": "checking", "label": "Checking access", "kind": "active"},
+                {"id": "awaiting_release", "label": "Waiting for confirmation", "kind": "waiting"},
+                {"id": "shared", "label": "File shared", "kind": "ended"},
+            ],
+            "bindings": [
+                {"phase": "enter", "state": "checking", "boundary": "start"},
+                {"phase": "wait", "state": "awaiting_release", "boundary": "update"},
+                {"phase": "read", "state": "checking", "boundary": "update"},
+                {
+                    "phase": "return",
+                    "state": "shared",
+                    "boundary": "end",
+                    "when": {"direction": "out", "field": "state", "equals": "done"},
+                },
+            ],
+        }
     model["edges"] = [
         {
             "id": ident,
@@ -310,8 +332,8 @@ class LifecycleTests(unittest.TestCase):
                     probe.close()
 
 
-def serve(root):
-    project = prepare(root)
+def serve(root, registered=False):
+    project = prepare(root, registered=registered)
     session = GraphSession(root)
     probe = BOProbe(
         project,
@@ -423,8 +445,9 @@ def serve(root):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--serve", type=Path)
+    parser.add_argument("--registered", action="store_true")
     options, rest = parser.parse_known_args()
     if options.serve:
-        serve(options.serve.absolute())
+        serve(options.serve.absolute(), registered=options.registered)
     else:
         unittest.main(argv=[sys.argv[0], *rest])

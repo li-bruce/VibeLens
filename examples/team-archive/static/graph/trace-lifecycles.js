@@ -2,8 +2,9 @@
  * Parentage is producer/entity scoped; containment and source mappings never create calls.
  */
 import { callKey, callScope } from "./trace-evidence.js";
+import { lifecycleTransition, lifecycleBoundary } from "./node-lifecycle.js";
 
-export function traceLifecycles(items, all) {
+export function traceLifecycles(items, all, { projections = true, registeredOnly = false } = {}) {
   const opened = new Map(),
     parents = new Map(),
     slices = [],
@@ -14,11 +15,18 @@ export function traceLifecycles(items, all) {
     slice.last = raw;
     slice.unfinished = unfinished;
     slice.closed = !unfinished;
+    if (!unfinished) slice.terminal = lifecycleBoundary(all.get(slice.node), items[raw]);
     slices.push(slice);
     if (slice.parent !== undefined)
       childEnds.set(slice.parent, Math.max(childEnds.get(slice.parent) ?? -1, raw));
     if (!unfinished && slice.parent !== undefined) {
-      links.push({ from: raw, to: slice.parent, at: raw, type: "return", invocation: slice.raw });
+      links.push({
+        from: raw,
+        to: slice.parent,
+        at: raw,
+        type: ["return", "error"].includes(items[raw].phase) ? "return" : "completion",
+        invocation: slice.raw,
+      });
     }
     const active = parents.get(parentKey(items[slice.raw]));
     if (active?.at(-1) === slice) active.pop();
@@ -27,8 +35,10 @@ export function traceLifecycles(items, all) {
     if (event.kind !== "probe") continue;
     const key = callKey(event);
     if (!key) continue;
+    const transition = lifecycleTransition(all.get(event.node), event);
+    if (registeredOnly && !transition?.registered) continue;
     const stack = opened.get(key) || [];
-    if (event.phase === "enter") {
+    if (transition?.boundary === "start") {
       // Legacy commit-only producers remain supported. A later owned child is
       // evidence that the commit was not the end of the enclosing operation.
       const prior = stack.at(-1);
@@ -41,7 +51,12 @@ export function traceLifecycles(items, all) {
         : null;
       if (parent) {
         if (parent.candidate !== null) parent.afterCommit = true;
-        links.push({ from: parent.raw, to: raw, at: raw, type: "call" });
+        links.push({
+          from: parent.raw,
+          to: raw,
+          at: raw,
+          type: event.phase === "enter" ? "call" : "activation",
+        });
       }
       if (stack.length) for (const entry of stack) entry.ambiguous = true;
       const slice = {
@@ -53,7 +68,9 @@ export function traceLifecycles(items, all) {
         candidate: null,
         afterCommit: false,
         explicit: event.lifecycle === "span",
-        stages: [{ raw, phase: "running" }],
+        stages: [
+          { raw, phase: transition.kind === "waiting" ? "waiting" : "running", ...transition },
+        ],
       };
       stack.push(slice);
       opened.set(key, stack);
@@ -62,15 +79,16 @@ export function traceLifecycles(items, all) {
     } else if (stack.length) {
       const slice = stack.at(-1);
       slice.observed = raw;
-      if (event.phase === "wait" && slice.stages.at(-1).phase !== "waiting")
-        slice.stages.push({ raw, phase: "waiting" });
-      else if (event.phase === "read" && slice.stages.at(-1).phase === "waiting")
-        slice.stages.push({ raw, phase: "running" });
+      if (transition?.boundary === "update") {
+        const phase = transition.kind === "waiting" ? "waiting" : "running";
+        if (slice.stages.at(-1).state !== transition.state)
+          slice.stages.push({ raw, phase, ...transition });
+      }
       const transformed =
         event.phase === "change" &&
         all.get(event.node)?.data_role === "transform" &&
         event.outputs?.status === "transformed";
-      if (["return", "error"].includes(event.phase) || (transformed && !slice.explicit)) {
+      if (transition?.boundary === "end" || (transformed && !slice.explicit)) {
         stack.pop();
         finish(slice, raw);
       } else if (!slice.explicit && ["commit", "decision"].includes(event.phase))
@@ -97,7 +115,7 @@ export function traceLifecycles(items, all) {
     }
   const byEntry = new Map(slices.map((slice) => [slice.raw, slice]));
   for (const link of links) {
-    const parent = byEntry.get(link.type === "call" ? link.from : link.to);
+    const parent = byEntry.get(["call", "activation"].includes(link.type) ? link.from : link.to);
     link.outlivesParent = !!(parent?.closed && link.at > parent.last);
   }
   const byId = new Map(items.map((event, raw) => [event.id, raw]));
@@ -105,6 +123,25 @@ export function traceLifecycles(items, all) {
     for (const dependency of event.depends || []) {
       const from = byId.get(dependency.event);
       if (from !== undefined && from < to) links.push({ from, to, type: dependency.type });
+    }
+  if (projections)
+    for (const node of all.values()) {
+      const owner = node.event_node || node.referenceOf;
+      if (!node.lifecycle || !owner || owner === node.id || !all.has(owner)) continue;
+      // A semantic parameter has its own identity and only its explicit value/event
+      // bindings. The owner's entry never invents a parameter invocation.
+      const projected = items.map((event) =>
+        event.node === owner
+          ? { ...event, node: node.id, parent_call_id: null }
+          : { kind: "projection-boundary" },
+      );
+      const observed = traceLifecycles(projected, new Map([[node.id, node]]), {
+        projections: false,
+        registeredOnly: true,
+      });
+      slices.push(
+        ...observed.slices.map((slice) => ({ ...slice, role: "registered", source_node: owner })),
+      );
     }
   return { slices, links };
 }

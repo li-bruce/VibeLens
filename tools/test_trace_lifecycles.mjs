@@ -125,7 +125,7 @@ for (let raw = 1; raw < items.length - 1; raw++) {
     if (slice.raw <= raw && raw < slice.last) assert.equal(current.get(node.id).phase, "running");
   }
 }
-assert.equal(graphActivations(items, nodes).get("share").phase, "completed");
+assert.equal(graphActivations(items, nodes).get("share").phase, "returned");
 checks.push(
   "all observed layers keep actual lifetimes in both graph and timeline; entry-only parentage returns correctly",
 );
@@ -207,10 +207,10 @@ assert.equal(graphActivations(waiting, nodes).get("share").phase, "waiting");
 assert.equal(status(nodes[0], view, waiting, "latest"), "blocked");
 assert.equal(
   graphActivations([...waiting, event("share", "error", 10)], nodes).get("share").phase,
-  "failed",
+  "exception",
 );
 checks.push(
-  "intermediate commit does not complete a still-owned child; running/waiting/failed/completed are distinct",
+  "intermediate commit does not complete a still-owned child; execution waits, returns and exceptions remain distinct from business outcomes",
 );
 
 const sameLayer = [

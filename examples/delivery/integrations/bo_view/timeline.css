@@ -21,6 +21,16 @@
   z-index: 5;
   touch-action: none;
 }
+#recording-timeline.trace-maximized {
+  position: fixed;
+  inset: 144px 10px 10px;
+  height: auto !important;
+  max-height: none;
+  z-index: 20;
+  border: 1px solid #cddae5;
+  border-radius: 10px;
+  box-shadow: 0 12px 44px #26394b20;
+}
 .trace-resize::after {
   content: "";
   position: absolute;
@@ -110,15 +120,18 @@
 }
 .trace-tooltip {
   position: absolute;
-  max-width: min(480px, calc(100% - 16px));
-  white-space: nowrap;
+  max-width: min(350px, calc(100% - 16px));
+  white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
-  background: #263c50f2;
-  color: #fff;
-  padding: 4px 7px;
-  border-radius: 3px;
-  font-size: 10px;
+  background: #fffffff7;
+  color: #334b60;
+  border: 1px solid #dbe4eb;
+  box-shadow: 0 8px 24px #25394b16;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 11px;
+  line-height: 1.5;
   pointer-events: none;
   z-index: 2;
 }
@@ -130,6 +143,18 @@
   padding: 3px 12px;
   border-top: 1px solid #e7edf3;
   font-size: 11px;
+}
+.trace-tooltip strong,
+.trace-tooltip span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.trace-tooltip strong {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.trace-tooltip span {
+  color: #697e8f;
 }
 .trace-payload {
   position: absolute;

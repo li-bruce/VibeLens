@@ -4,10 +4,64 @@
 
 An operation may span several functions, decisions, queries and waits. Its entry
 starts its lifetime; its actual return or exception ends it. The graph retains
-running, waiting, completed, failed or unknown status. The timeline uses the same
+running, waiting, normal-return, exception-exit or unknown observations. These do
+not determine business success or failure. The timeline uses the same
 invocation evidence to draw duration bars and nested calls/returns. State nodes
 also have occupancy intervals established by captured native state changes, including active ancestors. Native activity frames supply running/waiting intervals without invented function calls. Intervals already active at the recording boundary show a minimum observed duration (`≥`); they do not claim an unseen start.
 Static files, source mappings and containment do not establish execution lifetimes.
+
+## Register meanings when constructing nodes
+
+Use the project's existing lifecycle vocabulary when the user or implementation
+defines it. Bind each state to a real event or a captured scalar value. Clarify
+uncertain business meaning in conversation and reconcile implementation details
+within coding. Omit `lifecycle` for the generic observation vocabulary; never
+invent success/failure, waiting, cancellation or recovery requirements.
+
+For example, a node that already captures the boolean `allowed` output can name
+its observed rejection without reclassifying every normal return as success:
+
+```json
+{
+  "lifecycle": {
+    "states": [
+      { "id": "checking", "label": "Checking access", "kind": "active" },
+      { "id": "rejected", "label": "Rejected", "kind": "ended" }
+    ],
+    "bindings": [
+      { "phase": "enter", "boundary": "start", "state": "checking" },
+      {
+        "phase": "return", "boundary": "end", "state": "rejected",
+        "when": { "direction": "out", "field": "allowed", "equals": false }
+      }
+    ]
+  }
+}
+```
+
+Each state has a stable `id`, short `label` and timing `kind`: `active`, `waiting`
+or `ended`. Bindings select `phase`, optional exact `when` and `boundary`:
+`start`, `update` or `end`. Unmatched events on directly observed operations use
+generic boundaries. An exception remains an exception even if the caller later
+recovers. Missing completion evidence stays unknown. The declaration observes
+events; it never executes guards, transitions the application or changes results.
+Use one captured entity/attempt/call identity for each occurrence. A long-lived
+conceptual operation needs its own observation identity rather than unrelated
+function-call IDs. Emit an error boundary for an actual error exit; a false
+business result remains a value or an explicitly registered project state.
+
+A semantic node using `event_node` or `referenceOf` may register its own value
+history. Only matching registered bindings establish its intervals; the owner's
+function entry does not invent a parameter call. Its ID remains independent.
+Native state residency continues to follow the actual state machine's frames.
+
+Graph validation rejects malformed or overlapping bindings, unknown states,
+uncollected fields and type mismatches. During each affected iteration, preserve
+or update these declarations and exercise their important bindings with actual
+event/value cases. Verify generic returns, exceptions and registered outcomes
+separately. Source/AI labels remain overlays over node and event identities.
+
+## Probe a real operation
 
 Python's portable probe supplies a context manager:
 

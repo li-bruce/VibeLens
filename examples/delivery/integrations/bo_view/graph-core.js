@@ -1,4 +1,5 @@
 import { activationFor } from "./graph-activation.js";
+import { lifecycleCaption } from "./node-lifecycle.js";
 import { activeMachineStates } from "./machine-projection.js";
 import { graphInventory } from "./graph-inventory.js";
 export { stateNodeId } from "./graph-inventory.js";
@@ -260,6 +261,17 @@ export function status(node, view, events, choice, configuration = null) {
     staleBasis(node, view, last)
   )
     return "historical";
+  const life = activationFor(node, view, events);
+  if (life)
+    return {
+      running: "active",
+      waiting: "blocked",
+      exception: "blocked",
+      returned: "historical",
+      ended: "historical",
+      boundary: "historical",
+      unknown: "declared",
+    }[life.phase];
   if (
     last.phase === "wait" ||
     last.phase === "error" ||
@@ -271,15 +283,7 @@ export function status(node, view, events, choice, configuration = null) {
     if (last.outputs.status === "error" || last.outputs.value === false) return "blocked";
     if (last.outputs.status === "unknown" || last.outputs.value === null) return "declared";
   }
-  const life = activationFor(node, view, events);
-  if (life)
-    return {
-      running: "active",
-      waiting: "blocked",
-      failed: "blocked",
-      completed: "ok",
-      unknown: "declared",
-    }[life.phase];
+
   return last.phase === "enter" ? "active" : "ok";
 }
 export function lines(node, view, events, choice, configuration = null) {
@@ -289,14 +293,21 @@ export function lines(node, view, events, choice, configuration = null) {
   const names = {
     running: "Running",
     waiting: "Waiting",
-    completed: "Completed",
-    failed: "Failed",
+    returned: "Returned",
+    exception: "Exception exit",
+    ended: "Ended",
+    boundary: "Observed boundary",
     unknown: "Unknown lifecycle",
   };
   return [
     {
-      text: boTranslate(names[life.phase]) + (life.activeCount > 1 ? " · " + life.activeCount : ""),
-      role: life.phase === "failed" ? "bad" : "value",
+      text:
+        boTranslate(
+          life.registered
+            ? lifecycleCaption(life, view.model.presentation?.name_mode === "source")
+            : names[life.phase],
+        ) + (life.activeCount > 1 ? " · " + life.activeCount : ""),
+      role: life.phase === "exception" ? "bad" : "value",
     },
     ...content,
   ];

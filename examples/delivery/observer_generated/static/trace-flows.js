@@ -5,8 +5,10 @@ export function indexFlows(links, times) {
   const slices = links
     .map((link) => {
       const at = link.at ?? link.to;
-      const fromTime = ["call", "transition"].includes(link.type) ? times[at] : times[link.from];
-      const toTime = link.type === "return" ? times[at] : times[link.to];
+      const fromTime = ["call", "activation", "transition"].includes(link.type)
+        ? times[at]
+        : times[link.from];
+      const toTime = ["return", "completion"].includes(link.type) ? times[at] : times[link.to];
       return { ...link, at, start: Math.min(fromTime, toTime), end: Math.max(fromTime, toTime) };
     })
     .sort((a, b) => a.start - b.start || a.at - b.at);
@@ -46,8 +48,10 @@ export function visibleFlows(index, rows, window) {
         ...flow,
         fromRow,
         toRow,
-        fromTime: ["call", "transition"].includes(flow.type) ? at : index.axis.times[flow.from],
-        toTime: flow.type === "return" ? at : index.axis.times[flow.to],
+        fromTime: ["call", "activation", "transition"].includes(flow.type)
+          ? at
+          : index.axis.times[flow.from],
+        toTime: ["return", "completion"].includes(flow.type) ? at : index.axis.times[flow.to],
       },
     ];
   });

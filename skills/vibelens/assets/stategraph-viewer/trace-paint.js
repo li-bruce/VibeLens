@@ -5,6 +5,9 @@ import { layers } from "./graph-layers.js";
 import { visibleSlices } from "./trace-viewport.js";
 import { visibleFlows } from "./trace-flows.js";
 import { marksInWindow } from "./trace-index.js";
+import { paintDuration } from "./trace-bars.js";
+import { durationDetail } from "./trace-density.js";
+import { routeFlow, roundedRoute, routePoint, flowKey } from "./trace-routing.js";
 
 export const traceGeometry = { overview: 26, ruler: 24, row: 28 };
 export const traceColor = (layer) =>
@@ -122,14 +125,12 @@ export function paintTrace(canvas, state) {
     ctx.fillStyle = "#2965cc14";
     ctx.fillRect(x(range[0]), top, x(range[1]) - x(range[0]), height - top);
   }
-  const positions = new Map(),
-    rowPositions = new Map();
+  const positions = new Map();
   let drawn = 0;
   for (let i = firstRow; i < lastRow; i++) {
     const row = rows[i],
       y = top + i * g.row - scroll,
       color = traceColor(row.layer);
-    rowPositions.set(row.id, y + 14);
     if (row.header) {
       ctx.fillStyle = color + "09";
       ctx.fillRect(left, y, plot, g.row);
@@ -139,55 +140,57 @@ export function paintTrace(canvas, state) {
       ctx.fillStyle = "#2965cc08";
       ctx.fillRect(left, y, plot, g.row);
     }
+    const visibleDurations =
+      row.header && state.expanded.includes(row.layer)
+        ? []
+        : visibleSlices(row, window.start, window.end);
+    const detail = durationDetail(visibleDurations, { x, left, right: left + plot, raw });
+    for (const bin of detail.bins) {
+      ctx.globalAlpha = Math.min(0.9, 0.35 + Math.log1p(bin.count) * 0.15);
+      ctx.fillStyle = color;
+      ctx.fillRect(bin.x - 1, y + 8, 2, 12);
+      hits.push({
+        kind: "density",
+        count: bin.count,
+        label: row.header ? t(row.label) : null,
+        raw: bin.first,
+        row: row.id,
+        x: bin.x - 2,
+        y: y + 5,
+        width: 4,
+        height: 20,
+      });
+      drawn++;
+    }
     let previousSlicePixel = "";
-    for (const slice of visibleSlices(row, window.start, window.end)) {
+    for (const slice of detail.detailed) {
       const sx = Math.max(left, x(slice.start)),
         ex = Math.min(left + plot, x(slice.end));
       if (ex < sx) continue;
       const pixel = `${Math.floor(sx)}:${Math.ceil(ex)}`;
-      if (pixel === previousSlicePixel && !(slice.raw <= raw && raw <= slice.last)) continue;
+      if (
+        pixel === previousSlicePixel &&
+        slice.raw !== raw &&
+        slice.observed !== raw &&
+        (slice.unfinished || slice.last !== raw)
+      )
+        continue;
       previousSlicePixel = pixel;
       ctx.globalAlpha = allowed.has(slice.raw) || allowed.has(slice.last) ? 0.75 : 0.23;
-      ctx.fillStyle = slice.failed
-        ? "#bc5547"
-        : slice.unfinished || slice.ambiguous
-          ? color + "22"
-          : color;
-      ctx.fillRect(sx, y + 8, Math.max(2, ex - sx), 12);
-      for (const stage of slice.stages || []) {
-        if (stage.phase !== "waiting") continue;
-        const start = Math.max(sx, x(stage.start)),
-          end = Math.min(ex, x(stage.end));
-        if (end <= start) continue;
-        ctx.fillStyle = "#b37c32";
-        ctx.fillRect(start, y + 16, Math.max(1, end - start), 4);
-      }
-      if (slice.unfinished || slice.ambiguous) {
-        ctx.strokeStyle = color;
-        ctx.setLineDash([2, 2]);
-        ctx.strokeRect(sx, y + 8, Math.max(2, ex - sx), 12);
-        ctx.setLineDash([]);
-        ctx.fillStyle = color;
-        ctx.fillRect(sx, y + 8, 2, 12);
-      }
-      if (!slice.ambiguous && slice.raw <= raw && (slice.unfinished || raw < slice.last)) {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 1.6;
-        ctx.strokeRect(sx, y + 7, Math.max(2, ex - sx), 14);
-        ctx.lineWidth = 1;
-      }
-      if (ex - sx > 65 && slice.duration !== null) {
-        ctx.fillStyle = "#ffffff";
-        clippedText(
-          ctx,
-          (slice.clippedStart ? "≥ " : "") + timeLabel(slice.duration),
-          sx + 5,
-          y + 18,
-          ex - sx - 10,
-        );
-      }
+      paintDuration(ctx, slice, {
+        sx,
+        ex,
+        y,
+        color,
+        x,
+        raw,
+        timeLabel,
+        pulse: state.pulse || 0,
+        sourceNames: state.preferences?.nameMode === "source",
+      });
       hits.push({
         kind: "slice",
+        slice,
         raw: slice.last,
         startRaw: slice.raw,
         row: row.id,
@@ -200,9 +203,12 @@ export function paintTrace(canvas, state) {
     }
     ctx.globalAlpha = 1;
     let previousPixel = -Infinity;
-    for (const mark of marksInWindow(row, window.start, window.end)) {
+    for (const mark of row.header && state.expanded.includes(row.layer)
+      ? []
+      : marksInWindow(row, window.start, window.end)) {
       const px = x(mark.time);
       if (px < left - 5 || px > left + plot + 5) continue;
+      if (mark.raw !== raw && detail.covered.has(Math.floor(px / 4))) continue;
       if (px - previousPixel < 3 && mark.raw !== raw) continue;
       previousPixel = px;
       const included = allowed.has(mark.raw);
@@ -273,48 +279,76 @@ export function paintTrace(canvas, state) {
       flow.at === raw ||
       (!["call", "return", "transition"].includes(flow.type) &&
         (flow.to === raw || flow.from === raw));
-    const key = `${Math.round(fx / 3)}:${Math.round(tx / 3)}:${flow.fromRow}:${flow.toRow}:${flow.type}`;
-    if (!selected && (pixels.has(key) || flowCount >= 1800)) continue;
+    const density = index.items.length > 3000;
+    const bucket = density ? 8 : 3;
+    const key = `${Math.round(fx / bucket)}:${Math.round(tx / bucket)}:${flow.fromRow}:${flow.toRow}:${flow.type}`;
+    if (!selected && (pixels.has(key) || flowCount >= (density ? 900 : 1800))) continue;
     pixels.add(key);
-    ctx.globalAlpha = selected ? 1 : 0.38;
-    ctx.lineWidth = selected ? 1.8 : 1;
-    ctx.strokeStyle = flow.outlivesParent
-      ? "#c06a34"
-      : flow.type === "data"
-        ? "#208b73"
-        : flow.type === "transition"
-          ? "#8c57ad"
-          : "#477b9c";
+    const keyId = flowKey(flow);
+    const hovered = state.hover?.key === keyId;
+    const emphasized = selected || hovered;
+    ctx.globalAlpha = emphasized ? 1 : state.hover ? 0.22 : 0.65;
+    ctx.lineWidth = emphasized ? 1.8 : 1.1;
+    const color = flow.outlivesParent
+      ? "#b87842"
+      : flow.type === "transition"
+        ? "#8c57ad"
+        : traceColor(rows[flow.toRow].layer);
+    ctx.strokeStyle = color;
     ctx.setLineDash(
       ["call", "return", "data", "control", "transition"].includes(flow.type) ? [] : [3, 3],
     );
-    ctx.beginPath();
-    ctx.moveTo(fx, fy);
-    if (Math.abs(fy - ty) < 1) {
-      const lift = Math.min(11, 4 + Math.abs(tx - fx) / 8);
-      ctx.bezierCurveTo(fx, fy - lift, tx, ty - lift, tx, ty);
-    } else if (Math.abs(fx - tx) < 1) {
-      ctx.lineTo(tx, ty);
-    } else ctx.bezierCurveTo(fx + 16, fy, tx - 16, ty, tx, ty);
+    const route = routeFlow(fx, fy, tx, ty, flowCount, { left: left + 4, right: left + plot - 4 });
+    roundedRoute(ctx, route);
     ctx.stroke();
-    const vertical = Math.abs(fx - tx) < 1 && fy !== ty;
-    const direction = Math.sign(ty - fy) || 1;
+    ctx.setLineDash([]);
+    for (const [point, fill] of [
+      [route[0], color],
+      [route.at(-1), "#ffffff"],
+    ]) {
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, emphasized ? 3 : 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+    const tail = route.at(-2),
+      tip = route.at(-1);
+    const angle = Math.atan2(tip.y - tail.y, tip.x - tail.x);
     ctx.beginPath();
-    ctx.moveTo(tx - (vertical ? 3 : 5), ty - (vertical ? 5 * direction : 3));
-    ctx.lineTo(tx, ty);
-    ctx.lineTo(tx + (vertical ? 3 : -5), ty - (vertical ? 5 * direction : -3));
+    ctx.moveTo(tip.x - 5 * Math.cos(angle - 0.5), tip.y - 5 * Math.sin(angle - 0.5));
+    ctx.lineTo(tip.x, tip.y);
+    ctx.lineTo(tip.x - 5 * Math.cos(angle + 0.5), tip.y - 5 * Math.sin(angle + 0.5));
     ctx.stroke();
+    if (selected && state.pulse) {
+      const point = routePoint(route, state.pulse);
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 5;
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+    hits.push({ kind: "flow", key: keyId, flow, route, raw: flow.at, row: rows[flow.toRow].id });
     flowCount++;
   }
   ctx.globalAlpha = 1;
   ctx.lineWidth = 1;
   ctx.setLineDash([]);
-  const cursor = x(index.axis.times[raw] ?? 0);
+  const cursor = x(state.inspection === false ? index.axis.total : (index.axis.times[raw] ?? 0));
   ctx.strokeStyle = "#2965cc";
   ctx.beginPath();
   ctx.moveTo(cursor, top);
   ctx.lineTo(cursor, height);
   ctx.stroke();
+  if (cursor >= left && cursor <= left + plot) {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cursor, height - 7, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
   ctx.restore();
 
   for (let i = firstRow; i < lastRow; i++) {

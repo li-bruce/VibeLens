@@ -140,8 +140,11 @@ export function buildTraceIndex(
   }
   for (const slice of calls.slices) {
     // Duration belongs to the instrumented node, never to a source mapping/ancestor.
-    for (const node of aliases.get(slice.node) || []) {
-      if (node.field || canonical(node) !== slice.node) continue;
+    const targets = new Map((aliases.get(slice.node) || []).map((node) => [node.id, node]));
+    if (all.has(slice.node)) targets.set(slice.node, all.get(slice.node));
+    for (const node of targets.values()) {
+      const declaredSubject = node.id === slice.node && !!node.lifecycle;
+      if ((node.field || canonical(node) !== slice.node) && !declaredSubject) continue;
       if (!rows.has(node.id))
         rows.set(node.id, { id: node.id, node, layer: layerOf(node), marks: [], slices: [] });
       const start = axis.dates[slice.raw],
@@ -150,7 +153,7 @@ export function buildTraceIndex(
         ...slice,
         start: axis.times[slice.raw],
         end: slice.unfinished ? axis.total : axis.times[slice.last],
-        failed: items[slice.last]?.phase === "error" && !slice.unfinished,
+        termination: slice.terminal?.termination,
         stages: slice.stages.map((stage, i) => ({
           ...stage,
           start: axis.times[stage.raw],

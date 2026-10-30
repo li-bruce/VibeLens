@@ -7,15 +7,18 @@ import { paintTrace, traceGeometry, timeLabel } from "./trace-paint.js";
 import { layers } from "./graph-layers.js";
 import { iconButton } from "./controls.js";
 import { boDisplayValue } from "./replay-steps.js";
+import { traceHit } from "./trace-routing.js";
+import { traceDescription } from "./trace-tooltip.js";
+import { lifecycleCaption } from "./node-lifecycle.js";
 
 export function cleanTimeline(value) {
   return {
     visible: value?.visible !== false,
-    height: Number.isFinite(value?.height) ? Math.max(180, Math.min(500, value.height)) : 280,
+    height: Number.isFinite(value?.height) ? Math.max(180, Math.min(500, value.height)) : 340,
     scope: value?.scope === "all" ? "all" : "view",
     expanded: Array.isArray(value?.expanded)
       ? value.expanded.filter((id) => layers.some((layer) => layer.id === id))
-      : [],
+      : layers.map((layer) => layer.id),
     follow: value?.follow !== false,
     depth: layers.some((layer) => layer.id === value?.depth) ? value.depth : "all",
     layerMode: value?.layerMode === "single" ? "single" : "through",
@@ -38,14 +41,15 @@ export class RecordingTimeline {
     this.pendingSeek = null;
     this.drawFrame = this.seekFrame = null;
     this.drag = null;
+    this.pulseStarted = performance.now();
     this.host.innerHTML = `
       <div class="trace-resize" role="separator" tabindex="0" aria-orientation="horizontal"></div>
       <div class="trace-toolbar">
-        <strong></strong><span class="trace-key">━ · ◆ · ◇</span><select class="trace-scope"></select><select class="trace-depth"></select><button class="trace-single" aria-pressed="false"></button>
+        <strong></strong><span class="trace-key">━ · ◆ · ◇</span><select class="trace-scope"></select><select class="trace-depth"></select><button class="trace-single" aria-pressed="false"></button><button class="trace-tracks"></button>
         <button class="trace-fit"></button><button class="trace-zoom-in"></button><button class="trace-zoom-out"></button>
         <label class="trace-follow"><input type="checkbox" /><span></span></label>
         <button class="trace-loop"></button><button class="trace-clear"></button>
-        <span class="trace-health" role="status"></span><button class="trace-live"></button><button class="trace-close"></button>
+        <span class="trace-health" role="status"></span><button class="trace-live"></button><button class="trace-maximize"></button><button class="trace-close"></button>
       </div>
       <div class="trace-body"><canvas tabindex="0" role="slider" aria-valuemin="0"></canvas>
         <div class="trace-tooltip" hidden></div><pre class="trace-payload" hidden tabindex="0"></pre></div>
@@ -76,6 +80,23 @@ export class RecordingTimeline {
       }),
     );
     this.listen(find("live"), "click", onLive);
+    iconButton(find("maximize"), "expand", t("Expand timeline"));
+    this.listen(find("maximize"), "click", () => {
+      this.maximized = !this.maximized;
+      this.host.classList.toggle("trace-maximized", this.maximized);
+      iconButton(
+        find("maximize"),
+        this.maximized ? "collapse" : "expand",
+        t(this.maximized ? "Restore timeline" : "Expand timeline"),
+      );
+      this.clampScroll();
+      this.schedule();
+    });
+    this.listen(find("tracks"), "click", () =>
+      this.configure({
+        expanded: this.settings.expanded.length ? [] : layers.map((layer) => layer.id),
+      }),
+    );
     find("scope").setAttribute("aria-label", t("Timeline scope"));
     find("follow").querySelector("span").textContent = t("Follow cursor");
     find("loop").textContent = t("Loop selection");
@@ -121,6 +142,8 @@ export class RecordingTimeline {
     this.listen(this.canvas, "pointercancel", () => this.pointerEnd(true));
     this.listen(this.canvas, "pointerleave", () => {
       find("tooltip").hidden = true;
+      this.hover = null;
+      this.schedule();
     });
     this.listen(this.canvas, "wheel", (event) => this.wheel(event), { passive: false });
     this.listen(this.canvas, "keydown", (event) => this.key(event));
@@ -178,6 +201,8 @@ export class RecordingTimeline {
     inspection = true,
   }) {
     const prior = this.settings;
+    if (this.raw !== raw) this.pulseStarted = performance.now();
+    this.playing = playing;
     this.model = model;
     this.inspection = inspection;
     this.all = all;
@@ -277,6 +302,11 @@ export class RecordingTimeline {
     }
     this.find("depth").value = this.settings.depth;
     this.find("single").setAttribute("aria-pressed", String(this.settings.layerMode === "single"));
+    iconButton(
+      this.find("tracks"),
+      this.settings.expanded.length ? "collapse" : "expand",
+      t(this.settings.expanded.length ? "Collapse node tracks" : "Expand node tracks"),
+    );
     this.find("live").hidden = !recording.transient && recording.status !== "recording";
     this.host.dataset.source = recording.transient
       ? "live"
@@ -335,7 +365,15 @@ export class RecordingTimeline {
           ? t("Open call")
           : "";
     const title = `${eventLabel(event, this.model)}${duration ? " · " + duration : ""}`;
-    this.find("selected").textContent = title;
+    const lifecycleLabel = lifecycleCaption(
+      slice?.terminal && this.raw >= slice.last
+        ? slice.terminal
+        : slice?.stages?.findLast((stage) => stage.raw <= this.raw),
+      this.preferences?.nameMode === "source",
+    );
+    this.find("selected").textContent = [title, lifecycleLabel && t(lifecycleLabel)]
+      .filter(Boolean)
+      .join(" · ");
     this.find("selected").title = [
       title,
       event.id,
@@ -381,6 +419,17 @@ export class RecordingTimeline {
         depends: event.depends,
         changes,
         graph_transfers: this.transfers,
+        ...(slice
+          ? {
+              lifecycle: {
+                state: slice.terminal?.state || slice.stages?.at(-1)?.state,
+                registered: !!(slice.terminal || slice.stages?.at(-1))?.registered,
+                termination: slice.terminal?.termination,
+                start: slice.raw,
+                end: slice.unfinished ? null : slice.last,
+              },
+            }
+          : {}),
         ...(slice?.context_entry ? { context_entry: slice.context_entry } : {}),
       },
       null,
@@ -425,6 +474,9 @@ export class RecordingTimeline {
         }
       }
       const started = performance.now();
+      this.pulse = matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? 0
+        : ((started - this.pulseStarted) % 1100) / 1100;
       this.geometry = paintTrace(this.canvas, {
         ...this,
         width,
@@ -435,6 +487,16 @@ export class RecordingTimeline {
       });
       this.paintMs = performance.now() - started;
       if (this.zoomMotion) this.schedule();
+      else if (
+        !document.hidden &&
+        this.pulse &&
+        (this.playing ||
+          (this.inspection && this.transfers.length > 0) ||
+          started - this.pulseStarted < 1100)
+      ) {
+        clearTimeout(this.motionTimer);
+        this.motionTimer = setTimeout(() => this.schedule(), 33);
+      }
     });
   }
 
@@ -518,20 +580,31 @@ export class RecordingTimeline {
     } else if (event.shiftKey) {
       this.drag = { kind: "range", time: this.time(p.x), p };
       this.range = [this.drag.time, this.drag.time];
-    } else if (p.y < g.top) {
+    } else if (
+      p.y < g.top ||
+      (Math.abs(
+        p.x -
+          (g.left +
+            ((this.index.axis.times[this.raw] - this.window.start) /
+              (this.window.end - this.window.start)) *
+              g.plot),
+      ) < 7 &&
+        p.y > this.canvas.clientHeight - 18)
+    ) {
       this.drag = { kind: "seek" };
       this.seekTime(this.time(p.x));
     } else {
-      const hit = g.hits.findLast(
-        (hit) =>
-          ["mark", "slice"].includes(hit.kind) &&
-          p.x >= hit.x &&
-          p.x <= hit.x + hit.width &&
-          p.y >= hit.y &&
-          p.y <= hit.y + hit.height,
-      );
+      const hit = traceHit(g.hits, p);
       if (hit && this.allowed.has(hit.raw)) {
-        this.requestSeek(hit.raw, event.detail === 2);
+        const nearest =
+          hit.kind === "slice"
+            ? nearestEvent(
+                this.index.rows.get(hit.row)?.marks.filter((mark) => this.allowed.has(mark.raw)) ||
+                  [],
+                this.time(p.x),
+              )?.raw
+            : hit.raw;
+        this.requestSeek(nearest, event.detail === 2);
         this.drag = { kind: "seek" };
       } else this.drag = { kind: "pan", p, window: { ...this.window }, scroll: this.scroll };
     }
@@ -583,33 +656,47 @@ export class RecordingTimeline {
   }
 
   tooltip(point) {
-    const hit = this.geometry.hits.findLast(
-      (hit) =>
-        hit.raw !== undefined &&
-        point.x >= hit.x &&
-        point.x <= hit.x + hit.width &&
-        point.y >= hit.y &&
-        point.y <= hit.y + hit.height,
-    );
+    const hit =
+      point.x >= this.geometry.left && point.y >= this.geometry.top
+        ? traceHit(this.geometry.hits, point)
+        : null;
     const tooltip = this.find("tooltip");
-    if (!hit) {
+    if (!hit || hit.raw === undefined) {
       tooltip.hidden = true;
+      if (this.hover) {
+        this.hover = null;
+        this.schedule();
+      }
       return;
     }
-    const event = this.index.items[hit.raw],
-      mark = this.index.rows.get(hit.row)?.marks.find((item) => item.raw === hit.raw);
-    const evidence = hit.contextEvent || mark?.contextEvent || event;
-    tooltip.textContent = [
-      eventLabel(evidence, this.model),
-      evidence.observed_at,
-      evidence.entity,
-      evidence !== event ? t("Before recording") : mark?.projected ? t("Source mapping") : "",
-    ]
-      .filter(Boolean)
-      .join(" · ");
+    const key = hit.key || `${hit.row}:${hit.startRaw ?? hit.raw}`;
+    if (this.hover?.key !== key) {
+      this.hover = { key, row: hit.row, raw: hit.raw };
+      this.schedule();
+    }
+    const time = this.time(point.x);
+    const stage = hit.slice?.stages?.find((item) => item.start <= time && item.end > time);
+    const description = traceDescription(
+      { ...hit, stage },
+      this.index,
+      this.all,
+      this.preferences,
+      timeLabel,
+    );
+    const title = document.createElement("strong");
+    title.textContent = description.title;
+    tooltip.title = description.identity || "";
+    tooltip.replaceChildren(
+      title,
+      ...description.lines.map((text) => {
+        const line = document.createElement("span");
+        line.textContent = text;
+        return line;
+      }),
+    );
     tooltip.hidden = false;
-    tooltip.style.left = `${Math.max(8, Math.min(this.canvas.clientWidth - Math.min(480, this.canvas.clientWidth - 16), point.x + 10))}px`;
-    tooltip.style.top = `${Math.max(0, point.y - 28)}px`;
+    tooltip.style.left = `${Math.max(8, Math.min(this.canvas.clientWidth - Math.min(350, this.canvas.clientWidth - 16), point.x + 10))}px`;
+    tooltip.style.top = `${Math.max(0, Math.min(this.canvas.clientHeight - tooltip.offsetHeight - 6, point.y - tooltip.offsetHeight - 8))}px`;
   }
 
   wheel(event) {
@@ -685,6 +772,10 @@ export class RecordingTimeline {
   }
 
   clear() {
+    clearTimeout(this.motionTimer);
+    this.hover = null;
+    this.maximized = false;
+    this.host.classList.remove("trace-maximized");
     cancelAnimationFrame(this.seekFrame);
     cancelAnimationFrame(this.drawFrame);
     this.seekFrame = this.drawFrame = null;
@@ -739,9 +830,28 @@ export class RecordingTimeline {
               entryEventId: slice.context_entry?.id || this.index.items[slice.raw]?.id,
               raw: slice.raw,
               last: slice.last,
+              stages: slice.stages?.map((stage) => ({
+                state: stage.state,
+                label: stage.label,
+                start: stage.start,
+                end: stage.end,
+                registered: !!stage.registered,
+              })),
+              terminal: slice.terminal,
             })),
           ),
           paintMs: this.paintMs,
+          routes: this.geometry?.hits
+            .filter((hit) => hit.kind === "flow")
+            .map((hit) => ({
+              key: hit.key,
+              type: hit.flow.type,
+              raw: hit.raw,
+              row: hit.row,
+              fromRow: hit.flow.fromRow,
+              toRow: hit.flow.toRow,
+              route: hit.route,
+            })),
           zooming: !!this.zoomMotion,
           geometry: this.geometry && {
             left: this.geometry.left,
