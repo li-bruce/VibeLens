@@ -8,9 +8,11 @@
 
 Vibe coding 可以很快做出能用的页面，但内部状态、判断和调用关系往往难以掌握。`vibelens` 在开发过程中维护一张面向开发者的状态网，把业务流程、状态、判定依赖、关键函数、参数与实际运行事实联系起来。
 
-![从业务流程逐层深入到状态、判断、函数与参数，以及源码](docs/site/layers.svg)
+![九个相互连接的观察层，底部为数据结构](docs/review/layer-order/site-final/data-bottom-zh-CN.png)
 
 这些是**同一张图的不同观察层次**。节点可以属于多个抽象区域；可以逐层展开，也可以混合类型检查关系。
+
+从业务、状态和规则，追到 API、核心函数与数据处理，再展开工程目录、文件和代码符号，底部展示数据存储结构。自定义视图与布局随开发迭代保留。[查看各层](https://liblog.vip/VibeLens/index.html?lang=zh-CN#explore)。
 
 权限等规则可以共用条件节点，并关联到实际函数。所有者判断可由多个操作复用，同一函数的不同参数绑定会分别呈现；运行时可以查看每次判断的输入、结果及跳过的条件。[规则网接口](skills/vibelens/references/shared-policy.md)。
 
@@ -118,6 +120,6 @@ AI 根据当前图匹配具体节点，遇到重名或多份记录时先确认�
 
 许可证：[MIT](LICENSE)。可视化使用开源 PixiJS、ELK.js，不包含 yFiles 专有代码。见[第三方声明](THIRD_PARTY_NOTICES.md)。
 
-持续更新版从 `main` 安装；本次固定版本为 `v0.7.0`。见[版本说明](docs/releases/v0.7.0.md)、[独立项目试用](docs/review/release-v0.7.0/README.md)和[实现评估](docs/assessment/2026-10-24/README.md)。
+持续更新版从 `main` 安装；本次固定版本为 `v0.10.0`。见[版本说明](docs/releases/v0.10.0.md)、[本版验收](docs/review/release-v0.10.0/README.md)和[实现评估](docs/assessment/2026-10-24/README.md)。
 
 节点图标采用 MIT 许可的 Tabler Icons；可独立替换的 libavoid 路由库采用 LGPL-2.1-or-later。详见第三方许可说明。

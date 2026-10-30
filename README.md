@@ -8,9 +8,14 @@ Previously named Business Observer (`business-observer`). [Rename and migration]
 
 Vibe coding can produce a working screen while leaving its decisions, state changes, and internal dependencies difficult to inspect. `vibelens` keeps a developer-facing graph connected to the implementation: business flows, state machines, decision dependencies, important functions, parameters, and actual runtime evidence.
 
-![Five connected views of one operation: business, state, decisions, functions and values, and source](docs/site/layers.svg)
+![Nine connected layers from business intent to source and physical data structure](docs/review/layer-order/site-final/layers-en.png)
 
 These are views of **one typed network** with shared nodes and typed relationships. Expand a region, follow a relation, or combine types to answer the question in front of you.
+
+Read from business flows, states and rules through API entries, core functions
+and data operations. Expand the scanned project tree into code symbols, with
+physical data structure at the base. Saved views and positions carry across
+iterations. [Explore the layers](https://liblog.vip/VibeLens/index.html?lang=en#explore).
 
 Shared rule conditions connect permissions to the functions that implement them. Reuse an ownership check across actions, distinguish different parameter bindings, and inspect each request's actual inputs, result and skipped conditions. [Rule-network interface](skills/vibelens/references/shared-policy.md).
 
@@ -107,7 +112,7 @@ Alternatively, install with the Skills CLI:
 npx skills add li-bruce/VibeLens --skill vibelens
 ```
 
-You can also ask Codex's Skill installer to install from [the Skill directory](https://github.com/li-bruce/VibeLens/tree/main/skills/vibelens). Use `main` for current updates or `v0.9.0` for this fixed release. Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.9.0.md), [independent application trial](docs/review/release-v0.7.0/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
+You can also ask Codex's Skill installer to install from [the Skill directory](https://github.com/li-bruce/VibeLens/tree/main/skills/vibelens). Use `main` for current updates or `v0.10.0` for this fixed release. Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.10.0.md), [release validation](docs/review/release-v0.10.0/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
 
 English is the maintained source/documentation language. Conversation follows the user; the viewer offers English/Chinese and saves the preference in the project. Original answers and historical evidence retain their original language.
 

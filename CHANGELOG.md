@@ -1,12 +1,25 @@
 # Changelog
 
-## Unreleased
+## 0.10.0 — 2026-10-30
+
+- Add a scanned project-structure layer for directories, files, imports, dependencies
+  and cycles, linked to detailed code symbols and refreshed after source edits.
+- Improve type clustering and share initial 2D/3D coordinates while preserving
+  saved positions and pins. Add a bilingual, interactive nine-layer introduction.
+- Validate every layer in a real file-sharing application and a feature iteration,
+  retaining missing-mapping failures, runtime values and successful repairs.
 
 - Align the introduction and native layer controls from business, states and rules
   through API, core execution and source detail to data structure at the bottom.
 - Migrate old default orders while preserving custom order, visibility and layouts;
   keep the canvas ruler and keyboard action tree aligned. See the
   [layer-order checks](docs/review/layer-order/README.md).
+
+## 0.9.0 — 2026-10-29
+
+- Connect shared rule conditions, source predicates and runtime decisions; refine
+  native view controls and the file-sharing walkthrough. See the
+  [release notes](docs/releases/v0.9.0.md).
 
 ## 0.8.1 — 2026-10-26
 
