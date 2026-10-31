@@ -1,0 +1,132 @@
+{
+  "schema": "bo-mapping/v1",
+  "cases": [
+    "approved",
+    "approved_file_visible",
+    "cancelled",
+    "cancelled_file_hidden",
+    "cancelled_request_review_denied",
+    "invalid_login",
+    "nonowner_cancel_denied",
+    "nonowner_revoke_denied",
+    "nonowner_share_denied",
+    "owner_cancels_pending",
+    "owner_requests_share",
+    "owner_revokes_share",
+    "pending",
+    "pending_download_denied",
+    "pending_file_hidden",
+    "recipient_download_allowed",
+    "rejected",
+    "rejected_download_denied",
+    "rejected_file_hidden",
+    "revoked",
+    "revoked_file_hidden",
+    "revoked_old_url_denied",
+    "revoked_stale_page_denied",
+    "selected_reviewer_approves",
+    "selected_reviewer_rejects",
+    "unauthorized",
+    "ungranted_download_denied",
+    "unselected_reviewer_denied",
+    "upload_anonymous_denied",
+    "upload_authenticated"
+  ],
+  "modes": [
+    "on",
+    "off",
+    "fault"
+  ],
+  "source": "Independent SQLite reads through app/storage.py::Store.snapshot",
+  "actual_collection": [
+    "authority_snapshot",
+    "instances"
+  ],
+  "actual_id": [
+    "instance_id"
+  ],
+  "fields": [
+    {
+      "id": "state",
+      "node": "pending",
+      "actual": [
+        "state"
+      ],
+      "mapped": [
+        "state"
+      ]
+    },
+    {
+      "id": "revision",
+      "node": "pending",
+      "actual": [
+        "revision"
+      ],
+      "mapped": [
+        "revision"
+      ]
+    },
+    {
+      "id": "build",
+      "node": "pending",
+      "actual": [
+        "build_id"
+      ],
+      "mapped": [
+        "build_id"
+      ]
+    },
+    {
+      "id": "file_id",
+      "node": "share",
+      "actual": [
+        "context",
+        "file_id"
+      ],
+      "mapped": [
+        "context",
+        "file_id"
+      ]
+    },
+    {
+      "id": "owner_id",
+      "node": "share",
+      "actual": [
+        "context",
+        "owner_id"
+      ],
+      "mapped": [
+        "context",
+        "owner_id"
+      ]
+    },
+    {
+      "id": "recipient_id",
+      "node": "share",
+      "actual": [
+        "context",
+        "recipient_id"
+      ],
+      "mapped": [
+        "context",
+        "recipient_id"
+      ]
+    },
+    {
+      "id": "reviewer_id",
+      "node": "share",
+      "actual": [
+        "context",
+        "reviewer_id"
+      ],
+      "mapped": [
+        "context",
+        "reviewer_id"
+      ]
+    }
+  ],
+  "export": {
+    "case": "approved",
+    "mode": "on"
+  }
+}

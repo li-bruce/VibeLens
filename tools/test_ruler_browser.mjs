@@ -104,12 +104,16 @@ try {
     (order) => JSON.stringify(graphDebug.layers.order) === JSON.stringify(order),
     customOrder,
   );
-  await page.waitForFunction(async () => {
+  await page.waitForFunction(async (expected) => {
     const saved = await (await fetch("/api/preferences")).json();
     return Object.entries(saved.entries).some(
-      ([key, body]) => key.endsWith(":analysis") && JSON.parse(body).layers?.orderMode === "custom",
+      ([key, body]) => key.endsWith(":analysis") && JSON.parse(body).layers?.orderMode === "custom"
+        && JSON.stringify(JSON.parse(body).layers.order) === JSON.stringify(expected),
     );
-  });
+  }, customOrder);
+  await writeFile(path.join(output, "ruler-before-reload.json"), JSON.stringify({
+    layers: await page.evaluate(() => graphDebug.layers), saved: preferences,
+  }, null, 2));
   await page.reload();
   await page.waitForFunction(() => window.graphDebug?.graph);
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), customOrder);

@@ -244,6 +244,43 @@ assert.equal(events.at(-1).outputs.status, "rollback_failed");
 const commitFailure = events.find((event) => event.outputs.status === "commit_failed");
 assert.ok(commitFailure);
 assert.equal(Object.hasOwn(commitFailure.outputs, "committed"), false);
+for (const disabled of [false, true]) {
+  const captured = [];
+  const scoped = new BOProbe({
+    project,
+    buildId: "scope-build",
+    enabled: !disabled,
+    sink: (event) => captured.push(event),
+  });
+  scoped.bo_set_scope(disabled ? null : []);
+  const data = new BODataRuntime(scoped, config);
+  const summaries = [];
+  const actual = [1, 2];
+  assert.equal(
+    data.execute("query", () => actual, {
+      summarize: (value) => summaries.push("query") && { rows: value.length },
+    }),
+    actual,
+  );
+  assert.equal(
+    await data.executeAsync("query", async () => actual, {
+      summarize: (value) => summaries.push("async") && { rows: value.length },
+    }),
+    actual,
+  );
+  assert.deepEqual(
+    data.transform("transform", (value) => [...value, 3], actual, {
+      before: (value) => summaries.push("before") && { count: value.length },
+      after: (value) => summaries.push("after") && { count: value.length },
+    }),
+    [1, 2, 3],
+  );
+  assert.deepEqual(summaries, [], "Excluded observation-only extractors ran");
+  assert.equal(await scoped.flush(), true);
+  assert.deepEqual(captured, []);
+  assert.equal(data.bo_errors, 0);
+  assert.equal(scoped.bo_errors, 0);
+}
 console.log(
   JSON.stringify({
     status: "passed",

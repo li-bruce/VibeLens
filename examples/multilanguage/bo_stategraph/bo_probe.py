@@ -127,6 +127,9 @@ class BOProbe:
         self.bo_run, self.bo_producer = run_id or uuid.uuid4().hex, producer_id or uuid.uuid4().hex
         self.bo_enabled = enabled
         self.bo_seq = self.bo_errors = self.bo_dropped = self.bo_suppressed = 0
+        self.bo_filtered = 0
+        self.bo_capture_nodes = None
+        self.bo_last_error = None
         self.bo_queue = queue.Queue(maxsize=max(1, capacity))
         self.bo_lock = threading.Lock()
         self.bo_closed = threading.Event()
@@ -154,6 +157,35 @@ class BOProbe:
             "run_id": self.bo_run,
             "producer_id": self.bo_producer,
         }
+
+    def bo_set_scope(self, nodes):
+        """Select temporary capture owners before evaluating their field builders.
+
+        None restores full capture. Filtering does not consume a producer sequence
+        number, so deliberately excluded events do not resemble transport loss.
+        """
+        if nodes is not None and (
+            not isinstance(nodes, list)
+            or any(not isinstance(node, str) or node not in self.bo_nodes for node in nodes)
+        ):
+            raise ValueError("capture scope requires known node IDs or None")
+        with self.bo_lock:
+            self.bo_capture_nodes = None if nodes is None else frozenset(nodes)
+
+    def bo_health(self):
+        """Expose transport/capture counters without reading application state."""
+        with self.bo_lock:
+            return {
+                "enabled": self.bo_enabled and not self.bo_closed.is_set(),
+                "run_id": self.bo_run,
+                "producer_id": self.bo_producer,
+                "enqueued": self.bo_seq,
+                "pending": self.bo_queue.unfinished_tasks,
+                "errors": self.bo_errors,
+                "dropped": self.bo_dropped,
+                "filtered": self.bo_filtered,
+                "last_error": dict(self.bo_last_error) if self.bo_last_error else None,
+            }
 
     def bo_put(self, kind, body):
         raw = json.dumps(body, ensure_ascii=False, allow_nan=False).encode()
@@ -188,6 +220,10 @@ class BOProbe:
         if _bo_internal.get() or bo_is_internal() or node in self.bo_excluded:
             self.bo_suppressed += 1
             return None
+        with self.bo_lock:
+            if self.bo_capture_nodes is not None and node not in self.bo_capture_nodes:
+                self.bo_filtered += 1
+                return None
         token = _bo_internal.set(True)
         try:
             if phase not in {
@@ -201,10 +237,10 @@ class BOProbe:
                 "error",
             }:
                 raise ValueError("invalid phase")
+            spec = self.bo_nodes[node].get("capture", {})
             values = builder()
             if lifecycle not in (None, "span"):
                 raise ValueError("invalid lifecycle boundary mode")
-            spec = self.bo_nodes[node]["capture"]
             with self.bo_lock:
                 self.bo_seq += 1
                 eid = f"{self.bo_run}:{self.bo_producer}:{self.bo_seq}"
@@ -239,8 +275,21 @@ class BOProbe:
             return eid
         except queue.Full:
             self.bo_dropped += 1
-        except Exception:
+            self.bo_last_error = {"stage": "queue", "type": "Full"}
+        except Exception as error:
             self.bo_errors += 1
+            self.bo_last_error = {
+                "stage": "capture",
+                "type": type(error).__name__,
+                "node": node[:160] if isinstance(node, str) and node in self.bo_nodes else None,
+                "phase": (
+                    phase
+                    if isinstance(phase, str)
+                    and phase
+                    in {"enter", "return", "read", "decision", "wait", "commit", "change", "error"}
+                    else None
+                ),
+            }
         finally:
             _bo_internal.reset(token)
         return None
@@ -282,8 +331,9 @@ class BOProbe:
             )
         except queue.Full:
             self.bo_dropped += 1
-        except Exception:
+        except Exception as error:
             self.bo_errors += 1
+            self.bo_last_error = {"stage": "snapshot", "type": type(error).__name__}
         return False
 
     def bo_drain(self):
@@ -310,8 +360,9 @@ class BOProbe:
                         )
                         with urlopen(req, timeout=self.bo_timeout) as response:
                             response.read(32768)
-            except Exception:
+            except Exception as error:
                 self.bo_errors += 1
+                self.bo_last_error = {"stage": "transport", "type": type(error).__name__}
             finally:
                 _bo_internal.reset(token)
                 self.bo_queue.task_done()

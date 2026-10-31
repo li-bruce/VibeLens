@@ -41,6 +41,8 @@ def config(root, name):
         or set(modes) - {"on", "off", "fault"}
     ):
         raise ValueError("probe_modes must be a nonempty unique list of on/off/fault")
+    if type(result.get("require_probe_health", False)) is not bool:
+        raise ValueError("require_probe_health must be Boolean")
     stategraph = result.get("stategraph")
     if stategraph is not None:
         if not isinstance(stategraph, dict) or not stategraph.get("module"):
@@ -129,6 +131,7 @@ def snapshot(root, cfg, previous=None):
                 "required_probes",
                 "required_execution_cases",
                 "require_mapping_witnesses",
+                "require_probe_health",
             )
         },
         "whitebox": read(contained(root, cfg["whitebox"])) if cfg.get("whitebox") else None,

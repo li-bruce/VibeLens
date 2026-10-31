@@ -65,6 +65,37 @@ class CodeGraphTests(unittest.TestCase):
         self.assertEqual({n["label"] for n in graph["nodes"] if n.get("parent") == handler and n["code_role"] == "parameter"}, {"req", "res"})
         self.assertFalse(any(n.get("api", {}).get("path") == "/api/bo/health" for n in graph["nodes"]))
 
+    def test_api_projection_precedes_global_display_budget(self):
+        self.write("a_helpers.py", "\n".join(
+            f"def helper_{index}(value):\n    return value\n" for index in range(230)
+        ))
+        self.write("z_routes.py", "from flask import Flask\nfrom a_helpers import helper_0\n"
+                   "app = Flask(__name__)\n@app.get('/files/<file_id>')\n"
+                   "def download(file_id):\n    return helper_0(file_id)\n"
+                   "def unrelated(value):\n    return value\n")
+        graph, model = self.service.refresh()
+        endpoint = next(node for node in graph["nodes"] if node.get("code_role") == "endpoint")
+        handler = graph["symbols"]["z_routes.py::download"]
+        self.assertNotIn(endpoint["id"], {node["id"] for node in query(graph, model)["nodes"]})
+        api = self.service.view(projection="api")
+        actual = {node["id"] for node in api["nodes"]}
+        self.assertIn(endpoint["id"], actual)
+        self.assertIn(handler, actual)
+        self.assertIn(graph["symbols"]["a_helpers.py::helper_0"], actual)
+        self.assertNotIn(graph["symbols"]["z_routes.py::unrelated"], actual)
+        self.assertNotIn(graph["symbols"]["a_helpers.py::helper_229"], actual)
+        self.assertTrue(any(edge["from"] == endpoint["id"] and edge["to"] == handler
+                            and edge["code_relation"] == "handles" for edge in api["edges"]))
+        self.assertTrue(any(node.get("parent") == handler and node.get("label") == "file_id"
+                            for node in api["nodes"]))
+        self.assertTrue(all(edge["from"] in actual and edge["to"] in actual for edge in api["edges"]))
+        limited = self.service.view(projection="api", limit=1)
+        self.assertEqual(limited["loaded_nodes"], 1)
+        self.assertTrue(limited["omitted_nodes"] > 0)
+        self.assertEqual(limited["nodes"][0]["id"], endpoint["id"])
+        self.assertFalse(any(node.get("code_role") == "endpoint"
+                             for node in self.service.view(projection="project")["nodes"]))
+
     def test_parameter_source_ranges_python_javascript_and_vue(self):
         sources = {
             "unicode.py": "def f(中文, rows: int):\n    return rows\n",

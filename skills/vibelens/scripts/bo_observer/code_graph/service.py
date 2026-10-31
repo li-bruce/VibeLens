@@ -161,7 +161,7 @@ def main():
     parser.add_argument("--focus")
     parser.add_argument("--depth", type=int, default=1)
     parser.add_argument("--limit", type=int, default=400)
-    parser.add_argument("--projection", choices=["all", "project"], default="all")
+    parser.add_argument("--projection", choices=["all", "project", "api"], default="all")
     parser.add_argument("--out")
     args = parser.parse_args()
     service = CodeGraph(args.root, persist=args.command != "check")

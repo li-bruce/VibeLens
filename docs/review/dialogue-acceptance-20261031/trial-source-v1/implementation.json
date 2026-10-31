@@ -1,0 +1,945 @@
+{
+  "schema": "bo-implementation/v1",
+  "features": [
+    {
+      "id": "login",
+      "label": "用户登录",
+      "business_node": "login",
+      "nodes": [
+        "login"
+      ],
+      "sources": [
+        "app/service.py::Service.login"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::Service.login",
+          "name": "username",
+          "node": "login",
+          "direction": "in",
+          "field": "username",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.login",
+          "name": "password",
+          "node": "login",
+          "direction": "in",
+          "field": "password_supplied",
+          "policy": "derived",
+          "reason": "Capture presence or byte length only; never collect credential or file content."
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "login",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "login",
+          "phase": "return"
+        },
+        {
+          "case": "invalid_login",
+          "node": "login",
+          "phase": "error"
+        }
+      ],
+      "requirements": [
+        "R_LOGIN"
+      ]
+    },
+    {
+      "id": "logout",
+      "label": "Sign out",
+      "business_node": "logout",
+      "nodes": [
+        "logout"
+      ],
+      "sources": [
+        "app/service.py::Service.logout"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::Service.logout",
+          "name": "actor_id",
+          "node": "logout",
+          "direction": "in",
+          "field": "actor_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "logout",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "logout",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_LOGIN"
+      ]
+    },
+    {
+      "id": "upload",
+      "label": "上传文件",
+      "business_node": "upload",
+      "nodes": [
+        "upload"
+      ],
+      "sources": [
+        "app/service.py::Service.upload"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::Service.upload",
+          "name": "actor_id",
+          "node": "upload",
+          "direction": "in",
+          "field": "actor_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.upload",
+          "name": "filename",
+          "node": "upload",
+          "direction": "in",
+          "field": "filename",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.upload",
+          "name": "content",
+          "node": "upload",
+          "direction": "in",
+          "field": "size",
+          "policy": "derived",
+          "reason": "Capture presence or byte length only; never collect credential or file content."
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "upload",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "upload",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_UPLOAD"
+      ]
+    },
+    {
+      "id": "share",
+      "label": "主人选择接收方及审核人",
+      "business_node": "share",
+      "nodes": [
+        "share"
+      ],
+      "sources": [
+        "app/service.py::Service.request_share"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::Service.request_share",
+          "name": "actor_id",
+          "node": "share",
+          "direction": "in",
+          "field": "actor_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.request_share",
+          "name": "file_id",
+          "node": "share",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.request_share",
+          "name": "recipient_id",
+          "node": "share",
+          "direction": "in",
+          "field": "recipient_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.request_share",
+          "name": "reviewer_id",
+          "node": "share",
+          "direction": "in",
+          "field": "reviewer_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "share",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "share",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_SHARE"
+      ]
+    },
+    {
+      "id": "review",
+      "label": "主人指定的审核人审核",
+      "business_node": "review",
+      "nodes": [
+        "review",
+        "cancel_share",
+        "revoke",
+        "notification",
+        "share_message"
+      ],
+      "sources": [
+        "app/service.py::Service.change_share"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::Service.change_share",
+          "name": "actor_id",
+          "node": "review",
+          "direction": "in",
+          "field": "actor_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.change_share",
+          "name": "share_id",
+          "node": "review",
+          "direction": "in",
+          "field": "share_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.change_share",
+          "name": "event",
+          "node": "review",
+          "direction": "in",
+          "field": "event",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "review",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "review",
+          "phase": "return"
+        },
+        {
+          "case": "cancelled",
+          "node": "cancel_share",
+          "phase": "enter"
+        },
+        {
+          "case": "cancelled",
+          "node": "cancel_share",
+          "phase": "return"
+        },
+        {
+          "case": "revoked",
+          "node": "revoke",
+          "phase": "enter"
+        },
+        {
+          "case": "revoked",
+          "node": "revoke",
+          "phase": "return"
+        },
+        {
+          "case": "approved",
+          "node": "notification",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "notification",
+          "phase": "return"
+        },
+        {
+          "case": "approved",
+          "node": "share_message",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "share_message",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_REVIEW"
+      ]
+    },
+    {
+      "id": "download",
+      "label": "每次请求检查当前下载权限",
+      "business_node": "download",
+      "nodes": [
+        "download"
+      ],
+      "sources": [
+        "app/service.py::Service.download"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::Service.download",
+          "name": "actor_id",
+          "node": "download",
+          "direction": "in",
+          "field": "actor_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.download",
+          "name": "file_id",
+          "node": "download",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "download",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "download",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_DOWNLOAD"
+      ]
+    },
+    {
+      "id": "received_files",
+      "label": "接收方仅查看获授权文件",
+      "business_node": "received_files",
+      "nodes": [
+        "received_files"
+      ],
+      "sources": [
+        "app/service.py::Service.dashboard"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::Service.dashboard",
+          "name": "actor_id",
+          "node": "received_files",
+          "direction": "in",
+          "field": "actor_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "received_files",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "received_files",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_DOWNLOAD"
+      ]
+    },
+    {
+      "id": "read_notification",
+      "label": "Read notification",
+      "business_node": "read_notification",
+      "nodes": [
+        "read_notification"
+      ],
+      "sources": [
+        "app/service.py::Service.read_notification"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::Service.read_notification",
+          "name": "actor_id",
+          "node": "read_notification",
+          "direction": "in",
+          "field": "actor_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::Service.read_notification",
+          "name": "notification_id",
+          "node": "read_notification",
+          "direction": "in",
+          "field": "notification_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "read_notification",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "read_notification",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_MESSAGES"
+      ]
+    },
+    {
+      "id": "http_action",
+      "label": "Submit form",
+      "business_node": "http_action",
+      "nodes": [
+        "http_action",
+        "http_page"
+      ],
+      "sources": [
+        "app/web.py::create_app.page"
+      ],
+      "parameters": [],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "http_action",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "http_action",
+          "phase": "return"
+        },
+        {
+          "case": "approved",
+          "node": "http_page",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "http_page",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_LOGIN"
+      ]
+    },
+    {
+      "id": "http_download",
+      "label": "Download response",
+      "business_node": "http_download",
+      "nodes": [
+        "http_download"
+      ],
+      "sources": [
+        "app/web.py::create_app.download"
+      ],
+      "parameters": [
+        {
+          "source": "app/web.py::create_app.download",
+          "name": "file_id",
+          "node": "http_download",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "http_download",
+          "phase": "enter"
+        },
+        {
+          "case": "approved",
+          "node": "http_download",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_DOWNLOAD"
+      ]
+    },
+    {
+      "id": "permissions",
+      "label": "Current authorization rules",
+      "business_node": "download",
+      "nodes": [
+        "policy:session_fact",
+        "policy:owner_fact",
+        "policy:grant_fact",
+        "policy:signed_in_rule",
+        "policy:owner_rule",
+        "policy:grant_rule",
+        "policy:owner_session",
+        "policy:download_allowed",
+        "policy:selected_reviewer_fact",
+        "policy:selected_reviewer_rule",
+        "policy:pending_fact",
+        "policy:pending_rule",
+        "policy:approved_fact",
+        "policy:approved_rule",
+        "policy:reviewer_pending",
+        "policy:owner_pending",
+        "policy:owner_approved"
+      ],
+      "sources": [
+        "app/policy.py::flag_enabled"
+      ],
+      "parameters": [
+        {
+          "source": "app/policy.py::flag_enabled",
+          "name": "value",
+          "node": "policy:grant_rule",
+          "direction": "in",
+          "field": "value",
+          "policy": "value"
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "policy:session_fact",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:owner_fact",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:grant_fact",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:signed_in_rule",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:owner_rule",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:grant_rule",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:owner_session",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:download_allowed",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:selected_reviewer_fact",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:selected_reviewer_rule",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:pending_fact",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:pending_rule",
+          "phase": "decision"
+        },
+        {
+          "case": "revoked",
+          "node": "policy:approved_fact",
+          "phase": "decision"
+        },
+        {
+          "case": "revoked",
+          "node": "policy:approved_rule",
+          "phase": "decision"
+        },
+        {
+          "case": "approved",
+          "node": "policy:reviewer_pending",
+          "phase": "decision"
+        },
+        {
+          "case": "cancelled",
+          "node": "policy:owner_pending",
+          "phase": "decision"
+        },
+        {
+          "case": "revoked",
+          "node": "policy:owner_approved",
+          "phase": "decision"
+        }
+      ],
+      "requirements": [
+        "R_REVIEW",
+        "R_DOWNLOAD"
+      ]
+    },
+    {
+      "id": "db_read",
+      "label": "Read records",
+      "business_node": "upload",
+      "nodes": [
+        "db_read"
+      ],
+      "sources": [
+        "app/storage.py::Store.read"
+      ],
+      "parameters": [
+        {
+          "source": "app/storage.py::Store.read",
+          "name": "connection",
+          "node": "db_read",
+          "direction": "in",
+          "field": "statement",
+          "policy": "derived",
+          "reason": "Represent the native call with its literal-free statement or selected transformation fields; do not collect connection objects."
+        },
+        {
+          "source": "app/storage.py::Store.read",
+          "name": "statement",
+          "node": "db_read",
+          "direction": "in",
+          "field": "statement",
+          "policy": "derived",
+          "reason": "Represent the native call with its literal-free statement or selected transformation fields; do not collect connection objects."
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "db_read",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_STORAGE"
+      ]
+    },
+    {
+      "id": "db_write",
+      "label": "Write records",
+      "business_node": "upload",
+      "nodes": [
+        "db_write"
+      ],
+      "sources": [
+        "app/storage.py::Store.write"
+      ],
+      "parameters": [
+        {
+          "source": "app/storage.py::Store.write",
+          "name": "connection",
+          "node": "db_write",
+          "direction": "in",
+          "field": "statement",
+          "policy": "derived",
+          "reason": "Represent the native call with its literal-free statement or selected transformation fields; do not collect connection objects."
+        },
+        {
+          "source": "app/storage.py::Store.write",
+          "name": "statement",
+          "node": "db_write",
+          "direction": "in",
+          "field": "statement",
+          "policy": "derived",
+          "reason": "Represent the native call with its literal-free statement or selected transformation fields; do not collect connection objects."
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "db_write",
+          "phase": "return"
+        }
+      ],
+      "requirements": [
+        "R_STORAGE"
+      ]
+    },
+    {
+      "id": "db_transaction",
+      "label": "Commit or roll back",
+      "business_node": "upload",
+      "nodes": [
+        "db_transaction"
+      ],
+      "sources": [
+        "app/storage.py::Store.transaction"
+      ],
+      "parameters": [],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "db_transaction",
+          "phase": "commit"
+        }
+      ],
+      "requirements": [
+        "R_STORAGE"
+      ]
+    },
+    {
+      "id": "db_transform",
+      "label": "Normalize filename",
+      "business_node": "upload",
+      "nodes": [
+        "db_transform"
+      ],
+      "sources": [
+        "app/service.py::clean_filename"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::clean_filename",
+          "name": "value",
+          "node": "db_transform",
+          "direction": "out",
+          "field": "before",
+          "policy": "derived",
+          "reason": "Represent the native call with its literal-free statement or selected transformation fields; do not collect connection objects."
+        }
+      ],
+      "cases": [
+        {
+          "case": "approved",
+          "node": "db_transform",
+          "phase": "change"
+        }
+      ],
+      "requirements": [
+        "R_STORAGE"
+      ]
+    }
+  ],
+  "support": {
+    "app/policy.py::authorize": {
+      "node": "download",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/service.py::Service._one": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/service.py::Service._facts": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/service.py::Service._evaluate": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/service.py::Service._authorize": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/service.py::Service._journal": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/service.py::Service._messages": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/storage.py::timestamp": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/storage.py::Store.configure": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/storage.py::Store.initialize": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/storage.py::Store.unit": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/storage.py::Store.snapshot": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/web.py::create_app": {
+      "node": "http_action",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/web.py::create_app.context": {
+      "node": "http_action",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "app/web.py::create_app.too_large": {
+      "node": "http_action",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "bo_stategraph/workflow.py::SharingWorkflow.authorized": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    },
+    "bo_stategraph/workflow.py::SharingWorkflow.advance": {
+      "node": "share",
+      "reason": "Implementation helper; searchable source candidate, not an execution claim."
+    }
+  },
+  "excluded": {
+    "app/ports.py::NullActivation.result": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullActivation.record": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullMonitor.operation": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullMonitor.span": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullMonitor.record": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullMonitor.policy": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullMonitor.state": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullMonitor.execute": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullMonitor.transaction": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullMonitor.transform": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/ports.py::NullMonitor.flush": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "app/service.py::BusinessError.__init__": {
+      "category": "construction",
+      "reason": "Object construction; business operations have separate feature mappings."
+    },
+    "app/service.py::Service.__init__": {
+      "category": "construction",
+      "reason": "Object construction; business operations have separate feature mappings."
+    },
+    "app/storage.py::Store.__init__": {
+      "category": "construction",
+      "reason": "Object construction; business operations have separate feature mappings."
+    },
+    "app/web.py::create_app.health": {
+      "category": "observer",
+      "reason": "Read-only readiness endpoint; returns build metadata without business effects.",
+      "routes": [
+        "/api/bo/health"
+      ]
+    },
+    "bo_stategraph/workflow.py::SharingWorkflow.__init__": {
+      "category": "construction",
+      "reason": "Object construction; business operations have separate feature mappings."
+    },
+    "integrations/bo_monitor.py::BOMonitor.operation": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "integrations/bo_monitor.py::BOMonitor.__init__": {
+      "category": "construction",
+      "reason": "Object construction; business operations have separate feature mappings."
+    },
+    "integrations/bo_monitor.py::BOMonitor.span": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "integrations/bo_monitor.py::BOMonitor.record": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "integrations/bo_monitor.py::BOMonitor.policy": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "integrations/bo_monitor.py::BOMonitor.state": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "integrations/bo_monitor.py::BOMonitor._context": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "integrations/bo_monitor.py::BOMonitor.execute": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "integrations/bo_monitor.py::BOMonitor.transaction": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "integrations/bo_monitor.py::BOMonitor.transform": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    },
+    "integrations/bo_monitor.py::BOMonitor.flush": {
+      "category": "observer",
+      "reason": "Exact optional monitoring transport or neutral monitoring port; never determines business permission or state."
+    }
+  }
+}

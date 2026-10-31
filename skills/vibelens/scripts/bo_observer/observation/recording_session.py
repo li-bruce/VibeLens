@@ -92,6 +92,7 @@ class Recordings:
         max_events=20000,
         max_bytes=32 * 1024 * 1024,
         scope_setter=None,
+        capture_flush=None,
         event_source=None,
         command_fields=(),
     ):
@@ -105,6 +106,7 @@ class Recordings:
         self.provider, self.sources = observed_view, sources
         self.action_nodes = action_nodes or {}
         self.bo_scope_setter = scope_setter
+        self.bo_capture_flush = capture_flush
         self.interval, self.max_events, self.max_bytes = interval, max_events, max_bytes
         self.lock, self.operations = threading.RLock(), threading.Lock()
         self.active, self.cached, self.last_error = None, {}, ""
@@ -267,6 +269,10 @@ class Recordings:
 
     def _start(self, label, scope):
         """Begin from a current build snapshot and freeze the requested capture scope."""
+        if self.bo_capture_flush:
+            with bo_internal():
+                if self.bo_capture_flush() is not True:
+                    raise ValueError("Producer queue did not drain before recording")
         view = self.provider()
         with self.lock:
             if self.active:
@@ -414,11 +420,38 @@ class Recordings:
                 ident = self.active["id"] if self.active else None
             if not ident:
                 raise ValueError("No recording is active")
+            settlement = None
+            if self.bo_capture_flush:
+                # The producer worker may need both session and recording locks.
+                # Never hold either lock while waiting for the bounded drain.
+                try:
+                    with bo_internal():
+                        completed = self.bo_capture_flush() is True
+                    settlement = {"flushed": completed}
+                except Exception as error:
+                    settlement = {"flushed": False, "error": type(error).__name__}
             self._capture(ident, self.provider())
             with self.lock:
                 value = self.cached[ident]
                 if value["status"] == "recording":
                     value.update(status="stopped", ended_at=timestamp())
+                    if settlement is not None:
+                        value["producer_settlement"] = settlement
+                        if not settlement["flushed"]:
+                            value["status"] = "interrupted"
+                            value["gaps"].append(
+                                "Producer queue did not drain; only received events are retained."
+                            )
+                    before = value["context"]["health"].get("producer", {})
+                    after = value["final"]["health"].get("producer", {})
+                    if any(
+                        after.get(key, 0) > before.get(key, 0)
+                        for key in ("errors", "dropped", "data_errors")
+                    ):
+                        value["status"] = "interrupted"
+                        value["gaps"].append(
+                            "Producer capture or transport failed during this recording."
+                        )
                     if (
                         len(value["events"]) + value.get("scope_excluded", 0)
                         != value["end_seq"] - value["start_seq"]

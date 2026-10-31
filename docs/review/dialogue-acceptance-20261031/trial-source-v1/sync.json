@@ -1,0 +1,122 @@
+{
+  "model": "bo_stategraph/project.json",
+  "manifest": "manifest.json",
+  "code_files": [
+    "app/__init__.py",
+    "app/models.py",
+    "app/policy.py",
+    "app/ports.py",
+    "app/service.py",
+    "app/storage.py",
+    "app/web.py",
+    "integrations/__init__.py",
+    "integrations/bo_monitor.py",
+    "bo_stategraph/workflow.py"
+  ],
+  "watch_files": [
+    "tooling/build_model.py",
+    "tooling/observe.py",
+    "tooling/dev.py",
+    "tooling/check.py",
+    "tests/test_sharing.py",
+    "templates/base.html",
+    "templates/login.html",
+    "templates/workspace.html",
+    "templates/error.html",
+    "static/app.css",
+    "implementation.json",
+    "bo_stategraph/__init__.py",
+    "bo_stategraph/bo_contracts.py",
+    "bo_stategraph/execution_contract.py",
+    "bo_stategraph/native_executor.py",
+    "bo_stategraph/native_policy/runtime.py",
+    "bo_stategraph/native_policy/definition.py",
+    "bo_stategraph/native_policy/bindings.py"
+  ],
+  "source_scope": {
+    "roots": [
+      "."
+    ],
+    "require_symbol_classification": true,
+    "exclude": {
+      ".agents/**": "Project-local Skill checked through canonical tool fingerprints.",
+      ".trial/**": "Frozen Skill provenance.",
+      "observer_runtime/**": "Canonical runtime copy verified by upgrade hashes.",
+      "review/**": "Review evidence and finite test artifacts, not business code.",
+      "tooling/**": "Developer launch/build/check utilities, tracked explicitly.",
+      "bo_stategraph/__init__.py": "Canonical independent public query core.",
+      "bo_stategraph/bo_contracts.py": "Canonical declaration validation.",
+      "bo_stategraph/execution_contract.py": "Canonical activity validation.",
+      "bo_stategraph/native_executor.py": "Canonical flat native executor; parity checked.",
+      "bo_stategraph/native_policy/**": "Canonical pure native policy executor; parity checked.",
+      "data/**": "Application database and uploaded file content.",
+      "tests/**": "Independent tests, executed through test_commands.",
+      "static/graph/**": "Unchanged canonical viewer assets validated by managed runtime fingerprints."
+    },
+    "frozen_sources": {
+      ".trial/source": "review/frozen-archive-hashes.json",
+      "bo_stategraph/native_policy": "review/native-policy-hashes.json",
+      "bo_stategraph": "review/native-executor-hashes.json"
+    }
+  },
+  "stategraph": {
+    "module": "bo_stategraph/__init__.py",
+    "development_mode": "drive",
+    "execution_mode": "drive",
+    "decision_source": "user",
+    "decision": "drive：声明驱动"
+  },
+  "require_mapping_witnesses": true,
+  "mapping_contract": "mapping.json",
+  "acceptance": "acceptance.json",
+  "whitebox": "whitebox.json",
+  "discovery": "discovery.json",
+  "slice_depth": 1,
+  "probe_modes": [
+    "on",
+    "off",
+    "fault"
+  ],
+  "probe_callees": [
+    "record",
+    "span",
+    "self.monitor.operation",
+    "self.monitor.record"
+  ],
+  "required_probes": [
+    {
+      "symbol": "app/service.py::Service.download",
+      "node": "download",
+      "phase": "return"
+    }
+  ],
+  "required_runtime_probes": [
+    {
+      "case": "approved",
+      "node": "download",
+      "phase": "return"
+    }
+  ],
+  "observations_command": [
+    "{python}",
+    "-B",
+    "-X",
+    "utf8",
+    "tooling/observe.py"
+  ],
+  "test_commands": [
+    [
+      "{python}",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ]
+  ],
+  "timeout_seconds": 180
+}

@@ -46,6 +46,14 @@ async function api(route, body) {
   return data;
 }
 async function pick(id) {
+  // Search reveals current containment ancestors instead of assuming that one
+  // global expansion reaches every declaration in the engineering tree.
+  if (!(await page.locator(`#semantic [data-node-id="${id}"]`).count())) {
+    await page.fill("#node-search", id);
+    await page.locator("#node-search").press("Enter");
+    await page.waitForFunction((key) => graphDebug.graph.byId.has(key), id);
+    await page.fill("#node-search", "");
+  }
   await page
     .locator("#semantic [data-node-id]")
     .evaluateAll((nodes, id) => nodes.find((n) => n.dataset.nodeId === id).click(), id);

@@ -1,0 +1,150 @@
+{
+  "protocol": "bo-databases/v1",
+  "stores": [
+    {
+      "id": "application",
+      "label": "SQLite application records",
+      "engine": "sqlalchemy",
+      "url_env": "TRIAL_DATABASE_URL",
+      "selection": {
+        "source": "user",
+        "answer": "采用 SQLite + SQLAlchemy，文件放在本项目自己的数据目录。",
+        "locator": "review/design-dialogue.md U003-U004"
+      },
+      "model_layer": "SQLAlchemy Core MetaData",
+      "source_files": [
+        "app/models.py",
+        "tooling/export_database.py"
+      ],
+      "declaration": "bo_stategraph/database-declaration.json"
+    }
+  ],
+  "operations": [
+    {
+      "id": "db_read",
+      "label": "Read records",
+      "parent": "upload",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.read"
+      },
+      "store": "application",
+      "action": "read",
+      "targets": [
+        "table:users",
+        "table:files",
+        "table:shares",
+        "table:notifications",
+        "table:journal"
+      ],
+      "parameters": {},
+      "before": {},
+      "after": {
+        "count": "number"
+      },
+      "inputs": [],
+      "required_cases": [
+        "approved"
+      ],
+      "requirements": [
+        "R_STORAGE"
+      ]
+    },
+    {
+      "id": "db_write",
+      "label": "Write records",
+      "parent": "upload",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.write"
+      },
+      "store": "application",
+      "action": "write",
+      "targets": [
+        "table:files",
+        "table:shares",
+        "table:notifications",
+        "table:journal"
+      ],
+      "parameters": {},
+      "before": {},
+      "after": {
+        "count": "number"
+      },
+      "inputs": [],
+      "required_cases": [
+        "approved"
+      ],
+      "requirements": [
+        "R_STORAGE"
+      ],
+      "target_actions": {
+        "table:files": "write",
+        "table:shares": "write",
+        "table:notifications": "write",
+        "table:journal": "write"
+      }
+    },
+    {
+      "id": "db_transaction",
+      "label": "Commit or roll back",
+      "parent": "upload",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.transaction"
+      },
+      "store": "application",
+      "action": "transaction",
+      "targets": [],
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "inputs": [],
+      "required_cases": [
+        "approved"
+      ],
+      "requirements": [
+        "R_STORAGE"
+      ]
+    },
+    {
+      "id": "db_transform",
+      "label": "Normalize filename",
+      "parent": "upload",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "clean_filename"
+      },
+      "store": "application",
+      "action": "transform",
+      "targets": [],
+      "parameters": {},
+      "before": {
+        "filename": "string"
+      },
+      "after": {
+        "filename": "string"
+      },
+      "inputs": [],
+      "required_cases": [
+        "approved"
+      ],
+      "requirements": [
+        "R_STORAGE"
+      ]
+    }
+  ],
+  "exporters": [
+    {
+      "store": "application",
+      "output": "bo_stategraph/database-declaration.json",
+      "command": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tooling/export_database.py"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "candidate_id": "90a85be465a0991c01d0471e9cfee67494472ad52e8bfdb1d532c7c66895fb0c",
+  "excluded_symbols": {
+    "app/ports.py::BOEvents": "Application-owned optional diagnostics boundary; its actual business callers remain mapped. The implementation plan already classifies its constructor and emitter as observer support.",
+    "app/ports.py::BOEvents.__init__": "Stores the optional diagnostics callback and error counter only. Existing implementation observer classification is retained; no business action is excluded.",
+    "app/ports.py::BOEvents.bo_emit": "Invokes the optional observer callback with its capture gate and isolates callback exceptions. All business calls and their required runtime values remain mapped.",
+    "app/service.py::Delivery": "Class container; its actual business methods remain in the existing graph and independent implementation inventory.",
+    "app/store.py::Store": "Storage class container; its query and effect methods remain mapped by the existing graph and support inventory.",
+    "bo_stategraph/workflow.py::ActivityExecution": "Execution class container; its activity, resource, join and state methods retain existing graph and runtime checks.",
+    "bo_stategraph/workflow.py::ActivityState": "Activity-state enumeration; declared states and actual execution values retain existing contract validation.",
+    "bo_stategraph/workflow.py::Phase": "Main-phase enumeration; machine declaration and transition validation retain existing checks."
+  },
+  "requirement_changes": {},
+  "decisions": {
+    "business": {
+      "action": "unchanged",
+      "reason": "Git confirms byte-identical configured code_files; all protected requirements, cases and independent effects remain unchanged."
+    },
+    "state_machine": {
+      "action": "unchanged",
+      "reason": "No native state, transition, guard, activity, join or resource definition changed."
+    },
+    "abstraction": {
+      "action": "unchanged",
+      "reason": "Node IDs, meanings, source bindings and lifecycle definitions remain unchanged. Managed source fingerprints are refreshed only after explicit impact review."
+    },
+    "probes": {
+      "action": "updated",
+      "reason": "Managed Python/JavaScript adapters add scope filtering before builders, read-only health and safe capture diagnostics. Recording settlement waits outside observer locks. Same-stat source edits, out-of-root junctions, delayed capture errors, timeout retention and actual queued events have independent regressions. Existing example probe locations, allowlists, business assertions and on/off/fault modes are retained."
+    }
+  }
+}

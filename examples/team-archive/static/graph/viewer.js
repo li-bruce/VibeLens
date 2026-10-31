@@ -1707,7 +1707,7 @@ async function poll() {
               ? null
               : analysisSettings.codeFocus,
             limit: codeLimit,
-            projection: analysisId === "project" ? "project" : "all",
+            projection: ["project", "api"].includes(analysisId) ? analysisId : "all",
           });
       if (codeSlice?.focus && codeSlice.focus !== previousCodeFocus)
         for (const node of codeSlice.nodes)

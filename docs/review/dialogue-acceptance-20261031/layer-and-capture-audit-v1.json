@@ -1,0 +1,437 @@
+{
+  "kind": "Actual trial source/model and received events; structural declarations are not execution claims",
+  "build_id": "c344ca1ed0e0a7ba507d4c48fd83066eac26841f7314841eb43fc0e6dc76d76d",
+  "source_files": 33,
+  "layers": {
+    "business": 15,
+    "state": 5,
+    "unspecified": 43,
+    "predicate": 18,
+    "program": 37
+  },
+  "cross_layer_relations": {
+    "business -> business": 5,
+    "business -> state": 5,
+    "state -> business": 8,
+    "state -> unspecified": 1,
+    "predicate -> predicate": 34,
+    "predicate -> program": 6,
+    "predicate -> business": 7,
+    "unspecified -> unspecified": 60,
+    "business -> unspecified": 4,
+    "business -> program": 79,
+    "unspecified -> program": 2,
+    "program -> program": 4
+  },
+  "received_owners": {
+    "http_action": 62,
+    "login": 24,
+    "db_transaction": 224,
+    "db_read": 1300,
+    "http_page": 136,
+    "received_files": 136,
+    "policy:session_fact": 136,
+    "policy:signed_in_rule": 136,
+    "upload": 18,
+    "db_transform": 12,
+    "db_write": 108,
+    "share": 24,
+    "policy:owner_fact": 10,
+    "policy:owner_rule": 10,
+    "policy:owner_session": 10,
+    "policy:grant_fact": 46,
+    "policy:grant_rule": 46,
+    "policy:download_allowed": 46,
+    "http_download": 14,
+    "download": 24,
+    "review": 20,
+    "policy:selected_reviewer_fact": 6,
+    "policy:selected_reviewer_rule": 6,
+    "policy:reviewer_pending": 6,
+    "policy:pending_fact": 6,
+    "policy:pending_rule": 6,
+    "notification": 8,
+    "share_message": 4,
+    "revoke": 8,
+    "policy:approved_fact": 2,
+    "policy:approved_rule": 2,
+    "policy:owner_approved": 2,
+    "cancel_share": 8,
+    "policy:owner_pending": 2,
+    "read_notification": 4
+  },
+  "features": [
+    {
+      "id": "login",
+      "sources": [
+        "app/service.py::Service.login"
+      ],
+      "owners": [
+        "login"
+      ],
+      "received": {
+        "login": 24
+      }
+    },
+    {
+      "id": "logout",
+      "sources": [
+        "app/service.py::Service.logout"
+      ],
+      "owners": [
+        "logout"
+      ],
+      "received": {
+        "logout": 0
+      }
+    },
+    {
+      "id": "upload",
+      "sources": [
+        "app/service.py::Service.upload"
+      ],
+      "owners": [
+        "upload"
+      ],
+      "received": {
+        "upload": 18
+      }
+    },
+    {
+      "id": "share",
+      "sources": [
+        "app/service.py::Service.request_share"
+      ],
+      "owners": [
+        "share"
+      ],
+      "received": {
+        "share": 24
+      }
+    },
+    {
+      "id": "review",
+      "sources": [
+        "app/service.py::Service.change_share"
+      ],
+      "owners": [
+        "review",
+        "cancel_share",
+        "revoke",
+        "notification",
+        "share_message"
+      ],
+      "received": {
+        "review": 20,
+        "cancel_share": 8,
+        "revoke": 8,
+        "notification": 8,
+        "share_message": 4
+      }
+    },
+    {
+      "id": "download",
+      "sources": [
+        "app/service.py::Service.download"
+      ],
+      "owners": [
+        "download"
+      ],
+      "received": {
+        "download": 24
+      }
+    },
+    {
+      "id": "received_files",
+      "sources": [
+        "app/service.py::Service.dashboard"
+      ],
+      "owners": [
+        "received_files"
+      ],
+      "received": {
+        "received_files": 136
+      }
+    },
+    {
+      "id": "read_notification",
+      "sources": [
+        "app/service.py::Service.read_notification"
+      ],
+      "owners": [
+        "read_notification"
+      ],
+      "received": {
+        "read_notification": 4
+      }
+    },
+    {
+      "id": "http_action",
+      "sources": [
+        "app/web.py::create_app.page"
+      ],
+      "owners": [
+        "http_action",
+        "http_page"
+      ],
+      "received": {
+        "http_action": 62,
+        "http_page": 136
+      }
+    },
+    {
+      "id": "http_download",
+      "sources": [
+        "app/web.py::create_app.download"
+      ],
+      "owners": [
+        "http_download"
+      ],
+      "received": {
+        "http_download": 14
+      }
+    },
+    {
+      "id": "permissions",
+      "sources": [
+        "app/policy.py::flag_enabled"
+      ],
+      "owners": [
+        "policy:session_fact",
+        "policy:owner_fact",
+        "policy:grant_fact",
+        "policy:signed_in_rule",
+        "policy:owner_rule",
+        "policy:grant_rule",
+        "policy:owner_session",
+        "policy:download_allowed",
+        "policy:selected_reviewer_fact",
+        "policy:selected_reviewer_rule",
+        "policy:pending_fact",
+        "policy:pending_rule",
+        "policy:approved_fact",
+        "policy:approved_rule",
+        "policy:reviewer_pending",
+        "policy:owner_pending",
+        "policy:owner_approved"
+      ],
+      "received": {
+        "policy:session_fact": 136,
+        "policy:owner_fact": 10,
+        "policy:grant_fact": 46,
+        "policy:signed_in_rule": 136,
+        "policy:owner_rule": 10,
+        "policy:grant_rule": 46,
+        "policy:owner_session": 10,
+        "policy:download_allowed": 46,
+        "policy:selected_reviewer_fact": 6,
+        "policy:selected_reviewer_rule": 6,
+        "policy:pending_fact": 6,
+        "policy:pending_rule": 6,
+        "policy:approved_fact": 2,
+        "policy:approved_rule": 2,
+        "policy:reviewer_pending": 6,
+        "policy:owner_pending": 2,
+        "policy:owner_approved": 2
+      }
+    },
+    {
+      "id": "db_read",
+      "sources": [
+        "app/storage.py::Store.read"
+      ],
+      "owners": [
+        "db_read"
+      ],
+      "received": {
+        "db_read": 1300
+      }
+    },
+    {
+      "id": "db_write",
+      "sources": [
+        "app/storage.py::Store.write"
+      ],
+      "owners": [
+        "db_write"
+      ],
+      "received": {
+        "db_write": 108
+      }
+    },
+    {
+      "id": "db_transaction",
+      "sources": [
+        "app/storage.py::Store.transaction"
+      ],
+      "owners": [
+        "db_transaction"
+      ],
+      "received": {
+        "db_transaction": 224
+      }
+    },
+    {
+      "id": "db_transform",
+      "sources": [
+        "app/service.py::clean_filename"
+      ],
+      "owners": [
+        "db_transform"
+      ],
+      "received": {
+        "db_transform": 12
+      }
+    }
+  ],
+  "static_code": {
+    "roles": {
+      "file": 25,
+      "directory": 13,
+      "function": 61,
+      "parameter": 194,
+      "class": 7,
+      "endpoint": 2,
+      "unresolved": 278
+    },
+    "relations": {
+      "contains": 37,
+      "defines": 68,
+      "parameter": 194,
+      "handles": 2,
+      "imports": 64,
+      "inherits": 1,
+      "calls": 369
+    },
+    "endpoints": [
+      {
+        "id": "code:endpoint:45ee9ff160311a5335ae7ad4",
+        "label": "GET /download/<file_id>",
+        "kind": "function",
+        "layer": "code",
+        "code_role": "endpoint",
+        "origin": "code-index",
+        "summary": "app.get('/download/<file_id>')",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "create_app.download",
+          "line": 84,
+          "end_line": 95
+        },
+        "api": {
+          "path": "/download/<file_id>",
+          "methods": [
+            "GET"
+          ],
+          "declaration": "app.get('/download/<file_id>')"
+        }
+      },
+      {
+        "id": "code:endpoint:aae0ebe6ff48809ef7b4e5a0",
+        "label": "GET POST /",
+        "kind": "function",
+        "layer": "code",
+        "code_role": "endpoint",
+        "origin": "code-index",
+        "summary": "app.route('/', methods=['GET', 'POST'])",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "create_app.page",
+          "line": 32,
+          "end_line": 81
+        },
+        "api": {
+          "path": "/",
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "declaration": "app.route('/', methods=['GET', 'POST'])"
+        }
+      }
+    ]
+  },
+  "exception_capture": [
+    {
+      "id": "a1b4186686ab4ce988ef4c95860755ae",
+      "status": "interrupted",
+      "events": 1225,
+      "gaps": [
+        "Producer capture or transport failed during this recording."
+      ],
+      "producer_settlement": {
+        "flushed": true
+      },
+      "producer_before": {
+        "enabled": true,
+        "run_id": "759d62b732ba41fca9434cbaa5353b7a",
+        "producer_id": "98d8a8775ea445a9867fe26d31d6d63e",
+        "enqueued": 0,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null
+      },
+      "producer_after": {
+        "enabled": true,
+        "run_id": "759d62b732ba41fca9434cbaa5353b7a",
+        "producer_id": "98d8a8775ea445a9867fe26d31d6d63e",
+        "enqueued": 1225,
+        "pending": 0,
+        "errors": 6,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": {
+          "stage": "capture",
+          "type": "NameError",
+          "node": "http_download",
+          "phase": "return"
+        }
+      }
+    },
+    {
+      "id": "e3754262526c4bf2bf89a3a418267e14",
+      "status": "interrupted",
+      "events": 1387,
+      "gaps": [
+        "Producer capture or transport failed during this recording."
+      ],
+      "producer_settlement": {
+        "flushed": true
+      },
+      "producer_before": {
+        "enabled": true,
+        "run_id": "759d62b732ba41fca9434cbaa5353b7a",
+        "producer_id": "98d8a8775ea445a9867fe26d31d6d63e",
+        "enqueued": 1225,
+        "pending": 0,
+        "errors": 6,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": {
+          "stage": "capture",
+          "type": "NameError",
+          "node": "http_download",
+          "phase": "return"
+        }
+      },
+      "producer_after": {
+        "enabled": true,
+        "run_id": "759d62b732ba41fca9434cbaa5353b7a",
+        "producer_id": "98d8a8775ea445a9867fe26d31d6d63e",
+        "enqueued": 2612,
+        "pending": 0,
+        "errors": 12,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": {
+          "stage": "capture",
+          "type": "NameError",
+          "node": "http_download",
+          "phase": "return"
+        }
+      }
+    }
+  ]
+}

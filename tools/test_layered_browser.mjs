@@ -52,12 +52,32 @@ async function expand(id) {
   await page.waitForTimeout(180);
 }
 async function layerAction(id, toggle = false) {
-  const canvas = page.locator("#layer-controls canvas"),
-    box = await canvas.boundingBox();
+  const canvas = page.locator("#layer-controls canvas");
   const order = await page.evaluate(() => graphDebug.layers.order);
-  await page.mouse.click(box.x + (toggle ? 22 : 72), box.y + 40 + order.indexOf(id) * 34 + 17);
+  const offset = 40 + order.indexOf(id) * 34 + 17;
+  const drawer = await page.locator("#layer-drawer").boundingBox();
+  let box = await canvas.boundingBox();
+  if (box.y + offset < drawer.y + 3 || box.y + offset > drawer.y + drawer.height - 3) {
+    // On short/mobile viewports the layer ruler scrolls above the graph tools.
+    // Reach the row through an actual wheel gesture before clicking its token.
+    await page.mouse.move(drawer.x + 20, drawer.y + drawer.height / 2);
+    await page.mouse.wheel(0, box.y + offset - drawer.y - drawer.height / 2);
+    await page.waitForFunction((rowY) => {
+      const c = document.querySelector("#layer-controls canvas").getBoundingClientRect();
+      const d = document.querySelector("#layer-drawer").getBoundingClientRect();
+      return c.y + rowY >= d.y && c.y + rowY <= d.bottom;
+    }, offset);
+    box = await canvas.boundingBox();
+  }
+  await page.mouse.click(box.x + (toggle ? 22 : 72), box.y + offset);
 }
 async function layerHeader(all = false) {
+  const drawer = page.locator("#layer-drawer");
+  if (await drawer.evaluate((element) => element.scrollTop > 0)) {
+    await drawer.hover();
+    await page.mouse.wheel(0, -10000);
+    await page.waitForFunction(() => document.querySelector("#layer-drawer").scrollTop === 0);
+  }
   const box = await page.locator("#layer-controls canvas").boundingBox();
   await page.mouse.click(box.x + (all ? box.width - 13 : 13), box.y + 17);
 }
@@ -221,9 +241,16 @@ try {
   checks.coplanarLayers = true;
 
   const orderBefore = await page.evaluate(() => graphDebug.layers.order);
+  const stateIndex = orderBefore.indexOf("state");
+  assert.ok(stateIndex > 0, "State has a preceding layer for the reorder interaction");
+  const movedOrder = [...orderBefore];
+  [movedOrder[stateIndex - 1], movedOrder[stateIndex]] = [
+    movedOrder[stateIndex],
+    movedOrder[stateIndex - 1],
+  ];
   await layerAction("state");
   await page.keyboard.press("Alt+ArrowUp");
-  assert.equal((await page.evaluate(() => graphDebug.layers.order))[1], "state");
+  assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), movedOrder);
   await page.locator("#layer-gap").fill("380");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   const changedPlanes = await page.evaluate(() => graphDebug.spatialPositions);
@@ -233,11 +260,11 @@ try {
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), orderBefore);
   // Actual pointer drag reorders rendered plane tokens, not a DOM drag target.
   const tick = await page.locator("#layer-controls canvas").boundingBox();
-  await page.mouse.move(tick.x + 75, tick.y + 40 + 2 * 34 + 17);
+  await page.mouse.move(tick.x + 75, tick.y + 40 + stateIndex * 34 + 17);
   await page.mouse.down();
-  await page.mouse.move(tick.x + 75, tick.y + 40 + 34 + 17, { steps: 5 });
+  await page.mouse.move(tick.x + 75, tick.y + 40 + (stateIndex - 1) * 34 + 17, { steps: 5 });
   await page.mouse.up();
-  assert.equal((await page.evaluate(() => graphDebug.layers.order))[1], "state");
+  assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), movedOrder);
   const customLayers = await page.evaluate(() => graphDebug.layers);
   await page.waitForTimeout(350);
   await page.reload();
@@ -305,9 +332,16 @@ try {
   checks.rulerAndBoundaryRoutes = true;
   await shot("3d-top");
   const camera = await page.evaluate(() => graphDebug.spatial.camera.position);
-  await page.mouse.move(1000, 650);
+  // The timeline dock changes the available graph height. Orbit within the
+  // actual viewport rather than dragging an unrelated dock at a fixed page Y.
+  const orbitBounds = await page.locator("#viewport").boundingBox();
+  const orbitStart = {
+    x: orbitBounds.x + orbitBounds.width * 0.75,
+    y: orbitBounds.y + orbitBounds.height * 0.35,
+  };
+  await page.mouse.move(orbitStart.x, orbitStart.y);
   await page.mouse.down();
-  await page.mouse.move(1120, 700, { steps: 12 });
+  await page.mouse.move(orbitStart.x + 120, orbitStart.y + 50, { steps: 12 });
   await page.mouse.up();
   await page.waitForTimeout(350);
   assert.notDeepEqual(await page.evaluate(() => graphDebug.spatial.camera.position), camera);

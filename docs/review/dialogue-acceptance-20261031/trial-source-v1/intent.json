@@ -1,0 +1,75 @@
+{
+  "intent_id": "team-file-sharing-lifecycle",
+  "project_id": "team-file-sharing-lifecycle",
+  "revision": "1",
+  "goal": "Share team files through selected review, notifications and revocable download access.",
+  "requirements": [
+    {
+      "id": "R_LOGIN",
+      "text": "Seeded local accounts can log in and log out; no registration. Passwords are not captured.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    },
+    {
+      "id": "R_UPLOAD",
+      "text": "An authenticated member uploads a private file owned by that member.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    },
+    {
+      "id": "R_SHARE",
+      "text": "The file owner selects another existing member as recipient and an existing member as reviewer, creating a pending share.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    },
+    {
+      "id": "R_REVIEW",
+      "text": "Only the selected reviewer may approve or reject a pending share. Approval grants recipient access; rejection does not.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    },
+    {
+      "id": "R_MESSAGES",
+      "text": "Review results go to owner, selected reviewer, and recipient. Approval also sends a separate sharing message to all three. Users read only their own notifications.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    },
+    {
+      "id": "R_DOWNLOAD",
+      "text": "Recipients see and download only currently approved shares. Pending, rejected, cancelled, and revoked shares confer no access. Every new download checks current authority.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    },
+    {
+      "id": "R_CANCEL",
+      "text": "Only the owner can cancel a pending share. A cancelled request cannot subsequently be approved.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    },
+    {
+      "id": "R_REVOKE",
+      "text": "Only the owner can revoke an approved share; new downloads using old URLs or unchanged pages are denied immediately. Local downloaded copies are not recovered.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    },
+    {
+      "id": "R_STORAGE",
+      "text": "SQLite with SQLAlchemy persists records; file content remains inside the trial data directory. State and resulting messages commit together.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    },
+    {
+      "id": "R_GRAPH",
+      "text": "Drive mode executes the confirmed declaration; maintain public graph, source mappings, database observations, real lifecycles and evidence independently of business authority.",
+      "status": "confirmed",
+      "source": "review/design-dialogue.md U001-U006; trial answers, not production acceptance"
+    }
+  ],
+  "exclusions": [
+    "Public links",
+    "Registration",
+    "Cloud publication",
+    "Recovering downloaded copies",
+    "Production or arbitrary-schedule acceptance claims"
+  ]
+}

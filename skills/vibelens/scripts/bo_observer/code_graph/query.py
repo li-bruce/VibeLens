@@ -76,14 +76,55 @@ def anchors(model, graph, focus):
     return selected, links
 
 
+def api_projection(graph, depth):
+    """Keep real API handlers and bounded outgoing calls before display limits.
+
+    Limiting the full code index first can omit every route when an earlier file
+    has many symbols. Context ancestors retain containment; they do not bring
+    unrelated siblings or callers into this API neighborhood.
+    """
+    nodes = {node["id"]: node for node in graph["nodes"]}
+    endpoints = {key for key, node in nodes.items() if node.get("code_role") == "endpoint"}
+    owners = {
+        edge["to"]
+        for edge in graph["edges"]
+        if edge["code_relation"] == "handles" and edge["from"] in endpoints
+    }
+    for _ in range(depth):
+        current = set(owners)
+        owners.update(
+            edge["to"]
+            for edge in graph["edges"]
+            if edge["code_relation"] == "calls" and edge["from"] in current
+        )
+    keep = endpoints | owners
+    keep.update(
+        key
+        for key, node in nodes.items()
+        if node.get("code_role") == "parameter" and node.get("parent") in owners
+    )
+    for key in list(keep):
+        parent, seen = nodes[key].get("parent"), set()
+        while parent in nodes and parent not in seen:
+            keep.add(parent)
+            seen.add(parent)
+            parent = nodes[parent].get("parent")
+    return {
+        **graph,
+        "nodes": [node for node in graph["nodes"] if node["id"] in keep],
+        "symbols": {key: value for key, value in graph["symbols"].items() if value in keep},
+        "edges": [edge for edge in graph["edges"] if edge["from"] in keep and edge["to"] in keep],
+    }
+
+
 def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
     """Return a stable slice, preserving truncated relations as named boundaries."""
     if type(depth) is not int or not 0 <= depth <= 3:
         raise ValueError("Code depth must be an integer from 0 to 3")
     if type(limit) is not int or not 1 <= limit <= 5000:
         raise ValueError("Code limit must be an integer from 1 to 5000")
-    if projection not in {"all", "project"}:
-        raise ValueError("Code projection must be all or project")
+    if projection not in {"all", "project", "api"}:
+        raise ValueError("Code projection must be all, project or api")
     equivalent = representation_links(model, graph)
     if projection == "project":
         keep = {
@@ -101,6 +142,8 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
             },
             "edges": [e for e in graph["edges"] if e["from"] in keep and e["to"] in keep],
         }
+    if projection == "api":
+        graph = api_projection(graph, depth)
     nodes = {n["id"]: n for n in graph["nodes"]}
     links = []
     if focus:
@@ -162,6 +205,7 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
     ordered = sorted(
         wanted,
         key=lambda k: (
+            projection == "api" and nodes[k].get("code_role") != "endpoint",
             nodes[k].get("project_path", nodes[k].get("source", {}).get("path", "")),
             nodes[k].get("source", {}).get("line", 0),
             k,

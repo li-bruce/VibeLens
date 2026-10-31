@@ -87,6 +87,12 @@ scope. Never describe a bounded canvas as every possible execution path.
 
 ## API entries and layers
 
+The API preset requests `projection=api`: it selects registered endpoints,
+their handlers, signature parameters and bounded outgoing calls before applying
+the display limit. Ancestor files/classes retain containment. Unrelated earlier
+files cannot consume the API view's node budget. Omitted nodes and boundary links
+remain explicit; static registrations still do not prove actual invocation.
+
 Literal route registrations recognized by the Python and JavaScript adapters appear
 as **API** nodes linked to their handler declarations in **API entries**, **Code structure**, or a matching **Local code** region. The optional Layers control
 can separate these entries from business actions, states, rules, functions/values,

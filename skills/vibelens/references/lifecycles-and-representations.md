@@ -18,6 +18,11 @@ uncertain business meaning in conversation and reconcile implementation details
 within coding. Omit `lifecycle` for the generic observation vocabulary; never
 invent success/failure, waiting, cancellation or recovery requirements.
 
+Keep cause distinctions. A shared `BusinessError` class may represent a missing
+file, invalid input or rejected permission. That class alone cannot select a
+registered "Denied" state. Use a specifically captured cause, or keep the
+generic exception label and expose the actual policy evidence separately.
+
 For example, a node that already captures the boolean `allowed` output can name
 its observed rejection without reclassifying every normal return as success:
 

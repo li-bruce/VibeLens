@@ -198,7 +198,7 @@ class BODataRuntime:
         if not any(item is connection for item in self.bo_excluded_connections):
             self.bo_excluded_connections.append(connection)
 
-    def _allowed(self, connection=None):
+    def _allowed(self, connection=None, node=None):
         internal = bo_is_internal() or _transport_internal.get() or _bo_capturing.get()
         engine = getattr(connection, "engine", None) if connection is not None else None
         excluded = any(
@@ -207,6 +207,15 @@ class BODataRuntime:
         )
         if internal or excluded:
             self.bo_suppressed += 1
+            return False
+        if not self.bo_probe.bo_enabled or self.bo_probe.bo_closed.is_set():
+            return False
+        if node in self.bo_probe.bo_excluded:
+            self.bo_suppressed += 1
+            return False
+        selected = self.bo_probe.bo_capture_nodes
+        if node is not None and selected is not None and node not in selected:
+            self.bo_probe.bo_filtered += 1
             return False
         return True
 
@@ -234,7 +243,9 @@ class BODataRuntime:
     @contextmanager
     def operation(self, node, parameters=None, **context):
         """Associate actual driver calls with a declared graph node in this task/thread."""
-        scope = self._scope(node, parameters, **context)
+        # Do not parse queries, select values or call summaries outside capture.
+        # Clear an outer scope so excluded work cannot inherit its attribution.
+        scope = self._scope(node, parameters, **context) if self._allowed(node=node) else None
         token = _bo_scope.set(scope)
         try:
             yield
@@ -380,7 +391,7 @@ class BODataRuntime:
         are needed; this helper never calls list(), next(), fetch*, or consume().
         """
         call = None
-        if self._allowed(connection):
+        if self._allowed(connection, node):
             call = self._begin(
                 self._scope(node, parameters, **context), statement, language, targets
             )
@@ -407,7 +418,7 @@ class BODataRuntime:
     ):
         """Await one native async operation while preserving cancellation and results."""
         call = None
-        if self._allowed(connection):
+        if self._allowed(connection, node):
             call = self._begin(
                 self._scope(node, parameters, **context), statement, language, targets
             )
@@ -425,7 +436,7 @@ class BODataRuntime:
         """Record selected values around a real transformation and return its original result."""
         call = (
             self._begin(self._scope(node, parameters, **context), "transform")
-            if self._allowed()
+            if self._allowed(node=node)
             else None
         )
         initial = self._summary(before, value) if call and before else {}
@@ -488,9 +499,13 @@ class BODataRuntime:
         """
         call = (
             self._begin(self._scope(node, parameters, **context), "transaction")
-            if self._allowed(connection)
+            if self._allowed(connection, node)
             else None
         )
+        if call is None:
+            with manager as resource:
+                yield resource
+            return
         token = _bo_transaction.set((self, call.call_id)) if call else None
         body_error = None
         active_before_exit = True
@@ -546,9 +561,13 @@ class BODataRuntime:
         """Async counterpart of transaction(), with identical commit/error semantics."""
         call = (
             self._begin(self._scope(node, parameters, **context), "transaction")
-            if self._allowed(connection)
+            if self._allowed(connection, node)
             else None
         )
+        if call is None:
+            async with manager as resource:
+                yield resource
+            return
         token = _bo_transaction.set((self, call.call_id)) if call else None
         body_error = None
         active_before_exit = True
@@ -612,7 +631,11 @@ class BODataRuntime:
         def before(connection, cursor, statement, parameters, execution_context, many):
             try:
                 scope = _bo_scope.get()
-                if scope is None or scope.runtime is not self or not self._allowed(connection):
+                if (
+                    scope is None
+                    or scope.runtime is not self
+                    or not self._allowed(connection, scope.node)
+                ):
                     return
                 pending[id(execution_context)] = self._begin(
                     scope, statement, "sql", dialect=connection.dialect.name
@@ -673,7 +696,7 @@ class BODataRuntime:
                     if (
                         scope is None
                         or scope.runtime is not runtime
-                        or not runtime._allowed(self.bo_connection)
+                        or not runtime._allowed(self.bo_connection, scope.node)
                     ):
                         return
                     collection = event.command.get(event.command_name)

@@ -94,6 +94,51 @@ class DatabaseRuntimeTests(unittest.TestCase):
             schema_check(event, "event")
         return self.bo_events
 
+    def test_focused_or_disabled_data_skips_summaries_but_keeps_real_operations(self):
+        for disabled in (False, True):
+            self.bo_probe.bo_enabled = not disabled
+            self.bo_probe.bo_set_scope(None if disabled else [])
+            summaries = []
+            value = [1, 2]
+            result = self.bo_runtime.execute(
+                "query",
+                lambda: value,
+                summarize=lambda actual: summaries.append("query") or {"rows": len(actual)},
+            )
+            self.assertIs(result, value)
+            result = self.bo_runtime.transform(
+                "transform",
+                lambda actual: actual + [3],
+                value,
+                before=lambda actual: summaries.append("before") or {"count": len(actual)},
+                after=lambda actual: summaries.append("after") or {"count": len(actual)},
+            )
+            self.assertEqual(result, [1, 2, 3])
+
+            async def read():
+                return value
+
+            self.assertIs(
+                asyncio.run(
+                    self.bo_runtime.execute_async(
+                        "query",
+                        read,
+                        summarize=lambda actual: summaries.append("async") or {"rows": len(actual)},
+                    )
+                ),
+                value,
+            )
+            with self.bo_runtime.operation("query", {"limit": 1}):
+                with self.bo_engine.connect() as connection:
+                    self.assertEqual(
+                        connection.exec_driver_sql("SELECT COUNT(*) FROM image").scalar(), 1
+                    )
+            self.assertEqual(summaries, [], "An excluded observer-only extractor still ran")
+            self.assertEqual(self.bo_results(), [])
+            self.assertEqual(self.bo_runtime.bo_errors, 0)
+        self.bo_probe.bo_enabled = True
+        self.bo_probe.bo_set_scope(None)
+
     def test_real_driver_query_redacts_literals_and_keeps_cursor_unconsumed(self):
         with self.bo_runtime.operation("query", {"limit": 2, "password": "sensitive"}):
             with self.bo_engine.connect() as connection:

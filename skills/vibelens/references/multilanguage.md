@@ -49,6 +49,44 @@ Ask once: **develop from the state declaration (`drive`), or retain application 
 
 Use `begin → scan → inspect → verify → accept → check`. All languages retain implementation inventories, parameter coverage, actual events, independent effects, and protected mapping contracts. Code, declaration, or tool changes invalidate old results. The user answers necessary business questions and inspects the graph; AI maintains the intermediate artifacts.
 
+## Recording boundaries and capture control
+
+The producer queue is asynchronous. Connect its controls when constructing the
+observer; waiting only for the application's HTTP response does not settle that
+queue. In a Python application, after creating the session and native probe:
+
+```python
+session.bo_bind_capture(
+    scope_setter=probe.bo_set_scope,
+    flush_capture=lambda: probe.flush(30),
+    health=probe.bo_health,
+)
+```
+
+If the integration also uses a data adapter, return its actual counters in the
+same health callback, for example
+`health=lambda: {**probe.bo_health(), "data_errors": data_runtime.bo_errors}`.
+The callback reads counters only; it does not query application data.
+
+The bounded flush runs outside session/recording locks before start and stop.
+Old queued work becomes initial context; stop includes work drained before its
+acknowledgement. A timeout or new capture/transport error retains interrupted
+evidence and a gap, instead of claiming a complete stopped interval. It never
+reruns a business operation. Choose a finite timeout appropriate for the producer.
+
+Both Python and JavaScript probes expose `bo_set_scope` and `bo_health`. Scope is
+an allowlist of known node IDs; `None`/`null` restores full capture. Excluded value
+builders do not run or consume producer sequence numbers. Observer exclusions
+remain in force. Python and Node data adapters also skip query parsing and
+observer-only summaries for excluded operations; the actual database calls,
+transformations and transactions still execute. JavaScript `flush` is asynchronous; a separate-language host
+must provide an acknowledged control bridge for these callbacks. Passing a no-op
+scope setter or assuming an HTTP response drained another process is invalid.
+
+Run actual full/focused recordings, queued-stop, timeout, on/off/fault and zero
+observer-write cases. Keep source/identity checks, event gaps and application
+effects independent of recording health.
+
 ## Installation
 
 ```bash

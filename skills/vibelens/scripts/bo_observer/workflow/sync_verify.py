@@ -106,6 +106,34 @@ def assess_observations(model, contract, payload, modes, required_probes=(), cou
     return errors
 
 
+def assess_probe_health(payload, *, required=False):
+    """Reject reported capture loss separately from correct business outcomes."""
+    errors, checked = [], 0
+    for run in payload.get("runs", []):
+        if run.get("mode") != "on":
+            continue  # Fault/off modes deliberately exercise observer unavailability.
+        health = run.get("probe_health")
+        if health is None and not required:
+            continue
+        if not isinstance(health, dict):
+            errors.append({"missing_probe_health": run.get("case")})
+            continue
+        checked += 1
+        for name in ("errors", "dropped", "data_errors"):
+            if name not in health and not (required and name in {"errors", "dropped"}):
+                continue
+            value = health.get(name)
+            if type(value) is not int or value < 0:
+                errors.append({"invalid_probe_health": run.get("case"), "counter": name})
+            elif value:
+                errors.append(
+                    {"probe_capture_error": run.get("case"), "counter": name, "value": value}
+                )
+    if required and not checked:
+        errors.append("no enabled producer health was provided")
+    return {"valid": not errors, "checked_runs": checked, "required": required, "errors": errors}
+
+
 def verify(root, cfg, change, *, inspect, snapshot):
     """Report mapping, state rules, project tests, and business assertions separately.
 
@@ -171,6 +199,11 @@ def verify(root, cfg, change, *, inspect, snapshot):
     else:
         try:
             payload = json.loads(observation["stdout"])
+            producer_health = assess_probe_health(
+                payload, required=cfg.get("require_probe_health", False)
+            )
+            mapping_errors.extend(producer_health["errors"])
+            reports["mapping"]["producer_health"] = producer_health
             if current["model"].get("policy"):
                 from ..policy.evidence import runtime_errors as policy_runtime_errors
 

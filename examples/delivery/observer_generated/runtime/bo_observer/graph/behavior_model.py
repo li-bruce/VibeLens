@@ -195,10 +195,13 @@ def capture(root, model):
 
 
 def check(root, model, baseline):
+    from .source_files import SourceFiles
+
+    sources = SourceFiles(root)
     changed = []
     for name in set(baseline["files"]) | set(model["source_files"]):
-        path = contained(root, name)
-        if not path.is_file() or digest(path.read_bytes()) != baseline["files"].get(name):
+        current = sources.read(name)
+        if current is None or digest(current) != baseline["files"].get(name):
             changed.append(name)
     model_changed = digest(model) != baseline["model_hash"]
     try:

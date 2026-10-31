@@ -1,0 +1,54 @@
+{
+  "kind": "Independent acceptance plan, not executed results",
+  "date": "2026-10-31",
+  "trial_thread": "01a18f4d-11b3-7553-bbeb-6410929a9146",
+  "source_commit": "a2d9563",
+  "business_basis": [
+    "Initial file-sharing request in the independent conversation",
+    "Latest actual question replies: owner designates reviewer, all three parties notified",
+    "Recipient list contains authorized files only",
+    "Owner cancels pending requests and revokes approved shares",
+    "Revocation rejects new requests from unchanged pages and old download URLs",
+    "Drive mode; SQLite and SQLAlchemy; project-local synthetic data"
+  ],
+  "business_cases": [
+    {"id": "AUTH", "expectation": "Real login establishes the application identity; unauthenticated protected requests are refused"},
+    {"id": "UPLOAD", "expectation": "An authenticated upload persists exact file bytes and metadata"},
+    {"id": "REQUEST", "expectation": "Owner names a recipient and reviewer; request starts pending without granting download"},
+    {"id": "PENDING", "expectation": "Recipient cannot list or download a pending share"},
+    {"id": "REVIEW_AUTH", "expectation": "Only the designated reviewer can resolve that request"},
+    {"id": "APPROVE", "expectation": "Approval grants the designated recipient access to the original bytes"},
+    {"id": "REJECT", "expectation": "Rejection grants no download permission and does not list the file for the recipient"},
+    {"id": "NOTIFY", "expectation": "Owner, designated reviewer and recipient receive the confirmed review result/shared-file notifications"},
+    {"id": "CANCEL", "expectation": "Owner can cancel a pending request; cancellation grants no download"},
+    {"id": "REVOKE", "expectation": "Owner revocation immediately rejects subsequent downloads using an already displayed URL"},
+    {"id": "ISOLATION", "expectation": "The application's authoritative effects remain correct with observation on, off and failing"}
+  ],
+  "mapping_cases": [
+    {"id": "INVENTORY", "expectation": "Independently scan all business files, handlers, functions and key parameters, including login and notifications"},
+    {"id": "LAYERS", "expectation": "Each configured layer matches current source, declarations and data models; unresolved links remain explicit"},
+    {"id": "LINKS", "expectation": "Business, native states, shared policy, API, functions/values, data operations, project tree, code symbols and data structure are explicitly connected"},
+    {"id": "LIFECYCLES", "expectation": "Registered meanings match actual events; generic returns and exceptions do not invent business outcomes; waiting intervals and actual handoffs remain visible"},
+    {"id": "NOISE", "expectation": "Graph polling, source reads, viewer controls, preferences, recording and replay add zero business events"},
+    {"id": "NEGATIVE", "expectation": "A source-only change or omitted required capture is rejected by the connected gate, then passes after repair"},
+    {"id": "ITERATION", "expectation": "An ordinary business change refreshes all affected layers, source hashes, runtime build and checks without a manual graph-maintenance request"},
+    {"id": "CONTINUITY", "expectation": "Stable IDs, individual positions, expansion, notes and filters survive the changed graph; obsolete recordings leave the current list"}
+  ],
+  "viewer_groups": [
+    "English and Chinese; exact and explained names; identity preservation",
+    "Every preset view, advanced details, local code, project tree, complete code",
+    "Search, focus, breadcrumbs, expand/collapse, group drag, pan, zoom, fit",
+    "Arrange, undo, pins and persisted coordinates",
+    "2D/3D parity, perspective orbit, compact layer ruler, visibility, reordering and spacing",
+    "Straight, curved, orthogonal and bus routing; recalculation after geometry changes",
+    "Node and edge menus, annotations, core marking, Delete hide and All elements restore",
+    "Type, relation, region, depth and explicit-item filters; create, reload and delete custom view",
+    "Full source loading and accurate symbol/parameter highlighting without embedding copied files",
+    "Start/stop/clear recording, full and focused capture, recording export",
+    "Replay previous/next/play/pause, speed, granularity, locate, skip, loop and return to live",
+    "Timeline live/active/saved, duration and wait segments, directed same-track/cross-layer links",
+    "Timeline hover, exact event seek, event payload, graph locate and fixed-event animation",
+    "Timeline pan/zoom, wheel and keyboard, overview, range, depth/single-layer, expand tracks, dock resize/maximize",
+    "View/settings persistence, observer isolation, responsive viewport and large-record regression"
+  ]
+}

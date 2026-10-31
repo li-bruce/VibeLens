@@ -157,7 +157,32 @@ try {
     await Promise.all([...document.images].map((img) => img.decode()));
     return results;
   });
-  assert.equal(results.icons.length, 19);
+  assert.deepEqual(
+    results.icons.map((node) => node.type).sort(),
+    [
+      "code-directory",
+      "code-endpoint",
+      "code-file",
+      "code-class",
+      "code-function",
+      "code-parameter",
+      "code-unresolved",
+      "business",
+      "function",
+      "state",
+      "decision",
+      "resource",
+      "data",
+      "effect",
+      "wait",
+      "store",
+      "dataset",
+      "column",
+      "query",
+      "transform",
+    ].sort(),
+    "Every semantic and source type has a corresponding planar icon and solid object",
+  );
   assert.ok(results.icons.every((n) => n.family === "VibeLens solids"));
   assert.equal(results.icons.find((n) => n.type === "store").object, "tiered-database");
   assert.equal(results.icons.find((n) => n.type === "resource").object, "stacked-crates");
@@ -181,5 +206,5 @@ try {
   server.close();
 }
 console.log(
-  "PASS: real libavoid, obstacle invalidation, typed bundles, cross-layer route and 19 matched 2D/3D icons.",
+  "PASS: real libavoid, obstacle invalidation, typed bundles, cross-layer route and matched 2D/3D icons.",
 );

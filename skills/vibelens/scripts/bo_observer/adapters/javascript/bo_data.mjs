@@ -49,13 +49,23 @@ export class BODataRuntime {
     this.bo_excluded.add(connection);
   }
 
-  bo_allowed(connection) {
+  bo_allowed(connection, node) {
     if (
       bo_context.getStore()?.internal ||
       this.bo_probe.bo_internal ||
       (connection && this.bo_excluded.has(connection))
     ) {
       this.bo_suppressed++;
+      return false;
+    }
+    if (!this.bo_probe.bo_enabled) return false;
+    if (this.bo_probe.bo_excluded.has(node)) {
+      this.bo_suppressed++;
+      return false;
+    }
+    const selected = this.bo_probe.bo_capture_nodes;
+    if (node !== undefined && selected !== null && !selected.has(node)) {
+      this.bo_probe.bo_filtered++;
       return false;
     }
     return true;
@@ -168,7 +178,7 @@ export class BODataRuntime {
 
   /** A synchronous result, iterator, or cursor is returned with its exact identity. */
   execute(node, callback, options = {}) {
-    const call = this.bo_allowed(options.connection) ? this.bo_begin(node, options) : null;
+    const call = this.bo_allowed(options.connection, node) ? this.bo_begin(node, options) : null;
     try {
       const result = callback();
       this.bo_finish(call, result, options);
@@ -184,7 +194,7 @@ export class BODataRuntime {
 
   /** Use around the actual awaited driver call, not around a lazy query builder. */
   async executeAsync(node, callback, options = {}) {
-    const call = this.bo_allowed(options.connection) ? this.bo_begin(node, options) : null;
+    const call = this.bo_allowed(options.connection, node) ? this.bo_begin(node, options) : null;
     try {
       const result = await callback();
       this.bo_finish(call, result, options);
@@ -200,7 +210,7 @@ export class BODataRuntime {
 
   /** Snapshot selected values before an in-place or returning transformation. */
   transform(node, callback, value, options = {}) {
-    const call = this.bo_allowed()
+    const call = this.bo_allowed(undefined, node)
       ? this.bo_begin(node, { ...options, statement: "transform" })
       : null;
     const operation = this.bo_operations.get(node) || {};
@@ -237,7 +247,7 @@ export class BODataRuntime {
    * error is preserved if rollback also fails; the event reports rollback_failed.
    */
   async transaction(node, { begin, commit, rollback }, callback, options = {}) {
-    const call = this.bo_allowed(options.connection)
+    const call = this.bo_allowed(options.connection, node)
       ? this.bo_begin(node, { ...options, statement: "transaction" })
       : null;
     let resource,

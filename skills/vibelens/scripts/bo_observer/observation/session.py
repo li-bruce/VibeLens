@@ -53,6 +53,7 @@ class GraphSession:
         self.data_status = None
         self.errors = self.gaps = 0
         self.last_error = ""
+        self.bo_producer_health = None
         self.stream_id = secrets.token_hex(12)
         self.frames = OrderedDict()
         self.frame_bytes = 0
@@ -68,6 +69,22 @@ class GraphSession:
             self.sources(),
             event_source=self.history,
         )
+
+    def bo_bind_capture(self, *, scope_setter, flush_capture, health):
+        """Connect an observer controller; callbacks cannot execute business actions.
+
+        The native application supplies bounded queue draining, temporary owner
+        selection and read-only producer health. A remote-language bridge can
+        implement the same callbacks. Register before serving application work.
+        """
+        if not all(callable(callback) for callback in (scope_setter, flush_capture, health)):
+            raise ValueError("capture controller needs scope, bounded flush and health callbacks")
+        with self.recordings.lock:
+            if self.recordings.active:
+                raise ValueError("cannot replace a capture controller during recording")
+            self.recordings.bo_scope_setter = scope_setter
+            self.recordings.bo_capture_flush = flush_capture
+            self.bo_producer_health = health
 
     def sources(self):
         """Read the source files bound to this build for later source lookup and recordings."""
@@ -281,6 +298,7 @@ class GraphSession:
             model.setdefault("presentation", {}).setdefault("subject", self.project["project_id"])
             model["machine"].setdefault("labels", {s: s for s in model["machine"]["values"]})
             health = self.history.health()
+            producer = self.bo_producer_health() if self.bo_producer_health else None
             current_frame = self.frames.get(current.get("evidence_id"), (None, 0))[0]
             return {
                 "stage": "runtime",
@@ -323,7 +341,8 @@ class GraphSession:
                     "run_id": self.stream_id,
                     "attempted": self.sequence,
                     "written": self.sequence,
-                    "enabled": True,
+                    "enabled": producer["enabled"] if producer is not None else True,
+                    **({"producer": producer} if producer is not None else {}),
                     "runtime_frame_evictions": self.frame_evictions,
                     **health,
                 },

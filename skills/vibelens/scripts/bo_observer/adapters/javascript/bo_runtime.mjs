@@ -68,6 +68,26 @@ export function bo_validateMachine(machine, guards = {}) {
   }
 }
 const bo_list = (v) => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
+/** Report standard error categories only; custom names/messages may carry data. */
+function bo_error_type(error) {
+  try {
+    return [
+      "Error",
+      "TypeError",
+      "ReferenceError",
+      "RangeError",
+      "SyntaxError",
+      "URIError",
+      "EvalError",
+      "AbortError",
+      "TimeoutError",
+    ].includes(error?.name)
+      ? error.name
+      : "Error";
+  } catch {
+    return "Error";
+  }
+}
 function bo_spec(spec) {
   if (!["integer", "number", "boolean", "string", "enum", "object", "array"].includes(spec?.type))
     throw Error("Unknown value type");
@@ -270,6 +290,9 @@ export class BOProbe {
     this.bo_errors = 0;
     this.bo_dropped = 0;
     this.bo_suppressed = 0;
+    this.bo_filtered = 0;
+    this.bo_capture_nodes = null;
+    this.bo_last_error = null;
     this.bo_nodes = new Map(project.model.nodes.map((n) => [n.id, n]));
     const excluded = project.model.implementation?.excluded || {};
     this.bo_excluded = new Set(
@@ -280,6 +303,30 @@ export class BOProbe {
         )
         .map((n) => n.id),
     );
+  }
+  /** Temporarily limit capture owners without running excluded value builders. */
+  bo_set_scope(nodes) {
+    if (
+      nodes !== null &&
+      (!Array.isArray(nodes) ||
+        nodes.some((id) => typeof id !== "string" || !this.bo_nodes.has(id)))
+    )
+      throw Error("Capture scope requires known node IDs or null");
+    this.bo_capture_nodes = nodes === null ? null : new Set(nodes);
+  }
+  /** Read transport state; a host bridge may expose this to the Python observer. */
+  bo_health() {
+    return {
+      enabled: this.bo_enabled,
+      run_id: this.bo_run,
+      producer_id: this.bo_producer,
+      enqueued: this.bo_seq,
+      pending: this.bo_queue.length + (this.bo_busy ? 1 : 0),
+      errors: this.bo_errors,
+      dropped: this.bo_dropped,
+      filtered: this.bo_filtered,
+      last_error: this.bo_last_error ? { ...this.bo_last_error } : null,
+    };
   }
   record(
     node,
@@ -302,10 +349,14 @@ export class BOProbe {
       this.bo_suppressed++;
       return null;
     }
+    if (this.bo_capture_nodes !== null && !this.bo_capture_nodes.has(node)) {
+      this.bo_filtered++;
+      return null;
+    }
     try {
       this.bo_internal = true;
-      const spec = this.bo_nodes.get(node)?.capture;
-      if (!spec) throw Error("Unknown capture node");
+      if (!this.bo_nodes.has(node)) throw Error("Unknown capture node");
+      const spec = this.bo_nodes.get(node).capture || {};
       if (
         !["enter", "return", "read", "decision", "wait", "commit", "change", "error"].includes(
           phase,
@@ -349,13 +400,32 @@ export class BOProbe {
         throw Error("Event too large");
       if (this.bo_queue.length >= this.bo_capacity) {
         this.bo_dropped++;
+        this.bo_last_error = { stage: "queue", type: "Full" };
         return null;
       }
       this.bo_queue.push({ kind: "events", body: event });
       queueMicrotask(() => this.bo_drain());
       return id;
-    } catch {
+    } catch (error) {
       this.bo_errors++;
+      // Keep only safe diagnostic identity; messages may contain business data.
+      this.bo_last_error = {
+        stage: "capture",
+        type: bo_error_type(error),
+        node: typeof node === "string" && this.bo_nodes.has(node) ? node.slice(0, 160) : null,
+        phase: [
+          "enter",
+          "return",
+          "read",
+          "decision",
+          "wait",
+          "commit",
+          "change",
+          "error",
+        ].includes(phase)
+          ? phase
+          : null,
+      };
       return null;
     } finally {
       this.bo_internal = false;
@@ -377,6 +447,7 @@ export class BOProbe {
     try {
       if (this.bo_queue.length >= this.bo_capacity) {
         this.bo_dropped++;
+        this.bo_last_error = { stage: "queue", type: "Full" };
         return false;
       }
       const body = {
@@ -401,8 +472,9 @@ export class BOProbe {
       this.bo_queue.push({ kind: "snapshots", body: JSON.parse(raw) });
       queueMicrotask(() => this.bo_drain());
       return true;
-    } catch {
+    } catch (error) {
       this.bo_errors++;
+      this.bo_last_error = { stage: "snapshot", type: bo_error_type(error) };
       return false;
     }
   }
@@ -438,8 +510,9 @@ export class BOProbe {
               }
             }
           }
-        } catch {
+        } catch (error) {
           this.bo_errors++;
+          this.bo_last_error = { stage: "transport", type: bo_error_type(error) };
         }
       }
     } finally {
