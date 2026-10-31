@@ -1,0 +1,602 @@
+{
+  "phase": "batch-sink-copy-02",
+  "url": "http://127.0.0.1:55890/graph",
+  "passed": false,
+  "checks": [
+    {
+      "name": "Actual build loads, graph IDs and event IDs are unique",
+      "status": "passed",
+      "result": {
+        "nodes": 146,
+        "relations": 285,
+        "events": 1891,
+        "binding": {
+          "status": "current",
+          "changed_files": [],
+          "model_changed": false,
+          "intent_changed": false,
+          "directly_affected": [],
+          "possibly_affected": []
+        }
+      }
+    },
+    {
+      "name": "Source and explained labels preserve graph identity and coordinates",
+      "status": "passed",
+      "result": {
+        "ids": 449
+      }
+    },
+    {
+      "name": "Every configured preset and its relations render",
+      "status": "passed",
+      "result": [
+        {
+          "id": "overview",
+          "label": "Layered overview",
+          "nodes": 67,
+          "relations": 99,
+          "kinds": [
+            "business",
+            "state",
+            "data",
+            "decision",
+            "code-function",
+            "store",
+            "query",
+            "function",
+            "transform"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 67,
+            "relations": 99,
+            "kinds": [
+              "business",
+              "state",
+              "data",
+              "decision",
+              "code-function",
+              "store",
+              "query",
+              "function",
+              "transform"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "business",
+          "label": "Business flow",
+          "nodes": 31,
+          "relations": 66,
+          "kinds": [
+            "business",
+            "state",
+            "data",
+            "decision",
+            "code-function",
+            "store"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 31,
+            "relations": 66,
+            "kinds": [
+              "business",
+              "state",
+              "data",
+              "decision",
+              "code-function",
+              "store"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "project",
+          "label": "Project structure",
+          "nodes": 17,
+          "relations": 1,
+          "kinds": [
+            "code-directory",
+            "code-file"
+          ],
+          "code": {
+            "loaded": 96,
+            "status": "current"
+          },
+          "folded": {
+            "nodes": 17,
+            "relations": 1,
+            "kinds": [
+              "code-directory",
+              "code-file"
+            ],
+            "code": {
+              "loaded": 96,
+              "status": "current"
+            }
+          }
+        },
+        {
+          "id": "code",
+          "label": "Code structure",
+          "nodes": 151,
+          "relations": 81,
+          "kinds": [
+            "code-function",
+            "code-directory",
+            "code-file",
+            "code-class",
+            "business",
+            "decision",
+            "query",
+            "transform",
+            "function"
+          ],
+          "code": {
+            "loaded": 400,
+            "status": "current"
+          },
+          "folded": {
+            "nodes": 151,
+            "relations": 81,
+            "kinds": [
+              "code-function",
+              "code-directory",
+              "code-file",
+              "code-class",
+              "business",
+              "decision",
+              "query",
+              "transform",
+              "function"
+            ],
+            "code": {
+              "loaded": 400,
+              "status": "current"
+            }
+          }
+        },
+        {
+          "id": "api",
+          "label": "API entries",
+          "nodes": 50,
+          "relations": 47,
+          "kinds": [
+            "code-function",
+            "code-endpoint",
+            "code-file",
+            "code-class",
+            "code-unresolved",
+            "business",
+            "function"
+          ],
+          "code": {
+            "loaded": 52,
+            "status": "current"
+          },
+          "folded": {
+            "nodes": 50,
+            "relations": 47,
+            "kinds": [
+              "code-function",
+              "code-endpoint",
+              "code-file",
+              "code-class",
+              "code-unresolved",
+              "business",
+              "function"
+            ],
+            "code": {
+              "loaded": 52,
+              "status": "current"
+            }
+          }
+        },
+        {
+          "id": "states",
+          "label": "State machine",
+          "nodes": 6,
+          "relations": 7,
+          "kinds": [
+            "state"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 6,
+            "relations": 7,
+            "kinds": [
+              "state"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "functions",
+          "label": "Functions and parameters",
+          "nodes": 29,
+          "relations": 38,
+          "kinds": [
+            "business",
+            "data",
+            "decision",
+            "code-function",
+            "dataset"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 29,
+            "relations": 38,
+            "kinds": [
+              "business",
+              "data",
+              "decision",
+              "code-function",
+              "dataset"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "permission",
+          "label": "Authorization",
+          "nodes": 23,
+          "relations": 55,
+          "kinds": [
+            "business",
+            "data",
+            "decision",
+            "state"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 23,
+            "relations": 55,
+            "kinds": [
+              "business",
+              "data",
+              "decision",
+              "state"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "resources",
+          "label": "Concurrency and resources",
+          "nodes": 0,
+          "relations": 0,
+          "kinds": [],
+          "code": {},
+          "folded": {
+            "nodes": 0,
+            "relations": 0,
+            "kinds": [],
+            "code": {}
+          }
+        },
+        {
+          "id": "data",
+          "label": "Data dependencies",
+          "nodes": 28,
+          "relations": 41,
+          "kinds": [
+            "business",
+            "data",
+            "decision",
+            "store",
+            "state",
+            "code-function"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 28,
+            "relations": 41,
+            "kinds": [
+              "business",
+              "data",
+              "decision",
+              "store",
+              "state",
+              "code-function"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "database",
+          "label": "Database structure",
+          "nodes": 6,
+          "relations": 12,
+          "kinds": [
+            "store",
+            "dataset"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 6,
+            "relations": 12,
+            "kinds": [
+              "store",
+              "dataset"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "data-operations",
+          "label": "Queries and data processing",
+          "nodes": 216,
+          "relations": 266,
+          "kinds": [
+            "business",
+            "state",
+            "data",
+            "decision",
+            "code-function",
+            "store",
+            "query",
+            "transform",
+            "function",
+            "dataset"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 216,
+            "relations": 266,
+            "kinds": [
+              "business",
+              "state",
+              "data",
+              "decision",
+              "code-function",
+              "store",
+              "query",
+              "transform",
+              "function",
+              "dataset"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "runtime",
+          "label": "Observed execution",
+          "nodes": 83,
+          "relations": 138,
+          "kinds": [
+            "business",
+            "data",
+            "decision",
+            "state",
+            "code-function",
+            "dataset",
+            "function"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 83,
+            "relations": 138,
+            "kinds": [
+              "business",
+              "data",
+              "decision",
+              "state",
+              "code-function",
+              "dataset",
+              "function"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "blocked",
+          "label": "Waiting and failures",
+          "nodes": 12,
+          "relations": 13,
+          "kinds": [
+            "business",
+            "data",
+            "query",
+            "state",
+            "decision",
+            "function"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 12,
+            "relations": 13,
+            "kinds": [
+              "business",
+              "data",
+              "query",
+              "state",
+              "decision",
+              "function"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "shared",
+          "label": "Shared membership",
+          "nodes": 0,
+          "relations": 0,
+          "kinds": [],
+          "code": {},
+          "folded": {
+            "nodes": 0,
+            "relations": 0,
+            "kinds": [],
+            "code": {}
+          }
+        },
+        {
+          "id": "custom-mvvxp1ss",
+          "label": "Review and recipient access",
+          "nodes": 205,
+          "relations": 198,
+          "kinds": [
+            "business",
+            "state",
+            "data",
+            "decision",
+            "function",
+            "query",
+            "transform"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 205,
+            "relations": 198,
+            "kinds": [
+              "business",
+              "state",
+              "data",
+              "decision",
+              "function",
+              "query",
+              "transform"
+            ],
+            "code": {}
+          }
+        },
+        {
+          "id": "custom-mvvol5i8",
+          "label": "Sharing review route",
+          "nodes": 31,
+          "relations": 66,
+          "kinds": [
+            "business",
+            "state",
+            "data",
+            "decision",
+            "code-function",
+            "store"
+          ],
+          "code": {},
+          "folded": {
+            "nodes": 31,
+            "relations": 66,
+            "kinds": [
+              "business",
+              "state",
+              "data",
+              "decision",
+              "code-function",
+              "store"
+            ],
+            "code": {}
+          }
+        }
+      ]
+    },
+    {
+      "name": "All elements removes explicit exclusions; expand and collapse retain identities",
+      "status": "passed",
+      "result": {
+        "target": "login",
+        "expanded": 235,
+        "collapsed": 31
+      }
+    },
+    {
+      "name": "Node notes, custom label and core mark survive reload",
+      "status": "passed",
+      "result": {
+        "target": "download"
+      }
+    },
+    {
+      "name": "A real pointer drag pins the node and survives reload",
+      "status": "passed",
+      "result": {
+        "before": {
+          "x": 1312.0958245677703,
+          "y": 3598.6896506109506
+        },
+        "restored": {
+          "x": 1377.0958245677703,
+          "y": 3638.6896506109506
+        }
+      }
+    },
+    {
+      "name": "Full source loads through its real binding",
+      "status": "passed",
+      "result": {
+        "target": "login",
+        "displayedCharacters": 19167,
+        "highlights": 10
+      }
+    },
+    {
+      "name": "Captured transaction outcome opens context without inventing a source parameter highlight",
+      "status": "passed",
+      "result": {
+        "target": "field:db_transaction:out:committed",
+        "displayedCharacters": 4422,
+        "fabricatedParameterHighlights": 0
+      }
+    },
+    {
+      "name": "Custom type/relation view saves and reloads",
+      "status": "passed",
+      "result": {
+        "selected": "custom-mvvol5i8",
+        "nodes": 31
+      }
+    },
+    {
+      "name": "3D, matching legend, layer controls, routes and planar round trip",
+      "status": "passed",
+      "result": {
+        "renderer": "real Three.js WebGL",
+        "roundTrip": true
+      }
+    },
+    {
+      "name": "Language changes through the interface and preserves node IDs",
+      "status": "failed",
+      "error": "page.waitForFunction: Timeout 30000ms exceeded.\n    at ready (C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\test_dialogue_viewer.mjs:28:26)\n    at C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\test_dialogue_viewer.mjs:273:95\n    at async check (C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\test_dialogue_viewer.mjs:34:20)\n    at async file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/.validation/test_dialogue_viewer.mjs:271:3",
+      "diagnostics": {
+        "url": "http://127.0.0.1:55890/graph?lang=zh-CN",
+        "readyState": "complete",
+        "graphReady": false,
+        "connection": "Connecting",
+        "layout": "",
+        "canvases": 0
+      },
+      "pending": [
+        "/libavoid.wasm",
+        "/api/view",
+        "/libavoid.wasm",
+        "/libavoid.wasm",
+        "/libavoid.wasm",
+        "/libavoid.wasm",
+        "/api/view",
+        "/api/preferences"
+      ]
+    },
+    {
+      "name": "Viewer, source, preferences and layout actions add no business events",
+      "status": "passed",
+      "result": {
+        "before": 1891,
+        "after": 1891
+      }
+    }
+  ],
+  "errors": [],
+  "networkFailures": [
+    {
+      "path": "/routing-tools.vendor.js",
+      "error": "net::ERR_CONNECTION_TIMED_OUT"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_TIMED_OUT"
+  ]
+}

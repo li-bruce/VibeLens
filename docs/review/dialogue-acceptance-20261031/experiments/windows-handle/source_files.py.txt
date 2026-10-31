@@ -1,0 +1,120 @@
+"""Read actual source bytes after proving that the opened file stays in the project.
+
+Windows resolves the physical name of the same file handle used for reading.
+If that query is unavailable, the portable path checks still verify containment.
+Neither branch uses cached timestamps or file sizes as source identity.
+"""
+
+import ctypes
+import os
+from pathlib import Path
+import stat
+
+if os.name == "nt":
+    import msvcrt
+
+    _final_path = ctypes.WinDLL("kernel32", use_last_error=True).GetFinalPathNameByHandleW
+    _final_path.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_uint32, ctypes.c_uint32]
+    _final_path.restype = ctypes.c_uint32
+
+
+class SourceFiles:
+    """Keep path bookkeeping only; verify every newly opened source file."""
+
+    def __init__(self, root):
+        self.root = Path(root).absolute().resolve()
+        self.physical_root = self.dos_path(self.root) if os.name == "nt" else self.root
+        self.parents = {self.root: (self.root,)}
+
+    @staticmethod
+    def dos_path(value):
+        """Normalize Windows device prefixes for drive and UNC containment comparisons."""
+        value = str(value)
+        if value.startswith("\\\\?\\UNC\\"):
+            value = "\\\\" + value[8:]
+        elif value.startswith("\\\\?\\"):
+            value = value[4:]
+        return Path(value)
+
+    @staticmethod
+    def opened_path(stream):
+        """Ask Windows for the resolved name of this exact open handle, before reading.
+
+        The normalized DOS path follows directory junctions and symbolic links.
+        https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlew
+        """
+        handle = msvcrt.get_osfhandle(stream.fileno())
+        capacity = 1024
+        for _ in range(3):
+            buffer = ctypes.create_unicode_buffer(capacity)
+            size = _final_path(handle, buffer, capacity, 0)
+            if not size:
+                raise ctypes.WinError(ctypes.get_last_error())
+            if size < capacity:
+                return SourceFiles.dos_path(buffer.value)
+            capacity = size + 1
+        raise OSError("source path changed while resolving its opened handle")
+
+    def read_windows(self, target):
+        """Validate the actual opened object and read its bytes through the same handle."""
+        with target.open("rb") as stream:
+            if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+                return None
+            if not self.opened_path(stream).is_relative_to(self.physical_root):
+                raise ValueError("path escapes project")
+            return stream.read()
+
+    @staticmethod
+    def linked(info):
+        """Recognize Unix links and Windows directory/file reparse points."""
+        return stat.S_ISLNK(info.st_mode) or bool(
+            getattr(info, "st_file_attributes", 0)
+            & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)
+        )
+
+    def plain_parent(self, path):
+        if not path.is_relative_to(self.root):
+            return False
+        if path not in self.parents:
+            self.ancestors(path)
+        # Cache path construction only. A directory can be replaced by a link
+        # between two reads in the same pass, so old attributes are not evidence.
+        for parent in self.parents[path]:
+            info = parent.lstat()
+            if not stat.S_ISDIR(info.st_mode) or self.linked(info):
+                return False
+        return True
+
+    def ancestors(self, path):
+        """Construct relative ancestor lists without resolving every root component."""
+        if path not in self.parents:
+            self.parents[path] = self.ancestors(path.parent) + (path,)
+        return self.parents[path]
+
+    def read(self, name):
+        """Return current bytes, or None for an absent/unreadable regular file."""
+        relative = Path(name)
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError("expected contained relative path")
+        target = self.root / relative
+        try:
+            if os.name == "nt":
+                try:
+                    return self.read_windows(target)
+                except OSError:
+                    # Restricted hosts can deny native handle metadata. Close
+                    # that handle, then apply the full existing path checks.
+                    # An outside target raises ValueError and never falls back.
+                    pass
+            info = target.lstat()
+            if self.linked(info) or not self.plain_parent(target.parent):
+                target = target.resolve()
+                if not target.is_relative_to(self.root):
+                    raise ValueError("path escapes project")
+                if not target.is_file():
+                    return None
+            elif not stat.S_ISREG(info.st_mode):
+                return None
+            return target.read_bytes()
+        except OSError:
+            return None

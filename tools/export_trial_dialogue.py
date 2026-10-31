@@ -47,7 +47,7 @@ def public_record(record):
 def readable_text(text):
     """Keep captured local paths readable without making dead repository links."""
     return re.sub(
-        r"!?\[([^\]]*)\]\((<?(?:WORKSPACE[/\\]|[A-Za-z]:[/\\])[^)\n]*>?)\)",
+        r"!?\[([^\]]*)\]\((<?(?:/?WORKSPACE[/\\]|/?[A-Za-z]:[/\\])[^)\n]*>?)\)",
         lambda match: match[1] + " (`" + match[2].strip("<>") + "`)",
         text,
     )

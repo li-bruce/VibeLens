@@ -336,36 +336,85 @@ class BOProbe:
             self.bo_last_error = {"stage": "snapshot", "type": type(error).__name__}
         return False
 
+    def bo_send_one(self, kind, raw):
+        """Deliver an original envelope through the existing local or HTTP contract."""
+        if self.bo_sink:
+            return self.bo_sink(json.loads(raw), kind)
+        req = Request(
+            self.bo_endpoint + "/api/bo/" + kind,
+            data=raw,
+            headers={"Content-Type": "application/json", "X-BO-Token": self.bo_token},
+            method="POST",
+        )
+        with urlopen(req, timeout=self.bo_timeout) as response:
+            response.read(32768)
+
+    def bo_transport_error(self, error):
+        self.bo_errors += 1
+        self.bo_last_error = {"stage": "transport", "type": type(error).__name__}
+
     def bo_drain(self):
-        """Send queued envelopes on the worker thread and count delivery failures."""
-        while not self.bo_closed.is_set() or not self.bo_queue.empty():
-            try:
-                kind, raw = self.bo_queue.get(timeout=0.05)
-            except queue.Empty:
-                continue
+        """Drain bounded event groups; snapshots remain ordered completion barriers.
+
+        Only explicitly batch-capable local sinks opt in. HTTP and plain callable
+        sinks retain their single-envelope contract. Failed batch preflight falls
+        back to the original envelopes, preserving per-message error isolation.
+        """
+        deferred = None
+        while deferred is not None or not self.bo_closed.is_set() or not self.bo_queue.empty():
+            if deferred is not None:
+                kind, raw = deferred
+                deferred = None
+            else:
+                try:
+                    kind, raw = self.bo_queue.get(timeout=0.05)
+                except queue.Empty:
+                    continue
+            batch = [raw]
             token = _bo_internal.set(True)
             try:
                 with bo_internal():
-                    if self.bo_sink:
-                        self.bo_sink(json.loads(raw), kind)
+                    try:
+                        accept_many = getattr(self.bo_sink, "bo_accept_many", None)
+                    except Exception:
+                        accept_many = None  # An optional capability cannot break a plain sink.
+                    if kind == "events" and callable(accept_many):
+                        while len(batch) < 16:
+                            try:
+                                following = self.bo_queue.get_nowait()
+                            except queue.Empty:
+                                break
+                            if following[0] != "events":
+                                deferred = following
+                                break
+                            batch.append(following[1])
+                    if len(batch) > 1:
+                        try:
+                            receipts = accept_many([json.loads(value) for value in batch])
+                            if (
+                                not isinstance(receipts, list)
+                                or len(receipts) != len(batch)
+                                or any(
+                                    not isinstance(receipt, dict)
+                                    or receipt.get("accepted") is not True
+                                    for receipt in receipts
+                                )
+                            ):
+                                raise ValueError("event batch lacks acceptance receipts")
+                        except Exception:
+                            for value in batch:
+                                try:
+                                    self.bo_send_one(kind, value)
+                                except Exception as error:
+                                    self.bo_transport_error(error)
                     else:
-                        req = Request(
-                            self.bo_endpoint + "/api/bo/" + kind,
-                            data=raw,
-                            headers={
-                                "Content-Type": "application/json",
-                                "X-BO-Token": self.bo_token,
-                            },
-                            method="POST",
-                        )
-                        with urlopen(req, timeout=self.bo_timeout) as response:
-                            response.read(32768)
+                        self.bo_send_one(kind, raw)
             except Exception as error:
-                self.bo_errors += 1
-                self.bo_last_error = {"stage": "transport", "type": type(error).__name__}
+                self.bo_transport_error(error)
             finally:
                 _bo_internal.reset(token)
-                self.bo_queue.task_done()
+                for _ in batch:
+                    self.bo_queue.task_done()
 
     def flush(self, timeout=2):
         """Wait up to the supplied timeout for queued observations to finish sending."""

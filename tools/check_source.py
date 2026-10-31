@@ -21,6 +21,9 @@ def check_source(*, formatting=False, out=None):
     commands = [
         [
             sys.executable,
+            "-B",
+            "-X",
+            "utf8",
             "-m",
             "ruff",
             "check",

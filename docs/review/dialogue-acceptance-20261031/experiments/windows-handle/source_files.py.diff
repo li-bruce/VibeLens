@@ -1,0 +1,92 @@
+--- skills/vibelens/scripts/bo_observer/graph/source_files.py
++++ experiment/source_files.py
+@@ -1,21 +1,68 @@
+-"""Read current source bytes without repeatedly resolving ordinary parent paths.
++"""Read actual source bytes after proving that the opened file stays in the project.
+ 
+-Readers retain ancestor paths only. File contents and current attributes are
+-always reread; timestamps and file sizes never stand in for source identity.
+-Symlinks and Windows reparse points use full physical containment checks before
+-any content is read.
++Windows resolves the physical name of the same file handle used for reading.
++If that query is unavailable, the portable path checks still verify containment.
++Neither branch uses cached timestamps or file sizes as source identity.
+ """
+ 
++import ctypes
++import os
+ from pathlib import Path
+ import stat
+ 
++if os.name == "nt":
++    import msvcrt
++
++    _final_path = ctypes.WinDLL("kernel32", use_last_error=True).GetFinalPathNameByHandleW
++    _final_path.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_uint32, ctypes.c_uint32]
++    _final_path.restype = ctypes.c_uint32
++
+ 
+ class SourceFiles:
+-    """Reuse ancestor path lists while checking their current file attributes."""
++    """Keep path bookkeeping only; verify every newly opened source file."""
+ 
+     def __init__(self, root):
+         self.root = Path(root).absolute().resolve()
++        self.physical_root = self.dos_path(self.root) if os.name == "nt" else self.root
+         self.parents = {self.root: (self.root,)}
++
++    @staticmethod
++    def dos_path(value):
++        """Normalize Windows device prefixes for drive and UNC containment comparisons."""
++        value = str(value)
++        if value.startswith("\\\\?\\UNC\\"):
++            value = "\\\\" + value[8:]
++        elif value.startswith("\\\\?\\"):
++            value = value[4:]
++        return Path(value)
++
++    @staticmethod
++    def opened_path(stream):
++        """Ask Windows for the resolved name of this exact open handle, before reading.
++
++        The normalized DOS path follows directory junctions and symbolic links.
++        https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlew
++        """
++        handle = msvcrt.get_osfhandle(stream.fileno())
++        capacity = 1024
++        for _ in range(3):
++            buffer = ctypes.create_unicode_buffer(capacity)
++            size = _final_path(handle, buffer, capacity, 0)
++            if not size:
++                raise ctypes.WinError(ctypes.get_last_error())
++            if size < capacity:
++                return SourceFiles.dos_path(buffer.value)
++            capacity = size + 1
++        raise OSError("source path changed while resolving its opened handle")
++
++    def read_windows(self, target):
++        """Validate the actual opened object and read its bytes through the same handle."""
++        with target.open("rb") as stream:
++            if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
++                return None
++            if not self.opened_path(stream).is_relative_to(self.physical_root):
++                raise ValueError("path escapes project")
++            return stream.read()
+ 
+     @staticmethod
+     def linked(info):
+@@ -51,6 +98,14 @@
+             raise ValueError("expected contained relative path")
+         target = self.root / relative
+         try:
++            if os.name == "nt":
++                try:
++                    return self.read_windows(target)
++                except OSError:
++                    # Restricted hosts can deny native handle metadata. Close
++                    # that handle, then apply the full existing path checks.
++                    # An outside target raises ValueError and never falls back.
++                    pass
+             info = target.lstat()
+             if self.linked(info) or not self.plain_parent(target.parent):
+                 target = target.resolve()

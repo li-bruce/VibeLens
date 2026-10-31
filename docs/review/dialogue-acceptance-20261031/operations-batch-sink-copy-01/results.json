@@ -1,0 +1,9 @@
+{
+  "application": "http://127.0.0.1:55891",
+  "observer": "http://127.0.0.1:55890",
+  "phase": "batch-sink-copy-01",
+  "checks": [],
+  "errors": [],
+  "passed": false,
+  "error": "AssertionError [ERR_ASSERTION]: Traceback (most recent call last):\r\n  File \"<string>\", line 5, in <module>\r\n    print(json.dumps({\"share\":dict(db.execute(\"SELECT * FROM shares WHERE id=?\",(sys.argv[2],)).fetchone()),\"notifications\":[dict(r) for r in db.execute(\"SELECT * FROM notifications WHERE share_id=? ORDER BY id\",(sys.argv[2],))],\"journal\":[dict(r) for r in db.execute(\"SELECT * FROM journal WHERE share_id=? ORDER BY revision\",(sys.argv[2],))]}))\r\n                              ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nTypeError: 'NoneType' object is not iterable\r\n\n\n1 !== 0\n\n    at facts (file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/.validation/test_dialogue_supplement.mjs:33:10)\n    at setup (file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/.validation/test_dialogue_supplement.mjs:60:16)\n    at async file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/.validation/test_dialogue_supplement.mjs:93:34"
+}

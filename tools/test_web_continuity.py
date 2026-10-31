@@ -153,6 +153,9 @@ class DesignTests(unittest.TestCase):
             except OSError: time.sleep(.05)
         else: self.fail('design server not reachable')
         self.assertEqual(value['stage'], 'design')
+        with urlopen(base+'/libavoid.wasm',timeout=5) as response:
+            self.assertEqual(response.headers['Content-Type'], 'application/wasm')
+            self.assertEqual(response.read(), (ASSETS/'libavoid.wasm').read_bytes())
         with urlopen(base+'/api/preferences') as r: preference=json.load(r)
         preference['entries']={'business-observer.layout.v2:web-trial':'{"focus":"upload"}'}
         with urlopen(Request(base+'/api/preferences',data=json.dumps(preference).encode(),headers={'Content-Type':'application/json'})) as r:

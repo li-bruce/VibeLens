@@ -1,0 +1,159 @@
+{
+  "kind": "Challenge an accepted real trial's evidence without editing that trial.\n\nEach mutant removes or corrupts a retained implementation fact. Independent\nbusiness observations are preserved byte-for-byte so mapping is tested separately.\nThese are verifier negative controls, not newly executed application scenarios.\n",
+  "phase": "original-v1-negatives-01",
+  "build_id": "c344ca1ed0e0a7ba507d4c48fd83066eac26841f7314841eb43fc0e6dc76d76d",
+  "source_payload_sha256": "226c51d6a4f45d20adea4bca959d10c1f2ce47d0571cca33b2ce9cfafa9c1ae3",
+  "baseline": {
+    "mapping": {
+      "valid": false,
+      "errors": [
+        "no implementation mapping witnesses",
+        "invalid or incomplete implementation mapping: mapping projection belongs to another model or build"
+      ],
+      "checks": 0,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "business": [],
+    "health": {
+      "valid": false,
+      "checked_runs": 30,
+      "required": true,
+      "errors": [
+        {
+          "probe_capture_error": "cancelled",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "cancelled_file_hidden",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "cancelled_request_review_denied",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "nonowner_cancel_denied",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "owner_cancels_pending",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "owner_revokes_share",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "pending",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "pending_download_denied",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "pending_file_hidden",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "rejected",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "rejected_download_denied",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "rejected_file_hidden",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "revoked",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "revoked_file_hidden",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "revoked_old_url_denied",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "revoked_stale_page_denied",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "selected_reviewer_rejects",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "unauthorized",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "ungranted_download_denied",
+          "counter": "errors",
+          "value": 1
+        },
+        {
+          "probe_capture_error": "unselected_reviewer_denied",
+          "counter": "errors",
+          "value": 1
+        }
+      ]
+    },
+    "implementation": {
+      "errors": [
+        {
+          "feature_event_missing": "download",
+          "case": "http_error_paths",
+          "node": "download",
+          "phase": "error"
+        },
+        {
+          "feature_field_not_observed": "download",
+          "node": "download",
+          "direction": "out",
+          "field": "error"
+        },
+        {
+          "feature_field_not_observed": "http_action",
+          "node": "http_action",
+          "direction": "out",
+          "field": "business_status"
+        },
+        {
+          "feature_field_not_observed": "http_download",
+          "node": "http_download",
+          "direction": "out",
+          "field": "business_status"
+        }
+      ],
+      "events_checked": 142,
+      "features": 15
+    }
+  },
+  "checks": [],
+  "passed": false,
+  "error": "AssertionError()"
+}

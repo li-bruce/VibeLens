@@ -27,6 +27,16 @@ run["projection"] = {"build_id": build_id, "machine": machine,
 
 Produce top-level stategraph_export with public `graph.bo_export(runtime={"machine": selected_run["projection"]["machine"]})`, selecting the contract's run. Use the same adapter as Web/Python queries; do not create an idealized test-only projection.
 
+`mapping_checks` also belongs at the **top level** of the observation output. If scenario helpers create witnesses inside each run, aggregate them before returning the payload. Give each witness a unique case/mode/instance identity and keep its independently obtained `actual` value. Witnesses left only under `runs[].mapping_checks` are not consumed by the checker and fail required-witness verification.
+
+```python
+payload["mapping_checks"] = [
+    witness for run in payload["runs"] for witness in run["mapping_checks"]
+]
+```
+
+Each run still supplies its actual `projection`, `authority_snapshot`, events and producer health. A top-level witness does not replace the protected per-instance projection checks.
+
 The checker reads mapped values from the delivered projection and compares required cases, instances, revisions, builds, fields, and public export. Existing mapping_checks and business assertions remain; reports separate witnesses from projection_checks.
 
 The contract participates in candidate fingerprints and baselines. Add coverage freely; removing cases/fields or changing old bindings blocks delivery. Technical migrations preserve old bindings, add new ones, and verify migration rather than resetting begin. source_moves does not automatically rewrite this contract.

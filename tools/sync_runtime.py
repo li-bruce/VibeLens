@@ -1,5 +1,6 @@
 """Copy maintained Skill sources to shipped examples; never touch project config/data."""
 
+import argparse
 from pathlib import Path
 import shutil
 import json
@@ -107,4 +108,5 @@ def sync():
 
 
 if __name__ == "__main__":
+    argparse.ArgumentParser(description=__doc__).parse_args()
     sync()

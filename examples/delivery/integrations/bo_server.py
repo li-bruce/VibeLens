@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 import threading
 import time
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT))
 from observer_generated.runtime.behavior_model import capture, check
 from observer_generated.runtime.recording_session import Recordings
 from observer_generated.runtime.view_preferences import Preferences, PreferenceConflict
-from observer_generated.runtime.bo_web import BOWeb
+from observer_generated.runtime.bo_web import BOWeb, BOHTTPServer
 from bo_stategraph import bo_export_view
 from bo_stategraph.query import bo_machine
 
@@ -333,7 +333,7 @@ def serve(port=8797):
                     session.recordings.command(action, data, error=exc)
                 self.send({"error": str(exc)}, 400)
 
-    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    server = BOHTTPServer(("127.0.0.1", port), Handler)
     print(
         json.dumps(
             {

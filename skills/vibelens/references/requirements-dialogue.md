@@ -20,6 +20,8 @@ Keep necessary clarifications and counterexamples. A counterexample tests whethe
 
 Do not ask again when an answer is explicit, follows directly from adopted rules, or concerns an ordinary reversible implementation choice. Present alternative interpretations and their consequences without recommending a business option. Usually ask only 1–3 necessary questions per round; do not interrogate the user through a checklist of permissions, concurrency, cancellation, and other topics.
 
+Do not introduce behavior in a question's premise. When an existing notification or history rule might apply to a new step, first clarify whether it applies, then its audience. Asking who can read retained round text must not silently establish text history.
+
 The user answers in the development conversation. Web only displays the discussed graph. Copy, layout, and behavior-preserving refactors need only reconciliation with the existing graph. End confirmation when the current request is represented consistently; do not require an additional requirements-document approval.
 
 A recommendation, preselected option, silence, or elapsed time is not an answer. An explicitly delegated choice may be recorded as `delegated_choice`, with its authorization scope and rationale. Permission to decide implementation details does not authorize changing business meaning. Do not solicit delegation to bypass confirmation.

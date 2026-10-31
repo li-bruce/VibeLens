@@ -1,0 +1,267 @@
+{
+  "phase": "original-v2-structure-02",
+  "before_build": "22f404fa1a87c3da3dd442beadd03669ed3e3feff692be26948efd431ca8b7e9",
+  "accepted": {
+    "candidate_id": "92749e223f3735b616435db2a1d742744a8444036b6e1eaab9e3c30854e1d9e1",
+    "build_id": "3c209caabc58b47e7814be670cffeae9f9f9e0723c53cf1d3177d86ded0ee2b7",
+    "verification_hash": "3f14666135f898694fbc462505ec1c2e0848bc6f1755e3becbf706d3a5e51a7f"
+  },
+  "checks": [
+    {
+      "name": "Actual source and accepted verification identify the same current build",
+      "passed": true,
+      "facts": {
+        "source_build": "3c209caabc58b47e7814be670cffeae9f9f9e0723c53cf1d3177d86ded0ee2b7",
+        "accepted": {
+          "candidate_id": "92749e223f3735b616435db2a1d742744a8444036b6e1eaab9e3c30854e1d9e1",
+          "build_id": "3c209caabc58b47e7814be670cffeae9f9f9e0723c53cf1d3177d86ded0ee2b7",
+          "verification_hash": "3f14666135f898694fbc462505ec1c2e0848bc6f1755e3becbf706d3a5e51a7f"
+        }
+      }
+    },
+    {
+      "name": "A new accepted build follows the business request",
+      "passed": true,
+      "facts": {
+        "change": ".stategraph/review-supplement"
+      }
+    },
+    {
+      "name": "Earlier acceptance baselines remain immutable",
+      "passed": true,
+      "facts": {
+        ".stategraph/capture-byte-identity/baseline.json": true,
+        ".stategraph/initial-app/baseline.json": true
+      }
+    },
+    {
+      "name": "Protected probes, cases, fields and expectations are retained",
+      "passed": true,
+      "facts": []
+    },
+    {
+      "name": "Previously accepted feature sources, parameters and witnesses remain required",
+      "passed": true,
+      "facts": []
+    },
+    {
+      "name": "The state declaration adds the new waiting branch and retains original states",
+      "passed": true,
+      "facts": {
+        "before": [
+          "approved",
+          "cancelled",
+          "pending",
+          "rejected",
+          "revoked"
+        ],
+        "after": [
+          "approved",
+          "awaiting_supplement",
+          "cancelled",
+          "pending",
+          "rejected",
+          "revoked"
+        ]
+      }
+    },
+    {
+      "name": "Core business/state identities stay stable",
+      "passed": true,
+      "facts": {
+        "added": [
+          "awaiting_supplement",
+          "code.0298b25fa73ac6e3",
+          "code.193112146a829774",
+          "code.3b73e43c1bd0403e",
+          "code.994d7f9dbd393e49",
+          "code.d5b16bab8ec95e00",
+          "code.d5e97d6f036c8e1c",
+          "db:application:table%3Ashares:field:return_reason",
+          "db:application:table%3Ashares:field:supplement_text",
+          "http_application",
+          "implementation.446fb7d064a8bc48",
+          "policy:awaiting_supplement_fact",
+          "policy:awaiting_supplement_rule",
+          "policy:owner_awaiting_supplement",
+          "policy:owner_cancellable",
+          "policy:resubmit_allowed",
+          "policy:return_allowed",
+          "policy:return_reason_valid_fact",
+          "policy:return_reason_valid_rule",
+          "policy:reviewer_session",
+          "policy:supplement_text_allowed",
+          "policy:supplement_text_valid_fact",
+          "policy:supplement_text_valid_rule",
+          "resubmit_notice",
+          "resubmit_share",
+          "return_notice",
+          "return_share",
+          "supplement_text"
+        ],
+        "removed": []
+      }
+    },
+    {
+      "name": "The independent code index updates with the source",
+      "passed": true,
+      "facts": {
+        "before": "e20cc872e386a5ce998d419ad2b769264f714a853f2e3b2b4f5c14204d0f47ac",
+        "after": "d751c347809e88dcdc979547db607fb8198702819b6e292b2f6a42d0386c8612",
+        "nodes": 682,
+        "edges": 887,
+        "errors": []
+      }
+    },
+    {
+      "name": "Native application sources change",
+      "passed": true,
+      "facts": [
+        ".stategraph/code-graph.json",
+        ".stategraph/maintenance.json",
+        "acceptance.json",
+        "app/models.py",
+        "app/service.py",
+        "app/storage.py",
+        "app/web.py",
+        "behavior.json",
+        "bo_stategraph/database-catalog.json",
+        "bo_stategraph/database-declaration.json",
+        "bo_stategraph/project.json",
+        "discovery.json",
+        "implementation.json",
+        "integrations/bo_monitor.py",
+        "intent.json",
+        "manifest.json",
+        "mapping.json",
+        "static/app.css",
+        "sync.json",
+        "templates/workspace.html",
+        "tests/test_observation.py",
+        "tooling/actual_witnesses.py",
+        "tooling/build_model.py",
+        "tooling/observe.py",
+        "tooling/review_candidate.py",
+        "whitebox.json"
+      ]
+    },
+    {
+      "name": "New policy branches update the declaration while retaining shared rules and old cases",
+      "passed": true,
+      "facts": {
+        "operations": [
+          "cancel_share",
+          "download",
+          "received_files",
+          "resubmit_share",
+          "return_share",
+          "review",
+          "revoke",
+          "share",
+          "supplement_details",
+          "upload"
+        ],
+        "removed_cases": {}
+      }
+    },
+    {
+      "name": "Existing files survive migration unchanged",
+      "passed": true,
+      "facts": {
+        "old_rows": 14,
+        "missing": [],
+        "differences": []
+      }
+    },
+    {
+      "name": "Existing shares survive migration unchanged",
+      "passed": true,
+      "facts": {
+        "old_rows": 13,
+        "missing": [],
+        "differences": []
+      }
+    },
+    {
+      "name": "Existing journal survive migration unchanged",
+      "passed": true,
+      "facts": {
+        "old_rows": 30,
+        "missing": [],
+        "differences": []
+      }
+    },
+    {
+      "name": "Native database structure follows the new state/data model",
+      "passed": true,
+      "facts": {
+        "before": [
+          {
+            "type": "table",
+            "name": "files",
+            "table": "files",
+            "sql": "CREATE TABLE files (\n\tid VARCHAR NOT NULL, \n\towner_id VARCHAR NOT NULL, \n\tfilename VARCHAR NOT NULL, \n\tsize INTEGER NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT file_size_nonnegative CHECK (size >= 0), \n\tFOREIGN KEY(owner_id) REFERENCES users (id)\n)"
+          },
+          {
+            "type": "table",
+            "name": "journal",
+            "table": "journal",
+            "sql": "CREATE TABLE journal (\n\tid VARCHAR NOT NULL, \n\tshare_id VARCHAR NOT NULL, \n\trevision INTEGER NOT NULL, \n\tevent VARCHAR NOT NULL, \n\tbefore_state VARCHAR NOT NULL, \n\tafter_state VARCHAR NOT NULL, \n\tguards VARCHAR NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tFOREIGN KEY(share_id) REFERENCES shares (id)\n)"
+          },
+          {
+            "type": "table",
+            "name": "notifications",
+            "table": "notifications",
+            "sql": "CREATE TABLE notifications (\n\tid VARCHAR NOT NULL, \n\tuser_id VARCHAR NOT NULL, \n\tshare_id VARCHAR NOT NULL, \n\tkind VARCHAR NOT NULL, \n\tstate VARCHAR NOT NULL, \n\tfilename VARCHAR NOT NULL, \n\tis_read INTEGER DEFAULT '0' NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tFOREIGN KEY(user_id) REFERENCES users (id), \n\tFOREIGN KEY(share_id) REFERENCES shares (id)\n)"
+          },
+          {
+            "type": "table",
+            "name": "shares",
+            "table": "shares",
+            "sql": "CREATE TABLE shares (\n\tid VARCHAR NOT NULL, \n\tfile_id VARCHAR NOT NULL, \n\towner_id VARCHAR NOT NULL, \n\trecipient_id VARCHAR NOT NULL, \n\treviewer_id VARCHAR NOT NULL, \n\tstate VARCHAR NOT NULL, \n\trevision INTEGER NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT share_state_valid CHECK (state IN ('pending','approved','rejected','cancelled','revoked')), \n\tCONSTRAINT different_recipient CHECK (owner_id != recipient_id), \n\tCONSTRAINT share_revision_positive CHECK (revision >= 1), \n\tFOREIGN KEY(file_id) REFERENCES files (id), \n\tFOREIGN KEY(owner_id) REFERENCES users (id), \n\tFOREIGN KEY(recipient_id) REFERENCES users (id), \n\tFOREIGN KEY(reviewer_id) REFERENCES users (id)\n)"
+          },
+          {
+            "type": "table",
+            "name": "users",
+            "table": "users",
+            "sql": "CREATE TABLE users (\n\tid VARCHAR NOT NULL, \n\tname VARCHAR NOT NULL, \n\tpassword_hash VARCHAR NOT NULL, \n\tPRIMARY KEY (id)\n)"
+          }
+        ],
+        "after": [
+          {
+            "type": "table",
+            "name": "files",
+            "table": "files",
+            "sql": "CREATE TABLE files (\n\tid VARCHAR NOT NULL, \n\towner_id VARCHAR NOT NULL, \n\tfilename VARCHAR NOT NULL, \n\tsize INTEGER NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT file_size_nonnegative CHECK (size >= 0), \n\tFOREIGN KEY(owner_id) REFERENCES users (id)\n)"
+          },
+          {
+            "type": "table",
+            "name": "journal",
+            "table": "journal",
+            "sql": "CREATE TABLE journal (\n\tid VARCHAR NOT NULL, \n\tshare_id VARCHAR NOT NULL, \n\trevision INTEGER NOT NULL, \n\tevent VARCHAR NOT NULL, \n\tbefore_state VARCHAR NOT NULL, \n\tafter_state VARCHAR NOT NULL, \n\tguards VARCHAR NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tFOREIGN KEY(share_id) REFERENCES shares (id)\n)"
+          },
+          {
+            "type": "table",
+            "name": "notifications",
+            "table": "notifications",
+            "sql": "CREATE TABLE notifications (\n\tid VARCHAR NOT NULL, \n\tuser_id VARCHAR NOT NULL, \n\tshare_id VARCHAR NOT NULL, \n\tkind VARCHAR NOT NULL, \n\tstate VARCHAR NOT NULL, \n\tfilename VARCHAR NOT NULL, \n\tis_read INTEGER DEFAULT '0' NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tFOREIGN KEY(user_id) REFERENCES users (id), \n\tFOREIGN KEY(share_id) REFERENCES shares (id)\n)"
+          },
+          {
+            "type": "table",
+            "name": "shares",
+            "table": "shares",
+            "sql": "CREATE TABLE \"shares\" (\n\tid VARCHAR NOT NULL, \n\tfile_id VARCHAR NOT NULL, \n\towner_id VARCHAR NOT NULL, \n\trecipient_id VARCHAR NOT NULL, \n\treviewer_id VARCHAR NOT NULL, \n\tstate VARCHAR NOT NULL, \n\trevision INTEGER NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\treturn_reason VARCHAR DEFAULT '' NOT NULL, \n\tsupplement_text VARCHAR DEFAULT '' NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT share_state_valid CHECK (state IN ('pending','awaiting_supplement','approved','rejected','cancelled','revoked')), \n\tCONSTRAINT different_recipient CHECK (owner_id != recipient_id), \n\tCONSTRAINT share_revision_positive CHECK (revision >= 1), \n\tFOREIGN KEY(file_id) REFERENCES files (id), \n\tFOREIGN KEY(owner_id) REFERENCES users (id), \n\tFOREIGN KEY(recipient_id) REFERENCES users (id), \n\tFOREIGN KEY(reviewer_id) REFERENCES users (id), \n\tCONSTRAINT supplement_text_limit CHECK (length(return_reason) <= 200 AND length(supplement_text) <= 200)\n)"
+          },
+          {
+            "type": "table",
+            "name": "users",
+            "table": "users",
+            "sql": "CREATE TABLE users (\n\tid VARCHAR NOT NULL, \n\tname VARCHAR NOT NULL, \n\tpassword_hash VARCHAR NOT NULL, \n\tPRIMARY KEY (id)\n)"
+          }
+        ]
+      }
+    }
+  ],
+  "passed": false,
+  "error": "TypeError(\"unhashable type: 'dict'\")"
+}

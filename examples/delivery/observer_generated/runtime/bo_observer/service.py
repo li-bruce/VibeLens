@@ -6,7 +6,7 @@ finish. No route invokes an application business command.
 """
 
 from functools import wraps
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
 import json
 import mimetypes
 from pathlib import Path
@@ -14,6 +14,7 @@ import secrets
 from urllib.parse import urlsplit, parse_qs
 from .observation.session import GraphSession
 from .session_lifecycle import SessionHost
+from .web.bo_web import BOHTTPServer, bo_content_type
 
 try:
     from ..view_preferences import PreferenceConflict
@@ -88,7 +89,7 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
             )
             self.send_response(code)
             for k, v in [
-                ("Content-Type", mime + "; charset=utf-8"),
+                ("Content-Type", bo_content_type(mime)),
                 ("Content-Length", str(len(raw))),
                 ("Cache-Control", "no-store"),
                 ("X-Content-Type-Options", "nosniff"),
@@ -231,7 +232,7 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                         session.last_error = str(exc)
                 return self.reply(400, {"error": str(exc)})
 
-    class SessionServer(ThreadingHTTPServer):
+    class SessionServer(BOHTTPServer):
         def server_close(self):
             """Retire the session host only after the HTTP server has closed."""
             super().server_close()

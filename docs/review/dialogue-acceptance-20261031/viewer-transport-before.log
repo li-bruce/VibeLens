@@ -1,0 +1,38 @@
+F
+======================================================================
+FAIL: test_cold_parallel_asset_burst_preserves_bytes_and_emits_no_events (__main__.ViewerTransportTests.test_cold_parallel_asset_burst_preserves_bytes_and_emits_no_events)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_viewer_transport.py", line 72, in test_cold_parallel_asset_burst_preserves_bytes_and_emits_no_events
+    self.assertEqual(
+    ~~~~~~~~~~~~~~~~^
+        [error for error in accepted if error],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        [],
+        ^^^
+        "Parallel viewer connections overflowed the listen backlog",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+AssertionError: Lists differ: ['timed out', 'timed out', 'timed out', 't[83 chars]out'] != []
+
+First list contains 10 additional elements.
+First extra element 0:
+'timed out'
+
++ []
+- ['timed out',
+-  'timed out',
+-  'timed out',
+-  'timed out',
+-  'timed out',
+-  'timed out',
+-  'timed out',
+-  'timed out',
+-  'timed out',
+-  'timed out'] : Parallel viewer connections overflowed the listen backlog
+
+----------------------------------------------------------------------
+Ran 1 test in 1.633s
+
+FAILED (failures=1)

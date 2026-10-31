@@ -1,145 +1,167 @@
 # Independent dialogue and viewer acceptance
 
-Status: **partial**. Real application operations and the repaired observer passed
-the checks below. The independent development conversation is waiting for Codex
-approval; its final mapping gate and an ordinary business iteration remain open.
+Status: **passed within the boundaries below**. The accepted original project
+completed its first version, an ordinary business iteration, reviewed observer repairs
+and independent browser retests. Earlier failures remain available for review.
 
-The trial started from `a2d9563` on `feat/recording-timeline`, using a frozen local
-Skill in a separate project. It built a Python/Flask/SQLite team file-sharing
-application. Accounts and uploaded files are synthetic.
+- [Complete visible dialogue](dialogue-complete-002/dialogue.md)
+- [Machine-readable result index](acceptance-summary.json)
+- [Final accepted source and contract snapshot](iteration/original-v2-mime-before-browser/snapshot.json)
+- [Final executed harnesses and hashes](scripts/followup/manifest.json)
 
-## Dialogue and implementation
+## The actual trial
 
-Read the [actual visible dialogue](dialogue/dialogue.md), including the questions,
-changed answers, inline Mermaid graphs, graph confirmation and coding updates.
-The conversation is `01a18f4d-11b3-7553-bbeb-6410929a9146`, titled
-**VibeLens 生命周期全流程试用**. The original local project is
-`VibeLensTrials/lifecycle-dialogue-20261031` relative to this repository's parent.
+The real Codex conversation **VibeLens 生命周期全流程试用**
+(`01a18f4d-11b3-7553-bbeb-6410929a9146`) developed a separate
+Python/Flask/SQLAlchemy/SQLite team file-sharing application. Conversation was in
+Chinese; maintained source and comments were in English. Accounts and files are
+synthetic. The coordinator supplied explicitly marked simulated user replies;
+later actual human corrections are preserved in the same transcript. This is a
+real development conversation with a test persona, not an independent human study.
 
-The coordinator initially supplied explicitly marked simulated answers. Later
-human answers changed the reviewer to a person selected by the owner and widened
-notifications to the owner, reviewer and recipient. The developer recognized the
-newer answers and asked what “all related people” meant. A coordinator reminder
-requested the inline graph after the design server became reachable. These
-interventions are in the transcript; this is not unassisted human usability evidence.
+The first version confirmed login, upload, an owner-selected reviewer and recipient,
+approval/rejection, three-party final notices, authorized download, pending
+cancellation and immediate revocation of future downloads from an unchanged page
+or old URL. The developer showed an inline graph and a reachable design Web page
+before implementation. A coordinator reminder for the first inline graph is also
+retained rather than presented as autonomous success.
 
-The confirmed flow covers login, upload, selected review, approval/rejection,
-three-party notifications, authorized download, pending cancellation and immediate
-revocation of new downloads from an unchanged recipient page or old URL.
-Registration and public sharing were outside this trial.
+![Confirmed initial business graph](design/confirmed-intent-draft.png)
 
-![Confirmed design graph](design/confirmed-intent-draft.png)
+The next request was an ordinary business change, without graph or probe reminders:
+let the reviewer return an application for an explanation, then let the owner
+resubmit it to the original reviewer. Necessary questions confirmed required
+trimmed text up to 200 characters, repeated rounds, the latest pair only, private
+text for the owner/reviewer, owner-only return notices and reviewer-only resubmit
+notices. Existing final notices and participants remained unchanged. A later
+ambiguous human reply triggered reconfirmation; the actual human explicitly kept
+the previously confirmed rules. The developer updated the inline draft, state
+declaration, policy branches, implementation bindings, probes and cases.
 
-The [first connected project gate](original-project-gate/verify-001.json) correctly rejected missing implementation mapping
-witnesses. Its independent business, state and project checks passed. A successful
-browser flow does **not** turn that unfinished candidate into an accepted project.
-The [custom-source snapshot](trial-source-v1/snapshot.json) preserves 52 original
-files for review; managed runtime/assets are recreated from the named Skill revision.
+[Ordinary iteration gates and every matching attempt](iteration/ordinary-iteration-evidence.json)
+preserve the first strict rejections, fixes, acceptance and checks.
+[Nineteen independent structure checks](iteration/original-v2-structure-04/structure-and-data-update.json)
+verify unchanged old baselines, cases, modes, required parameters, core identities,
+updated source indexes, actual SQLite columns/state constraints and preserved old
+rows/files. A real two-round run with an intentionally wrong observed length fails
+mapping while native business behavior stays correct; the restored run passes
+([control](iteration/original-v2-probe-value-01/supplement-probe-control.json)).
 
-## Findings and repairs
+## Final original-project results
+
+| Area | Result | Evidence |
+| --- | --- | --- |
+| Initial version: users, review, notices, exact download bytes, cancellation and stale-link revocation | Passed on the accepted original project | [Initial operation retest](operations-original-v1-optimized-01/results.json) |
+| Business iteration: two return/resubmit rounds, private text, wrong actors, empty/201-character rejection, 200-character boundary, cancellation, rejection and final approval | 7 groups passed | [Final actual operations](operations-original-v2-final-02/results.json) |
+| Recording the actual iteration | 1390 events, complete capture; stop took 1.980 seconds at the unchanged 30-second bound | Same operation report and complete archived recording |
+| Business, states, permissions, function/value, API, project/code, database and data-operation views | Required configured views have nodes and relations; unconfigured presets remain empty | [Preset observations](application-original-v2-final-02/preset-observations.json) |
+| Names/identity, annotations, core marks, hide/show, expand/collapse, actual pointer pin/reload, full source, custom views, 2D/3D, layers and language | 12 groups passed | [Viewer checks](application-original-v2-final-02/viewer-results.json) |
+| Personal filters, specific exclusions, pins, annotation and expansion across source updates | Exact saved values retained; old-build recordings leave the current list | [View retention](iteration/original-v2-mime-view-01/view-update.json) |
+| Timeline lifetimes and directed handoffs | 470 intervals and 173 same-layer/cross-layer routes | [Timeline checks](timeline-original-v2-final-02/results.json) |
+| Waiting, resumption and approval in 2D/3D | Exact recorded event ID shared by graph, time ruler and selected step; four separate closed waiting periods | [Iteration state checks](timeline-original-v2-final-supplement-02/results.json) |
+| Timeline zoom, ruler/keyboard seek, drag range, looping, cutoff depth, single layer, skip/restore, play/pause, Chinese/mobile and live return | Passed; saved recording bytes unchanged | Same timeline checks |
+| Region-only recording and restoration of full capture | Passed with real approval and subsequent download | [Focused capture](focused-original-v2-final-02/results.json) |
+| Viewer/source/layout/preferences operations | Zero new application events | Same viewer and timeline reports |
+| Complete repository and real database checks | Passed with original checks retained | [Final verification](repository-mime-verification.json) |
+| Existing UI regressions, including registered/mid-span lifecycles, data/code, recording controls, 3D, routing, clustering, layers and replay | 15 distinct suites passed after retained corrections | [Regression index](acceptance-summary.json) |
+
+![Actual state residency and connected calls](timeline-original-v2-final-02/state-residency-and-calls.png)
+
+![Actual pointer orbit and the same recorded timeline](timeline-original-v2-final-02/actual-orbit-and-timeline.png)
+
+The visual proof reads the saved facts, uses native controls and a real pointer
+orbit, and verifies the recording bytes are unchanged. Short calls retain measured
+durations; zoom reveals them. Waiting/resident states retain their own intervals.
+No duration or missing event is synthesized for the screenshots.
+
+## Failures, repairs and retests
 
 | Finding | Repair and retained evidence |
 | --- | --- |
-| Stop returned before the asynchronous producer queue drained. The original record saved 149 events; the collector later held 1,256, including 31 earlier context events. | Added bounded producer settlement before start/stop, outside observer locks. Timeouts and new capture errors retain interrupted evidence. [Original failure](operations-v1-initial/results.json), [settled capture audit](layer-and-capture-audit-v1.json). |
-| Two deferred HTTP return builders referenced Python's cleared `except ... as error` variable. Business responses were correct, but six return observations were missing. | Preserved the original source. A separately marked copy fixes only those builders and records the POST redirect's actual HTTP 303. [Exact patch](patches/http-capture.diff), [copy provenance](patches/provenance.json). New gate checks reject producer/data errors separately from business results. |
-| Selected-region recording had no connected native scope controller. | Added `GraphSession.bo_bind_capture` and Python/Node producer scope/health APIs. Real approval captured four scoped events and its state frame; stopping restored full HTTP/data capture. [Actual focused test](focused-actual-retest/results.json). |
-| Data wrappers still evaluated observer-only summaries outside the selected scope. | Both language adapters now skip extraction for excluded/disabled observation while executing native callbacks unchanged. [Failing regression](data-scope-before.log), [retest](data-scope-after.log). |
-| The default global 400-node slice omitted both HTTP routes before the API view applied its filter. | Added an API neighborhood before display limits. The real API view and a source regression exceeding 400 nodes retain endpoints, handlers and parameters. [Failed browser assertion](application-v1-api-failure/viewer-results.json), [real retest](application-v1-api-repaired/viewer-results.json), [source regression](code-api-regression.log). |
-| Ingress repeatedly resolved complete Windows source paths. | Reused relative ancestor paths, reread current attributes and every source byte, and retained same-stat edit/link rejection. A parent replaced by an external junction within the same pass is rejected too. [Final profile](ingress-final/results.json). |
+| The first project gate lacked implementation witnesses | The original baseline was retained and the missing actual evidence was added. All four categories then passed. [First failed gate](original-project-gate/verify-001.json), [initial accepted snapshot](iteration/original-v1-before-browser/snapshot.json). |
+| Recording stopped before its asynchronous producer queue drained | Added bounded settlement before start/stop outside observer locks. An incomplete flush remains explicitly interrupted. [Original failure](operations-v1-initial/results.json), [capture audit](layer-and-capture-audit-v1.json). |
+| Deferred Python HTTP result builders used a cleared exception variable and omitted six actual return observations | Fixed the real deferred builders and actual redirect status, then formally upgraded the original project. Native business responses alone no longer suffice for mapping acceptance. [Exact early copy repair](patches/http-capture.diff), [accepted original retest](operations-original-v1-optimized-01/results.json). |
+| Selected recording scope did not reach the native producer; excluded data wrappers still extracted observer summaries | Connected scope/flush/health controllers and skipped excluded summaries while executing native work. [Scope failure/retest](focused-actual-retest/results.json), [data regression](data-scope-after.log), final focused capture above. |
+| A global code-node budget removed API endpoints before the API filter ran | Select API neighborhoods before display limits. [Failed view](application-v1-api-failure/viewer-results.json), [source regression](code-api-regression.log), final live API view above. |
+| Repeated source checks/parsing made recording drain exceed the unchanged bound | Kept fresh physical containment and byte reads, reusing canonical comparison only for already verified identical JSON bytes. [Two original failures](operations-original-v1-01/results.json), [accepted v1 retest](operations-original-v1-optimized-01/results.json). |
+| The larger ordinary iteration again exceeded 30 seconds: 1,226 interval events saved, 111 still pending, with no drops/capture errors | Added optional bounded local Python event batches. Every event retains the same strict envelope/identity rules; source bytes are checked at both pre-publication boundaries. Snapshots remain FIFO barriers, invalid groups fall back to individual admissions, and the original callback path remains tested. [Original interruption](operations-original-v2-supplement-01/results.json), [isolated repair](operations-batch-sink-copy-02/results.json), final accepted original retest above. |
+| Two full viewer runs stalled on a module connection during language reload | A cold TCP burst exposed the five-slot listener backlog: 10 of 16 connections timed out. The 64-slot backlog passes exact-byte/no-event checks. Full viewer and 12 repeated language changes then passed on the repair copy; the original-project full viewer also passed. [Failed browser run](application-batch-sink-copy-02/viewer-results.json), [before](viewer-transport-before.log), [after](viewer-transport-after-02.log), [copy reloads](reload-viewer-transport-after-01/reload-results.json). |
+| A later original timeline run passed eight groups, then stalled on reload; a direct browser check also rejected streaming WASM | The WASM header incorrectly included a text charset. Shared `bo_content_type` now keeps binary MIME exact; runtime, design and shipped adapters share that policy and `BOHTTPServer`. Native/header checks and actual streaming compilation pass. Repeated full timeline tests retained all assertions and later passed. [Retained timeline failure](timeline-original-v2-final-01/results.json), [actual failed compilation](original-transport-diagnostic-01/transport.json), [native failure](viewer-wasm-before.log), [native repair](viewer-wasm-shared-after.log), [successful compilation](copy-wasm-streaming-after-01/transport.json). |
+| The ordinary iteration's new spans/instance identities were incomplete; generated reason text rewrote protected old definitions | Existing source, parameter and instance checks rejected the candidates. The developer fixed bindings and restored exact protected definitions; old cases/modes were retained. All attempts remain in the ordinary-iteration archive. |
+| A question premise assumed retained round history | The persona corrected it to the latest pair. Guidance now asks whether an old rule applies before asking about its audience. This wording is a usage-derived correction, not a separately repeated forward dialogue experiment. |
 
-The failed capture with queue settlement retained all 1,225 received interval events
-and reported six capture errors. The two-builder repair adds those six actual
-HTTP returns: the clean repeat saved **1,231 events, zero gaps, zero producer/data
-errors and zero drops**. No missing event was synthesized.
+The observer repairs were separate reviewed changes after the accepted business
+iteration. [Technical upgrade history](iteration/technical-upgrade-evidence.json)
+retains their independent baselines, source parity, actual recordings, strict
+checks, observer-free package runs, original-test preservation and final data/file/
+recording/preferences conservation. The final [MIME upgrade](iteration/mime-upgrade-evidence.json)
+and [native observation attempts](iteration/observation-attempts-evidence.json)
+remain separate archives. No failed baseline was reset to obtain a pass.
 
-![Recipient's unchanged page before revocation](operations-v1-repaired-boundaries/recipient-with-original-link.png)
+Tests also rejected missing instances, stale revisions, missing context/witnesses,
+capture errors, missing actual returns and source-only edits/new functions. See
+[six evidence controls](iteration/original-v1-negatives-02/negative-controls.json),
+[real wrong-value control](iteration/original-v1-probe-value-01/probe-value-control.json)
+and [source-only controls](iteration/original-v1-source-01/source-only-controls.json).
+[Harness corrections](iteration/harness-setup-failures.md) distinguish test setup
+mistakes from application defects; their failed runs remain available too.
 
-## Browser coverage
+## Performance and boundaries
 
-| Area | Actual trial result | Evidence |
-| --- | --- | --- |
-| Four authenticated users, selected reviewer, approval/rejection/cancel, messages, exact file bytes, stale-link revocation | Passed | [Operation checks](operations-v1-repaired-boundaries/results.json) |
-| Business, state, permission, function/value, API, project/code, database and data-operation views | Passed for the implemented trial; source index limits remain visible | [Preset inventory](application-v1-api-repaired/preset-observations.json) |
-| Stable source/explained identities, node notes, aliases, core marks, hide/show, expand/collapse, custom views, full source, 2D/3D and language switch | Passed | [Actual viewer checks](application-v1-api-repaired/viewer-results.json) |
-| Observer-only UI/source/layout actions | Added zero application events | Same viewer report |
-| Timeline lifetimes and connections | 521 intervals, 323 directed routes; same-layer and cross-layer handoffs present | [Actual timeline tests](timeline-actual-01/results.json) |
-| Timeline and graph state/value/transfer synchronization | Passed in 2D and 3D at the exact original event ID | Same timeline report |
-| Zoom, ruler/keyboard seek, drag range, loop selection, depth cutoff, single layer, skip/restore, play/pause, Chinese/mobile, live return | Passed; saved recording bytes unchanged | Same timeline report |
-| Actual focused capture and return to full capture | Passed | [Focused/full records](focused-actual-retest/results.json) |
-| Resource concurrency, joins and shared membership | Not configured in this simple trial; exercised by existing repository examples/fixtures | Full repository and browser regressions |
-| Ordinary business iteration with autonomous graph/probe maintenance | **Pending** independent conversation approval | No passing claim |
-| Final independent application's complete mapping acceptance | **Pending** repair of missing witnesses and HTTP capture | Original failed gate retained |
+On the same native Windows host, model and 46 source files, admission of 100 actual
+event envelopes measured 14.70 ms/event with the ordinary sink and 3.16 ms/event
+amortized with groups of 16. This is a receiver microbenchmark, separate from the
+actual complete recording above. [Before](ingress-original-v2-host-before/results.json),
+[batch](ingress-original-v2-host-batch/results.json). A Windows-handle alternative
+showed no improvement in a fair host comparison and was reverted; its experiment
+and decision remain under `experiments/windows-handle/`.
 
-The actual timeline shows about 1.8 seconds of pending-review residency. Short
-function calls keep their measured durations; zoom reveals them without inflating
-time to make them look long.
-
-![Real call lifetimes at a local time scale](timeline-actual-01/actual-local-call-lifetimes.png)
-
-![The same actual approved state in the 3D graph and timeline](timeline-actual-01/actual-approved-3d.png)
-
-## Verification and limits
-
-Repository checks cover contracts, source inventories, protected expectations,
-on/off/fault behavior, real databases, observer-free exports, and shipped examples.
-Browser suites exercise lifecycle/timeline, names, conversation/design controls,
-native recording/clear/load-error handling, engineering/code/data views, 3D,
-routing, clustering, layers and replay. Final receipts are indexed in
-`acceptance-summary.json`; original failed runs remain alongside their retests.
-
-Large raw JSON is stored losslessly as `.json.gz`; `compressed-evidence.json`
-records each original SHA-256 and byte count. This includes complete event records
-and repeated source/view snapshots, rather than replacing them with summaries.
-Intermediate browser runs and superseded generated checkpoint copies are retained
-in [checkpoint-history/index.json](checkpoint-history/index.json), with a hash for
-every archived file. Current shipped examples retain their final frozen approval;
-earlier approvals and all failed/retested evidence remain recoverable from these ZIPs.
-
-Some initial browser assertions assumed old layer positions, icon counts or
-source expansion behavior. Their replacements retain the original checks and
-require actual current IDs, native controls and exact saved values. The layer
-reload check now waits for the **stored order**, not merely a custom-mode flag.
-Localhost/junction tests use host execution on this Windows installation.
-
-The isolated 100-event ingress profile improved from about **28.64 ms/event** to
-**17.70 ms/event**, with 35 source files and byte hashing retained. The real burst
-still created a backlog: stop took **19.379 seconds** to drain. Completeness is
-verified here; this is not a low-latency performance guarantee. Batch ingestion and
-larger-workload latency remain future optimization work.
-
-The trial is Python. Node scope/data adapters and JS/TS/React/Vue parsing are
-covered by repository regressions; this run does not claim a second independent
-Node/React/Vue application conversation. Unresolved static references remain
-unresolved, and static source links do not become executed calls.
+- Historical recordings currently disable optional project/AST/API indexes because
+  those indexes are not snapshotted. Live navigation passed separately. Bound
+  handler source and captured facts remain available during replay; tests explicitly
+  verify the disabled state instead of loading current indexes into old facts.
+- The independent application conversation is Python. Node/React/Vue parsing,
+  adapters and other database families have repository regressions. This run does
+  not claim another new application conversation for those stacks.
+- Shared-resource concurrency, joins and shared membership are not configured in
+  this simple application. Existing repository examples and fixtures cover them.
+- Runtime evidence establishes the observed runs. Unresolved static calls remain
+  unresolved; static relations do not become executed calls.
+- One retained custom view reported 31 blocked routes at startup
+  ([actual diagnostic](original-wasm-streaming-final-01/transport.json)). Relationship
+  and capture checks passed; obstacle-avoidance quality for that saved layout was
+  not established by the fixture routing results.
 
 ## Review and reproduction
 
-The [archived harnesses](scripts/manifest.json) are the exact final test sources.
-Restore them under `.validation/` to retain their relative imports, and run from
-the repository root with the Python environment and Playwright browser installed.
-The isolated candidate launcher copies the original trial into a fresh directory;
-`BO_DIALOGUE_PATCH_HTTP=1` applies the explicitly documented two-line capture repair.
-It does not modify the original conversation project or create an acceptance record.
+The original local project is `VibeLensTrials/lifecycle-dialogue-20261031` beside
+this repository. Its current process/build information and URLs are in
+`review/runtime-process.json`. The original application is left available for
+inspection; owned repair-copy services were shut down after their tests.
 
-Useful commands after restoring the scripts:
+Source/contract ZIPs retain file hashes and the actual observation command output.
+The final [after-browser snapshot](iteration/original-v2-mime-after-browser/snapshot.json)
+retains the current view/records without changing application source. Earlier
+failed/superseded checkpoints remain in [checkpoint history](checkpoint-history/index.json).
+Large event/view JSON is losslessly stored as gzip, with original hashes in
+`compressed-evidence.json` and `followup-compressed-evidence.json`.
+
+Restore the [final executed harnesses and review helpers](scripts/final/manifest.json)
+under `.validation/` for their relative imports. Final successful harness versions
+are hash-indexed; notes identify earlier harness corrections. The trial launcher
+copies the original application into an isolated repair project; its results are
+always labeled separately from accepted original-project evidence.
+
+Run repository checks from the root with its Python environment and a configured
+Playwright browser:
 
 ```powershell
 .venv/Scripts/python.exe -B -X utf8 tools/verify.py --database
 .venv/Scripts/python.exe -B -X utf8 tools/check_source.py --format
-.venv/Scripts/python.exe -B -X utf8 .validation/run_dialogue_browser_regressions.py
+.venv/Scripts/python.exe -B -X utf8 .validation/audit_dialogue_archive.py review-repeat
 ```
 
-To inspect the complete real recording without launching the business application:
-
-```powershell
-node docs/review/dialogue-acceptance-20261031/scripts/replay_actual_recording.mjs
-```
-
-Open the printed local URL and select the saved recording. This separate utility
-serves retained facts only; it does not repeat business operations.
-
-The conversation's original failed gate and its earlier questions must be retained
-when testing the next business iteration. Do not replace its baseline to obtain a
-passing result. Continue it after Codex approval, apply the local Skill/runtime
-upgrade, complete HTTP/error witnesses, then request an ordinary business change
-without mentioning graph maintenance and verify automatic updates independently.
+Mapping, state constraints, business correctness and project checks remain
+separate reports. A faithfully displayed application bug may pass mapping and fail
+business checks; an incorrect observed value must fail mapping even when native
+behavior is correct.

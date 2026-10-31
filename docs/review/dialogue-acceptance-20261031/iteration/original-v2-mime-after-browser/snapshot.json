@@ -1,0 +1,4821 @@
+{
+  "phase": "original-v2-mime-after-browser",
+  "recorded_at": "2026-10-31T09:43:53.649376+00:00",
+  "kind": "Accepted original conversation snapshot, not an isolated repaired copy",
+  "thread_id": "01a18f4d-11b3-7553-bbeb-6410929a9146",
+  "runtime": {
+    "server_pid": 18992,
+    "parent_pid": 21120,
+    "root": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\lifecycle-dialogue-20261031",
+    "application_url": "http://127.0.0.1:50643/",
+    "graph_url": "http://127.0.0.1:50642/graph",
+    "build_id": "55adb37274e9423694099b9fc86bbccf78454c50d14bd45eb9e756704e3b170f",
+    "phase": "accepted-local-viewer-mime",
+    "accepted_candidate_id": "5c87114c17ae58eb0d9bb4c2e2b621280a1fd73c35416969d46b1c840c694596",
+    "launcher_pid": 21120,
+    "process_identities": [
+      {
+        "ProcessId": 21120,
+        "ParentProcessId": 51212,
+        "CreationDate": "2026-10-31T17:27:36.096534+08:00",
+        "ExecutablePath": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "CommandLine": "\"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe\" -B -X utf8 \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\lifecycle-dialogue-20261031\\tooling\\dev.py\" --app-port 50643 --graph-port 50642"
+      },
+      {
+        "ProcessId": 18992,
+        "ParentProcessId": 21120,
+        "CreationDate": "2026-10-31T17:27:36.149875+08:00",
+        "ExecutablePath": "C:\\Users\\Lvi_P\\miniforge3\\python.exe",
+        "CommandLine": "\"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe\" -B -X utf8 \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\lifecycle-dialogue-20261031\\tooling\\dev.py\" --app-port 50643 --graph-port 50642"
+      }
+    ],
+    "independent_browser_acceptance": "pending for this new MIME build",
+    "handoff": "review/handoff-capture-viewer-mime.json"
+  },
+  "active": {
+    "change": ".stategraph/capture-viewer-mime"
+  },
+  "accepted": {
+    "candidate_id": "5c87114c17ae58eb0d9bb4c2e2b621280a1fd73c35416969d46b1c840c694596",
+    "build_id": "55adb37274e9423694099b9fc86bbccf78454c50d14bd45eb9e756704e3b170f",
+    "verification_hash": "7c62b436e173ed7338269efb2bf47379a3373064dee2706bb2312f76715c2ac5"
+  },
+  "observations_sha256": "77aab64e400712251d256826c7cb459685e18739f5052945a36f57169ecd37be",
+  "build_id": "55adb37274e9423694099b9fc86bbccf78454c50d14bd45eb9e756704e3b170f",
+  "nodes": {
+    "login": {
+      "kind": "action",
+      "label": "用户登录",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.login"
+      }
+    },
+    "logout": {
+      "kind": "action",
+      "label": "Sign out",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.logout"
+      }
+    },
+    "upload": {
+      "kind": "action",
+      "label": "上传文件",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.upload"
+      }
+    },
+    "share": {
+      "kind": "action",
+      "label": "主人选择接收方及审核人",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.request_share"
+      }
+    },
+    "review": {
+      "kind": "action",
+      "label": "主人指定的审核人审核",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.change_share"
+      }
+    },
+    "cancel_share": {
+      "kind": "action",
+      "label": "主人取消申请",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.change_share"
+      }
+    },
+    "revoke": {
+      "kind": "action",
+      "label": "文件主人撤销共享",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.change_share"
+      }
+    },
+    "download": {
+      "kind": "action",
+      "label": "每次请求检查当前下载权限",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.download"
+      }
+    },
+    "received_files": {
+      "kind": "action",
+      "label": "接收方仅查看获授权文件",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.dashboard"
+      }
+    },
+    "read_notification": {
+      "kind": "action",
+      "label": "Read notification",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.read_notification"
+      }
+    },
+    "notification": {
+      "kind": "action",
+      "label": "审核结果通知三方",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._messages"
+      }
+    },
+    "share_message": {
+      "kind": "action",
+      "label": "通过后共享消息通知三方",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._messages"
+      }
+    },
+    "http_action": {
+      "kind": "action",
+      "label": "Submit form",
+      "source": {
+        "path": "app/web.py",
+        "symbol": "create_app.page"
+      }
+    },
+    "http_page": {
+      "kind": "action",
+      "label": "Open workspace",
+      "source": {
+        "path": "app/web.py",
+        "symbol": "create_app.page"
+      }
+    },
+    "http_download": {
+      "kind": "action",
+      "label": "Download response",
+      "source": {
+        "path": "app/web.py",
+        "symbol": "create_app.download"
+      }
+    },
+    "return_share": {
+      "kind": "action",
+      "label": "原审核人退回补充",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.return_share"
+      }
+    },
+    "resubmit_share": {
+      "kind": "action",
+      "label": "主人补充并重新提交",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.resubmit_share"
+      }
+    },
+    "supplement_text": {
+      "kind": "action",
+      "label": "最新原因和说明（仅双方可见）",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service.supplement_details"
+      }
+    },
+    "return_notice": {
+      "kind": "action",
+      "label": "只通知文件主人",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._messages"
+      }
+    },
+    "resubmit_notice": {
+      "kind": "action",
+      "label": "只通知原审核人",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._messages"
+      }
+    },
+    "http_application": {
+      "kind": "action",
+      "label": "Application response",
+      "source": {
+        "path": "app/web.py",
+        "symbol": "create_app.application_details"
+      }
+    },
+    "pending": {
+      "kind": "state",
+      "label": "等待审核（接收方不可见）"
+    },
+    "granted": {
+      "kind": "state",
+      "label": "通过并授予下载权限"
+    },
+    "rejected": {
+      "kind": "state",
+      "label": "已驳回（接收方不可见）"
+    },
+    "cancelled": {
+      "kind": "state",
+      "label": "已取消：不授予权限"
+    },
+    "revoked": {
+      "kind": "state",
+      "label": "已撤销：旧地址新请求也拒绝"
+    },
+    "awaiting_supplement": {
+      "kind": "state",
+      "label": "待补充（暂停审核）"
+    },
+    "download_denied": {
+      "kind": "data",
+      "label": "拒绝新的下载请求"
+    },
+    "policy:network": {
+      "kind": "decision",
+      "label": "Rules"
+    },
+    "policy:session_fact": {
+      "kind": "data",
+      "label": "已登录"
+    },
+    "policy:owner_fact": {
+      "kind": "data",
+      "label": "操作者是文件主人"
+    },
+    "policy:grant_fact": {
+      "kind": "data",
+      "label": "当前具有下载权限"
+    },
+    "policy:function:flag_enabled": {
+      "kind": "function",
+      "label": "flag_enabled",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:signed_in_rule": {
+      "kind": "decision",
+      "label": "已登录",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:owner_rule": {
+      "kind": "decision",
+      "label": "文件主人",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:grant_rule": {
+      "kind": "decision",
+      "label": "下载权限有效",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:owner_session": {
+      "kind": "decision",
+      "label": "AND · 已登录的文件主人"
+    },
+    "policy:download_allowed": {
+      "kind": "decision",
+      "label": "AND · 允许下载"
+    },
+    "policy:selected_reviewer_fact": {
+      "kind": "data",
+      "label": "操作者是所选审核人"
+    },
+    "policy:selected_reviewer_rule": {
+      "kind": "decision",
+      "label": "操作者是所选审核人",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:pending_fact": {
+      "kind": "data",
+      "label": "申请仍在待审核"
+    },
+    "policy:pending_rule": {
+      "kind": "decision",
+      "label": "申请仍在待审核",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:approved_fact": {
+      "kind": "data",
+      "label": "共享处于已通过"
+    },
+    "policy:approved_rule": {
+      "kind": "decision",
+      "label": "共享处于已通过",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:reviewer_pending": {
+      "kind": "decision",
+      "label": "AND · 所选审核人处理待审核申请"
+    },
+    "policy:owner_pending": {
+      "kind": "decision",
+      "label": "AND · 主人取消待审核申请"
+    },
+    "policy:owner_approved": {
+      "kind": "decision",
+      "label": "AND · 主人撤销已通过共享"
+    },
+    "policy:awaiting_supplement_fact": {
+      "kind": "data",
+      "label": "申请处于待补充"
+    },
+    "policy:awaiting_supplement_rule": {
+      "kind": "decision",
+      "label": "申请处于待补充",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:return_reason_valid_fact": {
+      "kind": "data",
+      "label": "退回原因必填且不超过200字"
+    },
+    "policy:return_reason_valid_rule": {
+      "kind": "decision",
+      "label": "退回原因必填且不超过200字",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:supplement_text_valid_fact": {
+      "kind": "data",
+      "label": "补充说明必填且不超过200字"
+    },
+    "policy:supplement_text_valid_rule": {
+      "kind": "decision",
+      "label": "补充说明必填且不超过200字",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "flag_enabled"
+      }
+    },
+    "policy:owner_awaiting_supplement": {
+      "kind": "decision",
+      "label": "AND · 待补充申请的主人"
+    },
+    "policy:owner_cancellable": {
+      "kind": "decision",
+      "label": "OR · 主人可取消待审核或待补充申请"
+    },
+    "policy:return_allowed": {
+      "kind": "decision",
+      "label": "AND · 原审核人填写有效原因后退回"
+    },
+    "policy:resubmit_allowed": {
+      "kind": "decision",
+      "label": "AND · 主人填写有效说明后重新提交"
+    },
+    "policy:reviewer_session": {
+      "kind": "decision",
+      "label": "AND · 已登录的原审核人"
+    },
+    "policy:supplement_text_allowed": {
+      "kind": "decision",
+      "label": "OR · 仅文件主人或原审核人查看说明"
+    },
+    "db:application:store": {
+      "kind": "data",
+      "label": "SQLite application records"
+    },
+    "db:application:table%3Afiles": {
+      "kind": "data",
+      "label": "files"
+    },
+    "db:application:table%3Afiles:field:created_at": {
+      "kind": "data",
+      "label": "created_at"
+    },
+    "db:application:table%3Afiles:field:filename": {
+      "kind": "data",
+      "label": "filename"
+    },
+    "db:application:table%3Afiles:field:id": {
+      "kind": "data",
+      "label": "id"
+    },
+    "db:application:table%3Afiles:field:owner_id": {
+      "kind": "data",
+      "label": "owner_id"
+    },
+    "db:application:table%3Afiles:field:size": {
+      "kind": "data",
+      "label": "size"
+    },
+    "db:application:table%3Ajournal": {
+      "kind": "data",
+      "label": "journal"
+    },
+    "db:application:table%3Ajournal:field:after_state": {
+      "kind": "data",
+      "label": "after_state"
+    },
+    "db:application:table%3Ajournal:field:before_state": {
+      "kind": "data",
+      "label": "before_state"
+    },
+    "db:application:table%3Ajournal:field:created_at": {
+      "kind": "data",
+      "label": "created_at"
+    },
+    "db:application:table%3Ajournal:field:event": {
+      "kind": "data",
+      "label": "event"
+    },
+    "db:application:table%3Ajournal:field:guards": {
+      "kind": "data",
+      "label": "guards"
+    },
+    "db:application:table%3Ajournal:field:id": {
+      "kind": "data",
+      "label": "id"
+    },
+    "db:application:table%3Ajournal:field:revision": {
+      "kind": "data",
+      "label": "revision"
+    },
+    "db:application:table%3Ajournal:field:share_id": {
+      "kind": "data",
+      "label": "share_id"
+    },
+    "db:application:table%3Anotifications": {
+      "kind": "data",
+      "label": "notifications"
+    },
+    "db:application:table%3Anotifications:field:created_at": {
+      "kind": "data",
+      "label": "created_at"
+    },
+    "db:application:table%3Anotifications:field:filename": {
+      "kind": "data",
+      "label": "filename"
+    },
+    "db:application:table%3Anotifications:field:id": {
+      "kind": "data",
+      "label": "id"
+    },
+    "db:application:table%3Anotifications:field:is_read": {
+      "kind": "data",
+      "label": "is_read"
+    },
+    "db:application:table%3Anotifications:field:kind": {
+      "kind": "data",
+      "label": "kind"
+    },
+    "db:application:table%3Anotifications:field:share_id": {
+      "kind": "data",
+      "label": "share_id"
+    },
+    "db:application:table%3Anotifications:field:state": {
+      "kind": "data",
+      "label": "state"
+    },
+    "db:application:table%3Anotifications:field:user_id": {
+      "kind": "data",
+      "label": "user_id"
+    },
+    "db:application:table%3Ashares": {
+      "kind": "data",
+      "label": "shares"
+    },
+    "db:application:table%3Ashares:field:created_at": {
+      "kind": "data",
+      "label": "created_at"
+    },
+    "db:application:table%3Ashares:field:file_id": {
+      "kind": "data",
+      "label": "file_id"
+    },
+    "db:application:table%3Ashares:field:id": {
+      "kind": "data",
+      "label": "id"
+    },
+    "db:application:table%3Ashares:field:owner_id": {
+      "kind": "data",
+      "label": "owner_id"
+    },
+    "db:application:table%3Ashares:field:recipient_id": {
+      "kind": "data",
+      "label": "recipient_id"
+    },
+    "db:application:table%3Ashares:field:return_reason": {
+      "kind": "data",
+      "label": "return_reason"
+    },
+    "db:application:table%3Ashares:field:reviewer_id": {
+      "kind": "data",
+      "label": "reviewer_id"
+    },
+    "db:application:table%3Ashares:field:revision": {
+      "kind": "data",
+      "label": "revision"
+    },
+    "db:application:table%3Ashares:field:state": {
+      "kind": "data",
+      "label": "state"
+    },
+    "db:application:table%3Ashares:field:supplement_text": {
+      "kind": "data",
+      "label": "supplement_text"
+    },
+    "db:application:table%3Ausers": {
+      "kind": "data",
+      "label": "users"
+    },
+    "db:application:table%3Ausers:field:id": {
+      "kind": "data",
+      "label": "id"
+    },
+    "db:application:table%3Ausers:field:name": {
+      "kind": "data",
+      "label": "name"
+    },
+    "db:application:table%3Ausers:field:password_hash": {
+      "kind": "data",
+      "label": "password_hash"
+    },
+    "db_read": {
+      "kind": "function",
+      "label": "Read records",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.read"
+      }
+    },
+    "db_write": {
+      "kind": "function",
+      "label": "Write records",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.write"
+      }
+    },
+    "db_transaction": {
+      "kind": "function",
+      "label": "Commit or roll back",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.transaction"
+      }
+    },
+    "db_transform": {
+      "kind": "function",
+      "label": "Normalize filename",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "clean_filename"
+      }
+    },
+    "code.f61e58ec5a70c4e4": {
+      "kind": "function",
+      "label": "timestamp",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "timestamp"
+      }
+    },
+    "code.2efc1ea1e50cf59c": {
+      "kind": "function",
+      "label": "Service._authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._authorize"
+      }
+    },
+    "code.7b0ec99451880a1d": {
+      "kind": "function",
+      "label": "Service._one",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._one"
+      }
+    },
+    "code.1625164e277f9a18": {
+      "kind": "function",
+      "label": "Service._authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._authorize"
+      }
+    },
+    "code.ffb926226f1a9d28": {
+      "kind": "function",
+      "label": "timestamp",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "timestamp"
+      }
+    },
+    "code.0e66a200fe2af969": {
+      "kind": "function",
+      "label": "Service._journal",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._journal"
+      }
+    },
+    "code.3ffa7cf993ce6804": {
+      "kind": "function",
+      "label": "Service._one",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._one"
+      }
+    },
+    "code.16cc3f9303a765a2": {
+      "kind": "function",
+      "label": "Service._authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._authorize"
+      }
+    },
+    "code.2667879811c0aaf6": {
+      "kind": "function",
+      "label": "Service._journal",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._journal"
+      }
+    },
+    "code.e60c71cc86a497ae": {
+      "kind": "function",
+      "label": "Service._messages",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._messages"
+      }
+    },
+    "code.7b1141db3f842982": {
+      "kind": "function",
+      "label": "Service._one",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._one"
+      }
+    },
+    "code.01ddd5f797f0103c": {
+      "kind": "function",
+      "label": "Service._authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._authorize"
+      }
+    },
+    "code.31f8f3d5bb5413b6": {
+      "kind": "function",
+      "label": "Service._journal",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._journal"
+      }
+    },
+    "code.62a3db3051807939": {
+      "kind": "function",
+      "label": "Service._messages",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._messages"
+      }
+    },
+    "code.11c2a6fbe9d03aa7": {
+      "kind": "function",
+      "label": "Service._one",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._one"
+      }
+    },
+    "code.d22f0a4f8f0309f2": {
+      "kind": "function",
+      "label": "Service._authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._authorize"
+      }
+    },
+    "code.b6bd77a2abab7e5d": {
+      "kind": "function",
+      "label": "Service._journal",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._journal"
+      }
+    },
+    "code.66ac2da1575b91ef": {
+      "kind": "function",
+      "label": "Service._messages",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._messages"
+      }
+    },
+    "code.43ef73b71ea25cb4": {
+      "kind": "function",
+      "label": "Service._one",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._one"
+      }
+    },
+    "code.5edf63683f83e4d0": {
+      "kind": "function",
+      "label": "Service._authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._authorize"
+      }
+    },
+    "code.424d6d0b8a025eaf": {
+      "kind": "function",
+      "label": "Service._authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._authorize"
+      }
+    },
+    "code.9ede5b6b4f49ca4f": {
+      "kind": "function",
+      "label": "Service._evaluate",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._evaluate"
+      }
+    },
+    "code.ec847391c6631bd3": {
+      "kind": "function",
+      "label": "Service._one",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._one"
+      }
+    },
+    "code.09f162bf3c008d0e": {
+      "kind": "function",
+      "label": "timestamp",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "timestamp"
+      }
+    },
+    "code.840c90dd2f0d8c0f": {
+      "kind": "function",
+      "label": "timestamp",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "timestamp"
+      }
+    },
+    "code.994d7f9dbd393e49": {
+      "kind": "function",
+      "label": "Service._supplement_transition",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._supplement_transition"
+      }
+    },
+    "code.193112146a829774": {
+      "kind": "function",
+      "label": "Service._supplement_transition",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._supplement_transition"
+      }
+    },
+    "code.0298b25fa73ac6e3": {
+      "kind": "function",
+      "label": "Service._one",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._one"
+      }
+    },
+    "code.3b73e43c1bd0403e": {
+      "kind": "function",
+      "label": "Service._authorize",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._authorize"
+      }
+    },
+    "code.d5b16bab8ec95e00": {
+      "kind": "function",
+      "label": "timestamp",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "timestamp"
+      }
+    },
+    "code.d5e97d6f036c8e1c": {
+      "kind": "function",
+      "label": "timestamp",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "timestamp"
+      }
+    },
+    "code.076c5acad96e3195": {
+      "kind": "function",
+      "label": "Store.unit",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.unit"
+      }
+    },
+    "implementation.446fb7d064a8bc48": {
+      "kind": "function",
+      "label": "migrate_supplementation",
+      "source": {
+        "path": "app/migrations.py",
+        "symbol": "migrate_supplementation"
+      }
+    },
+    "implementation.eb00c848a706a760": {
+      "kind": "function",
+      "label": "authorize",
+      "source": {
+        "path": "app/policy.py",
+        "symbol": "authorize"
+      }
+    },
+    "implementation.34472b1a56b141c1": {
+      "kind": "function",
+      "label": "Service._facts",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Service._facts"
+      }
+    },
+    "implementation.d1a60d7bb8ebfcd1": {
+      "kind": "function",
+      "label": "Store.configure",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.configure"
+      }
+    },
+    "implementation.8cee59c854955a26": {
+      "kind": "function",
+      "label": "Store.initialize",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.initialize"
+      }
+    },
+    "implementation.72aa34afa2638163": {
+      "kind": "function",
+      "label": "Store.snapshot",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.snapshot"
+      }
+    },
+    "implementation.acc8d3d67a2d2b0f": {
+      "kind": "function",
+      "label": "create_app",
+      "source": {
+        "path": "app/web.py",
+        "symbol": "create_app"
+      }
+    },
+    "implementation.0c4f909e1a6aef1a": {
+      "kind": "function",
+      "label": "create_app.context",
+      "source": {
+        "path": "app/web.py",
+        "symbol": "create_app.context"
+      }
+    },
+    "implementation.87236be78860fe99": {
+      "kind": "function",
+      "label": "create_app.too_large",
+      "source": {
+        "path": "app/web.py",
+        "symbol": "create_app.too_large"
+      }
+    },
+    "implementation.82c306a1b1a85845": {
+      "kind": "function",
+      "label": "SharingWorkflow.advance",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "SharingWorkflow.advance"
+      }
+    },
+    "implementation.8c6c17e76a80263d": {
+      "kind": "function",
+      "label": "SharingWorkflow.authorized",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "SharingWorkflow.authorized"
+      }
+    }
+  },
+  "edges": [
+    {
+      "id": "flow_login_upload",
+      "from": "login",
+      "to": "upload",
+      "type": "guard",
+      "label": "登录后",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_upload_share",
+      "from": "upload",
+      "to": "share",
+      "type": "flow",
+      "label": "选择另一个成员",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_share_pending",
+      "from": "share",
+      "to": "pending",
+      "type": "flow",
+      "label": "提交申请",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_pending_review",
+      "from": "pending",
+      "to": "review",
+      "type": "flow",
+      "label": "所选审核人处理",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_review_granted",
+      "from": "review",
+      "to": "granted",
+      "type": "flow",
+      "label": "通过",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_review_rejected",
+      "from": "review",
+      "to": "rejected",
+      "type": "flow",
+      "label": "驳回",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_granted_notification",
+      "from": "granted",
+      "to": "notification",
+      "type": "flow",
+      "label": "通过结果",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_rejected_notification",
+      "from": "rejected",
+      "to": "notification",
+      "type": "flow",
+      "label": "驳回结果",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_granted_download",
+      "from": "granted",
+      "to": "download",
+      "type": "guard",
+      "label": "权限有效",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_granted_revoke",
+      "from": "granted",
+      "to": "revoke",
+      "type": "flow",
+      "label": "文件主人可撤销",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_revoke_revoked",
+      "from": "revoke",
+      "to": "revoked",
+      "type": "flow",
+      "label": "立即失去下载权限",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_granted_message",
+      "from": "granted",
+      "to": "share_message",
+      "type": "flow",
+      "label": "仅通过后发送",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_granted_received_files",
+      "from": "granted",
+      "to": "received_files",
+      "type": "guard",
+      "label": "获得权限后显示",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_received_files_download",
+      "from": "received_files",
+      "to": "download",
+      "type": "flow",
+      "label": "请求下载",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_pending_cancel",
+      "from": "pending",
+      "to": "cancel_share",
+      "type": "flow",
+      "label": "主人可取消",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_cancel_cancelled",
+      "from": "cancel_share",
+      "to": "cancelled",
+      "type": "flow",
+      "label": "结束申请",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_revoked_denied",
+      "from": "revoked",
+      "to": "download_denied",
+      "type": "guard",
+      "label": "再次请求下载",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_review_return",
+      "from": "review",
+      "to": "return_share",
+      "type": "guard",
+      "label": "资料不足，原审核人填写原因",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_return_awaiting",
+      "from": "return_share",
+      "to": "awaiting_supplement",
+      "type": "flow",
+      "label": "原因必填，最多200字",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "event_return_notice",
+      "from": "return_share",
+      "to": "return_notice",
+      "type": "flow",
+      "label": "退回成功",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_awaiting_resubmit",
+      "from": "awaiting_supplement",
+      "to": "resubmit_share",
+      "type": "guard",
+      "label": "仅主人补充，必填且最多200字",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_resubmit_pending",
+      "from": "resubmit_share",
+      "to": "pending",
+      "type": "flow",
+      "label": "同一申请；文件、接收方及审核人不变",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "event_resubmit_notice",
+      "from": "resubmit_share",
+      "to": "resubmit_notice",
+      "type": "flow",
+      "label": "重新提交成功",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "flow_awaiting_cancel",
+      "from": "awaiting_supplement",
+      "to": "cancel_share",
+      "type": "flow",
+      "label": "主人可取消",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "data_return_latest",
+      "from": "return_share",
+      "to": "supplement_text",
+      "type": "data",
+      "label": "替换最新退回原因",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "data_resubmit_latest",
+      "from": "resubmit_share",
+      "to": "supplement_text",
+      "type": "data",
+      "label": "替换最新补充说明",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "data_supplement_reviewer",
+      "from": "supplement_text",
+      "to": "review",
+      "type": "data",
+      "label": "仅原审核人查看",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "data_supplement_owner",
+      "from": "supplement_text",
+      "to": "resubmit_share",
+      "type": "data",
+      "label": "仅主人查看",
+      "evidence": "confirmed trial intent; execution requires recorded facts"
+    },
+    {
+      "id": "policy:contains:session_fact",
+      "from": "policy:network",
+      "to": "policy:session_fact",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:owner_fact",
+      "from": "policy:network",
+      "to": "policy:owner_fact",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:grant_fact",
+      "from": "policy:network",
+      "to": "policy:grant_fact",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:mapping:signed_in_rule",
+      "from": "policy:signed_in_rule",
+      "to": "policy:function:flag_enabled",
+      "type": "maps",
+      "label": "Implemented by",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual",
+      "code_relation": "maps"
+    },
+    {
+      "id": "policy:contains:signed_in_rule",
+      "from": "policy:network",
+      "to": "policy:signed_in_rule",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:signed_in_rule:0",
+      "from": "policy:session_fact",
+      "to": "policy:signed_in_rule",
+      "type": "data",
+      "label": "value",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:mapping:owner_rule",
+      "from": "policy:owner_rule",
+      "to": "policy:function:flag_enabled",
+      "type": "maps",
+      "label": "Implemented by",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual",
+      "code_relation": "maps"
+    },
+    {
+      "id": "policy:contains:owner_rule",
+      "from": "policy:network",
+      "to": "policy:owner_rule",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_rule:0",
+      "from": "policy:owner_fact",
+      "to": "policy:owner_rule",
+      "type": "data",
+      "label": "value",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:mapping:grant_rule",
+      "from": "policy:grant_rule",
+      "to": "policy:function:flag_enabled",
+      "type": "maps",
+      "label": "Implemented by",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual",
+      "code_relation": "maps"
+    },
+    {
+      "id": "policy:contains:grant_rule",
+      "from": "policy:network",
+      "to": "policy:grant_rule",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:grant_rule:0",
+      "from": "policy:grant_fact",
+      "to": "policy:grant_rule",
+      "type": "data",
+      "label": "value",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:owner_session",
+      "from": "policy:network",
+      "to": "policy:owner_session",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_session:0",
+      "from": "policy:signed_in_rule",
+      "to": "policy:owner_session",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_session:1",
+      "from": "policy:owner_rule",
+      "to": "policy:owner_session",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:download_allowed",
+      "from": "policy:network",
+      "to": "policy:download_allowed",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:download_allowed:0",
+      "from": "policy:signed_in_rule",
+      "to": "policy:download_allowed",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:download_allowed:1",
+      "from": "policy:grant_rule",
+      "to": "policy:download_allowed",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:selected_reviewer_fact",
+      "from": "policy:network",
+      "to": "policy:selected_reviewer_fact",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:mapping:selected_reviewer_rule",
+      "from": "policy:selected_reviewer_rule",
+      "to": "policy:function:flag_enabled",
+      "type": "maps",
+      "label": "Implemented by",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual",
+      "code_relation": "maps"
+    },
+    {
+      "id": "policy:contains:selected_reviewer_rule",
+      "from": "policy:network",
+      "to": "policy:selected_reviewer_rule",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:selected_reviewer_rule:0",
+      "from": "policy:selected_reviewer_fact",
+      "to": "policy:selected_reviewer_rule",
+      "type": "data",
+      "label": "value",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:pending_fact",
+      "from": "policy:network",
+      "to": "policy:pending_fact",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:mapping:pending_rule",
+      "from": "policy:pending_rule",
+      "to": "policy:function:flag_enabled",
+      "type": "maps",
+      "label": "Implemented by",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual",
+      "code_relation": "maps"
+    },
+    {
+      "id": "policy:contains:pending_rule",
+      "from": "policy:network",
+      "to": "policy:pending_rule",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:pending_rule:0",
+      "from": "policy:pending_fact",
+      "to": "policy:pending_rule",
+      "type": "data",
+      "label": "value",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:approved_fact",
+      "from": "policy:network",
+      "to": "policy:approved_fact",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:mapping:approved_rule",
+      "from": "policy:approved_rule",
+      "to": "policy:function:flag_enabled",
+      "type": "maps",
+      "label": "Implemented by",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual",
+      "code_relation": "maps"
+    },
+    {
+      "id": "policy:contains:approved_rule",
+      "from": "policy:network",
+      "to": "policy:approved_rule",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:approved_rule:0",
+      "from": "policy:approved_fact",
+      "to": "policy:approved_rule",
+      "type": "data",
+      "label": "value",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:reviewer_pending",
+      "from": "policy:network",
+      "to": "policy:reviewer_pending",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:reviewer_pending:0",
+      "from": "policy:signed_in_rule",
+      "to": "policy:reviewer_pending",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:reviewer_pending:1",
+      "from": "policy:selected_reviewer_rule",
+      "to": "policy:reviewer_pending",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:reviewer_pending:2",
+      "from": "policy:pending_rule",
+      "to": "policy:reviewer_pending",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:owner_pending",
+      "from": "policy:network",
+      "to": "policy:owner_pending",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_pending:0",
+      "from": "policy:owner_session",
+      "to": "policy:owner_pending",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_pending:1",
+      "from": "policy:pending_rule",
+      "to": "policy:owner_pending",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:owner_approved",
+      "from": "policy:network",
+      "to": "policy:owner_approved",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_approved:0",
+      "from": "policy:owner_session",
+      "to": "policy:owner_approved",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_approved:1",
+      "from": "policy:approved_rule",
+      "to": "policy:owner_approved",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:awaiting_supplement_fact",
+      "from": "policy:network",
+      "to": "policy:awaiting_supplement_fact",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:mapping:awaiting_supplement_rule",
+      "from": "policy:awaiting_supplement_rule",
+      "to": "policy:function:flag_enabled",
+      "type": "maps",
+      "label": "Implemented by",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual",
+      "code_relation": "maps"
+    },
+    {
+      "id": "policy:contains:awaiting_supplement_rule",
+      "from": "policy:network",
+      "to": "policy:awaiting_supplement_rule",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:awaiting_supplement_rule:0",
+      "from": "policy:awaiting_supplement_fact",
+      "to": "policy:awaiting_supplement_rule",
+      "type": "data",
+      "label": "value",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:return_reason_valid_fact",
+      "from": "policy:network",
+      "to": "policy:return_reason_valid_fact",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:mapping:return_reason_valid_rule",
+      "from": "policy:return_reason_valid_rule",
+      "to": "policy:function:flag_enabled",
+      "type": "maps",
+      "label": "Implemented by",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual",
+      "code_relation": "maps"
+    },
+    {
+      "id": "policy:contains:return_reason_valid_rule",
+      "from": "policy:network",
+      "to": "policy:return_reason_valid_rule",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:return_reason_valid_rule:0",
+      "from": "policy:return_reason_valid_fact",
+      "to": "policy:return_reason_valid_rule",
+      "type": "data",
+      "label": "value",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:supplement_text_valid_fact",
+      "from": "policy:network",
+      "to": "policy:supplement_text_valid_fact",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:mapping:supplement_text_valid_rule",
+      "from": "policy:supplement_text_valid_rule",
+      "to": "policy:function:flag_enabled",
+      "type": "maps",
+      "label": "Implemented by",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual",
+      "code_relation": "maps"
+    },
+    {
+      "id": "policy:contains:supplement_text_valid_rule",
+      "from": "policy:network",
+      "to": "policy:supplement_text_valid_rule",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:supplement_text_valid_rule:0",
+      "from": "policy:supplement_text_valid_fact",
+      "to": "policy:supplement_text_valid_rule",
+      "type": "data",
+      "label": "value",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:owner_awaiting_supplement",
+      "from": "policy:network",
+      "to": "policy:owner_awaiting_supplement",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_awaiting_supplement:0",
+      "from": "policy:owner_session",
+      "to": "policy:owner_awaiting_supplement",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_awaiting_supplement:1",
+      "from": "policy:awaiting_supplement_rule",
+      "to": "policy:owner_awaiting_supplement",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:owner_cancellable",
+      "from": "policy:network",
+      "to": "policy:owner_cancellable",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_cancellable:0",
+      "from": "policy:owner_pending",
+      "to": "policy:owner_cancellable",
+      "type": "guard",
+      "label": "any",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:owner_cancellable:1",
+      "from": "policy:owner_awaiting_supplement",
+      "to": "policy:owner_cancellable",
+      "type": "guard",
+      "label": "any",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:return_allowed",
+      "from": "policy:network",
+      "to": "policy:return_allowed",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:return_allowed:0",
+      "from": "policy:reviewer_pending",
+      "to": "policy:return_allowed",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:return_allowed:1",
+      "from": "policy:return_reason_valid_rule",
+      "to": "policy:return_allowed",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:resubmit_allowed",
+      "from": "policy:network",
+      "to": "policy:resubmit_allowed",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:resubmit_allowed:0",
+      "from": "policy:owner_awaiting_supplement",
+      "to": "policy:resubmit_allowed",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:resubmit_allowed:1",
+      "from": "policy:supplement_text_valid_rule",
+      "to": "policy:resubmit_allowed",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:reviewer_session",
+      "from": "policy:network",
+      "to": "policy:reviewer_session",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:reviewer_session:0",
+      "from": "policy:signed_in_rule",
+      "to": "policy:reviewer_session",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:reviewer_session:1",
+      "from": "policy:selected_reviewer_rule",
+      "to": "policy:reviewer_session",
+      "type": "guard",
+      "label": "all",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:contains:supplement_text_allowed",
+      "from": "policy:network",
+      "to": "policy:supplement_text_allowed",
+      "type": "contains",
+      "label": "Rule expression",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:supplement_text_allowed:0",
+      "from": "policy:owner_session",
+      "to": "policy:supplement_text_allowed",
+      "type": "guard",
+      "label": "any",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:dependency:supplement_text_allowed:1",
+      "from": "policy:reviewer_session",
+      "to": "policy:supplement_text_allowed",
+      "type": "guard",
+      "label": "any",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:upload:upload",
+      "from": "policy:signed_in_rule",
+      "to": "upload",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:share:share",
+      "from": "policy:owner_session",
+      "to": "share",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:revoke:revoke",
+      "from": "policy:owner_approved",
+      "to": "revoke",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:download:download",
+      "from": "policy:download_allowed",
+      "to": "download",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:review:review",
+      "from": "policy:reviewer_pending",
+      "to": "review",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:received_files:received_files",
+      "from": "policy:download_allowed",
+      "to": "received_files",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:cancel_share:cancel_share",
+      "from": "policy:owner_cancellable",
+      "to": "cancel_share",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:return_share:return_share",
+      "from": "policy:return_allowed",
+      "to": "return_share",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:resubmit_share:resubmit_share",
+      "from": "policy:resubmit_allowed",
+      "to": "resubmit_share",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "policy:operation:supplement_details:supplement_text",
+      "from": "policy:supplement_text_allowed",
+      "to": "supplement_text",
+      "type": "guard",
+      "label": "Requires",
+      "origin": "policy-definition",
+      "evidence": "policy declaration",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Astore:contains:db%3Aapplication%3Atable%253Afiles",
+      "from": "db:application:store",
+      "to": "db:application:table%3Afiles",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Afiles:contains:db%3Aapplication%3Atable%253Afiles%3Afield%3Acreated_at",
+      "from": "db:application:table%3Afiles",
+      "to": "db:application:table%3Afiles:field:created_at",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Afiles:contains:db%3Aapplication%3Atable%253Afiles%3Afield%3Afilename",
+      "from": "db:application:table%3Afiles",
+      "to": "db:application:table%3Afiles:field:filename",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Afiles:contains:db%3Aapplication%3Atable%253Afiles%3Afield%3Aid",
+      "from": "db:application:table%3Afiles",
+      "to": "db:application:table%3Afiles:field:id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Afiles:contains:db%3Aapplication%3Atable%253Afiles%3Afield%3Aowner_id",
+      "from": "db:application:table%3Afiles",
+      "to": "db:application:table%3Afiles:field:owner_id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Afiles:contains:db%3Aapplication%3Atable%253Afiles%3Afield%3Asize",
+      "from": "db:application:table%3Afiles",
+      "to": "db:application:table%3Afiles:field:size",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Astore:contains:db%3Aapplication%3Atable%253Ajournal",
+      "from": "db:application:store",
+      "to": "db:application:table%3Ajournal",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:contains:db%3Aapplication%3Atable%253Ajournal%3Afield%3Aafter_state",
+      "from": "db:application:table%3Ajournal",
+      "to": "db:application:table%3Ajournal:field:after_state",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:contains:db%3Aapplication%3Atable%253Ajournal%3Afield%3Abefore_state",
+      "from": "db:application:table%3Ajournal",
+      "to": "db:application:table%3Ajournal:field:before_state",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:contains:db%3Aapplication%3Atable%253Ajournal%3Afield%3Acreated_at",
+      "from": "db:application:table%3Ajournal",
+      "to": "db:application:table%3Ajournal:field:created_at",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:contains:db%3Aapplication%3Atable%253Ajournal%3Afield%3Aevent",
+      "from": "db:application:table%3Ajournal",
+      "to": "db:application:table%3Ajournal:field:event",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:contains:db%3Aapplication%3Atable%253Ajournal%3Afield%3Aguards",
+      "from": "db:application:table%3Ajournal",
+      "to": "db:application:table%3Ajournal:field:guards",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:contains:db%3Aapplication%3Atable%253Ajournal%3Afield%3Aid",
+      "from": "db:application:table%3Ajournal",
+      "to": "db:application:table%3Ajournal:field:id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:contains:db%3Aapplication%3Atable%253Ajournal%3Afield%3Arevision",
+      "from": "db:application:table%3Ajournal",
+      "to": "db:application:table%3Ajournal:field:revision",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:contains:db%3Aapplication%3Atable%253Ajournal%3Afield%3Ashare_id",
+      "from": "db:application:table%3Ajournal",
+      "to": "db:application:table%3Ajournal:field:share_id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Astore:contains:db%3Aapplication%3Atable%253Anotifications",
+      "from": "db:application:store",
+      "to": "db:application:table%3Anotifications",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:contains:db%3Aapplication%3Atable%253Anotifications%3Afield%3Acreated_at",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Anotifications:field:created_at",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:contains:db%3Aapplication%3Atable%253Anotifications%3Afield%3Afilename",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Anotifications:field:filename",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:contains:db%3Aapplication%3Atable%253Anotifications%3Afield%3Aid",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Anotifications:field:id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:contains:db%3Aapplication%3Atable%253Anotifications%3Afield%3Ais_read",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Anotifications:field:is_read",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:contains:db%3Aapplication%3Atable%253Anotifications%3Afield%3Akind",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Anotifications:field:kind",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:contains:db%3Aapplication%3Atable%253Anotifications%3Afield%3Ashare_id",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Anotifications:field:share_id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:contains:db%3Aapplication%3Atable%253Anotifications%3Afield%3Astate",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Anotifications:field:state",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:contains:db%3Aapplication%3Atable%253Anotifications%3Afield%3Auser_id",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Anotifications:field:user_id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Astore:contains:db%3Aapplication%3Atable%253Ashares",
+      "from": "db:application:store",
+      "to": "db:application:table%3Ashares",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Acreated_at",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:created_at",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Afile_id",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:file_id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Aid",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Aowner_id",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:owner_id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Arecipient_id",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:recipient_id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Areturn_reason",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:return_reason",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Areviewer_id",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:reviewer_id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Arevision",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:revision",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Astate",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:state",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:contains:db%3Aapplication%3Atable%253Ashares%3Afield%3Asupplement_text",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ashares:field:supplement_text",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Astore:contains:db%3Aapplication%3Atable%253Ausers",
+      "from": "db:application:store",
+      "to": "db:application:table%3Ausers",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ausers:contains:db%3Aapplication%3Atable%253Ausers%3Afield%3Aid",
+      "from": "db:application:table%3Ausers",
+      "to": "db:application:table%3Ausers:field:id",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ausers:contains:db%3Aapplication%3Atable%253Ausers%3Afield%3Aname",
+      "from": "db:application:table%3Ausers",
+      "to": "db:application:table%3Ausers:field:name",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ausers:contains:db%3Aapplication%3Atable%253Ausers%3Afield%3Apassword_hash",
+      "from": "db:application:table%3Ausers",
+      "to": "db:application:table%3Ausers:field:password_hash",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Afiles:references:db%3Aapplication%3Atable%253Ausers",
+      "from": "db:application:table%3Afiles",
+      "to": "db:application:table%3Ausers",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "references",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "owner_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "owner_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Afiles%3Afield%3Aowner_id:maps:db%3Aapplication%3Atable%253Ausers%3Afield%3Aid",
+      "from": "db:application:table%3Afiles:field:owner_id",
+      "to": "db:application:table%3Ausers:field:id",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "maps",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "owner_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "owner_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:references:db%3Aapplication%3Atable%253Ashares",
+      "from": "db:application:table%3Ajournal",
+      "to": "db:application:table%3Ashares",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "references",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "share_id"
+          ],
+          "target": "table:shares",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "share_id"
+          ],
+          "target": "table:shares",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal%3Afield%3Ashare_id:maps:db%3Aapplication%3Atable%253Ashares%3Afield%3Aid",
+      "from": "db:application:table%3Ajournal:field:share_id",
+      "to": "db:application:table%3Ashares:field:id",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "maps",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "share_id"
+          ],
+          "target": "table:shares",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "share_id"
+          ],
+          "target": "table:shares",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:references:db%3Aapplication%3Atable%253Ashares",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Ashares",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "references",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "share_id"
+          ],
+          "target": "table:shares",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "share_id"
+          ],
+          "target": "table:shares",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications%3Afield%3Ashare_id:maps:db%3Aapplication%3Atable%253Ashares%3Afield%3Aid",
+      "from": "db:application:table%3Anotifications:field:share_id",
+      "to": "db:application:table%3Ashares:field:id",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "maps",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "share_id"
+          ],
+          "target": "table:shares",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "share_id"
+          ],
+          "target": "table:shares",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:references:db%3Aapplication%3Atable%253Ausers",
+      "from": "db:application:table%3Anotifications",
+      "to": "db:application:table%3Ausers",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "references",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "user_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "user_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications%3Afield%3Auser_id:maps:db%3Aapplication%3Atable%253Ausers%3Afield%3Aid",
+      "from": "db:application:table%3Anotifications:field:user_id",
+      "to": "db:application:table%3Ausers:field:id",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "maps",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "user_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "user_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:references:db%3Aapplication%3Atable%253Afiles",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Afiles",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "references",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "file_id"
+          ],
+          "target": "table:files",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "file_id"
+          ],
+          "target": "table:files",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares%3Afield%3Afile_id:maps:db%3Aapplication%3Atable%253Afiles%3Afield%3Aid",
+      "from": "db:application:table%3Ashares:field:file_id",
+      "to": "db:application:table%3Afiles:field:id",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "maps",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "file_id"
+          ],
+          "target": "table:files",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "file_id"
+          ],
+          "target": "table:files",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:references:db%3Aapplication%3Atable%253Ausers",
+      "from": "db:application:table%3Ashares",
+      "to": "db:application:table%3Ausers",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "references",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "owner_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "recipient_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "reviewer_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "owner_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "recipient_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "reviewer_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares%3Afield%3Aowner_id:maps:db%3Aapplication%3Atable%253Ausers%3Afield%3Aid",
+      "from": "db:application:table%3Ashares:field:owner_id",
+      "to": "db:application:table%3Ausers:field:id",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "maps",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "owner_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "owner_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares%3Afield%3Arecipient_id:maps:db%3Aapplication%3Atable%253Ausers%3Afield%3Aid",
+      "from": "db:application:table%3Ashares:field:recipient_id",
+      "to": "db:application:table%3Ausers:field:id",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "maps",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "recipient_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "recipient_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares%3Afield%3Areviewer_id:maps:db%3Aapplication%3Atable%253Ausers%3Afield%3Aid",
+      "from": "db:application:table%3Ashares:field:reviewer_id",
+      "to": "db:application:table%3Ausers:field:id",
+      "type": "data",
+      "label": "foreign_key",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "maps",
+      "data_origin": "database",
+      "data_constraints": [
+        {
+          "origin": "database",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "reviewer_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        },
+        {
+          "origin": "declaration",
+          "kind": "foreign_key",
+          "name": "",
+          "fields": [
+            "reviewer_id"
+          ],
+          "target": "table:users",
+          "target_fields": [
+            "id"
+          ],
+          "description": "{}"
+        }
+      ]
+    },
+    {
+      "id": "db-edge:upload:contains:db_read",
+      "from": "upload",
+      "to": "db_read",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ausers:reads:db_read",
+      "from": "db:application:table%3Ausers",
+      "to": "db_read",
+      "type": "data",
+      "label": "reads",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "reads"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Afiles:reads:db_read",
+      "from": "db:application:table%3Afiles",
+      "to": "db_read",
+      "type": "data",
+      "label": "reads",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "reads"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ashares:reads:db_read",
+      "from": "db:application:table%3Ashares",
+      "to": "db_read",
+      "type": "data",
+      "label": "reads",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "reads"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Anotifications:reads:db_read",
+      "from": "db:application:table%3Anotifications",
+      "to": "db_read",
+      "type": "data",
+      "label": "reads",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "reads"
+    },
+    {
+      "id": "db-edge:db%3Aapplication%3Atable%253Ajournal:reads:db_read",
+      "from": "db:application:table%3Ajournal",
+      "to": "db_read",
+      "type": "data",
+      "label": "reads",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "reads"
+    },
+    {
+      "id": "db-edge:upload:contains:db_write",
+      "from": "upload",
+      "to": "db_write",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:db_write:writes:db%3Aapplication%3Atable%253Afiles",
+      "from": "db_write",
+      "to": "db:application:table%3Afiles",
+      "type": "data",
+      "label": "writes",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "writes"
+    },
+    {
+      "id": "db-edge:db_write:writes:db%3Aapplication%3Atable%253Ashares",
+      "from": "db_write",
+      "to": "db:application:table%3Ashares",
+      "type": "data",
+      "label": "writes",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "writes"
+    },
+    {
+      "id": "db-edge:db_write:writes:db%3Aapplication%3Atable%253Anotifications",
+      "from": "db_write",
+      "to": "db:application:table%3Anotifications",
+      "type": "data",
+      "label": "writes",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "writes"
+    },
+    {
+      "id": "db-edge:db_write:writes:db%3Aapplication%3Atable%253Ajournal",
+      "from": "db_write",
+      "to": "db:application:table%3Ajournal",
+      "type": "data",
+      "label": "writes",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1",
+      "data_relation": "writes"
+    },
+    {
+      "id": "db-edge:upload:contains:db_transaction",
+      "from": "upload",
+      "to": "db_transaction",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "db-edge:upload:contains:db_transform",
+      "from": "upload",
+      "to": "db_transform",
+      "type": "contains",
+      "label": "contains",
+      "evidence": "database catalog and configured source binding",
+      "managed_by": "bo-database/v1"
+    },
+    {
+      "id": "contains.code.f61e58ec5a70c4e4",
+      "from": "upload",
+      "to": "code.f61e58ec5a70c4e4",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.431a3a7fb36f0e3a",
+      "from": "upload",
+      "to": "code.f61e58ec5a70c4e4",
+      "type": "flow",
+      "label": "Static call timestamp",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 89,
+        "column": 104,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.2efc1ea1e50cf59c",
+      "from": "upload",
+      "to": "code.2efc1ea1e50cf59c",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.1f00978a57556fad",
+      "from": "upload",
+      "to": "code.2efc1ea1e50cf59c",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 92,
+        "column": 20,
+        "args": [
+          "connection",
+          "actor_id",
+          "'upload'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.7b0ec99451880a1d",
+      "from": "share",
+      "to": "code.7b0ec99451880a1d",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.a5cfa888150a2b91",
+      "from": "share",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 105,
+        "column": 23,
+        "args": [
+          "connection",
+          "files",
+          "file_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.1625164e277f9a18",
+      "from": "share",
+      "to": "code.1625164e277f9a18",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.fa000f85c16497f8",
+      "from": "share",
+      "to": "code.1625164e277f9a18",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 106,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "'share'"
+        ],
+        "keywords": {
+          "file": "file"
+        }
+      }
+    },
+    {
+      "id": "call.19dc04378d737fde",
+      "from": "share",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 107,
+        "column": 16,
+        "args": [
+          "connection",
+          "users",
+          "recipient_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "call.8b6cc6e54662f7b0",
+      "from": "share",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 108,
+        "column": 16,
+        "args": [
+          "connection",
+          "users",
+          "reviewer_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.ffb926226f1a9d28",
+      "from": "share",
+      "to": "code.ffb926226f1a9d28",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.407d900ff3d38206",
+      "from": "share",
+      "to": "code.ffb926226f1a9d28",
+      "type": "flow",
+      "label": "Static call timestamp",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 114,
+        "column": 193,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.0e66a200fe2af969",
+      "from": "share",
+      "to": "code.0e66a200fe2af969",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.00ce223da0ea4bb6",
+      "from": "share",
+      "to": "code.0e66a200fe2af969",
+      "type": "flow",
+      "label": "Static call self._journal",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 116,
+        "column": 16,
+        "args": [
+          "connection",
+          "row",
+          "'submit'",
+          "row['state']",
+          "{'authorized': True}"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.3ffa7cf993ce6804",
+      "from": "review",
+      "to": "code.3ffa7cf993ce6804",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.7090735a8ca1aa5c",
+      "from": "review",
+      "to": "code.3ffa7cf993ce6804",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 138,
+        "column": 20,
+        "args": [
+          "connection",
+          "shares",
+          "share_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.16cc3f9303a765a2",
+      "from": "review",
+      "to": "code.16cc3f9303a765a2",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.87ef235da6c6ad92",
+      "from": "review",
+      "to": "code.16cc3f9303a765a2",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 139,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "policy_operation"
+        ],
+        "keywords": {
+          "share": "row"
+        }
+      }
+    },
+    {
+      "id": "contains.code.2667879811c0aaf6",
+      "from": "review",
+      "to": "code.2667879811c0aaf6",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.92d6add011ec991b",
+      "from": "review",
+      "to": "code.2667879811c0aaf6",
+      "type": "flow",
+      "label": "Static call self._journal",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 148,
+        "column": 16,
+        "args": [
+          "connection",
+          "row",
+          "event",
+          "before",
+          "result['guards']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "call.d9f861a50cabbe89",
+      "from": "review",
+      "to": "code.3ffa7cf993ce6804",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 150,
+        "column": 25,
+        "args": [
+          "connection",
+          "files",
+          "row['file_id']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.e60c71cc86a497ae",
+      "from": "review",
+      "to": "code.e60c71cc86a497ae",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.14dd59376a2a8f0c",
+      "from": "review",
+      "to": "code.e60c71cc86a497ae",
+      "type": "flow",
+      "label": "Static call self._messages",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 151,
+        "column": 20,
+        "args": [
+          "connection",
+          "row",
+          "file",
+          "'review_result'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "call.5e5d0d6c93e8ce79",
+      "from": "review",
+      "to": "code.e60c71cc86a497ae",
+      "type": "flow",
+      "label": "Static call self._messages",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 153,
+        "column": 24,
+        "args": [
+          "connection",
+          "row",
+          "file",
+          "'shared'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.7b1141db3f842982",
+      "from": "cancel_share",
+      "to": "code.7b1141db3f842982",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.e6ae415727e6209e",
+      "from": "cancel_share",
+      "to": "code.7b1141db3f842982",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 138,
+        "column": 20,
+        "args": [
+          "connection",
+          "shares",
+          "share_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.01ddd5f797f0103c",
+      "from": "cancel_share",
+      "to": "code.01ddd5f797f0103c",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.76f4a2c358238c62",
+      "from": "cancel_share",
+      "to": "code.01ddd5f797f0103c",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 139,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "policy_operation"
+        ],
+        "keywords": {
+          "share": "row"
+        }
+      }
+    },
+    {
+      "id": "contains.code.31f8f3d5bb5413b6",
+      "from": "cancel_share",
+      "to": "code.31f8f3d5bb5413b6",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.ff80f5e831628695",
+      "from": "cancel_share",
+      "to": "code.31f8f3d5bb5413b6",
+      "type": "flow",
+      "label": "Static call self._journal",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 148,
+        "column": 16,
+        "args": [
+          "connection",
+          "row",
+          "event",
+          "before",
+          "result['guards']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "call.6aa81b0ec829c5ad",
+      "from": "cancel_share",
+      "to": "code.7b1141db3f842982",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 150,
+        "column": 25,
+        "args": [
+          "connection",
+          "files",
+          "row['file_id']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.62a3db3051807939",
+      "from": "cancel_share",
+      "to": "code.62a3db3051807939",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.d2e4520f4fb682e0",
+      "from": "cancel_share",
+      "to": "code.62a3db3051807939",
+      "type": "flow",
+      "label": "Static call self._messages",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 151,
+        "column": 20,
+        "args": [
+          "connection",
+          "row",
+          "file",
+          "'review_result'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "call.8206bd0c55dc8448",
+      "from": "cancel_share",
+      "to": "code.62a3db3051807939",
+      "type": "flow",
+      "label": "Static call self._messages",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 153,
+        "column": 24,
+        "args": [
+          "connection",
+          "row",
+          "file",
+          "'shared'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.11c2a6fbe9d03aa7",
+      "from": "revoke",
+      "to": "code.11c2a6fbe9d03aa7",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.0622038820475d49",
+      "from": "revoke",
+      "to": "code.11c2a6fbe9d03aa7",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 138,
+        "column": 20,
+        "args": [
+          "connection",
+          "shares",
+          "share_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.d22f0a4f8f0309f2",
+      "from": "revoke",
+      "to": "code.d22f0a4f8f0309f2",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.f6d505f48615ba08",
+      "from": "revoke",
+      "to": "code.d22f0a4f8f0309f2",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 139,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "policy_operation"
+        ],
+        "keywords": {
+          "share": "row"
+        }
+      }
+    },
+    {
+      "id": "contains.code.b6bd77a2abab7e5d",
+      "from": "revoke",
+      "to": "code.b6bd77a2abab7e5d",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.f22cb5130625dc55",
+      "from": "revoke",
+      "to": "code.b6bd77a2abab7e5d",
+      "type": "flow",
+      "label": "Static call self._journal",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 148,
+        "column": 16,
+        "args": [
+          "connection",
+          "row",
+          "event",
+          "before",
+          "result['guards']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "call.f50f0a39a8f5ec88",
+      "from": "revoke",
+      "to": "code.11c2a6fbe9d03aa7",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 150,
+        "column": 25,
+        "args": [
+          "connection",
+          "files",
+          "row['file_id']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.66ac2da1575b91ef",
+      "from": "revoke",
+      "to": "code.66ac2da1575b91ef",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.ce1172515a4e4b0c",
+      "from": "revoke",
+      "to": "code.66ac2da1575b91ef",
+      "type": "flow",
+      "label": "Static call self._messages",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 151,
+        "column": 20,
+        "args": [
+          "connection",
+          "row",
+          "file",
+          "'review_result'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "call.0cf12c3e51b297ba",
+      "from": "revoke",
+      "to": "code.66ac2da1575b91ef",
+      "type": "flow",
+      "label": "Static call self._messages",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 153,
+        "column": 24,
+        "args": [
+          "connection",
+          "row",
+          "file",
+          "'shared'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.43ef73b71ea25cb4",
+      "from": "download",
+      "to": "code.43ef73b71ea25cb4",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.c1366fe92afa88e6",
+      "from": "download",
+      "to": "code.43ef73b71ea25cb4",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 209,
+        "column": 21,
+        "args": [
+          "connection",
+          "files",
+          "file_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.5edf63683f83e4d0",
+      "from": "download",
+      "to": "code.5edf63683f83e4d0",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.5a508b0e8cfd71d0",
+      "from": "download",
+      "to": "code.5edf63683f83e4d0",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 210,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "'download'"
+        ],
+        "keywords": {
+          "file": "file"
+        }
+      }
+    },
+    {
+      "id": "contains.code.424d6d0b8a025eaf",
+      "from": "received_files",
+      "to": "code.424d6d0b8a025eaf",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.abfcbedb9dfa416d",
+      "from": "received_files",
+      "to": "code.424d6d0b8a025eaf",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 218,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "'upload'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.9ede5b6b4f49ca4f",
+      "from": "received_files",
+      "to": "code.9ede5b6b4f49ca4f",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.64257cccd170ab37",
+      "from": "received_files",
+      "to": "code.9ede5b6b4f49ca4f",
+      "type": "flow",
+      "label": "Static call self._evaluate",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 224,
+        "column": 36,
+        "args": [
+          "connection",
+          "actor_id",
+          "'received_files'"
+        ],
+        "keywords": {
+          "file": "candidate"
+        }
+      }
+    },
+    {
+      "id": "contains.code.ec847391c6631bd3",
+      "from": "read_notification",
+      "to": "code.ec847391c6631bd3",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.997ee72aa5a746fe",
+      "from": "read_notification",
+      "to": "code.ec847391c6631bd3",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 237,
+        "column": 24,
+        "args": [
+          "connection",
+          "notifications",
+          "notification_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.09f162bf3c008d0e",
+      "from": "notification",
+      "to": "code.09f162bf3c008d0e",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.64fb837d094c8dc1",
+      "from": "notification",
+      "to": "code.09f162bf3c008d0e",
+      "type": "flow",
+      "label": "Static call timestamp",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 130,
+        "column": 207,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.840c90dd2f0d8c0f",
+      "from": "share_message",
+      "to": "code.840c90dd2f0d8c0f",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.50697252974f8416",
+      "from": "share_message",
+      "to": "code.840c90dd2f0d8c0f",
+      "type": "flow",
+      "label": "Static call timestamp",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 130,
+        "column": 207,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.994d7f9dbd393e49",
+      "from": "return_share",
+      "to": "code.994d7f9dbd393e49",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.2dc57c04840c354a",
+      "from": "return_share",
+      "to": "code.994d7f9dbd393e49",
+      "type": "flow",
+      "label": "Static call self._supplement_transition",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 181,
+        "column": 23,
+        "args": [
+          "actor_id",
+          "share_id",
+          "reason",
+          "'return_for_supplement'",
+          "'return_share'",
+          "'returned'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.193112146a829774",
+      "from": "resubmit_share",
+      "to": "code.193112146a829774",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.5b75237ac658be0c",
+      "from": "resubmit_share",
+      "to": "code.193112146a829774",
+      "type": "flow",
+      "label": "Static call self._supplement_transition",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 190,
+        "column": 23,
+        "args": [
+          "actor_id",
+          "share_id",
+          "explanation",
+          "'resubmit'",
+          "'resubmit_share'",
+          "'resubmitted'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.0298b25fa73ac6e3",
+      "from": "supplement_text",
+      "to": "code.0298b25fa73ac6e3",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.c4b3067d84faff4a",
+      "from": "supplement_text",
+      "to": "code.0298b25fa73ac6e3",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 200,
+        "column": 20,
+        "args": [
+          "connection",
+          "shares",
+          "share_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.3b73e43c1bd0403e",
+      "from": "supplement_text",
+      "to": "code.3b73e43c1bd0403e",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.1e2c3ffaae6d370e",
+      "from": "supplement_text",
+      "to": "code.3b73e43c1bd0403e",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 201,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "'supplement_details'"
+        ],
+        "keywords": {
+          "share": "row"
+        }
+      }
+    },
+    {
+      "id": "call.30ce14934981d754",
+      "from": "supplement_text",
+      "to": "code.0298b25fa73ac6e3",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 202,
+        "column": 32,
+        "args": [
+          "connection",
+          "files",
+          "row['file_id']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.d5b16bab8ec95e00",
+      "from": "return_notice",
+      "to": "code.d5b16bab8ec95e00",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.757395f98aaa3c61",
+      "from": "return_notice",
+      "to": "code.d5b16bab8ec95e00",
+      "type": "flow",
+      "label": "Static call timestamp",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 130,
+        "column": 207,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.d5e97d6f036c8e1c",
+      "from": "resubmit_notice",
+      "to": "code.d5e97d6f036c8e1c",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.e7634b92a09526e8",
+      "from": "resubmit_notice",
+      "to": "code.d5e97d6f036c8e1c",
+      "type": "flow",
+      "label": "Static call timestamp",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 130,
+        "column": 207,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.code.076c5acad96e3195",
+      "from": "db_transaction",
+      "to": "code.076c5acad96e3195",
+      "type": "contains",
+      "label": "Local function",
+      "origin": "source-ast",
+      "evidence": "business-map anchor + source AST call"
+    },
+    {
+      "id": "call.d92b559c4dfb9765",
+      "from": "db_transaction",
+      "to": "code.076c5acad96e3195",
+      "type": "flow",
+      "label": "Static call self.unit",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 58,
+        "column": 58,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "contains.implementation.446fb7d064a8bc48",
+      "from": "share",
+      "to": "implementation.446fb7d064a8bc48",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.eb00c848a706a760",
+      "from": "download",
+      "to": "implementation.eb00c848a706a760",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.34472b1a56b141c1",
+      "from": "share",
+      "to": "implementation.34472b1a56b141c1",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.d1a60d7bb8ebfcd1",
+      "from": "share",
+      "to": "implementation.d1a60d7bb8ebfcd1",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.8cee59c854955a26",
+      "from": "share",
+      "to": "implementation.8cee59c854955a26",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.72aa34afa2638163",
+      "from": "share",
+      "to": "implementation.72aa34afa2638163",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.acc8d3d67a2d2b0f",
+      "from": "http_action",
+      "to": "implementation.acc8d3d67a2d2b0f",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.0c4f909e1a6aef1a",
+      "from": "http_action",
+      "to": "implementation.0c4f909e1a6aef1a",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.87236be78860fe99",
+      "from": "http_action",
+      "to": "implementation.87236be78860fe99",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.82c306a1b1a85845",
+      "from": "share",
+      "to": "implementation.82c306a1b1a85845",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "contains.implementation.8c6c17e76a80263d",
+      "from": "share",
+      "to": "implementation.8c6c17e76a80263d",
+      "type": "contains",
+      "label": "Implementation function",
+      "origin": "source-ast",
+      "evidence": "implementation inventory + source AST"
+    },
+    {
+      "id": "inventory-call.1bfb19735d2383e3",
+      "from": "code.9ede5b6b4f49ca4f",
+      "to": "implementation.34472b1a56b141c1",
+      "type": "flow",
+      "label": "Static call self._facts",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 50,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "file",
+          "share"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.fc951b533d7e5c2b",
+      "from": "code.9ede5b6b4f49ca4f",
+      "to": "implementation.eb00c848a706a760",
+      "type": "flow",
+      "label": "Static call authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 53,
+        "column": 21,
+        "args": [
+          "self.policy",
+          "operation",
+          "facts",
+          "entity + ':' + str(share['revision'] if share else uuid.uuid4().hex)",
+          "self.root"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.d3804da7307b8647",
+      "from": "code.2efc1ea1e50cf59c",
+      "to": "code.9ede5b6b4f49ca4f",
+      "type": "flow",
+      "label": "Static call self._evaluate",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 58,
+        "column": 28,
+        "args": [
+          "connection",
+          "actor_id",
+          "operation",
+          "file",
+          "share",
+          "extra_facts"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.7b563638b918e8fd",
+      "from": "share",
+      "to": "code.2efc1ea1e50cf59c",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 106,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "'share'"
+        ],
+        "keywords": {
+          "file": "file"
+        }
+      }
+    },
+    {
+      "id": "inventory-call.f7976d7044f4d22d",
+      "from": "share",
+      "to": "code.f61e58ec5a70c4e4",
+      "type": "flow",
+      "label": "Static call timestamp",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 114,
+        "column": 193,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.36d99c09becff897",
+      "from": "code.0e66a200fe2af969",
+      "to": "code.f61e58ec5a70c4e4",
+      "type": "flow",
+      "label": "Static call timestamp",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 123,
+        "column": 218,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.ea53729800005cdb",
+      "from": "notification",
+      "to": "code.f61e58ec5a70c4e4",
+      "type": "flow",
+      "label": "Static call timestamp",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 130,
+        "column": 207,
+        "args": [],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.8ffc5030d9d82dfe",
+      "from": "review",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 138,
+        "column": 20,
+        "args": [
+          "connection",
+          "shares",
+          "share_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.05556d5f4d84dd84",
+      "from": "review",
+      "to": "code.2efc1ea1e50cf59c",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 139,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "policy_operation"
+        ],
+        "keywords": {
+          "share": "row"
+        }
+      }
+    },
+    {
+      "id": "inventory-call.c57e91709dafdf46",
+      "from": "review",
+      "to": "code.0e66a200fe2af969",
+      "type": "flow",
+      "label": "Static call self._journal",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 148,
+        "column": 16,
+        "args": [
+          "connection",
+          "row",
+          "event",
+          "before",
+          "result['guards']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.80e2180b948e2183",
+      "from": "review",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 150,
+        "column": 25,
+        "args": [
+          "connection",
+          "files",
+          "row['file_id']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.d5336d2cb69c4a62",
+      "from": "review",
+      "to": "notification",
+      "type": "flow",
+      "label": "Static call self._messages",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 151,
+        "column": 20,
+        "args": [
+          "connection",
+          "row",
+          "file",
+          "'review_result'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.aa9959936023c909",
+      "from": "review",
+      "to": "notification",
+      "type": "flow",
+      "label": "Static call self._messages",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 153,
+        "column": 24,
+        "args": [
+          "connection",
+          "row",
+          "file",
+          "'shared'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.c072d22ee36821cf",
+      "from": "code.994d7f9dbd393e49",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 162,
+        "column": 16,
+        "args": [
+          "connection",
+          "shares",
+          "share_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.84eee72022919d3b",
+      "from": "code.994d7f9dbd393e49",
+      "to": "code.2efc1ea1e50cf59c",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 164,
+        "column": 12,
+        "args": [
+          "connection",
+          "actor_id",
+          "node"
+        ],
+        "keywords": {
+          "share": "row",
+          "extra_facts": "{flag: 0 < len(value) <= 200}"
+        }
+      }
+    },
+    {
+      "id": "inventory-call.72dc785d82052076",
+      "from": "code.994d7f9dbd393e49",
+      "to": "code.0e66a200fe2af969",
+      "type": "flow",
+      "label": "Static call self._journal",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 175,
+        "column": 12,
+        "args": [
+          "connection",
+          "row",
+          "event",
+          "before",
+          "result['guards']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.6a2a357fe39c4ffd",
+      "from": "code.994d7f9dbd393e49",
+      "to": "notification",
+      "type": "flow",
+      "label": "Static call self._messages",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 176,
+        "column": 12,
+        "args": [
+          "connection",
+          "row",
+          "self._one(connection, files, row['file_id'])",
+          "kind"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.fbfaf3d1929ebe48",
+      "from": "code.994d7f9dbd393e49",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 176,
+        "column": 42,
+        "args": [
+          "connection",
+          "files",
+          "row['file_id']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.68af9d5990e7406a",
+      "from": "resubmit_share",
+      "to": "code.994d7f9dbd393e49",
+      "type": "flow",
+      "label": "Static call self._supplement_transition",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 190,
+        "column": 23,
+        "args": [
+          "actor_id",
+          "share_id",
+          "explanation",
+          "'resubmit'",
+          "'resubmit_share'",
+          "'resubmitted'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.2849113f9e5ec6e4",
+      "from": "supplement_text",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 200,
+        "column": 20,
+        "args": [
+          "connection",
+          "shares",
+          "share_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.3cc6d7e2d4372566",
+      "from": "supplement_text",
+      "to": "code.2efc1ea1e50cf59c",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 201,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "'supplement_details'"
+        ],
+        "keywords": {
+          "share": "row"
+        }
+      }
+    },
+    {
+      "id": "inventory-call.e0aff405506f7e86",
+      "from": "supplement_text",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 202,
+        "column": 32,
+        "args": [
+          "connection",
+          "files",
+          "row['file_id']"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.7f16b46411406f57",
+      "from": "download",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 209,
+        "column": 21,
+        "args": [
+          "connection",
+          "files",
+          "file_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.527c093d04707783",
+      "from": "download",
+      "to": "code.2efc1ea1e50cf59c",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 210,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "'download'"
+        ],
+        "keywords": {
+          "file": "file"
+        }
+      }
+    },
+    {
+      "id": "inventory-call.2af2d143f2087f59",
+      "from": "received_files",
+      "to": "code.2efc1ea1e50cf59c",
+      "type": "flow",
+      "label": "Static call self._authorize",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 218,
+        "column": 16,
+        "args": [
+          "connection",
+          "actor_id",
+          "'upload'"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.fea8f7c7a1884395",
+      "from": "read_notification",
+      "to": "code.7b0ec99451880a1d",
+      "type": "flow",
+      "label": "Static call self._one",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 237,
+        "column": 24,
+        "args": [
+          "connection",
+          "notifications",
+          "notification_id"
+        ],
+        "keywords": {}
+      }
+    },
+    {
+      "id": "inventory-call.9e9576f39daf4c1a",
+      "from": "implementation.8cee59c854955a26",
+      "to": "implementation.446fb7d064a8bc48",
+      "type": "flow",
+      "label": "Static call migrate_supplementation",
+      "origin": "source-ast",
+      "evidence": "python syntax reference; execution unproven",
+      "callsite": {
+        "line": 40,
+        "column": 8,
+        "args": [
+          "self.engine"
+        ],
+        "keywords": {}
+      }
+    }
+  ],
+  "source_hashes": {
+    ".stategraph/capture-viewer-mime/accepted.json": "663d5d2cd7999be0cea4e716e55ce3c1f4d262dc5fe815218ca29538c1c3e6ee",
+    ".stategraph/capture-viewer-mime/baseline.json": "1e9fc806e5e827ac340a109d28c543ea75217a007b7c99f08f02963dc9b90be9",
+    ".stategraph/capture-viewer-mime/checks/test-0.json": "8b5aefee3f7b5fad6dd069e27b36b261cf4bb3beb3201eece3aa54c92e279422",
+    ".stategraph/capture-viewer-mime/checks/whitebox.json": "17e48723e2b605a30b6b75975058213d850adc4f3b287538f5b117638a1885f2",
+    ".stategraph/capture-viewer-mime/impact.json": "cb692958bb5b90fca7edf338f46dcb3549e77855627c770ee26ff212225976c9",
+    ".stategraph/capture-viewer-mime/review.json": "55472b25a38267691a02d0408875c4f982944884f847081b9d6b624a8f34ad4d",
+    ".stategraph/capture-viewer-mime/structure.json": "1d7a7d0f74f2454b5daef67c1d33bf124a801d769fac7dd57e3798e0599d3160",
+    ".stategraph/capture-viewer-mime/verification.json": "8b479ce8116ca6005070fda6dcf63c7da2d74a62b9c64af938152daddaee853f",
+    ".stategraph/code-graph.json": "f621eec6ad66f04b13c516e2a1f31bab6c14c1089c6cbfd02be97479123b7b3a",
+    ".stategraph/maintenance.json": "75312ddfae1f0ab698ac479434e1622646175e55082725c348fff0297269de19",
+    "AGENTS.md": "3c2f52a35b3265609950298e4473503022e8064a43dd7c5bb1324b4c04e0f873",
+    "acceptance.json": "29386e52c128ae7f871c6e13068c3dbda638619a060dc572ad5537dd885ef6aa",
+    "app/__init__.py": "a4d5d948a8ff547e20692fca3d18580971988a060a401558d43bee82f95ab8de",
+    "app/migrations.py": "ea99fbcefca9fb353b5afe5129a5eb823ffa1c8e356dff6bf28b569aa9b10058",
+    "app/models.py": "aa9baccbd709acf36a53ccf144e5eb8cc8081b3de5f32e92ff9c0ba77e6982f6",
+    "app/policy.py": "be7d726cd1d37d8b971e3b2698fe6135bac83d8b9af7f522739ada5ca4024138",
+    "app/ports.py": "12b4c9b79267daedabec6cccd97aed29c2af13d8f67f50df7ccbfac344a8cba9",
+    "app/service.py": "4d8aabb0e50d819ac879278e1561235bc4feb83d7af6f2a1f47441bf5a890c3b",
+    "app/storage.py": "5d927cc7d49734aa5d730f60bbcc0ebdcefc0d308668386ba0c258817f70c817",
+    "app/web.py": "17648e71b43bd781fba182d6478e11b7b5bea445ea98687939d746959fc88fef",
+    "behavior.json": "05166e16a5a00e79cb10be6e3f1226e01ba5c138fb90b9805313aef5216b7b75",
+    "bo_stategraph/__init__.py": "56f694a30fa9e2aa6319931b24cb35c52c82ea30b8b4b6f4029df0f838e63e6e",
+    "bo_stategraph/bo_contracts.py": "973043e0ebd0145bd5f8d2be44329e3a5cccf220ecde1d3ed960dbc902706dca",
+    "bo_stategraph/database-catalog.json": "383759e920fed29dec031a95874b01298b592dffebe56168168bfae85183395b",
+    "bo_stategraph/database-declaration.json": "9ce904afcb178c36eccb6c3ced18572c5129eea8c60d74283a1ebbd7256df985",
+    "bo_stategraph/databases.json": "6c01a3c96fd81b1f0c475ff4f6e531ca5f83ab01b8be1dffb0c390bc79d428c9",
+    "bo_stategraph/execution_contract.py": "0c966fb3549c0219c6a663ddf41c847e71ebf14216b02b725d2465e4bf0c4839",
+    "bo_stategraph/native_executor.py": "56ee5f17e8d9d0820f12f4a1b922a750338c3a97887a59f227b45e8f1ee6aab6",
+    "bo_stategraph/policy/__init__.py": "b60903037ae86f1a2269f09c716f543ff5e2a314713157ae3a5ee7a6558f4d27",
+    "bo_stategraph/policy/bindings.py": "9d0d0eda68f8641d0dbdce7122c1ccb88490d2f41ffc0e4acec75a9928df11d6",
+    "bo_stategraph/policy/definition.py": "cdcdb5c1963ebc10ed2080ad85ad96649a05d1c2ac322d106059a2ed4d5e294e",
+    "bo_stategraph/policy/projection.py": "266d7187905e11f455b1f4efa913250438cb9a35aa379110bf8f57072833341e",
+    "bo_stategraph/policy/runtime.py": "c6fde677ae0b68ed14660d641d72f37cf603a439b146e30430f734eeb99bcd1a",
+    "bo_stategraph/project.json": "ed7349c84b1957c258a0393d992fdc39acfd35f57c203694e06512c4d1fa823d",
+    "bo_stategraph/runtime-version.json": "0c252c5eaaddba6b611517f82063f49aef5f3fcb3294f5e23a15e3fb9b1054c4",
+    "bo_stategraph/workflow.py": "1a0ecdc4f824a5020a2604f2f8a884d5271ccd90b707b86e3a355272d480cdda",
+    "discovery.json": "ec230f2a248de9a5bf3e6c75a0241255e005491d595bc1f66713b3ec23cd5513",
+    "implementation.json": "eaec3bbd2e57d6d08b229230a58a5460a968e727ac4f79b89a2f7b29160d3e9a",
+    "integrations/__init__.py": "b9db7d8e4bbfe219d0b6f861a378f5a5886326b8f036dde985f3474b4278bd08",
+    "integrations/bo_monitor.py": "6b8a22277ba5c126b9c89a0137ad7b04879da6eaf8aa63a6c246c2b3bc1458ce",
+    "intent.json": "4e6395a6700962296e848309e241c8c251a18fb578544023659a06fda60735b6",
+    "manifest.json": "db6eb7d098faf9749739555603c9e3e274ab157a3609633e8b8f95172f64552f",
+    "mapping.json": "c428156178da7a613e158a69cc8e828e3ba36e99e0b73649f196664e91fcb226",
+    "ownership.json": "215ebb982bf47917cbc9105e1a052dc4718f15a601ce8a866a97e5ddbf807a92",
+    "requirements.txt": "7c92c8aa21ebbd8a6f64472918fbc1b49f3e60e3bf5186bcfa89597ede176dab",
+    "static/app.css": "61b887a5291acd41406403a701c1e9165cbfea5d8bcf790e3bc3cf4022e8c770",
+    "sync.json": "ad3062b6d39e130f822006ff8285f3efecf66a99ddbe19fcc1530bfb3183554c",
+    "templates/application.html": "311b270231c034ecf9a1ebdd661f2cd3926fdd92281a576f8a2767de8af2f687",
+    "templates/base.html": "a44441f3707d8c1bd7272878f47e6ce33eb1820138d8fecf867ee8cd9c2ab430",
+    "templates/error.html": "e6e70fa41fa857e28d17ae310d93645b1aa3203bcce360f87473dfcf2e30c2f8",
+    "templates/login.html": "2d6b5a274ffa5bef622e800bac42b8d49cdf874cd2e5ce7658810d9341555a10",
+    "templates/workspace.html": "bb04bed92f18c79e3140893a4e814a3ebf4ef917258c281d81f0bc4dd47a42c8",
+    "tests/test_observation.py": "69115e9d3a50e170ce9de5a69ff38e8b9af8645503ba61eabb14672c577a7398",
+    "tests/test_sharing.py": "0457a478ee6dd2ccd20aa3122a5277d414ec284d41a940dad83d83ca474be480",
+    "tests/test_supplement.py": "94117f0c049c49ec67c5c0eccb64fc2b868504aa6c0bfe13e1379550b8e62d6e",
+    "tooling/actual_witnesses.py": "895e00d825458e75e0714f85b9796bb42bd2078f692795dd83ad39831f02a4e2",
+    "tooling/build_model.py": "c9fa97284a1d2c4708d4d46dbf5812657de4af7896ba2649250e114d5f4456cc",
+    "tooling/check.py": "02419bb2c3b9dd644816d601d5dcab3910de727850bd0023fed0854c0c877a22",
+    "tooling/dev.py": "ba482c09215fb1353acc989fd6d57780d2218512ba50f472f2e6a5b586155009",
+    "tooling/export_database.py": "bd3496c305dfe701ec025f22ae865b21b8f620e85b7bd4a42c904ca9700a686c",
+    "tooling/frozen_hashes.py": "238dae31fb1ff819b88de953cf40c15c64f05212ab99e16b94e05940fad5aae9",
+    "tooling/http_probe_regression.py": "c305ecfbe0f68685d488f7ab8522357b29047b6021067a7c769150b392201b58",
+    "tooling/init_contract.py": "526d8d4a63f52b2fe6a96563100fd175b46834b9568c0a1699250cff7cfafd7b",
+    "tooling/observe.py": "0bd0298c0c26bc1a3428573c1b6d16b463e1f5ad4e619498fe1fe5acaa032018",
+    "tooling/reconcile_design.py": "0b7d5fbc3837a3f8e60d20636cdef920bfbe8285b481032877e8c2e00cb174cd",
+    "tooling/review_candidate.py": "864816afc32dd6c1d203e9f07bef9075678082e48d117358da50538533edbdd1",
+    "tooling/run_design.py": "9bd0295db0140cd767f7dacad6a99d3619cdb6b66e00c0a0b4c7fd841bb6df76",
+    "whitebox.json": "cb7f4d3ed00ef6bc62bc79b2506bcd72322bb242fd6944016a651a190f70e419"
+  }
+}

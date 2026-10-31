@@ -1,0 +1,32 @@
+[
+  {
+    "type": "table",
+    "name": "files",
+    "table": "files",
+    "sql": "CREATE TABLE files (\n\tid VARCHAR NOT NULL, \n\towner_id VARCHAR NOT NULL, \n\tfilename VARCHAR NOT NULL, \n\tsize INTEGER NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT file_size_nonnegative CHECK (size >= 0), \n\tFOREIGN KEY(owner_id) REFERENCES users (id)\n)"
+  },
+  {
+    "type": "table",
+    "name": "journal",
+    "table": "journal",
+    "sql": "CREATE TABLE journal (\n\tid VARCHAR NOT NULL, \n\tshare_id VARCHAR NOT NULL, \n\trevision INTEGER NOT NULL, \n\tevent VARCHAR NOT NULL, \n\tbefore_state VARCHAR NOT NULL, \n\tafter_state VARCHAR NOT NULL, \n\tguards VARCHAR NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tFOREIGN KEY(share_id) REFERENCES shares (id)\n)"
+  },
+  {
+    "type": "table",
+    "name": "notifications",
+    "table": "notifications",
+    "sql": "CREATE TABLE notifications (\n\tid VARCHAR NOT NULL, \n\tuser_id VARCHAR NOT NULL, \n\tshare_id VARCHAR NOT NULL, \n\tkind VARCHAR NOT NULL, \n\tstate VARCHAR NOT NULL, \n\tfilename VARCHAR NOT NULL, \n\tis_read INTEGER DEFAULT '0' NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tFOREIGN KEY(user_id) REFERENCES users (id), \n\tFOREIGN KEY(share_id) REFERENCES shares (id)\n)"
+  },
+  {
+    "type": "table",
+    "name": "shares",
+    "table": "shares",
+    "sql": "CREATE TABLE shares (\n\tid VARCHAR NOT NULL, \n\tfile_id VARCHAR NOT NULL, \n\towner_id VARCHAR NOT NULL, \n\trecipient_id VARCHAR NOT NULL, \n\treviewer_id VARCHAR NOT NULL, \n\tstate VARCHAR NOT NULL, \n\trevision INTEGER NOT NULL, \n\tcreated_at VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT share_state_valid CHECK (state IN ('pending','approved','rejected','cancelled','revoked')), \n\tCONSTRAINT different_recipient CHECK (owner_id != recipient_id), \n\tCONSTRAINT share_revision_positive CHECK (revision >= 1), \n\tFOREIGN KEY(file_id) REFERENCES files (id), \n\tFOREIGN KEY(owner_id) REFERENCES users (id), \n\tFOREIGN KEY(recipient_id) REFERENCES users (id), \n\tFOREIGN KEY(reviewer_id) REFERENCES users (id)\n)"
+  },
+  {
+    "type": "table",
+    "name": "users",
+    "table": "users",
+    "sql": "CREATE TABLE users (\n\tid VARCHAR NOT NULL, \n\tname VARCHAR NOT NULL, \n\tpassword_hash VARCHAR NOT NULL, \n\tPRIMARY KEY (id)\n)"
+  }
+]

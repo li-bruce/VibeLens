@@ -11,6 +11,8 @@ from pathlib import Path
 import secrets
 import threading
 from ..protocol import validate_project, validate_event, validate_snapshot
+from ..graph.source_files import SourceFiles
+from .event_batch import BOSessionSink
 
 try:
     from ...behavior_model import read, capture, check, contained, digest
@@ -37,10 +39,15 @@ class GraphSession:
         self.path = contained(self.root, project_path)
         self.project = validate_project(read(self.path))
         self.project_hash = digest(self.project)
+        self.bo_project_sources = SourceFiles(self.root)
+        self.bo_project_content_hash = None
+        self.bo_sink = BOSessionSink(self)
         self.model = self.project["model"]
         self.manifest = capture(self.root, self.model)
         self.graph = BOStateGraph(
-            self.model, build_id=self.manifest["build_id"], mode=self.project["selection"]["mode"]
+            self.model,
+            build_id=self.manifest["build_id"],
+            mode=self.project["selection"]["mode"],
         )
         self.lock = threading.RLock()
         self.sequence = 0
@@ -97,8 +104,18 @@ class GraphSession:
         """Report whether current source bytes still match the loaded build."""
         status = check(self.root, self.model, self.manifest)
         try:
-            if digest(read(self.path)) != self.project_hash:
+            # Read actual bytes every time. Only already verified identical bytes
+            # may skip JSON parsing; same-size/same-mtime edits still get checked.
+            # Changed formatting is compared canonically, as before this fast path.
+            raw = self.bo_project_sources.read(self.path.relative_to(self.root))
+            content_hash = digest(raw) if raw is not None else None
+            if raw is None or (
+                content_hash != self.bo_project_content_hash
+                and digest(json.loads(raw.decode("utf-8-sig"))) != self.project_hash
+            ):
                 status.update(status="stale", project_changed=True)
+            else:
+                self.bo_project_content_hash = content_hash
         except (OSError, ValueError):
             status.update(status="stale", project_changed=True)
         return status
@@ -110,50 +127,58 @@ class GraphSession:
         IDs remain the evidence for gaps and causal links.
         """
         value = validate_event(event, self.project, self.manifest["build_id"])
-        signature = digest(value)
-        producer = (value["run_id"], value["producer_id"])
         with self.lock:
             if self.binding()["status"] != "current":
                 raise ValueError("source or declaration changed; reload after verification")
-            if value["id"] in self.seen:
-                if self.seen[value["id"]]["digest"] != signature:
-                    raise ValueError("event identity collision")
-                return {"accepted": True, "duplicate": True}
-            if producer not in self.producers and len(self.producers) >= 1024:
-                raise ValueError("producer limit reached")
-            prior = self.producers.get(producer, 0)
-            if value["seq"] <= prior:
-                raise ValueError("old or reordered producer sequence")
-            if value["seq"] != prior + 1:
-                self.gaps += value["seq"] - prior - 1
-            for ref in value["depends"]:
-                previous = self.seen.get(ref["event"])
-                if previous is None:
-                    self.gaps += 1
-                    continue
-                if previous["run_id"] != value["run_id"]:
-                    raise ValueError("cross-run dependency")
-            self.sequence += 1
-            # Collector order is a display index, not a causal claim.
-            stored = {
-                **value,
-                "source_seq": value["seq"],
-                "seq": self.sequence,
-                "stream_id": self.stream_id,
-            }
-            self.producers[producer] = value["seq"]
-            self.seen[value["id"]] = {
-                "digest": signature,
-                "run_id": value["run_id"],
-                "producer_id": value["producer_id"],
-                "entity": value["entity"],
-                "attempt": value["attempt"],
-                "revision": value.get("revision"),
-            }
-            while len(self.seen) > 10000:
-                self.seen.popitem(last=False)
-            self.history.append(stored)
-            return {"accepted": True, "receipt_seq": self.sequence}
+            return self._accept_event(value)
+
+    def _accept_event(self, value):
+        """Advance one validated cursor; the caller holds the lock and source boundary.
+
+        Event batches use this same reducer on a detached cursor before the real
+        commit. Keep its mutations confined to seen, producers, sequence, gaps and
+        history so invalid preflight cannot leak into the live graph or recorder.
+        """
+        signature = digest(value)
+        producer = (value["run_id"], value["producer_id"])
+        if value["id"] in self.seen:
+            if self.seen[value["id"]]["digest"] != signature:
+                raise ValueError("event identity collision")
+            return {"accepted": True, "duplicate": True}
+        if producer not in self.producers and len(self.producers) >= 1024:
+            raise ValueError("producer limit reached")
+        prior = self.producers.get(producer, 0)
+        if value["seq"] <= prior:
+            raise ValueError("old or reordered producer sequence")
+        if value["seq"] != prior + 1:
+            self.gaps += value["seq"] - prior - 1
+        for ref in value["depends"]:
+            previous = self.seen.get(ref["event"])
+            if previous is None:
+                self.gaps += 1
+                continue
+            if previous["run_id"] != value["run_id"]:
+                raise ValueError("cross-run dependency")
+        self.sequence += 1
+        stored = {
+            **value,
+            "source_seq": value["seq"],
+            "seq": self.sequence,
+            "stream_id": self.stream_id,
+        }
+        self.producers[producer] = value["seq"]
+        self.seen[value["id"]] = {
+            "digest": signature,
+            "run_id": value["run_id"],
+            "producer_id": value["producer_id"],
+            "entity": value["entity"],
+            "attempt": value["attempt"],
+            "revision": value.get("revision"),
+        }
+        while len(self.seen) > 10000:
+            self.seen.popitem(last=False)
+        self.history.append(stored)
+        return {"accepted": True, "receipt_seq": self.sequence}
 
     def snapshot(self, value):
         """Attach an application snapshot to its matching recorded event.

@@ -1,8 +1,9 @@
 """Read current source bytes without repeatedly resolving ordinary parent paths.
 
-Each instance belongs to one binding check. File contents are always reread;
-timestamps and file sizes never stand in for source identity. Symlinks and Windows
-reparse points use full physical containment checks before any content is read.
+Readers retain ancestor paths only. File contents and current attributes are
+always reread; timestamps and file sizes never stand in for source identity.
+Symlinks and Windows reparse points use full physical containment checks before
+any content is read.
 """
 
 from pathlib import Path

@@ -1,6 +1,6 @@
 """Local synthetic-data application and read-only developer graph endpoints."""
 from copy import deepcopy
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
 import json
 import mimetypes
 from pathlib import Path
@@ -15,7 +15,7 @@ from integrations.bo_observer import BOObserver
 from observer_runtime.behavior_model import check
 from observer_runtime.recording_session import Recordings
 from observer_runtime.view_preferences import Preferences, PreferenceConflict
-from observer_runtime.bo_web import BOWeb
+from observer_runtime.bo_web import BOWeb, BOHTTPServer, bo_content_type
 from bo_stategraph import bo_export_view
 from bo_stategraph.query import bo_machine
 
@@ -240,7 +240,7 @@ def serve(root, args, model, manifest, sources):
                     return self.reply(404,{"error":"Page not found"})
                 raw=path.read_bytes()
                 if parsed.path in ('/','/control'):raw=application.bo_web.entry_html(raw)
-                return self.reply(200,raw,(mimetypes.guess_type(path.name)[0] or "application/octet-stream")+"; charset=utf-8")
+                return self.reply(200,raw,bo_content_type(mimetypes.guess_type(path.name)[0] or "application/octet-stream"))
             except Exception as error:
                 self.reply(500,{"error":type(error).__name__,"message":str(error)})
 
@@ -286,7 +286,7 @@ def serve(root, args, model, manifest, sources):
                 if action and action!="preferences" and not action.startswith(("recordings/","bo/")):
                     application.recordings.command(action,values,error=error)
                 return self.reply(400,{"error":str(error)})
-    server=ThreadingHTTPServer(("127.0.0.1",args.port),Handler)
+    server=BOHTTPServer(("127.0.0.1",args.port),Handler)
     print(json.dumps({"application":f"http://127.0.0.1:{args.port}/",
                       "graph":f"http://127.0.0.1:{args.port}/graph",
                       "build":manifest["build_id"],"candidate":args.candidate}),flush=True)

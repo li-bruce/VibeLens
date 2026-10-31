@@ -1,0 +1,128 @@
+{
+  "kind": "Challenge an accepted real trial's evidence without editing that trial.\n\nEach mutant removes or corrupts a retained implementation fact. Independent\nbusiness observations are preserved byte-for-byte so mapping is tested separately.\nThese are verifier negative controls, not newly executed application scenarios.\n",
+  "phase": "original-v1-negatives-02",
+  "build_id": "9da5d8c2f3a393f11913988449709ee75495af32a4662d2e8d26880e59884e5a",
+  "source_payload_sha256": "81475b98e511e7e24df5998f3569931ac4d1377688e637ac487a0d2f650341a8",
+  "source_execution": ".stategraph/initial-app/checks/observations.json",
+  "baseline": {
+    "mapping": {
+      "valid": true,
+      "errors": [],
+      "checks": 9086,
+      "projection_checks": 744,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "business": [],
+    "health": {
+      "valid": true,
+      "checked_runs": 31,
+      "required": true,
+      "errors": []
+    },
+    "implementation": {
+      "errors": [],
+      "events_checked": 144,
+      "features": 15
+    }
+  },
+  "checks": [
+    {
+      "name": "Missing actual exported instance",
+      "mapping_errors": [
+        {
+          "case": [
+            "approved",
+            "on"
+          ],
+          "error": "actual and exported instance identities differ"
+        }
+      ],
+      "business_errors": [],
+      "independent_observations_unchanged": true,
+      "passed": true
+    },
+    {
+      "name": "Stale projected revision",
+      "mapping_errors": [
+        {
+          "case": [
+            "approved",
+            "on"
+          ],
+          "instance": "6f1c1ec4422a4c358e4f8ae2680dc729",
+          "field": "revision",
+          "node": "pending",
+          "source": "Independent SQLite reads through app/storage.py::Store.snapshot",
+          "error": "actual value differs from exported projection"
+        }
+      ],
+      "business_errors": [],
+      "independent_observations_unchanged": true,
+      "passed": true
+    },
+    {
+      "name": "Missing projected context field: file_id",
+      "mapping_errors": [
+        "invalid or incomplete implementation mapping: 'file_id'"
+      ],
+      "business_errors": [],
+      "independent_observations_unchanged": true,
+      "passed": true
+    },
+    {
+      "name": "Missing implementation witnesses",
+      "mapping_errors": [
+        "no implementation mapping witnesses"
+      ],
+      "business_errors": [],
+      "independent_observations_unchanged": true,
+      "passed": true
+    },
+    {
+      "name": "Actual producer reports capture error",
+      "mapping_errors": [
+        {
+          "probe_capture_error": "approved",
+          "counter": "errors",
+          "value": 1
+        }
+      ],
+      "business_errors": [],
+      "independent_observations_unchanged": true,
+      "passed": true
+    },
+    {
+      "name": "Missing real download return boundary",
+      "mapping_errors": [
+        {
+          "feature_event_missing": "download",
+          "case": "approved",
+          "node": "download",
+          "phase": "return"
+        },
+        {
+          "feature_field_not_observed": "download",
+          "node": "download",
+          "direction": "out",
+          "field": "allowed"
+        },
+        {
+          "feature_field_not_observed": "download",
+          "node": "download",
+          "direction": "out",
+          "field": "size"
+        },
+        {
+          "feature_field_not_observed": "download",
+          "node": "download",
+          "direction": "out",
+          "field": "file_id"
+        }
+      ],
+      "business_errors": [],
+      "independent_observations_unchanged": true,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

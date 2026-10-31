@@ -1,0 +1,113 @@
+--- tests/test_source_files.py
++++ experiment/test_source_files.py
+@@ -1,15 +1,18 @@
+ """Source verification reads real bytes and preserves physical containment."""
+ 
++from contextlib import contextmanager
+ import os
+ from pathlib import Path
+ import subprocess
+ import sys
+ import tempfile
+ import unittest
++from unittest.mock import Mock, patch
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ sys.path.insert(0, str(ROOT / "skills/vibelens/scripts"))
+ from bo_observer.graph.source_files import SourceFiles
++import bo_observer.graph.source_files as sources_module
+ 
+ 
+ class SourceFileTests(unittest.TestCase):
+@@ -43,6 +46,91 @@
+         for value in [str(self.file.resolve()), "../source.py", "app/../source.py"]:
+             with self.assertRaisesRegex(ValueError, "contained relative"):
+                 reader.read(value)
++
++    @unittest.skipUnless(os.name == "nt", "Windows open-handle containment")
++    def test_opened_outside_object_is_rejected_before_any_content_read(self):
++        reader = SourceFiles(self.root)
++        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as external:
++            outside = Path(external) / "service.py"
++            outside.write_bytes(b"value = 1\n")
++            opened = outside.open("rb")
++            tracked = Mock(wraps=opened)
++
++            @contextmanager
++            def redirected_open(*args, **kwargs):
++                with opened:
++                    yield tracked
++
++            # Simulate opening a redirected object through an otherwise valid
++            # project name. The kernel resolves the real handle, not that name.
++            with patch.object(Path, "open", side_effect=redirected_open):
++                with self.assertRaisesRegex(ValueError, "escapes project"):
++                    reader.read("app/service.py")
++            self.assertFalse(tracked.read.called)
++            self.assertTrue(opened.closed)
++
++    @unittest.skipUnless(os.name == "nt", "Windows open-handle containment")
++    def test_failed_handle_identity_closes_without_reading_content(self):
++        reader = SourceFiles(self.root)
++        opened = self.file.open("rb")
++        tracked = Mock(wraps=opened)
++
++        @contextmanager
++        def tracked_open(*args, **kwargs):
++            with opened:
++                yield tracked
++
++        with patch.object(Path, "open", side_effect=tracked_open):
++            with patch.object(reader, "opened_path", side_effect=OSError("unavailable")):
++                with self.assertRaises(OSError):
++                    reader.read_windows(self.file)
++        self.assertFalse(tracked.read.called)
++        self.assertTrue(opened.closed)
++
++    @unittest.skipUnless(os.name == "nt", "Windows metadata-query fallback")
++    def test_unavailable_handle_query_uses_full_path_checks(self):
++        reader = SourceFiles(self.root)
++        with patch.object(reader, "read_windows", side_effect=OSError("query denied")):
++            self.assertEqual(reader.read("app/service.py"), b"value = 1\n")
++            with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as external:
++                (Path(external) / "service.py").write_bytes(b"value = 1\n")
++                link = self.root / "linked"
++                self.directory_link(link, Path(external))
++                try:
++                    with self.assertRaisesRegex(ValueError, "escapes project"):
++                        reader.read("linked/service.py")
++                finally:
++                    link.rmdir()
++
++    @unittest.skipUnless(os.name == "nt", "Windows normalized path buffers")
++    def test_long_unicode_handle_name_grows_the_buffer(self):
++        physical = "C:\\" + "segment\\" * 180 + "文件.py"
++        returned = "\\\\?\\" + physical
++        capacities = []
++
++        def final_path(handle, buffer, capacity, flags):
++            capacities.append(capacity)
++            self.assertEqual(flags, 0)
++            if capacity <= len(returned):
++                return len(returned) + 1
++            buffer.value = returned
++            return len(returned)
++
++        with self.file.open("rb") as stream:
++            with patch.object(sources_module, "_final_path", side_effect=final_path):
++                self.assertEqual(SourceFiles.opened_path(stream), Path(physical))
++        self.assertEqual(len(capacities), 2)
++        self.assertGreater(capacities[1], len(returned))
++
++    @unittest.skipUnless(os.name == "nt", "Windows drive and UNC names")
++    def test_extended_paths_keep_drive_and_unc_identity(self):
++        self.assertEqual(
++            SourceFiles.dos_path("\\\\?\\C:\\project\\file.py"), Path("C:/project/file.py")
++        )
++        self.assertEqual(
++            SourceFiles.dos_path("\\\\?\\UNC\\server\\share\\file.py"),
++            Path("//server/share/file.py"),
++        )
+ 
+     def directory_link(self, link, target):
+         if os.name == "nt":

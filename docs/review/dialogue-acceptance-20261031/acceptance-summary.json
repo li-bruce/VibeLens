@@ -1,9 +1,9 @@
 {
-  "overall": "partial: independent conversation awaits Codex approval",
+  "overall": "passed within the explicitly listed replay and language-trial boundaries",
   "repository": {
     "valid": true,
     "exit_code": 0,
-    "exec_session": 27988,
+    "exec_session": 74008,
     "command": [
       ".venv/Scripts/python.exe",
       "-B",
@@ -12,8 +12,34 @@
       "tools/verify.py",
       "--database"
     ],
-    "log": "repository-final-verification.log",
-    "sha256": "dac7b84bf8fc9d08c1d20658cc9ab02b2b369414890e81130362de6cf1a6a4d4"
+    "log": "repository-mime-verification.log",
+    "sha256": "64fbeb1f79efe61dbc78d82312b43c178fc88e40d1a39c15be2f248438ca7da2",
+    "base_commit": "db66166f20818232430739803b320c0b588cdbc0",
+    "tested_files": {
+      "skills/vibelens/scripts/bo_observer/observation/event_batch.py": "88a7e1e09734a4f13191b23de24558e58a9268c519e7d58776e2f404be07aa45",
+      "skills/vibelens/scripts/bo_observer/observation/session.py": "763e48595b2f84715a6fa710be2e5220d7641217c679df7944f59dd2eca6bf5c",
+      "skills/vibelens/scripts/bo_observer/adapters/python/bo_probe.py": "4d453f242d524956e39ddf57f3899a12c09946bda904c513d59e30f2938b17f2",
+      "skills/vibelens/scripts/bo_observer/graph/source_files.py": "5ae86276bb1555c2fda120e7cab401e92233134641d6b2aecffd5a7ebb78a53f",
+      "skills/vibelens/scripts/bo_observer/service.py": "3fe59a8916122cb221fee9922665fa2eb07c1e97268e5c419124c421bf969700",
+      "skills/vibelens/scripts/bo_observer/web/bo_web.py": "a6db883841d20e66b97905c01fe5478fd744e3f73f515f61a0a052c61976164a",
+      "tools/verify.py": "16359b17be5898794621a9946cf2dcb1c3fe145f60ad4f6456d4003ba3ee7da4",
+      "tools/test_web_continuity.py": "42c73ecaa8863afd7023723923e8a6a060effe5e9f2311753b511a80190d2217",
+      "tests/test_event_batch.py": "ae0a1f7844005f5bb103108789078eb1db6222a3ed2f881c15cf45578cb79716",
+      "tests/test_project_identity.py": "f31ec9216c9648c69cdc3e57f20caa49c6c687023c48a5d757254f180b165df4",
+      "tests/test_viewer_transport.py": "b7eb85674034657ea6a11589e5b470effb75fbbc1393a444fc5b70f2b368215b",
+      "tests/test_runtime_http.py": "a41a8a0dc3d922216e563986e6d1ab2b8f47a90dbf6a345a5a0d642a355b8d9f",
+      "tests/test_trial_dialogue_export.py": "60d3ad28b49062f3b6228e9c729e12ed0c99be2a88093e3659a86ca30fbc2f9b",
+      "tests/test_trial_dialogue_links.py": "edb37bbe70e91697684a936498c5a3582785ab396cbd48a41b1ae08952be2da0",
+      "examples/delivery/integrations/bo_server.py": "f519b3cc6903304c3731f85344514a86ccd91ff4cae2c049226b77cfd41fac49",
+      "examples/team-archive/integrations/bo_server.py": "7f53634777cbda6537ad095a8b9c78ae0058810e3fb8ca951451ae45f3c59111"
+    },
+    "scope": "Full final source/runtime/database checks after shared binary MIME fix. Inactive approvals were subsequently moved unchanged into verified archives; active approvals and source bytes retained."
+  },
+  "source_quality": {
+    "valid": true,
+    "python_modules": 115,
+    "javascript_modules": 88,
+    "receipt": "source-quality-mime.json"
   },
   "browser": {
     "latest_passed": true,
@@ -188,28 +214,81 @@
       }
     }
   },
+  "independent_conversation": {
+    "thread_id": "01a18f4d-11b3-7553-bbeb-6410929a9146",
+    "title": "VibeLens \u751f\u547d\u5468\u671f\u5168\u6d41\u7a0b\u8bd5\u7528",
+    "status": "completed",
+    "dialogue": "dialogue-complete-002/dialogue.md",
+    "provenance": "Real Codex development conversation with explicitly marked simulated user replies and preserved actual human corrections.",
+    "ordinary_business_iteration": {
+      "accepted": {
+        "candidate_id": "92749e223f3735b616435db2a1d742744a8444036b6e1eaab9e3c30854e1d9e1",
+        "build_id": "3c209caabc58b47e7814be670cffeae9f9f9e0723c53cf1d3177d86ded0ee2b7",
+        "verification_hash": "3f14666135f898694fbc462505ec1c2e0848bc6f1755e3becbf706d3a5e51a7f"
+      },
+      "structure_checks": 19,
+      "receipt": "iteration/ordinary-iteration-evidence.json"
+    },
+    "final_observer_upgrade": {
+      "accepted": {
+        "candidate_id": "5c87114c17ae58eb0d9bb4c2e2b621280a1fd73c35416969d46b1c840c694596",
+        "build_id": "55adb37274e9423694099b9fc86bbccf78454c50d14bd45eb9e756704e3b170f",
+        "verification_hash": "7c62b436e173ed7338269efb2bf47379a3373064dee2706bb2312f76715c2ac5"
+      },
+      "receipt": "iteration/mime-upgrade-evidence.json"
+    }
+  },
   "actual_application": {
     "passed": true,
-    "recorded_events": 1231,
-    "scope": "Explicit isolated HTTP capture repair; not the original conversation's acceptance"
+    "scope": "Accepted original conversation project after formal upgrades; not a copied candidate",
+    "checks": 7,
+    "recorded_events": 1390,
+    "stop_milliseconds": 1980,
+    "receipt": "operations-original-v2-final-02/results.json"
+  },
+  "actual_viewer": {
+    "passed": true,
+    "groups": 12,
+    "receipt": "application-original-v2-final-02/viewer-results.json"
   },
   "actual_timeline": {
-    "phase": "actual-01",
-    "base": "http://127.0.0.1:62888",
-    "recordingId": "a486d5d9f37e4950b660a9380b251fb0",
+    "phase": "original-v2-final-02",
+    "base": "http://127.0.0.1:50642",
+    "recordingId": "d72ba50d67814dbf84b0962ba9626c6e",
     "checks": [
       {
         "name": "Actual durations, same-layer and cross-layer handoffs",
-        "intervals": 521,
-        "routes": 323
+        "intervals": 470,
+        "routes": 173
+      },
+      {
+        "name": "Unsnapshotted project/code/API indexes stay disabled during historical replay",
+        "options": [
+          {
+            "id": "project",
+            "disabled": true,
+            "title": "Return to live view to browse code structure"
+          },
+          {
+            "id": "code",
+            "disabled": true,
+            "title": "Return to live view to browse code structure"
+          },
+          {
+            "id": "api",
+            "disabled": true,
+            "title": "Return to live view to browse code structure"
+          }
+        ],
+        "boundary": "Live source/API navigation is checked separately; historical source-index replay is unavailable."
       },
       {
         "name": "2D graph, actual state/value data and timeline share the exact captured event",
-        "eventId": "1f57e63544ea4676884c8f6a98c3ad64:91743ea4cb7c4ab48f0fb15d3406c5f1:399"
+        "eventId": "10653fd3d1554fb0893f8a7c52230830:20915cf96f264e798253836a03ea1611:1528"
       },
       {
         "name": "3D graph, actual state/value data and timeline share the exact captured event",
-        "eventId": "1f57e63544ea4676884c8f6a98c3ad64:91743ea4cb7c4ab48f0fb15d3406c5f1:399"
+        "eventId": "10653fd3d1554fb0893f8a7c52230830:20915cf96f264e798253836a03ea1611:1528"
       },
       {
         "name": "Real query result animates the same evidence-supported edges",
@@ -231,11 +310,3534 @@
       }
     ],
     "errors": [],
+    "passed": true,
+    "pending": [],
+    "networkFailures": [],
+    "consoleErrors": [],
+    "requestTimes": [
+      {
+        "path": "/graph",
+        "start": 1793439433627,
+        "duration_ms": 12,
+        "timing": {
+          "startTime": 1793439433627.21,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": 0.127,
+          "responseStart": 1.103,
+          "responseEnd": 2.03
+        }
+      },
+      {
+        "path": "/viewer.css",
+        "start": 1793439433638,
+        "duration_ms": 4,
+        "timing": {
+          "startTime": 1793439433635.824,
+          "domainLookupStart": 0.079,
+          "domainLookupEnd": 0.089,
+          "connectStart": 0.089,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.063,
+          "requestStart": 1.12,
+          "responseStart": 3.522,
+          "responseEnd": 6.599
+        }
+      },
+      {
+        "path": "/timeline.css",
+        "start": 1793439433638,
+        "duration_ms": 8,
+        "timing": {
+          "startTime": 1793439433637.1692,
+          "domainLookupStart": 0.065,
+          "domainLookupEnd": 0.075,
+          "connectStart": 0.075,
+          "secureConnectionStart": -1,
+          "connectEnd": 2.126,
+          "requestStart": 2.691,
+          "responseStart": 4.92,
+          "responseEnd": 8.968
+        }
+      },
+      {
+        "path": "/viewer.js",
+        "start": 1793439433639,
+        "duration_ms": 38,
+        "timing": {
+          "startTime": 1793439433640.126,
+          "domainLookupStart": 0.047,
+          "domainLookupEnd": 0.057,
+          "connectStart": 0.057,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.552,
+          "requestStart": 0.577,
+          "responseStart": 2.496,
+          "responseEnd": 9.777
+        }
+      },
+      {
+        "path": "/pixi.min.js",
+        "start": 1793439433639,
+        "duration_ms": 38,
+        "timing": {
+          "startTime": 1793439433638.065,
+          "domainLookupStart": 0.061,
+          "domainLookupEnd": 0.066,
+          "connectStart": 0.066,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.754,
+          "requestStart": 1.911,
+          "responseStart": 4.394,
+          "responseEnd": 10.935
+        }
+      },
+      {
+        "path": "/elk.bundled.js",
+        "start": 1793439433639,
+        "duration_ms": 132,
+        "timing": {
+          "startTime": 1793439433638.799,
+          "domainLookupStart": 0.059,
+          "domainLookupEnd": 0.065,
+          "connectStart": 0.065,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.144,
+          "requestStart": 1.207,
+          "responseStart": 3.75,
+          "responseEnd": 11.368
+        }
+      },
+      {
+        "path": "/change-panel.js",
+        "start": 1793439433773,
+        "duration_ms": 6,
+        "timing": {
+          "startTime": 1793439433772.313,
+          "domainLookupStart": 0.075,
+          "domainLookupEnd": 0.085,
+          "connectStart": 0.085,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.012,
+          "requestStart": 1.058,
+          "responseStart": 2.802,
+          "responseEnd": 3.367
+        }
+      },
+      {
+        "path": "/trace-evidence.js",
+        "start": 1793439433775,
+        "duration_ms": 12,
+        "timing": {
+          "startTime": 1793439433774.0889,
+          "domainLookupStart": 0.038,
+          "domainLookupEnd": 0.042,
+          "connectStart": 0.042,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.983,
+          "requestStart": 1.522,
+          "responseStart": 3.342,
+          "responseEnd": 7.187
+        }
+      },
+      {
+        "path": "/trace-session.js",
+        "start": 1793439433775,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439433773.4958,
+          "domainLookupStart": 0.053,
+          "domainLookupEnd": 0.066,
+          "connectStart": 0.066,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.569,
+          "requestStart": 2.051,
+          "responseStart": 6.003,
+          "responseEnd": 8.617
+        }
+      },
+      {
+        "path": "/detail-panel.js",
+        "start": 1793439433776,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439433776.266,
+          "domainLookupStart": 0.037,
+          "domainLookupEnd": 0.042,
+          "connectStart": 0.042,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.8,
+          "requestStart": 0.829,
+          "responseStart": 3.521,
+          "responseEnd": 10.747
+        }
+      },
+      {
+        "path": "/edge-panel.js",
+        "start": 1793439433776,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439433775.728,
+          "domainLookupStart": 0.035,
+          "domainLookupEnd": 0.041,
+          "connectStart": 0.041,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.417,
+          "requestStart": 0.442,
+          "responseStart": 4.233,
+          "responseEnd": 9.192
+        }
+      },
+      {
+        "path": "/layer-ruler.js",
+        "start": 1793439433776,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439433776.712,
+          "domainLookupStart": 0.036,
+          "domainLookupEnd": 0.04,
+          "connectStart": 0.04,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.362,
+          "requestStart": 0.433,
+          "responseStart": 4.795,
+          "responseEnd": 11.729
+        }
+      },
+      {
+        "path": "/recording-timeline.js",
+        "start": 1793439433776,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439433774.646,
+          "domainLookupStart": 0.039,
+          "domainLookupEnd": 0.043,
+          "connectStart": 0.043,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.435,
+          "requestStart": 1.004,
+          "responseStart": 5.041,
+          "responseEnd": 9.977
+        }
+      },
+      {
+        "path": "/edge-routing.js",
+        "start": 1793439433776,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439433777.229,
+          "domainLookupStart": 1.357,
+          "domainLookupEnd": 1.361,
+          "connectStart": 1.361,
+          "secureConnectionStart": -1,
+          "connectEnd": 2.697,
+          "requestStart": 5.891,
+          "responseStart": 7.127,
+          "responseEnd": 12.89
+        }
+      },
+      {
+        "path": "/replay-selection.js",
+        "start": 1793439433776,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439433777.318,
+          "domainLookupStart": 2.899,
+          "domainLookupEnd": 2.902,
+          "connectStart": 2.902,
+          "secureConnectionStart": -1,
+          "connectEnd": 4.326,
+          "requestStart": 6.775,
+          "responseStart": 9.266,
+          "responseEnd": 15.868
+        }
+      },
+      {
+        "path": "/semantic-view.js",
+        "start": 1793439433776,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439433777.3828,
+          "domainLookupStart": 3.6,
+          "domainLookupEnd": 3.605,
+          "connectStart": 3.605,
+          "secureConnectionStart": -1,
+          "connectEnd": 5.854,
+          "requestStart": 6.858,
+          "responseStart": 9.339,
+          "responseEnd": 16.854
+        }
+      },
+      {
+        "path": "/spatial-model.js",
+        "start": 1793439433776,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439433777.592,
+          "domainLookupStart": 4.152,
+          "domainLookupEnd": 4.155,
+          "connectStart": 4.155,
+          "secureConnectionStart": -1,
+          "connectEnd": 5.701,
+          "requestStart": 6.941,
+          "responseStart": 11.898,
+          "responseEnd": 19.366
+        }
+      },
+      {
+        "path": "/graph-layers.js",
+        "start": 1793439433776,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439433777.673,
+          "domainLookupStart": 4.667,
+          "domainLookupEnd": 4.673,
+          "connectStart": 4.673,
+          "secureConnectionStart": -1,
+          "connectEnd": 5.631,
+          "requestStart": 6.923,
+          "responseStart": 11.626,
+          "responseEnd": 18.626
+        }
+      },
+      {
+        "path": "/spatial-geometry.js",
+        "start": 1793439433776,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439433777.731,
+          "domainLookupStart": 5.679,
+          "domainLookupEnd": 5.685,
+          "connectStart": 5.685,
+          "secureConnectionStart": -1,
+          "connectEnd": 6.774,
+          "requestStart": 7.552,
+          "responseStart": 11.869,
+          "responseEnd": 19.874
+        }
+      },
+      {
+        "path": "/spatial-renderer.js",
+        "start": 1793439433776,
+        "duration_ms": 20,
+        "timing": {
+          "startTime": 1793439433777.8052,
+          "domainLookupStart": 6.908,
+          "domainLookupEnd": 6.911,
+          "connectStart": 6.911,
+          "secureConnectionStart": -1,
+          "connectEnd": 7.448,
+          "requestStart": 7.549,
+          "responseStart": 11.969,
+          "responseEnd": 20.306
+        }
+      },
+      {
+        "path": "/route-picking.js",
+        "start": 1793439433776,
+        "duration_ms": 27,
+        "timing": {
+          "startTime": 1793439433778.19,
+          "domainLookupStart": 13.766,
+          "domainLookupEnd": 13.772,
+          "connectStart": 13.772,
+          "secureConnectionStart": -1,
+          "connectEnd": 14.739,
+          "requestStart": 14.834,
+          "responseStart": 17.319,
+          "responseEnd": 24.097
+        }
+      },
+      {
+        "path": "/graph-links.js",
+        "start": 1793439433776,
+        "duration_ms": 27,
+        "timing": {
+          "startTime": 1793439433777.8708,
+          "domainLookupStart": 9.394,
+          "domainLookupEnd": 9.407,
+          "connectStart": 9.407,
+          "secureConnectionStart": -1,
+          "connectEnd": 12.127,
+          "requestStart": 14.934,
+          "responseStart": 18.88,
+          "responseEnd": 25.496
+        }
+      },
+      {
+        "path": "/conversation.js",
+        "start": 1793439433776,
+        "duration_ms": 27,
+        "timing": {
+          "startTime": 1793439433778.356,
+          "domainLookupStart": 14.053,
+          "domainLookupEnd": 14.057,
+          "connectStart": 14.057,
+          "secureConnectionStart": -1,
+          "connectEnd": 14.58,
+          "requestStart": 14.7,
+          "responseStart": 18.584,
+          "responseEnd": 26.264
+        }
+      },
+      {
+        "path": "/controls.js",
+        "start": 1793439433776,
+        "duration_ms": 27,
+        "timing": {
+          "startTime": 1793439433778.001,
+          "domainLookupStart": 12.302,
+          "domainLookupEnd": 12.308,
+          "connectStart": 12.308,
+          "secureConnectionStart": -1,
+          "connectEnd": 14.911,
+          "requestStart": 14.957,
+          "responseStart": 19.001,
+          "responseEnd": 28.539
+        }
+      },
+      {
+        "path": "/renderer.js",
+        "start": 1793439433776,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439433778.071,
+          "domainLookupStart": 13.161,
+          "domainLookupEnd": 13.168,
+          "connectStart": 13.168,
+          "secureConnectionStart": -1,
+          "connectEnd": 14.854,
+          "requestStart": 14.924,
+          "responseStart": 18.806,
+          "responseEnd": 27.675
+        }
+      },
+      {
+        "path": "/i18n.js",
+        "start": 1793439433776,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439433777.928,
+          "domainLookupStart": 10.578,
+          "domainLookupEnd": 10.582,
+          "connectStart": 10.582,
+          "secureConnectionStart": -1,
+          "connectEnd": 12.088,
+          "requestStart": 14.941,
+          "responseStart": 19.137,
+          "responseEnd": 27.071
+        }
+      },
+      {
+        "path": "/conversation-controls.js",
+        "start": 1793439433776,
+        "duration_ms": 33,
+        "timing": {
+          "startTime": 1793439433785.465,
+          "domainLookupStart": 10.415,
+          "domainLookupEnd": 10.42,
+          "connectStart": 10.42,
+          "secureConnectionStart": -1,
+          "connectEnd": 11.663,
+          "requestStart": 15.713,
+          "responseStart": 18.355,
+          "responseEnd": 32.297
+        }
+      },
+      {
+        "path": "/view-lifecycle.js",
+        "start": 1793439433776,
+        "duration_ms": 33,
+        "timing": {
+          "startTime": 1793439433785.739,
+          "domainLookupStart": 14.02,
+          "domainLookupEnd": 14.025,
+          "connectStart": 14.025,
+          "secureConnectionStart": -1,
+          "connectEnd": 15.539,
+          "requestStart": 15.77,
+          "responseStart": 18.324,
+          "responseEnd": 32.899
+        }
+      },
+      {
+        "path": "/data-layer.js",
+        "start": 1793439433776,
+        "duration_ms": 33,
+        "timing": {
+          "startTime": 1793439433785.795,
+          "domainLookupStart": 14.748,
+          "domainLookupEnd": 14.755,
+          "connectStart": 14.755,
+          "secureConnectionStart": -1,
+          "connectEnd": 15.499,
+          "requestStart": 15.765,
+          "responseStart": 18.193,
+          "responseEnd": 33.57
+        }
+      },
+      {
+        "path": "/polling.js",
+        "start": 1793439433776,
+        "duration_ms": 33,
+        "timing": {
+          "startTime": 1793439433785.6082,
+          "domainLookupStart": 12.655,
+          "domainLookupEnd": 12.664,
+          "connectStart": 12.664,
+          "secureConnectionStart": -1,
+          "connectEnd": 14.681,
+          "requestStart": 15.781,
+          "responseStart": 20.166,
+          "responseEnd": 34.136
+        }
+      },
+      {
+        "path": "/preferences.js",
+        "start": 1793439433776,
+        "duration_ms": 33,
+        "timing": {
+          "startTime": 1793439433785.549,
+          "domainLookupStart": 11.857,
+          "domainLookupEnd": 11.861,
+          "connectStart": 11.861,
+          "secureConnectionStart": -1,
+          "connectEnd": 14.071,
+          "requestStart": 15.773,
+          "responseStart": 19.398,
+          "responseEnd": 34.616
+        }
+      },
+      {
+        "path": "/layout.js",
+        "start": 1793439433776,
+        "duration_ms": 33,
+        "timing": {
+          "startTime": 1793439433785.696,
+          "domainLookupStart": 13.401,
+          "domainLookupEnd": 13.407,
+          "connectStart": 13.407,
+          "secureConnectionStart": -1,
+          "connectEnd": 15.429,
+          "requestStart": 15.756,
+          "responseStart": 19.964,
+          "responseEnd": 35
+        }
+      },
+      {
+        "path": "/analysis.js",
+        "start": 1793439433777,
+        "duration_ms": 39,
+        "timing": {
+          "startTime": 1793439433785.988,
+          "domainLookupStart": 19.964,
+          "domainLookupEnd": 19.967,
+          "connectStart": 19.967,
+          "secureConnectionStart": -1,
+          "connectEnd": 21.297,
+          "requestStart": 21.909,
+          "responseStart": 24.572,
+          "responseEnd": 39.243
+        }
+      },
+      {
+        "path": "/code-layer.js",
+        "start": 1793439433776,
+        "duration_ms": 40,
+        "timing": {
+          "startTime": 1793439433785.853,
+          "domainLookupStart": 18.509,
+          "domainLookupEnd": 18.513,
+          "connectStart": 18.513,
+          "secureConnectionStart": -1,
+          "connectEnd": 19.988,
+          "requestStart": 21.918,
+          "responseStart": 26.773,
+          "responseEnd": 40.71
+        }
+      },
+      {
+        "path": "/graph-names.js",
+        "start": 1793439433777,
+        "duration_ms": 39,
+        "timing": {
+          "startTime": 1793439433786.244,
+          "domainLookupStart": 21.132,
+          "domainLookupEnd": 21.136,
+          "connectStart": 21.136,
+          "secureConnectionStart": -1,
+          "connectEnd": 21.637,
+          "requestStart": 21.751,
+          "responseStart": 24.387,
+          "responseEnd": 39.673
+        }
+      },
+      {
+        "path": "/graph-core.js",
+        "start": 1793439433777,
+        "duration_ms": 39,
+        "timing": {
+          "startTime": 1793439433785.907,
+          "domainLookupStart": 19.304,
+          "domainLookupEnd": 19.307,
+          "connectStart": 19.307,
+          "secureConnectionStart": -1,
+          "connectEnd": 20.438,
+          "requestStart": 21.94,
+          "responseStart": 24.494,
+          "responseEnd": 38.655
+        }
+      },
+      {
+        "path": "/recording.js",
+        "start": 1793439433777,
+        "duration_ms": 39,
+        "timing": {
+          "startTime": 1793439433786.154,
+          "domainLookupStart": 20.764,
+          "domainLookupEnd": 20.768,
+          "connectStart": 20.768,
+          "secureConnectionStart": -1,
+          "connectEnd": 21.677,
+          "requestStart": 21.814,
+          "responseStart": 26.612,
+          "responseEnd": 41.088
+        }
+      },
+      {
+        "path": "/glyphs.js",
+        "start": 1793439433777,
+        "duration_ms": 40,
+        "timing": {
+          "startTime": 1793439433786.0908,
+          "domainLookupStart": 20.357,
+          "domainLookupEnd": 20.36,
+          "connectStart": 20.36,
+          "secureConnectionStart": -1,
+          "connectEnd": 21.648,
+          "requestStart": 21.844,
+          "responseStart": 26.748,
+          "responseEnd": 41.541
+        }
+      },
+      {
+        "path": "/trace-viewport.js",
+        "start": 1793439433789,
+        "duration_ms": 34,
+        "timing": {
+          "startTime": 1793439433793.375,
+          "domainLookupStart": 20.22,
+          "domainLookupEnd": 20.224,
+          "connectStart": 20.224,
+          "secureConnectionStart": -1,
+          "connectEnd": 21.266,
+          "requestStart": 21.345,
+          "responseStart": 25.417,
+          "responseEnd": 30.976
+        }
+      },
+      {
+        "path": "/replay-steps.js",
+        "start": 1793439433777,
+        "duration_ms": 46,
+        "timing": {
+          "startTime": 1793439433786.318,
+          "domainLookupStart": 24.57,
+          "domainLookupEnd": 24.573,
+          "connectStart": 24.573,
+          "secureConnectionStart": -1,
+          "connectEnd": 26.578,
+          "requestStart": 28.095,
+          "responseStart": 31.248,
+          "responseEnd": 45.676
+        }
+      },
+      {
+        "path": "/source-view.js",
+        "start": 1793439433789,
+        "duration_ms": 34,
+        "timing": {
+          "startTime": 1793439433793.165,
+          "domainLookupStart": 18.492,
+          "domainLookupEnd": 18.495,
+          "connectStart": 18.495,
+          "secureConnectionStart": -1,
+          "connectEnd": 19.751,
+          "requestStart": 21.322,
+          "responseStart": 25.706,
+          "responseEnd": 31.632
+        }
+      },
+      {
+        "path": "/trace-index.js",
+        "start": 1793439433789,
+        "duration_ms": 34,
+        "timing": {
+          "startTime": 1793439433793.319,
+          "domainLookupStart": 19.744,
+          "domainLookupEnd": 19.746,
+          "connectStart": 19.746,
+          "secureConnectionStart": -1,
+          "connectEnd": 21.304,
+          "requestStart": 21.35,
+          "responseStart": 25.332,
+          "responseEnd": 31.918
+        }
+      },
+      {
+        "path": "/capture-fields.js",
+        "start": 1793439433789,
+        "duration_ms": 34,
+        "timing": {
+          "startTime": 1793439433793.2761,
+          "domainLookupStart": 18.917,
+          "domainLookupEnd": 18.922,
+          "connectStart": 18.922,
+          "secureConnectionStart": -1,
+          "connectEnd": 19.651,
+          "requestStart": 21.253,
+          "responseStart": 25.722,
+          "responseEnd": 32.889
+        }
+      },
+      {
+        "path": "/trace-paint.js",
+        "start": 1793439433789,
+        "duration_ms": 35,
+        "timing": {
+          "startTime": 1793439433793.428,
+          "domainLookupStart": 20.616,
+          "domainLookupEnd": 20.62,
+          "connectStart": 20.62,
+          "secureConnectionStart": -1,
+          "connectEnd": 21.216,
+          "requestStart": 21.319,
+          "responseStart": 25.5,
+          "responseEnd": 32.28
+        }
+      },
+      {
+        "path": "/node-lifecycle.js",
+        "start": 1793439433789,
+        "duration_ms": 42,
+        "timing": {
+          "startTime": 1793439433793.5842,
+          "domainLookupStart": 26.159,
+          "domainLookupEnd": 26.162,
+          "connectStart": 26.162,
+          "secureConnectionStart": -1,
+          "connectEnd": 27.02,
+          "requestStart": 28.043,
+          "responseStart": 32.683,
+          "responseEnd": 38.729
+        }
+      },
+      {
+        "path": "/trace-routing.js",
+        "start": 1793439433789,
+        "duration_ms": 42,
+        "timing": {
+          "startTime": 1793439433793.4749,
+          "domainLookupStart": 24.567,
+          "domainLookupEnd": 24.571,
+          "connectStart": 24.571,
+          "secureConnectionStart": -1,
+          "connectEnd": 25.566,
+          "requestStart": 28.005,
+          "responseStart": 30.886,
+          "responseEnd": 36.686
+        }
+      },
+      {
+        "path": "/trace-tooltip.js",
+        "start": 1793439433789,
+        "duration_ms": 42,
+        "timing": {
+          "startTime": 1793439433793.518,
+          "domainLookupStart": 25.712,
+          "domainLookupEnd": 25.714,
+          "connectStart": 25.714,
+          "secureConnectionStart": -1,
+          "connectEnd": 27.076,
+          "requestStart": 28.065,
+          "responseStart": 31.982,
+          "responseEnd": 38.326
+        }
+      },
+      {
+        "path": "/route-shapes.js",
+        "start": 1793439433796,
+        "duration_ms": 35,
+        "timing": {
+          "startTime": 1793439433795.311,
+          "domainLookupStart": 25.781,
+          "domainLookupEnd": 25.785,
+          "connectStart": 25.785,
+          "secureConnectionStart": -1,
+          "connectEnd": 26.254,
+          "requestStart": 26.421,
+          "responseStart": 31.069,
+          "responseEnd": 32.836
+        }
+      },
+      {
+        "path": "/node-icons.js",
+        "start": 1793439433796,
+        "duration_ms": 35,
+        "timing": {
+          "startTime": 1793439433795.202,
+          "domainLookupStart": 25.47,
+          "domainLookupEnd": 25.473,
+          "connectStart": 25.473,
+          "secureConnectionStart": -1,
+          "connectEnd": 26.358,
+          "requestStart": 26.5,
+          "responseStart": 29.357,
+          "responseEnd": 31.281
+        }
+      },
+      {
+        "path": "/routing-scene.js",
+        "start": 1793439433796,
+        "duration_ms": 40,
+        "timing": {
+          "startTime": 1793439433801.806,
+          "domainLookupStart": 24.953,
+          "domainLookupEnd": 24.956,
+          "connectStart": 24.956,
+          "secureConnectionStart": -1,
+          "connectEnd": 26.254,
+          "requestStart": 26.6,
+          "responseStart": 28.508,
+          "responseEnd": 36.445
+        }
+      },
+      {
+        "path": "/spatial-labels.js",
+        "start": 1793439433796,
+        "duration_ms": 40,
+        "timing": {
+          "startTime": 1793439433801.909,
+          "domainLookupStart": 25.308,
+          "domainLookupEnd": 25.311,
+          "connectStart": 25.311,
+          "secureConnectionStart": -1,
+          "connectEnd": 26.161,
+          "requestStart": 26.654,
+          "responseStart": 29.814,
+          "responseEnd": 37.627
+        }
+      },
+      {
+        "path": "/routing-geometry.js",
+        "start": 1793439433804,
+        "duration_ms": 32,
+        "timing": {
+          "startTime": 1793439433803.626,
+          "domainLookupStart": 24.011,
+          "domainLookupEnd": 24.014,
+          "connectStart": 24.014,
+          "secureConnectionStart": -1,
+          "connectEnd": 24.468,
+          "requestStart": 24.998,
+          "responseStart": 28.281,
+          "responseEnd": 31.153
+        }
+      },
+      {
+        "path": "/spatial-paths.js",
+        "start": 1793439433796,
+        "duration_ms": 41,
+        "timing": {
+          "startTime": 1793439433795.401,
+          "domainLookupStart": 29.481,
+          "domainLookupEnd": 29.486,
+          "connectStart": 29.486,
+          "secureConnectionStart": -1,
+          "connectEnd": 31.121,
+          "requestStart": 32.729,
+          "responseStart": 36.574,
+          "responseEnd": 38.232
+        }
+      },
+      {
+        "path": "/routing-client.js",
+        "start": 1793439433796,
+        "duration_ms": 41,
+        "timing": {
+          "startTime": 1793439433801.696,
+          "domainLookupStart": 24.087,
+          "domainLookupEnd": 24.089,
+          "connectStart": 24.089,
+          "secureConnectionStart": -1,
+          "connectEnd": 25.441,
+          "requestStart": 26.599,
+          "responseStart": 30.372,
+          "responseEnd": 38.681
+        }
+      },
+      {
+        "path": "/messages.zh-CN.js",
+        "start": 1793439433804,
+        "duration_ms": 33,
+        "timing": {
+          "startTime": 1793439433803.7568,
+          "domainLookupStart": 25.273,
+          "domainLookupEnd": 25.278,
+          "connectStart": 25.278,
+          "secureConnectionStart": -1,
+          "connectEnd": 25.743,
+          "requestStart": 25.775,
+          "responseStart": 30.142,
+          "responseEnd": 31.675
+        }
+      },
+      {
+        "path": "/spatial-three.vendor.js",
+        "start": 1793439433796,
+        "duration_ms": 47,
+        "timing": {
+          "startTime": 1793439433795.0562,
+          "domainLookupStart": 25.17,
+          "domainLookupEnd": 25.173,
+          "connectStart": 25.173,
+          "secureConnectionStart": -1,
+          "connectEnd": 26.489,
+          "requestStart": 26.611,
+          "responseStart": 31.405,
+          "responseEnd": 34.516
+        }
+      },
+      {
+        "path": "/graph-activation.js",
+        "start": 1793439433817,
+        "duration_ms": 26,
+        "timing": {
+          "startTime": 1793439433816.8792,
+          "domainLookupStart": 14.056,
+          "domainLookupEnd": 14.066,
+          "connectStart": 14.066,
+          "secureConnectionStart": -1,
+          "connectEnd": 15.175,
+          "requestStart": 17.703,
+          "responseStart": 20.744,
+          "responseEnd": 22.451
+        }
+      },
+      {
+        "path": "/graph-inventory.js",
+        "start": 1793439433817,
+        "duration_ms": 26,
+        "timing": {
+          "startTime": 1793439433817.1282,
+          "domainLookupStart": 15.836,
+          "domainLookupEnd": 15.841,
+          "connectStart": 15.841,
+          "secureConnectionStart": -1,
+          "connectEnd": 17.413,
+          "requestStart": 18.112,
+          "responseStart": 21.8,
+          "responseEnd": 23.997
+        }
+      },
+      {
+        "path": "/trace-context.js",
+        "start": 1793439433824,
+        "duration_ms": 20,
+        "timing": {
+          "startTime": 1793439433823.5312,
+          "domainLookupStart": 10.583,
+          "domainLookupEnd": 10.585,
+          "connectStart": 10.585,
+          "secureConnectionStart": -1,
+          "connectEnd": 11.194,
+          "requestStart": 11.81,
+          "responseStart": 15.59,
+          "responseEnd": 17.99
+        }
+      },
+      {
+        "path": "/runtime-frames.js",
+        "start": 1793439433817,
+        "duration_ms": 27,
+        "timing": {
+          "startTime": 1793439433817.171,
+          "domainLookupStart": 16.322,
+          "domainLookupEnd": 16.326,
+          "connectStart": 16.326,
+          "secureConnectionStart": -1,
+          "connectEnd": 17.464,
+          "requestStart": 18.107,
+          "responseStart": 22.162,
+          "responseEnd": 25.394
+        }
+      },
+      {
+        "path": "/machine-projection.js",
+        "start": 1793439433817,
+        "duration_ms": 27,
+        "timing": {
+          "startTime": 1793439433817.0823,
+          "domainLookupStart": 15.169,
+          "domainLookupEnd": 15.173,
+          "connectStart": 15.173,
+          "secureConnectionStart": -1,
+          "connectEnd": 16.944,
+          "requestStart": 18.106,
+          "responseStart": 22.154,
+          "responseEnd": 25.773
+        }
+      },
+      {
+        "path": "/trace-residencies.js",
+        "start": 1793439433824,
+        "duration_ms": 20,
+        "timing": {
+          "startTime": 1793439433823.715,
+          "domainLookupStart": 11.101,
+          "domainLookupEnd": 11.105,
+          "connectStart": 11.105,
+          "secureConnectionStart": -1,
+          "connectEnd": 11.605,
+          "requestStart": 11.659,
+          "responseStart": 15.743,
+          "responseEnd": 19.13
+        }
+      },
+      {
+        "path": "/trace-density.js",
+        "start": 1793439433824,
+        "duration_ms": 22,
+        "timing": {
+          "startTime": 1793439433824.06,
+          "domainLookupStart": 16.656,
+          "domainLookupEnd": 16.662,
+          "connectStart": 16.662,
+          "secureConnectionStart": -1,
+          "connectEnd": 17.937,
+          "requestStart": 18.471,
+          "responseStart": 20.263,
+          "responseEnd": 21.229
+        }
+      },
+      {
+        "path": "/trace-flows.js",
+        "start": 1793439433824,
+        "duration_ms": 22,
+        "timing": {
+          "startTime": 1793439433823.794,
+          "domainLookupStart": 14.241,
+          "domainLookupEnd": 14.246,
+          "connectStart": 14.246,
+          "secureConnectionStart": -1,
+          "connectEnd": 15.634,
+          "requestStart": 18.481,
+          "responseStart": 20.684,
+          "responseEnd": 21.593
+        }
+      },
+      {
+        "path": "/trace-bars.js",
+        "start": 1793439433824,
+        "duration_ms": 22,
+        "timing": {
+          "startTime": 1793439433823.8909,
+          "domainLookupStart": 15.932,
+          "domainLookupEnd": 15.937,
+          "connectStart": 15.937,
+          "secureConnectionStart": -1,
+          "connectEnd": 18.111,
+          "requestStart": 18.612,
+          "responseStart": 21.205,
+          "responseEnd": 21.846
+        }
+      },
+      {
+        "path": "/trace-lifecycles.js",
+        "start": 1793439433844,
+        "duration_ms": 3,
+        "timing": {
+          "startTime": 1793439433843.684,
+          "domainLookupStart": 0.063,
+          "domainLookupEnd": 0.071,
+          "connectStart": 0.071,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.617,
+          "requestStart": 0.901,
+          "responseStart": 2.137,
+          "responseEnd": 2.746
+        }
+      },
+      {
+        "path": "/routing-tools.vendor.js",
+        "start": 1793439433837,
+        "duration_ms": 10,
+        "timing": {
+          "startTime": 1793439433836.991,
+          "domainLookupStart": 4.444,
+          "domainLookupEnd": 4.448,
+          "connectStart": 4.448,
+          "secureConnectionStart": -1,
+          "connectEnd": 5.256,
+          "requestStart": 5.587,
+          "responseStart": 7.987,
+          "responseEnd": 8.604
+        }
+      },
+      {
+        "path": "/api/design",
+        "start": 1793439433852,
+        "duration_ms": 26,
+        "timing": {
+          "startTime": 1793439433848.161,
+          "domainLookupStart": 0.06,
+          "domainLookupEnd": 0.069,
+          "connectStart": 0.069,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.842,
+          "requestStart": 0.889,
+          "responseStart": 9.222,
+          "responseEnd": 9.929
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439433879,
+        "duration_ms": 7,
+        "timing": {
+          "startTime": 1793439433861.808,
+          "domainLookupStart": 0.057,
+          "domainLookupEnd": 0.066,
+          "connectStart": 0.066,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.706,
+          "requestStart": 0.747,
+          "responseStart": 7.959,
+          "responseEnd": 8.653
+        }
+      },
+      {
+        "path": "/routing-worker.js",
+        "start": 1793439433973,
+        "duration_ms": 17,
+        "timing": {
+          "startTime": 1793439433972.616,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": -1,
+          "responseStart": 17.139,
+          "responseEnd": 17.139
+        }
+      },
+      {
+        "path": "/routing-libavoid.vendor.js",
+        "start": 1793439433990,
+        "duration_ms": 5,
+        "timing": {
+          "startTime": 1793439433990.228,
+          "domainLookupStart": 0.079,
+          "domainLookupEnd": 0.091,
+          "connectStart": 0.091,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.771,
+          "requestStart": 0.818,
+          "responseStart": 2.835,
+          "responseEnd": 3.452
+        }
+      },
+      {
+        "path": "/routing-engine.js",
+        "start": 1793439433990,
+        "duration_ms": 5,
+        "timing": {
+          "startTime": 1793439433991.28,
+          "domainLookupStart": 0.054,
+          "domainLookupEnd": 0.062,
+          "connectStart": 0.062,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.594,
+          "requestStart": 0.625,
+          "responseStart": 2.189,
+          "responseEnd": 3.552
+        }
+      },
+      {
+        "path": "/routing-geometry.js",
+        "start": 1793439433996,
+        "duration_ms": 4,
+        "timing": {
+          "startTime": 1793439433995.7012,
+          "domainLookupStart": 0.079,
+          "domainLookupEnd": 0.088,
+          "connectStart": 0.088,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.846,
+          "requestStart": 0.895,
+          "responseStart": 3.049,
+          "responseEnd": 3.794
+        }
+      },
+      {
+        "path": "/routing-navigation.js",
+        "start": 1793439433996,
+        "duration_ms": 7,
+        "timing": {
+          "startTime": 1793439433998.133,
+          "domainLookupStart": 0.047,
+          "domainLookupEnd": 0.053,
+          "connectStart": 0.053,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.81,
+          "requestStart": 1.285,
+          "responseStart": 2.729,
+          "responseEnd": 5.523
+        }
+      },
+      {
+        "path": "/route-shapes.js",
+        "start": 1793439433996,
+        "duration_ms": 7,
+        "timing": {
+          "startTime": 1793439433997.552,
+          "domainLookupStart": 0.051,
+          "domainLookupEnd": 0.056,
+          "connectStart": 0.056,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.155,
+          "requestStart": 1.558,
+          "responseStart": 3.81,
+          "responseEnd": 6.009
+        }
+      },
+      {
+        "path": "/routing-tools.vendor.js",
+        "start": 1793439433996,
+        "duration_ms": 8,
+        "timing": {
+          "startTime": 1793439433996.733,
+          "domainLookupStart": 0.057,
+          "domainLookupEnd": 0.062,
+          "connectStart": 0.062,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.961,
+          "requestStart": 2.281,
+          "responseStart": 4.758,
+          "responseEnd": 6.293
+        }
+      },
+      {
+        "path": "/elk-worker.min.js",
+        "start": 1793439433880,
+        "duration_ms": 155,
+        "timing": {
+          "startTime": 1793439433879.801,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": -1,
+          "responseStart": 154.05,
+          "responseEnd": 154.05
+        }
+      },
+      {
+        "path": "/libavoid.wasm",
+        "start": 1793439434008,
+        "duration_ms": 66,
+        "timing": {
+          "startTime": 1793439434007.227,
+          "domainLookupStart": 0.094,
+          "domainLookupEnd": 0.105,
+          "connectStart": 0.105,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.023,
+          "requestStart": 1.08,
+          "responseStart": 62.243,
+          "responseEnd": 63.118
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439433979,
+        "duration_ms": 111,
+        "timing": {
+          "startTime": 1793439433978.872,
+          "domainLookupStart": 0.063,
+          "domainLookupEnd": 0.074,
+          "connectStart": 0.074,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.687,
+          "requestStart": 0.73,
+          "responseStart": 88.573,
+          "responseEnd": 94.59
+        }
+      },
+      {
+        "path": "/api/recordings",
+        "start": 1793439434130,
+        "duration_ms": 67,
+        "timing": {
+          "startTime": 1793439434129.641,
+          "domainLookupStart": 0.076,
+          "domainLookupEnd": 0.087,
+          "connectStart": 0.087,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.868,
+          "requestStart": 0.911,
+          "responseStart": 66.258,
+          "responseEnd": 67.137
+        }
+      },
+      {
+        "path": "/api/design",
+        "start": 1793439434265,
+        "duration_ms": 127,
+        "timing": {
+          "startTime": 1793439434264.4382,
+          "domainLookupStart": 0.07,
+          "domainLookupEnd": 0.348,
+          "connectStart": 0.348,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.998,
+          "requestStart": 1.046,
+          "responseStart": 9.013,
+          "responseEnd": 9.865
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439434429,
+        "duration_ms": 104,
+        "timing": {
+          "startTime": 1793439434429.364,
+          "domainLookupStart": 0.066,
+          "domainLookupEnd": 0.077,
+          "connectStart": 0.077,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.81,
+          "requestStart": 0.854,
+          "responseStart": 84.645,
+          "responseEnd": 90.911
+        }
+      },
+      {
+        "path": "/api/recordings/d72ba50d67814dbf84b0962ba9626c6e",
+        "start": 1793439434466,
+        "duration_ms": 205,
+        "timing": {
+          "startTime": 1793439434465.579,
+          "domainLookupStart": 0.066,
+          "domainLookupEnd": 0.077,
+          "connectStart": 0.077,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.942,
+          "requestStart": 0.989,
+          "responseStart": 178.816,
+          "responseEnd": 186.316
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439434597,
+        "duration_ms": 178,
+        "timing": {
+          "startTime": 1793439434591.3901,
+          "domainLookupStart": 0.066,
+          "domainLookupEnd": 0.077,
+          "connectStart": 0.077,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.787,
+          "requestStart": 0.836,
+          "responseStart": 76.214,
+          "responseEnd": 78.165
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439435062,
+        "duration_ms": 123,
+        "timing": {
+          "startTime": 1793439434987.654,
+          "domainLookupStart": 0.078,
+          "domainLookupEnd": 0.089,
+          "connectStart": 0.089,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.254,
+          "requestStart": 1.321,
+          "responseStart": 83.852,
+          "responseEnd": 90.43
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439435220,
+        "duration_ms": 157,
+        "timing": {
+          "startTime": 1793439435219.1802,
+          "domainLookupStart": 0.061,
+          "domainLookupEnd": 0.071,
+          "connectStart": 0.071,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.017,
+          "requestStart": 1.059,
+          "responseStart": 79.801,
+          "responseEnd": 91.171
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439435391,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439435385.8208,
+          "domainLookupStart": 0.066,
+          "domainLookupEnd": 0.076,
+          "connectStart": 0.076,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.997,
+          "requestStart": 1.044,
+          "responseStart": 23.259,
+          "responseEnd": 24.902
+        }
+      },
+      {
+        "path": "/routing-worker.js",
+        "start": 1793439435661,
+        "duration_ms": 23,
+        "timing": {
+          "startTime": 1793439435660.878,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": -1,
+          "responseStart": 23.788,
+          "responseEnd": 23.788
+        }
+      },
+      {
+        "path": "/spatial-worker.js",
+        "start": 1793439435666,
+        "duration_ms": 22,
+        "timing": {
+          "startTime": 1793439435666.572,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": -1,
+          "responseStart": 21.779,
+          "responseEnd": 21.779
+        }
+      },
+      {
+        "path": "/routing-libavoid.vendor.js",
+        "start": 1793439435685,
+        "duration_ms": 6,
+        "timing": {
+          "startTime": 1793439435684.904,
+          "domainLookupStart": 0.079,
+          "domainLookupEnd": 0.089,
+          "connectStart": 0.089,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.016,
+          "requestStart": 1.06,
+          "responseStart": 2.83,
+          "responseEnd": 3.879
+        }
+      },
+      {
+        "path": "/spatial-layout.js",
+        "start": 1793439435688,
+        "duration_ms": 3,
+        "timing": {
+          "startTime": 1793439435688.729,
+          "domainLookupStart": 0.061,
+          "domainLookupEnd": 0.068,
+          "connectStart": 0.068,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.716,
+          "requestStart": 0.843,
+          "responseStart": 1.911,
+          "responseEnd": 2.539
+        }
+      },
+      {
+        "path": "/routing-engine.js",
+        "start": 1793439435685,
+        "duration_ms": 7,
+        "timing": {
+          "startTime": 1793439435686.079,
+          "domainLookupStart": 0.052,
+          "domainLookupEnd": 0.058,
+          "connectStart": 0.058,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.608,
+          "requestStart": 0.638,
+          "responseStart": 1.852,
+          "responseEnd": 3.619
+        }
+      },
+      {
+        "path": "/spatial-model.js",
+        "start": 1793439435692,
+        "duration_ms": 5,
+        "timing": {
+          "startTime": 1793439435691.66,
+          "domainLookupStart": 0.06,
+          "domainLookupEnd": 0.067,
+          "connectStart": 0.067,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.73,
+          "requestStart": 0.766,
+          "responseStart": 2.721,
+          "responseEnd": 3.238
+        }
+      },
+      {
+        "path": "/graph-layers.js",
+        "start": 1793439435692,
+        "duration_ms": 5,
+        "timing": {
+          "startTime": 1793439435692.521,
+          "domainLookupStart": 0.038,
+          "domainLookupEnd": 0.042,
+          "connectStart": 0.042,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.823,
+          "requestStart": 2.052,
+          "responseStart": 3.938,
+          "responseEnd": 5.329
+        }
+      },
+      {
+        "path": "/routing-geometry.js",
+        "start": 1793439435692,
+        "duration_ms": 8,
+        "timing": {
+          "startTime": 1793439435693.533,
+          "domainLookupStart": 0.031,
+          "domainLookupEnd": 0.034,
+          "connectStart": 0.034,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.994,
+          "requestStart": 1.31,
+          "responseStart": 3.491,
+          "responseEnd": 5.639
+        }
+      },
+      {
+        "path": "/spatial-force.vendor.js",
+        "start": 1793439435692,
+        "duration_ms": 9,
+        "timing": {
+          "startTime": 1793439435692.994,
+          "domainLookupStart": 0.043,
+          "domainLookupEnd": 0.047,
+          "connectStart": 0.047,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.358,
+          "requestStart": 1.641,
+          "responseStart": 4.23,
+          "responseEnd": 5.936
+        }
+      },
+      {
+        "path": "/routing-tools.vendor.js",
+        "start": 1793439435692,
+        "duration_ms": 9,
+        "timing": {
+          "startTime": 1793439435693.903,
+          "domainLookupStart": 0.032,
+          "domainLookupEnd": 0.034,
+          "connectStart": 0.034,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.623,
+          "requestStart": 0.981,
+          "responseStart": 3.755,
+          "responseEnd": 6.851
+        }
+      },
+      {
+        "path": "/route-shapes.js",
+        "start": 1793439435692,
+        "duration_ms": 9,
+        "timing": {
+          "startTime": 1793439435694.957,
+          "domainLookupStart": 0.037,
+          "domainLookupEnd": 0.041,
+          "connectStart": 0.041,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.462,
+          "requestStart": 0.483,
+          "responseStart": 3.897,
+          "responseEnd": 7.377
+        }
+      },
+      {
+        "path": "/graph-core.js",
+        "start": 1793439435697,
+        "duration_ms": 4,
+        "timing": {
+          "startTime": 1793439435697.805,
+          "domainLookupStart": 0.057,
+          "domainLookupEnd": 0.061,
+          "connectStart": 0.061,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.2,
+          "requestStart": 1.616,
+          "responseStart": 2.329,
+          "responseEnd": 3.359
+        }
+      },
+      {
+        "path": "/routing-navigation.js",
+        "start": 1793439435692,
+        "duration_ms": 10,
+        "timing": {
+          "startTime": 1793439435695.524,
+          "domainLookupStart": 0.034,
+          "domainLookupEnd": 0.038,
+          "connectStart": 0.038,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.391,
+          "requestStart": 0.413,
+          "responseStart": 3.498,
+          "responseEnd": 7.566
+        }
+      },
+      {
+        "path": "/graph-activation.js",
+        "start": 1793439435702,
+        "duration_ms": 11,
+        "timing": {
+          "startTime": 1793439435701.9731,
+          "domainLookupStart": 0.198,
+          "domainLookupEnd": 0.209,
+          "connectStart": 0.209,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.096,
+          "requestStart": 1.149,
+          "responseStart": 3.988,
+          "responseEnd": 4.695
+        }
+      },
+      {
+        "path": "/machine-projection.js",
+        "start": 1793439435702,
+        "duration_ms": 11,
+        "timing": {
+          "startTime": 1793439435704.094,
+          "domainLookupStart": 0.056,
+          "domainLookupEnd": 0.061,
+          "connectStart": 0.061,
+          "secureConnectionStart": -1,
+          "connectEnd": 2.099,
+          "requestStart": 2.614,
+          "responseStart": 4.551,
+          "responseEnd": 8.621
+        }
+      },
+      {
+        "path": "/capture-fields.js",
+        "start": 1793439435702,
+        "duration_ms": 12,
+        "timing": {
+          "startTime": 1793439435705.3499,
+          "domainLookupStart": 0.041,
+          "domainLookupEnd": 0.045,
+          "connectStart": 0.045,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.874,
+          "requestStart": 1.48,
+          "responseStart": 3.5,
+          "responseEnd": 8.853
+        }
+      },
+      {
+        "path": "/node-lifecycle.js",
+        "start": 1793439435702,
+        "duration_ms": 12,
+        "timing": {
+          "startTime": 1793439435703.289,
+          "domainLookupStart": 0.064,
+          "domainLookupEnd": 0.069,
+          "connectStart": 0.069,
+          "secureConnectionStart": -1,
+          "connectEnd": 2.628,
+          "requestStart": 3.302,
+          "responseStart": 5.675,
+          "responseEnd": 7.966
+        }
+      },
+      {
+        "path": "/graph-inventory.js",
+        "start": 1793439435702,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439435704.7231,
+          "domainLookupStart": 0.043,
+          "domainLookupEnd": 0.047,
+          "connectStart": 0.047,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.487,
+          "requestStart": 2.051,
+          "responseStart": 6.198,
+          "responseEnd": 9.325
+        }
+      },
+      {
+        "path": "/graph-names.js",
+        "start": 1793439435702,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439435706.949,
+          "domainLookupStart": 0.054,
+          "domainLookupEnd": 0.059,
+          "connectStart": 0.059,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.73,
+          "requestStart": 0.76,
+          "responseStart": 4.137,
+          "responseEnd": 9.327
+        }
+      },
+      {
+        "path": "/i18n.js",
+        "start": 1793439435702,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439435707.832,
+          "domainLookupStart": 0.056,
+          "domainLookupEnd": 0.061,
+          "connectStart": 0.061,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.995,
+          "requestStart": 2.792,
+          "responseStart": 3.685,
+          "responseEnd": 9.593
+        }
+      },
+      {
+        "path": "/data-layer.js",
+        "start": 1793439435702,
+        "duration_ms": 14,
+        "timing": {
+          "startTime": 1793439435708.469,
+          "domainLookupStart": 0.855,
+          "domainLookupEnd": 0.859,
+          "connectStart": 0.859,
+          "secureConnectionStart": -1,
+          "connectEnd": 2.69,
+          "requestStart": 3.148,
+          "responseStart": 4.761,
+          "responseEnd": 11.544
+        }
+      },
+      {
+        "path": "/libavoid.wasm",
+        "start": 1793439435706,
+        "duration_ms": 10,
+        "timing": {
+          "startTime": 1793439435708.588,
+          "domainLookupStart": 1.566,
+          "domainLookupEnd": 1.572,
+          "connectStart": 1.572,
+          "secureConnectionStart": -1,
+          "connectEnd": 2.606,
+          "requestStart": 3.133,
+          "responseStart": 4.873,
+          "responseEnd": 9.642
+        }
+      },
+      {
+        "path": "/trace-lifecycles.js",
+        "start": 1793439435716,
+        "duration_ms": 5,
+        "timing": {
+          "startTime": 1793439435715.773,
+          "domainLookupStart": 0.102,
+          "domainLookupEnd": 0.115,
+          "connectStart": 0.115,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.947,
+          "requestStart": 0.995,
+          "responseStart": 3.962,
+          "responseEnd": 4.543
+        }
+      },
+      {
+        "path": "/trace-evidence.js",
+        "start": 1793439435716,
+        "duration_ms": 7,
+        "timing": {
+          "startTime": 1793439435716.8892,
+          "domainLookupStart": 0.059,
+          "domainLookupEnd": 0.067,
+          "connectStart": 0.067,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.091,
+          "requestStart": 1.134,
+          "responseStart": 4.929,
+          "responseEnd": 6.991
+        }
+      },
+      {
+        "path": "/messages.zh-CN.js",
+        "start": 1793439435716,
+        "duration_ms": 8,
+        "timing": {
+          "startTime": 1793439435717.562,
+          "domainLookupStart": 0.046,
+          "domainLookupEnd": 0.051,
+          "connectStart": 0.051,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.431,
+          "requestStart": 0.524,
+          "responseStart": 4.543,
+          "responseEnd": 6.508
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439435745,
+        "duration_ms": 151,
+        "timing": {
+          "startTime": 1793439435744.882,
+          "domainLookupStart": 0.083,
+          "domainLookupEnd": 0.094,
+          "connectStart": 0.094,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.181,
+          "requestStart": 1.244,
+          "responseStart": 108.735,
+          "responseEnd": 118.825
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439435896,
+        "duration_ms": 0,
+        "timing": {
+          "startTime": 1793439435857.455,
+          "domainLookupStart": 0.085,
+          "domainLookupEnd": 0.097,
+          "connectStart": 0.097,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.994,
+          "requestStart": 1.056,
+          "responseStart": 23.016,
+          "responseEnd": 24.601
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439436128,
+        "duration_ms": 186,
+        "timing": {
+          "startTime": 1793439436127.49,
+          "domainLookupStart": 0.066,
+          "domainLookupEnd": 0.077,
+          "connectStart": 0.077,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.767,
+          "requestStart": 0.81,
+          "responseStart": 88.151,
+          "responseEnd": 95.484
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439436323,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439436318.083,
+          "domainLookupStart": 0.064,
+          "domainLookupEnd": 0.328,
+          "connectStart": 0.328,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.025,
+          "requestStart": 1.105,
+          "responseStart": 30.205,
+          "responseEnd": 32.064
+        }
+      },
+      {
+        "path": "/api/recordings",
+        "start": 1793439436329,
+        "duration_ms": 139,
+        "timing": {
+          "startTime": 1793439436329.113,
+          "domainLookupStart": 0.072,
+          "domainLookupEnd": 0.084,
+          "connectStart": 0.084,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.91,
+          "requestStart": 0.952,
+          "responseStart": 68.685,
+          "responseEnd": 69.581
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439436692,
+        "duration_ms": 139,
+        "timing": {
+          "startTime": 1793439436691.57,
+          "domainLookupStart": 0.067,
+          "domainLookupEnd": 0.078,
+          "connectStart": 0.078,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.99,
+          "requestStart": 1.033,
+          "responseStart": 82.873,
+          "responseEnd": 124.643
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439436855,
+        "duration_ms": 21,
+        "timing": {
+          "startTime": 1793439436849.0652,
+          "domainLookupStart": 0.065,
+          "domainLookupEnd": 0.077,
+          "connectStart": 0.077,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.785,
+          "requestStart": 0.829,
+          "responseStart": 24.749,
+          "responseEnd": 26.63
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439437242,
+        "duration_ms": 104,
+        "timing": {
+          "startTime": 1793439437242.0352,
+          "domainLookupStart": 0.069,
+          "domainLookupEnd": 0.079,
+          "connectStart": 0.079,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.812,
+          "requestStart": 0.854,
+          "responseStart": 76.291,
+          "responseEnd": 82.349
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439437886,
+        "duration_ms": 1,
+        "timing": {
+          "startTime": 1793439437760.966,
+          "domainLookupStart": 0.078,
+          "domainLookupEnd": 0.48,
+          "connectStart": 0.48,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.229,
+          "requestStart": 1.295,
+          "responseStart": 85.102,
+          "responseEnd": 93.559
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439438358,
+        "duration_ms": 137,
+        "timing": {
+          "startTime": 1793439438285.2058,
+          "domainLookupStart": 0.079,
+          "domainLookupEnd": 0.091,
+          "connectStart": 0.091,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.186,
+          "requestStart": 1.251,
+          "responseStart": 86.802,
+          "responseEnd": 123.11
+        }
+      },
+      {
+        "path": "/api/recordings",
+        "start": 1793439438495,
+        "duration_ms": 9,
+        "timing": {
+          "startTime": 1793439438436.728,
+          "domainLookupStart": 0.067,
+          "domainLookupEnd": 0.078,
+          "connectStart": 0.078,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.835,
+          "requestStart": 0.881,
+          "responseStart": 66.279,
+          "responseEnd": 67.253
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439438900,
+        "duration_ms": 0,
+        "timing": {
+          "startTime": 1793439438822.344,
+          "domainLookupStart": 0.08,
+          "domainLookupEnd": 0.435,
+          "connectStart": 0.435,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.202,
+          "requestStart": 1.259,
+          "responseStart": 24.06,
+          "responseEnd": 25.828
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439438907,
+        "duration_ms": 105,
+        "timing": {
+          "startTime": 1793439438907.516,
+          "domainLookupStart": 0.079,
+          "domainLookupEnd": 0.091,
+          "connectStart": 0.091,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.077,
+          "requestStart": 1.132,
+          "responseStart": 79.224,
+          "responseEnd": 85.396
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439439508,
+        "duration_ms": 36,
+        "timing": {
+          "startTime": 1793439439440.7617,
+          "domainLookupStart": 0.073,
+          "domainLookupEnd": 0.084,
+          "connectStart": 0.084,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.239,
+          "requestStart": 1.314,
+          "responseStart": 80.053,
+          "responseEnd": 86.465
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439439561,
+        "duration_ms": 101,
+        "timing": {
+          "startTime": 1793439439555.661,
+          "domainLookupStart": 0.065,
+          "domainLookupEnd": 0.076,
+          "connectStart": 0.076,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.821,
+          "requestStart": 0.867,
+          "responseStart": 21.844,
+          "responseEnd": 23.704
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439439669,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439439664.212,
+          "domainLookupStart": 0.065,
+          "domainLookupEnd": 0.076,
+          "connectStart": 0.076,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.9,
+          "requestStart": 0.966,
+          "responseStart": 22,
+          "responseEnd": 23.756
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439439958,
+        "duration_ms": 95,
+        "timing": {
+          "startTime": 1793439439958.2952,
+          "domainLookupStart": 0.064,
+          "domainLookupEnd": 0.402,
+          "connectStart": 0.402,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.11,
+          "requestStart": 1.176,
+          "responseStart": 73.057,
+          "responseEnd": 80.793
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439440468,
+        "duration_ms": 92,
+        "timing": {
+          "startTime": 1793439440466.326,
+          "domainLookupStart": 0.068,
+          "domainLookupEnd": 0.08,
+          "connectStart": 0.08,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.03,
+          "requestStart": 1.105,
+          "responseStart": 75.516,
+          "responseEnd": 78.79
+        }
+      },
+      {
+        "path": "/api/recordings",
+        "start": 1793439440570,
+        "duration_ms": 64,
+        "timing": {
+          "startTime": 1793439440570.235,
+          "domainLookupStart": 0.084,
+          "domainLookupEnd": 0.096,
+          "connectStart": 0.096,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.215,
+          "requestStart": 1.275,
+          "responseStart": 61.701,
+          "responseEnd": 62.593
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439441037,
+        "duration_ms": 103,
+        "timing": {
+          "startTime": 1793439441036.804,
+          "domainLookupStart": 0.068,
+          "domainLookupEnd": 0.338,
+          "connectStart": 0.338,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.156,
+          "requestStart": 1.201,
+          "responseStart": 81.96,
+          "responseEnd": 88.269
+        }
+      },
+      {
+        "path": "/graph",
+        "start": 1793439441296,
+        "duration_ms": 49,
+        "timing": {
+          "startTime": 1793439441296.276,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": 0.109,
+          "responseStart": 1.268,
+          "responseEnd": 2.032
+        }
+      },
+      {
+        "path": "/timeline.css",
+        "start": 1793439441345,
+        "duration_ms": 7,
+        "timing": {
+          "startTime": 1793439441339.548,
+          "domainLookupStart": 0.213,
+          "domainLookupEnd": 0.224,
+          "connectStart": 0.224,
+          "secureConnectionStart": -1,
+          "connectEnd": 3.038,
+          "requestStart": 3.242,
+          "responseStart": 6.908,
+          "responseEnd": 9.065
+        }
+      },
+      {
+        "path": "/viewer.css",
+        "start": 1793439441345,
+        "duration_ms": 7,
+        "timing": {
+          "startTime": 1793439441337.9531,
+          "domainLookupStart": 0.339,
+          "domainLookupEnd": 0.349,
+          "connectStart": 0.349,
+          "secureConnectionStart": -1,
+          "connectEnd": 4.594,
+          "requestStart": 4.731,
+          "responseStart": 9.037,
+          "responseEnd": 9.747
+        }
+      },
+      {
+        "path": "/viewer.js",
+        "start": 1793439441345,
+        "duration_ms": 8,
+        "timing": {
+          "startTime": 1793439441343.012,
+          "domainLookupStart": 0.051,
+          "domainLookupEnd": 0.058,
+          "connectStart": 0.058,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.18,
+          "requestStart": 1.237,
+          "responseStart": 4.688,
+          "responseEnd": 10.764
+        }
+      },
+      {
+        "path": "/pixi.min.js",
+        "start": 1793439441345,
+        "duration_ms": 25,
+        "timing": {
+          "startTime": 1793439441340.717,
+          "domainLookupStart": 0.066,
+          "domainLookupEnd": 0.075,
+          "connectStart": 0.075,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.897,
+          "requestStart": 2.122,
+          "responseStart": 6.734,
+          "responseEnd": 11.872
+        }
+      },
+      {
+        "path": "/elk.bundled.js",
+        "start": 1793439441345,
+        "duration_ms": 45,
+        "timing": {
+          "startTime": 1793439441341.7192,
+          "domainLookupStart": 0.279,
+          "domainLookupEnd": 0.287,
+          "connectStart": 0.287,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.904,
+          "requestStart": 1.171,
+          "responseStart": 5.875,
+          "responseEnd": 12.615
+        }
+      },
+      {
+        "path": "/change-panel.js",
+        "start": 1793439441392,
+        "duration_ms": 15,
+        "timing": {
+          "startTime": 1793439441391.029,
+          "domainLookupStart": 0.078,
+          "domainLookupEnd": 0.089,
+          "connectStart": 0.089,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.788,
+          "requestStart": 0.831,
+          "responseStart": 2.477,
+          "responseEnd": 3.042
+        }
+      },
+      {
+        "path": "/trace-session.js",
+        "start": 1793439441392,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439441391.9749,
+          "domainLookupStart": 0.044,
+          "domainLookupEnd": 0.049,
+          "connectStart": 0.049,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.483,
+          "requestStart": 1.864,
+          "responseStart": 3.646,
+          "responseEnd": 5.123
+        }
+      },
+      {
+        "path": "/recording-timeline.js",
+        "start": 1793439441392,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439441392.95,
+          "domainLookupStart": 0.03,
+          "domainLookupEnd": 0.032,
+          "connectStart": 0.032,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.71,
+          "requestStart": 1,
+          "responseStart": 2.533,
+          "responseEnd": 5.428
+        }
+      },
+      {
+        "path": "/semantic-view.js",
+        "start": 1793439441393,
+        "duration_ms": 27,
+        "timing": {
+          "startTime": 1793439441398.385,
+          "domainLookupStart": 0.038,
+          "domainLookupEnd": 0.042,
+          "connectStart": 0.042,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.674,
+          "requestStart": 0.925,
+          "responseStart": 2.658,
+          "responseEnd": 10.598
+        }
+      },
+      {
+        "path": "/edge-routing.js",
+        "start": 1793439441393,
+        "duration_ms": 27,
+        "timing": {
+          "startTime": 1793439441396.617,
+          "domainLookupStart": 0.039,
+          "domainLookupEnd": 0.042,
+          "connectStart": 0.042,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.639,
+          "requestStart": 0.897,
+          "responseStart": 2.288,
+          "responseEnd": 8.24
+        }
+      },
+      {
+        "path": "/edge-panel.js",
+        "start": 1793439441392,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439441394.023,
+          "domainLookupStart": 0.035,
+          "domainLookupEnd": 0.039,
+          "connectStart": 0.039,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.496,
+          "requestStart": 0.515,
+          "responseStart": 2.351,
+          "responseEnd": 5.678
+        }
+      },
+      {
+        "path": "/layer-ruler.js",
+        "start": 1793439441393,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439441395.0168,
+          "domainLookupStart": 0.03,
+          "domainLookupEnd": 0.033,
+          "connectStart": 0.033,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.672,
+          "requestStart": 1.298,
+          "responseStart": 2.122,
+          "responseEnd": 6.544
+        }
+      },
+      {
+        "path": "/trace-evidence.js",
+        "start": 1793439441392,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441392.573,
+          "domainLookupStart": 0.033,
+          "domainLookupEnd": 0.037,
+          "connectStart": 0.037,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.894,
+          "requestStart": 1.336,
+          "responseStart": 3.132,
+          "responseEnd": 5.278
+        }
+      },
+      {
+        "path": "/spatial-model.js",
+        "start": 1793439441393,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439441399.4128,
+          "domainLookupStart": 0.041,
+          "domainLookupEnd": 0.045,
+          "connectStart": 0.045,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.534,
+          "requestStart": 0.557,
+          "responseStart": 3.8,
+          "responseEnd": 12.624
+        }
+      },
+      {
+        "path": "/graph-layers.js",
+        "start": 1793439441393,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439441400.068,
+          "domainLookupStart": 0.034,
+          "domainLookupEnd": 0.037,
+          "connectStart": 0.037,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.804,
+          "requestStart": 1.31,
+          "responseStart": 3.268,
+          "responseEnd": 12.814
+        }
+      },
+      {
+        "path": "/replay-selection.js",
+        "start": 1793439441393,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439441397.823,
+          "domainLookupStart": 0.104,
+          "domainLookupEnd": 0.108,
+          "connectStart": 0.108,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.225,
+          "requestStart": 1.405,
+          "responseStart": 3.073,
+          "responseEnd": 10.374
+        }
+      },
+      {
+        "path": "/route-picking.js",
+        "start": 1793439441393,
+        "duration_ms": 28,
+        "timing": {
+          "startTime": 1793439441405.73,
+          "domainLookupStart": 0.028,
+          "domainLookupEnd": 0.031,
+          "connectStart": 0.031,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.498,
+          "requestStart": 0.735,
+          "responseStart": 3.041,
+          "responseEnd": 17.938
+        }
+      },
+      {
+        "path": "/detail-panel.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441394.624,
+          "domainLookupStart": 0.031,
+          "domainLookupEnd": 0.034,
+          "connectStart": 0.034,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.836,
+          "requestStart": 1.514,
+          "responseStart": 2.649,
+          "responseEnd": 6.854
+        }
+      },
+      {
+        "path": "/graph-links.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441402.3398,
+          "domainLookupStart": 0.032,
+          "domainLookupEnd": 0.035,
+          "connectStart": 0.035,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.061,
+          "requestStart": 1.516,
+          "responseStart": 2.429,
+          "responseEnd": 14.006
+        }
+      },
+      {
+        "path": "/spatial-geometry.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441400.4978,
+          "domainLookupStart": 0.031,
+          "domainLookupEnd": 0.034,
+          "connectStart": 0.034,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.607,
+          "requestStart": 1.109,
+          "responseStart": 2.942,
+          "responseEnd": 13.118
+        }
+      },
+      {
+        "path": "/spatial-renderer.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441401.711,
+          "domainLookupStart": 0.041,
+          "domainLookupEnd": 0.044,
+          "connectStart": 0.044,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.52,
+          "requestStart": 0.54,
+          "responseStart": 2.257,
+          "responseEnd": 13.23
+        }
+      },
+      {
+        "path": "/i18n.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441402.7751,
+          "domainLookupStart": 0.03,
+          "domainLookupEnd": 0.033,
+          "connectStart": 0.033,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.639,
+          "requestStart": 1.15,
+          "responseStart": 2.119,
+          "responseEnd": 14.109
+        }
+      },
+      {
+        "path": "/conversation.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441406.584,
+          "domainLookupStart": 0.038,
+          "domainLookupEnd": 0.042,
+          "connectStart": 0.042,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.464,
+          "requestStart": 0.488,
+          "responseStart": 3.414,
+          "responseEnd": 19.067
+        }
+      },
+      {
+        "path": "/controls.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441404.35,
+          "domainLookupStart": 0.036,
+          "domainLookupEnd": 0.039,
+          "connectStart": 0.039,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.526,
+          "requestStart": 0.868,
+          "responseStart": 1.763,
+          "responseEnd": 15.315
+        }
+      },
+      {
+        "path": "/polling.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441408.1738,
+          "domainLookupStart": 0.032,
+          "domainLookupEnd": 0.036,
+          "connectStart": 0.036,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.581,
+          "requestStart": 0.939,
+          "responseStart": 3.155,
+          "responseEnd": 20.314
+        }
+      },
+      {
+        "path": "/renderer.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441405.323,
+          "domainLookupStart": 0.034,
+          "domainLookupEnd": 0.038,
+          "connectStart": 0.038,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.767,
+          "requestStart": 0.942,
+          "responseStart": 3.285,
+          "responseEnd": 17.824
+        }
+      },
+      {
+        "path": "/conversation-controls.js",
+        "start": 1793439441393,
+        "duration_ms": 29,
+        "timing": {
+          "startTime": 1793439441407.167,
+          "domainLookupStart": 0.037,
+          "domainLookupEnd": 0.041,
+          "connectStart": 0.041,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.829,
+          "requestStart": 0.862,
+          "responseStart": 3.161,
+          "responseEnd": 19.371
+        }
+      },
+      {
+        "path": "/preferences.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441407.603,
+          "domainLookupStart": 0.031,
+          "domainLookupEnd": 0.034,
+          "connectStart": 0.034,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.402,
+          "requestStart": 0.488,
+          "responseStart": 3.408,
+          "responseEnd": 20.027
+        }
+      },
+      {
+        "path": "/view-lifecycle.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441409.6072,
+          "domainLookupStart": 0.03,
+          "domainLookupEnd": 0.032,
+          "connectStart": 0.032,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.501,
+          "requestStart": 0.804,
+          "responseStart": 3.244,
+          "responseEnd": 21.91
+        }
+      },
+      {
+        "path": "/code-layer.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441411.614,
+          "domainLookupStart": 0.038,
+          "domainLookupEnd": 0.041,
+          "connectStart": 0.041,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.803,
+          "requestStart": 0.968,
+          "responseStart": 2.133,
+          "responseEnd": 22.77
+        }
+      },
+      {
+        "path": "/data-layer.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441410.624,
+          "domainLookupStart": 0.034,
+          "domainLookupEnd": 0.038,
+          "connectStart": 0.038,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.482,
+          "requestStart": 0.643,
+          "responseStart": 2.355,
+          "responseEnd": 22.019
+        }
+      },
+      {
+        "path": "/analysis.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441413.355,
+          "domainLookupStart": 0.037,
+          "domainLookupEnd": 0.04,
+          "connectStart": 0.04,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.564,
+          "requestStart": 0.836,
+          "responseStart": 1.694,
+          "responseEnd": 24.068
+        }
+      },
+      {
+        "path": "/glyphs.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441414.291,
+          "domainLookupStart": 0.034,
+          "domainLookupEnd": 0.037,
+          "connectStart": 0.037,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.733,
+          "requestStart": 0.919,
+          "responseStart": 2.265,
+          "responseEnd": 25.445
+        }
+      },
+      {
+        "path": "/layout.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441409.21,
+          "domainLookupStart": 0.033,
+          "domainLookupEnd": 0.036,
+          "connectStart": 0.036,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.765,
+          "requestStart": 1.055,
+          "responseStart": 3.228,
+          "responseEnd": 21.515
+        }
+      },
+      {
+        "path": "/graph-names.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441415.5369,
+          "domainLookupStart": 0.041,
+          "domainLookupEnd": 0.044,
+          "connectStart": 0.044,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.423,
+          "requestStart": 0.445,
+          "responseStart": 2.585,
+          "responseEnd": 27.027
+        }
+      },
+      {
+        "path": "/recording.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441414.676,
+          "domainLookupStart": 0.032,
+          "domainLookupEnd": 0.035,
+          "connectStart": 0.035,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.491,
+          "requestStart": 0.753,
+          "responseStart": 3.087,
+          "responseEnd": 26.707
+        }
+      },
+      {
+        "path": "/replay-steps.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441416.085,
+          "domainLookupStart": 0.034,
+          "domainLookupEnd": 0.038,
+          "connectStart": 0.038,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.396,
+          "requestStart": 0.417,
+          "responseStart": 2.135,
+          "responseEnd": 27.141
+        }
+      },
+      {
+        "path": "/graph-core.js",
+        "start": 1793439441393,
+        "duration_ms": 31,
+        "timing": {
+          "startTime": 1793439441412.048,
+          "domainLookupStart": 0.029,
+          "domainLookupEnd": 0.033,
+          "connectStart": 0.033,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.493,
+          "requestStart": 0.741,
+          "responseStart": 1.812,
+          "responseEnd": 22.863
+        }
+      },
+      {
+        "path": "/trace-viewport.js",
+        "start": 1793439441421,
+        "duration_ms": 9,
+        "timing": {
+          "startTime": 1793439441421.301,
+          "domainLookupStart": 0.04,
+          "domainLookupEnd": 0.044,
+          "connectStart": 0.044,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.423,
+          "requestStart": 1.838,
+          "responseStart": 3.452,
+          "responseEnd": 6.304
+        }
+      },
+      {
+        "path": "/trace-index.js",
+        "start": 1793439441421,
+        "duration_ms": 9,
+        "timing": {
+          "startTime": 1793439441420.4968,
+          "domainLookupStart": 0.06,
+          "domainLookupEnd": 0.068,
+          "connectStart": 0.068,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.667,
+          "requestStart": 0.703,
+          "responseStart": 2.268,
+          "responseEnd": 3.258
+        }
+      },
+      {
+        "path": "/trace-routing.js",
+        "start": 1793439441421,
+        "duration_ms": 10,
+        "timing": {
+          "startTime": 1793439441422.2551,
+          "domainLookupStart": 0.035,
+          "domainLookupEnd": 0.039,
+          "connectStart": 0.039,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.802,
+          "requestStart": 1.367,
+          "responseStart": 4.454,
+          "responseEnd": 7.152
+        }
+      },
+      {
+        "path": "/trace-tooltip.js",
+        "start": 1793439441421,
+        "duration_ms": 10,
+        "timing": {
+          "startTime": 1793439441423.807,
+          "domainLookupStart": 0.073,
+          "domainLookupEnd": 0.081,
+          "connectStart": 0.081,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.735,
+          "requestStart": 0.779,
+          "responseStart": 3.128,
+          "responseEnd": 7.291
+        }
+      },
+      {
+        "path": "/trace-paint.js",
+        "start": 1793439441421,
+        "duration_ms": 10,
+        "timing": {
+          "startTime": 1793439441421.8088,
+          "domainLookupStart": 0.036,
+          "domainLookupEnd": 0.04,
+          "connectStart": 0.04,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.922,
+          "requestStart": 1.471,
+          "responseStart": 5.025,
+          "responseEnd": 7.47
+        }
+      },
+      {
+        "path": "/node-lifecycle.js",
+        "start": 1793439441421,
+        "duration_ms": 17,
+        "timing": {
+          "startTime": 1793439441424.976,
+          "domainLookupStart": 0.049,
+          "domainLookupEnd": 0.055,
+          "connectStart": 0.055,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.935,
+          "requestStart": 2.905,
+          "responseStart": 5.184,
+          "responseEnd": 11.057
+        }
+      },
+      {
+        "path": "/capture-fields.js",
+        "start": 1793439441424,
+        "duration_ms": 14,
+        "timing": {
+          "startTime": 1793439441426.081,
+          "domainLookupStart": 1.112,
+          "domainLookupEnd": 1.115,
+          "connectStart": 1.115,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.657,
+          "requestStart": 1.943,
+          "responseStart": 5.562,
+          "responseEnd": 11.657
+        }
+      },
+      {
+        "path": "/source-view.js",
+        "start": 1793439441424,
+        "duration_ms": 14,
+        "timing": {
+          "startTime": 1793439441426,
+          "domainLookupStart": 0.273,
+          "domainLookupEnd": 0.276,
+          "connectStart": 0.276,
+          "secureConnectionStart": -1,
+          "connectEnd": 1,
+          "requestStart": 1.987,
+          "responseStart": 6,
+          "responseEnd": 10.995
+        }
+      },
+      {
+        "path": "/route-shapes.js",
+        "start": 1793439441424,
+        "duration_ms": 14,
+        "timing": {
+          "startTime": 1793439441428.9817,
+          "domainLookupStart": 1.815,
+          "domainLookupEnd": 1.82,
+          "connectStart": 1.82,
+          "secureConnectionStart": -1,
+          "connectEnd": 3.234,
+          "requestStart": 5.467,
+          "responseStart": 7.08,
+          "responseEnd": 14.494
+        }
+      },
+      {
+        "path": "/routing-geometry.js",
+        "start": 1793439441424,
+        "duration_ms": 15,
+        "timing": {
+          "startTime": 1793439441425.557,
+          "domainLookupStart": 0.041,
+          "domainLookupEnd": 0.046,
+          "connectStart": 0.046,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.365,
+          "requestStart": 2.39,
+          "responseStart": 6.319,
+          "responseEnd": 12.24
+        }
+      },
+      {
+        "path": "/node-icons.js",
+        "start": 1793439441424,
+        "duration_ms": 15,
+        "timing": {
+          "startTime": 1793439441428.6,
+          "domainLookupStart": 0.03,
+          "domainLookupEnd": 0.033,
+          "connectStart": 0.033,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.428,
+          "requestStart": 0.447,
+          "responseStart": 3.672,
+          "responseEnd": 12.735
+        }
+      },
+      {
+        "path": "/spatial-labels.js",
+        "start": 1793439441424,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439441429.32,
+          "domainLookupStart": 5.288,
+          "domainLookupEnd": 5.292,
+          "connectStart": 5.292,
+          "secureConnectionStart": -1,
+          "connectEnd": 5.776,
+          "requestStart": 6.025,
+          "responseStart": 8.642,
+          "responseEnd": 17.17
+        }
+      },
+      {
+        "path": "/routing-client.js",
+        "start": 1793439441424,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439441429.204,
+          "domainLookupStart": 4.219,
+          "domainLookupEnd": 4.223,
+          "connectStart": 4.223,
+          "secureConnectionStart": -1,
+          "connectEnd": 5.317,
+          "requestStart": 6.009,
+          "responseStart": 9.66,
+          "responseEnd": 17.969
+        }
+      },
+      {
+        "path": "/routing-scene.js",
+        "start": 1793439441424,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439441429.258,
+          "domainLookupStart": 4.693,
+          "domainLookupEnd": 4.697,
+          "connectStart": 4.697,
+          "secureConnectionStart": -1,
+          "connectEnd": 5.739,
+          "requestStart": 5.996,
+          "responseStart": 8.349,
+          "responseEnd": 16.482
+        }
+      },
+      {
+        "path": "/spatial-paths.js",
+        "start": 1793439441424,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439441429.123,
+          "domainLookupStart": 3.508,
+          "domainLookupEnd": 3.513,
+          "connectStart": 3.513,
+          "secureConnectionStart": -1,
+          "connectEnd": 5.252,
+          "requestStart": 6,
+          "responseStart": 10.534,
+          "responseEnd": 18.644
+        }
+      },
+      {
+        "path": "/runtime-frames.js",
+        "start": 1793439441424,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439441429.445,
+          "domainLookupStart": 6.895,
+          "domainLookupEnd": 6.897,
+          "connectStart": 6.897,
+          "secureConnectionStart": -1,
+          "connectEnd": 7.335,
+          "requestStart": 7.363,
+          "responseStart": 10.872,
+          "responseEnd": 18.968
+        }
+      },
+      {
+        "path": "/messages.zh-CN.js",
+        "start": 1793439441424,
+        "duration_ms": 19,
+        "timing": {
+          "startTime": 1793439441429.393,
+          "domainLookupStart": 6.235,
+          "domainLookupEnd": 6.24,
+          "connectStart": 6.24,
+          "secureConnectionStart": -1,
+          "connectEnd": 6.794,
+          "requestStart": 6.821,
+          "responseStart": 10.156,
+          "responseEnd": 19.436
+        }
+      },
+      {
+        "path": "/graph-inventory.js",
+        "start": 1793439441424,
+        "duration_ms": 25,
+        "timing": {
+          "startTime": 1793439441429.616,
+          "domainLookupStart": 10.213,
+          "domainLookupEnd": 10.215,
+          "connectStart": 10.215,
+          "secureConnectionStart": -1,
+          "connectEnd": 11.332,
+          "requestStart": 12.396,
+          "responseStart": 15.84,
+          "responseEnd": 23.927
+        }
+      },
+      {
+        "path": "/trace-context.js",
+        "start": 1793439441431,
+        "duration_ms": 18,
+        "timing": {
+          "startTime": 1793439441436.9258,
+          "domainLookupStart": 3.638,
+          "domainLookupEnd": 3.641,
+          "connectStart": 3.641,
+          "secureConnectionStart": -1,
+          "connectEnd": 4.924,
+          "requestStart": 5.134,
+          "responseStart": 8.617,
+          "responseEnd": 16.004
+        }
+      },
+      {
+        "path": "/trace-flows.js",
+        "start": 1793439441431,
+        "duration_ms": 18,
+        "timing": {
+          "startTime": 1793439441437.062,
+          "domainLookupStart": 4.421,
+          "domainLookupEnd": 4.423,
+          "connectStart": 4.423,
+          "secureConnectionStart": -1,
+          "connectEnd": 4.933,
+          "requestStart": 5.058,
+          "responseStart": 7.311,
+          "responseEnd": 14.278
+        }
+      },
+      {
+        "path": "/graph-activation.js",
+        "start": 1793439441424,
+        "duration_ms": 25,
+        "timing": {
+          "startTime": 1793439441429.5032,
+          "domainLookupStart": 8.765,
+          "domainLookupEnd": 8.768,
+          "connectStart": 8.768,
+          "secureConnectionStart": -1,
+          "connectEnd": 10.229,
+          "requestStart": 12.372,
+          "responseStart": 16.112,
+          "responseEnd": 24.552
+        }
+      },
+      {
+        "path": "/machine-projection.js",
+        "start": 1793439441424,
+        "duration_ms": 25,
+        "timing": {
+          "startTime": 1793439441429.5662,
+          "domainLookupStart": 9.535,
+          "domainLookupEnd": 9.538,
+          "connectStart": 9.538,
+          "secureConnectionStart": -1,
+          "connectEnd": 10.877,
+          "requestStart": 12.389,
+          "responseStart": 15.765,
+          "responseEnd": 24.664
+        }
+      },
+      {
+        "path": "/trace-residencies.js",
+        "start": 1793439441431,
+        "duration_ms": 18,
+        "timing": {
+          "startTime": 1793439441437.014,
+          "domainLookupStart": 4.057,
+          "domainLookupEnd": 4.06,
+          "connectStart": 4.06,
+          "secureConnectionStart": -1,
+          "connectEnd": 4.929,
+          "requestStart": 5.073,
+          "responseStart": 8.689,
+          "responseEnd": 16.428
+        }
+      },
+      {
+        "path": "/spatial-three.vendor.js",
+        "start": 1793439441424,
+        "duration_ms": 25,
+        "timing": {
+          "startTime": 1793439441428.103,
+          "domainLookupStart": 0.035,
+          "domainLookupEnd": 0.039,
+          "connectStart": 0.039,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.392,
+          "requestStart": 0.411,
+          "responseStart": 4.003,
+          "responseEnd": 13.776
+        }
+      },
+      {
+        "path": "/trace-bars.js",
+        "start": 1793439441431,
+        "duration_ms": 20,
+        "timing": {
+          "startTime": 1793439441437.1082,
+          "domainLookupStart": 7.623,
+          "domainLookupEnd": 7.628,
+          "connectStart": 7.628,
+          "secureConnectionStart": -1,
+          "connectEnd": 8.582,
+          "requestStart": 10.119,
+          "responseStart": 11.896,
+          "responseEnd": 18.399
+        }
+      },
+      {
+        "path": "/trace-density.js",
+        "start": 1793439441431,
+        "duration_ms": 20,
+        "timing": {
+          "startTime": 1793439441437.158,
+          "domainLookupStart": 8.794,
+          "domainLookupEnd": 8.797,
+          "connectStart": 8.797,
+          "secureConnectionStart": -1,
+          "connectEnd": 10.024,
+          "requestStart": 10.255,
+          "responseStart": 12.532,
+          "responseEnd": 18.915
+        }
+      },
+      {
+        "path": "/routing-tools.vendor.js",
+        "start": 1793439441439,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439441442.225,
+          "domainLookupStart": 4.32,
+          "domainLookupEnd": 4.324,
+          "connectStart": 4.324,
+          "secureConnectionStart": -1,
+          "connectEnd": 4.972,
+          "requestStart": 5.247,
+          "responseStart": 7.337,
+          "responseEnd": 11.705
+        }
+      },
+      {
+        "path": "/trace-lifecycles.js",
+        "start": 1793439441450,
+        "duration_ms": 3,
+        "timing": {
+          "startTime": 1793439441450.248,
+          "domainLookupStart": 0.057,
+          "domainLookupEnd": 0.061,
+          "connectStart": 0.061,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.6,
+          "requestStart": 0.635,
+          "responseStart": 2.1,
+          "responseEnd": 3.09
+        }
+      },
+      {
+        "path": "/api/design",
+        "start": 1793439441455,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439441454.051,
+          "domainLookupStart": 0.046,
+          "domainLookupEnd": 0.052,
+          "connectStart": 0.052,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.599,
+          "requestStart": 0.635,
+          "responseStart": 10.154,
+          "responseEnd": 10.847
+        }
+      },
+      {
+        "path": "/api/preferences",
+        "start": 1793439441469,
+        "duration_ms": 13,
+        "timing": {
+          "startTime": 1793439441470.837,
+          "domainLookupStart": 0.046,
+          "domainLookupEnd": 0.052,
+          "connectStart": 0.052,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.729,
+          "requestStart": 0.78,
+          "responseStart": 9.743,
+          "responseEnd": 11.786
+        }
+      },
+      {
+        "path": "/elk-worker.min.js",
+        "start": 1793439441469,
+        "duration_ms": 52,
+        "timing": {
+          "startTime": 1793439441469.286,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": -1,
+          "responseStart": 50.321,
+          "responseEnd": 50.321
+        }
+      },
+      {
+        "path": "/routing-worker.js",
+        "start": 1793439441523,
+        "duration_ms": 14,
+        "timing": {
+          "startTime": 1793439441523.2,
+          "domainLookupStart": -1,
+          "domainLookupEnd": -1,
+          "connectStart": -1,
+          "secureConnectionStart": -1,
+          "connectEnd": -1,
+          "requestStart": -1,
+          "responseStart": 13.635,
+          "responseEnd": 13.635
+        }
+      },
+      {
+        "path": "/routing-libavoid.vendor.js",
+        "start": 1793439441537,
+        "duration_ms": 5,
+        "timing": {
+          "startTime": 1793439441537.2,
+          "domainLookupStart": 0.116,
+          "domainLookupEnd": 0.131,
+          "connectStart": 0.131,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.263,
+          "requestStart": 1.336,
+          "responseStart": 3.414,
+          "responseEnd": 4.025
+        }
+      },
+      {
+        "path": "/routing-engine.js",
+        "start": 1793439441537,
+        "duration_ms": 6,
+        "timing": {
+          "startTime": 1793439441538.755,
+          "domainLookupStart": 0.14,
+          "domainLookupEnd": 0.151,
+          "connectStart": 0.151,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.908,
+          "requestStart": 0.952,
+          "responseStart": 2.698,
+          "responseEnd": 4.679
+        }
+      },
+      {
+        "path": "/routing-geometry.js",
+        "start": 1793439441543,
+        "duration_ms": 4,
+        "timing": {
+          "startTime": 1793439441543.2632,
+          "domainLookupStart": 0.066,
+          "domainLookupEnd": 0.073,
+          "connectStart": 0.073,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.808,
+          "requestStart": 0.845,
+          "responseStart": 2.28,
+          "responseEnd": 2.822
+        }
+      },
+      {
+        "path": "/route-shapes.js",
+        "start": 1793439441543,
+        "duration_ms": 8,
+        "timing": {
+          "startTime": 1793439441544.6738,
+          "domainLookupStart": 0.035,
+          "domainLookupEnd": 0.039,
+          "connectStart": 0.039,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.835,
+          "requestStart": 1.111,
+          "responseStart": 3.02,
+          "responseEnd": 5.084
+        }
+      },
+      {
+        "path": "/routing-navigation.js",
+        "start": 1793439441543,
+        "duration_ms": 8,
+        "timing": {
+          "startTime": 1793439441545.074,
+          "domainLookupStart": 0.033,
+          "domainLookupEnd": 0.036,
+          "connectStart": 0.036,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.603,
+          "requestStart": 0.925,
+          "responseStart": 2.883,
+          "responseEnd": 5.655
+        }
+      },
+      {
+        "path": "/routing-tools.vendor.js",
+        "start": 1793439441543,
+        "duration_ms": 9,
+        "timing": {
+          "startTime": 1793439441544.204,
+          "domainLookupStart": 0.041,
+          "domainLookupEnd": 0.045,
+          "connectStart": 0.045,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.297,
+          "requestStart": 1.515,
+          "responseStart": 4.274,
+          "responseEnd": 5.95
+        }
+      },
+      {
+        "path": "/libavoid.wasm",
+        "start": 1793439441556,
+        "duration_ms": 63,
+        "timing": {
+          "startTime": 1793439441555.286,
+          "domainLookupStart": 0.078,
+          "domainLookupEnd": 0.089,
+          "connectStart": 0.089,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.858,
+          "requestStart": 0.899,
+          "responseStart": 60.377,
+          "responseEnd": 61.275
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439441525,
+        "duration_ms": 110,
+        "timing": {
+          "startTime": 1793439441525.1702,
+          "domainLookupStart": 0.051,
+          "domainLookupEnd": 0.06,
+          "connectStart": 0.06,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.539,
+          "requestStart": 0.573,
+          "responseStart": 87.763,
+          "responseEnd": 94.075
+        }
+      },
+      {
+        "path": "/api/recordings",
+        "start": 1793439441664,
+        "duration_ms": 87,
+        "timing": {
+          "startTime": 1793439441662.908,
+          "domainLookupStart": 0.08,
+          "domainLookupEnd": 0.092,
+          "connectStart": 0.092,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.959,
+          "requestStart": 1.017,
+          "responseStart": 87.327,
+          "responseEnd": 88.187
+        }
+      },
+      {
+        "path": "/api/design",
+        "start": 1793439441797,
+        "duration_ms": 63,
+        "timing": {
+          "startTime": 1793439441796.884,
+          "domainLookupStart": 0.077,
+          "domainLookupEnd": 0.089,
+          "connectStart": 0.089,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.004,
+          "requestStart": 1.068,
+          "responseStart": 9.636,
+          "responseEnd": 10.569
+        }
+      },
+      {
+        "path": "/api/recordings/d72ba50d67814dbf84b0962ba9626c6e",
+        "start": 1793439441884,
+        "duration_ms": 160,
+        "timing": {
+          "startTime": 1793439441884.259,
+          "domainLookupStart": 0.065,
+          "domainLookupEnd": 0.075,
+          "connectStart": 0.075,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.798,
+          "requestStart": 0.839,
+          "responseStart": 131.077,
+          "responseEnd": 138.699
+        }
+      },
+      {
+        "path": "/api/view",
+        "start": 1793439442182,
+        "duration_ms": 102,
+        "timing": {
+          "startTime": 1793439442180.29,
+          "domainLookupStart": 0.065,
+          "domainLookupEnd": 0.339,
+          "connectStart": 0.339,
+          "secureConnectionStart": -1,
+          "connectEnd": 1.084,
+          "requestStart": 1.153,
+          "responseStart": 83.268,
+          "responseEnd": 90.342
+        }
+      },
+      {
+        "path": "/api/recordings",
+        "start": 1793439442294,
+        "duration_ms": 107,
+        "timing": {
+          "startTime": 1793439442293.654,
+          "domainLookupStart": 0.068,
+          "domainLookupEnd": 0.079,
+          "connectStart": 0.079,
+          "secureConnectionStart": -1,
+          "connectEnd": 0.786,
+          "requestStart": 0.83,
+          "responseStart": 106.153,
+          "responseEnd": 106.902
+        }
+      }
+    ],
+    "browser": "151.0.7922.34"
+  },
+  "iteration_waiting_timeline": {
+    "phase": "original-v2-final-supplement-02",
+    "base": "http://127.0.0.1:50642",
+    "recordingId": "d72ba50d67814dbf84b0962ba9626c6e",
+    "checks": [
+      {
+        "name": "2D graph and timeline share exact waiting, resumption and approval state events",
+        "states": [
+          {
+            "state": "awaiting_supplement",
+            "id": "10653fd3d1554fb0893f8a7c52230830:20915cf96f264e798253836a03ea1611:770"
+          },
+          {
+            "state": "pending",
+            "id": "10653fd3d1554fb0893f8a7c52230830:20915cf96f264e798253836a03ea1611:1233"
+          },
+          {
+            "state": "approved",
+            "id": "10653fd3d1554fb0893f8a7c52230830:20915cf96f264e798253836a03ea1611:1528"
+          }
+        ]
+      },
+      {
+        "name": "3D graph and timeline share exact waiting, resumption and approval state events",
+        "states": [
+          {
+            "state": "awaiting_supplement",
+            "id": "10653fd3d1554fb0893f8a7c52230830:20915cf96f264e798253836a03ea1611:770"
+          },
+          {
+            "state": "pending",
+            "id": "10653fd3d1554fb0893f8a7c52230830:20915cf96f264e798253836a03ea1611:1233"
+          },
+          {
+            "state": "approved",
+            "id": "10653fd3d1554fb0893f8a7c52230830:20915cf96f264e798253836a03ea1611:1528"
+          }
+        ]
+      },
+      {
+        "name": "Repeated waiting periods and physical operation exits retain separate lifetimes and connected handoffs",
+        "waits": [
+          {
+            "duration": 1505.962158203125
+          },
+          {
+            "duration": 306.9619140625
+          },
+          {
+            "duration": 235.59912109375
+          },
+          {
+            "duration": 181.780029296875
+          }
+        ],
+        "routes": 173
+      }
+    ],
+    "errors": [],
     "passed": true
   },
   "focused_capture": {
-    "application": "http://127.0.0.1:55033",
-    "observer": "http://127.0.0.1:55032",
+    "application": "http://127.0.0.1:50643",
+    "observer": "http://127.0.0.1:50642",
     "checks": [
       {
         "name": "Real focused approval keeps its state frame and captured scope",
@@ -253,29 +3855,69 @@
             "review"
           ],
           "boundary_nodes": []
+        },
+        "integrity": {
+          "pre_context_events": 2366,
+          "retained_context_events": 16,
+          "context_bound": 2000,
+          "warnings": [
+            "Pre-recording context retains only the latest 2000 events."
+          ],
+          "interval_complete": true
         }
       },
       {
         "name": "Stopping focused capture restores actual HTTP and data capture",
-        "events": 15
+        "events": 15,
+        "integrity": {
+          "pre_context_events": 2370,
+          "retained_context_events": 2000,
+          "context_bound": 2000,
+          "warnings": [
+            "Pre-recording context retains only the latest 2000 events."
+          ],
+          "interval_complete": true
+        }
       }
     ],
     "errors": [],
     "passed": true
   },
-  "independent_conversation": {
-    "thread_id": "01a18f4d-11b3-7553-bbeb-6410929a9146",
-    "status": "waitingOnApproval",
-    "revision": 32,
-    "final_mapping_acceptance": "pending",
-    "ordinary_business_iteration": "not_run"
+  "view_retention": {
+    "passed": true,
+    "groups": 5,
+    "receipt": "iteration/original-v2-mime-view-01/view-update.json"
   },
+  "semantic_probe_control": {
+    "passed": true,
+    "receipt": "iteration/original-v2-probe-value-01/supplement-probe-control.json"
+  },
+  "native_wasm_streaming": {
+    "passed": true,
+    "result": {
+      "ok": true,
+      "type": "application/wasm",
+      "ms": 65.70000004768372,
+      "exports": 234
+    },
+    "receipt": "original-wasm-streaming-final-01/transport.json"
+  },
+  "post_operation_conservation": {
+    "passed": true,
+    "checks": 8,
+    "receipt": "iteration/original-v2-final-preservation-01.json"
+  },
+  "limits": [
+    "Historical recordings do not snapshot optional project/AST/API indexes; those controls remain disabled during replay. Live source-index navigation passed separately.",
+    "The independent new application conversation is Python/Flask/SQLite. Node/React/Vue and other databases have repository regressions, not a second new application conversation in this run.",
+    "This application does not configure shared resources or concurrent Petri-style activities; those remain covered by repository examples and fixtures.",
+    "The narrowed question-premise wording is a usage-derived guide correction, not proof of a new forward dialogue trial for that wording.",
+    "One retained custom view reported 31 blocked routes at startup. Relationship/capture checks passed; obstacle-avoidance quality for that saved layout remains a separate visual-quality finding."
+  ],
   "clean_export": {
     "valid": true,
-    "receipt": "clean-staged-export-final.json"
-  },
-  "source_quality": {
-    "valid": true,
-    "receipt": "source-quality-final-confirmed.json"
+    "receipt": "clean-export-final-followup.json",
+    "revision": "2008a5c9a7464bd96f822f1694aa887f33b5d688",
+    "scope": "Clean Git export plus frozen approvals; no regeneration or reapproval"
   }
 }

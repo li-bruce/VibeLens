@@ -35,6 +35,23 @@ ASSETS = Path(__file__).resolve().parents[3] / "assets/stategraph-viewer"
 MODES = {"visible", "hidden", "disabled"}
 
 
+class BOHTTPServer(ThreadingHTTPServer):
+    """Queue a cold module/worker burst while the local accept thread is scheduled."""
+
+    request_queue_size = 64
+
+
+def bo_content_type(mime):
+    """Keep binary MIME exact for streaming WASM; declare UTF-8 only for text."""
+    textual = mime.startswith("text/") or mime in {
+        "application/json",
+        "application/javascript",
+        "application/xml",
+        "image/svg+xml",
+    }
+    return mime + "; charset=utf-8" if textual else mime
+
+
 class BOWeb:
     def __init__(self, root, *, assets=ASSETS, discovery=None, graph_routes=("/graph", "/graph/")):
         self.root = Path(root).absolute().resolve()
@@ -180,7 +197,7 @@ def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
             raw = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False).encode()
             self.send_response(code)
             for key, value in [
-                ("Content-Type", mime + "; charset=utf-8"),
+                ("Content-Type", bo_content_type(mime)),
                 ("Content-Length", str(len(raw))),
                 ("Cache-Control", "no-store"),
                 ("X-Content-Type-Options", "nosniff"),
@@ -256,7 +273,7 @@ def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
             except (OSError, ValueError) as exc:
                 return self.reply(400, {"error": str(exc)})
 
-    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    server = BOHTTPServer(("127.0.0.1", port), Handler)
     print(f"Design graph: http://127.0.0.1:{server.server_port}/graph", flush=True)
     try:
         server.serve_forever()

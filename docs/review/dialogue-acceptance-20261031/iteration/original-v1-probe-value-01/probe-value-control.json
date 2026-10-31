@@ -1,0 +1,124 @@
+{
+  "phase": "original-v1-probe-value-01",
+  "build_id": "9da5d8c2f3a393f11913988449709ee75495af32a4662d2e8d26880e59884e5a",
+  "checks": [
+    {
+      "name": "baseline",
+      "injected": false,
+      "mapping": {
+        "valid": true,
+        "errors": [],
+        "checks": 306,
+        "projection_checks": 0,
+        "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+      },
+      "probe_health": {
+        "enabled": true,
+        "run_id": "approved-on",
+        "producer_id": "690d03d9e11344aab1cd80b4e3a10961",
+        "enqueued": 199,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "data_errors": 0
+      },
+      "independent_business_observations": {
+        "state": "approved",
+        "download_allowed": true,
+        "recipient_visible": true,
+        "review_results": 3,
+        "share_messages": 3,
+        "file_size": 22,
+        "recipient_id": "recipient"
+      },
+      "business_unchanged": true,
+      "passed": true
+    },
+    {
+      "name": "wrong-observation",
+      "injected": true,
+      "mapping": {
+        "valid": false,
+        "errors": [
+          {
+            "check": "approved:on:native:121:outputs.size",
+            "error": "mapped value differs from implementation",
+            "actual": 22,
+            "mapped": 23
+          },
+          {
+            "check": "approved:on:native:244:outputs.size",
+            "error": "mapped value differs from implementation",
+            "actual": 22,
+            "mapped": 23
+          }
+        ],
+        "checks": 306,
+        "projection_checks": 0,
+        "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+      },
+      "probe_health": {
+        "enabled": true,
+        "run_id": "approved-on",
+        "producer_id": "0f3c26f4a538477bbb3a19e56a507040",
+        "enqueued": 199,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "data_errors": 0
+      },
+      "independent_business_observations": {
+        "state": "approved",
+        "download_allowed": true,
+        "recipient_visible": true,
+        "review_results": 3,
+        "share_messages": 3,
+        "file_size": 22,
+        "recipient_id": "recipient"
+      },
+      "business_unchanged": true,
+      "passed": true
+    },
+    {
+      "name": "restored",
+      "injected": false,
+      "mapping": {
+        "valid": true,
+        "errors": [],
+        "checks": 306,
+        "projection_checks": 0,
+        "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+      },
+      "probe_health": {
+        "enabled": true,
+        "run_id": "approved-on",
+        "producer_id": "1780fcd8abea40e295e9732f10667611",
+        "enqueued": 199,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "data_errors": 0
+      },
+      "independent_business_observations": {
+        "state": "approved",
+        "download_allowed": true,
+        "recipient_visible": true,
+        "review_results": 3,
+        "share_messages": 3,
+        "file_size": 22,
+        "recipient_id": "recipient"
+      },
+      "business_unchanged": true,
+      "passed": true
+    }
+  ],
+  "injection": "download.return.outputs.size += 1 before actual capture",
+  "passed": true,
+  "source_build_unchanged": true
+}

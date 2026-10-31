@@ -22,6 +22,9 @@ def main():
     subprocess.run(
         [
             sys.executable,
+            "-B",
+            "-X",
+            "utf8",
             "-m",
             "black",
             "--line-length",

@@ -113,6 +113,8 @@ class RuntimeTests(unittest.TestCase):
                     ):
                         with urlopen(base + "/" + name, timeout=5) as asset:
                             self.assertIn(mime, asset.headers["Content-Type"])
+                            if name.endswith(".wasm"):
+                                self.assertEqual(asset.headers["Content-Type"], "application/wasm")
                             self.assertEqual(
                                 asset.read(),
                                 (
