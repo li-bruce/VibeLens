@@ -1,3 +1,4 @@
+import { typeColor } from "./layer-style.js";
 import { activationFor } from "./graph-activation.js";
 import { lifecycleCaption } from "./node-lifecycle.js";
 import { activeMachineStates } from "./machine-projection.js";
@@ -550,26 +551,46 @@ export function wrapText(text, width = 47) {
   return out;
 }
 export const nodeTypes = {
-  "code-directory": { label: boTranslate("Directory"), glyph: "D", color: 0x997c4f },
-  "code-endpoint": { label: boTranslate("API endpoint"), glyph: "API", color: 0x986345 },
-  "code-file": { label: boTranslate("Source file"), glyph: "F", color: 0x657ca5 },
-  "code-class": { label: boTranslate("Class"), glyph: "C", color: 0x9371a6 },
-  "code-function": { label: boTranslate("Code function"), glyph: "ƒ", color: 0x387c88 },
-  "code-parameter": { label: boTranslate("Code parameter"), glyph: "x", color: 0x627f9c },
-  "code-unresolved": { label: boTranslate("Unresolved reference"), glyph: "?", color: 0xb18857 },
-  business: { label: boTranslate("Business"), glyph: "B", color: 0x5075b5 },
-  function: { label: boTranslate("Function"), glyph: "ƒ", color: 0x387c88 },
-  state: { label: boTranslate("State"), glyph: "S", color: 0x9869a0 },
-  decision: { label: boTranslate("Decision"), glyph: "?", color: 0xaf8029 },
-  resource: { label: boTranslate("Resource"), glyph: "R", color: 0x7b8845 },
-  data: { label: boTranslate("Value"), glyph: "x", color: 0x627f9c },
-  effect: { label: boTranslate("Effect"), glyph: "✓", color: 0x2d8a70 },
-  wait: { label: boTranslate("Wait"), glyph: "…", color: 0xb38442 },
-  store: { label: boTranslate("Database"), glyph: "DB", color: 0x426b9a },
-  dataset: { label: boTranslate("Table or collection"), glyph: "T", color: 0x3d7e97 },
-  column: { label: boTranslate("Data field"), glyph: ":", color: 0x638b98 },
-  query: { label: boTranslate("Database operation"), glyph: "Q", color: 0x316da4 },
-  transform: { label: boTranslate("Data processing"), glyph: "Δ", color: 0x997345 },
+  "code-directory": {
+    label: boTranslate("Directory"),
+    glyph: "D",
+    color: typeColor("code-directory"),
+  },
+  "code-endpoint": {
+    label: boTranslate("API endpoint"),
+    glyph: "API",
+    color: typeColor("code-endpoint"),
+  },
+  "code-file": { label: boTranslate("Source file"), glyph: "F", color: typeColor("code-file") },
+  "code-class": { label: boTranslate("Class"), glyph: "C", color: typeColor("code-class") },
+  "code-function": {
+    label: boTranslate("Code function"),
+    glyph: "ƒ",
+    color: typeColor("code-function"),
+  },
+  "code-parameter": {
+    label: boTranslate("Code parameter"),
+    glyph: "x",
+    color: typeColor("code-parameter"),
+  },
+  "code-unresolved": {
+    label: boTranslate("Unresolved reference"),
+    glyph: "?",
+    color: typeColor("code-unresolved"),
+  },
+  business: { label: boTranslate("Business"), glyph: "B", color: typeColor("business") },
+  function: { label: boTranslate("Function"), glyph: "ƒ", color: typeColor("function") },
+  state: { label: boTranslate("State"), glyph: "S", color: typeColor("state") },
+  decision: { label: boTranslate("Decision"), glyph: "?", color: typeColor("decision") },
+  resource: { label: boTranslate("Resource"), glyph: "R", color: typeColor("resource") },
+  data: { label: boTranslate("Value"), glyph: "x", color: typeColor("data") },
+  effect: { label: boTranslate("Effect"), glyph: "✓", color: typeColor("effect") },
+  wait: { label: boTranslate("Wait"), glyph: "…", color: typeColor("wait") },
+  store: { label: boTranslate("Database"), glyph: "DB", color: typeColor("store") },
+  dataset: { label: boTranslate("Table or collection"), glyph: "T", color: typeColor("dataset") },
+  column: { label: boTranslate("Data field"), glyph: ":", color: typeColor("column") },
+  query: { label: boTranslate("Database operation"), glyph: "Q", color: typeColor("query") },
+  transform: { label: boTranslate("Data processing"), glyph: "Δ", color: typeColor("transform") },
 };
 export function nodeType(n) {
   if (n.code_role) return "code-" + n.code_role;

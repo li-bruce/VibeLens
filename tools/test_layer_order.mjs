@@ -5,6 +5,8 @@ import {
   layers,
   cleanLayers,
   layerHeights,
+  cleanLayerVisibility,
+  visibilityForView,
 } from "../skills/vibelens/assets/stategraph-viewer/graph-layers.js";
 import { LayerRuler } from "../skills/vibelens/assets/stategraph-viewer/layer-ruler.js";
 
@@ -14,11 +16,37 @@ const expected = [
   "rules",
   "api",
   "execution",
-  "operations",
   "project",
   "code",
+  "operations",
   "data",
 ];
+const legacyVisibility = { visible: ["business", "state", "rules", "api"], gap: 420 };
+const viewSettings = {
+  layers: cleanLayers(legacyVisibility),
+  layerVisibility: cleanLayerVisibility(undefined, legacyVisibility),
+};
+assert.deepEqual(visibilityForView(viewSettings, "overview"), legacyVisibility.visible);
+assert.ok(visibilityForView(viewSettings, "project").includes("project"));
+assert.ok(visibilityForView(viewSettings, "database").includes("data"));
+viewSettings.layerVisibility.project = ["project"];
+viewSettings.layerVisibility["custom-empty"] = [];
+assert.deepEqual(visibilityForView(viewSettings, "project"), ["project"]);
+assert.deepEqual(visibilityForView(viewSettings, "custom-empty"), []);
+assert.deepEqual(visibilityForView(viewSettings, "overview"), legacyVisibility.visible);
+assert.equal(viewSettings.layers.gap, 420);
+const restoredVisibility = cleanLayerVisibility(
+  JSON.parse(JSON.stringify(viewSettings.layerVisibility)),
+  legacyVisibility,
+);
+assert.deepEqual(restoredVisibility.project, ["project"]);
+assert.deepEqual(restoredVisibility["custom-empty"], []);
+const projectHidden = expected.filter((id) => id !== "project");
+assert.deepEqual(
+  cleanLayerVisibility({ project: projectHidden }, legacyVisibility).project,
+  projectHidden,
+  "Modern per-view visibility must not rerun legacy project-layer migration",
+);
 const legacy = [
   "api",
   "business",

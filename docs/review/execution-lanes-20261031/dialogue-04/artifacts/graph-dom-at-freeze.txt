@@ -1,0 +1,504 @@
+- banner:
+  - generic: ◉
+  - heading "VibeLens" [level=1]
+  - generic: Team Files
+  - combobox "界面语言":
+    - option "English"
+    - option "中文" [selected]
+  - generic: 已连接 · 回放记录
+  - link "操作程序 ↗":
+    - /url: http://127.0.0.1:8982/
+- switch "易懂名称" [checked]: 易懂名称
+- text: 视图
+- combobox "分析视图":
+  - option "分层全图" [selected]
+  - option "业务流"
+  - option "工程结构" [disabled]
+  - option "代码结构" [disabled]
+  - option "API 入口" [disabled]
+  - option "状态机"
+  - option "函数与参数"
+  - option "权限相关"
+  - option "并发与资源"
+  - option "数据依赖"
+  - option "数据库结构"
+  - option "查询与数据处理"
+  - option "实际运行"
+  - option "等待与异常"
+  - option "共享关系"
+- button "分析细节"
+- button "局部代码" [disabled]
+- status
+- button "全部元素"
+- button "筛选 · 已启用"
+- searchbox "搜索节点"
+- combobox "记录范围" [disabled]:
+  - option "全部核心事件" [selected]
+  - option "仅选中区域"
+- button "开始记录" [disabled]:
+- button "结束记录" [disabled]:
+- button "清空当前记录":
+- combobox "选择记录":
+  - option "实时观察"
+  - option "21:35:50 · 315 个事件" [selected]
+- button "时间轴" [pressed]:
+- status
+- region "记录回放":
+  - button "上一步" [disabled]:
+  - button "播放":
+  - button "下一步":
+  - slider "回放步骤位置": "0"
+  - status: 1 / 229
+  - combobox "播放粒度":
+    - option "按当前层级" [selected]
+    - option "逐个原始事件"
+  - combobox "回放速度":
+    - option "慢速"
+    - option "正常" [selected]
+    - option "快速"
+  - button "返回实时观察":
+  - combobox "记录中的步骤":
+    - option "1 · 记录开始 · 初始状态" [selected]
+    - option "2 · 网页请求 · 开始执行"
+    - option "3 · 上传并指定审核人 · 开始执行"
+    - option "4 · 已登录 · 完成判断"
+    - option "5 · 审核人是已有用户 · 完成判断"
+    - option "6 · 指定审核人 · 完成判断"
+    - option "7 · 上传者 · 完成判断"
+    - option "8 · 审核人与上传者是同一人 · 完成判断"
+    - option "9 · NOT · 审核人不是上传者 · 完成判断"
+    - option "10 · AND · 登录且选择一位已有的其他同事 · 完成判断"
+    - option "11 · 核验当前权限 · 完成判断"
+    - option "12 · 执行声明中的状态变化 · 开始执行"
+    - option "13 · 执行声明中的状态变化 · 返回结果"
+    - option "14 · 上传并指定审核人 · 状态改变"
+    - option "15 · 上传并指定审核人 · 返回结果"
+    - option "16 · 网页请求 · 返回结果"
+    - option "17 · 网页请求 · 开始执行"
+    - option "18 · 选择已有同事 · 开始执行"
+    - option "19 · 选择已有同事 · 返回结果"
+    - option "20 · 列出我能访问的文件 · 开始执行"
+    - option "21 · 查看信息或下载 · 开始执行"
+    - option "22 · 已登录 · 完成判断"
+    - option "23 · 当前用户 · 完成判断"
+    - option "24 · 上传者 · 完成判断"
+    - option "25 · 当前用户是上传者 · 完成判断"
+    - option "26 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    - option "27 · AND · 登录并具备读取资格 · 完成判断"
+    - option "28 · 核验当前权限 · 完成判断"
+    - option "29 · 查看信息或下载 · 返回结果"
+    - option "30 · 列出我能访问的文件 · 返回结果"
+    - option "31 · 网页请求 · 返回结果"
+    - option "32 · 网页请求 · 开始执行"
+    - option "33 · 网页请求 · 返回结果"
+    - option "34 · 网页请求 · 开始执行"
+    - option "35 · 退出登录 · 开始执行"
+    - option "36 · 退出登录 · 返回结果"
+    - option "37 · 网页请求 · 返回结果"
+    - option "38 · 网页请求 · 开始执行"
+    - option "39 · 网页请求 · 返回结果"
+    - option "40 · 网页请求 · 开始执行"
+    - option "41 · 网页请求 · 返回结果"
+    - option "42 · 网页请求 · 开始执行"
+    - option "43 · 登录 · 开始执行"
+    - option "44 · 登录 · 返回结果"
+    - option "45 · 网页请求 · 返回结果"
+    - option "46 · 网页请求 · 开始执行"
+    - option "47 · 选择已有同事 · 开始执行"
+    - option "48 · 选择已有同事 · 返回结果"
+    - option "49 · 列出我能访问的文件 · 开始执行"
+    - option "50 · 查看信息或下载 · 开始执行"
+    - option "51 · 已登录 · 完成判断"
+    - option "52 · 当前用户 · 完成判断"
+    - option "53 · 上传者 · 完成判断"
+    - option "54 · 当前用户是上传者 · 完成判断"
+    - option "55 · 指定审核人 · 完成判断"
+    - option "56 · 当前用户是指定审核人 · 完成判断"
+    - option "57 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    - option "58 · AND · 登录并具备读取资格 · 完成判断"
+    - option "59 · 核验当前权限 · 完成判断"
+    - option "60 · 查看信息或下载 · 返回结果"
+    - option "61 · 列出我能访问的文件 · 返回结果"
+    - option "62 · 网页请求 · 返回结果"
+    - option "63 · 网页请求 · 开始执行"
+    - option "64 · 网页请求 · 返回结果"
+    - option "65 · 网页请求 · 开始执行"
+    - option "66 · 指定同事审核 · 开始执行"
+    - option "67 · 已登录 · 完成判断"
+    - option "68 · 当前用户 · 完成判断"
+    - option "69 · 指定审核人 · 完成判断"
+    - option "70 · 当前用户是指定审核人 · 完成判断"
+    - option "71 · AND · 仅指定审核人可审核 · 完成判断"
+    - option "72 · 核验当前权限 · 完成判断"
+    - option "73 · 执行声明中的状态变化 · 开始执行"
+    - option "74 · 执行声明中的状态变化 · 返回结果"
+    - option "75 · 指定同事审核 · 状态改变"
+    - option "76 · 指定同事审核 · 返回结果"
+    - option "77 · 网页请求 · 返回结果"
+    - option "78 · 网页请求 · 开始执行"
+    - option "79 · 选择已有同事 · 开始执行"
+    - option "80 · 选择已有同事 · 返回结果"
+    - option "81 · 列出我能访问的文件 · 开始执行"
+    - option "82 · 查看信息或下载 · 开始执行"
+    - option "83 · 已登录 · 完成判断"
+    - option "84 · 当前用户 · 完成判断"
+    - option "85 · 上传者 · 完成判断"
+    - option "86 · 当前用户是上传者 · 完成判断"
+    - option "87 · 指定审核人 · 完成判断"
+    - option "88 · 当前用户是指定审核人 · 完成判断"
+    - option "89 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    - option "90 · AND · 登录并具备读取资格 · 完成判断"
+    - option "91 · 核验当前权限 · 完成判断"
+    - option "92 · 查看信息或下载 · 返回结果"
+    - option "93 · 列出我能访问的文件 · 返回结果"
+    - option "94 · 网页请求 · 返回结果"
+    - option "95 · 网页请求 · 开始执行"
+    - option "96 · 网页请求 · 返回结果"
+    - option "97 · 网页请求 · 开始执行"
+    - option "98 · 退出登录 · 开始执行"
+    - option "99 · 退出登录 · 返回结果"
+    - option "100 · 网页请求 · 返回结果"
+    - option "101 · 网页请求 · 开始执行"
+    - option "102 · 网页请求 · 返回结果"
+    - option "103 · 网页请求 · 开始执行"
+    - option "104 · 网页请求 · 返回结果"
+    - option "105 · 网页请求 · 开始执行"
+    - option "106 · 登录 · 开始执行"
+    - option "107 · 登录 · 返回结果"
+    - option "108 · 网页请求 · 返回结果"
+    - option "109 · 网页请求 · 开始执行"
+    - option "110 · 选择已有同事 · 开始执行"
+    - option "111 · 选择已有同事 · 返回结果"
+    - option "112 · 列出我能访问的文件 · 开始执行"
+    - option "113 · 查看信息或下载 · 开始执行"
+    - option "114 · 已登录 · 完成判断"
+    - option "115 · 当前用户 · 完成判断"
+    - option "116 · 上传者 · 完成判断"
+    - option "117 · 当前用户是上传者 · 完成判断"
+    - option "118 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    - option "119 · AND · 登录并具备读取资格 · 完成判断"
+    - option "120 · 核验当前权限 · 完成判断"
+    - option "121 · 查看信息或下载 · 返回结果"
+    - option "122 · 列出我能访问的文件 · 返回结果"
+    - option "123 · 网页请求 · 返回结果"
+    - option "124 · 网页请求 · 开始执行"
+    - option "125 · 网页请求 · 返回结果"
+    - option "126 · 网页请求 · 开始执行"
+    - option "127 · 上传者定向分享 · 开始执行"
+    - option "128 · 已登录 · 完成判断"
+    - option "129 · 已通过审核 · 完成判断"
+    - option "130 · 当前用户 · 完成判断"
+    - option "131 · 上传者 · 完成判断"
+    - option "132 · 当前用户是上传者 · 完成判断"
+    - option "133 · AND · 登录且通过审核且为上传者 · 完成判断"
+    - option "134 · 核验当前权限 · 完成判断"
+    - option "135 · 执行声明中的状态变化 · 开始执行"
+    - option "136 · 执行声明中的状态变化 · 返回结果"
+    - option "137 · 上传者定向分享 · 状态改变"
+    - option "138 · 上传者定向分享 · 返回结果"
+    - option "139 · 网页请求 · 返回结果"
+    - option "140 · 网页请求 · 开始执行"
+    - option "141 · 选择已有同事 · 开始执行"
+    - option "142 · 选择已有同事 · 返回结果"
+    - option "143 · 列出我能访问的文件 · 开始执行"
+    - option "144 · 查看信息或下载 · 开始执行"
+    - option "145 · 已登录 · 完成判断"
+    - option "146 · 当前用户 · 完成判断"
+    - option "147 · 上传者 · 完成判断"
+    - option "148 · 当前用户是上传者 · 完成判断"
+    - option "149 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    - option "150 · AND · 登录并具备读取资格 · 完成判断"
+    - option "151 · 核验当前权限 · 完成判断"
+    - option "152 · 查看信息或下载 · 返回结果"
+    - option "153 · 列出我能访问的文件 · 返回结果"
+    - option "154 · 网页请求 · 返回结果"
+    - option "155 · 网页请求 · 开始执行"
+    - option "156 · 网页请求 · 返回结果"
+    - option "157 · 网页请求 · 开始执行"
+    - option "158 · 退出登录 · 开始执行"
+    - option "159 · 退出登录 · 返回结果"
+    - option "160 · 网页请求 · 返回结果"
+    - option "161 · 网页请求 · 开始执行"
+    - option "162 · 网页请求 · 返回结果"
+    - option "163 · 网页请求 · 开始执行"
+    - option "164 · 网页请求 · 返回结果"
+    - option "165 · 网页请求 · 开始执行"
+    - option "166 · 登录 · 开始执行"
+    - option "167 · 登录 · 返回结果"
+    - option "168 · 网页请求 · 返回结果"
+    - option "169 · 网页请求 · 开始执行"
+    - option "170 · 选择已有同事 · 开始执行"
+    - option "171 · 选择已有同事 · 返回结果"
+    - option "172 · 列出我能访问的文件 · 开始执行"
+    - option "173 · 查看信息或下载 · 开始执行"
+    - option "174 · 已登录 · 完成判断"
+    - option "175 · 当前用户 · 完成判断"
+    - option "176 · 上传者 · 完成判断"
+    - option "177 · 当前用户是上传者 · 完成判断"
+    - option "178 · 指定审核人 · 完成判断"
+    - option "179 · 当前用户是指定审核人 · 完成判断"
+    - option "180 · 已通过审核 · 完成判断"
+    - option "181 · 已向接收人分享 · 完成判断"
+    - option "182 · 指定接收人 · 完成判断"
+    - option "183 · 当前用户是指定接收人 · 完成判断"
+    - option "184 · AND · 通过且已分享给本人 · 完成判断"
+    - option "185 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    - option "186 · AND · 登录并具备读取资格 · 完成判断"
+    - option "187 · 核验当前权限 · 完成判断"
+    - option "188 · 查看信息或下载 · 返回结果"
+    - option "189 · 列出我能访问的文件 · 返回结果"
+    - option "190 · 网页请求 · 返回结果"
+    - option "191 · 网页请求 · 开始执行"
+    - option "192 · 网页请求 · 返回结果"
+    - option "193 · 网页请求 · 开始执行"
+    - option "194 · 查看信息或下载 · 开始执行"
+    - option "195 · 已登录 · 完成判断"
+    - option "196 · 当前用户 · 完成判断"
+    - option "197 · 上传者 · 完成判断"
+    - option "198 · 当前用户是上传者 · 完成判断"
+    - option "199 · 指定审核人 · 完成判断"
+    - option "200 · 当前用户是指定审核人 · 完成判断"
+    - option "201 · 已通过审核 · 完成判断"
+    - option "202 · 已向接收人分享 · 完成判断"
+    - option "203 · 指定接收人 · 完成判断"
+    - option "204 · 当前用户是指定接收人 · 完成判断"
+    - option "205 · AND · 通过且已分享给本人 · 完成判断"
+    - option "206 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    - option "207 · AND · 登录并具备读取资格 · 完成判断"
+    - option "208 · 核验当前权限 · 完成判断"
+    - option "209 · 查看信息或下载 · 返回结果"
+    - option "210 · 网页请求 · 返回结果"
+    - option "211 · 网页请求 · 开始执行"
+    - option "212 · 查看信息或下载 · 开始执行"
+    - option "213 · 已登录 · 完成判断"
+    - option "214 · 当前用户 · 完成判断"
+    - option "215 · 上传者 · 完成判断"
+    - option "216 · 当前用户是上传者 · 完成判断"
+    - option "217 · 指定审核人 · 完成判断"
+    - option "218 · 当前用户是指定审核人 · 完成判断"
+    - option "219 · 已通过审核 · 完成判断"
+    - option "220 · 已向接收人分享 · 完成判断"
+    - option "221 · 指定接收人 · 完成判断"
+    - option "222 · 当前用户是指定接收人 · 完成判断"
+    - option "223 · AND · 通过且已分享给本人 · 完成判断"
+    - option "224 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    - option "225 · AND · 登录并具备读取资格 · 完成判断"
+    - option "226 · 核验当前权限 · 完成判断"
+    - option "227 · 查看信息或下载 · 返回结果"
+    - option "228 · 网页请求 · 返回结果"
+    - option "229 · 记录结束 · 最后保存的状态"
+  - button "定位" [disabled]:
+  - button "导出":
+  - button "步骤"
+  - generic: 315 个原始事件
+- main "统一节点连接图。拖动节点或圈内空白移动整组，拖动圈外空白平移；双击展开，滚轮缩放。选中节点后按 F 定位、P 固定，方向键移动；Esc 清除高亮。":
+  - button "上传并指定审核人"
+  - button "指定同事审核"
+  - button "上传者定向分享"
+  - button "查看信息或下载"
+  - button "登录"
+  - button "选择已有同事"
+  - button "列出我能访问的文件"
+  - button "网页请求"
+  - button "退出登录"
+  - button "核验当前权限"
+  - button "执行声明中的状态变化"
+  - button "指定审核人不能是自己"
+  - button "唯一指定接收人"
+  - button "上传者与审核人始终可读取"
+  - button "same_identity"
+  - button "operation_allowed"
+  - button "configure_sqlite"
+  - button "Store.initialize"
+  - button "Store.write_transaction"
+  - button "Store.read_users"
+  - button "Store.read_file"
+  - button "Store.read_candidates"
+  - button "Store.insert_file"
+  - button "Store.update_file"
+  - button "Store.snapshots"
+  - button "metadata_view"
+  - button "WebRoutes.after_request"
+  - button "WebRoutes.teardown_request"
+  - button "WebRoutes.actor"
+  - button "WebRoutes.index"
+  - button "WebRoutes.login"
+  - button "WebRoutes.upload"
+  - button "WebRoutes.review"
+  - button "WebRoutes.share"
+  - button "WebRoutes.file_info"
+  - button "WebRoutes.download"
+  - button "WebRoutes.error"
+  - button "create_app"
+  - button "bo_list"
+  - button "BOExecutor.step"
+  - button "BOExecutor.step.guard"
+  - button "FileWorkflow.step"
+  - button "file_context"
+  - button "machine_snapshot"
+  - button "Rules"
+  - button "Team Files SQLite"
+  - generic "当前层级的关系":
+    - button "share：指定同事审核 → 指定同事审核，1 条"
+    - button "上传入口：登录 → 上传并指定审核人，1 条"
+    - button "上传后交审：上传并指定审核人 → 指定同事审核，1 条"
+    - button "仅通过后由上传者分享：指定同事审核 → 上传者定向分享，1 条"
+    - button "指定一个已有账号：上传者定向分享 → 唯一指定接收人，1 条"
+    - button "通过且已分享给本人：唯一指定接收人 → 查看信息或下载，1 条"
+    - button "访问必须已登录：登录 → 查看信息或下载，1 条"
+    - button "从已有用户中选择一位其他同事：指定审核人不能是自己 → 上传并指定审核人，1 条"
+    - button "审核前后均可读取：上传者与审核人始终可读取 → 查看信息或下载，1 条"
+    - button "Implemented by × 4：Rules → same_identity，4 条"
+    - button "Requires：Rules → 上传并指定审核人，1 条"
+    - button "Requires：Rules → 指定同事审核，1 条"
+    - button "Requires：Rules → 上传者定向分享，1 条"
+    - button "Requires：Rules → 查看信息或下载，1 条"
+    - button "reads：Team Files SQLite → 选择已有同事，1 条"
+    - button "reads × 2：Team Files SQLite → 指定同事审核，2 条"
+    - button "writes：上传并指定审核人 → Team Files SQLite，1 条"
+    - button "writes：指定同事审核 → Team Files SQLite，1 条"
+    - button "Static call file_context：执行声明中的状态变化 → file_context，1 条"
+    - button "Static call self.authorize：上传并指定审核人 → 核验当前权限，1 条"
+    - button "Static call self.advance：上传并指定审核人 → 执行声明中的状态变化，1 条"
+    - button "Static call self.authorize：指定同事审核 → 核验当前权限，1 条"
+    - button "Static call self.advance：指定同事审核 → 执行声明中的状态变化，1 条"
+    - button "Static call metadata_view：指定同事审核 → metadata_view，1 条"
+    - button "Static call self.authorize：上传者定向分享 → 核验当前权限，1 条"
+    - button "Static call self.advance：上传者定向分享 → 执行声明中的状态变化，1 条"
+    - button "Static call metadata_view：上传者定向分享 → metadata_view，1 条"
+    - button "Static call self.authorize：查看信息或下载 → 核验当前权限，1 条"
+    - button "Static call metadata_view：查看信息或下载 → metadata_view，1 条"
+    - button "Static call self.access：列出我能访问的文件 → 查看信息或下载，1 条"
+    - button "Static call self.actor：WebRoutes.index → WebRoutes.actor，1 条"
+    - button "Static call self.actor：WebRoutes.upload → WebRoutes.actor，1 条"
+    - button "Static call self.actor：WebRoutes.review → WebRoutes.actor，1 条"
+    - button "Static call self.actor：WebRoutes.share → WebRoutes.actor，1 条"
+    - button "Static call self.actor：WebRoutes.file_info → WebRoutes.actor，1 条"
+    - button "Static call self.actor：WebRoutes.download → WebRoutes.actor，1 条"
+    - button "Static call bo_list × 4：BOExecutor.step → bo_list，4 条"
+    - button "Static call file_context：machine_snapshot → file_context，1 条"
+    - button "分享 · 条件 operation_allowed：指定同事审核 → 指定同事审核，1 条"
+  - navigation "所属层级":
+    - button "概览"
+  - region "本步变化":
+    - strong: 记录开始
+    - generic: 无可见值变化
+  - complementary "图层":
+    - group "显示图层":
+      - group "图层"
+      - text: 方向键选择；空格显隐；Alt + 方向键排序
+      - button "分层" [expanded]: ☷
+      - button "显示所有图层" [pressed]: ◎
+      - button "显示或隐藏业务" [pressed]
+      - button "业务"
+      - button "显示或隐藏状态" [pressed]
+      - button "状态"
+      - button "显示或隐藏规则" [pressed]
+      - button "规则"
+      - button "显示或隐藏API" [pressed]
+      - button "API"
+      - button "显示或隐藏函数与值" [pressed]
+      - button "函数与值"
+      - button "显示或隐藏数据操作" [pressed]
+      - button "数据操作"
+      - button "显示或隐藏工程结构" [pressed]
+      - button "工程结构"
+      - button "显示或隐藏代码功能" [pressed]
+      - button "代码功能"
+      - button "显示或隐藏数据结构" [pressed]
+      - button "数据结构"
+  - toolbar "画布工具":
+    - button "切换到三维": 2D
+    - generic "图层间距":
+      - generic: ↕
+      - slider "图层间距" [disabled]: "260"
+    - button "自动布局":
+    - button "俯视": ⌃
+    - button "撤销布局" [disabled]:
+    - button "收起全部":
+    - button "展开一级":
+    - button "适应画布":
+    - button "缩小":
+    - status: 26%
+    - button "放大":
+    - combobox "连线形状":
+      - option "曲线" [selected]
+      - option "直线"
+      - option "折线"
+      - option "总线"
+  - complementary "图例":
+    - generic: 2D
+    - generic "当前节点类型":
+      - generic "业务处理过程":
+        - generic: 业务
+      - generic "函数或方法":
+        - generic: 函数
+      - generic "条件或规则判断":
+        - generic: 判断
+      - generic "选定值或事件记录字段":
+        - generic: 值
+      - generic "项目使用的数据库或存储":
+        - generic: 数据库
+    - generic "当前连线类型":
+      - generic "调用":
+        - text: 调用
+      - generic "流程":
+        - text: 流程
+      - generic "状态迁移":
+        - text: 状态迁移
+      - generic "判断依赖":
+        - text: 判断依赖
+      - generic "传值":
+        - text: 传值
+      - generic "读取":
+        - text: 读取
+      - generic "写入":
+        - text: 写入
+      - generic "映射":
+        - text: 映射
+    - generic "执行中": ▶
+    - generic "已完成": ✓
+    - generic "等待或未通过": "!"
+    - generic "核心节点": ★
+    - generic "已固定位置": ●
+    - generic "批注": ✎
+    - generic "共享节点": ↗
+- region "执行时间轴":
+  - separator "时间轴高度"
+  - strong: 时间轴
+  - generic "持续时间 · 事件 · 录制前事实或源码映射": ━ · ◆ · ◇
+  - combobox "时间轴范围":
+    - option "当前视图" [selected]
+    - option "已录制节点"
+  - combobox "观察深度":
+    - option "全部图层" [selected]
+    - option "业务"
+    - option "状态"
+    - option "规则"
+    - option "API"
+    - option "函数与值"
+    - option "数据操作"
+    - option "工程结构"
+    - option "代码功能"
+    - option "数据结构"
+  - button "只看单层"
+  - button "收起执行组":
+  - button "完整时间范围":
+  - button "放大":
+  - button "缩小":
+  - checkbox "跟随游标" [checked]
+  - generic: 跟随游标
+  - button "循环选区" [disabled]
+  - button "清除选区" [disabled]
+  - status
+  - button "展开时间轴":
+  - button "隐藏时间轴":
+  - slider "时间轴：拖动标尺定位，拖动轨道平移，Ctrl 加滚轮缩放，按住 Shift 拖动选择范围"
+  - generic "记录开始 · 初始状态 start 2026-10-31T13:35:50.031138+00:00": 记录开始 · 初始状态
+  - 'generic "{}"'
+  - button "事件数据"
+  - button "在图中定位" [disabled]:
+- contentinfo:
+  - generic: 右键点击节点或连线进行操作。
+  - status: 视图已保存到项目
+  - generic "实线：调用与数据传递 · 虚线：逻辑与关联": ━ · ┄

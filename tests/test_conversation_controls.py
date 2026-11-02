@@ -6,11 +6,14 @@ import json
 import os
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch
 from contextlib import redirect_stdout
 import io
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "skills/vibelens/scripts"))
@@ -25,6 +28,7 @@ from bo_observer.graph.behavior_model import digest
 from bo_observer.web.bo_web import BOWeb
 from bo_observer.web.bo_design import BODesign
 from bo_observer.control.cli import main as control_main
+from bo_observer.control.cli import get as control_get
 from bo_observer.web.view_preferences import Preferences, PreferenceConflict
 from bo_observer.observation.observation_scope import observer_route
 
@@ -169,6 +173,108 @@ class ControlTests(unittest.TestCase):
         self.assertEqual(
             plan["view_id"], build_plan(self.view, {**self.spec, "depth": 0})["view_id"]
         )
+
+    def test_requested_types_are_used_before_neighbor_expansion(self):
+        view = deepcopy(self.view)
+        view["model"]["nodes"].append(
+            {"id": "state_new", "kind": "state", "layer": "state", "parent": "review-policy"}
+        )
+        edge = {"id": "initial-state", "from": "state_new", "to": "review-policy", "type": "guard"}
+        view["model"]["edges"].append(edge)
+        before = deepcopy(view)
+        plan = build_plan(view, {**self.spec, "depth": 2})
+        self.assertNotIn("state_new", plan["node_ids"])
+        self.assertNotIn(edge["id"], plan["edge_ids"])
+        self.assertIn(edge, plan["boundaries"])
+        self.assertIn("review-policy", plan["node_ids"])
+        validate_evidence(plan, view)
+        self.assertEqual(view, before)
+
+        # A structurally valid hand-written plan must not bypass the typed view.
+        invalid = build_plan(view, {**self.spec, "nodes": [*self.spec["nodes"], "state"]})
+        invalid["filters"]["nodes"].remove("state")
+        invalid["filters"]["regions"].remove("state")
+        invalid["id"] = "control-" + digest({k: v for k, v in invalid.items() if k != "id"})[:20]
+        with self.assertRaisesRegex(ValueError, "node type"):
+            validate_evidence(invalid, view)
+
+    def test_cross_type_paths_keep_original_boundary_nodes(self):
+        view = deepcopy(self.view)
+        view["model"]["nodes"] = [
+            {"id": "start", "kind": "action", "layer": "business"},
+            {"id": "value", "kind": "data"},
+            {"id": "end", "kind": "action", "layer": "business"},
+        ]
+        view["model"]["edges"] = [
+            {"id": "first", "from": "start", "to": "value", "type": "data"},
+            {"id": "second", "from": "value", "to": "end", "type": "data"},
+        ]
+        spec = {**self.spec, "anchors": ["start", "end"], "nodes": ["business"]}
+        boundary = build_plan(view, spec)
+        self.assertEqual(boundary["context_node_ids"], ["value"])
+        self.assertEqual(boundary["node_ids"], ["end", "start", "value"])
+        self.assertEqual(boundary["edge_ids"], ["first", "second"])
+        self.assertEqual(boundary["filters"]["nodes"], ["business"])
+        validate_evidence(boundary, view)
+        visible = build_plan(view, {**spec, "nodes": ["business", "data"], "depth": 0})
+        self.assertEqual(visible["node_ids"], ["end", "start", "value"])
+        self.assertEqual(visible["edge_ids"], ["first", "second"])
+        self.assertEqual(visible["context_node_ids"], [])
+
+        # A longer hidden chain cannot be drawn as a one-hop boundary. Ask for
+        # its types before publication instead of inventing a direct edge.
+        view["model"]["nodes"] = [view["model"]["nodes"][0], view["model"]["nodes"][-1]] + [
+            {"id": "a", "kind": "data"},
+            {"id": "b", "kind": "data"},
+            {"id": "c", "kind": "data"},
+        ]
+        sequence = ["start", "a", "b", "c", "end"]
+        view["model"]["edges"] = [
+            {"id": str(index), "from": first, "to": second, "type": "data"}
+            for index, (first, second) in enumerate(zip(sequence, sequence[1:]))
+        ]
+        with self.assertRaisesRegex(ValueError, "node type"):
+            build_plan(view, spec)
+
+    def test_control_node_membership_matches_actual_viewer_types(self):
+        from bo_observer.control.selection import view_types
+
+        nodes = [
+            {"kind": "action", "layer": "business", "source": {}},
+            {"kind": "state", "source": {}},
+            {"kind": "decision", "source": {}},
+            {"execution_role": "join"},
+            {"execution_role": "resource"},
+            {"kind": "data", "semantic_role": "state_parameter", "source": {}, "field": {}},
+            {"semantic_roles": ["business"], "kind": "function"},
+            *(
+                {"code_role": role}
+                for role in (
+                    "file",
+                    "directory",
+                    "class",
+                    "function",
+                    "parameter",
+                    "endpoint",
+                    "unresolved",
+                )
+            ),
+            *(
+                {"data_role": role, "layer": "business"}
+                for role in ("store", "dataset", "column", "query", "transform")
+            ),
+            *({"kind": kind} for kind in ("resource", "data", "wait", "effect", "action")),
+            *self.view["model"]["nodes"],
+        ]
+        module = (ROOT / "skills/vibelens/assets/stategraph-viewer/graph-core.js").as_uri()
+        script = f"import {{viewTypes}} from {json.dumps(module)}; console.log(JSON.stringify({json.dumps(nodes)}.map(n => viewTypes(n).sort())));"
+        result = subprocess.run(
+            ["node", "--input-type=module", "-e", script],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        self.assertEqual([sorted(view_types(node)) for node in nodes], json.loads(result.stdout))
 
     def test_stale_graph_and_recording_fail_without_rewriting_events(self):
         recording = deepcopy(self.artifact["recording"])
@@ -346,12 +452,91 @@ class ControlTests(unittest.TestCase):
     def test_observer_controls_are_never_business_routes(self):
         for route in [
             "/api/vibelens/control",
+            "/api/vibelens/control/context",
             "/api/vibelens/control?vl_session=abc",
             "/api/preferences?vl_session=abc",
         ]:
             self.assertTrue(observer_route(route))
         self.assertFalse(observer_route("/api/login"))
         self.assertFalse(observer_route("/api/messages"))
+
+    def test_http_controls_ignore_large_unrelated_runtime_history(self):
+        """Model controls do not need a live response's retained event/frame bodies."""
+        web = BOWeb(self.root)
+        live = deepcopy(self.view)
+        live["runtime_frames"] = {"transport_test_payload": "x" * (9 * 1024 * 1024)}
+        web.control_view = lambda: live
+        full_body = json.dumps(live).encode()
+        self.assertGreater(len(full_body), 8 * 1024 * 1024)
+        (self.root / "bo_stategraph/project.json").write_text(
+            json.dumps({"project_id": self.project}), encoding="utf-8"
+        )
+        spec = self.root / "request.json"
+        spec.write_text(json.dumps(self.spec), encoding="utf-8")
+        requests = []
+
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self, *_):
+                pass
+
+            def do_GET(self):
+                requests.append(self.path)
+                if self.path in {"/api/view", "/oversize"}:
+                    body = full_body
+                elif self.path == "/api/recordings":
+                    body = b"[]"
+                else:
+                    value = web.get(self.path)
+                    if value is None:
+                        self.send_error(404)
+                        return
+                    body = json.dumps(value).encode()
+                self.send_response(200)
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                try:
+                    self.wfile.write(body)
+                except (ConnectionError, OSError):
+                    pass  # A bounded reader intentionally closes the oversize response.
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        try:
+            base = "http://127.0.0.1:" + str(server.server_port)
+            for command in ("activate", "inspect", "plan", "apply"):
+                message = "$vibelens" if command == "activate" else "/vibelens show approval"
+                with self.subTest(command=command), redirect_stdout(io.StringIO()) as output:
+                    code = control_main(
+                        [
+                            command,
+                            "--root",
+                            str(self.root),
+                            "--url",
+                            base,
+                            "--message",
+                            message,
+                            "--spec",
+                            str(spec),
+                        ]
+                    )
+                    self.assertEqual(code, 0, output.getvalue())
+            self.assertNotIn("/api/view", requests)
+            self.assertEqual(requests.count("/api/vibelens/control/context"), 4)
+            context = control_get(base, "/api/vibelens/control/context")
+            self.assertNotIn("runtime_frames", context)
+            self.assertNotIn("events", context)
+            self.assertEqual(context["model"], live["model"])
+            self.assertEqual(context["manifest"], live["manifest"])
+            with self.assertRaisesRegex(ValueError, "inspection budget"):
+                control_get(base, "/oversize")
+            self.assertEqual(
+                live["runtime_frames"]["transport_test_payload"], "x" * (9 * 1024 * 1024)
+            )
+        finally:
+            server.shutdown()
+            server.server_close()
+            worker.join(3)
 
 
 if __name__ == "__main__":

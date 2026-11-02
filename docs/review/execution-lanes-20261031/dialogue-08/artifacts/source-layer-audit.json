@@ -1,0 +1,1890 @@
+{
+  "valid": true,
+  "build_id": "fc5642726c7ef64bc86c122afe3135de439e19b95d4ba2da65a34cc46b680538",
+  "layer_counts": {
+    "business": 9,
+    "rules": 13,
+    "execution": 172,
+    "state": 4,
+    "data": 16,
+    "operations": 138,
+    "code": 501,
+    "project": 97,
+    "api": 8
+  },
+  "cross_layer_pairs": {
+    "business -> state": 3,
+    "state -> business": 2,
+    "business -> execution": 7,
+    "execution -> business": 3,
+    "rules -> execution": 12,
+    "execution -> rules": 16,
+    "rules -> business": 4,
+    "business -> operations": 8,
+    "data -> operations": 3,
+    "operations -> data": 2,
+    "business -> code": 29,
+    "execution -> code": 54,
+    "business -> rules": 4,
+    "project -> code": 22,
+    "code -> api": 8,
+    "api -> code": 8,
+    "rules -> code": 5,
+    "operations -> code": 7
+  },
+  "cross_layer_edges": [
+    {
+      "id": "flow_upload_review",
+      "from": "upload_file",
+      "to": "pending_review",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "flow_wait_reviewer",
+      "from": "pending_review",
+      "to": "review_file",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "flow_review_approve",
+      "from": "review_file",
+      "to": "approved",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "guard_approval_share",
+      "from": "approved",
+      "to": "share_file",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "flow_review_not_approved",
+      "from": "review_file",
+      "to": "review_not_approved",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "data_share_recipient",
+      "from": "share_file",
+      "to": "designated_recipient",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "guard_recipient_access",
+      "from": "designated_recipient",
+      "to": "access_file",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "guard_reviewer_selection",
+      "from": "assigned_reviewer",
+      "to": "upload_file",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "guard_uploader_reviewer_access",
+      "from": "uploader_access",
+      "to": "access_file",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:contains:actor",
+      "from": "policy:network",
+      "to": "policy:actor",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:contains:uploader",
+      "from": "policy:network",
+      "to": "policy:uploader",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:contains:reviewer",
+      "from": "policy:network",
+      "to": "policy:reviewer",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:contains:recipient",
+      "from": "policy:network",
+      "to": "policy:recipient",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:contains:logged_in",
+      "from": "policy:network",
+      "to": "policy:logged_in",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:contains:approved",
+      "from": "policy:network",
+      "to": "policy:approved",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:contains:shared",
+      "from": "policy:network",
+      "to": "policy:shared",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:contains:reviewer_exists",
+      "from": "policy:network",
+      "to": "policy:reviewer_exists",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:mapping:actor_is_uploader",
+      "from": "policy:actor_is_uploader",
+      "to": "source:app/predicates.py::same_identity",
+      "type": "maps",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:actor_is_uploader:0",
+      "from": "policy:actor",
+      "to": "policy:actor_is_uploader",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:actor_is_uploader:1",
+      "from": "policy:uploader",
+      "to": "policy:actor_is_uploader",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:mapping:actor_is_reviewer",
+      "from": "policy:actor_is_reviewer",
+      "to": "source:app/predicates.py::same_identity",
+      "type": "maps",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:actor_is_reviewer:0",
+      "from": "policy:actor",
+      "to": "policy:actor_is_reviewer",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:actor_is_reviewer:1",
+      "from": "policy:reviewer",
+      "to": "policy:actor_is_reviewer",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:mapping:actor_is_recipient",
+      "from": "policy:actor_is_recipient",
+      "to": "source:app/predicates.py::same_identity",
+      "type": "maps",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:actor_is_recipient:0",
+      "from": "policy:actor",
+      "to": "policy:actor_is_recipient",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:actor_is_recipient:1",
+      "from": "policy:recipient",
+      "to": "policy:actor_is_recipient",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:mapping:reviewer_is_uploader",
+      "from": "policy:reviewer_is_uploader",
+      "to": "source:app/predicates.py::same_identity",
+      "type": "maps",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:reviewer_is_uploader:0",
+      "from": "policy:reviewer",
+      "to": "policy:reviewer_is_uploader",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:reviewer_is_uploader:1",
+      "from": "policy:uploader",
+      "to": "policy:reviewer_is_uploader",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:upload_allowed:0",
+      "from": "policy:logged_in",
+      "to": "policy:upload_allowed",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:upload_allowed:1",
+      "from": "policy:reviewer_exists",
+      "to": "policy:upload_allowed",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:review_allowed:0",
+      "from": "policy:logged_in",
+      "to": "policy:review_allowed",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:share_allowed:0",
+      "from": "policy:logged_in",
+      "to": "policy:share_allowed",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:share_allowed:1",
+      "from": "policy:approved",
+      "to": "policy:share_allowed",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:recipient_access:0",
+      "from": "policy:approved",
+      "to": "policy:recipient_access",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:recipient_access:1",
+      "from": "policy:shared",
+      "to": "policy:recipient_access",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:dependency:access_allowed:0",
+      "from": "policy:logged_in",
+      "to": "policy:access_allowed",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:operation:upload:upload_file",
+      "from": "policy:upload_allowed",
+      "to": "upload_file",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:operation:review:review_file",
+      "from": "policy:review_allowed",
+      "to": "review_file",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:operation:share:share_file",
+      "from": "policy:share_allowed",
+      "to": "share_file",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "policy:operation:access:access_file",
+      "from": "policy:access_allowed",
+      "to": "access_file",
+      "type": "guard",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:list_users:contains:db_users",
+      "from": "list_users",
+      "to": "db_users",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:db%3Ateam_files%3Atable%253Ausers:reads:db_users",
+      "from": "db:team_files:table%3Ausers",
+      "to": "db_users",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": "reads",
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:review_file:contains:db_file",
+      "from": "review_file",
+      "to": "db_file",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:reads:db_file",
+      "from": "db:team_files:table%3Afiles",
+      "to": "db_file",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": "reads",
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:review_file:contains:db_candidates",
+      "from": "review_file",
+      "to": "db_candidates",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:reads:db_candidates",
+      "from": "db:team_files:table%3Afiles",
+      "to": "db_candidates",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": "reads",
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:upload_file:contains:db_insert",
+      "from": "upload_file",
+      "to": "db_insert",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:db_insert:writes:db%3Ateam_files%3Atable%253Afiles",
+      "from": "db_insert",
+      "to": "db:team_files:table%3Afiles",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": "writes",
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:review_file:contains:db_update",
+      "from": "review_file",
+      "to": "db_update",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:db_update:writes:db%3Ateam_files%3Atable%253Afiles",
+      "from": "db_update",
+      "to": "db:team_files:table%3Afiles",
+      "type": "data",
+      "code_relation": null,
+      "data_relation": "writes",
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:upload_file:contains:db_transaction",
+      "from": "upload_file",
+      "to": "db_transaction",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "db-edge:access_file:contains:db_metadata",
+      "from": "access_file",
+      "to": "db_metadata",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.4d30fd12e3103997",
+      "from": "upload_file",
+      "to": "code.4d30fd12e3103997",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.0702943770fafcf3",
+      "from": "upload_file",
+      "to": "code.4d30fd12e3103997",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.dcb3cefb04ba1a1d",
+      "from": "upload_file",
+      "to": "code.dcb3cefb04ba1a1d",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.098a03b07e03d675",
+      "from": "upload_file",
+      "to": "code.dcb3cefb04ba1a1d",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.30326d5d01115958",
+      "from": "review_file",
+      "to": "code.30326d5d01115958",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.52e0a23a10c81d9c",
+      "from": "review_file",
+      "to": "code.30326d5d01115958",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.7ac1e3434af643f0",
+      "from": "review_file",
+      "to": "code.7ac1e3434af643f0",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.2e1d9f8c8f55eade",
+      "from": "review_file",
+      "to": "code.7ac1e3434af643f0",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.3edeec461b08e152",
+      "from": "review_file",
+      "to": "code.3edeec461b08e152",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.98c6c41c06892407",
+      "from": "review_file",
+      "to": "code.3edeec461b08e152",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.2b4ce20bc4971c2a",
+      "from": "share_file",
+      "to": "code.2b4ce20bc4971c2a",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.3b673d4a03053c89",
+      "from": "share_file",
+      "to": "code.2b4ce20bc4971c2a",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.f01e24ca5c7b9b65",
+      "from": "share_file",
+      "to": "code.f01e24ca5c7b9b65",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.10095339714d0a37",
+      "from": "share_file",
+      "to": "code.f01e24ca5c7b9b65",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.94c27a9ca04798cb",
+      "from": "share_file",
+      "to": "code.94c27a9ca04798cb",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.0ede71e1014786c5",
+      "from": "share_file",
+      "to": "code.94c27a9ca04798cb",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.ffe99097306a6c85",
+      "from": "access_file",
+      "to": "code.ffe99097306a6c85",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.5388a6b5f8d28e00",
+      "from": "access_file",
+      "to": "code.ffe99097306a6c85",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.364929c8ccc6549b",
+      "from": "access_file",
+      "to": "db_metadata",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.994b0f065dc58597",
+      "from": "list_files",
+      "to": "code.994b0f065dc58597",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.f237b15bf5aa8018",
+      "from": "list_files",
+      "to": "code.994b0f065dc58597",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.61ad245cb873fe20",
+      "from": "state_transition",
+      "to": "code.61ad245cb873fe20",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.076644e1beaccaf2",
+      "from": "state_transition",
+      "to": "code.61ad245cb873fe20",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.fd38ba1787a6d3a9",
+      "from": "source:app/web.py::WebRoutes.index",
+      "to": "code.fd38ba1787a6d3a9",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.47346ec5ca88d41d",
+      "from": "source:app/web.py::WebRoutes.index",
+      "to": "code.fd38ba1787a6d3a9",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.b878e8141016daef",
+      "from": "source:app/web.py::WebRoutes.upload",
+      "to": "code.b878e8141016daef",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.d47addc9cfaeda1f",
+      "from": "source:app/web.py::WebRoutes.upload",
+      "to": "code.b878e8141016daef",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.ca48fd53b62b48f8",
+      "from": "source:app/web.py::WebRoutes.review",
+      "to": "code.ca48fd53b62b48f8",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.f2a7b209f331cf5b",
+      "from": "source:app/web.py::WebRoutes.review",
+      "to": "code.ca48fd53b62b48f8",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.eb2407e3fdac0c27",
+      "from": "source:app/web.py::WebRoutes.share",
+      "to": "code.eb2407e3fdac0c27",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.2491df8be93bee10",
+      "from": "source:app/web.py::WebRoutes.share",
+      "to": "code.eb2407e3fdac0c27",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.a3855bb372489ebc",
+      "from": "source:app/web.py::WebRoutes.file_info",
+      "to": "code.a3855bb372489ebc",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.5d9106854c885586",
+      "from": "source:app/web.py::WebRoutes.file_info",
+      "to": "code.a3855bb372489ebc",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.745c91a59eaa5249",
+      "from": "source:app/web.py::WebRoutes.download",
+      "to": "code.745c91a59eaa5249",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.c2d565d69e9b1ce0",
+      "from": "source:app/web.py::WebRoutes.download",
+      "to": "code.745c91a59eaa5249",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.90a64a540715b32d",
+      "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+      "to": "code.90a64a540715b32d",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.75df1f087893588c",
+      "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+      "to": "code.90a64a540715b32d",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.93d244a828c97644",
+      "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+      "to": "code.90a64a540715b32d",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.4586998ab5f09c59",
+      "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+      "to": "code.90a64a540715b32d",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.cd9ba0addf845aa1",
+      "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+      "to": "code.90a64a540715b32d",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "contains.code.32dd78719f02e47c",
+      "from": "source:bo_stategraph/workflow.py::machine_snapshot",
+      "to": "code.32dd78719f02e47c",
+      "type": "contains",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "call.14e55e88682e05cd",
+      "from": "source:bo_stategraph/workflow.py::machine_snapshot",
+      "to": "code.32dd78719f02e47c",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.d08904955c4aaa8a",
+      "from": "upload_file",
+      "to": "authorize_file",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.57284c7fe29a6327",
+      "from": "upload_file",
+      "to": "state_transition",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.0d492f8d10bc5906",
+      "from": "review_file",
+      "to": "authorize_file",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.644075cb2071522a",
+      "from": "review_file",
+      "to": "state_transition",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.69a3d203ac3bfaef",
+      "from": "review_file",
+      "to": "source:app/storage.py::metadata_view",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.a003f12f4f7c5088",
+      "from": "share_file",
+      "to": "authorize_file",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.b251b313612870f6",
+      "from": "share_file",
+      "to": "state_transition",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.31ed8855c720e455",
+      "from": "share_file",
+      "to": "source:app/storage.py::metadata_view",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.d5732fa91948d032",
+      "from": "access_file",
+      "to": "authorize_file",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "inventory-call.566424849026a3f1",
+      "from": "access_file",
+      "to": "source:app/storage.py::metadata_view",
+      "type": "flow",
+      "code_relation": null,
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:bf0e9bc9d2229209bb604aa4",
+      "from": "code:file:583410937ea606a3751d7b5a",
+      "to": "code:symbol:437668f1c6fd571e22148807",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:ddceb4fcb3cee034804ede11",
+      "from": "code:file:ebc7b2e063120d0188d80a33",
+      "to": "code:symbol:f5b93263389c9363decf8571",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:158ca21024fc3a63dc0891f5",
+      "from": "code:file:ebc7b2e063120d0188d80a33",
+      "to": "code:symbol:af2ea8d22b7389983cb20dfc",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:f706938ab1745e2265b1ece8",
+      "from": "code:file:ebc7b2e063120d0188d80a33",
+      "to": "code:symbol:c40aac8b0944b891ceb2187e",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:84957e341c88866f1f1a839c",
+      "from": "code:file:ebc7b2e063120d0188d80a33",
+      "to": "code:symbol:99e84891e5d1bb6371e33dd9",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:ca081ffa63f2bc733cade0f6",
+      "from": "code:file:d90af8a197c6805171e7c7c3",
+      "to": "code:symbol:6d95fc86640a673c30a7ec4a",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:2d50bf957758f5d590e9f742",
+      "from": "code:file:d90af8a197c6805171e7c7c3",
+      "to": "code:symbol:37dd9cf34dc77185cff16b50",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:0707cd8bad5dd78b0b311af3",
+      "from": "code:file:9cf5099e90c020cb5033cc7e",
+      "to": "code:symbol:f5ccc60d171aebb6a0571596",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:bdfe01ede70f2149475b4ac8",
+      "from": "code:file:9cf5099e90c020cb5033cc7e",
+      "to": "code:symbol:15ca5aa8c4a5f29980062975",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:957adc647c530049ed0cccbd",
+      "from": "code:file:64cd71c513e12fd9d2e90a9a",
+      "to": "code:symbol:6869a5b52bcd0cfb3af1e867",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:6fc478a6960ce806fdb122dc",
+      "from": "code:file:64cd71c513e12fd9d2e90a9a",
+      "to": "code:symbol:2aea9c48c2c29dd206c19094",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:796a756b59484d1ca5f4323f",
+      "from": "code:file:64cd71c513e12fd9d2e90a9a",
+      "to": "code:symbol:306aaae28bab496b8ec9c88a",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:ec580fb2f3f820be806cdd3f",
+      "from": "code:file:9e6211ce526795395f1dcfc1",
+      "to": "code:symbol:01a5907d37f96a51cbc1e8e0",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:4ef70f1c80dcba68b70defc6",
+      "from": "code:file:9e6211ce526795395f1dcfc1",
+      "to": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:8080f71511b446b36961d2c0",
+      "from": "code:file:2607712d95d662e78a6da67c",
+      "to": "code:symbol:587c1ac6874b595d1813fc00",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:4bffe05fbf5a04911b13ca2f",
+      "from": "code:file:2607712d95d662e78a6da67c",
+      "to": "code:symbol:ae9009abb0cd76a9155e1b57",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:280c8b3b581409e72ab6e7a6",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:f17f481ad85a70fb458609ad",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:90827391e7a8b28df9a2c514",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:2dff8704a7ae825382c11bef",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:9bf556586dd6cf9fade5e9b6",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:897974abffb7c6ebab1ea6ba",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:6e8bd1b5c9effecad2a6d840",
+      "from": "code:file:5b75ab5fb5001a2ceadf31ef",
+      "to": "code:symbol:d706fc560b27a0de24950c60",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:7a2060c50ccf3469cb3e4d47",
+      "from": "code:file:8bcacc3bc43d0c612166ee38",
+      "to": "code:symbol:edfb1b1b5ad0253c3d144761",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:f13f6e4e04c6213b958aed33",
+      "from": "code:file:8bcacc3bc43d0c612166ee38",
+      "to": "code:symbol:f3b1b0c80e2e66a600040f83",
+      "type": "data",
+      "code_relation": "defines",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:5b80dcbf279dfb6b4b917aa0",
+      "from": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "to": "code:endpoint:a451f14967ed2b666726da5b",
+      "type": "data",
+      "code_relation": "registers",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:3733a162fd5621e43d2d901c",
+      "from": "code:endpoint:a451f14967ed2b666726da5b",
+      "to": "code:symbol:35371a04d71f4520d01683f7",
+      "type": "data",
+      "code_relation": "handles",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:81dcd0ac745370ab35d7171c",
+      "from": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "to": "code:endpoint:b7828f6686e0b75a313a570a",
+      "type": "data",
+      "code_relation": "registers",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:c8502679f3fc4601a7f6232d",
+      "from": "code:endpoint:b7828f6686e0b75a313a570a",
+      "to": "code:symbol:d09515cdf92b324ab511fa88",
+      "type": "data",
+      "code_relation": "handles",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:b5a01d40c2904b137a615f49",
+      "from": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "to": "code:endpoint:bcadd6805ffc7d1ce27295f6",
+      "type": "data",
+      "code_relation": "registers",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:a8603326f9147595f4becf85",
+      "from": "code:endpoint:bcadd6805ffc7d1ce27295f6",
+      "to": "code:symbol:c6b128b7183aff381b64f97c",
+      "type": "data",
+      "code_relation": "handles",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:00716d7ba9f41e88c9470e07",
+      "from": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "to": "code:endpoint:cfa8829bcddf497f36c83050",
+      "type": "data",
+      "code_relation": "registers",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:6b06cdd53035413085f30572",
+      "from": "code:endpoint:cfa8829bcddf497f36c83050",
+      "to": "code:symbol:934897c79748a8f476fa3186",
+      "type": "data",
+      "code_relation": "handles",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:566e1d54382be904a974d85c",
+      "from": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "to": "code:endpoint:2801690c9f5c214fa3c9950f",
+      "type": "data",
+      "code_relation": "registers",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:7764191dbdaec7ca2f001e74",
+      "from": "code:endpoint:2801690c9f5c214fa3c9950f",
+      "to": "code:symbol:5bdb65925faa5d5c5e09e84f",
+      "type": "data",
+      "code_relation": "handles",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:a3a296657c35b2b1855bf49f",
+      "from": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "to": "code:endpoint:ced9308cb3775e7945292f05",
+      "type": "data",
+      "code_relation": "registers",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:e2625d1c1115e6ea8033ad87",
+      "from": "code:endpoint:ced9308cb3775e7945292f05",
+      "to": "code:symbol:b26c027bb33cb844b0dd3e94",
+      "type": "data",
+      "code_relation": "handles",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:a780ad246fb9e1e4819b3638",
+      "from": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "to": "code:endpoint:b133acf2082525fd0d996ca5",
+      "type": "data",
+      "code_relation": "registers",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:02fe9af11b1e89ac52bff8d4",
+      "from": "code:endpoint:b133acf2082525fd0d996ca5",
+      "to": "code:symbol:234d830263ebf1037790ae9b",
+      "type": "data",
+      "code_relation": "handles",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:e16e34f8397a46e2463cb163",
+      "from": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "to": "code:endpoint:1826620e23cb567d69c403c7",
+      "type": "data",
+      "code_relation": "registers",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:edge:4915e8b821660ab4c3b36efe",
+      "from": "code:endpoint:1826620e23cb567d69c403c7",
+      "to": "code:symbol:ff77cd620dd185214b456f65",
+      "type": "data",
+      "code_relation": "handles",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:equivalent:356738d93085c91701c05a0d",
+      "from": "assigned_reviewer",
+      "to": "code:parameter:d7ca9f567f5e911925930674",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": "equivalent"
+    },
+    {
+      "id": "code:equivalent:5f0caf65ca3c7d1a2822262a",
+      "from": "designated_recipient",
+      "to": "code:parameter:d4b96f9f9342aef71cc5a27f",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": "equivalent"
+    },
+    {
+      "id": "code:binding:b297e455fbe9c66ea5d1efae",
+      "from": "sign_in",
+      "to": "code:symbol:c96e39169a8004476f238c5c",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:6518662c8bd07288f41a4bc8",
+      "from": "list_users",
+      "to": "code:symbol:6ab29868540e18406755d4b5",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:4413590a801935c724437939",
+      "from": "upload_file",
+      "to": "code:symbol:f95a383e1688f62299044717",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:6b63509245bc89db9fd793fb",
+      "from": "review_file",
+      "to": "code:symbol:415842c0ddcd54a71961d5f2",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:14dc18dc9ce51c76deda818a",
+      "from": "share_file",
+      "to": "code:symbol:fcca8e1d33a94a11fd45cd9c",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:e046e41e93003dd1a20c477a",
+      "from": "access_file",
+      "to": "code:symbol:4fcc994c52ea1f708132882d",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:6eb2f79ad3e896dc8c750306",
+      "from": "list_files",
+      "to": "code:symbol:b42bce6de6275c998ac44fc4",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:f58d8c79534b5ab75d8384bb",
+      "from": "http_request",
+      "to": "code:symbol:df05c7c70d4b59018817a8b2",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:f07c8ef5e8485a2704f9bf74",
+      "from": "sign_out",
+      "to": "code:symbol:c6b128b7183aff381b64f97c",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:127c5a2bc43cc1699c270031",
+      "from": "authorize_file",
+      "to": "code:symbol:6abbce07100e5f0c2ee46bd4",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:63046b1736ea41e04371dbc8",
+      "from": "state_transition",
+      "to": "code:symbol:8ede46c2448f9acd897ae218",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:a84be50d3ad536f4861a389a",
+      "from": "source:app/predicates.py::same_identity",
+      "to": "code:symbol:37dd9cf34dc77185cff16b50",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:db90f2f49b759a8f51a51a08",
+      "from": "source:app/predicates.py::operation_allowed",
+      "to": "code:symbol:6d95fc86640a673c30a7ec4a",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:f9154ae9ad6a8a7dace885c8",
+      "from": "source:app/storage.py::configure_sqlite",
+      "to": "code:symbol:2aea9c48c2c29dd206c19094",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:199c0da41ec7790172105f8c",
+      "from": "source:app/storage.py::Store.initialize",
+      "to": "code:symbol:8cee59c854955a262b7ce9be",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:ace951b2f33698da2651f56f",
+      "from": "source:app/storage.py::Store.write_transaction",
+      "to": "code:symbol:a558bdfc4ae87bcba9856c9e",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:091965475133db43caf5cae5",
+      "from": "source:app/storage.py::Store.read_users",
+      "to": "code:symbol:d74e67f67f3d2013bdf1dc1c",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:7dd7c7d661f14c0a5d3d04e7",
+      "from": "source:app/storage.py::Store.read_file",
+      "to": "code:symbol:b554c2af95022605788295ec",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:0c957236e767793a4d016c23",
+      "from": "source:app/storage.py::Store.read_candidates",
+      "to": "code:symbol:9dc333c7d33dee0726c7fd42",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:cf170d53129da16198c2f0d8",
+      "from": "source:app/storage.py::Store.insert_file",
+      "to": "code:symbol:df3bd9f9ca903fd9938244e4",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:c7601fca80e5575445295276",
+      "from": "source:app/storage.py::Store.update_file",
+      "to": "code:symbol:1c4db9a332e7a98317a76126",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:79dcb59a752fea8e1447352a",
+      "from": "source:app/storage.py::Store.snapshots",
+      "to": "code:symbol:98a49f7890a212c95ec84ef0",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:7787ddad84b79d4e745ace9c",
+      "from": "source:app/storage.py::metadata_view",
+      "to": "code:symbol:306aaae28bab496b8ec9c88a",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:1d01b7eb2f1d4e2157f72e92",
+      "from": "source:app/web.py::WebRoutes.after_request",
+      "to": "code:symbol:9ff255556ffdd0aaf013e425",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:2921079861a3a812e630f543",
+      "from": "source:app/web.py::WebRoutes.teardown_request",
+      "to": "code:symbol:64c6587c577c7de1579d0623",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:1cb27f7c6931df5418a864da",
+      "from": "source:app/web.py::WebRoutes.actor",
+      "to": "code:symbol:883b1a919dea888209c61d14",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:470cb4e0dbf1e494a6623b85",
+      "from": "source:app/web.py::WebRoutes.index",
+      "to": "code:symbol:35371a04d71f4520d01683f7",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:3b545f3622369d74b9f42e0b",
+      "from": "source:app/web.py::WebRoutes.login",
+      "to": "code:symbol:d09515cdf92b324ab511fa88",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:aa21d404fedfc43a2cce3b38",
+      "from": "source:app/web.py::WebRoutes.upload",
+      "to": "code:symbol:934897c79748a8f476fa3186",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:201d5f96fd9a89d19590ef5b",
+      "from": "source:app/web.py::WebRoutes.review",
+      "to": "code:symbol:5bdb65925faa5d5c5e09e84f",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:7cb64ecc2688922fac21199e",
+      "from": "source:app/web.py::WebRoutes.share",
+      "to": "code:symbol:b26c027bb33cb844b0dd3e94",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:4fb00b6546d5279518c0da14",
+      "from": "source:app/web.py::WebRoutes.file_info",
+      "to": "code:symbol:234d830263ebf1037790ae9b",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:d70f5c0c602cf4adeb1c9cd4",
+      "from": "source:app/web.py::WebRoutes.download",
+      "to": "code:symbol:ff77cd620dd185214b456f65",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:f3fca329d1ef786955107829",
+      "from": "source:app/web.py::WebRoutes.error",
+      "to": "code:symbol:89bec321fc173038a4773c7f",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:607465534239ea1d46e4cbfa",
+      "from": "source:app/web.py::create_app",
+      "to": "code:symbol:acc8d3d67a2d2b0fff8d8944",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:30f0b9104f80dd2f994db766",
+      "from": "source:bo_stategraph/native_executor.py::bo_list",
+      "to": "code:symbol:ae9009abb0cd76a9155e1b57",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:131da1f09bd1b24da675d6a3",
+      "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+      "to": "code:symbol:3680bd814170e543933423cc",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:889d3909d0b12cd1df419d51",
+      "from": "source:bo_stategraph/native_executor.py::BOExecutor.step.guard",
+      "to": "code:symbol:88498c8c56b7324cf5255664",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:e5dd7ba552cfc90ea13b5e1c",
+      "from": "source:bo_stategraph/workflow.py::FileWorkflow.step",
+      "to": "code:symbol:eb3bba42f32e106a5250df20",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:11e8a6dc666b57718a9c812c",
+      "from": "source:bo_stategraph/workflow.py::file_context",
+      "to": "code:symbol:2dff8704a7ae825382c11bef",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:1c7ecd7b7dec26394c24260a",
+      "from": "source:bo_stategraph/workflow.py::machine_snapshot",
+      "to": "code:symbol:897974abffb7c6ebab1ea6ba",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:9bc0298ae4ce575138a651bf",
+      "from": "policy:actor_is_uploader",
+      "to": "code:symbol:37dd9cf34dc77185cff16b50",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:c0046b1b31b2f2d097639829",
+      "from": "policy:actor_is_reviewer",
+      "to": "code:symbol:37dd9cf34dc77185cff16b50",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:f9b6fe890646dd2b26291648",
+      "from": "policy:actor_is_recipient",
+      "to": "code:symbol:37dd9cf34dc77185cff16b50",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:cb8f8d66b5efa7df8045310a",
+      "from": "policy:reviewer_is_uploader",
+      "to": "code:symbol:37dd9cf34dc77185cff16b50",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:4d1b5b08d83558402509412e",
+      "from": "db_users",
+      "to": "code:symbol:d74e67f67f3d2013bdf1dc1c",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:689a5c7d451bccedf12a9555",
+      "from": "db_file",
+      "to": "code:symbol:b554c2af95022605788295ec",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:e12dfdccbe1c218f7adc54fc",
+      "from": "db_candidates",
+      "to": "code:symbol:9dc333c7d33dee0726c7fd42",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:4c9a062368f84a3db1374e42",
+      "from": "db_insert",
+      "to": "code:symbol:df3bd9f9ca903fd9938244e4",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:d3d2520505b83bbf5c8db112",
+      "from": "db_update",
+      "to": "code:symbol:1c4db9a332e7a98317a76126",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:0e4b66255c204b44502facb0",
+      "from": "db_transaction",
+      "to": "code:symbol:a558bdfc4ae87bcba9856c9e",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    },
+    {
+      "id": "code:binding:7f6e37936a8cf00b23b06bb7",
+      "from": "db_metadata",
+      "to": "code:symbol:306aaae28bab496b8ec9c88a",
+      "type": "data",
+      "code_relation": "maps",
+      "data_relation": null,
+      "mapping_role": null
+    }
+  ],
+  "parameters": [
+    {
+      "node": "code:parameter:d7ca9f567f5e911925930674",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "FileService.upload",
+        "line": 64,
+        "end_line": 81,
+        "selection": {
+          "line": 64,
+          "column": 33,
+          "end_line": 64,
+          "end_column": 44
+        }
+      },
+      "marks": [
+        "reviewer_id"
+      ],
+      "complete_source_file": true
+    },
+    {
+      "node": "code:parameter:22ebca76aa6cf0e5aa982176",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "FileService.upload",
+        "line": 64,
+        "end_line": 81,
+        "selection": {
+          "line": 64,
+          "column": 51,
+          "end_line": 64,
+          "end_column": 59
+        }
+      },
+      "marks": [
+        "filename"
+      ],
+      "complete_source_file": true
+    },
+    {
+      "node": "code:parameter:a45ded0ba98035d89231ecac",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "FileService.review",
+        "line": 83,
+        "end_line": 101,
+        "selection": {
+          "line": 83,
+          "column": 47,
+          "end_line": 83,
+          "end_column": 55
+        }
+      },
+      "marks": [
+        "decision"
+      ],
+      "complete_source_file": true
+    },
+    {
+      "node": "code:parameter:d4b96f9f9342aef71cc5a27f",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "FileService.share",
+        "line": 103,
+        "end_line": 121,
+        "selection": {
+          "line": 103,
+          "column": 46,
+          "end_line": 103,
+          "end_column": 58
+        }
+      },
+      "marks": [
+        "recipient_id"
+      ],
+      "complete_source_file": true
+    }
+  ],
+  "observer_events_unchanged": 7597,
+  "boundary": "Static source/declaration links remain distinct from actual runtime events. UI source ranges were opened after the source projection loaded."
+}

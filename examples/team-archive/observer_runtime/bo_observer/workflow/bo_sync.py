@@ -6,13 +6,17 @@ This discovers work; it does not claim to invoke an arbitrary editor's AI.
 
 import argparse
 import ast
+from copy import deepcopy
 import fnmatch
 import hashlib
 import json
+import os
 from pathlib import Path
+import stat
 import time
 from ..model_io import read_model
 from ..development import questions
+from ..graph.source_files import SourceFiles
 
 IGNORED = {
     ".git",
@@ -26,6 +30,7 @@ IGNORED = {
     ".planning",
     ".release",
     ".pytest_cache",
+    ".tmp",
     "dist",
 }
 
@@ -52,13 +57,47 @@ def infrastructure_path(name):
     )
 
 
-def source_inventory(root, cfg):
+def source_paths(start, supported):
+    """Prune global generated/cache trees before reading their descendants.
+
+    Ordinary scope exclusions are deliberately not pruned: their code must still
+    be inspected for hidden application implementations and entrypoints.
+    """
+    if start.is_file():
+        yield start
+        return
+    for parent, directories, files in os.walk(start, followlinks=False):
+        kept = []
+        for name in directories:
+            if name in IGNORED:
+                continue
+            try:
+                info = (Path(parent) / name).lstat()
+            except OSError:
+                continue
+            junction = getattr(info, "st_reparse_tag", 0) == getattr(
+                stat, "IO_REPARSE_TAG_MOUNT_POINT", -1
+            )
+            if not stat.S_ISLNK(info.st_mode) and not junction:
+                kept.append(name)
+        directories[:] = kept
+        for name in files:
+            if supported(name):
+                path = Path(parent) / name
+                if path.is_file():
+                    yield path
+
+
+def source_inventory(root, cfg, *, inspection_cache=None):
     """Enumerate the configured source scope independently of existing graph nodes.
 
     Inspect excluded code for hidden application entrypoints. A reviewed, unchanged
     runtime copy can be excluded using its managed-file fingerprint.
     """
     root = Path(root).absolute().resolve()
+    reader = SourceFiles(root)
+    inspected = set()
+    known = None
     scope = cfg.get("source_scope", {})
     if not isinstance(scope, dict):
         raise ValueError("source scope must be an object")
@@ -85,17 +124,15 @@ def source_inventory(root, cfg):
             from ..sources import supported_path, scan as scan_sources
         except ImportError:
             from bo_observer.sources import supported_path, scan as scan_sources
-        paths = (
-            [start]
-            if start.is_file()
-            else (p for p in start.rglob("*") if p.is_file() and supported_path(p.name))
-        )
-        for path in paths:
+        for path in source_paths(start, supported_path):
             name = path.relative_to(root).as_posix()
             if any(part in IGNORED for part in Path(name).parts):
                 continue
-            if path.is_symlink() or not path.resolve().is_relative_to(root):
+            if path.is_symlink():
                 raise ValueError("source symlink escapes declared project: " + name)
+            raw = reader.read(name)
+            if raw is None:
+                raise ValueError("source file became unavailable: " + name)
             # This is an optional native dependency, not observer activity. Only
             # exact managed copies of this tool's own library are excluded from
             # application coverage. A changed file returns to normal inspection.
@@ -116,7 +153,7 @@ def source_inventory(root, cfg):
                     }
                 ):
                     managed = json.loads(metadata.read_text(encoding="utf-8")).get("files", {})
-                    actual = hashlib.sha256(path.read_bytes()).hexdigest()
+                    actual = hashlib.sha256(raw).hexdigest()
                     if (
                         managed.get(name)
                         == actual
@@ -141,7 +178,7 @@ def source_inventory(root, cfg):
                             .get("files", {})
                             .get(path.relative_to(base).as_posix())
                         )
-                        if expected == hashlib.sha256(path.read_bytes()).hexdigest():
+                        if expected == hashlib.sha256(raw).hexdigest():
                             frozen = True
                 if frozen:
                     continue
@@ -149,13 +186,24 @@ def source_inventory(root, cfg):
                 # modified or arbitrary excluded UI file still gets inspected.
                 metadata = root / "bo_stategraph/runtime-version.json"
                 if path.suffix != ".py" and metadata.is_file():
-                    known = json.loads(metadata.read_text(encoding="utf-8")).get("files", {})
-                    try:
-                        from ...bo_upgrade import portable_files
-                    except ImportError:
-                        from bo_upgrade import portable_files
-                    known = portable_files(known)
-                    if known.get(name) == hashlib.sha256(path.read_bytes()).hexdigest():
+                    if known is None:
+                        try:
+                            from ...bo_upgrade import portable_files
+                        except ImportError:
+                            from bo_upgrade import portable_files
+                        known = portable_files(
+                            json.loads(metadata.read_text(encoding="utf-8")).get("files", {})
+                        )
+                    if known.get(name) == hashlib.sha256(raw).hexdigest():
+                        continue
+                if path.suffix == ".py" and inspection_cache is not None:
+                    inspected.add(name)
+                    previous = inspection_cache.get(name)
+                    if previous and previous["hash"] == hashlib.sha256(raw).hexdigest():
+                        if previous["implementation"]:
+                            hidden_implementations.append(name)
+                        if previous["entrypoints"]:
+                            hidden_entrypoints[name] = deepcopy(previous["entrypoints"])
                         continue
                 # An exclusion is not a way to hide an application endpoint.
                 # Inspect declarations without importing or executing the file.
@@ -171,7 +219,7 @@ def source_inventory(root, cfg):
                         if routes:
                             hidden_entrypoints[name] = routes
                         continue
-                    tree = ast.parse(path.read_text(encoding="utf-8-sig"), filename=name)
+                    tree = ast.parse(raw.decode("utf-8-sig"), filename=name)
                     if not infrastructure_path(name) and any(
                         isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
                         for n in ast.walk(tree)
@@ -197,12 +245,25 @@ def source_inventory(root, cfg):
                             "task",
                         }
                     ]
+                    from ..graph.python_routes import registrations
+
+                    routes.extend(item["declaration"] for item in registrations(tree, name))
                     if routes:
                         hidden_entrypoints[name] = routes
                 except (SyntaxError, UnicodeError) as exc:
                     hidden_entrypoints[name] = ["cannot inspect excluded Python: " + str(exc)]
+                if path.suffix == ".py" and inspection_cache is not None:
+                    inspection_cache[name] = {
+                        "hash": hashlib.sha256(raw).hexdigest(),
+                        "implementation": name in hidden_implementations,
+                        "entrypoints": deepcopy(hidden_entrypoints.get(name, [])),
+                    }
             else:
-                files[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+                files[name] = hashlib.sha256(raw).hexdigest()
+    if inspection_cache is not None:
+        for name in list(inspection_cache):
+            if name not in inspected:
+                del inspection_cache[name]
     return {
         "files": dict(sorted(files.items())),
         "excluded": dict(sorted(excluded.items())),
@@ -265,6 +326,13 @@ def maintenance_task(root, cfg, previous=None):
             + inventory_errors(cfg, current)
             + static_errors(model.get("implementation"), model, index)
         )
+        from ..observation.telemetry import business_layer_errors, load_registrations
+
+        gaps.extend(business_layer_errors(model))
+        try:
+            load_registrations(root, model)
+        except (ValueError, OSError) as error:
+            gaps.append("telemetry registration: " + str(error))
     digest = hashlib.sha256(json.dumps(current, sort_keys=True).encode()).hexdigest()
     return {
         "schema": "bo-maintenance/v1",

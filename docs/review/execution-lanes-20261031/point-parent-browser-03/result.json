@@ -1,0 +1,1134 @@
+{
+  "passed": false,
+  "checks": [
+    "two real users wait in two complete four-layer bands",
+    "independent collapse and all-group collapse retain only business rows"
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: {\"valid\":false,\"closed_calls\":0,\"legacy_events\":0,\"errors\":[\"no closed invocation was provided by enabled observation runs\"]}\n    at file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/tools/test_execution_bands_browser.mjs:131:10",
+  "errors": [],
+  "stdout": "{\"observer\": \"http://127.0.0.1:57466\", \"application\": \"http://127.0.0.1:57465\"}\r\n",
+  "stderr": "",
+  "diagnostic": {
+    "metrics": {
+      "nodes": 7,
+      "edges": 6,
+      "texts": 20,
+      "drawCount": 10,
+      "routeSolver": {
+        "wasm": 0,
+        "cached": 0,
+        "bundles": 0,
+        "routed": 6,
+        "unresolved": 0,
+        "total": 6,
+        "elapsed": 0.5999999046325684,
+        "busy": false
+      },
+      "webgl": true
+    },
+    "presentation": [
+      {
+        "id": "summary:advance|state-parameter|data|false|false|model",
+        "from": "advance",
+        "to": "state-parameter",
+        "type": "data",
+        "label": "current-state",
+        "evidence": "worker.py explicit nested spans",
+        "authored_label": "current-state",
+        "labels": {},
+        "members": [
+          {
+            "id": "current-state",
+            "from": "advance",
+            "to": "state-parameter",
+            "type": "data",
+            "label": "current-state",
+            "evidence": "worker.py explicit nested spans",
+            "authored_label": "current-state",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": false,
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:advance|rule_fact|guard|false|false|model",
+        "from": "advance",
+        "to": "rule_fact",
+        "type": "guard",
+        "label": "Observed result",
+        "evidence": "Actual query result",
+        "authored_label": "Observed result",
+        "labels": {},
+        "members": [
+          {
+            "id": "observed-grant",
+            "from": "check",
+            "to": "rule_fact",
+            "type": "guard",
+            "label": "Observed result",
+            "evidence": "Actual query result",
+            "authored_label": "Observed result",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": false,
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-pending|state-running|transition|false|false|model",
+        "from": "state-pending",
+        "to": "state-running",
+        "type": "transition",
+        "event": "start",
+        "label": "start · when available",
+        "conditions": [
+          "available"
+        ],
+        "unless": [],
+        "machine_transition": {
+          "index": 0,
+          "source": "pending",
+          "dest": "running",
+          "internal": false
+        },
+        "observed": false,
+        "current": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:start:pending:%5B%22state-running%22%2C%5B%22available%22%5D%2C%5B%5D%2Cfalse%5D",
+            "from": "state-pending",
+            "to": "state-running",
+            "type": "transition",
+            "event": "start",
+            "label": "start · when available",
+            "conditions": [
+              "available"
+            ],
+            "unless": [],
+            "machine_transition": {
+              "index": 0,
+              "source": "pending",
+              "dest": "running",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-pending|state-waiting|transition|false|false|model",
+        "from": "state-pending",
+        "to": "state-waiting",
+        "type": "transition",
+        "event": "start",
+        "label": "start · unless available",
+        "conditions": [],
+        "unless": [
+          "available"
+        ],
+        "machine_transition": {
+          "index": 1,
+          "source": "pending",
+          "dest": "waiting",
+          "internal": false
+        },
+        "observed": false,
+        "current": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:start:pending:%5B%22state-waiting%22%2C%5B%5D%2C%5B%22available%22%5D%2Cfalse%5D",
+            "from": "state-pending",
+            "to": "state-waiting",
+            "type": "transition",
+            "event": "start",
+            "label": "start · unless available",
+            "conditions": [],
+            "unless": [
+              "available"
+            ],
+            "machine_transition": {
+              "index": 1,
+              "source": "pending",
+              "dest": "waiting",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-waiting|state-running|transition|false|false|model",
+        "from": "state-waiting",
+        "to": "state-running",
+        "type": "transition",
+        "event": "resume",
+        "label": "resume · when available",
+        "conditions": [
+          "available"
+        ],
+        "unless": [],
+        "machine_transition": {
+          "index": 2,
+          "source": "waiting",
+          "dest": "running",
+          "internal": false
+        },
+        "observed": false,
+        "current": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:resume:waiting",
+            "from": "state-waiting",
+            "to": "state-running",
+            "type": "transition",
+            "event": "resume",
+            "label": "resume · when available",
+            "conditions": [
+              "available"
+            ],
+            "unless": [],
+            "machine_transition": {
+              "index": 2,
+              "source": "waiting",
+              "dest": "running",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-running|state-done|transition|false|false|model",
+        "from": "state-running",
+        "to": "state-done",
+        "type": "transition",
+        "event": "finish",
+        "label": "finish",
+        "conditions": [],
+        "unless": [],
+        "machine_transition": {
+          "index": 3,
+          "source": "running",
+          "dest": "done",
+          "internal": false
+        },
+        "observed": true,
+        "current": true,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:finish:running",
+            "from": "state-running",
+            "to": "state-done",
+            "type": "transition",
+            "event": "finish",
+            "label": "finish",
+            "conditions": [],
+            "unless": [],
+            "machine_transition": {
+              "index": 3,
+              "source": "running",
+              "dest": "done",
+              "internal": false
+            },
+            "observed": true,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      }
+    ],
+    "planar": [
+      {
+        "id": "summary:advance|state-parameter|data|false|false|model",
+        "start": {
+          "x": 316.4794829785272,
+          "y": 88.18879825984669,
+          "level": 0
+        },
+        "end": {
+          "x": 81.56737022136119,
+          "y": 557.5074425230395,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:advance|rule_fact|guard|false|false|model",
+        "start": {
+          "x": 316.4794829785272,
+          "y": 88.18879825984669,
+          "level": 0
+        },
+        "end": {
+          "x": -255.58216230423022,
+          "y": 58.86943110910764,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-pending|state-running|transition|false|false|model",
+        "start": {
+          "x": -128.1210380068522,
+          "y": -636.1541507641512,
+          "level": 0
+        },
+        "end": {
+          "x": -42.72956253948547,
+          "y": -928.7117122896393,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-pending|state-waiting|transition|false|false|model",
+        "start": {
+          "x": -128.1210380068522,
+          "y": -636.1541507641512,
+          "level": 0
+        },
+        "end": {
+          "x": 125.45203766280379,
+          "y": -467.3882797842352,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-waiting|state-running|transition|false|false|model",
+        "start": {
+          "x": 125.45203766280379,
+          "y": -467.3882797842352,
+          "level": 0
+        },
+        "end": {
+          "x": -42.72956253948547,
+          "y": -928.7117122896393,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-running|state-done|transition|false|false|model",
+        "start": {
+          "x": -42.72956253948547,
+          "y": -928.7117122896393,
+          "level": 0
+        },
+        "end": {
+          "x": 210.49851676553047,
+          "y": -759.680066302363,
+          "level": 0
+        },
+        "vertices": 25
+      }
+    ],
+    "spatial": null,
+    "timeline": {
+      "eventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:18",
+      "raw": 18,
+      "window": {
+        "start": 0,
+        "end": 2442.007080078125
+      },
+      "range": null,
+      "rows": [
+        {
+          "id": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:business",
+          "layer": "business",
+          "group": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1",
+          "groupStart": true,
+          "groupKind": "invocation",
+          "folded": false,
+          "members": [
+            "advance"
+          ]
+        },
+        {
+          "id": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:state",
+          "layer": "state",
+          "group": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1",
+          "groupStart": false,
+          "groupKind": "invocation",
+          "folded": false,
+          "members": [
+            "state-parameter",
+            "state-pending",
+            "state-running"
+          ]
+        },
+        {
+          "id": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:rules",
+          "layer": "rules",
+          "group": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1",
+          "groupStart": false,
+          "groupKind": "invocation",
+          "folded": false,
+          "members": [
+            "check",
+            "rule_fact"
+          ]
+        },
+        {
+          "id": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:execution",
+          "layer": "execution",
+          "group": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1",
+          "groupStart": false,
+          "groupKind": "invocation",
+          "folded": false,
+          "members": [
+            "field:advance:in:state",
+            "field:advance:in:actor",
+            "field:advance:out:state",
+            "query",
+            "field:query:out:allowed",
+            "field:rule_fact:out:allowed",
+            "field:check:out:allowed"
+          ]
+        },
+        {
+          "id": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:business",
+          "layer": "business",
+          "group": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4",
+          "groupStart": true,
+          "groupKind": "invocation",
+          "folded": false,
+          "members": [
+            "advance"
+          ]
+        },
+        {
+          "id": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:state",
+          "layer": "state",
+          "group": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4",
+          "groupStart": false,
+          "groupKind": "invocation",
+          "folded": false,
+          "members": [
+            "state-parameter",
+            "state-pending",
+            "state-running"
+          ]
+        },
+        {
+          "id": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:rules",
+          "layer": "rules",
+          "group": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4",
+          "groupStart": false,
+          "groupKind": "invocation",
+          "folded": false,
+          "members": [
+            "check",
+            "rule_fact"
+          ]
+        },
+        {
+          "id": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:execution",
+          "layer": "execution",
+          "group": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4",
+          "groupStart": false,
+          "groupKind": "invocation",
+          "folded": false,
+          "members": [
+            "field:advance:in:state",
+            "field:advance:in:actor",
+            "field:advance:out:state",
+            "query",
+            "field:query:out:allowed",
+            "field:rule_fact:out:allowed",
+            "field:check:out:allowed"
+          ]
+        }
+      ],
+      "executions": [
+        {
+          "id": "execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1",
+          "start": 5.502197265625,
+          "end": 2442.007080078125,
+          "root": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1",
+          "kind": "invocation",
+          "lane": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1"
+        },
+        {
+          "id": "execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4",
+          "start": 7.357177734375,
+          "end": 2442.007080078125,
+          "root": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4",
+          "kind": "invocation",
+          "lane": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4"
+        }
+      ],
+      "groups": 2,
+      "invocationGroups": 2,
+      "unassignedObservations": 0,
+      "points": [
+        {
+          "raw": 0,
+          "time": 0
+        },
+        {
+          "raw": 1,
+          "time": 5.502197265625
+        },
+        {
+          "raw": 2,
+          "time": 5.612060546875
+        },
+        {
+          "raw": 3,
+          "time": 5.734130859375
+        },
+        {
+          "raw": 4,
+          "time": 7.357177734375
+        },
+        {
+          "raw": 5,
+          "time": 7.425048828125
+        },
+        {
+          "raw": 6,
+          "time": 7.51708984375
+        },
+        {
+          "raw": 11,
+          "time": 9.463134765625
+        },
+        {
+          "raw": 12,
+          "time": 9.505126953125
+        },
+        {
+          "raw": 13,
+          "time": 9.529052734375
+        },
+        {
+          "raw": 14,
+          "time": 9.55419921875
+        },
+        {
+          "raw": 15,
+          "time": 9.81298828125
+        },
+        {
+          "raw": 16,
+          "time": 9.85009765625
+        },
+        {
+          "raw": 17,
+          "time": 9.87109375
+        },
+        {
+          "raw": 18,
+          "time": 9.89208984375
+        }
+      ],
+      "transfers": [],
+      "clock": "time",
+      "scroll": 0,
+      "painted": 23,
+      "flows": 12,
+      "source": "recording",
+      "depth": "all",
+      "layerMode": "through",
+      "lifecycles": [
+        {
+          "node": "advance",
+          "start": 5.502197265625,
+          "end": 2442.007080078125,
+          "duration": null,
+          "unfinished": true,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1",
+          "raw": 1,
+          "last": 18,
+          "stages": [
+            {
+              "state": "checking",
+              "label": "Checking access",
+              "start": 5.502197265625,
+              "end": 9.55419921875,
+              "registered": true
+            },
+            {
+              "state": "awaiting_release",
+              "label": "Waiting for confirmation",
+              "start": 9.55419921875,
+              "end": 2442.007080078125,
+              "registered": true
+            }
+          ]
+        },
+        {
+          "node": "advance",
+          "start": 7.357177734375,
+          "end": 2442.007080078125,
+          "duration": null,
+          "unfinished": true,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4",
+          "raw": 4,
+          "last": 18,
+          "stages": [
+            {
+              "state": "checking",
+              "label": "Checking access",
+              "start": 7.357177734375,
+              "end": 9.89208984375,
+              "registered": true
+            },
+            {
+              "state": "awaiting_release",
+              "label": "Waiting for confirmation",
+              "start": 9.89208984375,
+              "end": 2442.007080078125,
+              "registered": true
+            }
+          ]
+        },
+        {
+          "node": "state-pending",
+          "start": 5.612060546875,
+          "end": 5.734130859375,
+          "duration": 0.1220703125,
+          "unfinished": false,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:2",
+          "raw": 2,
+          "last": 3
+        },
+        {
+          "node": "state-pending",
+          "start": 7.425048828125,
+          "end": 7.51708984375,
+          "duration": 0.092041015625,
+          "unfinished": false,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:5",
+          "raw": 5,
+          "last": 6
+        },
+        {
+          "node": "state-running",
+          "start": 5.734130859375,
+          "end": 2442.007080078125,
+          "duration": null,
+          "unfinished": true,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:3",
+          "raw": 3,
+          "last": 18
+        },
+        {
+          "node": "state-running",
+          "start": 7.51708984375,
+          "end": 2442.007080078125,
+          "duration": null,
+          "unfinished": true,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:6",
+          "raw": 6,
+          "last": 18
+        },
+        {
+          "node": "check",
+          "start": 7.698974609375,
+          "end": 9.529052734375,
+          "duration": 1.830078125,
+          "unfinished": false,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:7",
+          "raw": 7,
+          "last": 13,
+          "stages": [
+            {
+              "state": "running",
+              "label": "Running",
+              "start": 7.698974609375,
+              "end": 9.529052734375,
+              "registered": false
+            }
+          ],
+          "terminal": {
+            "boundary": "end",
+            "state": "returned",
+            "label": "Returned",
+            "kind": "ended",
+            "registered": false,
+            "termination": "return"
+          }
+        },
+        {
+          "node": "check",
+          "start": 8.963134765625,
+          "end": 9.87109375,
+          "duration": 0.907958984375,
+          "unfinished": false,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:9",
+          "raw": 9,
+          "last": 17,
+          "stages": [
+            {
+              "state": "running",
+              "label": "Running",
+              "start": 8.963134765625,
+              "end": 9.87109375,
+              "registered": false
+            }
+          ],
+          "terminal": {
+            "boundary": "end",
+            "state": "returned",
+            "label": "Returned",
+            "kind": "ended",
+            "registered": false,
+            "termination": "return"
+          }
+        },
+        {
+          "node": "query",
+          "start": 7.75,
+          "end": 9.463134765625,
+          "duration": 1.713134765625,
+          "unfinished": false,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:8",
+          "raw": 8,
+          "last": 11,
+          "stages": [
+            {
+              "state": "running",
+              "label": "Running",
+              "start": 7.75,
+              "end": 9.463134765625,
+              "registered": false
+            }
+          ],
+          "terminal": {
+            "boundary": "end",
+            "state": "returned",
+            "label": "Returned",
+            "kind": "ended",
+            "registered": false,
+            "termination": "return"
+          }
+        },
+        {
+          "node": "query",
+          "start": 9.024169921875,
+          "end": 9.81298828125,
+          "duration": 0.788818359375,
+          "unfinished": false,
+          "clippedStart": false,
+          "entryEventId": "3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:10",
+          "raw": 10,
+          "last": 15,
+          "stages": [
+            {
+              "state": "running",
+              "label": "Running",
+              "start": 9.024169921875,
+              "end": 9.81298828125,
+              "registered": false
+            }
+          ],
+          "terminal": {
+            "boundary": "end",
+            "state": "returned",
+            "label": "Returned",
+            "kind": "ended",
+            "registered": false,
+            "termination": "return"
+          }
+        }
+      ],
+      "paintMs": 0.5,
+      "routes": [
+        {
+          "key": "2:3:3:transition",
+          "type": "transition",
+          "raw": 3,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:state",
+          "fromRow": 1,
+          "toRow": 1,
+          "route": [
+            {
+              "x": 189.09952120783075,
+              "y": 86
+            },
+            {
+              "x": 189.09952120783075,
+              "y": 81
+            },
+            {
+              "x": 201.09952120783075,
+              "y": 81
+            },
+            {
+              "x": 201.09952120783075,
+              "y": 101
+            },
+            {
+              "x": 189.09952120783075,
+              "y": 101
+            },
+            {
+              "x": 189.09952120783075,
+              "y": 98
+            }
+          ]
+        },
+        {
+          "key": "5:6:6:transition",
+          "type": "transition",
+          "raw": 6,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:state",
+          "fromRow": 5,
+          "toRow": 5,
+          "route": [
+            {
+              "x": 190.0632800267854,
+              "y": 198
+            },
+            {
+              "x": 190.0632800267854,
+              "y": 191
+            },
+            {
+              "x": 202.0632800267854,
+              "y": 191
+            },
+            {
+              "x": 202.0632800267854,
+              "y": 213
+            },
+            {
+              "x": 190.0632800267854,
+              "y": 213
+            },
+            {
+              "x": 190.0632800267854,
+              "y": 210
+            }
+          ]
+        },
+        {
+          "key": "1:7:7:call",
+          "type": "call",
+          "raw": 7,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:rules",
+          "fromRow": 0,
+          "toRow": 2,
+          "route": [
+            {
+              "x": 190.1615958312659,
+              "y": 64
+            },
+            {
+              "x": 206.1615958312659,
+              "y": 64
+            },
+            {
+              "x": 206.1615958312659,
+              "y": 120
+            },
+            {
+              "x": 190.1615958312659,
+              "y": 120
+            }
+          ]
+        },
+        {
+          "key": "7:8:8:call",
+          "type": "call",
+          "raw": 8,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:execution",
+          "fromRow": 2,
+          "toRow": 3,
+          "route": [
+            {
+              "x": 190.18917704352958,
+              "y": 120
+            },
+            {
+              "x": 200.18917704352958,
+              "y": 120
+            },
+            {
+              "x": 200.18917704352958,
+              "y": 148
+            },
+            {
+              "x": 190.18917704352958,
+              "y": 148
+            }
+          ]
+        },
+        {
+          "key": "4:9:9:call",
+          "type": "call",
+          "raw": 9,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:rules",
+          "fromRow": 4,
+          "toRow": 6,
+          "route": [
+            {
+              "x": 190.84492366428623,
+              "y": 176
+            },
+            {
+              "x": 203.84492366428623,
+              "y": 176
+            },
+            {
+              "x": 203.84492366428623,
+              "y": 232
+            },
+            {
+              "x": 190.84492366428623,
+              "y": 232
+            }
+          ]
+        },
+        {
+          "key": "9:10:10:call",
+          "type": "call",
+          "raw": 10,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:execution",
+          "fromRow": 6,
+          "toRow": 7,
+          "route": [
+            {
+              "x": 190.87791554498438,
+              "y": 232
+            },
+            {
+              "x": 206.87791554498438,
+              "y": 232
+            },
+            {
+              "x": 206.87791554498438,
+              "y": 260
+            },
+            {
+              "x": 190.87791554498438,
+              "y": 260
+            }
+          ]
+        },
+        {
+          "key": "11:7:11:return",
+          "type": "return",
+          "raw": 11,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:rules",
+          "fromRow": 3,
+          "toRow": 2,
+          "route": [
+            {
+              "x": 191.11519315096555,
+              "y": 148
+            },
+            {
+              "x": 201.11519315096555,
+              "y": 148
+            },
+            {
+              "x": 201.11519315096555,
+              "y": 120
+            },
+            {
+              "x": 191.11519315096555,
+              "y": 120
+            }
+          ]
+        },
+        {
+          "key": "7:12:12:observation",
+          "type": "observation",
+          "raw": 12,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:rules",
+          "fromRow": 2,
+          "toRow": 2,
+          "route": [
+            {
+              "x": 191.13789156488588,
+              "y": 114
+            },
+            {
+              "x": 191.13789156488588,
+              "y": 107
+            },
+            {
+              "x": 203.13789156488588,
+              "y": 107
+            },
+            {
+              "x": 203.13789156488588,
+              "y": 129
+            },
+            {
+              "x": 191.13789156488588,
+              "y": 129
+            },
+            {
+              "x": 191.13789156488588,
+              "y": 126
+            }
+          ]
+        },
+        {
+          "key": "13:1:13:return",
+          "type": "return",
+          "raw": 13,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:1:business",
+          "fromRow": 2,
+          "toRow": 0,
+          "route": [
+            {
+              "x": 191.15082438211957,
+              "y": 120
+            },
+            {
+              "x": 207.15082438211957,
+              "y": 120
+            },
+            {
+              "x": 207.15082438211957,
+              "y": 64
+            },
+            {
+              "x": 191.15082438211957,
+              "y": 64
+            }
+          ]
+        },
+        {
+          "key": "15:9:15:return",
+          "type": "return",
+          "raw": 15,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:rules",
+          "fromRow": 7,
+          "toRow": 6,
+          "route": [
+            {
+              "x": 191.3043026111274,
+              "y": 260
+            },
+            {
+              "x": 201.3043026111274,
+              "y": 260
+            },
+            {
+              "x": 201.3043026111274,
+              "y": 232
+            },
+            {
+              "x": 191.3043026111274,
+              "y": 232
+            }
+          ]
+        },
+        {
+          "key": "9:16:16:observation",
+          "type": "observation",
+          "raw": 16,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:rules",
+          "fromRow": 6,
+          "toRow": 6,
+          "route": [
+            {
+              "x": 191.32436167459187,
+              "y": 226
+            },
+            {
+              "x": 191.32436167459187,
+              "y": 221
+            },
+            {
+              "x": 203.32436167459187,
+              "y": 221
+            },
+            {
+              "x": 203.32436167459187,
+              "y": 241
+            },
+            {
+              "x": 191.32436167459187,
+              "y": 241
+            },
+            {
+              "x": 191.32436167459187,
+              "y": 238
+            }
+          ]
+        },
+        {
+          "key": "17:4:17:return",
+          "type": "return",
+          "raw": 17,
+          "row": "lane:execution:3255bb56501f48aaa8ebbb41ec8cbf41:40df94119dc046079250dff0a2589c3e:4:business",
+          "fromRow": 6,
+          "toRow": 4,
+          "route": [
+            {
+              "x": 191.33571088155205,
+              "y": 232
+            },
+            {
+              "x": 207.33571088155205,
+              "y": 232
+            },
+            {
+              "x": 207.33571088155205,
+              "y": 176
+            },
+            {
+              "x": 191.33571088155205,
+              "y": 176
+            }
+          ]
+        }
+      ],
+      "zooming": false,
+      "geometry": {
+        "left": 186,
+        "plot": 1320,
+        "top": 50
+      }
+    }
+  }
+}

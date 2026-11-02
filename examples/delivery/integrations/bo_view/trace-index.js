@@ -1,11 +1,12 @@
 /** Immutable execution index. Static projections locate facts and never become calls. */
 import { boFacts } from "./replay-steps.js";
 import { layerOf, layers } from "./graph-layers.js";
-import { traceTime } from "./trace-evidence.js";
+import { traceTime, configurationScopeMatches } from "./trace-evidence.js";
 import { contextualLifecycles } from "./trace-context.js";
 import { stateResidencies, activityResidencies } from "./trace-residencies.js";
 import { indexFlows } from "./trace-flows.js";
 import { lowerBound } from "./trace-viewport.js";
+import { executionIndex, executionRows } from "./trace-executions.js";
 
 const canonical = (node) => node.referenceOf || node.event_node || node.id;
 
@@ -95,12 +96,15 @@ export function buildTraceIndex(
   const aliases = projections(all, edges),
     rows = new Map(),
     eventRows = new Map();
-  const add = (node, raw, projected, change = null) => {
+  const add = (node, raw, projected, change = null, contextEvent = null) => {
     if (!rows.has(node.id))
       rows.set(node.id, { id: node.id, node, layer: layerOf(node), marks: [], slices: [] });
     const row = rows.get(node.id);
     const previous = row.marks.at(-1);
-    if (previous?.raw === raw) {
+    if (
+      previous?.raw === raw &&
+      (previous.contextEvent?.id || null) === (contextEvent?.id || null)
+    ) {
       if (change) previous.changes.push(change);
       previous.projected &&= projected;
       return;
@@ -111,6 +115,7 @@ export function buildTraceIndex(
       time: axis.times[raw],
       projected,
       changes: change ? [change] : [],
+      ...(contextEvent ? { contextEvent } : {}),
     });
     if (!eventRows.has(raw)) eventRows.set(raw, []);
     eventRows.get(raw).push(node.id);
@@ -166,7 +171,7 @@ export function buildTraceIndex(
         })),
         duration:
           !slice.unfinished && !slice.ambiguous && axis.ordered && start !== null && end !== null
-            ? end - start
+            ? axis.times[slice.last] - axis.times[slice.raw]
             : null,
       });
     }
@@ -174,8 +179,7 @@ export function buildTraceIndex(
   for (const original of calls.contextSources)
     for (const node of aliases.get(original.node) || []) {
       if (node.field) continue;
-      add(node, 0, true);
-      rows.get(node.id).marks.find((mark) => mark.raw === 0).contextEvent = original;
+      add(node, 0, true, null, original);
     }
   const occupancy = stateResidencies(recording, items, facts.changes, all, axis);
   for (const slice of [
@@ -189,7 +193,7 @@ export function buildTraceIndex(
         .get(slice.node)
         ?.slices.some(
           (call) =>
-            items[call.raw].attempt === slice.scope &&
+            configurationScopeMatches(items[call.raw], slice.scope) &&
             call.raw <= slice.raw &&
             call.last >= slice.last,
         )
@@ -205,7 +209,7 @@ export function buildTraceIndex(
     let end = -Infinity;
     row.maxEnds = row.slices.map((slice) => (end = Math.max(end, slice.end)));
   }
-  return {
+  const result = {
     recording,
     items,
     axis,
@@ -215,7 +219,11 @@ export function buildTraceIndex(
     links: [...calls.links, ...occupancy.links],
     flows: indexFlows([...calls.links, ...occupancy.links], axis.times),
     lifecycles: calls,
+    all,
+    layerOf,
   };
+  result.executions = executionIndex(result);
+  return result;
 }
 
 /** Project the index to visible graph identities; hidden nodes do not reserve rows. */
@@ -225,12 +233,13 @@ export function traceRows(
     visible,
     scope = "view",
     order = layers.map((layer) => layer.id),
-    expanded = [],
+    collapsed = [],
+    collapseAll = false,
     depth = "all",
     layerMode = "through",
   } = {},
 ) {
-  const groups = new Map();
+  if (order.includes("business")) order = ["business", ...order.filter((id) => id !== "business")];
   const boundary = order.indexOf(depth);
   const included = new Set(
     depth === "all" || boundary < 0
@@ -239,41 +248,13 @@ export function traceRows(
         ? [depth]
         : order.slice(0, boundary + 1),
   );
-  for (const row of index.rows.values()) {
-    if (!included.has(row.layer)) continue;
-    if (scope === "view" && !visible?.has(row.id)) continue;
-    if (!groups.has(row.layer)) groups.set(row.layer, []);
-    groups.get(row.layer).push(row);
-  }
-  const result = [];
-  for (const id of order) {
-    const children = groups.get(id);
-    if (!children?.length) continue;
-    const layer = layers.find((item) => item.id === id);
-    const marks = children.flatMap((row) => row.marks).sort((a, b) => a.raw - b.raw);
-    const unique = marks.filter((mark, i) => !i || mark.raw !== marks[i - 1].raw);
-    const slices = children
-      .flatMap((row) => row.slices)
-      .sort((a, b) => a.start - b.start || a.raw - b.raw);
-    let maxEnd = -Infinity;
-    result.push({
-      id: "layer:" + id,
-      layer: id,
-      header: true,
-      label: layer.label,
-      color: layer.color,
-      count: children.length,
-      members: children.map((row) => row.id),
-      marks: unique,
-      slices,
-      maxEnds: slices.map((slice) => (maxEnd = Math.max(maxEnd, slice.end))),
-    });
-    if (expanded.includes(id))
-      result.push(
-        ...children.sort((a, b) => a.marks[0].raw - b.marks[0].raw || a.id.localeCompare(b.id)),
-      );
-  }
-  return result;
+  return executionRows(index, {
+    visible,
+    scope,
+    order,
+    included,
+    collapsed: collapseAll ? index.executions.lanes.map((lane) => lane.id) : collapsed,
+  });
 }
 
 export function tracePoints(rows, index, plan) {

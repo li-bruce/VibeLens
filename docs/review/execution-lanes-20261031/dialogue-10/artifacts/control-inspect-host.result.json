@@ -1,0 +1,3032 @@
+{
+  "valid": true,
+  "result": {
+    "project_id": "execution_bands_dialogue_20261031_03",
+    "model_revision": "1",
+    "nodes": [
+      {
+        "id": "sign_in",
+        "label": "sign_in",
+        "kind": "action",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.login"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "list_users",
+        "label": "list_users",
+        "kind": "action",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.users"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "upload_file",
+        "label": "upload_file",
+        "kind": "action",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.upload"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "review_file",
+        "label": "review_file",
+        "kind": "action",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.review"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "share_file",
+        "label": "share_file",
+        "kind": "action",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.share"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "access_file",
+        "label": "access_file",
+        "kind": "action",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.access"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "list_files",
+        "label": "list_files",
+        "kind": "action",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.visible_files"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "http_request",
+        "label": "http_request",
+        "kind": "action",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.before_request"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "sign_out",
+        "label": "sign_out",
+        "kind": "action",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.logout"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "authorize_file",
+        "label": "Authorize file operation",
+        "kind": "decision",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.authorize"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "state_transition",
+        "label": "Apply declared transition",
+        "kind": "function",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.advance"
+        },
+        "semantic_roles": [
+          "business"
+        ]
+      },
+      {
+        "id": "state_new",
+        "label": "new",
+        "kind": "state",
+        "parent": "review_file"
+      },
+      {
+        "id": "pending_review",
+        "label": "pending",
+        "kind": "state",
+        "parent": "review_file"
+      },
+      {
+        "id": "approved",
+        "label": "approved",
+        "kind": "state",
+        "parent": "review_file"
+      },
+      {
+        "id": "review_not_approved",
+        "label": "rejected",
+        "kind": "state",
+        "parent": "review_file"
+      },
+      {
+        "id": "assigned_reviewer",
+        "label": "Assigned reviewer",
+        "kind": "data"
+      },
+      {
+        "id": "designated_recipient",
+        "label": "Designated recipient",
+        "kind": "data"
+      },
+      {
+        "id": "uploader_access",
+        "label": "Uploader and reviewer access",
+        "kind": "data"
+      },
+      {
+        "id": "source:app/predicates.py::same_identity",
+        "label": "same_identity",
+        "kind": "function",
+        "source": {
+          "path": "app/predicates.py",
+          "symbol": "same_identity"
+        }
+      },
+      {
+        "id": "source:app/predicates.py::operation_allowed",
+        "label": "operation_allowed",
+        "kind": "function",
+        "source": {
+          "path": "app/predicates.py",
+          "symbol": "operation_allowed"
+        }
+      },
+      {
+        "id": "source:app/storage.py::configure_sqlite",
+        "label": "configure_sqlite",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "configure_sqlite"
+        }
+      },
+      {
+        "id": "source:app/storage.py::Store.initialize",
+        "label": "Store.initialize",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.initialize"
+        }
+      },
+      {
+        "id": "source:app/storage.py::Store.write_transaction",
+        "label": "Store.write_transaction",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.write_transaction"
+        }
+      },
+      {
+        "id": "source:app/storage.py::Store.read_users",
+        "label": "Store.read_users",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.read_users"
+        }
+      },
+      {
+        "id": "source:app/storage.py::Store.read_file",
+        "label": "Store.read_file",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.read_file"
+        }
+      },
+      {
+        "id": "source:app/storage.py::Store.read_candidates",
+        "label": "Store.read_candidates",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.read_candidates"
+        }
+      },
+      {
+        "id": "source:app/storage.py::Store.insert_file",
+        "label": "Store.insert_file",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.insert_file"
+        }
+      },
+      {
+        "id": "source:app/storage.py::Store.update_file",
+        "label": "Store.update_file",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.update_file"
+        }
+      },
+      {
+        "id": "source:app/storage.py::Store.snapshots",
+        "label": "Store.snapshots",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.snapshots"
+        }
+      },
+      {
+        "id": "source:app/storage.py::metadata_view",
+        "label": "metadata_view",
+        "kind": "function",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "metadata_view"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.after_request",
+        "label": "WebRoutes.after_request",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.after_request"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.teardown_request",
+        "label": "WebRoutes.teardown_request",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.teardown_request"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.actor",
+        "label": "WebRoutes.actor",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.actor"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.index",
+        "label": "WebRoutes.index",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.index"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.login",
+        "label": "WebRoutes.login",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.login"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.upload",
+        "label": "WebRoutes.upload",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.upload"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.review",
+        "label": "WebRoutes.review",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.review"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.share",
+        "label": "WebRoutes.share",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.share"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.file_info",
+        "label": "WebRoutes.file_info",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.file_info"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.download",
+        "label": "WebRoutes.download",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.download"
+        }
+      },
+      {
+        "id": "source:app/web.py::WebRoutes.error",
+        "label": "WebRoutes.error",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.error"
+        }
+      },
+      {
+        "id": "source:app/web.py::create_app",
+        "label": "create_app",
+        "kind": "function",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "create_app"
+        }
+      },
+      {
+        "id": "source:bo_stategraph/native_executor.py::bo_list",
+        "label": "bo_list",
+        "kind": "function",
+        "source": {
+          "path": "bo_stategraph/native_executor.py",
+          "symbol": "bo_list"
+        }
+      },
+      {
+        "id": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "label": "BOExecutor.step",
+        "kind": "function",
+        "source": {
+          "path": "bo_stategraph/native_executor.py",
+          "symbol": "BOExecutor.step"
+        }
+      },
+      {
+        "id": "source:bo_stategraph/native_executor.py::BOExecutor.step.guard",
+        "label": "BOExecutor.step.guard",
+        "kind": "function",
+        "source": {
+          "path": "bo_stategraph/native_executor.py",
+          "symbol": "BOExecutor.step.guard"
+        }
+      },
+      {
+        "id": "source:bo_stategraph/workflow.py::FileWorkflow.step",
+        "label": "FileWorkflow.step",
+        "kind": "function",
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "FileWorkflow.step"
+        }
+      },
+      {
+        "id": "source:bo_stategraph/workflow.py::file_context",
+        "label": "file_context",
+        "kind": "function",
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "file_context"
+        }
+      },
+      {
+        "id": "source:bo_stategraph/workflow.py::machine_snapshot",
+        "label": "machine_snapshot",
+        "kind": "function",
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "machine_snapshot"
+        }
+      },
+      {
+        "id": "login_result",
+        "label": "Authentication result",
+        "kind": "data",
+        "parent": "sign_in"
+      },
+      {
+        "id": "policy:network",
+        "label": "Rules",
+        "kind": "decision"
+      },
+      {
+        "id": "policy:actor",
+        "label": "当前用户",
+        "kind": "data",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:uploader",
+        "label": "上传者",
+        "kind": "data",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:reviewer",
+        "label": "指定审核人",
+        "kind": "data",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:recipient",
+        "label": "指定接收人",
+        "kind": "data",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:logged_in",
+        "label": "已登录",
+        "kind": "data",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:approved",
+        "label": "已通过审核",
+        "kind": "data",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:shared",
+        "label": "已向接收人分享",
+        "kind": "data",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:reviewer_exists",
+        "label": "审核人是已有用户",
+        "kind": "data",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:actor_is_uploader",
+        "label": "当前用户是上传者",
+        "kind": "decision",
+        "parent": "policy:network",
+        "source": {
+          "path": "app/predicates.py",
+          "symbol": "same_identity"
+        }
+      },
+      {
+        "id": "policy:actor_is_reviewer",
+        "label": "当前用户是指定审核人",
+        "kind": "decision",
+        "parent": "policy:network",
+        "source": {
+          "path": "app/predicates.py",
+          "symbol": "same_identity"
+        }
+      },
+      {
+        "id": "policy:actor_is_recipient",
+        "label": "当前用户是指定接收人",
+        "kind": "decision",
+        "parent": "policy:network",
+        "source": {
+          "path": "app/predicates.py",
+          "symbol": "same_identity"
+        }
+      },
+      {
+        "id": "policy:reviewer_is_uploader",
+        "label": "审核人与上传者是同一人",
+        "kind": "decision",
+        "parent": "policy:network",
+        "source": {
+          "path": "app/predicates.py",
+          "symbol": "same_identity"
+        }
+      },
+      {
+        "id": "policy:reviewer_is_other",
+        "label": "NOT · 审核人不是上传者",
+        "kind": "decision",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:upload_allowed",
+        "label": "AND · 登录且选择一位已有的其他同事",
+        "kind": "decision",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:review_allowed",
+        "label": "AND · 仅指定审核人可审核",
+        "kind": "decision",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:share_allowed",
+        "label": "AND · 登录且通过审核且为上传者",
+        "kind": "decision",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:recipient_access",
+        "label": "AND · 通过且已分享给本人",
+        "kind": "decision",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:file_access_basis",
+        "label": "OR · 上传者、审核人或满足条件的接收人",
+        "kind": "decision",
+        "parent": "policy:network"
+      },
+      {
+        "id": "policy:access_allowed",
+        "label": "AND · 登录并具备读取资格",
+        "kind": "decision",
+        "parent": "policy:network"
+      },
+      {
+        "id": "db:team_files:store",
+        "label": "Team Files SQLite",
+        "kind": "data"
+      },
+      {
+        "id": "db:team_files:table%3Afiles",
+        "label": "files",
+        "kind": "data",
+        "parent": "db:team_files:store"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:content",
+        "label": "content",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:filename",
+        "label": "filename",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:id",
+        "label": "id",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:journal",
+        "label": "journal",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:recipient_id",
+        "label": "recipient_id",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:reviewer_id",
+        "label": "reviewer_id",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:revision",
+        "label": "revision",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:size",
+        "label": "size",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:state",
+        "label": "state",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Afiles:field:uploader_id",
+        "label": "uploader_id",
+        "kind": "data",
+        "parent": "db:team_files:table%3Afiles"
+      },
+      {
+        "id": "db:team_files:table%3Ausers",
+        "label": "users",
+        "kind": "data",
+        "parent": "db:team_files:store"
+      },
+      {
+        "id": "db:team_files:table%3Ausers:field:display_name",
+        "label": "display_name",
+        "kind": "data",
+        "parent": "db:team_files:table%3Ausers"
+      },
+      {
+        "id": "db:team_files:table%3Ausers:field:id",
+        "label": "id",
+        "kind": "data",
+        "parent": "db:team_files:table%3Ausers"
+      },
+      {
+        "id": "db:team_files:table%3Ausers:field:password_hash",
+        "label": "password_hash",
+        "kind": "data",
+        "parent": "db:team_files:table%3Ausers"
+      },
+      {
+        "id": "db_users",
+        "label": "Read existing accounts",
+        "kind": "function",
+        "parent": "list_users",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.read_users"
+        }
+      },
+      {
+        "id": "db_file",
+        "label": "Read current file facts",
+        "kind": "function",
+        "parent": "review_file",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.read_file"
+        }
+      },
+      {
+        "id": "db_candidates",
+        "label": "Read visible file candidates",
+        "kind": "function",
+        "parent": "review_file",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.read_candidates"
+        }
+      },
+      {
+        "id": "db_insert",
+        "label": "Persist uploaded file",
+        "kind": "function",
+        "parent": "upload_file",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.insert_file"
+        }
+      },
+      {
+        "id": "db_update",
+        "label": "Commit review or recipient",
+        "kind": "function",
+        "parent": "review_file",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.update_file"
+        }
+      },
+      {
+        "id": "db_transaction",
+        "label": "File transaction",
+        "kind": "function",
+        "parent": "upload_file",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "Store.write_transaction"
+        }
+      },
+      {
+        "id": "db_metadata",
+        "label": "Select file metadata",
+        "kind": "function",
+        "parent": "access_file",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "metadata_view"
+        }
+      },
+      {
+        "id": "code.4d30fd12e3103997",
+        "label": "FileService.authorize",
+        "kind": "function",
+        "parent": "upload_file",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.authorize"
+        }
+      },
+      {
+        "id": "code.dcb3cefb04ba1a1d",
+        "label": "FileService.advance",
+        "kind": "function",
+        "parent": "upload_file",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.advance"
+        }
+      },
+      {
+        "id": "code.30326d5d01115958",
+        "label": "FileService.authorize",
+        "kind": "function",
+        "parent": "review_file",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.authorize"
+        }
+      },
+      {
+        "id": "code.7ac1e3434af643f0",
+        "label": "FileService.advance",
+        "kind": "function",
+        "parent": "review_file",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.advance"
+        }
+      },
+      {
+        "id": "code.3edeec461b08e152",
+        "label": "metadata_view",
+        "kind": "function",
+        "parent": "review_file",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "metadata_view"
+        }
+      },
+      {
+        "id": "code.2b4ce20bc4971c2a",
+        "label": "FileService.authorize",
+        "kind": "function",
+        "parent": "share_file",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.authorize"
+        }
+      },
+      {
+        "id": "code.f01e24ca5c7b9b65",
+        "label": "FileService.advance",
+        "kind": "function",
+        "parent": "share_file",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.advance"
+        }
+      },
+      {
+        "id": "code.94c27a9ca04798cb",
+        "label": "metadata_view",
+        "kind": "function",
+        "parent": "share_file",
+        "source": {
+          "path": "app/storage.py",
+          "symbol": "metadata_view"
+        }
+      },
+      {
+        "id": "code.ffe99097306a6c85",
+        "label": "FileService.authorize",
+        "kind": "function",
+        "parent": "access_file",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.authorize"
+        }
+      },
+      {
+        "id": "code.994b0f065dc58597",
+        "label": "FileService.access",
+        "kind": "function",
+        "parent": "list_files",
+        "source": {
+          "path": "app/service.py",
+          "symbol": "FileService.access"
+        }
+      },
+      {
+        "id": "code.61ad245cb873fe20",
+        "label": "file_context",
+        "kind": "function",
+        "parent": "state_transition",
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "file_context"
+        }
+      },
+      {
+        "id": "code.fd38ba1787a6d3a9",
+        "label": "WebRoutes.actor",
+        "kind": "function",
+        "parent": "source:app/web.py::WebRoutes.index",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.actor"
+        }
+      },
+      {
+        "id": "code.b878e8141016daef",
+        "label": "WebRoutes.actor",
+        "kind": "function",
+        "parent": "source:app/web.py::WebRoutes.upload",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.actor"
+        }
+      },
+      {
+        "id": "code.ca48fd53b62b48f8",
+        "label": "WebRoutes.actor",
+        "kind": "function",
+        "parent": "source:app/web.py::WebRoutes.review",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.actor"
+        }
+      },
+      {
+        "id": "code.eb2407e3fdac0c27",
+        "label": "WebRoutes.actor",
+        "kind": "function",
+        "parent": "source:app/web.py::WebRoutes.share",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.actor"
+        }
+      },
+      {
+        "id": "code.a3855bb372489ebc",
+        "label": "WebRoutes.actor",
+        "kind": "function",
+        "parent": "source:app/web.py::WebRoutes.file_info",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.actor"
+        }
+      },
+      {
+        "id": "code.745c91a59eaa5249",
+        "label": "WebRoutes.actor",
+        "kind": "function",
+        "parent": "source:app/web.py::WebRoutes.download",
+        "source": {
+          "path": "app/web.py",
+          "symbol": "WebRoutes.actor"
+        }
+      },
+      {
+        "id": "code.90a64a540715b32d",
+        "label": "bo_list",
+        "kind": "function",
+        "parent": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "source": {
+          "path": "bo_stategraph/native_executor.py",
+          "symbol": "bo_list"
+        }
+      },
+      {
+        "id": "code.32dd78719f02e47c",
+        "label": "file_context",
+        "kind": "function",
+        "parent": "source:bo_stategraph/workflow.py::machine_snapshot",
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "file_context"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "transition:submit",
+        "from": "state_new",
+        "to": "pending_review",
+        "type": "flow",
+        "event": "submit",
+        "conditions": "operation_allowed",
+        "label": "submit",
+        "evidence": "The canonical machine consumed by FileWorkflow."
+      },
+      {
+        "id": "transition:approve",
+        "from": "pending_review",
+        "to": "approved",
+        "type": "flow",
+        "event": "approve",
+        "conditions": "operation_allowed",
+        "label": "approve",
+        "evidence": "The canonical machine consumed by FileWorkflow."
+      },
+      {
+        "id": "transition:reject",
+        "from": "pending_review",
+        "to": "review_not_approved",
+        "type": "flow",
+        "event": "reject",
+        "conditions": "operation_allowed",
+        "label": "reject",
+        "evidence": "The canonical machine consumed by FileWorkflow."
+      },
+      {
+        "id": "transition:share",
+        "from": "approved",
+        "to": "approved",
+        "type": "flow",
+        "event": "share",
+        "conditions": "operation_allowed",
+        "label": "share",
+        "evidence": "The canonical machine consumed by FileWorkflow."
+      },
+      {
+        "id": "flow_login_upload",
+        "from": "sign_in",
+        "to": "upload_file",
+        "type": "flow",
+        "label": "上传入口",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "flow_upload_review",
+        "from": "upload_file",
+        "to": "pending_review",
+        "type": "flow",
+        "label": "上传后交审",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "flow_wait_reviewer",
+        "from": "pending_review",
+        "to": "review_file",
+        "type": "flow",
+        "label": "只由本次指定的同事审核",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "flow_review_approve",
+        "from": "review_file",
+        "to": "approved",
+        "type": "flow",
+        "label": "通过",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "guard_approval_share",
+        "from": "approved",
+        "to": "share_file",
+        "type": "guard",
+        "label": "仅通过后由上传者分享",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "flow_review_not_approved",
+        "from": "review_file",
+        "to": "review_not_approved",
+        "type": "flow",
+        "label": "未通过即结束，不重提",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "data_share_recipient",
+        "from": "share_file",
+        "to": "designated_recipient",
+        "type": "data",
+        "label": "指定一个已有账号",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "guard_recipient_access",
+        "from": "designated_recipient",
+        "to": "access_file",
+        "type": "guard",
+        "label": "通过且已分享给本人",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "guard_login_access",
+        "from": "sign_in",
+        "to": "access_file",
+        "type": "guard",
+        "label": "访问必须已登录",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "guard_reviewer_selection",
+        "from": "assigned_reviewer",
+        "to": "upload_file",
+        "type": "guard",
+        "label": "从已有用户中选择一位其他同事",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "guard_uploader_reviewer_access",
+        "from": "uploader_access",
+        "to": "access_file",
+        "type": "guard",
+        "label": "审核前后均可读取",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "policy:contains:actor",
+        "from": "policy:network",
+        "to": "policy:actor",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:uploader",
+        "from": "policy:network",
+        "to": "policy:uploader",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:reviewer",
+        "from": "policy:network",
+        "to": "policy:reviewer",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:recipient",
+        "from": "policy:network",
+        "to": "policy:recipient",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:logged_in",
+        "from": "policy:network",
+        "to": "policy:logged_in",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:approved",
+        "from": "policy:network",
+        "to": "policy:approved",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:shared",
+        "from": "policy:network",
+        "to": "policy:shared",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:reviewer_exists",
+        "from": "policy:network",
+        "to": "policy:reviewer_exists",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:mapping:actor_is_uploader",
+        "from": "policy:actor_is_uploader",
+        "to": "source:app/predicates.py::same_identity",
+        "type": "maps",
+        "label": "Implemented by",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "code_relation": "maps"
+      },
+      {
+        "id": "policy:contains:actor_is_uploader",
+        "from": "policy:network",
+        "to": "policy:actor_is_uploader",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:actor_is_uploader:0",
+        "from": "policy:actor",
+        "to": "policy:actor_is_uploader",
+        "type": "data",
+        "label": "left",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:actor_is_uploader:1",
+        "from": "policy:uploader",
+        "to": "policy:actor_is_uploader",
+        "type": "data",
+        "label": "right",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:mapping:actor_is_reviewer",
+        "from": "policy:actor_is_reviewer",
+        "to": "source:app/predicates.py::same_identity",
+        "type": "maps",
+        "label": "Implemented by",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "code_relation": "maps"
+      },
+      {
+        "id": "policy:contains:actor_is_reviewer",
+        "from": "policy:network",
+        "to": "policy:actor_is_reviewer",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:actor_is_reviewer:0",
+        "from": "policy:actor",
+        "to": "policy:actor_is_reviewer",
+        "type": "data",
+        "label": "left",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:actor_is_reviewer:1",
+        "from": "policy:reviewer",
+        "to": "policy:actor_is_reviewer",
+        "type": "data",
+        "label": "right",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:mapping:actor_is_recipient",
+        "from": "policy:actor_is_recipient",
+        "to": "source:app/predicates.py::same_identity",
+        "type": "maps",
+        "label": "Implemented by",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "code_relation": "maps"
+      },
+      {
+        "id": "policy:contains:actor_is_recipient",
+        "from": "policy:network",
+        "to": "policy:actor_is_recipient",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:actor_is_recipient:0",
+        "from": "policy:actor",
+        "to": "policy:actor_is_recipient",
+        "type": "data",
+        "label": "left",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:actor_is_recipient:1",
+        "from": "policy:recipient",
+        "to": "policy:actor_is_recipient",
+        "type": "data",
+        "label": "right",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:mapping:reviewer_is_uploader",
+        "from": "policy:reviewer_is_uploader",
+        "to": "source:app/predicates.py::same_identity",
+        "type": "maps",
+        "label": "Implemented by",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "code_relation": "maps"
+      },
+      {
+        "id": "policy:contains:reviewer_is_uploader",
+        "from": "policy:network",
+        "to": "policy:reviewer_is_uploader",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:reviewer_is_uploader:0",
+        "from": "policy:reviewer",
+        "to": "policy:reviewer_is_uploader",
+        "type": "data",
+        "label": "left",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:reviewer_is_uploader:1",
+        "from": "policy:uploader",
+        "to": "policy:reviewer_is_uploader",
+        "type": "data",
+        "label": "right",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:reviewer_is_other",
+        "from": "policy:network",
+        "to": "policy:reviewer_is_other",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:reviewer_is_other:0",
+        "from": "policy:reviewer_is_uploader",
+        "to": "policy:reviewer_is_other",
+        "type": "guard",
+        "label": "not",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:upload_allowed",
+        "from": "policy:network",
+        "to": "policy:upload_allowed",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:upload_allowed:0",
+        "from": "policy:logged_in",
+        "to": "policy:upload_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:upload_allowed:1",
+        "from": "policy:reviewer_exists",
+        "to": "policy:upload_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:upload_allowed:2",
+        "from": "policy:reviewer_is_other",
+        "to": "policy:upload_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:review_allowed",
+        "from": "policy:network",
+        "to": "policy:review_allowed",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:review_allowed:0",
+        "from": "policy:logged_in",
+        "to": "policy:review_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:review_allowed:1",
+        "from": "policy:actor_is_reviewer",
+        "to": "policy:review_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:share_allowed",
+        "from": "policy:network",
+        "to": "policy:share_allowed",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:share_allowed:0",
+        "from": "policy:logged_in",
+        "to": "policy:share_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:share_allowed:1",
+        "from": "policy:approved",
+        "to": "policy:share_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:share_allowed:2",
+        "from": "policy:actor_is_uploader",
+        "to": "policy:share_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:recipient_access",
+        "from": "policy:network",
+        "to": "policy:recipient_access",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:recipient_access:0",
+        "from": "policy:approved",
+        "to": "policy:recipient_access",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:recipient_access:1",
+        "from": "policy:shared",
+        "to": "policy:recipient_access",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:recipient_access:2",
+        "from": "policy:actor_is_recipient",
+        "to": "policy:recipient_access",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:file_access_basis",
+        "from": "policy:network",
+        "to": "policy:file_access_basis",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:file_access_basis:0",
+        "from": "policy:actor_is_uploader",
+        "to": "policy:file_access_basis",
+        "type": "guard",
+        "label": "any",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:file_access_basis:1",
+        "from": "policy:actor_is_reviewer",
+        "to": "policy:file_access_basis",
+        "type": "guard",
+        "label": "any",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:file_access_basis:2",
+        "from": "policy:recipient_access",
+        "to": "policy:file_access_basis",
+        "type": "guard",
+        "label": "any",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:contains:access_allowed",
+        "from": "policy:network",
+        "to": "policy:access_allowed",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:access_allowed:0",
+        "from": "policy:logged_in",
+        "to": "policy:access_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:dependency:access_allowed:1",
+        "from": "policy:file_access_basis",
+        "to": "policy:access_allowed",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:operation:upload:upload_file",
+        "from": "policy:upload_allowed",
+        "to": "upload_file",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:operation:review:review_file",
+        "from": "policy:review_allowed",
+        "to": "review_file",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:operation:share:share_file",
+        "from": "policy:share_allowed",
+        "to": "share_file",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:operation:access:access_file",
+        "from": "policy:access_allowed",
+        "to": "access_file",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Astore:contains:db%3Ateam_files%3Atable%253Afiles",
+        "from": "db:team_files:store",
+        "to": "db:team_files:table%3Afiles",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Acontent",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:content",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Afilename",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:filename",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Aid",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:id",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Ajournal",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:journal",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Arecipient_id",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:recipient_id",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Areviewer_id",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:reviewer_id",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Arevision",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:revision",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Asize",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:size",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Astate",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:state",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:contains:db%3Ateam_files%3Atable%253Afiles%3Afield%3Auploader_id",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Afiles:field:uploader_id",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Astore:contains:db%3Ateam_files%3Atable%253Ausers",
+        "from": "db:team_files:store",
+        "to": "db:team_files:table%3Ausers",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Ausers:contains:db%3Ateam_files%3Atable%253Ausers%3Afield%3Adisplay_name",
+        "from": "db:team_files:table%3Ausers",
+        "to": "db:team_files:table%3Ausers:field:display_name",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Ausers:contains:db%3Ateam_files%3Atable%253Ausers%3Afield%3Aid",
+        "from": "db:team_files:table%3Ausers",
+        "to": "db:team_files:table%3Ausers:field:id",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Ausers:contains:db%3Ateam_files%3Atable%253Ausers%3Afield%3Apassword_hash",
+        "from": "db:team_files:table%3Ausers",
+        "to": "db:team_files:table%3Ausers:field:password_hash",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:references:db%3Ateam_files%3Atable%253Ausers",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db:team_files:table%3Ausers",
+        "type": "data",
+        "label": "foreign_key",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1",
+        "data_relation": "references",
+        "data_origin": "database",
+        "data_constraints": [
+          {
+            "origin": "database",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "recipient_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          },
+          {
+            "origin": "database",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "reviewer_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          },
+          {
+            "origin": "database",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "uploader_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          },
+          {
+            "origin": "declaration",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "recipient_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          },
+          {
+            "origin": "declaration",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "reviewer_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          },
+          {
+            "origin": "declaration",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "uploader_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          }
+        ]
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles%3Afield%3Arecipient_id:maps:db%3Ateam_files%3Atable%253Ausers%3Afield%3Aid",
+        "from": "db:team_files:table%3Afiles:field:recipient_id",
+        "to": "db:team_files:table%3Ausers:field:id",
+        "type": "data",
+        "label": "foreign_key",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1",
+        "data_relation": "maps",
+        "data_origin": "database",
+        "data_constraints": [
+          {
+            "origin": "database",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "recipient_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          },
+          {
+            "origin": "declaration",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "recipient_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          }
+        ]
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles%3Afield%3Areviewer_id:maps:db%3Ateam_files%3Atable%253Ausers%3Afield%3Aid",
+        "from": "db:team_files:table%3Afiles:field:reviewer_id",
+        "to": "db:team_files:table%3Ausers:field:id",
+        "type": "data",
+        "label": "foreign_key",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1",
+        "data_relation": "maps",
+        "data_origin": "database",
+        "data_constraints": [
+          {
+            "origin": "database",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "reviewer_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          },
+          {
+            "origin": "declaration",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "reviewer_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          }
+        ]
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles%3Afield%3Auploader_id:maps:db%3Ateam_files%3Atable%253Ausers%3Afield%3Aid",
+        "from": "db:team_files:table%3Afiles:field:uploader_id",
+        "to": "db:team_files:table%3Ausers:field:id",
+        "type": "data",
+        "label": "foreign_key",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1",
+        "data_relation": "maps",
+        "data_origin": "database",
+        "data_constraints": [
+          {
+            "origin": "database",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "uploader_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          },
+          {
+            "origin": "declaration",
+            "kind": "foreign_key",
+            "name": "",
+            "fields": [
+              "uploader_id"
+            ],
+            "target": "table:users",
+            "target_fields": [
+              "id"
+            ],
+            "description": "{}"
+          }
+        ]
+      },
+      {
+        "id": "db-edge:list_users:contains:db_users",
+        "from": "list_users",
+        "to": "db_users",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Ausers:reads:db_users",
+        "from": "db:team_files:table%3Ausers",
+        "to": "db_users",
+        "type": "data",
+        "label": "reads",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1",
+        "data_relation": "reads"
+      },
+      {
+        "id": "db-edge:review_file:contains:db_file",
+        "from": "review_file",
+        "to": "db_file",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:reads:db_file",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db_file",
+        "type": "data",
+        "label": "reads",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1",
+        "data_relation": "reads"
+      },
+      {
+        "id": "db-edge:review_file:contains:db_candidates",
+        "from": "review_file",
+        "to": "db_candidates",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db%3Ateam_files%3Atable%253Afiles:reads:db_candidates",
+        "from": "db:team_files:table%3Afiles",
+        "to": "db_candidates",
+        "type": "data",
+        "label": "reads",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1",
+        "data_relation": "reads"
+      },
+      {
+        "id": "db-edge:upload_file:contains:db_insert",
+        "from": "upload_file",
+        "to": "db_insert",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db_insert:writes:db%3Ateam_files%3Atable%253Afiles",
+        "from": "db_insert",
+        "to": "db:team_files:table%3Afiles",
+        "type": "data",
+        "label": "writes",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1",
+        "data_relation": "writes"
+      },
+      {
+        "id": "db-edge:review_file:contains:db_update",
+        "from": "review_file",
+        "to": "db_update",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:db_update:writes:db%3Ateam_files%3Atable%253Afiles",
+        "from": "db_update",
+        "to": "db:team_files:table%3Afiles",
+        "type": "data",
+        "label": "writes",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1",
+        "data_relation": "writes"
+      },
+      {
+        "id": "db-edge:upload_file:contains:db_transaction",
+        "from": "upload_file",
+        "to": "db_transaction",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:access_file:contains:db_metadata",
+        "from": "access_file",
+        "to": "db_metadata",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "contains.code.4d30fd12e3103997",
+        "from": "upload_file",
+        "to": "code.4d30fd12e3103997",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.0702943770fafcf3",
+        "from": "upload_file",
+        "to": "code.4d30fd12e3103997",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 73,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'upload'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.dcb3cefb04ba1a1d",
+        "from": "upload_file",
+        "to": "code.dcb3cefb04ba1a1d",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.098a03b07e03d675",
+        "from": "upload_file",
+        "to": "code.dcb3cefb04ba1a1d",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 75,
+          "column": 29,
+          "args": [
+            "row",
+            "'submit'",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.30326d5d01115958",
+        "from": "review_file",
+        "to": "code.30326d5d01115958",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.52e0a23a10c81d9c",
+        "from": "review_file",
+        "to": "code.30326d5d01115958",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 92,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'review'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.7ac1e3434af643f0",
+        "from": "review_file",
+        "to": "code.7ac1e3434af643f0",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.2e1d9f8c8f55eade",
+        "from": "review_file",
+        "to": "code.7ac1e3434af643f0",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 95,
+          "column": 33,
+          "args": [
+            "row",
+            "decision",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.3edeec461b08e152",
+        "from": "review_file",
+        "to": "code.3edeec461b08e152",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.98c6c41c06892407",
+        "from": "review_file",
+        "to": "code.3edeec461b08e152",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 101,
+          "column": 19,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.2b4ce20bc4971c2a",
+        "from": "share_file",
+        "to": "code.2b4ce20bc4971c2a",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.3b673d4a03053c89",
+        "from": "share_file",
+        "to": "code.2b4ce20bc4971c2a",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 110,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'share'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.f01e24ca5c7b9b65",
+        "from": "share_file",
+        "to": "code.f01e24ca5c7b9b65",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.10095339714d0a37",
+        "from": "share_file",
+        "to": "code.f01e24ca5c7b9b65",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 117,
+          "column": 29,
+          "args": [
+            "row",
+            "'share'",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.94c27a9ca04798cb",
+        "from": "share_file",
+        "to": "code.94c27a9ca04798cb",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.0ede71e1014786c5",
+        "from": "share_file",
+        "to": "code.94c27a9ca04798cb",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 121,
+          "column": 19,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.ffe99097306a6c85",
+        "from": "access_file",
+        "to": "code.ffe99097306a6c85",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.5388a6b5f8d28e00",
+        "from": "access_file",
+        "to": "code.ffe99097306a6c85",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 130,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'access'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "call.364929c8ccc6549b",
+        "from": "access_file",
+        "to": "db_metadata",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 132,
+          "column": 21,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.994b0f065dc58597",
+        "from": "list_files",
+        "to": "code.994b0f065dc58597",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.f237b15bf5aa8018",
+        "from": "list_files",
+        "to": "code.994b0f065dc58597",
+        "type": "flow",
+        "label": "Static call self.access",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 142,
+          "column": 20,
+          "args": [
+            "actor",
+            "identifier"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.61ad245cb873fe20",
+        "from": "state_transition",
+        "to": "code.61ad245cb873fe20",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.076644e1beaccaf2",
+        "from": "state_transition",
+        "to": "code.61ad245cb873fe20",
+        "type": "flow",
+        "label": "Static call file_context",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 57,
+          "column": 55,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.fd38ba1787a6d3a9",
+        "from": "source:app/web.py::WebRoutes.index",
+        "to": "code.fd38ba1787a6d3a9",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.47346ec5ca88d41d",
+        "from": "source:app/web.py::WebRoutes.index",
+        "to": "code.fd38ba1787a6d3a9",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 49,
+          "column": 16,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.b878e8141016daef",
+        "from": "source:app/web.py::WebRoutes.upload",
+        "to": "code.b878e8141016daef",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.d47addc9cfaeda1f",
+        "from": "source:app/web.py::WebRoutes.upload",
+        "to": "code.b878e8141016daef",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 68,
+          "column": 16,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.ca48fd53b62b48f8",
+        "from": "source:app/web.py::WebRoutes.review",
+        "to": "code.ca48fd53b62b48f8",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.f2a7b209f331cf5b",
+        "from": "source:app/web.py::WebRoutes.review",
+        "to": "code.ca48fd53b62b48f8",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 80,
+          "column": 34,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.eb2407e3fdac0c27",
+        "from": "source:app/web.py::WebRoutes.share",
+        "to": "code.eb2407e3fdac0c27",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.2491df8be93bee10",
+        "from": "source:app/web.py::WebRoutes.share",
+        "to": "code.eb2407e3fdac0c27",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 84,
+          "column": 33,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.a3855bb372489ebc",
+        "from": "source:app/web.py::WebRoutes.file_info",
+        "to": "code.a3855bb372489ebc",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.5d9106854c885586",
+        "from": "source:app/web.py::WebRoutes.file_info",
+        "to": "code.a3855bb372489ebc",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 88,
+          "column": 43,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.745c91a59eaa5249",
+        "from": "source:app/web.py::WebRoutes.download",
+        "to": "code.745c91a59eaa5249",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.c2d565d69e9b1ce0",
+        "from": "source:app/web.py::WebRoutes.download",
+        "to": "code.745c91a59eaa5249",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 91,
+          "column": 34,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.90a64a540715b32d",
+        "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "to": "code.90a64a540715b32d",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.75df1f087893588c",
+        "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "to": "code.90a64a540715b32d",
+        "type": "flow",
+        "label": "Static call bo_list",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 68,
+          "column": 25,
+          "args": [
+            "t['source']"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "call.93d244a828c97644",
+        "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "to": "code.90a64a540715b32d",
+        "type": "flow",
+        "label": "Static call bo_list",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 68,
+          "column": 56,
+          "args": [
+            "t['source']"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "call.4586998ab5f09c59",
+        "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "to": "code.90a64a540715b32d",
+        "type": "flow",
+        "label": "Static call bo_list",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 70,
+          "column": 41,
+          "args": [
+            "t.get('conditions')"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "call.cd9ba0addf845aa1",
+        "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "to": "code.90a64a540715b32d",
+        "type": "flow",
+        "label": "Static call bo_list",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 71,
+          "column": 42,
+          "args": [
+            "t.get('unless')"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.32dd78719f02e47c",
+        "from": "source:bo_stategraph/workflow.py::machine_snapshot",
+        "to": "code.32dd78719f02e47c",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.14e55e88682e05cd",
+        "from": "source:bo_stategraph/workflow.py::machine_snapshot",
+        "to": "code.32dd78719f02e47c",
+        "type": "flow",
+        "label": "Static call file_context",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 20,
+          "column": 45,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.055b39eb880abcce",
+        "from": "state_transition",
+        "to": "source:bo_stategraph/workflow.py::file_context",
+        "type": "flow",
+        "label": "Static call file_context",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 57,
+          "column": 55,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.d08904955c4aaa8a",
+        "from": "upload_file",
+        "to": "authorize_file",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 73,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'upload'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.57284c7fe29a6327",
+        "from": "upload_file",
+        "to": "state_transition",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 75,
+          "column": 29,
+          "args": [
+            "row",
+            "'submit'",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.0d492f8d10bc5906",
+        "from": "review_file",
+        "to": "authorize_file",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 92,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'review'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.644075cb2071522a",
+        "from": "review_file",
+        "to": "state_transition",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 95,
+          "column": 33,
+          "args": [
+            "row",
+            "decision",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.69a3d203ac3bfaef",
+        "from": "review_file",
+        "to": "source:app/storage.py::metadata_view",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 101,
+          "column": 19,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.a003f12f4f7c5088",
+        "from": "share_file",
+        "to": "authorize_file",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 110,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'share'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.b251b313612870f6",
+        "from": "share_file",
+        "to": "state_transition",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 117,
+          "column": 29,
+          "args": [
+            "row",
+            "'share'",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.31ed8855c720e455",
+        "from": "share_file",
+        "to": "source:app/storage.py::metadata_view",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 121,
+          "column": 19,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.d5732fa91948d032",
+        "from": "access_file",
+        "to": "authorize_file",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 130,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'access'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.566424849026a3f1",
+        "from": "access_file",
+        "to": "source:app/storage.py::metadata_view",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 132,
+          "column": 21,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.a076cae8c791eb63",
+        "from": "list_files",
+        "to": "access_file",
+        "type": "flow",
+        "label": "Static call self.access",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 142,
+          "column": 20,
+          "args": [
+            "actor",
+            "identifier"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.413a0be4a91d2168",
+        "from": "source:app/web.py::WebRoutes.index",
+        "to": "source:app/web.py::WebRoutes.actor",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 49,
+          "column": 16,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.c771ee4595c7d334",
+        "from": "source:app/web.py::WebRoutes.upload",
+        "to": "source:app/web.py::WebRoutes.actor",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 68,
+          "column": 16,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.c9b4be9e05626cd1",
+        "from": "source:app/web.py::WebRoutes.review",
+        "to": "source:app/web.py::WebRoutes.actor",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 80,
+          "column": 34,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.dc71f19dc4138970",
+        "from": "source:app/web.py::WebRoutes.share",
+        "to": "source:app/web.py::WebRoutes.actor",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 84,
+          "column": 33,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.a36f24a400c9b2a6",
+        "from": "source:app/web.py::WebRoutes.file_info",
+        "to": "source:app/web.py::WebRoutes.actor",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 88,
+          "column": 43,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.8fac6663feed51c7",
+        "from": "source:app/web.py::WebRoutes.download",
+        "to": "source:app/web.py::WebRoutes.actor",
+        "type": "flow",
+        "label": "Static call self.actor",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 91,
+          "column": 34,
+          "args": [],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.2dad11f8e7c5b1fb",
+        "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "to": "source:bo_stategraph/native_executor.py::bo_list",
+        "type": "flow",
+        "label": "Static call bo_list",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 68,
+          "column": 25,
+          "args": [
+            "t['source']"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.7085f4624885278a",
+        "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "to": "source:bo_stategraph/native_executor.py::bo_list",
+        "type": "flow",
+        "label": "Static call bo_list",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 68,
+          "column": 56,
+          "args": [
+            "t['source']"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.b134498dad988fca",
+        "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "to": "source:bo_stategraph/native_executor.py::bo_list",
+        "type": "flow",
+        "label": "Static call bo_list",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 70,
+          "column": 41,
+          "args": [
+            "t.get('conditions')"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.c0cc63c6df5b0bc9",
+        "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+        "to": "source:bo_stategraph/native_executor.py::bo_list",
+        "type": "flow",
+        "label": "Static call bo_list",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 71,
+          "column": 42,
+          "args": [
+            "t.get('unless')"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.fad148865f9ac5fe",
+        "from": "source:bo_stategraph/workflow.py::machine_snapshot",
+        "to": "source:bo_stategraph/workflow.py::file_context",
+        "type": "flow",
+        "label": "Static call file_context",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 20,
+          "column": 45,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      }
+    ],
+    "recordings": {
+      "active": null,
+      "recordings": [],
+      "error": "",
+      "graph_version": [
+        "28ec8463cd649107ff1257bc4a1cfee1ec2db5e8366ae66e1ac6d077585c33b8",
+        "b588f9505da68a05f4d7ba4cd06bb5a49075e3fe1b348712eabe65fa9de59a7f"
+      ]
+    }
+  }
+}

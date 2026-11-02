@@ -1,0 +1,233 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+{
+  "valid": true,
+  "status": "editing",
+  "baseline_id": "d9b3ba8026b234f08b4ea111c6b9627834ae4f4ee318ea2839ecbbcac39dbc3f",
+  "change": ".stategraph/otel-api-classification-20261101",
+  "recall": {
+    "schema": "bo-iteration-recall/v1",
+    "candidate_id": "d9b3ba8026b234f08b4ea111c6b9627834ae4f4ee318ea2839ecbbcac39dbc3f",
+    "mode": "drive",
+    "active_change": {
+      "change": ".stategraph/otel-api-classification-20261101"
+    },
+    "request": "Honor explicit API-layer runtime declarations in shared viewer and layer observation requirements; native business and state definitions are unchanged.",
+    "changed_files": [],
+    "source_errors": [],
+    "verification": "not_run",
+    "unregistered_files": [],
+    "unclassified_functions": [],
+    "contracts": {
+      "model": "observer_generated/behavior.json",
+      "acceptance": "acceptance.json",
+      "whitebox": "whitebox.json",
+      "mapping_contract": "mapping.json"
+    },
+    "observation_module": "bo_stategraph/__init__.py",
+    "observation_sources": [
+      "app/ports.py::BOEvents.__init__",
+      "app/ports.py::BOEvents.bo_emit"
+    ],
+    "naming": {
+      "wiring": "bo_",
+      "adapters": "BO"
+    },
+    "layers": {
+      "business": {
+        "nodes": 5,
+        "scan": "feature entrypoints and effects",
+        "observe": "actual invocation and selected result",
+        "affected_nodes": []
+      },
+      "state": {
+        "nodes": 8,
+        "scan": "state declaration and value bindings",
+        "observe": "actual state changes and residence",
+        "affected_nodes": []
+      },
+      "rules": {
+        "nodes": 5,
+        "scan": "predicate sources, arguments and shared dependencies",
+        "observe": "evaluated/skipped conditions and actual enclosing invocation",
+        "affected_nodes": []
+      },
+      "api": {
+        "nodes": 0,
+        "scan": "registered routes and handlers",
+        "observe": "request boundary and actual response",
+        "affected_nodes": []
+      },
+      "execution": {
+        "nodes": 22,
+        "scan": "functions, parameters and explicit probes",
+        "observe": "call boundaries, selected values and actual nested parent identities",
+        "affected_nodes": []
+      },
+      "operations": {
+        "nodes": 0,
+        "scan": "model exporters and data-access bindings",
+        "observe": "query, transform, transaction and enclosing native call identity",
+        "affected_nodes": []
+      },
+      "project": {
+        "nodes": 0,
+        "scan": "directories, files, imports and dependencies",
+        "observe": "source projection only",
+        "affected_nodes": []
+      },
+      "code": {
+        "nodes": 24,
+        "scan": "symbols, lexical owners, calls and source maps",
+        "observe": "explicitly mapped runtime evidence",
+        "affected_nodes": []
+      },
+      "data": {
+        "nodes": 0,
+        "scan": "ORM/ODM/schema metadata and relationships",
+        "observe": "operation-linked structural projection",
+        "affected_nodes": []
+      }
+    },
+    "plan": ".stategraph/observation-plan.json",
+    "telemetry": {
+      "backend": "native",
+      "registration_file": null,
+      "nodes": [],
+      "preserve": [
+        "state declaration and native executor",
+        "source mappings and selected fields",
+        "trace propagation across async/job boundaries",
+        "observer exclusion and probe health",
+        "native principal/object facts and protected context comparisons"
+      ]
+    },
+    "context_mapping": [],
+    "context_mapping_count": 0,
+    "context_mapping_omitted": 0,
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "typed input and versioned edits",
+        "status": "assumption"
+      },
+      {
+        "id": "R2",
+        "text": "engineer AND ANY eligible grant; substitute authorization",
+        "status": "assumption"
+      },
+      {
+        "id": "R3",
+        "text": "lifecycle, wait, retry and cancellation",
+        "status": "assumption"
+      },
+      {
+        "id": "R4",
+        "text": "checksum and fresh commit authorization",
+        "status": "assumption"
+      },
+      {
+        "id": "R5",
+        "text": "one committed artifact per version",
+        "status": "assumption"
+      },
+      {
+        "id": "R6",
+        "text": "observer isolation and equal business effects",
+        "status": "assumption"
+      },
+      {
+        "id": "R7",
+        "text": "Concurrent checks share per-run capacity, wait for slots, return slots and require all results; reject synthetic SECRET: marker.",
+        "status": "assumption"
+      },
+      {
+        "id": "R8",
+        "text": "All declared activity instances are queryable by run and version; stale runs cannot overwrite or commit new runs; historical views retain the selected state.",
+        "status": "assumption"
+      }
+    ],
+    "requirement_count": 8,
+    "intent": "intent.json",
+    "test_commands": [
+      [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_business.py"
+      ],
+      [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/architecture_guard.py",
+        "check",
+        "--root",
+        "."
+      ],
+      [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_execution.py"
+      ],
+      [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tooling/graph_fixture.py"
+      ],
+      [
+        "node",
+        "tests/test_graph_projection.mjs"
+      ],
+      [
+        "node",
+        "tests/test_graph_layout.mjs"
+      ],
+      [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tests/test_recording.py"
+      ],
+      [
+        "node",
+        "tests/test_recorded_views.mjs"
+      ],
+      [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tests/test_stategraph_module.py"
+      ]
+    ],
+    "observations_command": [
+      "{python}",
+      "-B",
+      "-X",
+      "utf8",
+      "tests/observe.py"
+    ],
+    "required_checks": {
+      "source_first_inventory": true,
+      "probe_health": false,
+      "invocation_closure": false,
+      "mapping_witnesses": true,
+      "reports": [
+        "mapping",
+        "state_rules",
+        "business",
+        "project_checks"
+      ]
+    },
+    "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results."
+  }
+}
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+{"valid": true, "release": "0.8.0", "protocols": {"behavior": 3, "event": 3, "activity": "activity-graph/v1", "export": "bo-stategraph/v1", "recording": 1, "runtime_frames": 1, "preferences": 1, "implementation": "bo-implementation/v1", "project": "bo-project/v1", "transport": "bo-event/v1", "snapshot": "bo-snapshot/v1", "source": "bo-source/v1", "database_config": "bo-databases/v1", "database_catalog": "bo-data-catalog/v1", "database_projection": "bo-database/v1", "policy": "bo-policy/v1", "policy_evaluation": "bo-policy-evaluation/v1"}, "changes": ["integrations/bo_view/graph-layers.js", "observer_generated/runtime/bo_observer/workflow/observation_requirements.py", "observer_generated/static/graph-layers.js"], "conflicts": [], "retired_files": []}

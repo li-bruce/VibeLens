@@ -1,0 +1,235 @@
+{
+  "schema": "bo-iteration-recall/v1",
+  "candidate_id": "1de930183f7081ce09b6b354b8e18c3285bd9be32c52ee726cb22b8c7ef410f4",
+  "mode": "drive",
+  "active_change": null,
+  "request": null,
+  "changed_files": [
+    "acceptance.json",
+    "app/__init__.py",
+    "app/models.py",
+    "app/ports.py",
+    "app/predicates.py",
+    "app/service.py",
+    "app/storage.py",
+    "app/web.py",
+    "bo_stategraph/__init__.py",
+    "bo_stategraph/databases.json",
+    "bo_stategraph/native_executor.py",
+    "bo_stategraph/project.json",
+    "bo_stategraph/workflow.py",
+    "discovery.json",
+    "intent.json",
+    "mapping.json",
+    "ownership.json",
+    "run.py",
+    "static/app/app.css",
+    "sync.json",
+    "templates/error.html",
+    "templates/index.html",
+    "templates/login.html",
+    "tooling/build_model.py",
+    "tooling/export_models.py",
+    "tooling/observe.py",
+    "tooling/test_business.py",
+    "tooling/verify.py",
+    "whitebox.json"
+  ],
+  "source_errors": [
+    {
+      "path": "integrations/__init__.py",
+      "error": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\Lvi_P\\\\Documents\\\\Work\\\\CF\\\\平台软著\\\\VibeLensTrials\\\\execution-bands-dialogue-20261031-03\\\\integrations\\\\__init__.py'"
+    },
+    {
+      "path": "integrations/bo_integration.py",
+      "error": "[Errno 2] No such file or directory: 'C:\\\\Users\\\\Lvi_P\\\\Documents\\\\Work\\\\CF\\\\平台软著\\\\VibeLensTrials\\\\execution-bands-dialogue-20261031-03\\\\integrations\\\\bo_integration.py'"
+    }
+  ],
+  "verification": "not_run",
+  "unregistered_files": [],
+  "unclassified_functions": [
+    "app/ports.py::NullActivation.result",
+    "app/ports.py::NullData.execute",
+    "app/ports.py::NullData.transaction",
+    "app/ports.py::NullData.transform",
+    "app/ports.py::NullObserver.policy",
+    "app/ports.py::NullObserver.state",
+    "app/ports.py::NullProbe.record",
+    "app/ports.py::NullProbe.span",
+    "app/predicates.py::operation_allowed",
+    "app/predicates.py::same_identity",
+    "app/service.py::DomainError.__init__",
+    "app/service.py::FileService.__init__",
+    "app/service.py::FileService.access",
+    "app/service.py::FileService.advance",
+    "app/service.py::FileService.authorize",
+    "app/service.py::FileService.login",
+    "app/service.py::FileService.review",
+    "app/service.py::FileService.share",
+    "app/service.py::FileService.upload",
+    "app/service.py::FileService.users",
+    "app/service.py::FileService.visible_files",
+    "app/storage.py::Store.__init__",
+    "app/storage.py::Store.initialize",
+    "app/storage.py::Store.insert_file",
+    "app/storage.py::Store.read_candidates",
+    "app/storage.py::Store.read_file",
+    "app/storage.py::Store.read_users",
+    "app/storage.py::Store.snapshots",
+    "app/storage.py::Store.update_file",
+    "app/storage.py::Store.write_transaction",
+    "app/storage.py::configure_sqlite",
+    "app/storage.py::metadata_view",
+    "app/web.py::WebRoutes.__init__",
+    "app/web.py::WebRoutes.actor",
+    "app/web.py::WebRoutes.after_request",
+    "app/web.py::WebRoutes.before_request",
+    "app/web.py::WebRoutes.download",
+    "app/web.py::WebRoutes.error",
+    "app/web.py::WebRoutes.file_info",
+    "app/web.py::WebRoutes.index",
+    "app/web.py::WebRoutes.login",
+    "app/web.py::WebRoutes.logout",
+    "app/web.py::WebRoutes.review",
+    "app/web.py::WebRoutes.share",
+    "app/web.py::WebRoutes.teardown_request",
+    "app/web.py::WebRoutes.upload",
+    "app/web.py::create_app",
+    "bo_stategraph/native_executor.py::BOExecutor.__init__",
+    "bo_stategraph/native_executor.py::BOExecutor.step",
+    "bo_stategraph/native_executor.py::BOExecutor.step.guard",
+    "bo_stategraph/native_executor.py::bo_list",
+    "bo_stategraph/workflow.py::FileWorkflow.__init__",
+    "bo_stategraph/workflow.py::FileWorkflow.step",
+    "bo_stategraph/workflow.py::file_context",
+    "bo_stategraph/workflow.py::machine_snapshot",
+    "run.py::main"
+  ],
+  "contracts": {
+    "model": "bo_stategraph/project.json",
+    "acceptance": "acceptance.json",
+    "whitebox": "whitebox.json",
+    "mapping_contract": "mapping.json",
+    "discovery": "discovery.json"
+  },
+  "observation_module": "bo_stategraph/__init__.py",
+  "observation_sources": [],
+  "naming": {
+    "wiring": "bo_",
+    "adapters": "BO"
+  },
+  "layers": {
+    "business": {
+      "nodes": 0,
+      "scan": "feature entrypoints and effects",
+      "observe": "actual invocation and selected result",
+      "affected_nodes": []
+    },
+    "state": {
+      "nodes": 4,
+      "scan": "state declaration and value bindings",
+      "observe": "actual state changes and residence",
+      "affected_nodes": []
+    },
+    "rules": {
+      "nodes": 0,
+      "scan": "predicate sources, arguments and shared dependencies",
+      "observe": "evaluated/skipped conditions",
+      "affected_nodes": []
+    },
+    "api": {
+      "nodes": 0,
+      "scan": "registered routes and handlers",
+      "observe": "request boundary and actual response",
+      "affected_nodes": []
+    },
+    "execution": {
+      "nodes": 0,
+      "scan": "functions, parameters and explicit probes",
+      "observe": "call boundaries and selected values",
+      "affected_nodes": []
+    },
+    "operations": {
+      "nodes": 0,
+      "scan": "model exporters and data-access bindings",
+      "observe": "query, transform and transaction",
+      "affected_nodes": []
+    },
+    "project": {
+      "nodes": 0,
+      "scan": "directories, files, imports and dependencies",
+      "observe": "source projection only",
+      "affected_nodes": []
+    },
+    "code": {
+      "nodes": 0,
+      "scan": "symbols, lexical owners, calls and source maps",
+      "observe": "explicitly mapped runtime evidence",
+      "affected_nodes": []
+    },
+    "data": {
+      "nodes": 0,
+      "scan": "ORM/ODM/schema metadata and relationships",
+      "observe": "operation-linked structural projection",
+      "affected_nodes": []
+    }
+  },
+  "plan": ".stategraph/observation-plan.json",
+  "requirements": [
+    {
+      "id": "R_LOGIN",
+      "text": "Every file metadata/content request requires a logged-in existing test account.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_REVIEW",
+      "text": "Each upload assigns exactly one other existing user as reviewer; only that user reviews. Non-approval ends the file workflow without resubmission.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_SHARE",
+      "text": "Only the uploader shares an approved file with one existing recipient; the recipient cannot forward.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_ACCESS",
+      "text": "Uploader and assigned reviewer may read metadata and download at every stage. A recipient needs approval and an actual share to that account; other users have no access.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_SCOPE",
+      "text": "Use fixed local test accounts, Python, SQLite, a declaration-driven state machine, independent ports/data, and VibeLens observation. Preserve trial evidence and do not publish or a",
+      "status": "confirmed"
+    }
+  ],
+  "requirement_count": 5,
+  "intent": "intent.json",
+  "test_commands": [
+    [
+      "{python}",
+      "-B",
+      "tooling/test_business.py"
+    ]
+  ],
+  "observations_command": [
+    "{python}",
+    "-B",
+    "-X",
+    "utf8",
+    "tooling/observe.py"
+  ],
+  "required_checks": {
+    "source_first_inventory": true,
+    "probe_health": true,
+    "invocation_closure": true,
+    "mapping_witnesses": true,
+    "reports": [
+      "mapping",
+      "state_rules",
+      "business",
+      "project_checks"
+    ]
+  },
+  "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results.",
+  "valid": true
+}

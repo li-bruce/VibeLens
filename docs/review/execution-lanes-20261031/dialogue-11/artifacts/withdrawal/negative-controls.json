@@ -1,0 +1,186 @@
+{
+  "valid": true,
+  "basis": "Fresh real application observations; mutations are confined to copies.",
+  "results": {
+    "clean_mapping": {
+      "valid": true,
+      "errors": [],
+      "checks": 21,
+      "projection_checks": 141,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "missing_selected_recipient": {
+      "valid": false,
+      "errors": [
+        "invalid or incomplete implementation mapping: scenario instances differ from its runtime machine"
+      ],
+      "checks": 21,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "incorrect_revision": {
+      "valid": false,
+      "errors": [
+        "invalid or incomplete implementation mapping: scenario instances differ from its runtime machine"
+      ],
+      "checks": 21,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "missing_invocation_exit": {
+      "valid": false,
+      "closed_calls": 892,
+      "legacy_events": 0,
+      "errors": [
+        {
+          "invocation_without_exit": "9367d369617f4ff884571e6dddd0ff2f:e489edabb3194b8b97d1dcb4f7922697:84",
+          "node": "upload_file",
+          "case": "workflow",
+          "call_id": "924a4eabfbdf40f18fc11d9a00175b9e"
+        }
+      ]
+    },
+    "missing_internal_point_owner": {
+      "valid": false,
+      "closed_calls": 893,
+      "legacy_events": 0,
+      "errors": [
+        {
+          "event": "9367d369617f4ff884571e6dddd0ff2f:e489edabb3194b8b97d1dcb4f7922697:88",
+          "node": "policy:logged_in",
+          "missing_observation_owner": true,
+          "case": "workflow"
+        }
+      ]
+    },
+    "missing_native_transition": {
+      "detected": true,
+      "error": "missing native transition witness: [{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 2, \"event\": \"approve\", \"before\": \"pending\", \"after\": \"approved\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 3, \"event\": \"share\", \"before\": \"approved\", \"after\": \"approved\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    },
+    "unsynchronized_source": {
+      "status": "stale",
+      "changed_files": [
+        "app/service.py"
+      ],
+      "model_changed": false,
+      "intent_changed": false,
+      "directly_affected": [
+        "access_file",
+        "authorize_file",
+        "code.2b4ce20bc4971c2a",
+        "code.30326d5d01115958",
+        "code.358f50e0de5580fc",
+        "code.4d30fd12e3103997",
+        "code.7ac1e3434af643f0",
+        "code.7d0910b485a716ad",
+        "code.994b0f065dc58597",
+        "code.dcb3cefb04ba1a1d",
+        "code.f01e24ca5c7b9b65",
+        "code.ffe99097306a6c85",
+        "list_files",
+        "list_users",
+        "review_file",
+        "share_file",
+        "sign_in",
+        "state_transition",
+        "upload_file",
+        "withdraw_file"
+      ],
+      "possibly_affected": [
+        "access_file",
+        "approved",
+        "authorize_file",
+        "code.2b4ce20bc4971c2a",
+        "code.30326d5d01115958",
+        "code.358f50e0de5580fc",
+        "code.3edeec461b08e152",
+        "code.4d30fd12e3103997",
+        "code.61ad245cb873fe20",
+        "code.7ac1e3434af643f0",
+        "code.7d0910b485a716ad",
+        "code.94c27a9ca04798cb",
+        "code.994b0f065dc58597",
+        "code.dcb3cefb04ba1a1d",
+        "code.f01e24ca5c7b9b65",
+        "code.f948b79a71a97708",
+        "code.ffe99097306a6c85",
+        "db:team_files:table%3Afiles",
+        "db:team_files:table%3Afiles:field:content",
+        "db:team_files:table%3Afiles:field:filename",
+        "db:team_files:table%3Afiles:field:id",
+        "db:team_files:table%3Afiles:field:journal",
+        "db:team_files:table%3Afiles:field:recipient_id",
+        "db:team_files:table%3Afiles:field:reviewer_id",
+        "db:team_files:table%3Afiles:field:revision",
+        "db:team_files:table%3Afiles:field:size",
+        "db:team_files:table%3Afiles:field:state",
+        "db:team_files:table%3Afiles:field:uploader_id",
+        "db:team_files:table%3Ausers",
+        "db:team_files:table%3Ausers:field:display_name",
+        "db:team_files:table%3Ausers:field:id",
+        "db:team_files:table%3Ausers:field:password_hash",
+        "db_candidates",
+        "db_file",
+        "db_insert",
+        "db_metadata",
+        "db_transaction",
+        "db_update",
+        "db_users",
+        "designated_recipient",
+        "list_files",
+        "list_users",
+        "pending_review",
+        "review_file",
+        "review_not_approved",
+        "share_file",
+        "sign_in",
+        "source:app/storage.py::metadata_view",
+        "source:bo_stategraph/workflow.py::file_context",
+        "state_transition",
+        "upload_file",
+        "withdraw_file",
+        "withdrawn"
+      ]
+    },
+    "real_isolated_schema_change": {
+      "clean": {
+        "configured": true,
+        "valid": true,
+        "errors": [],
+        "changed": false,
+        "source_id": "c13d3b381e0c50fc5cdeb7ed113b148288882da911c85d78d2583c93ffcd46bf",
+        "catalog_id": "81ec69f33839d01c5bccf5f5b5f0c8b6a1ea822b018a48230f52e96245afbda7",
+        "stores": [
+          {
+            "id": "team_files",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "altered": {
+        "configured": true,
+        "valid": false,
+        "errors": [
+          "database catalog or graph projection is stale; run bo_db sync"
+        ],
+        "changed": true,
+        "source_id": "c13d3b381e0c50fc5cdeb7ed113b148288882da911c85d78d2583c93ffcd46bf",
+        "catalog_id": "269ca09bb5ca287b7b8f9ba5261139d29e0de4196c5dc9c883ab8fb1d7c3eb0b",
+        "stores": [
+          {
+            "id": "team_files",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "statement": "ALTER TABLE files ADD COLUMN isolated_audit_marker TEXT",
+      "production_database_modified": false
+    }
+  }
+}

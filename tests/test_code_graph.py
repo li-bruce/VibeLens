@@ -8,6 +8,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
@@ -33,46 +34,285 @@ class CodeGraphTests(unittest.TestCase):
     def write(self, path, text):
         (self.root / path).write_text(text, encoding="utf-8")
 
+    def test_file_projection_is_available_without_the_optional_symbol_index(self):
+        """Filesystem discovery includes fresh files without parsing their symbols."""
+        (self.root / "web").mkdir()
+        self.write("web/index.html", "<h1>Upload files</h1>")
+        before_cache = self.service.cache.exists()
+        from bo_observer.sources import scan as native_scan
+
+        with patch("bo_observer.code_graph.service.scan", wraps=native_scan) as parser:
+            first = self.service.view(projection="project", limit=5000)
+        self.assertEqual(parser.call_args.args[1], [], "The AST parser receives no source files")
+        self.assertFalse(any(n.get("code_role") == "function" for n in first["nodes"]))
+        paths = {n.get("project_path") for n in first["nodes"]}
+        self.assertIn("web/index.html", paths)
+        self.assertIn("worker.py", paths)
+        self.assertTrue(any(e["code_relation"] == "contains" for e in first["edges"]))
+        self.assertEqual(self.service.cache.exists(), before_cache)
+        self.write("web/new.css", "h1 { color: teal }")
+        second = self.service.view(projection="project", limit=5000)
+        self.assertNotEqual(first["revision"], second["revision"])
+        self.assertIn("web/new.css", {n.get("project_path") for n in second["nodes"]})
+        (self.root / "web/new.css").unlink()
+        third = self.service.view(projection="project", limit=5000)
+        self.assertNotIn("web/new.css", {n.get("project_path") for n in third["nodes"]})
+
+    def test_file_dependencies_do_not_require_resolving_function_identities(self):
+        """Legal repeated JS declarations can still expose their file dependencies."""
+        self.write("imports.js", "import './target.js';\nfunction repeat() {}\nfunction repeat() {}\n")
+        self.write("target.js", "export const value = 1;\n")
+        graph = self.service.view(projection="project", limit=5000)
+        self.assertEqual(graph["errors"], [])
+        self.assertTrue(any(edge["code_relation"] == "imports" for edge in graph["edges"]))
+        self.assertIsNone(self.service.graph)
+        self.assertFalse(self.service.cache.exists())
+        self.assertFalse(any(node.get("code_role") == "function" for node in graph["nodes"]))
+
     def test_api_endpoints_source_refresh_and_observer_exclusion(self):
-        self.write("api.py", "from fastapi import FastAPI\napp = FastAPI()\n"
-                   "@app.post('/pictures')\ndef upload(name: str):\n    return name\n"
-                   "@app.get('/api/view')\ndef observer_view():\n    return {}\n")
+        self.write(
+            "api.py",
+            "from fastapi import FastAPI\napp = FastAPI()\n"
+            "@app.post('/pictures')\ndef upload(name: str):\n    return name\n"
+            "@app.get('/api/view')\ndef observer_view():\n    return {}\n",
+        )
         first, model = self.service.refresh()
         endpoints = [n for n in first["nodes"] if n["code_role"] == "endpoint"]
         self.assertEqual([n["label"] for n in endpoints], ["POST /pictures"])
         handler = first["symbols"]["api.py::upload"]
-        self.assertTrue(any(e["from"] == endpoints[0]["id"] and e["to"] == handler
-                            and e["code_relation"] == "handles" for e in first["edges"]))
+        self.assertTrue(
+            any(
+                e["from"] == endpoints[0]["id"]
+                and e["to"] == handler
+                and e["code_relation"] == "handles"
+                for e in first["edges"]
+            )
+        )
         local = query(first, model, focus=handler)
         self.assertIn(endpoints[0]["id"], {n["id"] for n in local["nodes"]})
         authored = {"nodes": [{"id": "upload", "source": {"path": "api.py", "symbol": "upload"}}]}
         full = query(first, authored)
         self.assertTrue(any(e["from"] == "upload" and e["to"] == handler for e in full["edges"]))
-        self.write("api.py", "from fastapi import FastAPI\napp = FastAPI()\n"
-                   "@app.get('/pictures')\ndef upload(name):\n    return name\n")
+        self.write(
+            "api.py",
+            "from fastapi import FastAPI\napp = FastAPI()\n"
+            "@app.get('/pictures')\ndef upload(name):\n    return name\n",
+        )
         updated, _ = self.service.refresh()
-        self.assertEqual([n["label"] for n in updated["nodes"] if n["code_role"] == "endpoint"], ["GET /pictures"])
+        self.assertEqual(
+            [n["label"] for n in updated["nodes"] if n["code_role"] == "endpoint"],
+            ["GET /pictures"],
+        )
+
+    def test_native_factory_route_registrations_and_bound_handlers(self):
+        self.write(
+            "api.py",
+            "from flask import Flask\n"
+            "class Routes:\n    def download(self, file_id):\n        return file_id\n"
+            "def create_app():\n    app = Flask(__name__)\n    routes = Routes()\n"
+            "    app.add_url_rule('/files/<file_id>', 'download', routes.download)\n"
+            "    app.add_url_rule('/files/<file_id>/copy', view_func=routes.download, methods=['POST'])\n"
+            "    app.add_url_rule('/api/view', view_func=routes.download)\n"
+            "    return app\n",
+        )
+        import runpy
+
+        native = runpy.run_path(str(self.root / "api.py"))["create_app"]()
+        with native.test_client() as client:
+            self.assertEqual(client.get("/files/one").data, b"one")
+            self.assertEqual(client.post("/files/two/copy").data, b"two")
+        graph, _ = self.service.refresh()
+        actual = {
+            node["api"]["path"]: node
+            for node in graph["nodes"]
+            if node.get("code_role") == "endpoint"
+        }
+        expected = {
+            rule.rule
+            for rule in native.url_map.iter_rules()
+            if rule.endpoint != "static" and not observer_route(rule.rule)
+        }
+        self.assertEqual(set(actual), expected)
+        # Omitted methods stay unspecified: native handlers can override GET.
+        self.assertEqual(actual["/files/<file_id>"]["api"]["methods"], [])
+        self.assertEqual(actual["/files/<file_id>/copy"]["api"]["methods"], ["POST"])
+        target = graph["symbols"]["api.py::Routes.download"]
+        for endpoint in actual.values():
+            self.assertTrue(
+                any(
+                    edge["from"] == endpoint["id"]
+                    and edge["to"] == target
+                    and edge["code_relation"] == "handles"
+                    for edge in graph["edges"]
+                )
+            )
+            self.assertEqual(endpoint["source"]["symbol"], "create_app")
+            self.assertGreater(endpoint["source"]["line"], 5)
+
+    def test_project_tree_excludes_temporary_installation_files(self):
+        temporary = self.root / ".tmp" / "pip-metadata-a"
+        temporary.mkdir(parents=True)
+        (temporary / "METADATA").write_text("temporary installer content", encoding="utf-8")
+        self.write("actual.py", "def execute():\n    return 1\n")
+        graph, _ = self.service.refresh()
+        self.assertFalse(
+            any(node.get("project_path", "").startswith(".tmp") for node in graph["nodes"])
+        )
+        self.assertIn("actual.py::execute", graph["symbols"])
+        self.assertTrue((temporary / "METADATA").is_file())
+
+    def test_programmatic_routes_imports_unknowns_shadowing_and_updates(self):
+        self.write(
+            "handlers.py",
+            "class Views:\n    def read(self):\n        return 'ok'\n"
+            "def write():\n    return 'saved'\n",
+        )
+        self.write(
+            "api.py",
+            "from fastapi import FastAPI as Web\n"
+            "from handlers import Views as Handlers, write\n"
+            "def factory():\n    app = Web()\n    view = Handlers()\n"
+            "    app.add_api_route('/read', view.read, methods=['GET'])\n"
+            "    app.add_api_route(path='/write', endpoint=write, methods=['POST'])\n"
+            "    app.add_api_route('/dynamic-handler', choose_handler())\n"
+            "    app.add_api_route(computed_path, write)\n"
+            "    app = unknown_receiver\n    app.add_api_route('/shadowed', write)\n",
+        )
+        graph, _ = self.service.refresh()
+        endpoints = {
+            node["api"]["path"]: node
+            for node in graph["nodes"]
+            if node.get("code_role") == "endpoint"
+        }
+        self.assertEqual(set(endpoints), {"/read", "/write", "/dynamic-handler"})
+        for path, symbol in [
+            ("/read", "handlers.py::Views.read"),
+            ("/write", "handlers.py::write"),
+        ]:
+            self.assertTrue(
+                any(
+                    edge["from"] == endpoints[path]["id"]
+                    and edge["to"] == graph["symbols"][symbol]
+                    and edge["code_relation"] == "handles"
+                    for edge in graph["edges"]
+                )
+            )
+        unknown = endpoints["/dynamic-handler"]
+        self.assertFalse(unknown["api"]["handler_resolved"])
+        self.assertFalse(
+            any(
+                edge["from"] == unknown["id"] and edge["code_relation"] == "handles"
+                for edge in graph["edges"]
+            )
+        )
+        old_id = endpoints["/read"]["id"]
+        path = self.root / "api.py"
+        path.write_text(
+            path.read_text().replace("'/read'", "'/download'").replace("['GET']", "['POST']"),
+            encoding="utf-8",
+        )
+        updated, _ = self.service.refresh()
+        self.assertNotIn(old_id, {node["id"] for node in updated["nodes"]})
+        new = next(
+            node for node in updated["nodes"] if node.get("api", {}).get("path") == "/download"
+        )
+        self.assertEqual(new["api"]["methods"], ["POST"])
+        self.assertEqual(updated["incremental"]["parsed"], ["api.py"])
+
+    def test_route_receivers_shadowed_by_parameters_and_loop_bindings_stay_unknown(self):
+        self.write(
+            "api.py",
+            "from flask import Flask\napp = Flask(__name__)\n"
+            "def handler():\n    return 'ok'\n"
+            "def mount(app):\n    app.add_url_rule('/parameter', view_func=handler)\n"
+            "for app in unknown_routers:\n    app.add_url_rule('/loop', view_func=handler)\n"
+            "app.add_url_rule('/after-loop', view_func=handler)\n",
+        )
+        graph, _ = self.service.refresh()
+        self.assertFalse(any(node.get("code_role") == "endpoint" for node in graph["nodes"]))
+
+    def test_excluded_launcher_cannot_hide_programmatic_business_routes(self):
+        self.write("handlers.py", "def download():\n    return 'ok'\n")
+        self.write(
+            "run.py",
+            "from flask import Flask\nfrom handlers import download\n"
+            "app = Flask(__name__)\napp.add_url_rule('/files', view_func=download)\n",
+        )
+        config = {
+            "model": "bo_stategraph/project.json",
+            "source_scope": {"roots": ["."], "exclude": {}},
+        }
+        config.setdefault("source_scope", {}).setdefault("exclude", {})[
+            "run.py"
+        ] = "Application launcher"
+        (self.root / "sync.json").write_text(json.dumps(config), encoding="utf-8")
+        from bo_observer.workflow.bo_sync import source_inventory
+
+        inventory = source_inventory(self.root, config)
+        self.assertIn("run.py", inventory["excluded_entrypoints"])
+        graph, _ = self.service.refresh()
+        self.assertTrue(
+            any(
+                error.get("error") == "Excluded entrypoint" and error.get("path") == "run.py"
+                for error in graph["errors"]
+            )
+        )
+
+    def test_method_scope_does_not_capture_its_class_namespace(self):
+        self.write(
+            "api.py",
+            "from flask import Flask\n"
+            "def download():\n    return 'ok'\n"
+            "class WrongScope:\n    app = Flask(__name__)\n"
+            "    def configure(self):\n        app.add_url_rule('/not-global', view_func=download)\n"
+            "def factory():\n    app = Flask(__name__)\n"
+            "    class Nested:\n        def configure(self):\n            app.add_url_rule('/closure', view_func=download)\n"
+            "    return Nested\n",
+        )
+        graph, _ = self.service.refresh()
+        paths = {
+            node["api"]["path"] for node in graph["nodes"] if node.get("code_role") == "endpoint"
+        }
+        self.assertEqual(paths, {"/closure"})
 
     def test_javascript_literal_route_has_handler_and_nested_parameters(self):
-        self.write("routes.mjs", "import express from 'express';\nconst app = express();\n"
-                   "function upload(req, res) { return res.json({ok:true}); }\n"
-                   "app.post('/pictures', upload);\napp.get('/api/bo/health', upload);\n")
+        self.write(
+            "routes.mjs",
+            "import express from 'express';\nconst app = express();\n"
+            "function upload(req, res) { return res.json({ok:true}); }\n"
+            "app.post('/pictures', upload);\napp.get('/api/bo/health', upload);\n",
+        )
         graph, _ = self.service.refresh()
         endpoint = next(n for n in graph["nodes"] if n.get("api", {}).get("path") == "/pictures")
         self.assertEqual(endpoint["api"]["methods"], ["POST"])
         handler = graph["symbols"]["routes.mjs::upload"]
-        self.assertTrue(any(e["from"] == endpoint["id"] and e["to"] == handler for e in graph["edges"]))
-        self.assertEqual({n["label"] for n in graph["nodes"] if n.get("parent") == handler and n["code_role"] == "parameter"}, {"req", "res"})
-        self.assertFalse(any(n.get("api", {}).get("path") == "/api/bo/health" for n in graph["nodes"]))
+        self.assertTrue(
+            any(e["from"] == endpoint["id"] and e["to"] == handler for e in graph["edges"])
+        )
+        self.assertEqual(
+            {
+                n["label"]
+                for n in graph["nodes"]
+                if n.get("parent") == handler and n["code_role"] == "parameter"
+            },
+            {"req", "res"},
+        )
+        self.assertFalse(
+            any(n.get("api", {}).get("path") == "/api/bo/health" for n in graph["nodes"])
+        )
 
     def test_api_projection_precedes_global_display_budget(self):
-        self.write("a_helpers.py", "\n".join(
-            f"def helper_{index}(value):\n    return value\n" for index in range(230)
-        ))
-        self.write("z_routes.py", "from flask import Flask\nfrom a_helpers import helper_0\n"
-                   "app = Flask(__name__)\n@app.get('/files/<file_id>')\n"
-                   "def download(file_id):\n    return helper_0(file_id)\n"
-                   "def unrelated(value):\n    return value\n")
+        self.write(
+            "a_helpers.py",
+            "\n".join(f"def helper_{index}(value):\n    return value\n" for index in range(230)),
+        )
+        self.write(
+            "z_routes.py",
+            "from flask import Flask\nfrom a_helpers import helper_0\n"
+            "app = Flask(__name__)\n@app.get('/files/<file_id>')\n"
+            "def download(file_id):\n    return helper_0(file_id)\n"
+            "def unrelated(value):\n    return value\n",
+        )
         graph, model = self.service.refresh()
         endpoint = next(node for node in graph["nodes"] if node.get("code_role") == "endpoint")
         handler = graph["symbols"]["z_routes.py::download"]
@@ -84,17 +324,33 @@ class CodeGraphTests(unittest.TestCase):
         self.assertIn(graph["symbols"]["a_helpers.py::helper_0"], actual)
         self.assertNotIn(graph["symbols"]["z_routes.py::unrelated"], actual)
         self.assertNotIn(graph["symbols"]["a_helpers.py::helper_229"], actual)
-        self.assertTrue(any(edge["from"] == endpoint["id"] and edge["to"] == handler
-                            and edge["code_relation"] == "handles" for edge in api["edges"]))
-        self.assertTrue(any(node.get("parent") == handler and node.get("label") == "file_id"
-                            for node in api["nodes"]))
-        self.assertTrue(all(edge["from"] in actual and edge["to"] in actual for edge in api["edges"]))
+        self.assertTrue(
+            any(
+                edge["from"] == endpoint["id"]
+                and edge["to"] == handler
+                and edge["code_relation"] == "handles"
+                for edge in api["edges"]
+            )
+        )
+        self.assertTrue(
+            any(
+                node.get("parent") == handler and node.get("label") == "file_id"
+                for node in api["nodes"]
+            )
+        )
+        self.assertTrue(
+            all(edge["from"] in actual and edge["to"] in actual for edge in api["edges"])
+        )
         limited = self.service.view(projection="api", limit=1)
         self.assertEqual(limited["loaded_nodes"], 1)
         self.assertTrue(limited["omitted_nodes"] > 0)
         self.assertEqual(limited["nodes"][0]["id"], endpoint["id"])
-        self.assertFalse(any(node.get("code_role") == "endpoint"
-                             for node in self.service.view(projection="project")["nodes"]))
+        self.assertFalse(
+            any(
+                node.get("code_role") == "endpoint"
+                for node in self.service.view(projection="project")["nodes"]
+            )
+        )
 
     def test_parameter_source_ranges_python_javascript_and_vue(self):
         sources = {
@@ -106,16 +362,30 @@ class CodeGraphTests(unittest.TestCase):
             self.write(path, source)
         graph, _ = self.service.refresh()
         for path, source in sources.items():
-            parameter = next(n for n in graph["nodes"] if n["code_role"] == "parameter"
-                             and n["label"] == "rows" and n["source"]["path"] == path)
+            parameter = next(
+                n
+                for n in graph["nodes"]
+                if n["code_role"] == "parameter"
+                and n["label"] == "rows"
+                and n["source"]["path"] == path
+            )
             location = graph["bindings"][parameter["id"]]["selection"]
             line = source.splitlines()[location["line"] - 1].encode("utf-16-le")
-            self.assertEqual(line[location["column"]*2:location["end_column"]*2].decode("utf-16-le"), "rows")
+            self.assertEqual(
+                line[location["column"] * 2 : location["end_column"] * 2].decode("utf-16-le"),
+                "rows",
+            )
 
     def test_route_method_defaults_and_dynamic_paths_stay_unknown(self):
         from bo_observer.code_graph.endpoints import endpoints
+
         self.assertEqual(endpoints({"entrypoints": ["app.route('/items')"]})[0]["methods"], [])
-        self.assertEqual(endpoints({"entrypoints": ["app.route('/items', methods=['POST', 'PUT'])"]})[0]["methods"], ["POST", "PUT"])
+        self.assertEqual(
+            endpoints({"entrypoints": ["app.route('/items', methods=['POST', 'PUT'])"]})[0][
+                "methods"
+            ],
+            ["POST", "PUT"],
+        )
         self.assertEqual(endpoints({"entrypoints": ["app.get(route_name)"]}), [])
         self.assertEqual(endpoints({"entrypoints": ["app.get('/api/recordings')"]}), [])
 

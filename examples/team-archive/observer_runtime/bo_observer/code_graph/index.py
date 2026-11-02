@@ -12,6 +12,7 @@ from .manifests import dependencies
 from ..sources import SOURCE_SUFFIXES
 from ..graph.code_structure import module_name
 from ..graph.behavior_model import digest
+from ..observation.observation_scope import observer_route
 
 
 def identity(role, value):
@@ -198,6 +199,47 @@ def build(index, project=None, root=None):
                 parameter.get("annotation") or "Type unspecified",
             )
             edge(pid, value["id"], "parameter", "Parameter")
+
+    # Programmatic registrations live at the factory/module source location,
+    # independently of the callable's own declaration and parameter children.
+    for path, unit in sorted(units.items()):
+        for route in unit.get("http_registrations", []):
+            if observer_route(route["path"]):
+                continue
+            reference = route.get("handler") or ""
+            target_key = path + "::" + reference
+            if target_key not in symbols:
+                imported = import_target(path, reference, units)
+                module = module_name(imported) if imported else ""
+                target_key = str(imported) + "::" + reference.removeprefix(module + ".")
+            handler = symbol_ids.get(target_key)
+            owner_key = path + "::" + route["source"]["symbol"]
+            identifier = identity(
+                "endpoint",
+                [
+                    target_key if handler else owner_key + "::" + route["handler_expression"],
+                    route["path"],
+                    route["methods"],
+                ],
+            )
+            endpoint = node(
+                identifier,
+                " ".join(route["methods"] + [route["path"]]),
+                "endpoint",
+                route["source"],
+                summary=route["declaration"],
+            )
+            endpoint["api"] = {**route, "handler_resolved": bool(handler)}
+            if owner_key in symbol_ids:
+                edge(
+                    symbol_ids[owner_key],
+                    identifier,
+                    "registers",
+                    "Registers",
+                    route["declaration"],
+                )
+            if handler:
+                edge(identifier, handler, "handles", "Handled by", route["declaration"])
 
     for path, unit in sorted(units.items()):
         references = unit.get("file_references", [])

@@ -1,0 +1,5328 @@
+[
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 1,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:1",
+    "node": "api_post",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "baadbce2ec77ec588702d1522a81c27d:7a9dabe288757988",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/login"
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.021189+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "baadbce2ec77ec588702d1522a81c27d",
+      "span_id": "7a9dabe288757988",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 1,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 2,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:2",
+    "node": "sign_in",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e8c591128d734329b77d23a44590c87d",
+    "parent_call_id": "baadbce2ec77ec588702d1522a81c27d:7a9dabe288757988",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:1",
+    "inputs": {
+      "username": "admin1",
+      "credential_supplied": true
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.021466+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "baadbce2ec77ec588702d1522a81c27d",
+      "span_id": "d730b0b91c15f57f",
+      "trace_flags": 3,
+      "parent_span_id": "7a9dabe288757988",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 2,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 3,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:3",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "571bc51df1804ad68af448587b331eb8",
+    "parent_call_id": "e8c591128d734329b77d23a44590c87d",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:2",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM users WHERE username = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.006,
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.061958+00:00",
+    "trace": {
+      "trace_id": "baadbce2ec77ec588702d1522a81c27d",
+      "span_id": "75700b86629c808c",
+      "trace_flags": 3,
+      "parent_span_id": "d730b0b91c15f57f",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 3,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 4,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:4",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "571bc51df1804ad68af448587b331eb8",
+    "parent_call_id": "e8c591128d734329b77d23a44590c87d",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:2",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM users WHERE username = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.433,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.063324+00:00",
+    "trace": {
+      "trace_id": "baadbce2ec77ec588702d1522a81c27d",
+      "span_id": "75700b86629c808c",
+      "trace_flags": 3,
+      "parent_span_id": "d730b0b91c15f57f",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 4,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 5,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:5",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "2e80536bf8434c73af2a10e7ad95776e",
+    "parent_call_id": "e8c591128d734329b77d23a44590c87d",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:2",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.004,
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.142108+00:00",
+    "trace": {
+      "trace_id": "baadbce2ec77ec588702d1522a81c27d",
+      "span_id": "7688238a769ad34d",
+      "trace_flags": 3,
+      "parent_span_id": "d730b0b91c15f57f",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 5,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 6,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:6",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "2e80536bf8434c73af2a10e7ad95776e",
+    "parent_call_id": "e8c591128d734329b77d23a44590c87d",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:2",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.346,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.143409+00:00",
+    "trace": {
+      "trace_id": "baadbce2ec77ec588702d1522a81c27d",
+      "span_id": "7688238a769ad34d",
+      "trace_flags": 3,
+      "parent_span_id": "d730b0b91c15f57f",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 6,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 7,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:7",
+    "node": "sign_in",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e8c591128d734329b77d23a44590c87d",
+    "parent_call_id": "baadbce2ec77ec588702d1522a81c27d:7a9dabe288757988",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:1",
+    "inputs": {},
+    "outputs": {
+      "user_id": "admin-1",
+      "authenticated": true
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.144184+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "baadbce2ec77ec588702d1522a81c27d",
+      "span_id": "d730b0b91c15f57f",
+      "trace_flags": 3,
+      "parent_span_id": "7a9dabe288757988",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 7,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 8,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:8",
+    "node": "api_post",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "baadbce2ec77ec588702d1522a81c27d:7a9dabe288757988",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/login"
+    },
+    "outputs": {
+      "status": 200
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.144709+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "baadbce2ec77ec588702d1522a81c27d",
+      "span_id": "7a9dabe288757988",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 8,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 9,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:9",
+    "node": "api_post",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "6009aead5c5eefb20b91a649cecffb82:fbf74b67e4004683",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/files"
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.198710+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "fbf74b67e4004683",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 9,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 10,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:10",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "db08cb1af62240c88fc6040aa727dc30",
+    "parent_call_id": "6009aead5c5eefb20b91a649cecffb82:fbf74b67e4004683",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:9",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.004,
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.200675+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b1b4ab821cb43e29",
+      "trace_flags": 3,
+      "parent_span_id": "fbf74b67e4004683",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 10,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 11,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:11",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "db08cb1af62240c88fc6040aa727dc30",
+    "parent_call_id": "6009aead5c5eefb20b91a649cecffb82:fbf74b67e4004683",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:9",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.382,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.201989+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b1b4ab821cb43e29",
+      "trace_flags": 3,
+      "parent_span_id": "fbf74b67e4004683",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 11,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 12,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "node": "upload_file",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_call_id": "6009aead5c5eefb20b91a649cecffb82:fbf74b67e4004683",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:9",
+    "inputs": {
+      "filename": "notes.txt",
+      "size": 20,
+      "actor_id": "admin-1"
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.203486+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b38ea0986f9d5aed",
+      "trace_flags": 3,
+      "parent_span_id": "fbf74b67e4004683",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 12,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 13,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:13",
+    "node": "policy:authenticated",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "c8de1587f5dd414fb40142570542c580:authenticated",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "bo_check": "c8de1587f5dd414fb40142570542c580",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.212601+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b38ea0986f9d5aed",
+      "trace_flags": 3,
+      "parent_span_id": "fbf74b67e4004683",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 13,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 14,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:14",
+    "node": "policy:signed_in",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "c8de1587f5dd414fb40142570542c580:signed_in",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "bo_check": "c8de1587f5dd414fb40142570542c580",
+      "bo_basis": "request-local",
+      "value": true
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:13",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.212672+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b38ea0986f9d5aed",
+      "trace_flags": 3,
+      "parent_span_id": "fbf74b67e4004683",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 14,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 15,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:15",
+    "node": "db_transaction",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "288bb70f88f846cba274700c9c600f8d",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "operation": "transaction",
+      "statement": "transaction",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "targets": [],
+      "unknown_targets": [],
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.212889+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "41a7b996abe8c2d3",
+      "trace_flags": 3,
+      "parent_span_id": "b38ea0986f9d5aed",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 15,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 16,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:16",
+    "node": "db_write",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "3110fd8633174729a8e1eac092e1a132",
+    "parent_call_id": "288bb70f88f846cba274700c9c600f8d",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:15",
+    "inputs": {
+      "operation": "write",
+      "statement": "INSERT INTO files (id, owner_id, filename, size, content, state, workflow_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "parameters": {
+        "count": 8
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "transaction_id": "288bb70f88f846cba274700c9c600f8d",
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "write"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.215361+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "8c091f2cad7c2c4e",
+      "trace_flags": 3,
+      "parent_span_id": "41a7b996abe8c2d3",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 16,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 17,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:17",
+    "node": "db_write",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "3110fd8633174729a8e1eac092e1a132",
+    "parent_call_id": "288bb70f88f846cba274700c9c600f8d",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:15",
+    "inputs": {
+      "operation": "write",
+      "statement": "INSERT INTO files (id, owner_id, filename, size, content, state, workflow_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "parameters": {
+        "count": 8
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 0.345,
+      "rows": 1,
+      "rows_known": true,
+      "result": {
+        "rowcount": 1
+      },
+      "transaction_id": "288bb70f88f846cba274700c9c600f8d",
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "write"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.215660+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "8c091f2cad7c2c4e",
+      "trace_flags": 3,
+      "parent_span_id": "41a7b996abe8c2d3",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 17,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 18,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:18",
+    "node": "db_transaction",
+    "phase": "commit",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "288bb70f88f846cba274700c9c600f8d",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "operation": "transaction",
+      "statement": "transaction",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "committed",
+      "duration_ms": 9.757,
+      "targets": [],
+      "unknown_targets": [],
+      "committed": true,
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.222673+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "41a7b996abe8c2d3",
+      "trace_flags": 3,
+      "parent_span_id": "b38ea0986f9d5aed",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 18,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 19,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:19",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "1bb4985a133e450a935077e0fe38f09a",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.223880+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "ee67a4d7d777f6d2",
+      "trace_flags": 3,
+      "parent_span_id": "b38ea0986f9d5aed",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 19,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 20,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:20",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "1bb4985a133e450a935077e0fe38f09a",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.208,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.225061+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "ee67a4d7d777f6d2",
+      "trace_flags": 3,
+      "parent_span_id": "b38ea0986f9d5aed",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 20,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 21,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:21",
+    "node": "upload_file",
+    "phase": "commit",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_call_id": "6009aead5c5eefb20b91a649cecffb82:fbf74b67e4004683",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:9",
+    "inputs": {},
+    "outputs": {
+      "file_id": "file-c172916706f24ef38ca70292abf4e1da",
+      "state": "pending_review"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.225876+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b38ea0986f9d5aed",
+      "trace_flags": 3,
+      "parent_span_id": "fbf74b67e4004683",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        },
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "output"
+        }
+      ]
+    },
+    "source_seq": 21,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 22,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:22",
+    "node": "upload_file",
+    "phase": "change",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_call_id": "6009aead5c5eefb20b91a649cecffb82:fbf74b67e4004683",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:9",
+    "inputs": {},
+    "outputs": {
+      "state": "pending_review",
+      "instance_id": "file-c172916706f24ef38ca70292abf4e1da"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.225956+00:00",
+    "revision": 1,
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b38ea0986f9d5aed",
+      "trace_flags": 3,
+      "parent_span_id": "fbf74b67e4004683",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 22,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 23,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:23",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "6c3b599ba55f498d95cfeea505ec889f",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM transitions WHERE entity_id = ? ORDER BY id DESC LIMIT ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "targets": [
+        "table:transitions"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:transitions",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.227555+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b7d08a64be8ec679",
+      "trace_flags": 3,
+      "parent_span_id": "b38ea0986f9d5aed",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 23,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 24,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:24",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "6c3b599ba55f498d95cfeea505ec889f",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM transitions WHERE entity_id = ? ORDER BY id DESC LIMIT ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.548,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:transitions"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:transitions",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.229054+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b7d08a64be8ec679",
+      "trace_flags": 3,
+      "parent_span_id": "b38ea0986f9d5aed",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 24,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 25,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:25",
+    "node": "db_metadata",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "11e6f392290e4e71a0e5581c2207fdb2",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "operation": "transform",
+      "statement": "transform",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "targets": [],
+      "unknown_targets": [],
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.229922+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "53bcb6d9a7bc4d55",
+      "trace_flags": 3,
+      "parent_span_id": "b38ea0986f9d5aed",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 25,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 26,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:26",
+    "node": "db_metadata",
+    "phase": "change",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "11e6f392290e4e71a0e5581c2207fdb2",
+    "parent_call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:12",
+    "inputs": {
+      "operation": "transform",
+      "statement": "transform",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "transformed",
+      "duration_ms": 0.168,
+      "result": {
+        "size": 20,
+        "state": "pending_review"
+      },
+      "before": {
+        "size": 20,
+        "state": "pending_review"
+      },
+      "targets": [],
+      "unknown_targets": [],
+      "input_count": 12,
+      "output_count": 11,
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.230032+00:00",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "53bcb6d9a7bc4d55",
+      "trace_flags": 3,
+      "parent_span_id": "b38ea0986f9d5aed",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    "source_seq": 26,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 27,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:27",
+    "node": "upload_file",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e2cfa93683a84b139ff5e13c6478e236",
+    "parent_call_id": "6009aead5c5eefb20b91a649cecffb82:fbf74b67e4004683",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:9",
+    "inputs": {},
+    "outputs": {
+      "file_id": "file-c172916706f24ef38ca70292abf4e1da",
+      "state": "pending_review"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.230117+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "b38ea0986f9d5aed",
+      "trace_flags": 3,
+      "parent_span_id": "fbf74b67e4004683",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        },
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "output"
+        }
+      ]
+    },
+    "source_seq": 27,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 28,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:28",
+    "node": "api_post",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "6009aead5c5eefb20b91a649cecffb82:fbf74b67e4004683",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/files"
+    },
+    "outputs": {
+      "status": 201
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.230719+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "6009aead5c5eefb20b91a649cecffb82",
+      "span_id": "fbf74b67e4004683",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 28,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 29,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:29",
+    "node": "api_post",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e209252ee14df015dad51bc3088f6b15:ab86cefbb4434c77",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/login"
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.231320+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "e209252ee14df015dad51bc3088f6b15",
+      "span_id": "ab86cefbb4434c77",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 29,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 30,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:30",
+    "node": "sign_in",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "4d54a436a4f54b2094a238b6638f13fd",
+    "parent_call_id": "e209252ee14df015dad51bc3088f6b15:ab86cefbb4434c77",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:29",
+    "inputs": {
+      "username": "admin2",
+      "credential_supplied": true
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.231520+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "e209252ee14df015dad51bc3088f6b15",
+      "span_id": "eca4af8d90f399d7",
+      "trace_flags": 3,
+      "parent_span_id": "ab86cefbb4434c77",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 30,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 31,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:31",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "16e6598531884bc8b4ed03217fa0cc1b",
+    "parent_call_id": "4d54a436a4f54b2094a238b6638f13fd",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:30",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM users WHERE username = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.232510+00:00",
+    "trace": {
+      "trace_id": "e209252ee14df015dad51bc3088f6b15",
+      "span_id": "7f404d0ba9c1faf6",
+      "trace_flags": 3,
+      "parent_span_id": "eca4af8d90f399d7",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 31,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 32,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:32",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "16e6598531884bc8b4ed03217fa0cc1b",
+    "parent_call_id": "4d54a436a4f54b2094a238b6638f13fd",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:30",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM users WHERE username = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.163,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.233671+00:00",
+    "trace": {
+      "trace_id": "e209252ee14df015dad51bc3088f6b15",
+      "span_id": "7f404d0ba9c1faf6",
+      "trace_flags": 3,
+      "parent_span_id": "eca4af8d90f399d7",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 32,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 33,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:33",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e2ec0e8a9f7f4a5ba96c3fae8e180f5d",
+    "parent_call_id": "4d54a436a4f54b2094a238b6638f13fd",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:30",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.314737+00:00",
+    "trace": {
+      "trace_id": "e209252ee14df015dad51bc3088f6b15",
+      "span_id": "8b7350e323635719",
+      "trace_flags": 3,
+      "parent_span_id": "eca4af8d90f399d7",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 33,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 34,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:34",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e2ec0e8a9f7f4a5ba96c3fae8e180f5d",
+    "parent_call_id": "4d54a436a4f54b2094a238b6638f13fd",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:30",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.465,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.316152+00:00",
+    "trace": {
+      "trace_id": "e209252ee14df015dad51bc3088f6b15",
+      "span_id": "8b7350e323635719",
+      "trace_flags": 3,
+      "parent_span_id": "eca4af8d90f399d7",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": null
+    },
+    "source_seq": 34,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 35,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:35",
+    "node": "sign_in",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "4d54a436a4f54b2094a238b6638f13fd",
+    "parent_call_id": "e209252ee14df015dad51bc3088f6b15:ab86cefbb4434c77",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:29",
+    "inputs": {},
+    "outputs": {
+      "user_id": "admin-2",
+      "authenticated": true
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.316934+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "e209252ee14df015dad51bc3088f6b15",
+      "span_id": "eca4af8d90f399d7",
+      "trace_flags": 3,
+      "parent_span_id": "ab86cefbb4434c77",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      }
+    },
+    "source_seq": 35,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 36,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:36",
+    "node": "api_post",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "e209252ee14df015dad51bc3088f6b15:ab86cefbb4434c77",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/login"
+    },
+    "outputs": {
+      "status": 200
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.317348+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "e209252ee14df015dad51bc3088f6b15",
+      "span_id": "ab86cefbb4434c77",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 36,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 37,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:37",
+    "node": "api_post",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "b4b31b1374b5f22442982b7842cce010:cb10c07eec381118",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/files/file-c172916706f24ef38ca70292abf4e1da/review"
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.321990+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "cb10c07eec381118",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 37,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 38,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:38",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "6e54219c862a4736813e1da015fd8f0e",
+    "parent_call_id": "b4b31b1374b5f22442982b7842cce010:cb10c07eec381118",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:37",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.323394+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "e329f2eba830ecc9",
+      "trace_flags": 3,
+      "parent_span_id": "cb10c07eec381118",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 38,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 39,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:39",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "6e54219c862a4736813e1da015fd8f0e",
+    "parent_call_id": "b4b31b1374b5f22442982b7842cce010:cb10c07eec381118",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:37",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.141,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.324502+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "e329f2eba830ecc9",
+      "trace_flags": 3,
+      "parent_span_id": "cb10c07eec381118",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 39,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 40,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:40",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "b395faa903124a1b9aff4fcc231fcaf6",
+    "parent_call_id": "b4b31b1374b5f22442982b7842cce010:cb10c07eec381118",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:37",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.326213+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "f09cc8b40c189efe",
+      "trace_flags": 3,
+      "parent_span_id": "cb10c07eec381118",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 40,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 41,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:41",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "b395faa903124a1b9aff4fcc231fcaf6",
+    "parent_call_id": "b4b31b1374b5f22442982b7842cce010:cb10c07eec381118",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:37",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.123,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.327319+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "f09cc8b40c189efe",
+      "trace_flags": 3,
+      "parent_span_id": "cb10c07eec381118",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 41,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 42,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:42",
+    "node": "review_file",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "2c0bc38586c344199f5ba78790c7f665",
+    "parent_call_id": "b4b31b1374b5f22442982b7842cce010:cb10c07eec381118",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:37",
+    "inputs": {
+      "file_id": "file-c172916706f24ef38ca70292abf4e1da",
+      "decision": "approved",
+      "reason": "",
+      "actor_id": "admin-1"
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.328090+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "5d4f80002b3acc9c",
+      "trace_flags": 3,
+      "parent_span_id": "cb10c07eec381118",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 42,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 43,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "node": "db_transaction",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_call_id": "2c0bc38586c344199f5ba78790c7f665",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:42",
+    "inputs": {
+      "operation": "transaction",
+      "statement": "transaction",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "targets": [],
+      "unknown_targets": [],
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.328252+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 43,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 44,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:44",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "9fb2105315d64372b59d933f0f90524a",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "transaction_id": "564b649ffa494cf180db59d1a0edb246",
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.329981+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "fdd659919e94c276",
+      "trace_flags": 3,
+      "parent_span_id": "9c52f7f715081cac",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 44,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 45,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:45",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "9fb2105315d64372b59d933f0f90524a",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 0.268,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "transaction_id": "564b649ffa494cf180db59d1a0edb246",
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.330210+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "fdd659919e94c276",
+      "trace_flags": 3,
+      "parent_span_id": "9c52f7f715081cac",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 45,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 46,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:46",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "93c9dd7880384d42b6b38e62ab047cac",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT ? FROM shares WHERE file_id = ? AND recipient_id = ? AND state = ?",
+      "parameters": {
+        "count": 2
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "transaction_id": "564b649ffa494cf180db59d1a0edb246",
+      "targets": [
+        "table:shares"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:shares",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.331106+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "aaa6ceb2d5989df6",
+      "trace_flags": 3,
+      "parent_span_id": "9c52f7f715081cac",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 46,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 47,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:47",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "93c9dd7880384d42b6b38e62ab047cac",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT ? FROM shares WHERE file_id = ? AND recipient_id = ? AND state = ?",
+      "parameters": {
+        "count": 2
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 0.204,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "transaction_id": "564b649ffa494cf180db59d1a0edb246",
+      "targets": [
+        "table:shares"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:shares",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.331278+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "aaa6ceb2d5989df6",
+      "trace_flags": 3,
+      "parent_span_id": "9c52f7f715081cac",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 47,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 48,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:48",
+    "node": "policy:authenticated",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "e679317f1e8146fd886548b6006fe936:authenticated",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "bo_check": "e679317f1e8146fd886548b6006fe936",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.340824+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 48,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 49,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:49",
+    "node": "policy:signed_in",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "e679317f1e8146fd886548b6006fe936:signed_in",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "bo_check": "e679317f1e8146fd886548b6006fe936",
+      "bo_basis": "request-local",
+      "value": true
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:48",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.340907+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 49,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 50,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:50",
+    "node": "policy:actor_is_admin",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "e679317f1e8146fd886548b6006fe936:actor_is_admin",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "bo_check": "e679317f1e8146fd886548b6006fe936",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.340978+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 50,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 51,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:51",
+    "node": "policy:is_admin",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "e679317f1e8146fd886548b6006fe936:is_admin",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "bo_check": "e679317f1e8146fd886548b6006fe936",
+      "bo_basis": "request-local",
+      "value": true
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:50",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.341042+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 51,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 52,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:52",
+    "node": "policy:actor_is_uploader",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "e679317f1e8146fd886548b6006fe936:actor_is_uploader",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "bo_check": "e679317f1e8146fd886548b6006fe936",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.341102+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 52,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 53,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:53",
+    "node": "policy:is_uploader",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "e679317f1e8146fd886548b6006fe936:is_uploader",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "bo_check": "e679317f1e8146fd886548b6006fe936",
+      "bo_basis": "request-local",
+      "value": true
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:52",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.341159+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 53,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 54,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:54",
+    "node": "policy:not_uploader",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "e679317f1e8146fd886548b6006fe936:not_uploader",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "bo_check": "e679317f1e8146fd886548b6006fe936",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": false,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:53",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.341217+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 54,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 55,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:55",
+    "node": "policy:review_allowed",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "e679317f1e8146fd886548b6006fe936:review_allowed",
+    "parent_call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:43",
+    "inputs": {
+      "bo_check": "e679317f1e8146fd886548b6006fe936",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": false,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:49",
+        "type": "data"
+      },
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:51",
+        "type": "data"
+      },
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:54",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.341271+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 55,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 56,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:56",
+    "node": "db_transaction",
+    "phase": "error",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "564b649ffa494cf180db59d1a0edb246",
+    "parent_call_id": "2c0bc38586c344199f5ba78790c7f665",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:42",
+    "inputs": {
+      "operation": "transaction",
+      "statement": "transaction",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "rolled_back",
+      "duration_ms": 13.865,
+      "error_type": "DomainError",
+      "targets": [],
+      "unknown_targets": [],
+      "committed": false,
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.342120+00:00",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "9c52f7f715081cac",
+      "trace_flags": 3,
+      "parent_span_id": "5d4f80002b3acc9c",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 56,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 57,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:57",
+    "node": "review_file",
+    "phase": "error",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "2c0bc38586c344199f5ba78790c7f665",
+    "parent_call_id": "b4b31b1374b5f22442982b7842cce010:cb10c07eec381118",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:37",
+    "inputs": {},
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.342238+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "5d4f80002b3acc9c",
+      "trace_flags": 3,
+      "parent_span_id": "cb10c07eec381118",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "exception": {
+      "type": "DomainError"
+    },
+    "source_seq": 57,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 58,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:58",
+    "node": "api_post",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "b4b31b1374b5f22442982b7842cce010:cb10c07eec381118",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/files/file-c172916706f24ef38ca70292abf4e1da/review"
+    },
+    "outputs": {
+      "status": 403
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.342555+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "b4b31b1374b5f22442982b7842cce010",
+      "span_id": "cb10c07eec381118",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 58,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 59,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:59",
+    "node": "api_post",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "30e6a102098b9fcadaba872bc48e6e07:21c71ff716552285",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/files/file-c172916706f24ef38ca70292abf4e1da/review"
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.347620+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "21c71ff716552285",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 59,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 60,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:60",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "49235b79532e489c82254c239fafc8fc",
+    "parent_call_id": "30e6a102098b9fcadaba872bc48e6e07:21c71ff716552285",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:59",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.351543+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "f4a4526727ce2998",
+      "trace_flags": 3,
+      "parent_span_id": "21c71ff716552285",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 60,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 61,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:61",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "49235b79532e489c82254c239fafc8fc",
+    "parent_call_id": "30e6a102098b9fcadaba872bc48e6e07:21c71ff716552285",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:59",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT id, username, display_name, role FROM users WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.282,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:users"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:users",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.352793+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "f4a4526727ce2998",
+      "trace_flags": 3,
+      "parent_span_id": "21c71ff716552285",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 61,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 62,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:62",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "343c09fa86f94523b72f7880d2f18496",
+    "parent_call_id": "30e6a102098b9fcadaba872bc48e6e07:21c71ff716552285",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:59",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.354928+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "a8305c69155b8264",
+      "trace_flags": 3,
+      "parent_span_id": "21c71ff716552285",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 62,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 63,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:63",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "343c09fa86f94523b72f7880d2f18496",
+    "parent_call_id": "30e6a102098b9fcadaba872bc48e6e07:21c71ff716552285",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:59",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.254,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.356138+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "a8305c69155b8264",
+      "trace_flags": 3,
+      "parent_span_id": "21c71ff716552285",
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 63,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 64,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+    "node": "review_file",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_call_id": "30e6a102098b9fcadaba872bc48e6e07:21c71ff716552285",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:59",
+    "inputs": {
+      "file_id": "file-c172916706f24ef38ca70292abf4e1da",
+      "decision": "approved",
+      "reason": "",
+      "actor_id": "admin-2"
+    },
+    "outputs": {},
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.356983+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "d9a9b4c971090621",
+      "trace_flags": 3,
+      "parent_span_id": "21c71ff716552285",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 64,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 65,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "node": "db_transaction",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+    "inputs": {
+      "operation": "transaction",
+      "statement": "transaction",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "targets": [],
+      "unknown_targets": [],
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.357149+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 65,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 66,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:66",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "513505d9b1404b689b61e0e9a138d9be",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.359446+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "d997416155337709",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 66,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 67,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:67",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "513505d9b1404b689b61e0e9a138d9be",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 0.292,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.359709+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "d997416155337709",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 67,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 68,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:68",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "017557af72b245d58d11ed88cb27a766",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT ? FROM shares WHERE file_id = ? AND recipient_id = ? AND state = ?",
+      "parameters": {
+        "count": 2
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:shares"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:shares",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.360584+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "c4172f9df78069dc",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 68,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 69,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:69",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "017557af72b245d58d11ed88cb27a766",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT ? FROM shares WHERE file_id = ? AND recipient_id = ? AND state = ?",
+      "parameters": {
+        "count": 2
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 0.29,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:shares"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:shares",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.360805+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "c4172f9df78069dc",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 69,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 70,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:70",
+    "node": "policy:authenticated",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "ca7100df8f394bc1800a0f91ec62f837:authenticated",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "bo_check": "ca7100df8f394bc1800a0f91ec62f837",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.380009+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 70,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 71,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:71",
+    "node": "policy:signed_in",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "ca7100df8f394bc1800a0f91ec62f837:signed_in",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "bo_check": "ca7100df8f394bc1800a0f91ec62f837",
+      "bo_basis": "request-local",
+      "value": true
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:70",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.380093+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 71,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 72,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:72",
+    "node": "policy:actor_is_admin",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "ca7100df8f394bc1800a0f91ec62f837:actor_is_admin",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "bo_check": "ca7100df8f394bc1800a0f91ec62f837",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.380158+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 72,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 73,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:73",
+    "node": "policy:is_admin",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "ca7100df8f394bc1800a0f91ec62f837:is_admin",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "bo_check": "ca7100df8f394bc1800a0f91ec62f837",
+      "bo_basis": "request-local",
+      "value": true
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:72",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.380215+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 73,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 74,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:74",
+    "node": "policy:actor_is_uploader",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "ca7100df8f394bc1800a0f91ec62f837:actor_is_uploader",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "bo_check": "ca7100df8f394bc1800a0f91ec62f837",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": false,
+      "status": "completed"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.380270+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 74,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 75,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:75",
+    "node": "policy:is_uploader",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "ca7100df8f394bc1800a0f91ec62f837:is_uploader",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "bo_check": "ca7100df8f394bc1800a0f91ec62f837",
+      "bo_basis": "request-local",
+      "value": false
+    },
+    "outputs": {
+      "value": false,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:74",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.380322+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 75,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 76,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:76",
+    "node": "policy:not_uploader",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "ca7100df8f394bc1800a0f91ec62f837:not_uploader",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "bo_check": "ca7100df8f394bc1800a0f91ec62f837",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:75",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.380375+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 76,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 77,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:77",
+    "node": "policy:review_allowed",
+    "phase": "decision",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "entity",
+    "basis": {},
+    "call_id": "ca7100df8f394bc1800a0f91ec62f837:review_allowed",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "bo_check": "ca7100df8f394bc1800a0f91ec62f837",
+      "bo_basis": "request-local"
+    },
+    "outputs": {
+      "value": true,
+      "status": "completed"
+    },
+    "depends": [
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:71",
+        "type": "data"
+      },
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:73",
+        "type": "data"
+      },
+      {
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:76",
+        "type": "data"
+      }
+    ],
+    "observed_at": "2026-11-01T02:52:41.380427+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 77,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 78,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:78",
+    "node": "db_write",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "593b45842fe64533a866c034c42a2b02",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "write",
+      "statement": "INSERT INTO transitions (entity_id, event, before_state, after_state, revision, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+      "parameters": {
+        "count": 6
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:transitions"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:transitions",
+          "action": "write"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.381747+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "16497f9b8ca32337",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 78,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 79,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:79",
+    "node": "db_write",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "593b45842fe64533a866c034c42a2b02",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "write",
+      "statement": "INSERT INTO transitions (entity_id, event, before_state, after_state, revision, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+      "parameters": {
+        "count": 6
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 0.301,
+      "rows": 1,
+      "rows_known": true,
+      "result": {
+        "rowcount": 1
+      },
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:transitions"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:transitions",
+          "action": "write"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.381994+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "16497f9b8ca32337",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 79,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 80,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:80",
+    "node": "db_write",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "f542da4f9b274a8ea38a01ee537bdc65",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "write",
+      "statement": "UPDATE files SET state = ?, review_decision = ?, rejection_reason = ?, reviewer_id = ?, revision = revision + ? WHERE id = ?",
+      "parameters": {
+        "count": 5
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "write"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.383059+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "9f0489a4c6ce79cc",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 80,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 81,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:81",
+    "node": "db_write",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "f542da4f9b274a8ea38a01ee537bdc65",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "write",
+      "statement": "UPDATE files SET state = ?, review_decision = ?, rejection_reason = ?, reviewer_id = ?, revision = revision + ? WHERE id = ?",
+      "parameters": {
+        "count": 5
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 0.233,
+      "rows": 1,
+      "rows_known": true,
+      "result": {
+        "rowcount": 1
+      },
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "write"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.383261+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "9f0489a4c6ce79cc",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 81,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 82,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:82",
+    "node": "db_write",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "ecb06d4d25bd4cc0b9944244682fdba2",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "write",
+      "statement": "INSERT INTO jobs (id, kind, file_id, share_id, recipient_id, workflow_id, available_at, carrier) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "parameters": {
+        "count": 8
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.005,
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:jobs"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:jobs",
+          "action": "write"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.384628+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "c3b42705b56a4ba4",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 82,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 83,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:83",
+    "node": "db_write",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "ecb06d4d25bd4cc0b9944244682fdba2",
+    "parent_call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:65",
+    "inputs": {
+      "operation": "write",
+      "statement": "INSERT INTO jobs (id, kind, file_id, share_id, recipient_id, workflow_id, available_at, carrier) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "parameters": {
+        "count": 8
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 0.36,
+      "rows": 1,
+      "rows_known": true,
+      "result": {
+        "rowcount": 1
+      },
+      "transaction_id": "4e91584b79dc428aa1be99f8fb0a2531",
+      "targets": [
+        "table:jobs"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:jobs",
+          "action": "write"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.384905+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "c3b42705b56a4ba4",
+      "trace_flags": 3,
+      "parent_span_id": "4c2dddac49d5b173",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 83,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 84,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:84",
+    "node": "db_transaction",
+    "phase": "commit",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "4e91584b79dc428aa1be99f8fb0a2531",
+    "parent_call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+    "inputs": {
+      "operation": "transaction",
+      "statement": "transaction",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "committed",
+      "duration_ms": 31.624,
+      "targets": [],
+      "unknown_targets": [],
+      "committed": true,
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.388775+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "4c2dddac49d5b173",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 84,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 85,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:85",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "64edc03666f94c75935fddf84ca66216",
+    "parent_call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.003,
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.389799+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "36cf9db56c0709ac",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 85,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 86,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:86",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "64edc03666f94c75935fddf84ca66216",
+    "parent_call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM files WHERE id = ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.362,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:files"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:files",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.391147+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "36cf9db56c0709ac",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 86,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 87,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:87",
+    "node": "review_file",
+    "phase": "change",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_call_id": "30e6a102098b9fcadaba872bc48e6e07:21c71ff716552285",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:59",
+    "inputs": {},
+    "outputs": {
+      "state": "review_notice_wait",
+      "instance_id": "file-c172916706f24ef38ca70292abf4e1da"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.392008+00:00",
+    "revision": 2,
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "d9a9b4c971090621",
+      "trace_flags": 3,
+      "parent_span_id": "21c71ff716552285",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 87,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 88,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:88",
+    "node": "db_read",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "915503b86443413c8584c4163471e423",
+    "parent_call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM transitions WHERE entity_id = ? ORDER BY id DESC LIMIT ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "targets": [
+        "table:transitions"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:transitions",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.393251+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "65fc727780823514",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 88,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 89,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:89",
+    "node": "db_read",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "915503b86443413c8584c4163471e423",
+    "parent_call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+    "inputs": {
+      "operation": "read",
+      "statement": "SELECT * FROM transitions WHERE entity_id = ? ORDER BY id DESC LIMIT ?",
+      "parameters": {
+        "count": 1
+      }
+    },
+    "outputs": {
+      "status": "returned",
+      "duration_ms": 1.314,
+      "rows_known": false,
+      "result": {
+        "rowcount": -1
+      },
+      "targets": [
+        "table:transitions"
+      ],
+      "unknown_targets": [],
+      "target_source": "parsed_sql",
+      "target_access": [
+        {
+          "target": "table:transitions",
+          "action": "read"
+        }
+      ]
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.394542+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "65fc727780823514",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 89,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 90,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:90",
+    "node": "db_metadata",
+    "phase": "enter",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "f5e237dbe2a440cbb43579c6fc7ccf57",
+    "parent_call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+    "inputs": {
+      "operation": "transform",
+      "statement": "transform",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "started",
+      "duration_ms": 0.002,
+      "targets": [],
+      "unknown_targets": [],
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.395407+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "e01249f1d5d1223f",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 90,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 91,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:91",
+    "node": "db_metadata",
+    "phase": "change",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "f5e237dbe2a440cbb43579c6fc7ccf57",
+    "parent_call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+    "inputs": {
+      "operation": "transform",
+      "statement": "transform",
+      "parameters": {}
+    },
+    "outputs": {
+      "status": "transformed",
+      "duration_ms": 0.162,
+      "result": {
+        "size": 20,
+        "state": "review_notice_wait"
+      },
+      "before": {
+        "size": 20,
+        "state": "review_notice_wait"
+      },
+      "targets": [],
+      "unknown_targets": [],
+      "input_count": 12,
+      "output_count": 11,
+      "target_source": "not_applicable",
+      "target_access": []
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.395525+00:00",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "e01249f1d5d1223f",
+      "trace_flags": 3,
+      "parent_span_id": "d9a9b4c971090621",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        }
+      ]
+    },
+    "source_seq": 91,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 92,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:92",
+    "node": "review_file",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "cb7e63d83ac840588f4e98f77662ecd7",
+    "parent_call_id": "30e6a102098b9fcadaba872bc48e6e07:21c71ff716552285",
+    "parent_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:59",
+    "inputs": {},
+    "outputs": {
+      "file_id": "file-c172916706f24ef38ca70292abf4e1da",
+      "job_id": "job-f245923670454b89bb9fea5a18019cdf",
+      "state": "review_notice_wait",
+      "decision": "approved"
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.395611+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "d9a9b4c971090621",
+      "trace_flags": 3,
+      "parent_span_id": "21c71ff716552285",
+      "tracestate": "",
+      "links": []
+    },
+    "provenance": {
+      "actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "workflow_id": "workflow-cafe0d573e0f41aabd1a43ec6d482a20",
+      "objects": [
+        {
+          "type": "File",
+          "id": "file-c172916706f24ef38ca70292abf4e1da",
+          "role": "input"
+        },
+        {
+          "type": "Job",
+          "id": "job-f245923670454b89bb9fea5a18019cdf",
+          "role": "output"
+        }
+      ]
+    },
+    "source_seq": 92,
+    "stream_id": "0625d952935cf73b97380b90"
+  },
+  {
+    "protocol": "bo-event/v1",
+    "project_id": "team-files-otel-dialogue-20261101-03",
+    "model_revision": "1",
+    "build_id": "1891a7074159a4b2306cccbba1e1f2b3a7dd6194e65fe4f6f0393d3ee1c9bf92",
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "schema_version": 3,
+    "seq": 93,
+    "id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:93",
+    "node": "api_post",
+    "phase": "return",
+    "entity": "application",
+    "attempt": "application",
+    "scope": "application",
+    "basis": {},
+    "call_id": "30e6a102098b9fcadaba872bc48e6e07:21c71ff716552285",
+    "parent_call_id": null,
+    "parent_event_id": null,
+    "inputs": {
+      "path": "/api/files/file-c172916706f24ef38ca70292abf4e1da/review"
+    },
+    "outputs": {
+      "status": 200
+    },
+    "depends": [],
+    "observed_at": "2026-11-01T02:52:41.395841+00:00",
+    "lifecycle": "span",
+    "trace": {
+      "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+      "span_id": "21c71ff716552285",
+      "trace_flags": 3,
+      "parent_span_id": null,
+      "tracestate": "",
+      "links": []
+    },
+    "source_seq": 93,
+    "stream_id": "0625d952935cf73b97380b90"
+  }
+]

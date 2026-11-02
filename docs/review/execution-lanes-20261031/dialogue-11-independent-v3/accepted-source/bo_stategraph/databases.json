@@ -1,0 +1,218 @@
+{
+  "protocol": "bo-databases/v1",
+  "stores": [
+    {
+      "id": "team_files",
+      "label": "Team Files SQLite",
+      "engine": "sqlalchemy",
+      "url_env": "TEAM_FILES_DB_URL",
+      "selection": {
+        "source": "user",
+        "answer": "先用 Python 和 SQLite 在本机跑起来",
+        "locator": "discovery.json#U001"
+      },
+      "model_layer": "SQLAlchemy MetaData",
+      "source_files": [
+        "app/models.py",
+        "tooling/export_models.py"
+      ],
+      "declaration": "bo_stategraph/model-catalog.json"
+    }
+  ],
+  "operations": [
+    {
+      "id": "db_users",
+      "label": "Read existing accounts",
+      "parent": "list_users",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.read_users"
+      },
+      "store": "team_files",
+      "action": "read",
+      "targets": [
+        "table:users"
+      ],
+      "parameters": {},
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow"
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ]
+    },
+    {
+      "id": "db_file",
+      "label": "Read current file facts",
+      "parent": "review_file",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.read_file"
+      },
+      "store": "team_files",
+      "action": "read",
+      "targets": [
+        "table:files"
+      ],
+      "parameters": {
+        "file_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow",
+        "withdrawal"
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ]
+    },
+    {
+      "id": "db_candidates",
+      "label": "Read visible file candidates",
+      "parent": "review_file",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.read_candidates"
+      },
+      "store": "team_files",
+      "action": "read",
+      "targets": [
+        "table:files"
+      ],
+      "parameters": {
+        "actor": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow",
+        "withdrawal"
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ]
+    },
+    {
+      "id": "db_insert",
+      "label": "Persist uploaded file",
+      "parent": "upload_file",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.insert_file"
+      },
+      "store": "team_files",
+      "action": "write",
+      "targets": [
+        "table:files"
+      ],
+      "parameters": {
+        "file_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow"
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ]
+    },
+    {
+      "id": "db_update",
+      "label": "Commit review, recipient or withdrawal",
+      "parent": "review_file",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.update_file"
+      },
+      "store": "team_files",
+      "action": "write",
+      "targets": [
+        "table:files"
+      ],
+      "parameters": {
+        "file_id": "string"
+      },
+      "before": {},
+      "after": {
+        "row_count": "number"
+      },
+      "required_cases": [
+        "workflow",
+        "withdrawal"
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ]
+    },
+    {
+      "id": "db_transaction",
+      "label": "File transaction",
+      "parent": "upload_file",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "Store.write_transaction"
+      },
+      "store": "team_files",
+      "action": "transaction",
+      "targets": [],
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "required_cases": [
+        "workflow",
+        "withdrawal"
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ]
+    },
+    {
+      "id": "db_metadata",
+      "label": "Select file metadata",
+      "parent": "access_file",
+      "source": {
+        "path": "app/storage.py",
+        "symbol": "metadata_view"
+      },
+      "store": "team_files",
+      "action": "transform",
+      "targets": [],
+      "parameters": {},
+      "before": {
+        "size": "number"
+      },
+      "after": {
+        "size": "number"
+      },
+      "required_cases": [
+        "workflow"
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ]
+    }
+  ],
+  "exporters": [
+    {
+      "store": "team_files",
+      "command": [
+        "{python}",
+        "-B",
+        "tooling/export_models.py"
+      ],
+      "output": "bo_stategraph/model-catalog.json"
+    }
+  ]
+}

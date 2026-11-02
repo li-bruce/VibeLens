@@ -1,0 +1,881 @@
+{
+  "passed": false,
+  "checks": [
+    "two real users wait in two complete four-layer bands",
+    "independent collapse and all-group collapse retain only business rows"
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(\n    trace.routes.some((route) => route.type === \"control\" && route.fromRow === route.toRow),\n  )\n\n    at file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/tools/test_execution_bands_browser.mjs:145:10",
+  "errors": [],
+  "stdout": "{\"observer\": \"http://127.0.0.1:57494\", \"application\": \"http://127.0.0.1:57493\"}\r\n",
+  "stderr": "",
+  "diagnostic": {
+    "metrics": {
+      "nodes": 6,
+      "edges": 5,
+      "texts": 19,
+      "drawCount": 10,
+      "routeSolver": {
+        "wasm": 0,
+        "cached": 0,
+        "bundles": 0,
+        "routed": 5,
+        "unresolved": 0,
+        "total": 5,
+        "elapsed": 0.6999998092651367,
+        "busy": false
+      },
+      "webgl": true
+    },
+    "presentation": [
+      {
+        "id": "summary:advance|state-parameter|data|false|false|model",
+        "from": "advance",
+        "to": "state-parameter",
+        "type": "data",
+        "label": "current-state",
+        "evidence": "worker.py explicit nested spans",
+        "authored_label": "current-state",
+        "labels": {},
+        "members": [
+          {
+            "id": "current-state",
+            "from": "advance",
+            "to": "state-parameter",
+            "type": "data",
+            "label": "current-state",
+            "evidence": "worker.py explicit nested spans",
+            "authored_label": "current-state",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": false,
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-pending|state-running|transition|false|false|model",
+        "from": "state-pending",
+        "to": "state-running",
+        "type": "transition",
+        "event": "start",
+        "label": "start · when available",
+        "conditions": [
+          "available"
+        ],
+        "unless": [],
+        "machine_transition": {
+          "index": 0,
+          "source": "pending",
+          "dest": "running",
+          "internal": false
+        },
+        "observed": true,
+        "current": true,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:start:pending:%5B%22state-running%22%2C%5B%22available%22%5D%2C%5B%5D%2Cfalse%5D",
+            "from": "state-pending",
+            "to": "state-running",
+            "type": "transition",
+            "event": "start",
+            "label": "start · when available",
+            "conditions": [
+              "available"
+            ],
+            "unless": [],
+            "machine_transition": {
+              "index": 0,
+              "source": "pending",
+              "dest": "running",
+              "internal": false
+            },
+            "observed": true,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-pending|state-waiting|transition|false|false|model",
+        "from": "state-pending",
+        "to": "state-waiting",
+        "type": "transition",
+        "event": "start",
+        "label": "start · unless available",
+        "conditions": [],
+        "unless": [
+          "available"
+        ],
+        "machine_transition": {
+          "index": 1,
+          "source": "pending",
+          "dest": "waiting",
+          "internal": false
+        },
+        "observed": false,
+        "current": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:start:pending:%5B%22state-waiting%22%2C%5B%5D%2C%5B%22available%22%5D%2Cfalse%5D",
+            "from": "state-pending",
+            "to": "state-waiting",
+            "type": "transition",
+            "event": "start",
+            "label": "start · unless available",
+            "conditions": [],
+            "unless": [
+              "available"
+            ],
+            "machine_transition": {
+              "index": 1,
+              "source": "pending",
+              "dest": "waiting",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-waiting|state-running|transition|false|false|model",
+        "from": "state-waiting",
+        "to": "state-running",
+        "type": "transition",
+        "event": "resume",
+        "label": "resume · when available",
+        "conditions": [
+          "available"
+        ],
+        "unless": [],
+        "machine_transition": {
+          "index": 2,
+          "source": "waiting",
+          "dest": "running",
+          "internal": false
+        },
+        "observed": false,
+        "current": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:resume:waiting",
+            "from": "state-waiting",
+            "to": "state-running",
+            "type": "transition",
+            "event": "resume",
+            "label": "resume · when available",
+            "conditions": [
+              "available"
+            ],
+            "unless": [],
+            "machine_transition": {
+              "index": 2,
+              "source": "waiting",
+              "dest": "running",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-running|state-done|transition|false|false|model",
+        "from": "state-running",
+        "to": "state-done",
+        "type": "transition",
+        "event": "finish",
+        "label": "finish",
+        "conditions": [],
+        "unless": [],
+        "machine_transition": {
+          "index": 3,
+          "source": "running",
+          "dest": "done",
+          "internal": false
+        },
+        "observed": false,
+        "current": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:finish:running",
+            "from": "state-running",
+            "to": "state-done",
+            "type": "transition",
+            "event": "finish",
+            "label": "finish",
+            "conditions": [],
+            "unless": [],
+            "machine_transition": {
+              "index": 3,
+              "source": "running",
+              "dest": "done",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      }
+    ],
+    "planar": [
+      {
+        "id": "summary:advance|state-parameter|data|false|false|model",
+        "start": {
+          "x": 328.83819383302927,
+          "y": 56.68391299374049,
+          "level": 0
+        },
+        "end": {
+          "x": -115.63913802113962,
+          "y": 311.876973702126,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-pending|state-running|transition|false|false|model",
+        "start": {
+          "x": -423.8266284156814,
+          "y": -414.1122039060078,
+          "level": 0
+        },
+        "end": {
+          "x": -337.9292429356381,
+          "y": -706.5217566855083,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-pending|state-waiting|transition|false|false|model",
+        "start": {
+          "x": -423.8266284156814,
+          "y": -414.1122039060078,
+          "level": 0
+        },
+        "end": {
+          "x": -169.9974293719702,
+          "y": -245.73131147555046,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-waiting|state-running|transition|false|false|model",
+        "start": {
+          "x": -169.9974293719702,
+          "y": -245.73131147555046,
+          "level": 0
+        },
+        "end": {
+          "x": -337.9292429356381,
+          "y": -706.5217566855083,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-running|state-done|transition|false|false|model",
+        "start": {
+          "x": -337.9292429356381,
+          "y": -706.5217566855083,
+          "level": 0
+        },
+        "end": {
+          "x": -84.44493601014557,
+          "y": -537.875145362698,
+          "level": 0
+        },
+        "vertices": 25
+      }
+    ],
+    "spatial": null,
+    "timeline": {
+      "eventId": "start",
+      "raw": 0,
+      "window": {
+        "start": 0,
+        "end": 758.528076171875
+      },
+      "range": null,
+      "rows": [
+        {
+          "id": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1:business",
+          "layer": "business",
+          "group": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1",
+          "groupStart": true,
+          "folded": false,
+          "members": [
+            "advance"
+          ]
+        },
+        {
+          "id": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1:state",
+          "layer": "state",
+          "group": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1",
+          "groupStart": false,
+          "folded": false,
+          "members": [
+            "state-parameter",
+            "state-running",
+            "state-done"
+          ]
+        },
+        {
+          "id": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1:rules",
+          "layer": "rules",
+          "group": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1",
+          "groupStart": false,
+          "folded": false,
+          "members": []
+        },
+        {
+          "id": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1:execution",
+          "layer": "execution",
+          "group": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1",
+          "groupStart": false,
+          "folded": false,
+          "members": [
+            "field:advance:out:state",
+            "write",
+            "field:write:out:count"
+          ]
+        },
+        {
+          "id": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9:business",
+          "layer": "business",
+          "group": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9",
+          "groupStart": true,
+          "folded": false,
+          "members": [
+            "advance"
+          ]
+        },
+        {
+          "id": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9:state",
+          "layer": "state",
+          "group": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9",
+          "groupStart": false,
+          "folded": false,
+          "members": [
+            "state-parameter",
+            "state-running",
+            "state-done"
+          ]
+        },
+        {
+          "id": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9:rules",
+          "layer": "rules",
+          "group": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9",
+          "groupStart": false,
+          "folded": false,
+          "members": []
+        },
+        {
+          "id": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9:execution",
+          "layer": "execution",
+          "group": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9",
+          "groupStart": false,
+          "folded": false,
+          "members": [
+            "field:advance:out:state",
+            "write",
+            "field:write:out:count"
+          ]
+        }
+      ],
+      "executions": [
+        {
+          "id": "execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1",
+          "start": 0,
+          "end": 600.387939453125,
+          "root": "75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1",
+          "lane": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1"
+        },
+        {
+          "id": "execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9",
+          "start": 0,
+          "end": 604.26904296875,
+          "root": "75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9",
+          "lane": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9"
+        }
+      ],
+      "groups": 2,
+      "points": [
+        {
+          "raw": 0,
+          "time": 0
+        },
+        {
+          "raw": 1,
+          "time": 594.385986328125
+        },
+        {
+          "raw": 2,
+          "time": 594.488037109375
+        },
+        {
+          "raw": 3,
+          "time": 594.554931640625
+        },
+        {
+          "raw": 4,
+          "time": 594.60595703125
+        },
+        {
+          "raw": 5,
+          "time": 600.041015625
+        },
+        {
+          "raw": 6,
+          "time": 600.114990234375
+        },
+        {
+          "raw": 7,
+          "time": 600.18212890625
+        },
+        {
+          "raw": 8,
+          "time": 600.3310546875
+        },
+        {
+          "raw": 9,
+          "time": 600.387939453125
+        },
+        {
+          "raw": 10,
+          "time": 603.8740234375
+        },
+        {
+          "raw": 11,
+          "time": 603.93798828125
+        },
+        {
+          "raw": 12,
+          "time": 604.193115234375
+        },
+        {
+          "raw": 13,
+          "time": 604.26904296875
+        },
+        {
+          "raw": 14,
+          "time": 758.528076171875
+        }
+      ],
+      "transfers": [],
+      "clock": "time",
+      "scroll": 0,
+      "painted": 23,
+      "flows": 5,
+      "source": "saved",
+      "depth": "all",
+      "layerMode": "through",
+      "lifecycles": [
+        {
+          "node": "advance",
+          "start": 0,
+          "end": 600.387939453125,
+          "duration": 600.387939453125,
+          "unfinished": false,
+          "clippedStart": true,
+          "entryEventId": "75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1",
+          "raw": 0,
+          "last": 9,
+          "stages": [
+            {
+              "state": "awaiting_release",
+              "label": "Waiting for confirmation",
+              "start": 0,
+              "end": 594.385986328125,
+              "registered": true
+            },
+            {
+              "state": "checking",
+              "label": "Checking access",
+              "start": 594.385986328125,
+              "end": 600.387939453125,
+              "registered": true
+            }
+          ],
+          "terminal": {
+            "id": "shared",
+            "label": "File shared",
+            "kind": "ended",
+            "state": "shared",
+            "boundary": "end",
+            "registered": true,
+            "termination": "return"
+          }
+        },
+        {
+          "node": "advance",
+          "start": 0,
+          "end": 604.26904296875,
+          "duration": 604.26904296875,
+          "unfinished": false,
+          "clippedStart": true,
+          "entryEventId": "75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9",
+          "raw": 0,
+          "last": 13,
+          "stages": [
+            {
+              "state": "awaiting_release",
+              "label": "Waiting for confirmation",
+              "start": 0,
+              "end": 594.554931640625,
+              "registered": true
+            },
+            {
+              "state": "checking",
+              "label": "Checking access",
+              "start": 594.554931640625,
+              "end": 604.26904296875,
+              "registered": true
+            }
+          ],
+          "terminal": {
+            "id": "shared",
+            "label": "File shared",
+            "kind": "ended",
+            "state": "shared",
+            "boundary": "end",
+            "registered": true,
+            "termination": "return"
+          }
+        },
+        {
+          "node": "write",
+          "start": 594.488037109375,
+          "end": 600.114990234375,
+          "duration": 5.626953125,
+          "unfinished": false,
+          "clippedStart": false,
+          "entryEventId": "75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:18",
+          "raw": 2,
+          "last": 6,
+          "stages": [
+            {
+              "state": "running",
+              "label": "Running",
+              "start": 594.488037109375,
+              "end": 600.114990234375,
+              "registered": false
+            }
+          ],
+          "terminal": {
+            "boundary": "end",
+            "state": "returned",
+            "label": "Returned",
+            "kind": "ended",
+            "registered": false,
+            "termination": "return"
+          }
+        },
+        {
+          "node": "write",
+          "start": 594.60595703125,
+          "end": 603.93798828125,
+          "duration": 9.33203125,
+          "unfinished": false,
+          "clippedStart": false,
+          "entryEventId": "75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:20",
+          "raw": 4,
+          "last": 11,
+          "stages": [
+            {
+              "state": "running",
+              "label": "Running",
+              "start": 594.60595703125,
+              "end": 603.93798828125,
+              "registered": false
+            }
+          ],
+          "terminal": {
+            "boundary": "end",
+            "state": "returned",
+            "label": "Returned",
+            "kind": "ended",
+            "registered": false,
+            "termination": "return"
+          }
+        },
+        {
+          "node": "state-running",
+          "start": 0,
+          "end": 600.3310546875,
+          "duration": 600.3310546875,
+          "unfinished": false,
+          "clippedStart": true,
+          "entryEventId": "start",
+          "raw": 0,
+          "last": 8
+        },
+        {
+          "node": "state-running",
+          "start": 0,
+          "end": 604.193115234375,
+          "duration": 604.193115234375,
+          "unfinished": false,
+          "clippedStart": true,
+          "entryEventId": "start",
+          "raw": 0,
+          "last": 12
+        },
+        {
+          "node": "state-done",
+          "start": 600.3310546875,
+          "end": 758.528076171875,
+          "duration": null,
+          "unfinished": true,
+          "clippedStart": false,
+          "entryEventId": "75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:24",
+          "raw": 8,
+          "last": 14
+        },
+        {
+          "node": "state-done",
+          "start": 604.193115234375,
+          "end": 758.528076171875,
+          "duration": null,
+          "unfinished": true,
+          "clippedStart": false,
+          "entryEventId": "75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:28",
+          "raw": 12,
+          "last": 14
+        }
+      ],
+      "paintMs": 0.8000001907348633,
+      "routes": [
+        {
+          "key": "0:2:2:call",
+          "type": "call",
+          "raw": 2,
+          "row": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1:execution",
+          "fromRow": 0,
+          "toRow": 3,
+          "route": [
+            {
+              "x": 1220.5354821204592,
+              "y": 64
+            },
+            {
+              "x": 1210.5354821204592,
+              "y": 64
+            },
+            {
+              "x": 1210.5354821204592,
+              "y": 148
+            },
+            {
+              "x": 1220.5354821204592,
+              "y": 148
+            }
+          ]
+        },
+        {
+          "key": "0:4:4:call",
+          "type": "call",
+          "raw": 4,
+          "row": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9:execution",
+          "fromRow": 4,
+          "toRow": 7,
+          "route": [
+            {
+              "x": 1220.7406878363247,
+              "y": 176
+            },
+            {
+              "x": 1207.7406878363247,
+              "y": 176
+            },
+            {
+              "x": 1207.7406878363247,
+              "y": 260
+            },
+            {
+              "x": 1220.7406878363247,
+              "y": 260
+            }
+          ]
+        },
+        {
+          "key": "5:7:7:control",
+          "type": "control",
+          "raw": 7,
+          "row": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9:execution",
+          "fromRow": 3,
+          "toRow": 7,
+          "route": [
+            {
+              "x": 1230.1988444545439,
+              "y": 148
+            },
+            {
+              "x": 1234.5088684605482,
+              "y": 148.81199999999995
+            },
+            {
+              "x": 1238.3653931355414,
+              "y": 151.13600000000002
+            },
+            {
+              "x": 1241.7686026548383,
+              "y": 154.80399999999997
+            },
+            {
+              "x": 1244.7186811937572,
+              "y": 159.64800000000005
+            },
+            {
+              "x": 1247.2158129276127,
+              "y": 165.5
+            },
+            {
+              "x": 1249.2601820317218,
+              "y": 172.19199999999998
+            },
+            {
+              "x": 1250.8519726814018,
+              "y": 179.55599999999998
+            },
+            {
+              "x": 1251.9913690519681,
+              "y": 187.424
+            },
+            {
+              "x": 1252.6785553187376,
+              "y": 195.62800000000001
+            },
+            {
+              "x": 1252.9137156570264,
+              "y": 204
+            },
+            {
+              "x": 1252.697034242151,
+              "y": 212.372
+            },
+            {
+              "x": 1252.028695249428,
+              "y": 220.576
+            },
+            {
+              "x": 1250.9088828541735,
+              "y": 228.444
+            },
+            {
+              "x": 1249.3377812317042,
+              "y": 235.80799999999996
+            },
+            {
+              "x": 1247.3155745573367,
+              "y": 242.5
+            },
+            {
+              "x": 1244.842447006387,
+              "y": 248.35200000000003
+            },
+            {
+              "x": 1241.9185827541712,
+              "y": 253.196
+            },
+            {
+              "x": 1238.5441659760068,
+              "y": 256.86400000000003
+            },
+            {
+              "x": 1234.719380847209,
+              "y": 259.188
+            },
+            {
+              "x": 1230.4444115430952,
+              "y": 260
+            }
+          ]
+        },
+        {
+          "key": "6:0:6:return",
+          "type": "return",
+          "raw": 6,
+          "row": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:1:business",
+          "fromRow": 3,
+          "toRow": 0,
+          "route": [
+            {
+              "x": 1230.3275759905837,
+              "y": 148
+            },
+            {
+              "x": 1220.3275759905837,
+              "y": 148
+            },
+            {
+              "x": 1220.3275759905837,
+              "y": 64
+            },
+            {
+              "x": 1230.3275759905837,
+              "y": 64
+            }
+          ]
+        },
+        {
+          "key": "11:0:11:return",
+          "type": "return",
+          "raw": 11,
+          "row": "lane:execution:75d79ecbc1a44192b73fb1a61f805a0d:23122fe5dcb6457dacc491fdfcf79a2c:9:business",
+          "fromRow": 7,
+          "toRow": 4,
+          "route": [
+            {
+              "x": 1236.9804047788637,
+              "y": 260
+            },
+            {
+              "x": 1223.9804047788637,
+              "y": 260
+            },
+            {
+              "x": 1223.9804047788637,
+              "y": 176
+            },
+            {
+              "x": 1236.9804047788637,
+              "y": 176
+            }
+          ]
+        }
+      ],
+      "zooming": false,
+      "geometry": {
+        "left": 186,
+        "plot": 1320,
+        "top": 50
+      }
+    }
+  }
+}

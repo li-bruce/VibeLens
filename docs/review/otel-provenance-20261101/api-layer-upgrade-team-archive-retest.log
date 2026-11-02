@@ -1,0 +1,270 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+{
+  "valid": true,
+  "status": "editing",
+  "baseline_id": "10929c63b7ba21ebe88e1ea5fea3650f0bb5e812b35a765f39ee49d06a270e05",
+  "change": ".stategraph/otel-api-classification-20261101",
+  "recall": {
+    "schema": "bo-iteration-recall/v1",
+    "candidate_id": "10929c63b7ba21ebe88e1ea5fea3650f0bb5e812b35a765f39ee49d06a270e05",
+    "mode": "drive",
+    "active_change": {
+      "change": ".stategraph/otel-api-classification-20261101"
+    },
+    "request": "Honor explicit API-layer runtime declarations in shared viewer and layer observation requirements; native business and state definitions are unchanged.",
+    "changed_files": [],
+    "source_errors": [],
+    "verification": "not_run",
+    "unregistered_files": [],
+    "unclassified_functions": [],
+    "contracts": {
+      "model": "behavior.json",
+      "acceptance": "acceptance.json",
+      "whitebox": "whitebox.json",
+      "mapping_contract": "mapping.json",
+      "discovery": "discovery.json"
+    },
+    "observation_module": "bo_stategraph/__init__.py",
+    "observation_sources": [
+      "archive_app/ports.py::BOTracePort.__init__",
+      "archive_app/ports.py::BOTracePort.bo_record",
+      "archive_app/ports.py::no_trace",
+      "archive_app/ports.py::bo_record_change",
+      "integrations/bo_observer.py::BOObserver.__init__",
+      "integrations/bo_observer.py::BOObserver.write",
+      "integrations/bo_observer.py::BOObserver.trace",
+      "integrations/bo_observer.py::BOObserver.snapshot",
+      "integrations/bo_observer.py::BOObserver.health",
+      "integrations/bo_observer.py::BOObserver.close",
+      "integrations/bo_server.py::LocalApplication.__init__",
+      "integrations/bo_server.py::LocalApplication.recording_view",
+      "integrations/bo_server.py::LocalApplication.bo_export_graph",
+      "integrations/bo_server.py::LocalApplication.cases",
+      "integrations/bo_server.py::LocalApplication.version_sources",
+      "integrations/bo_server.py::LocalApplication.graph_view",
+      "integrations/bo_server.py::LocalApplication.state",
+      "integrations/bo_server.py::LocalApplication.command",
+      "integrations/bo_server.py::serve",
+      "integrations/bo_server.py::serve.Handler.log_message",
+      "integrations/bo_server.py::serve.Handler.reply",
+      "integrations/bo_server.py::serve.Handler.do_GET",
+      "integrations/bo_server.py::serve.Handler.do_POST",
+      "run.py::main",
+      "static/app.js::bo_record",
+      "integrations/bo_observer.py::BOObserver.trace.broken"
+    ],
+    "naming": {
+      "wiring": "bo_",
+      "adapters": "BO"
+    },
+    "layers": {
+      "business": {
+        "nodes": 6,
+        "scan": "feature entrypoints and effects",
+        "observe": "actual invocation and selected result",
+        "affected_nodes": []
+      },
+      "state": {
+        "nodes": 10,
+        "scan": "state declaration and value bindings",
+        "observe": "actual state changes and residence",
+        "affected_nodes": []
+      },
+      "rules": {
+        "nodes": 8,
+        "scan": "predicate sources, arguments and shared dependencies",
+        "observe": "evaluated/skipped conditions and actual enclosing invocation",
+        "affected_nodes": []
+      },
+      "api": {
+        "nodes": 0,
+        "scan": "registered routes and handlers",
+        "observe": "request boundary and actual response",
+        "affected_nodes": []
+      },
+      "execution": {
+        "nodes": 30,
+        "scan": "functions, parameters and explicit probes",
+        "observe": "call boundaries, selected values and actual nested parent identities",
+        "affected_nodes": []
+      },
+      "operations": {
+        "nodes": 0,
+        "scan": "model exporters and data-access bindings",
+        "observe": "query, transform, transaction and enclosing native call identity",
+        "affected_nodes": []
+      },
+      "project": {
+        "nodes": 0,
+        "scan": "directories, files, imports and dependencies",
+        "observe": "source projection only",
+        "affected_nodes": []
+      },
+      "code": {
+        "nodes": 70,
+        "scan": "symbols, lexical owners, calls and source maps",
+        "observe": "explicitly mapped runtime evidence",
+        "affected_nodes": []
+      },
+      "data": {
+        "nodes": 0,
+        "scan": "ORM/ODM/schema metadata and relationships",
+        "observe": "operation-linked structural projection",
+        "affected_nodes": []
+      }
+    },
+    "plan": ".stategraph/observation-plan.json",
+    "telemetry": {
+      "backend": "native",
+      "registration_file": null,
+      "nodes": [],
+      "preserve": [
+        "state declaration and native executor",
+        "source mappings and selected fields",
+        "trace propagation across async/job boundaries",
+        "observer exclusion and probe health",
+        "native principal/object facts and protected context comparisons"
+      ]
+    },
+    "context_mapping": [],
+    "context_mapping_count": 0,
+    "context_mapping_omitted": 0,
+    "requirements": [
+      {
+        "id": "R01",
+        "text": "在本地用 Python 和 SQLite 建立团队资料归档工具；资料位于项目的多层文件夹中。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R02",
+        "text": "仅资料所在文件夹的直接负责人可以处理；上级文件夹负责人不自动继承下级权限，下级按自己的直接负责人判断。本规则仅适用于本演练项目。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R03",
+        "text": "任一审批目标四字段匹配、审核员非操作人、未撤销且 now < deadline 即有效；撤销重评，无有效审批等待。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R04",
+        "text": "内容不得包含 SECRET:；索引要求标题、项目、资料编号齐全。两项都通过才可提交，失败后新建运行，不拼用不同运行结果。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R05",
+        "text": "每次运行独享名额，创建时选择 1 或 2，默认 2；两项检查各占 1，实际结束后归还。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R06",
+        "text": "内容改版后旧运行禁止提交；未开始检查作废，已开始检查自然结束；保留全部运行，新版本独立启动且不复用旧审批或旧结果。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R07",
+        "text": "开发者图可拖动、逐层展开，能解释归档依据、等待原因和关键函数实际参数。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R08",
+        "text": "归档对象是一份资料条目；成功后在 SQLite 保存当时内容的固定快照和对应内容版本。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R09",
+        "text": "同一份资料的同一内容版本不得重复生成归档记录。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R10",
+        "text": "文件夹仅作分类，不归档文件夹；归档不移动或删除原资料。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R11",
+        "text": "新运行须具备当前资格才启动检查；失去审批后已启动的自然结束，尚未启动的等待；点击继续并重查资格后再开始或提交。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R12",
+        "text": "取消本次运行：停止启动未开始的检查，已启动检查实际结束后归还名额，不提交、不删除资料，也不影响其他运行。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R13",
+        "text": "目录归属变化按当前直接关系判断；提交事务重新验证权限、审批有效期、内容版本和同运行检查结果。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R14",
+        "text": "每个项目共用归档正文大小上限，默认 8192 字节；仅按 UTF-8 正文计量，等于上限允许。设置值必须为正整数，拒绝小数、零、负数且不取整。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R15",
+        "text": "开始/继续/提交按当前项目上限判断。超限时已启动检查自然结束、未启动等待、禁止提交；调大后须手动继续，复用同版本已通过检查。上限变化不改内容版本、不自动撤销审批，不改已有快照。",
+        "status": "confirmed"
+      },
+      {
+        "id": "R16",
+        "text": "同一开发者图显示正文实际字节数、读取的上限/修订号及超限原因；保留首版坐标、标注和稳定节点 ID，提供可比较的首版/当前图及对应加载源码。",
+        "status": "confirmed"
+      }
+    ],
+    "requirement_count": 16,
+    "intent": "intent.json",
+    "test_commands": [
+      [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tooling/tests.py"
+      ],
+      [
+        "node",
+        "tooling/graph_tests.mjs"
+      ],
+      [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tooling/test_recording.py"
+      ],
+      [
+        "node",
+        "tooling/test_recorded_views.mjs"
+      ],
+      [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tooling/test_stategraph_module.py"
+      ]
+    ],
+    "observations_command": [
+      "{python}",
+      "-X",
+      "utf8",
+      "-B",
+      "tooling/observe.py"
+    ],
+    "required_checks": {
+      "source_first_inventory": true,
+      "probe_health": false,
+      "invocation_closure": false,
+      "mapping_witnesses": true,
+      "reports": [
+        "mapping",
+        "state_rules",
+        "business",
+        "project_checks"
+      ]
+    },
+    "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results."
+  }
+}
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+{"valid": true, "release": "0.8.0", "protocols": {"behavior": 3, "event": 3, "activity": "activity-graph/v1", "export": "bo-stategraph/v1", "recording": 1, "runtime_frames": 1, "preferences": 1, "implementation": "bo-implementation/v1", "project": "bo-project/v1", "transport": "bo-event/v1", "snapshot": "bo-snapshot/v1", "source": "bo-source/v1", "database_config": "bo-databases/v1", "database_catalog": "bo-data-catalog/v1", "database_projection": "bo-database/v1", "policy": "bo-policy/v1", "policy_evaluation": "bo-policy-evaluation/v1"}, "changes": ["observer_runtime/bo_observer/workflow/observation_requirements.py", "static/graph/graph-layers.js"], "conflicts": [], "retired_files": []}

@@ -1,0 +1,43 @@
+{
+  "intent_id": "execution_bands_dialogue_20261031_03",
+  "revision": "1",
+  "goal": "Share team files with designated accounts after a colleague approves them; require login for file access.",
+  "requirements": [
+    {
+      "id": "R_LOGIN",
+      "text": "Every file metadata/content request requires a logged-in existing test account.",
+      "status": "confirmed",
+      "source": "U001"
+    },
+    {
+      "id": "R_REVIEW",
+      "text": "Each upload assigns exactly one other existing user as reviewer; only that user reviews. Non-approval ends the file workflow without resubmission.",
+      "status": "confirmed",
+      "source": "U001"
+    },
+    {
+      "id": "R_SHARE",
+      "text": "Only the uploader shares an approved file with one existing recipient; the recipient cannot forward.",
+      "status": "confirmed",
+      "source": "U001"
+    },
+    {
+      "id": "R_ACCESS",
+      "text": "Uploader and assigned reviewer may read metadata and download at every stage. A recipient needs approval and an actual share to that account; other users have no access.",
+      "status": "confirmed",
+      "source": "U001"
+    },
+    {
+      "id": "R_SCOPE",
+      "text": "Use fixed local test accounts, Python, SQLite, a declaration-driven state machine, independent ports/data, and VibeLens observation. Preserve trial evidence and do not publish or alter shared framework source.",
+      "status": "confirmed",
+      "source": "U001"
+    }
+  ],
+  "exclusions": [
+    "Registration and account administration.",
+    "Resubmission after rejected review.",
+    "Public links, publication, and recipient forwarding."
+  ],
+  "project_id": "execution_bands_dialogue_20261031_03"
+}

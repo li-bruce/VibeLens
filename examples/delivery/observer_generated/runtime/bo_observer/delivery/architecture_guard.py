@@ -19,10 +19,10 @@ def read(path):
 
 
 def save(path, value):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
-    )
+    """Publish a complete ownership artifact while existing readers remain valid."""
+    from ..workflow.sync_io import write
+
+    write(path, value)
 
 
 def sha(path):

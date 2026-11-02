@@ -189,6 +189,12 @@ class BODesign:
             "graph_roots": [n["id"] for n in nodes if not n.get("parent")],
             "presentation": {"subject": doc.get("title", "Project design")},
         }
+        from ..graph.relations.model import discovery as construct_relations
+
+        registered = construct_relations(doc, identities)
+        if registered is not None:
+            model["edges"] = registered["edges"]
+            model["relation_registry"] = registered["relation_registry"]
         if doc.get("policy"):
             from ..policy.projection import project as project_policy
 

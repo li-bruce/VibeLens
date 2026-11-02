@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "scan": [
+    "app",
+    "bo_stategraph",
+    "integrations",
+    "run.py"
+  ],
+  "layers": {
+    "business": {
+      "paths": [
+        "app"
+      ],
+      "allows": [
+        "business",
+        "stategraph"
+      ],
+      "reject_dynamic": true
+    },
+    "stategraph": {
+      "paths": [
+        "bo_stategraph"
+      ],
+      "allows": [
+        "stategraph",
+        "business"
+      ],
+      "reject_dynamic": true
+    },
+    "integration": {
+      "paths": [
+        "integrations",
+        "run.py"
+      ],
+      "allows": [
+        "business",
+        "stategraph",
+        "observer",
+        "integration"
+      ]
+    },
+    "observer": {
+      "paths": [
+        "observer_runtime"
+      ],
+      "allows": [
+        "observer",
+        "stategraph"
+      ]
+    }
+  },
+  "managed_paths": [
+    "bo_stategraph/__init__.py",
+    "bo_stategraph/bo_contracts.py",
+    "bo_stategraph/execution_contract.py",
+    "bo_stategraph/native_executor.py",
+    "bo_stategraph/policy"
+  ],
+  "core_layers": [
+    "business",
+    "stategraph"
+  ],
+  "core_resources": [
+    "requirements.txt",
+    "templates",
+    "static/app"
+  ],
+  "core_include": [
+    "app",
+    "bo_stategraph",
+    "requirements.txt",
+    "templates",
+    "static/app"
+  ],
+  "core_exclude": [
+    "bo_stategraph/config/views/**",
+    "bo_stategraph/config/control/**",
+    "bo_stategraph/data/**"
+  ],
+  "regenerations": [
+    {
+      "reason": "Reviewed current canonical installation and unchanged native executor; register hashes before first runtime delivery.",
+      "changed": [
+        "bo_stategraph/__init__.py",
+        "bo_stategraph/bo_contracts.py",
+        "bo_stategraph/execution_contract.py",
+        "bo_stategraph/native_executor.py",
+        "bo_stategraph/policy/__init__.py",
+        "bo_stategraph/policy/bindings.py",
+        "bo_stategraph/policy/definition.py",
+        "bo_stategraph/policy/projection.py",
+        "bo_stategraph/policy/runtime.py"
+      ]
+    },
+    {
+      "reason": "Canonical bo_upgrade installed native parent context; parity has no changes or conflicts. No managed source was hand edited.",
+      "changed": []
+    }
+  ],
+  "managed_hashes": {
+    "bo_stategraph/__init__.py": "56f694a30fa9e2aa6319931b24cb35c52c82ea30b8b4b6f4029df0f838e63e6e",
+    "bo_stategraph/bo_contracts.py": "973043e0ebd0145bd5f8d2be44329e3a5cccf220ecde1d3ed960dbc902706dca",
+    "bo_stategraph/execution_contract.py": "0c966fb3549c0219c6a663ddf41c847e71ebf14216b02b725d2465e4bf0c4839",
+    "bo_stategraph/native_executor.py": "56ee5f17e8d9d0820f12f4a1b922a750338c3a97887a59f227b45e8f1ee6aab6",
+    "bo_stategraph/policy/__init__.py": "b60903037ae86f1a2269f09c716f543ff5e2a314713157ae3a5ee7a6558f4d27",
+    "bo_stategraph/policy/bindings.py": "9d0d0eda68f8641d0dbdce7122c1ccb88490d2f41ffc0e4acec75a9928df11d6",
+    "bo_stategraph/policy/definition.py": "cdcdb5c1963ebc10ed2080ad85ad96649a05d1c2ac322d106059a2ed4d5e294e",
+    "bo_stategraph/policy/projection.py": "266d7187905e11f455b1f4efa913250438cb9a35aa379110bf8f57072833341e",
+    "bo_stategraph/policy/runtime.py": "c6fde677ae0b68ed14660d641d72f37cf603a439b146e30430f734eeb99bcd1a"
+  }
+}

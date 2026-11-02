@@ -1,0 +1,56 @@
+"""Bind the canonical observer, selected database calls and real SDK task context."""
+from pathlib import Path
+from collections import deque
+from copy import deepcopy
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "observer_runtime"))
+from opentelemetry.sdk.trace import TracerProvider
+from bo_observer.service import GraphSession, make_server
+from bo_observer.adapters.python.bo_probe import BOProbe
+from bo_observer.adapters.python.bo_otel import BOOpenTelemetry
+from bo_observer.data.runtime import BODataRuntime
+from bo_observer.policy.recording import record_evaluation
+from app.ports import BOPorts
+import json
+
+
+class BOIntegration:
+    def __init__(self, root: Path, mode="on", sink=None):
+        self.root = root
+        self.session = GraphSession(root)
+        self.provider = TracerProvider()
+        self.probe = BOProbe(self.session.project, self.session.manifest["build_id"], sink=sink or self.session.bo_sink,
+            enabled=mode != "off", capacity=8192, producer_id="team-file-service")
+        self.tracing = self.probe.bo_bind_tracing(BOOpenTelemetry(self.provider.get_tracer("team-files")))
+        self.data = BODataRuntime(self.probe, json.loads((root / "bo_stategraph/databases.json").read_text(encoding="utf-8")))
+        self.policy_evaluations = deque(maxlen=4096)
+        self.ports = BOPorts(self.probe, self.data, self.bo_record_policy, self.tracing)
+        self.ports.http_installer = self.bo_instrument_http
+        self.session.bo_bind_capture(scope_setter=self.probe.bo_set_scope, flush_capture=self.flush, health=self.health)
+
+    def attach(self, app):
+        self.data.attach_sqlalchemy(app.extensions["sharing"].store.engine)
+
+    def bo_record_policy(self, policy, evaluation, **identity):
+        self.policy_evaluations.append(deepcopy(evaluation))
+        return record_evaluation(policy, evaluation, self.probe, **identity)
+
+    def bo_instrument_http(self, app):
+        from opentelemetry.instrumentation.flask import FlaskInstrumentor
+        FlaskInstrumentor().instrument_app(app, tracer_provider=self.provider, excluded_urls="/static/.*")
+
+    def health(self):
+        result = self.probe.bo_health()
+        return {**result, "data_errors": self.data.bo_errors, "port_errors": self.ports.errors}
+
+    def flush(self):
+        return self.probe.flush(timeout=45)
+
+    def close(self):
+        self.flush()
+        self.probe.close()
+        self.provider.shutdown()
+
+    def server(self, port=59263, app_port=59262):
+        return make_server(self.session, port=port, origins=["http://127.0.0.1:" + str(app_port)], assets=self.root / "static/graph")
+

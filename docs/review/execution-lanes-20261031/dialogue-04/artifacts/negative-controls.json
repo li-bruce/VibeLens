@@ -1,0 +1,56 @@
+{
+  "basis": "Isolated copies of actual completed runtime evidence; source, baselines and original events unchanged.",
+  "results": {
+    "clean": {
+      "valid": true,
+      "errors": [],
+      "checks": 12,
+      "projection_checks": 75,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "missing_recipient_field": {
+      "valid": false,
+      "errors": [
+        "invalid or incomplete implementation mapping: scenario instances differ from its runtime machine"
+      ],
+      "checks": 12,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "wrong_revision": {
+      "valid": false,
+      "errors": [
+        "invalid or incomplete implementation mapping: scenario instances differ from its runtime machine"
+      ],
+      "checks": 12,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "missing_case": {
+      "valid": false,
+      "errors": [
+        "invalid or incomplete implementation mapping: mapping scenario coverage differs from protected plan"
+      ],
+      "checks": 12,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "missing_exit": {
+      "valid": false,
+      "closed_calls": 590,
+      "legacy_events": 0,
+      "errors": [
+        {
+          "invocation_without_exit": "71bf68d001684691ab480bc409dbb966:4b8d911ffedf417a8393b6716d324b23:84",
+          "node": "upload_file",
+          "case": "workflow",
+          "call_id": "820e6b0df4b9440eb2b9eaa5eb89c9b9"
+        }
+      ]
+    },
+    "missing_native_transition": {
+      "detected": true,
+      "error": "missing native transition witness: [{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 2, \"event\": \"approve\", \"before\": \"pending\", \"after\": \"approved\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 3, \"event\": \"share\", \"before\": \"approved\", \"after\": \"approved\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    }
+  }
+}

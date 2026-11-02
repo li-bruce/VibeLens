@@ -1,0 +1,556 @@
+{
+  "edges": [
+    {
+      "from": "review_file",
+      "id": "summary:review_file|review_file|flow|false|false|model",
+      "to": "review_file",
+      "type": "flow"
+    },
+    {
+      "from": "sign_in",
+      "id": "summary:sign_in|upload_file|flow|false|false|model",
+      "to": "upload_file",
+      "type": "flow"
+    },
+    {
+      "from": "upload_file",
+      "id": "summary:upload_file|review_file|flow|false|false|model",
+      "to": "review_file",
+      "type": "flow"
+    },
+    {
+      "from": "review_file",
+      "id": "summary:review_file|share_file|guard|false|false|model",
+      "to": "share_file",
+      "type": "guard"
+    },
+    {
+      "from": "share_file",
+      "id": "summary:share_file|designated_recipient|data|false|false|model",
+      "to": "designated_recipient",
+      "type": "data"
+    },
+    {
+      "from": "designated_recipient",
+      "id": "summary:designated_recipient|access_file|guard|false|false|model",
+      "to": "access_file",
+      "type": "guard"
+    },
+    {
+      "from": "sign_in",
+      "id": "summary:sign_in|access_file|guard|false|false|model",
+      "to": "access_file",
+      "type": "guard"
+    },
+    {
+      "from": "assigned_reviewer",
+      "id": "summary:assigned_reviewer|upload_file|guard|false|false|model",
+      "to": "upload_file",
+      "type": "guard"
+    },
+    {
+      "from": "uploader_access",
+      "id": "summary:uploader_access|access_file|guard|false|false|model",
+      "to": "access_file",
+      "type": "guard"
+    },
+    {
+      "from": "review_file",
+      "id": "summary:review_file|withdraw_file|guard|false|false|model",
+      "to": "withdraw_file",
+      "type": "guard"
+    },
+    {
+      "from": "withdraw_file",
+      "id": "summary:withdraw_file|review_file|flow|false|false|model",
+      "to": "review_file",
+      "type": "flow"
+    },
+    {
+      "from": "review_file",
+      "id": "summary:review_file|access_file|guard|false|false|model",
+      "to": "access_file",
+      "type": "guard"
+    },
+    {
+      "from": "policy:network",
+      "id": "summary:policy:network|source:app/predicates.py::same_identity|maps|false|false|model",
+      "to": "source:app/predicates.py::same_identity",
+      "type": "maps"
+    },
+    {
+      "from": "policy:network",
+      "id": "summary:policy:network|upload_file|guard|false|false|model",
+      "to": "upload_file",
+      "type": "guard"
+    },
+    {
+      "from": "policy:network",
+      "id": "summary:policy:network|review_file|guard|false|false|model",
+      "to": "review_file",
+      "type": "guard"
+    },
+    {
+      "from": "policy:network",
+      "id": "summary:policy:network|share_file|guard|false|false|model",
+      "to": "share_file",
+      "type": "guard"
+    },
+    {
+      "from": "policy:network",
+      "id": "summary:policy:network|access_file|guard|false|false|model",
+      "to": "access_file",
+      "type": "guard"
+    },
+    {
+      "from": "policy:network",
+      "id": "summary:policy:network|withdraw_file|guard|false|false|model",
+      "to": "withdraw_file",
+      "type": "guard"
+    },
+    {
+      "from": "db:team_files:store",
+      "id": "summary:db:team_files:store|list_users|reads|false|false|model",
+      "to": "list_users",
+      "type": "reads"
+    },
+    {
+      "from": "db:team_files:store",
+      "id": "summary:db:team_files:store|review_file|reads|false|false|model",
+      "to": "review_file",
+      "type": "reads"
+    },
+    {
+      "from": "upload_file",
+      "id": "summary:upload_file|db:team_files:store|writes|false|false|model",
+      "to": "db:team_files:store",
+      "type": "writes"
+    },
+    {
+      "from": "review_file",
+      "id": "summary:review_file|db:team_files:store|writes|false|false|model",
+      "to": "db:team_files:store",
+      "type": "writes"
+    },
+    {
+      "from": "state_transition",
+      "id": "summary:state_transition|source:bo_stategraph/workflow.py::file_context|call|false|false|static",
+      "to": "source:bo_stategraph/workflow.py::file_context",
+      "type": "call"
+    },
+    {
+      "from": "upload_file",
+      "id": "summary:upload_file|authorize_file|call|false|false|static",
+      "to": "authorize_file",
+      "type": "call"
+    },
+    {
+      "from": "upload_file",
+      "id": "summary:upload_file|state_transition|call|false|false|static",
+      "to": "state_transition",
+      "type": "call"
+    },
+    {
+      "from": "review_file",
+      "id": "summary:review_file|authorize_file|call|false|false|static",
+      "to": "authorize_file",
+      "type": "call"
+    },
+    {
+      "from": "review_file",
+      "id": "summary:review_file|state_transition|call|false|false|static",
+      "to": "state_transition",
+      "type": "call"
+    },
+    {
+      "from": "review_file",
+      "id": "summary:review_file|source:app/storage.py::metadata_view|call|false|false|static",
+      "to": "source:app/storage.py::metadata_view",
+      "type": "call"
+    },
+    {
+      "from": "withdraw_file",
+      "id": "summary:withdraw_file|authorize_file|call|false|false|static",
+      "to": "authorize_file",
+      "type": "call"
+    },
+    {
+      "from": "withdraw_file",
+      "id": "summary:withdraw_file|state_transition|call|false|false|static",
+      "to": "state_transition",
+      "type": "call"
+    },
+    {
+      "from": "withdraw_file",
+      "id": "summary:withdraw_file|source:app/storage.py::metadata_view|call|false|false|static",
+      "to": "source:app/storage.py::metadata_view",
+      "type": "call"
+    },
+    {
+      "from": "share_file",
+      "id": "summary:share_file|authorize_file|call|false|false|static",
+      "to": "authorize_file",
+      "type": "call"
+    },
+    {
+      "from": "share_file",
+      "id": "summary:share_file|state_transition|call|false|false|static",
+      "to": "state_transition",
+      "type": "call"
+    },
+    {
+      "from": "share_file",
+      "id": "summary:share_file|source:app/storage.py::metadata_view|call|false|false|static",
+      "to": "source:app/storage.py::metadata_view",
+      "type": "call"
+    },
+    {
+      "from": "access_file",
+      "id": "summary:access_file|authorize_file|call|false|false|static",
+      "to": "authorize_file",
+      "type": "call"
+    },
+    {
+      "from": "access_file",
+      "id": "summary:access_file|source:app/storage.py::metadata_view|call|false|false|static",
+      "to": "source:app/storage.py::metadata_view",
+      "type": "call"
+    },
+    {
+      "from": "list_files",
+      "id": "summary:list_files|access_file|call|false|false|static",
+      "to": "access_file",
+      "type": "call"
+    },
+    {
+      "from": "source:app/storage.py::Store.initialize",
+      "id": "summary:source:app/storage.py::Store.initialize|source:app/storage.py::Store.migrate_file_states|call|false|false|static",
+      "to": "source:app/storage.py::Store.migrate_file_states",
+      "type": "call"
+    },
+    {
+      "from": "source:app/storage.py::Store.migrate_file_states",
+      "id": "summary:source:app/storage.py::Store.migrate_file_states|source:app/storage.py::Store.write_transaction|call|false|false|static",
+      "to": "source:app/storage.py::Store.write_transaction",
+      "type": "call"
+    },
+    {
+      "from": "source:app/web.py::WebRoutes.index",
+      "id": "summary:source:app/web.py::WebRoutes.index|source:app/web.py::WebRoutes.actor|call|false|false|static",
+      "to": "source:app/web.py::WebRoutes.actor",
+      "type": "call"
+    },
+    {
+      "from": "source:app/web.py::WebRoutes.upload",
+      "id": "summary:source:app/web.py::WebRoutes.upload|source:app/web.py::WebRoutes.actor|call|false|false|static",
+      "to": "source:app/web.py::WebRoutes.actor",
+      "type": "call"
+    },
+    {
+      "from": "source:app/web.py::WebRoutes.review",
+      "id": "summary:source:app/web.py::WebRoutes.review|source:app/web.py::WebRoutes.actor|call|false|false|static",
+      "to": "source:app/web.py::WebRoutes.actor",
+      "type": "call"
+    },
+    {
+      "from": "source:app/web.py::WebRoutes.share",
+      "id": "summary:source:app/web.py::WebRoutes.share|source:app/web.py::WebRoutes.actor|call|false|false|static",
+      "to": "source:app/web.py::WebRoutes.actor",
+      "type": "call"
+    },
+    {
+      "from": "source:app/web.py::WebRoutes.withdraw",
+      "id": "summary:source:app/web.py::WebRoutes.withdraw|source:app/web.py::WebRoutes.actor|call|false|false|static",
+      "to": "source:app/web.py::WebRoutes.actor",
+      "type": "call"
+    },
+    {
+      "from": "source:app/web.py::WebRoutes.file_info",
+      "id": "summary:source:app/web.py::WebRoutes.file_info|source:app/web.py::WebRoutes.actor|call|false|false|static",
+      "to": "source:app/web.py::WebRoutes.actor",
+      "type": "call"
+    },
+    {
+      "from": "source:app/web.py::WebRoutes.download",
+      "id": "summary:source:app/web.py::WebRoutes.download|source:app/web.py::WebRoutes.actor|call|false|false|static",
+      "to": "source:app/web.py::WebRoutes.actor",
+      "type": "call"
+    },
+    {
+      "from": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+      "id": "summary:source:bo_stategraph/native_executor.py::BOExecutor.step|source:bo_stategraph/native_executor.py::bo_list|call|false|false|static",
+      "to": "source:bo_stategraph/native_executor.py::bo_list",
+      "type": "call"
+    },
+    {
+      "from": "source:bo_stategraph/workflow.py::machine_snapshot",
+      "id": "summary:source:bo_stategraph/workflow.py::machine_snapshot|source:bo_stategraph/workflow.py::file_context|call|false|false|static",
+      "to": "source:bo_stategraph/workflow.py::file_context",
+      "type": "call"
+    },
+    {
+      "from": "review_file",
+      "id": "summary:review_file|review_file|transition|false|false|model",
+      "to": "review_file",
+      "type": "transition"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "upload_file",
+      "label": "上传并指定审核人",
+      "type": "business"
+    },
+    {
+      "id": "review_file",
+      "label": "指定同事审核",
+      "type": "business"
+    },
+    {
+      "id": "withdraw_file",
+      "label": "上传者撤回待审核文件",
+      "type": "business"
+    },
+    {
+      "id": "share_file",
+      "label": "上传者定向分享",
+      "type": "business"
+    },
+    {
+      "id": "access_file",
+      "label": "查看信息或下载",
+      "type": "business"
+    },
+    {
+      "id": "sign_in",
+      "label": "登录",
+      "type": "business"
+    },
+    {
+      "id": "list_users",
+      "label": "选择已有同事",
+      "type": "business"
+    },
+    {
+      "id": "list_files",
+      "label": "列出我能访问的文件",
+      "type": "business"
+    },
+    {
+      "id": "http_request",
+      "label": "网页请求",
+      "type": "business"
+    },
+    {
+      "id": "sign_out",
+      "label": "退出登录",
+      "type": "business"
+    },
+    {
+      "id": "authorize_file",
+      "label": "核验当前权限",
+      "type": "decision"
+    },
+    {
+      "id": "state_transition",
+      "label": "执行声明中的状态变化",
+      "type": "function"
+    },
+    {
+      "id": "assigned_reviewer",
+      "label": "指定审核人不能是自己",
+      "type": "data"
+    },
+    {
+      "id": "designated_recipient",
+      "label": "唯一指定接收人",
+      "type": "data"
+    },
+    {
+      "id": "uploader_access",
+      "label": "上传者始终可读；审核人撤回后不可读",
+      "type": "data"
+    },
+    {
+      "id": "source:app/predicates.py::same_identity",
+      "label": "same_identity",
+      "type": "function"
+    },
+    {
+      "id": "source:app/predicates.py::operation_allowed",
+      "label": "operation_allowed",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::configure_sqlite",
+      "label": "configure_sqlite",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::Store.initialize",
+      "label": "Store.initialize",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::Store.migrate_file_states",
+      "label": "Store.migrate_file_states",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::Store.write_transaction",
+      "label": "Store.write_transaction",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::Store.read_users",
+      "label": "Store.read_users",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::Store.read_file",
+      "label": "Store.read_file",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::Store.read_candidates",
+      "label": "Store.read_candidates",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::Store.insert_file",
+      "label": "Store.insert_file",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::Store.update_file",
+      "label": "Store.update_file",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::Store.snapshots",
+      "label": "Store.snapshots",
+      "type": "function"
+    },
+    {
+      "id": "source:app/storage.py::metadata_view",
+      "label": "metadata_view",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.after_request",
+      "label": "WebRoutes.after_request",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.teardown_request",
+      "label": "WebRoutes.teardown_request",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.actor",
+      "label": "WebRoutes.actor",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.index",
+      "label": "WebRoutes.index",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.login",
+      "label": "WebRoutes.login",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.upload",
+      "label": "WebRoutes.upload",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.review",
+      "label": "WebRoutes.review",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.share",
+      "label": "WebRoutes.share",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.withdraw",
+      "label": "WebRoutes.withdraw",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.file_info",
+      "label": "WebRoutes.file_info",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.download",
+      "label": "WebRoutes.download",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::WebRoutes.error",
+      "label": "WebRoutes.error",
+      "type": "function"
+    },
+    {
+      "id": "source:app/web.py::create_app",
+      "label": "create_app",
+      "type": "function"
+    },
+    {
+      "id": "source:bo_stategraph/native_executor.py::bo_list",
+      "label": "bo_list",
+      "type": "function"
+    },
+    {
+      "id": "source:bo_stategraph/native_executor.py::BOExecutor.step",
+      "label": "BOExecutor.step",
+      "type": "function"
+    },
+    {
+      "id": "source:bo_stategraph/native_executor.py::BOExecutor.step.guard",
+      "label": "BOExecutor.step.guard",
+      "type": "function"
+    },
+    {
+      "id": "source:bo_stategraph/workflow.py::FileWorkflow.step",
+      "label": "FileWorkflow.step",
+      "type": "function"
+    },
+    {
+      "id": "source:bo_stategraph/workflow.py::file_context",
+      "label": "file_context",
+      "type": "function"
+    },
+    {
+      "id": "source:bo_stategraph/workflow.py::machine_snapshot",
+      "label": "machine_snapshot",
+      "type": "function"
+    },
+    {
+      "id": "policy:network",
+      "label": "Rules",
+      "type": "decision"
+    },
+    {
+      "id": "db:team_files:store",
+      "label": "Team Files SQLite",
+      "type": "store"
+    }
+  ],
+  "recordings": [
+    {
+      "id": "",
+      "label": "实时观察"
+    },
+    {
+      "id": "b91c47a5926649c78b36a1f44c7bff91",
+      "label": "04:50:27 · 220 个事件 · 有缺口"
+    }
+  ],
+  "url": "http://127.0.0.1:8983/graph"
+}

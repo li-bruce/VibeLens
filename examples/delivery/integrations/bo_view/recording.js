@@ -2,7 +2,7 @@ import { t as boTranslate } from "./i18n.js";
 import { observedDataTransfer } from "./data-layer.js";
 // Read-only replay. This module has no business-command endpoint.
 import { applyRuntimeFrame } from "./runtime-frames.js";
-import { parentEvent } from "./trace-evidence.js";
+import { parentEvent, spanLinkEvents } from "./trace-evidence.js";
 const copy = (value) => structuredClone(value);
 const millis = (value) => (Number.isFinite(Date.parse(value)) ? Date.parse(value) : 0);
 /** Build the replay sequence from recorded events and its start/end boundaries. */
@@ -136,7 +136,11 @@ export function eventLabel(item, model) {
 /** Find visible transfers supported by recorded calls or dependencies. */
 export function transferEdges(event, events, edges, all, configuration = null) {
   if (!event || event.kind === "command" || !event.node) return [];
-  const dependencies = new Set((event.depends || []).map((d) => d.event));
+  const actualDependencies = [
+    ...(event.depends || []),
+    ...spanLinkEvents(event, events).map((link) => ({ event: link.event.id, type: link.type })),
+  ];
+  const dependencies = new Set(actualDependencies.map((d) => d.event));
   const prior = events.filter((e) => dependencies.has(e.id));
   const parent = parentEvent(event, events);
   if (parent) prior.push(parent);
@@ -201,11 +205,11 @@ export function transferEdges(event, events, edges, all, configuration = null) {
             prior.some(
               (e) =>
                 e.node === source &&
-                (event.depends || []).some(
+                actualDependencies.some(
                   (d) =>
                     d.event === e.id &&
                     (d.type === member.type ||
-                      (member.type === "flow" && d.type === "control") ||
+                      (member.type === "flow" && ["control", "trigger"].includes(d.type)) ||
                       witnessedRuleInput(member, e, event, d, all)),
                 ),
             )

@@ -1,0 +1,410 @@
+{
+  "markdown": "# Business network draft\n\n```mermaid\nflowchart LR\n  n0[\"查看信息或下载\"]\n  n1[\"唯一指定接收人\"]\n  n2[\"已保存的拒绝原因\"]\n  n3[\"指定同事审核\"]\n  n4[\"不通过需填写原因；通过可空\"]\n  n5[\"登录\"]\n  n2 -->|\"上传者在详情查看原因\"| n0\n  n3 -->|\"拒绝时保存原因\"| n2\n  n5 -->|\"访问必须已登录\"| n0\n  n1 -->|\"通过且已分享给本人\"| n0\n  n4 -->|\"拒绝必填；通过无需填写\"| n3\n  b0[\"上传者分享给一个接收人 (outside scope)\"]\n  b0 -.->|\"指定一个已有账号\"| n1\n  b1[\"上传并指定一位同事 (outside scope)\"]\n  n5 -.->|\"上传入口\"| b1\n  b2[\"审核通过 (outside scope)\"]\n  n3 -.->|\"通过\"| b2\n  b3[\"未通过：流程结束 (outside scope)\"]\n  n3 -.->|\"未通过即结束，不重提\"| b3\n  b4[\"待指定同事审核 (outside scope)\"]\n  b4 -.->|\"只由本次指定的同事审核\"| n3\n  b5[\"上传者始终可读；审核人撤回后不可读 (outside scope)\"]\n  b5 -.->|\"上传者始终可读；审核人仅未撤回时可读\"| n0\n  b6[\"已撤回：本次流程结束 (outside scope)\"]\n  b6 -.->|\"保留文件；仅上传者可读取\"| n0\n  b7[\"AND · 登录并具备读取资格 (outside scope)\"]\n  b7 -.->|\"Requires\"| n0\n  b8[\"AND · 仅指定审核人可审核 (outside scope)\"]\n  b8 -.->|\"Requires\"| n3\n```\n\n[Open the live graph](http://127.0.0.1:8986/graph)\n\nThis is a focused view. Dashed boundaries retain original relations; open Web for the complete graph.\n\nStill to confirm:\n\n- 拒绝时原因必填并保存，上传者在详情看到原文；通过时无需填写，现有审核与读取权限保持。业务图将按这条分支更新，这样理解是否正确？\n\nConfirm this understanding in the conversation, or describe a correction. Viewing the graph is not confirmation.\n",
+  "focus": {
+    "schema_version": 1,
+    "base": {
+      "project_id": "execution_bands_dialogue_20261031_03",
+      "model_revision": "8428b7ebccc9d4e4d5bb9ffe79166f17be9859ce05f3c4eb16b2194f5ef90223",
+      "model_hash": "de9d9ba128aea83b5913adebd86c6f684bdb38677a58f3e7ba791fbde3a84ef9",
+      "build_id": null
+    },
+    "selection": {
+      "nodes": [
+        "access_file",
+        "rejection_reason",
+        "review_file",
+        "review_reason_check"
+      ],
+      "depth": 1,
+      "max_nodes": 6,
+      "max_edges": 48,
+      "relations": null,
+      "run_id": null
+    },
+    "nodes": [
+      {
+        "id": "access_file",
+        "label": "查看信息或下载",
+        "kind": "action",
+        "layer": "business",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      },
+      {
+        "id": "designated_recipient",
+        "label": "唯一指定接收人",
+        "kind": "data",
+        "layer": "design",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      },
+      {
+        "id": "rejection_reason",
+        "label": "已保存的拒绝原因",
+        "kind": "data",
+        "layer": "design",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      },
+      {
+        "id": "review_file",
+        "label": "指定同事审核",
+        "kind": "action",
+        "layer": "business",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      },
+      {
+        "id": "review_reason_check",
+        "label": "不通过需填写原因；通过可空",
+        "kind": "decision",
+        "layer": "design",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      },
+      {
+        "id": "sign_in",
+        "label": "登录",
+        "kind": "action",
+        "layer": "business",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "data_reason_details",
+        "from": "rejection_reason",
+        "to": "access_file",
+        "type": "data",
+        "label": "上传者在详情查看原因",
+        "origin": "design"
+      },
+      {
+        "id": "data_review_reason",
+        "from": "review_file",
+        "to": "rejection_reason",
+        "type": "data",
+        "label": "拒绝时保存原因",
+        "origin": "design"
+      },
+      {
+        "id": "guard_login_access",
+        "from": "sign_in",
+        "to": "access_file",
+        "type": "guard",
+        "label": "访问必须已登录",
+        "origin": "design"
+      },
+      {
+        "id": "guard_recipient_access",
+        "from": "designated_recipient",
+        "to": "access_file",
+        "type": "guard",
+        "label": "通过且已分享给本人",
+        "origin": "design"
+      },
+      {
+        "id": "guard_review_reason",
+        "from": "review_reason_check",
+        "to": "review_file",
+        "type": "guard",
+        "label": "拒绝必填；通过无需填写",
+        "origin": "design"
+      }
+    ],
+    "boundaries": [
+      {
+        "id": "view:boundary:e1a49e91962bbeef",
+        "edge_id": "data_share_recipient",
+        "from": "share_file",
+        "to": "designated_recipient",
+        "type": "data",
+        "label": "指定一个已有账号",
+        "relation": {
+          "id": "data_share_recipient",
+          "from": "share_file",
+          "to": "designated_recipient",
+          "type": "data",
+          "label": "指定一个已有账号",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "share_file",
+            "label": "上传者分享给一个接收人",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:fcb2c919a554c88e",
+        "edge_id": "flow_login_upload",
+        "from": "sign_in",
+        "to": "upload_file",
+        "type": "flow",
+        "label": "上传入口",
+        "relation": {
+          "id": "flow_login_upload",
+          "from": "sign_in",
+          "to": "upload_file",
+          "type": "flow",
+          "label": "上传入口",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "upload_file",
+            "label": "上传并指定一位同事",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:865183f3c652624b",
+        "edge_id": "flow_review_approve",
+        "from": "review_file",
+        "to": "approved",
+        "type": "flow",
+        "label": "通过",
+        "relation": {
+          "id": "flow_review_approve",
+          "from": "review_file",
+          "to": "approved",
+          "type": "flow",
+          "label": "通过",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "approved",
+            "label": "审核通过",
+            "kind": "state"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:3d26f63dc46e5603",
+        "edge_id": "flow_review_not_approved",
+        "from": "review_file",
+        "to": "review_not_approved",
+        "type": "flow",
+        "label": "未通过即结束，不重提",
+        "relation": {
+          "id": "flow_review_not_approved",
+          "from": "review_file",
+          "to": "review_not_approved",
+          "type": "flow",
+          "label": "未通过即结束，不重提",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "review_not_approved",
+            "label": "未通过：流程结束",
+            "kind": "state"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:e0c4afd3213c441d",
+        "edge_id": "flow_wait_reviewer",
+        "from": "pending_review",
+        "to": "review_file",
+        "type": "flow",
+        "label": "只由本次指定的同事审核",
+        "relation": {
+          "id": "flow_wait_reviewer",
+          "from": "pending_review",
+          "to": "review_file",
+          "type": "flow",
+          "label": "只由本次指定的同事审核",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "pending_review",
+            "label": "待指定同事审核",
+            "kind": "state"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:37b536024eec0bca",
+        "edge_id": "guard_uploader_reviewer_access",
+        "from": "uploader_access",
+        "to": "access_file",
+        "type": "guard",
+        "label": "上传者始终可读；审核人仅未撤回时可读",
+        "relation": {
+          "id": "guard_uploader_reviewer_access",
+          "from": "uploader_access",
+          "to": "access_file",
+          "type": "guard",
+          "label": "上传者始终可读；审核人仅未撤回时可读",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "uploader_access",
+            "label": "上传者始终可读；审核人撤回后不可读",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:7b26cc1664929aef",
+        "edge_id": "guard_withdrawn_access",
+        "from": "withdrawn",
+        "to": "access_file",
+        "type": "guard",
+        "label": "保留文件；仅上传者可读取",
+        "relation": {
+          "id": "guard_withdrawn_access",
+          "from": "withdrawn",
+          "to": "access_file",
+          "type": "guard",
+          "label": "保留文件；仅上传者可读取",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "withdrawn",
+            "label": "已撤回：本次流程结束",
+            "kind": "state"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:c086fa617d5cdcdd",
+        "edge_id": "policy:operation:access:access_file",
+        "from": "policy:access_allowed",
+        "to": "access_file",
+        "type": "guard",
+        "label": "Requires",
+        "relation": {
+          "id": "policy:operation:access:access_file",
+          "from": "policy:access_allowed",
+          "to": "access_file",
+          "type": "guard",
+          "label": "Requires",
+          "origin": "policy-definition",
+          "evidence": "policy declaration",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy:access_allowed",
+            "label": "AND · 登录并具备读取资格",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:00de6eda94583840",
+        "edge_id": "policy:operation:review:review_file",
+        "from": "policy:review_allowed",
+        "to": "review_file",
+        "type": "guard",
+        "label": "Requires",
+        "relation": {
+          "id": "policy:operation:review:review_file",
+          "from": "policy:review_allowed",
+          "to": "review_file",
+          "type": "guard",
+          "label": "Requires",
+          "origin": "policy-definition",
+          "evidence": "policy declaration",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy:review_allowed",
+            "label": "AND · 仅指定审核人可审核",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      }
+    ],
+    "mapping": {
+      "access_file": {
+        "nodes": [
+          "access_file"
+        ],
+        "source": null
+      },
+      "designated_recipient": {
+        "nodes": [
+          "designated_recipient"
+        ],
+        "source": null
+      },
+      "rejection_reason": {
+        "nodes": [
+          "rejection_reason"
+        ],
+        "source": null
+      },
+      "review_file": {
+        "nodes": [
+          "review_file"
+        ],
+        "source": null
+      },
+      "review_reason_check": {
+        "nodes": [
+          "review_reason_check"
+        ],
+        "source": null
+      },
+      "sign_in": {
+        "nodes": [
+          "sign_in"
+        ],
+        "source": null
+      }
+    },
+    "events": [],
+    "coverage": {
+      "selected_nodes": 6,
+      "total_nodes": 40,
+      "crossing_or_omitted_edges": 9,
+      "reported_boundaries": 9,
+      "limits_hit": [
+        "nodes"
+      ],
+      "source_unknowns": [],
+      "evidence_gaps": [],
+      "runtime_evidence": "not_selected",
+      "complete": false
+    },
+    "questions": [],
+    "focus_id": "focus:d62e459ee3d4ba624c6c"
+  },
+  "url": "http://127.0.0.1:8986/graph",
+  "discovery_revision": "8428b7ebccc9d4e4d5bb9ffe79166f17be9859ce05f3c4eb16b2194f5ef90223"
+}

@@ -10,14 +10,17 @@ import {
   forceX,
   forceY,
 } from "./spatial-force.vendor.js";
-export function clusterUnits(units, edges) {
-  const byId = new Map(units.map((n) => [n.id, n])),
-    groups = new Map();
+const groupOf = (unit) => JSON.stringify([unit.layer || "", unit.type]);
+
+/** Group whole containment footprints; layer identity takes precedence over glyph type. */
+export function clusterGroups(units) {
+  const groups = new Map();
   for (const n of units) {
-    if (!groups.has(n.type)) groups.set(n.type, []);
-    groups.get(n.type).push(n);
+    const key = groupOf(n);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(n);
   }
-  const clusters = [...groups]
+  return [...groups]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([id, members], i) => {
       const radius = Math.sqrt(members.reduce((s, n) => s + (n.radius + 20) ** 2, 0)) * 1.3 + 30;
@@ -30,15 +33,25 @@ export function clusterUnits(units, edges) {
         members,
       };
     });
+}
+
+export function clusterUnits(units, edges, seeds = []) {
+  const byId = new Map(units.map((n) => [n.id, n]));
+  const clusters = clusterGroups(units);
+  const seedById = new Map(seeds.map((seed) => [seed.id, seed]));
+  for (const group of clusters) {
+    const seed = seedById.get(group.id);
+    if (seed) Object.assign(group, { x: seed.x, y: seed.y });
+  }
   const centers = new Map(clusters.map((n) => [n.id, n]));
   const groupEdges = new Map();
   for (const e of edges) {
     const a = byId.get(e.from),
       b = byId.get(e.to);
-    if (a && b && a.type !== b.type)
-      groupEdges.set([a.type, b.type].sort().join(":"), {
-        source: a.type,
-        target: b.type,
+    if (a && b && groupOf(a) !== groupOf(b))
+      groupEdges.set([groupOf(a), groupOf(b)].sort().join(":"), {
+        source: groupOf(a),
+        target: groupOf(b),
       });
   }
   const coarse = forceSimulation(clusters, 2)
@@ -54,14 +67,16 @@ export function clusterUnits(units, edges) {
     .force("collision", forceCollide((n) => n.radius + 90).iterations(3))
     .force("x", forceX(0).strength(0.008))
     .force("y", forceY(0).strength(0.008));
-  coarse.tick(160);
+  // ELK seeds already minimize crossings between semantic groups. Do not let a
+  // second global force pass scramble that ordering; D3 packs members locally.
+  if (!seeds.length) coarse.tick(160);
   const outside = new Map(units.map((n) => [n.id, []]));
   for (const e of edges) {
     const a = byId.get(e.from),
       b = byId.get(e.to);
-    if (a && b && a.type !== b.type) {
-      outside.get(a.id).push(centers.get(b.type));
-      outside.get(b.id).push(centers.get(a.type));
+    if (a && b && groupOf(a) !== groupOf(b)) {
+      outside.get(a.id).push(centers.get(groupOf(b)));
+      outside.get(b.id).push(centers.get(groupOf(a)));
     }
   }
   const bridgeCounts = new Map(
@@ -119,7 +134,7 @@ export function clusterUnits(units, edges) {
       forceLink(links)
         .id((n) => n.id)
         .distance((e) => e.source.radius + e.target.radius + 65)
-        .strength((e) => (e.source.type === e.target.type ? 0.035 : 0.002)),
+        .strength((e) => (groupOf(e.source) === groupOf(e.target) ? 0.035 : 0.001)),
     )
     .force("collision", forceCollide((n) => n.radius + 22).iterations(3))
     .force("x", forceX((n) => n.tx).strength(0.16))

@@ -85,6 +85,18 @@ async function isolateLayer(id) {
   await layerHeader(true);
   const ids = await page.evaluate(() => graphDebug.layers.order);
   for (const other of ids) if (other !== id) await layerAction(other, true);
+  // Visibility changes precede the worker's next rendered frame. Require both
+  // the actual input and its completed plane projection before inspecting ports.
+  await page.waitForFunction((id) => {
+    const debug = graphDebug;
+    return (
+      debug.layers.visible.length === 1 &&
+      debug.layers.visible[0] === id &&
+      !debug.layoutBusy &&
+      (!debug.layers.enabled ||
+        (debug.spatial.layerPlanes.length === 1 && debug.spatial.layerPlanes[0].id === id))
+    );
+  }, id);
 }
 async function shot(name) {
   await page.screenshot({ path: path.join(output, name + ".png"), fullPage: true });

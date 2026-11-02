@@ -212,29 +212,136 @@ export function bo_selected(value, spec, depth = 0) {
   throw Error("Unapproved capture type");
 }
 
+let bo_invocation_store = null;
+
+/** Native adapters install task-local storage; browser callers retain explicit child scopes. */
+export function bo_use_context_store(store) {
+  if (typeof store?.run !== "function" || typeof store?.getStore !== "function")
+    throw Error("Invocation context requires run and getStore");
+  bo_invocation_store ||= store;
+  return bo_invocation_store;
+}
+
 /** Queue observations separately from business decisions; delivery failures stay local. */
 export class BOProbe {
+  bo_boundary_events = true;
+  bo_current_context({ allowEnded = false } = {}) {
+    const parent = this.bo_tracing ? this.bo_tracing.current() : bo_invocation_store?.getStore();
+    if (!parent || parent.probe !== this || (!parent.active && !allowEnded)) return {};
+    return {
+      ...Object.fromEntries(
+        ["entity", "attempt", "scope", "basis", "provenance"]
+          .filter((key) => Object.hasOwn(parent.identity, key))
+          .map((key) => [key, parent.identity[key]]),
+      ),
+      parentCallId: parent.callId,
+      parentEventId: parent.entryId || null,
+    };
+  }
+
+  /** Bind an optional SDK context backend; state execution and graph identity stay native. */
+  bo_bind_tracing(backend) {
+    if (this.bo_tracing) throw Error("Tracing backend already bound");
+    backend.bind(this);
+    this.bo_tracing = backend;
+    return backend;
+  }
+
+  /** Keep explicit entity identities while inheriting actual enclosing call ownership. */
+  bo_context_options(identity = {}, { allowEnded = false } = {}) {
+    const current = this.bo_current_context({ allowEnded });
+    if (Object.hasOwn(identity, "parentCallId") && identity.parentCallId !== current.parentCallId)
+      delete current.parentEventId;
+    if (
+      Object.hasOwn(identity, "parentEventId") &&
+      identity.parentEventId !== current.parentEventId
+    )
+      delete current.parentCallId;
+    return { ...current, ...identity };
+  }
+
+  /** Adopt an already-emitted native call; synchronous return identity stays untouched. */
+  bo_call_context(node, callId, identity, callback) {
+    if (!bo_invocation_store && !this.bo_tracing) return callback();
+    const state = { probe: this, node, callId, identity, entryId: identity.entryId, active: true };
+    const run = this.bo_tracing ? this.bo_tracing : bo_invocation_store;
+    return run.run(state, () => {
+      try {
+        return callback();
+      } finally {
+        state.active = false;
+      }
+    });
+  }
+
+  async bo_call_context_async(node, callId, identity, callback) {
+    if (!bo_invocation_store && !this.bo_tracing) return await callback();
+    const state = { probe: this, node, callId, identity, entryId: identity.entryId, active: true };
+    const run = this.bo_tracing ? this.bo_tracing : bo_invocation_store;
+    return await run.run(state, async () => {
+      try {
+        return await callback();
+      } finally {
+        state.active = false;
+      }
+    });
+  }
+
+  /** Physical constructor identity is distinct from a configured business outcome. */
+  bo_exception(error) {
+    let type = "ThrownValue";
+    try {
+      if (error instanceof Error) type = error.constructor?.name || "Error";
+    } catch {
+      type = "Error";
+    }
+    return this.bo_exception_metadata({ type });
+  }
+
+  bo_exception_metadata(value) {
+    if (
+      !value ||
+      typeof value !== "object" ||
+      Array.isArray(value) ||
+      Object.keys(value).length !== 1 ||
+      typeof value.type !== "string" ||
+      !value.type.length ||
+      value.type.length > 256 ||
+      !value.type.split(".").every((part) => /^[\p{L}_$][\p{L}\p{N}\p{M}_$]*$/u.test(part))
+    )
+      throw Error("Invalid exception class metadata");
+    return { type: value.type };
+  }
+
   /** Own a real asynchronous lifetime. Explicit child scopes avoid ambient async leakage. */
   async span(node, operation, { inputs = () => ({}), outputs = () => ({}), ...options } = {}) {
     const activation = this.startSpan(node, () => ({ inputs: inputs() }), options);
-    try {
-      const result = await operation(activation);
-      activation.finish(() => ({ outputs: outputs(result) }));
-      return result;
-    } catch (error) {
-      activation.fail(() => ({ outputs: { error: error?.name || "Error" } }));
-      throw error;
-    }
+    return await activation.run(async () => {
+      try {
+        const result = await operation(activation);
+        activation.finish(() => ({ outputs: outputs(result) }));
+        return result;
+      } catch (error) {
+        activation.fail(() => ({
+          outputs: { error: error?.name || "Error" },
+          exception: this.bo_exception(error),
+        }));
+        throw error;
+      }
+    });
   }
 
   /** Synchronous callers may finish explicitly; business results stay with the caller. */
   startSpan(node, builder = () => ({}), options = {}) {
     const context = {
-      ...options,
+      parentCallId: null,
+      parentEventId: null,
+      ...this.bo_context_options(options, { allowEnded: true }),
       callId: options.callId || globalThis.crypto.randomUUID(),
       lifecycle: "span",
     };
-    let closed = false;
+    let closed = false,
+      completionBuilder = null;
     const record = (phase, values = () => ({})) => this.record(node, phase, values, context);
     const finish = (phase, values) => {
       if (closed) return null;
@@ -246,16 +353,22 @@ export class BOProbe {
       entryId,
       callId: context.callId,
       record,
-      finish: (values) => finish("return", values),
+      result: (builder) => {
+        completionBuilder = builder;
+      },
+      finish: (values) => finish("return", completionBuilder || values),
       fail: (values) => finish("error", values),
+      run: (operation) =>
+        this.bo_call_context_async(node, context.callId, { ...context, entryId }, operation),
       child: (child, operation, settings = {}) =>
         this.span(child, operation, {
           ...Object.fromEntries(
-            ["entity", "attempt", "scope", "basis"]
+            ["entity", "attempt", "scope", "basis", "provenance"]
               .filter((key) => Object.hasOwn(context, key))
               .map((key) => [key, context[key]]),
           ),
           parentCallId: context.callId,
+          parentEventId: entryId,
           ...settings,
         }),
     };
@@ -280,10 +393,12 @@ export class BOProbe {
     this.bo_run = runId;
     this.bo_producer = producerId;
     this.bo_enabled = enabled;
+    this.bo_tracing = null;
     this.bo_capacity = capacity;
     this.bo_timeout = timeout;
     this.bo_sink = sink;
     this.bo_queue = [];
+    this.bo_submitted = this.bo_completed = this.bo_flush_target = 0;
     this.bo_seq = 0;
     this.bo_busy = false;
     this.bo_internal = false;
@@ -318,43 +433,53 @@ export class BOProbe {
   bo_health() {
     return {
       enabled: this.bo_enabled,
+      boundary_context: true,
       run_id: this.bo_run,
       producer_id: this.bo_producer,
       enqueued: this.bo_seq,
       pending: this.bo_queue.length + (this.bo_busy ? 1 : 0),
+      queue_submitted: this.bo_submitted,
+      queue_completed: this.bo_completed,
+      flush_target: this.bo_flush_target,
       errors: this.bo_errors,
       dropped: this.bo_dropped,
       filtered: this.bo_filtered,
       last_error: this.bo_last_error ? { ...this.bo_last_error } : null,
+      ...(this.bo_tracing ? { tracing: this.bo_tracing.health() } : {}),
     };
   }
-  record(
-    node,
-    phase,
-    builder,
-    {
-      entity = "application",
-      attempt = "application",
-      scope = "application",
-      basis = {},
-      callId = null,
-      parentCallId = null,
-      depends = [],
-      revision = null,
-      lifecycle = null,
-    } = {},
-  ) {
+  record(node, phase, builder, options = {}) {
     if (!this.bo_enabled) return null;
     if (this.bo_internal || this.bo_excluded.has(node)) {
       this.bo_suppressed++;
       return null;
     }
-    if (this.bo_capture_nodes !== null && !this.bo_capture_nodes.has(node)) {
-      this.bo_filtered++;
-      return null;
-    }
+    let boundary;
     try {
+      boundary =
+        options?.contextBoundary ||
+        (options?.lifecycle === "span"
+          ? { enter: "start", return: "end", error: "end" }[phase]
+          : null);
+      const filtered = this.bo_capture_nodes !== null && !this.bo_capture_nodes.has(node);
+      if (filtered) {
+        this.bo_filtered++;
+        if (!["start", "end"].includes(boundary)) return null;
+      }
       this.bo_internal = true;
+      const {
+        entity = "application",
+        attempt = "application",
+        scope = "application",
+        basis = {},
+        callId = null,
+        parentCallId = null,
+        parentEventId = null,
+        depends = [],
+        revision = null,
+        lifecycle = null,
+        provenance = null,
+      } = this.bo_context_options(options, { allowEnded: boundary === "start" });
       if (!this.bo_nodes.has(node)) throw Error("Unknown capture node");
       const spec = this.bo_nodes.get(node).capture || {};
       if (
@@ -363,7 +488,9 @@ export class BOProbe {
         )
       )
         throw Error("Unknown phase");
-      const values = builder();
+      const values = filtered ? {} : builder();
+      if (options.contextBoundary != null && !["start", "end"].includes(options.contextBoundary))
+        throw Error("Invalid physical context boundary");
       if (lifecycle !== null && lifecycle !== "span")
         throw Error("Invalid lifecycle boundary mode");
       const seq = ++this.bo_seq,
@@ -385,6 +512,7 @@ export class BOProbe {
         scope,
         call_id: callId || id,
         parent_call_id: parentCallId,
+        parent_event_id: parentEventId,
         basis: bo_selected(basis, { param_version: "number", epoch: "number", clock: "number" }),
         inputs: bo_selected(values.inputs || {}, spec.in || {}),
         outputs: bo_selected(values.outputs || {}, spec.out || {}),
@@ -396,6 +524,25 @@ export class BOProbe {
         event.revision = revision;
       }
       if (lifecycle !== null) event.lifecycle = lifecycle;
+      const metadata = options.trace || this.bo_tracing?.observe(node, phase, callId, boundary);
+      if (metadata) event.trace = structuredClone(metadata);
+      const eventProvenance = Object.hasOwn(values, "provenance") ? values.provenance : provenance;
+      if (eventProvenance && !filtered) event.provenance = structuredClone(eventProvenance);
+      if (Object.hasOwn(values, "exception") && !filtered) {
+        event.exception = this.bo_exception_metadata(values.exception);
+        this.bo_tracing?.exception?.(callId, event.exception);
+      }
+      if (filtered) {
+        Object.assign(event, {
+          context_only: true,
+          context_boundary: boundary,
+          inputs: {},
+          outputs: {},
+          depends: [],
+          basis: {},
+        });
+        delete event.revision;
+      }
       if (new TextEncoder().encode(JSON.stringify(event)).length > 24576)
         throw Error("Event too large");
       if (this.bo_queue.length >= this.bo_capacity) {
@@ -404,6 +551,7 @@ export class BOProbe {
         return null;
       }
       this.bo_queue.push({ kind: "events", body: event });
+      this.bo_submitted++;
       queueMicrotask(() => this.bo_drain());
       return id;
     } catch (error) {
@@ -428,6 +576,12 @@ export class BOProbe {
       };
       return null;
     } finally {
+      try {
+        this.bo_tracing?.complete(options.callId, phase, boundary);
+      } catch {
+        this.bo_errors++;
+        this.bo_last_error = { stage: "tracing", type: "Error" };
+      }
       this.bo_internal = false;
     }
   }
@@ -470,6 +624,7 @@ export class BOProbe {
       const raw = JSON.stringify(body);
       if (new TextEncoder().encode(raw).length > 24576) throw Error("Snapshot too large");
       this.bo_queue.push({ kind: "snapshots", body: JSON.parse(raw) });
+      this.bo_submitted++;
       queueMicrotask(() => this.bo_drain());
       return true;
     } catch (error) {
@@ -489,7 +644,8 @@ export class BOProbe {
             let pending;
             this.bo_internal = true;
             try {
-              pending = this.bo_sink(item.body, item.kind);
+              const deliverToSink = () => this.bo_sink(item.body, item.kind);
+              pending = this.bo_tracing ? this.bo_tracing.internal(deliverToSink) : deliverToSink();
             } finally {
               this.bo_internal = false;
             }
@@ -497,12 +653,16 @@ export class BOProbe {
           } else {
             for (let attempt = 0; attempt < 2; attempt++) {
               try {
-                const response = await fetch(`${this.bo_endpoint}/api/bo/${item.kind}`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json", "X-BO-Token": this.bo_token },
-                  body: JSON.stringify(item.body),
-                  signal: AbortSignal.timeout(this.bo_timeout),
-                });
+                const sendRequest = () =>
+                  fetch(`${this.bo_endpoint}/api/bo/${item.kind}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-BO-Token": this.bo_token },
+                    body: JSON.stringify(item.body),
+                    signal: AbortSignal.timeout(this.bo_timeout),
+                  });
+                const response = await (this.bo_tracing
+                  ? this.bo_tracing.internal(sendRequest)
+                  : sendRequest());
                 if (!response.ok) throw Error("Collector rejected observation");
                 break;
               } catch (error) {
@@ -513,6 +673,8 @@ export class BOProbe {
         } catch (error) {
           this.bo_errors++;
           this.bo_last_error = { stage: "transport", type: bo_error_type(error) };
+        } finally {
+          this.bo_completed++;
         }
       }
     } finally {
@@ -520,9 +682,12 @@ export class BOProbe {
     }
   }
   async flush(timeout = 2000) {
+    // Freeze a prefix including snapshots; ongoing producers do not extend it.
+    const target = this.bo_submitted;
+    this.bo_flush_target = target;
     const deadline = Date.now() + timeout;
-    while ((this.bo_busy || this.bo_queue.length) && Date.now() < deadline)
+    while (this.bo_completed < target && Date.now() < deadline)
       await new Promise((r) => setTimeout(r, 5));
-    return !this.bo_busy && !this.bo_queue.length;
+    return this.bo_completed >= target;
   }
 }

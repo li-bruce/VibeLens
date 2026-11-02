@@ -6,7 +6,7 @@
 **/bo_observer/**/__init__.py -text
 # Protocol schemas participate in the same raw-byte runtime fingerprints.
 # Preserve copied schemas identically in the Skill and both installed examples.
-**/bo_observer/schemas/*.json -text
+**/bo_observer/schemas/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 *.png binary
 *.zip binary
 **/pixi.min.js -whitespace linguist-vendored=true
@@ -73,3 +73,12 @@ docs/review/file-sharing-demo/** -whitespace
 # Preserve raw Windows trial logs and frozen source/check receipts byte-for-byte.
 docs/review/dialogue-acceptance-20261031/** -whitespace
 examples/*/.release/stategraph/dialogue-*/** -whitespace
+
+# Immutable Windows observation receipts retain their recorded line endings.
+# Maintained source still uses the separate formatter/lint inventory.
+docs/review/execution-lanes-20261031/** -whitespace
+docs/review/otel-provenance-20261101/** -whitespace
+docs/review/graph-usability-20261102/** -whitespace
+docs/review/relation-insertion-20261102/** -whitespace
+docs/review/iteration-publish-20261102/** -whitespace
+examples/*/.release/stategraph/** -whitespace

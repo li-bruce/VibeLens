@@ -1,0 +1,85 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+[2026-11-01 09:20:09,399] ERROR in app: Exception on /api/review [POST]
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1976, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 964, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: jobs
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\server.py", line 43, in api_entry
+    response = dispatch(service, operation)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\server.py", line 92, in dispatch
+    result = service.review_file(actor, str(body.get("file_id", "")), str(body.get("verdict", "")), str(body.get("reason", "")))
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\app\service.py", line 132, in review_file
+    job_id = self.queue_notice(connection, "review_notice", file_id, file["owner_id"], "review", witness["after"] + (": " + reason if reason else ""), actor)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\app\service.py", line 109, in queue_notice
+    connection.execute(jobs.insert().values(id=job_id, file_id=file_id, recipient_id=recipient_id, kind=kind, text=text, carrier=json.dumps(self.bo.inject()), due_at=time.time() + self.delay, state="queued"))
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1428, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1650, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1855, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1995, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2372, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1976, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\otel-provenance-dialogue-20261101-02\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 964, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: jobs
+[SQL: INSERT INTO jobs (id, file_id, recipient_id, kind, text, carrier, due_at, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: ('c64e1e59d8994a5f9ba55d1da8b99e54', '8618cf0faf684744874345b56f1f1e46', 'member1', 'review', 'approved', '{"traceparent": "00-63c1235a893d6951cd6af800856eb695-d3307645db0ab78e-03", "vibelens-context": "{\\"project_id\\":\\"team-file-sharing-otel-20261101- ... (447 characters truncated) ... "id\\":\\"8618cf0faf684744874345b56f1f1e46\\",\\"role\\":\\"input\\"},{\\"type\\":\\"User\\",\\"id\\":\\"member1\\",\\"role\\":\\"recipient\\"}]}}}"}', 1793496012.391993, 'queued')]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

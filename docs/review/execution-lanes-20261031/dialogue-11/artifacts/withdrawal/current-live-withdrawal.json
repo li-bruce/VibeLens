@@ -1,0 +1,139 @@
+{
+  "valid": true,
+  "file_id": "93bae716a99f4a6681515c8848663df3",
+  "filename": "withdraw-current-20261101.txt",
+  "recording_id": "b91c47a5926649c78b36a1f44c7bff91",
+  "build_id": "a06f7031547ba96942cf611bd0430acda8626272aeb2b0be259513f7904a52ad",
+  "http_checks": [
+    {
+      "case": "reviewer cannot withdraw",
+      "actual": 403,
+      "expected": 403
+    },
+    {
+      "case": "other actor cannot withdraw",
+      "actual": 403,
+      "expected": 403
+    },
+    {
+      "case": "uploader pending withdrawal",
+      "actual": 200,
+      "expected": 200
+    },
+    {
+      "case": "stale reviewer cannot review",
+      "actual": 409,
+      "expected": 409
+    },
+    {
+      "case": "reviewer metadata",
+      "actual": 403,
+      "expected": 403
+    },
+    {
+      "case": "reviewer download",
+      "actual": 403,
+      "expected": 403
+    },
+    {
+      "case": "other actor metadata",
+      "actual": 403,
+      "expected": 403
+    },
+    {
+      "case": "duplicate withdrawal",
+      "actual": 403,
+      "expected": 403
+    },
+    {
+      "case": "withdrawn sharing",
+      "actual": 403,
+      "expected": 403
+    },
+    {
+      "case": "uploader metadata",
+      "actual": 200,
+      "expected": 200
+    }
+  ],
+  "state": "withdrawn",
+  "revision": 2,
+  "content_sha256": "85d22c718223ac7fcd03956831bb8895447388c14542447d97ff3b9af33e251e",
+  "journal": [
+    {
+      "seq": 1,
+      "event": "submit",
+      "before": "new",
+      "after": "pending",
+      "guards": {
+        "operation_allowed": true
+      },
+      "payload": {
+        "allowed": true
+      }
+    },
+    {
+      "seq": 2,
+      "event": "withdraw",
+      "before": "pending",
+      "after": "withdrawn",
+      "guards": {
+        "operation_allowed": true
+      },
+      "payload": {
+        "allowed": true
+      }
+    }
+  ],
+  "interval_events": 220,
+  "closed_interval_calls": 60,
+  "interval_missing_parents": 0,
+  "interval_ownership_gaps": 0,
+  "reviewer_list_absent": true,
+  "raw_gaps": [
+    "Pre-recording context retains only the latest 2000 events.",
+    "A parent invocation entry was not retained; its execution boundary is incomplete."
+  ],
+  "prior_context_ownership_gaps": 194,
+  "producer_settlement": {
+    "flushed": true
+  },
+  "raw_recording_path": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\\u5e73\u53f0\u8f6f\u8457\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\bo_stategraph\\data\\recordings\\b91c47a5926649c78b36a1f44c7bff91.json",
+  "raw_recording_sha256": "059206a66ad7f871e44583dc569d8d9e76bd067a7a5f7e4476b268ad248be077",
+  "health": {
+    "errors": 0,
+    "dropped": 0,
+    "run_id": "c01276bf9ec0e929e93e6cd6",
+    "attempted": 10326,
+    "written": 10326,
+    "enabled": true,
+    "producer": {
+      "enabled": true,
+      "boundary_context": true,
+      "run_id": "4766b44dda624bfaa48e8670d65c5c79",
+      "producer_id": "55d896e9ab2c4ebd86a1a9cc66a88dd2",
+      "enqueued": 10326,
+      "pending": 0,
+      "errors": 0,
+      "dropped": 0,
+      "filtered": 0,
+      "last_error": null,
+      "data_errors": 0,
+      "integration_errors": 0
+    },
+    "runtime_frame_evictions": 0,
+    "context_evictions": 0,
+    "retained_events": 10000,
+    "evicted_events": 326,
+    "history_start_seq": 327,
+    "log_errors": 0,
+    "listener_errors": 0,
+    "retention": {
+      "memory_events": 10000,
+      "memory_seconds": 1800,
+      "log_bytes": 8388608,
+      "log_backups": 2
+    }
+  },
+  "earlier_timeout": "recording-stop.json and actual-recording.json remain unchanged; no complete-capture claim for that attempt."
+}

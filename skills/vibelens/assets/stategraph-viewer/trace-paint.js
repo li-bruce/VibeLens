@@ -1,3 +1,4 @@
+import { rowMetrics, trackOf, trackPitch } from "./trace-tracks.js";
 /** Canvas-only timeline presentation. Geometry and hit targets share one transform. */
 import { t } from "./i18n.js";
 import { displayName } from "./layout.js";
@@ -7,7 +8,7 @@ import { visibleFlows } from "./trace-flows.js";
 import { marksInWindow } from "./trace-index.js";
 import { paintDuration } from "./trace-bars.js";
 import { durationDetail } from "./trace-density.js";
-import { routeFlow, roundedRoute, routePoint, flowKey } from "./trace-routing.js";
+import { routeFlow, groupCurve, roundedRoute, routePoint, flowKey } from "./trace-routing.js";
 
 export const traceGeometry = { overview: 26, ruler: 24, row: 28 };
 export const traceColor = (layer) =>
@@ -105,8 +106,13 @@ export function paintTrace(canvas, state) {
   ctx.fillStyle = "#667f91";
   clippedText(ctx, index.axis.ordered ? t("Elapsed time") : t("Event order"), 12, 18, left - 18);
 
-  const firstRow = Math.max(0, Math.floor(scroll / g.row)),
-    lastRow = Math.min(rows.length, Math.ceil((scroll + height - top) / g.row));
+  const metrics = rowMetrics(rows);
+  const firstRow = Math.max(
+    0,
+    rows.findIndex((_, i) => metrics.tops[i] + metrics.heights[i] > scroll),
+  );
+  const beyond = rows.findIndex((_, i) => metrics.tops[i] >= scroll + height - top);
+  const lastRow = beyond < 0 ? rows.length : beyond;
   ctx.save();
   ctx.beginPath();
   ctx.rect(left, top, plot, height - top);
@@ -129,21 +135,18 @@ export function paintTrace(canvas, state) {
   let drawn = 0;
   for (let i = firstRow; i < lastRow; i++) {
     const row = rows[i],
-      y = top + i * g.row - scroll,
+      y = top + metrics.tops[i] - scroll,
       color = traceColor(row.layer);
-    if (row.header) {
-      ctx.fillStyle = color + "09";
-      ctx.fillRect(left, y, plot, g.row);
+    if (row.groupNumber % 2 === 0 || row.groupStart) {
+      ctx.fillStyle = color + "07";
+      ctx.fillRect(left, y, plot, metrics.heights[i]);
     }
     const selected = row.marks.find((mark) => mark.raw === raw);
     if (selected) {
       ctx.fillStyle = "#2965cc08";
-      ctx.fillRect(left, y, plot, g.row);
+      ctx.fillRect(left, y, plot, metrics.heights[i]);
     }
-    const visibleDurations =
-      row.header && state.expanded.includes(row.layer)
-        ? []
-        : visibleSlices(row, window.start, window.end);
+    const visibleDurations = visibleSlices(row, window.start, window.end);
     const detail = durationDetail(visibleDurations, { x, left, right: left + plot, raw });
     for (const bin of detail.bins) {
       ctx.globalAlpha = Math.min(0.9, 0.35 + Math.log1p(bin.count) * 0.15);
@@ -152,7 +155,7 @@ export function paintTrace(canvas, state) {
       hits.push({
         kind: "density",
         count: bin.count,
-        label: row.header ? t(row.label) : null,
+        label: t(layers.find((layer) => layer.id === row.layer).label),
         raw: bin.first,
         row: row.id,
         x: bin.x - 2,
@@ -167,7 +170,7 @@ export function paintTrace(canvas, state) {
       const sx = Math.max(left, x(slice.start)),
         ex = Math.min(left + plot, x(slice.end));
       if (ex < sx) continue;
-      const pixel = `${Math.floor(sx)}:${Math.ceil(ex)}`;
+      const pixel = `${slice.track}:${Math.floor(sx)}:${Math.ceil(ex)}`;
       if (
         pixel === previousSlicePixel &&
         slice.raw !== raw &&
@@ -180,13 +183,14 @@ export function paintTrace(canvas, state) {
       paintDuration(ctx, slice, {
         sx,
         ex,
-        y,
+        y: y + slice.track * trackPitch,
         color,
         x,
         raw,
         timeLabel,
         pulse: state.pulse || 0,
         sourceNames: state.preferences?.nameMode === "source",
+        caption: displayName(state.all.get(slice.node), state.preferences || {}),
       });
       hits.push({
         kind: "slice",
@@ -195,22 +199,21 @@ export function paintTrace(canvas, state) {
         startRaw: slice.raw,
         row: row.id,
         x: sx,
-        y: y + 5,
-        width: Math.max(5, ex - sx),
+        y: y + slice.track * trackPitch + 5,
+        width: Math.max(7, ex - sx),
         height: 20,
       });
       drawn++;
     }
     ctx.globalAlpha = 1;
     let previousPixel = -Infinity;
-    for (const mark of row.header && state.expanded.includes(row.layer)
-      ? []
-      : marksInWindow(row, window.start, window.end)) {
+    for (const mark of marksInWindow(row, window.start, window.end)) {
       const px = x(mark.time);
       if (px < left - 5 || px > left + plot + 5) continue;
       if (mark.raw !== raw && detail.covered.has(Math.floor(px / 4))) continue;
       if (px - previousPixel < 3 && mark.raw !== raw) continue;
       previousPixel = px;
+      const markY = y + trackOf(row, mark.node, mark.raw) * trackPitch;
       const included = allowed.has(mark.raw);
       ctx.globalAlpha = included ? 1 : 0.24;
       ctx.strokeStyle = mark.raw === raw ? "#144eb0" : color;
@@ -218,26 +221,30 @@ export function paintTrace(canvas, state) {
       ctx.lineWidth = mark.raw === raw ? 2 : 1;
       if (mark.projected) ctx.setLineDash([2, 1]);
       ctx.beginPath();
-      ctx.moveTo(px, y + 8);
-      ctx.lineTo(px + 4, y + 14);
-      ctx.lineTo(px, y + 20);
-      ctx.lineTo(px - 4, y + 14);
+      ctx.moveTo(px, markY + 8);
+      ctx.lineTo(px + 4, markY + 14);
+      ctx.lineTo(px, markY + 20);
+      ctx.lineTo(px - 4, markY + 14);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
       ctx.setLineDash([]);
       ctx.lineWidth = 1;
       if (!positions.has(mark.raw)) positions.set(mark.raw, []);
-      positions
-        .get(mark.raw)
-        .push({ x: px, y: y + 14, layer: row.layer, node: mark.node, projected: mark.projected });
+      positions.get(mark.raw).push({
+        x: px,
+        y: markY + 14,
+        layer: row.layer,
+        node: mark.node,
+        projected: mark.projected,
+      });
       hits.push({
         kind: "mark",
         contextEvent: mark.contextEvent,
         raw: mark.raw,
         row: row.id,
         x: px - 5,
-        y: y + 4,
+        y: markY + 4,
         width: 10,
         height: 20,
       });
@@ -270,8 +277,19 @@ export function paintTrace(canvas, state) {
   const pixels = new Set();
   let flowCount = 0;
   for (const flow of visibleFlows(index, rows, window)) {
-    const fy = top + flow.fromRow * g.row - scroll + 14;
-    const ty = top + flow.toRow * g.row - scroll + 14;
+    const fy =
+      top +
+      metrics.tops[flow.fromRow] -
+      scroll +
+      14 +
+      trackOf(rows[flow.fromRow], flow.fromNode || index.items[flow.from]?.node, flow.from) *
+        trackPitch;
+    const ty =
+      top +
+      metrics.tops[flow.toRow] -
+      scroll +
+      14 +
+      trackOf(rows[flow.toRow], flow.toNode || index.items[flow.to]?.node, flow.to) * trackPitch;
     if (Math.max(fy, ty) < top || Math.min(fy, ty) > height) continue;
     const fx = x(flow.fromTime),
       tx = x(flow.toTime);
@@ -298,7 +316,10 @@ export function paintTrace(canvas, state) {
     ctx.setLineDash(
       ["call", "return", "data", "control", "transition"].includes(flow.type) ? [] : [3, 3],
     );
-    const route = routeFlow(fx, fy, tx, ty, flowCount, { left: left + 4, right: left + plot - 4 });
+    const crossGroup = rows[flow.fromRow].group !== rows[flow.toRow].group;
+    const route = crossGroup
+      ? groupCurve(fx, fy, tx, ty, { left: left + 4, right: left + plot - 4 })
+      : routeFlow(fx, fy, tx, ty, flowCount, { left: left + 4, right: left + plot - 4 });
     roundedRoute(ctx, route);
     ctx.stroke();
     ctx.setLineDash([]);
@@ -353,35 +374,37 @@ export function paintTrace(canvas, state) {
 
   for (let i = firstRow; i < lastRow; i++) {
     const row = rows[i],
-      y = top + i * g.row - scroll;
-    ctx.fillStyle = row.header ? "#f2f6f9" : "#ffffff";
-    ctx.fillRect(0, y, left, g.row);
+      y = top + metrics.tops[i] - scroll;
+    ctx.fillStyle = row.groupStart ? "#f2f6f9" : "#ffffff";
+    ctx.fillRect(0, y, left, metrics.heights[i]);
     ctx.fillStyle = traceColor(row.layer);
-    ctx.fillRect(0, y + 5, 3, g.row - 10);
-    ctx.font = `${row.header ? "600" : "400"} 11px "Segoe UI", sans-serif`;
+    ctx.fillRect(0, y + 5, 3, metrics.heights[i] - 10);
+    ctx.font = `${row.groupStart ? "600" : "400"} 11px "Segoe UI", sans-serif`;
     ctx.fillStyle = "#354d5e";
-    const title = row.header
-      ? (state.expanded.includes(row.layer) ? "▾ " : "▸ ") + t(row.label)
-      : state.preferences
-        ? displayName(state.all?.get(row.id) || row.node, state.preferences)
-        : row.node.label || row.id;
-    clippedText(ctx, title, row.header ? 12 : 22, y + 18, left - (row.header ? 42 : 28));
-    if (row.header) {
-      ctx.fillStyle = "#71808e";
-      ctx.fillText(String(row.count), left - 26, y + 18);
+    const label = t(layers.find((layer) => layer.id === row.layer).label);
+    const title = row.groupStart
+      ? `${row.folded ? "▸" : "▾"} ${row.groupKind === "observation" ? t("Unassigned observations") : row.groupNumber} · ${label}`
+      : label;
+    clippedText(ctx, title, row.groupStart ? 12 : 28, y + 18, left - 18);
+    if (row.groupStart) {
+      ctx.strokeStyle = "#c9d5df";
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
     }
     ctx.strokeStyle = "#edf1f5";
     ctx.beginPath();
-    ctx.moveTo(0, y + g.row);
-    ctx.lineTo(width, y + g.row);
+    ctx.moveTo(0, y + metrics.heights[i]);
+    ctx.lineTo(width, y + metrics.heights[i]);
     ctx.stroke();
     hits.push({
-      kind: row.header ? "layer" : "node",
+      kind: row.groupStart ? "group" : "layer",
       row: row.id,
       x: 0,
       y,
       width: left,
-      height: g.row,
+      height: metrics.heights[i],
     });
   }
   ctx.fillStyle = "#f8fafc";
@@ -399,7 +422,7 @@ export function paintTrace(canvas, state) {
     ctx.fill();
   }
   const trackHeight = height - top,
-    contentHeight = rows.length * g.row;
+    contentHeight = metrics.total;
   if (contentHeight > trackHeight) {
     const thumb = Math.max(18, trackHeight ** 2 / contentHeight);
     ctx.fillStyle = "#bdcbd6";

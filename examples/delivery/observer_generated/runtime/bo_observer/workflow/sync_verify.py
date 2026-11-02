@@ -199,11 +199,29 @@ def verify(root, cfg, change, *, inspect, snapshot):
     else:
         try:
             payload = json.loads(observation["stdout"])
+            from ..observation.telemetry import (
+                load_registrations,
+                runtime_errors as telemetry_errors,
+            )
+
+            mapping_errors.extend(
+                telemetry_errors(load_registrations(root, current["model"]), payload)
+            )
             producer_health = assess_probe_health(
                 payload, required=cfg.get("require_probe_health", False)
             )
             mapping_errors.extend(producer_health["errors"])
             reports["mapping"]["producer_health"] = producer_health
+            from .observation_requirements import invocation_closure, layer_evidence
+
+            closure = invocation_closure(
+                payload,
+                required=cfg.get("require_observation_closure", False),
+                model=current["model"],
+            )
+            mapping_errors.extend(closure["errors"])
+            reports["mapping"]["invocation_closure"] = closure
+            reports["mapping"]["layers"] = layer_evidence(current["model"], payload)
             if current["model"].get("policy"):
                 from ..policy.evidence import runtime_errors as policy_runtime_errors
 

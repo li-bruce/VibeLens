@@ -1,0 +1,95 @@
+{
+  "schema": "bo-mapping/v1",
+  "cases": [
+    "two_reviewers"
+  ],
+  "modes": [
+    "on"
+  ],
+  "source": "Native session and SQLite readers",
+  "actual_collection": [
+    "authority_snapshot",
+    "instances"
+  ],
+  "actual_id": [
+    "id"
+  ],
+  "fields": [
+    {
+      "id": "state",
+      "node": "upload_file",
+      "actual": [
+        "state"
+      ],
+      "mapped": [
+        "state"
+      ]
+    },
+    {
+      "id": "revision",
+      "node": "upload_file",
+      "actual": [
+        "revision"
+      ],
+      "mapped": [
+        "revision"
+      ]
+    },
+    {
+      "id": "build_id",
+      "node": "upload_file",
+      "actual": [
+        "build_id"
+      ],
+      "mapped": [
+        "build_id"
+      ]
+    }
+  ],
+  "export": {
+    "case": "two_reviewers",
+    "mode": "on"
+  },
+  "context_fields": [
+    {
+      "id": "both-native-reviewers",
+      "case": "two_reviewers",
+      "node": "review_file",
+      "phase": "enter",
+      "source": "Native Flask session before the HTTP review, independently read user row and SDK SpanContext at invocation entry.",
+      "actual": [
+        "principal_before",
+        "actor"
+      ],
+      "mapped": [
+        "provenance",
+        "actor"
+      ],
+      "each": {
+        "collection": [
+          "native_requests"
+        ],
+        "actual_key": [
+          [
+            "native_sdk",
+            "trace_id"
+          ],
+          [
+            "native_sdk",
+            "span_id"
+          ]
+        ],
+        "mapped_key": [
+          [
+            "trace",
+            "trace_id"
+          ],
+          [
+            "trace",
+            "span_id"
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\review\retest-20261101-02\queue_cases.py", line 123, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\review\retest-20261101-02\queue_cases.py", line 113, in main
+    assert result.returncode == 0, result.stderr[-3000:]
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: \Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.venv\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\app\web.py", line 73, in upload
+    row = self.service.upload(actor, request.form.get("reviewer_id", ""), filename,
+        incoming.stream.read(10 * 1024 * 1024 + 1))
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\app\service.py", line 73, in upload
+    if not self.authorize(connection, actor, "upload", row):
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\app\service.py", line 31, in authorize
+    report = evaluate(self.policy, operation, inputs, {"same_identity": same_identity},
+        fact_revision=row["id"] + ":" + str(row["revision"]), source_root=self.root)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\bo_stategraph\policy\runtime.py", line 57, in evaluate
+    bindings[pred["id"]] = callable_binding(callback, pred["source"], source_root)
+                           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\bo_stategraph\policy\bindings.py", line 40, in callable_binding
+    raise ValueError("native predicate source differs: " + source["symbol"])
+ValueError: native predicate source differs: same_identity
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\review\retest-20261101-02\queue_cases.py", line 121, in <module>
+    print(json.dumps(scenario(sys.argv[1])))
+                     ~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\review\retest-20261101-02\queue_cases.py", line 46, in scenario
+    fid = upload(clients["alice"]).json["id"]
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+

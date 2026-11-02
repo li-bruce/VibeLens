@@ -1,0 +1,946 @@
+{
+  "body": {
+    "controlPlan": "control-dad6af0b15b5c3fbb04c"
+  },
+  "edges": [
+    {
+      "count": 1,
+      "from": "pending_review",
+      "id": "summary:pending_review|approved|flow|false|false|model",
+      "label": "approve：待审核 → 已通过，1 条",
+      "to": "approved",
+      "type": "flow"
+    },
+    {
+      "count": 1,
+      "from": "pending_review",
+      "id": "summary:pending_review|review_not_approved|flow|false|false|model",
+      "label": "reject：待审核 → 未通过，1 条",
+      "to": "review_not_approved",
+      "type": "flow"
+    },
+    {
+      "count": 1,
+      "from": "approved",
+      "id": "summary:approved|approved|flow|false|false|model",
+      "label": "share：已通过 → 已通过，1 条",
+      "to": "approved",
+      "type": "flow"
+    },
+    {
+      "count": 1,
+      "from": "sign_in",
+      "id": "summary:sign_in|upload_file|flow|false|false|model",
+      "label": "上传入口：登录 → 上传并指定审核人，1 条",
+      "to": "upload_file",
+      "type": "flow"
+    },
+    {
+      "count": 1,
+      "from": "upload_file",
+      "id": "summary:upload_file|pending_review|flow|false|false|model",
+      "label": "上传后交审：上传并指定审核人 → 待审核，1 条",
+      "to": "pending_review",
+      "type": "flow"
+    },
+    {
+      "count": 1,
+      "from": "pending_review",
+      "id": "summary:pending_review|review_file|flow|false|false|model",
+      "label": "只由本次指定的同事审核：待审核 → 指定同事审核，1 条",
+      "to": "review_file",
+      "type": "flow"
+    },
+    {
+      "count": 1,
+      "from": "review_file",
+      "id": "summary:review_file|approved|flow|false|false|model",
+      "label": "通过：指定同事审核 → 已通过，1 条",
+      "to": "approved",
+      "type": "flow"
+    },
+    {
+      "count": 1,
+      "from": "approved",
+      "id": "summary:approved|share_file|guard|false|false|model",
+      "label": "仅通过后由上传者分享：已通过 → 上传者定向分享，1 条",
+      "to": "share_file",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "review_file",
+      "id": "summary:review_file|review_not_approved|flow|false|false|model",
+      "label": "未通过即结束，不重提：指定同事审核 → 未通过，1 条",
+      "to": "review_not_approved",
+      "type": "flow"
+    },
+    {
+      "count": 1,
+      "from": "share_file",
+      "id": "summary:share_file|designated_recipient|data|false|false|model",
+      "label": "指定一个已有账号：上传者定向分享 → 唯一指定接收人，1 条",
+      "to": "designated_recipient",
+      "type": "data"
+    },
+    {
+      "count": 1,
+      "from": "designated_recipient",
+      "id": "summary:designated_recipient|access_file|guard|false|false|model",
+      "label": "通过且已分享给本人：唯一指定接收人 → 查看信息或下载，1 条",
+      "to": "access_file",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "sign_in",
+      "id": "summary:sign_in|access_file|guard|false|false|model",
+      "label": "访问必须已登录：登录 → 查看信息或下载，1 条",
+      "to": "access_file",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:reviewer_is_other",
+      "id": "summary:policy:reviewer_is_other|policy:upload_allowed|guard|false|false|model",
+      "label": "all：NOT · 审核人不是上传者 → AND · 登录且选择一位已有的其他同事，1 条",
+      "to": "policy:upload_allowed",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:actor_is_reviewer",
+      "id": "summary:policy:actor_is_reviewer|policy:review_allowed|guard|false|false|model",
+      "label": "all：当前用户是指定审核人 → AND · 仅指定审核人可审核，1 条",
+      "to": "policy:review_allowed",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:actor_is_uploader",
+      "id": "summary:policy:actor_is_uploader|policy:share_allowed|guard|false|false|model",
+      "label": "all：当前用户是上传者 → AND · 登录且通过审核且为上传者，1 条",
+      "to": "policy:share_allowed",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:actor_is_uploader",
+      "id": "summary:policy:actor_is_uploader|policy:file_access_basis|guard|false|false|model",
+      "label": "any：当前用户是上传者 → OR · 上传者、审核人或满足条件的接收人，1 条",
+      "to": "policy:file_access_basis",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:actor_is_reviewer",
+      "id": "summary:policy:actor_is_reviewer|policy:file_access_basis|guard|false|false|model",
+      "label": "any：当前用户是指定审核人 → OR · 上传者、审核人或满足条件的接收人，1 条",
+      "to": "policy:file_access_basis",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:file_access_basis",
+      "id": "summary:policy:file_access_basis|policy:access_allowed|guard|false|false|model",
+      "label": "all：OR · 上传者、审核人或满足条件的接收人 → AND · 登录并具备读取资格，1 条",
+      "to": "policy:access_allowed",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:upload_allowed",
+      "id": "summary:policy:upload_allowed|upload_file|guard|false|false|model",
+      "label": "Requires：AND · 登录且选择一位已有的其他同事 → 上传并指定审核人，1 条",
+      "to": "upload_file",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:review_allowed",
+      "id": "summary:policy:review_allowed|review_file|guard|false|false|model",
+      "label": "Requires：AND · 仅指定审核人可审核 → 指定同事审核，1 条",
+      "to": "review_file",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:share_allowed",
+      "id": "summary:policy:share_allowed|share_file|guard|false|false|model",
+      "label": "Requires：AND · 登录且通过审核且为上传者 → 上传者定向分享，1 条",
+      "to": "share_file",
+      "type": "guard"
+    },
+    {
+      "count": 1,
+      "from": "policy:access_allowed",
+      "id": "summary:policy:access_allowed|access_file|guard|false|false|model",
+      "label": "Requires：AND · 登录并具备读取资格 → 查看信息或下载，1 条",
+      "to": "access_file",
+      "type": "guard"
+    }
+  ],
+  "index": "0",
+  "nodes": [
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#5075b5",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#e0e6f2",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "sign_in",
+        "nodeType": "business",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "historical",
+        "screenX": "550.5861974576829",
+        "screenY": "275.08790540799896",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "672",
+        "y": "294.5"
+      },
+      "id": "sign_in",
+      "type": "business"
+    },
+    {
+      "attributes": {
+        "changes": "[{\"field\":\"actor\",\"after\":\"alice\",\"kind\":\"value\"},{\"field\":\"reviewer_id\",\"after\":\"ben\",\"kind\":\"value\"},{\"field\":\"filename\",\"after\":\"stopped-round05-chain.txt\",\"kind\":\"value\"},{\"field\":\"size\",\"after\":68,\"kind\":\"value\"}]",
+        "childCount": "0",
+        "color": "#5075b5",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#e0e6f2",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "upload_file",
+        "nodeType": "business",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "active",
+        "screenX": "586.5861974576829",
+        "screenY": "320.38790540799897",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "972",
+        "y": "672"
+      },
+      "id": "upload_file",
+      "type": "business"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#5075b5",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#e0e6f2",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "review_file",
+        "nodeType": "business",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "historical",
+        "screenX": "658.5861974576829",
+        "screenY": "301.78790540799895",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "1572",
+        "y": "517"
+      },
+      "id": "review_file",
+      "type": "business"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#5075b5",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#e0e6f2",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "share_file",
+        "nodeType": "business",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "declared",
+        "screenX": "730.5861974576828",
+        "screenY": "344.38790540799897",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "2172",
+        "y": "872"
+      },
+      "id": "share_file",
+      "type": "business"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#5075b5",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#e0e6f2",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "access_file",
+        "nodeType": "business",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "historical",
+        "screenX": "802.5861974576828",
+        "screenY": "272.38790540799897",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "2772",
+        "y": "272"
+      },
+      "id": "access_file",
+      "type": "business"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "8",
+        "color": "#af8029",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#f1e8d8",
+        "fillEmphasis": "normal",
+        "groupCenterX": "731.2805011267476",
+        "groupCenterY": "423.5770150733162",
+        "groupRadius": "684.0504587547955",
+        "nodeId": "policy:network",
+        "nodeType": "decision",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "circle",
+        "runState": "declared",
+        "screenX": "546.2998575928926",
+        "screenY": "286.85714721679693",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "72",
+        "y": "864.5"
+      },
+      "id": "policy:network",
+      "type": "decision"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#9869a0",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#ece4ee",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "pending_review",
+        "nodeType": "state",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "declared",
+        "screenX": "622.5861974576829",
+        "screenY": "322.1879054079989",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "1272",
+        "y": "687"
+      },
+      "id": "pending_review",
+      "type": "state"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#9869a0",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#ece4ee",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "approved",
+        "nodeType": "state",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "declared",
+        "screenX": "694.5861974576829",
+        "screenY": "300.88790540799897",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "1872",
+        "y": "509.5"
+      },
+      "id": "approved",
+      "type": "state"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#9869a0",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#ece4ee",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "review_not_approved",
+        "nodeType": "state",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "declared",
+        "screenX": "694.5861974576829",
+        "screenY": "324.28790540799895",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "1872",
+        "y": "704.5"
+      },
+      "id": "review_not_approved",
+      "type": "state"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#627f9c",
+        "core": "false",
+        "depth": "0",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#e3e8ed",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "designated_recipient",
+        "nodeType": "data",
+        "parent": "",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "declared",
+        "screenX": "766.5861974576828",
+        "screenY": "344.38790540799897",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "2472",
+        "y": "872"
+      },
+      "id": "designated_recipient",
+      "type": "data"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#af8029",
+        "core": "false",
+        "depth": "1",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#f1e8d8",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "policy:actor_is_uploader",
+        "nodeType": "decision",
+        "parent": "policy:network",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "historical",
+        "screenX": "514.5861974576829",
+        "screenY": "292.48790540799894",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "372",
+        "y": "439.5"
+      },
+      "id": "policy:actor_is_uploader",
+      "type": "decision"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#af8029",
+        "core": "false",
+        "depth": "1",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#f1e8d8",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "policy:actor_is_reviewer",
+        "nodeType": "decision",
+        "parent": "policy:network",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "historical",
+        "screenX": "514.5861974576829",
+        "screenY": "253.78790540799892",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "372",
+        "y": "117"
+      },
+      "id": "policy:actor_is_reviewer",
+      "type": "decision"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#af8029",
+        "core": "false",
+        "depth": "1",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#f1e8d8",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "policy:reviewer_is_other",
+        "nodeType": "decision",
+        "parent": "policy:network",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "declared",
+        "screenX": "514.5861974576829",
+        "screenY": "316.48790540799894",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "372",
+        "y": "639.5"
+      },
+      "id": "policy:reviewer_is_other",
+      "type": "decision"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#af8029",
+        "core": "false",
+        "depth": "1",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#f1e8d8",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "policy:upload_allowed",
+        "nodeType": "decision",
+        "parent": "policy:network",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "declared",
+        "screenX": "550.5861974576829",
+        "screenY": "323.08790540799896",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "672",
+        "y": "694.5"
+      },
+      "id": "policy:upload_allowed",
+      "type": "decision"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#af8029",
+        "core": "false",
+        "depth": "1",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#f1e8d8",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "policy:review_allowed",
+        "nodeType": "decision",
+        "parent": "policy:network",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "declared",
+        "screenX": "550.5861974576829",
+        "screenY": "299.08790540799896",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "672",
+        "y": "494.5"
+      },
+      "id": "policy:review_allowed",
+      "type": "decision"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#af8029",
+        "core": "false",
+        "depth": "1",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#f1e8d8",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "policy:share_allowed",
+        "nodeType": "decision",
+        "parent": "policy:network",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "declared",
+        "screenX": "550.5861974576829",
+        "screenY": "347.08790540799896",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "672",
+        "y": "894.5"
+      },
+      "id": "policy:share_allowed",
+      "type": "decision"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#af8029",
+        "core": "false",
+        "depth": "1",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#f1e8d8",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "policy:file_access_basis",
+        "nodeType": "decision",
+        "parent": "policy:network",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "historical",
+        "screenX": "550.5861974576829",
+        "screenY": "251.08790540799893",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "672",
+        "y": "94.5"
+      },
+      "id": "policy:file_access_basis",
+      "type": "decision"
+    },
+    {
+      "attributes": {
+        "changes": "[]",
+        "childCount": "0",
+        "color": "#af8029",
+        "core": "false",
+        "depth": "1",
+        "discussion": "false",
+        "emphasis": "normal",
+        "fill": "#f1e8d8",
+        "fillEmphasis": "normal",
+        "groupCenterX": "",
+        "groupCenterY": "",
+        "groupRadius": "",
+        "nodeId": "policy:access_allowed",
+        "nodeType": "decision",
+        "parent": "policy:network",
+        "pinned": "false",
+        "plane": "flat",
+        "referenceOf": "",
+        "representation": "node",
+        "runState": "historical",
+        "screenX": "586.5861974576829",
+        "screenY": "248.38790540799894",
+        "worldX": "",
+        "worldY": "",
+        "worldZ": "",
+        "x": "972",
+        "y": "72"
+      },
+      "id": "policy:access_allowed",
+      "type": "decision"
+    }
+  ],
+  "recording": "d34529dca11041ed9518247d44758d2a",
+  "steps": [
+    {
+      "id": "2",
+      "label": "1 · 上传并指定审核人 · 开始执行"
+    },
+    {
+      "id": "11",
+      "label": "2 · NOT · 审核人不是上传者 · 完成判断"
+    },
+    {
+      "id": "12",
+      "label": "3 · AND · 登录且选择一位已有的其他同事 · 完成判断"
+    },
+    {
+      "id": "19",
+      "label": "4 · 上传并指定审核人 · 状态改变"
+    },
+    {
+      "id": "22",
+      "label": "5 · 上传并指定审核人 · 返回结果"
+    },
+    {
+      "id": "25",
+      "label": "6 · 查看信息或下载 · 开始执行"
+    },
+    {
+      "id": "33",
+      "label": "7 · 当前用户是上传者 · 完成判断"
+    },
+    {
+      "id": "35",
+      "label": "8 · 当前用户是指定审核人 · 完成判断"
+    },
+    {
+      "id": "38",
+      "label": "9 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    },
+    {
+      "id": "39",
+      "label": "10 · AND · 登录并具备读取资格 · 完成判断"
+    },
+    {
+      "id": "41",
+      "label": "11 · 查看信息或下载 · 失败"
+    },
+    {
+      "id": "44",
+      "label": "12 · 指定同事审核 · 开始执行"
+    },
+    {
+      "id": "53",
+      "label": "13 · 当前用户是指定审核人 · 完成判断"
+    },
+    {
+      "id": "54",
+      "label": "14 · AND · 仅指定审核人可审核 · 完成判断"
+    },
+    {
+      "id": "61",
+      "label": "15 · 指定同事审核 · 状态改变"
+    },
+    {
+      "id": "62",
+      "label": "16 · 指定同事审核 · 返回结果"
+    },
+    {
+      "id": "65",
+      "label": "17 · 上传者定向分享 · 开始执行"
+    },
+    {
+      "id": "75",
+      "label": "18 · 当前用户是上传者 · 完成判断"
+    },
+    {
+      "id": "76",
+      "label": "19 · AND · 登录且通过审核且为上传者 · 完成判断"
+    },
+    {
+      "id": "85",
+      "label": "20 · 上传者定向分享 · 状态改变"
+    },
+    {
+      "id": "86",
+      "label": "21 · 上传者定向分享 · 返回结果"
+    },
+    {
+      "id": "89",
+      "label": "22 · 查看信息或下载 · 开始执行"
+    },
+    {
+      "id": "97",
+      "label": "23 · 当前用户是上传者 · 完成判断"
+    },
+    {
+      "id": "99",
+      "label": "24 · 当前用户是指定审核人 · 完成判断"
+    },
+    {
+      "id": "105",
+      "label": "25 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    },
+    {
+      "id": "106",
+      "label": "26 · AND · 登录并具备读取资格 · 完成判断"
+    },
+    {
+      "id": "108",
+      "label": "27 · 查看信息或下载 · 返回结果"
+    },
+    {
+      "id": "111",
+      "label": "28 · 查看信息或下载 · 开始执行"
+    },
+    {
+      "id": "119",
+      "label": "29 · 当前用户是上传者 · 完成判断"
+    },
+    {
+      "id": "121",
+      "label": "30 · 当前用户是指定审核人 · 完成判断"
+    },
+    {
+      "id": "127",
+      "label": "31 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    },
+    {
+      "id": "128",
+      "label": "32 · AND · 登录并具备读取资格 · 完成判断"
+    },
+    {
+      "id": "130",
+      "label": "33 · 查看信息或下载 · 失败"
+    },
+    {
+      "id": "133",
+      "label": "34 · 查看信息或下载 · 开始执行"
+    },
+    {
+      "id": "141",
+      "label": "35 · 当前用户是上传者 · 完成判断"
+    },
+    {
+      "id": "143",
+      "label": "36 · 当前用户是指定审核人 · 完成判断"
+    },
+    {
+      "id": "149",
+      "label": "37 · OR · 上传者、审核人或满足条件的接收人 · 完成判断"
+    },
+    {
+      "id": "150",
+      "label": "38 · AND · 登录并具备读取资格 · 完成判断"
+    },
+    {
+      "id": "152",
+      "label": "39 · 查看信息或下载 · 返回结果"
+    }
+  ],
+  "timeline": {
+    "eventId": "21b5b2f1d2074bda8a211dac1e81f743:e7777621593c4a6e9d8300c1406e4001:14085",
+    "graphTransfers": "[]",
+    "rawIndex": "2",
+    "source": "saved"
+  },
+  "url": "http://127.0.0.1:8983/graph?vl_session=5f8cc8edd6d8c1b21b5764230c4a5371"
+}

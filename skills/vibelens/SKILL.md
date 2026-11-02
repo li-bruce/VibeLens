@@ -42,6 +42,8 @@ When the requested software stores data, reuse its database choice or run `bo_db
 
 Read [multilanguage architecture and protocols](references/multilanguage.md). Python provides shared graph validation, source aggregation, recording, querying, export, and the complete viewer. The application keeps native execution and authoritative state; both sides exchange versioned JSON.
 
+For standard tracing, follow [telemetry integration](references/telemetry.md). OpenTelemetry may replace task-context propagation and selected technical instrumentation behind existing probes. Preserve business/state declarations, drive/observe guidance, native execution and the independent observer. Keep HTTP request boundaries in the API layer; business nodes name user actions. Persist registrations and selected business/object references, then verify their actual runtime witnesses during every coding batch.
+
 New projects store a `bo-project/v1` document in `bo_stategraph/project.json`, including the mode decision and complete model. `model.machine` is the state declaration; drive mode binds it to the selected executor. Bind functions through stable source references; do not embed executable function code in JSON. Existing Python projects may retain a v3 graph and a shared `bo_stategraph/machine.json` consumed by their real executor and graph generator. Never edit generated copies independently.
 
 Carry confirmed rule identities into `model.policy`, bind native predicate functions and parameters, and register independent operation cases. `bo_policy.py sync` generates their nodes, shared dependencies and business/source links in the same graph. Drive may use the native evaluator; observe captures the application's actual evaluation. Record each check separately and retain skipped, unknown and error evidence. See the rule reference for the JSON and probe interfaces.
@@ -58,12 +60,16 @@ For data access, configure `bo_stategraph/databases.json`, a native ORM/ODM or e
 
 ## 3. Maintain the graph during each coding batch
 
+For a later business request, first follow [iteration dialogue](references/iteration-dialogue.md): restore confirmed decisions, locate the affected graph region and its boundaries, show the proposed local change in conversation and Web, and resolve only new or changed business meaning before implementation. Reuse explicit confirmations of the same scope. Source-only refactors keep their business meaning and update mappings without repeating business questions.
+
 Connect these commands to the project's verification entrypoint. Conversation guidance applies only after explicit adoption in that conversation; project instruction files must not silently activate the skill elsewhere. The AI runs the commands; the user does not maintain intermediate files:
 
 ```text
 change_sync begin -> coding and local generation -> bo_sync scan -> change_sync inspect
 -> resolve confirmations and implementation review -> change_sync verify -> accept -> check
 ```
+
+Before every coding turn, run `change_sync.py recall --root PROJECT` and read its concise output. It restores mode, current request, protected contracts, observation-module paths, affected layer nodes and verification commands from project files. `begin` also produces this recall automatically. Detailed per-layer sources, fields, lifecycles and cases are in `.stategraph/observation-plan.json`; inspect only affected entries. Recall does not accept source changes. See [observation continuity](references/observation-continuity.md).
 
 Commands require the project `--root`; `begin` also needs `--change` and the actual request. Continue an active change instead of replacing its baseline to hide drift. See [continuous development](references/continuous-development.md).
 
@@ -79,7 +85,7 @@ Read `confirmations.user` and `confirmations.coding`. Ask users only about unres
 
 Map all implemented features, including later login, messages, queries, configuration, and frontend actions. Give entrypoints, parameters, helpers, and runtime cases a traceable place in the graph. Collapsing a feature is not excluding it. Static edges are candidates; capture actual calls, decisions, state changes, and effects at their execution boundaries. Do not invent results for conditions skipped by short-circuit evaluation. See [source isolation](references/source-isolation.md) and [semantic probes](references/semantic-pins.md).
 
-Use `bo_` for observation wiring and `BO` for adapter classes; keep domain names for business methods. Select fields explicitly. Never collect credentials, tokens, or arbitrary bodies. Isolate builder, transport, and storage failures; bound queues. Events identify project, model, build, run, producer, entity, call, and parameter version. Arrival order across processes is not causality. Use application/entity scope for features such as login outside a selected task.
+Use `bo_` for observation wiring and `BO` for adapter classes; keep domain names for business methods. Select fields explicitly. Never collect credentials, tokens, or arbitrary bodies. Isolate builder, transport, and storage failures; bound queues. Events identify project, model, build, run, producer, entity, call, and parameter version. Internal rule, state and value facts retain their actual enclosing invocation, including when file identities differ. Enable protected `require_observation_closure`; missing ownership fails mapping. Source-bound external point notifications may declare `observation_root`, as detailed in [observation continuity](references/observation-continuity.md). Arrival order across processes is not causality. Use application/entity scope for features such as login outside a selected task.
 
 At node construction, register existing lifecycle meanings with `lifecycle.states` and explicit event/value `bindings`. Clarify uncertain business meanings with the user and implementation bindings with coding. Otherwise use neutral entry, wait/resume, return and exception observations; a return or exception does not establish business success or failure. A broad exception class cannot establish a specific outcome such as permission denial; capture the actual cause or retain the generic exception. Preserve real call ownership, including detached work with its own interval. Graph and timeline share these facts. Keep independent semantic and source parameter IDs connected by explicit `represents` mappings. Follow [lifecycles and representations](references/lifecycles-and-representations.md); test registered meanings against actual captured values, timed bars, same-track and cross-layer links, live inspection and recording without business writes.
 
@@ -88,6 +94,10 @@ Collection, reporting, polling, source viewing, layout, and recording controls m
 Track source moves explicitly, preserving node identities, parameters, and assertions. Generate from canonical sources and check installed copies. Do not reset capture baselines, fabricate events, or relax expectations to remove failures. Keep personal layouts in `bo_stategraph/config/views/local.json`; upgrades must preserve them. See [source migration](references/cochange.md).
 
 Keep project, node, and relation IDs stable across iterations. Use explicit `presentation.node_aliases` / `edge_aliases` for one-to-one renames; retain dormant personal settings and migration conflicts. Do not derive identity from labels, source line numbers, or build versions. A changed title is not a new project.
+
+Route authored relation construction and updates through the [relation insertion](references/relation-insertion.md) interface. Register exact context, duplicate identity and permitted conceptual compositions from confirmed declarations. Keep physical execution facts direct. Missing meaning or evidence retains the edge; invalid or conflicting registrations stop the batch. Preserve raw IDs and witness paths, and check restoration after a witness changes or disappears.
+
+Focused capture selects value builders and retains minimal witnessed caller boundaries. Unselected inputs and results remain uncollected; boundary metadata adds no ordinary replay steps. Disclose any remaining partial ownership without inferring parents or claiming full capture. See [observation continuity](references/observation-continuity.md#focused-values-and-execution-context).
 
 ## 4. Present and inspect
 
@@ -116,6 +126,8 @@ When requested, hide the debug Web UI with `bo_web.py mode` or use the verified 
 For each batch, use the changed graph region and its incoming/outgoing dependencies to select regression cases. Follow the [iteration graph checks](references/iteration-graph-checks.md): retain independent expectations, run affected and neighboring feature cases, and test one relevant omission or incorrect value in an isolated copy. A static relation selects a case; actual execution establishes its evidence. Preserve the existing project-wide checks.
 
 Report **implementation mapping**, **state constraints**, **business rules**, and **project checks** separately. A graph may accurately expose a business bug: mapping can pass while business checks fail. Missing evidence and unrun tests are not passes. Reject invalid declarations, types, projections, engines, or guard wiring before loading. Preserve actual invalid runtime values with diagnostics; never correct observations to fit the model.
+
+Compare identities and effects at the selected native boundary. A final session or database snapshot cannot establish what was true before authentication, commit, logout or response completion. Keep the independent reader and its timing explicit; test an actual framework error response when API capture is configured.
 
 For a configured policy network, scan/inspect/verify must check its exact projection, independent source signatures, actual per-check evaluations and their matching graph events. Include every configured operation case. Recheck shared dependents after composition, function, parameter or fact-basis changes; keep business expectations independent from recorded predicate truth.
 

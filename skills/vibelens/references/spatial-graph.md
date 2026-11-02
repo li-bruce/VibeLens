@@ -11,8 +11,8 @@ The 3D viewport is another renderer of the existing graph. It uses a real perspe
 
 ## Default reading order
 
-Business → States → Rules → API → Functions and values → Data operations →
-Project structure → Code symbols → Data structure. The product introduction and
+Business → States → Rules → API → Functions and values → Project structure →
+Code symbols → Data operations → Data structure. The product introduction and
 native 2D/3D controls use this order. It moves from intent and behavioral models
 through execution evidence and source detail to the physical storage foundation. These are connected
 perspectives, not nine sequential execution stages; states and rules constrain
@@ -30,6 +30,7 @@ remain intact. Only visible, populated layers consume height slots.
 | graph-links.js | Merge optional source slices by stable identity; follow explicit source/handler links to capture owners. |
 | graph-inventory.js | Assemble authored nodes, capture fields, machine states/transitions and shared references before filtering. |
 | graph-layers.js | Classify semantic layers and close a layer slice over actual edge endpoints. |
+| layer-style.js | Share the nine layer colors across planar icons, spatial objects, regions and controls. Type shapes retain their meanings. |
 | layer-ruler.js / edge-routing.js | Draw a canvas layer navigator; save order and visibility; share routed path geometry while retaining graph identities. |
 | replay-selection.js | Filter playback steps and loop ranges by event ID without modifying recordings. |
 | spatial-model.js | Produce renderer-neutral nodes, edges and cross-layer containment projections. |
@@ -93,7 +94,12 @@ Tabler Icons 3.49.0 supplies the 19 planar icons. Three uses original compound s
 
 ## Planar type clustering
 
-Arrange packs actual containment subtrees first. Repeated sibling types receive local packing neighborhoods. Complete top-level subtrees then form type clusters: D3 forces position coarse cluster centers, collision forces separate footprints, and external relationships bias bridge nodes toward the relevant neighboring cluster's rim. This borrows the circular-cluster idea from [CiSE](https://github.com/iVis-at-Bilkent/cytoscape.js-cise); it does not embed that package or create synthetic model containers. The existing D3 implementation is reused in a short-lived worker. Existing manual positions and pins survive incremental updates; only an explicit Arrange recomputes unpinned placements. Dense all-to-all connections can still cross; type grouping does not change graph semantics.
+Arrange packs actual containment subtrees first, then groups complete subtrees by layer and type. [ELK Layered](https://eclipse.dev/elk/reference/algorithms/org-eclipse-elk-layered.html) orders the coarse group graph with crossing minimization. A short-lived D3 worker separates local footprints and biases externally connected nodes toward neighboring groups. Both renderers share these planar coordinates. Existing manual positions and pins survive incremental updates; only an explicit Arrange recomputes unpinned placements. Dense all-to-all connections can still cross; grouping changes placement, not graph semantics.
+
+Larger spatial objects keep a minimum screen size. Ordinary links use thin,
+translucent strokes; selection and actual runtime evidence receive emphasis.
+Measure camera motion without per-node DOM dimension reads, in addition to draw
+calls, frame cost, picking and route updates.
 
 References: [libavoid-js](https://github.com/Aksem/libavoid-js), [D3 bundle curves](https://d3js.org/d3-shape/curve#curveBundle), [D3 Delaunay](https://github.com/d3/d3-delaunay), [ngraph A*](https://github.com/anvaka/ngraph.path), [Tabler](https://github.com/tabler/tabler-icons), [dependency sources and replacement](vendor/README.md). No proprietary yFiles code is bundled.
 

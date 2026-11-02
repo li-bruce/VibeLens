@@ -6,6 +6,7 @@ from urllib.parse import quote
 from .contract import MANAGED, CONFIG_PATH, CATALOG_PATH, capture_spec
 from .protocol import operation_target_actions
 from .schema_compare import structure_differences
+from ..observation.lifecycle import data_lifecycle
 
 
 def resource_id(store, key):
@@ -286,6 +287,7 @@ def project_model(model, config, bundle):
                     ),
                 },
                 "capture": capture_spec(operation),
+                "lifecycle": data_lifecycle(operation["action"]),
             }
         )
         edge(operation["parent"], operation["id"], "contains")

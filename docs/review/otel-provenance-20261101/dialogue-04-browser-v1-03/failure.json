@@ -1,0 +1,112 @@
+{
+  "type": "TimeoutError",
+  "message": "Page.wait_for_function: Timeout 30000ms exceeded.",
+  "responses": [
+    {
+      "method": "POST",
+      "path": "/command/login",
+      "status": 303,
+      "trace_id": "a7f008f755c32132b438fef5a097e9ca"
+    },
+    {
+      "method": "POST",
+      "path": "/command/upload",
+      "status": 303,
+      "trace_id": "21c902db735d448c0b471ca41011dab0"
+    },
+    {
+      "method": "POST",
+      "path": "/command/login",
+      "status": 303,
+      "trace_id": "77dba122863b422637c46067af61baaa"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-286e5e3847b94162983b0dfd02b6aaf6/download",
+      "status": 403,
+      "trace_id": "fef906b3f1e2555e0290bd857d532a00"
+    },
+    {
+      "method": "POST",
+      "path": "/command/login",
+      "status": 303,
+      "trace_id": "1fc4fb742c8bc857b59b4ada6f061c6c"
+    },
+    {
+      "method": "POST",
+      "path": "/command/review",
+      "status": 303,
+      "trace_id": "beb0fe784cdc5585a96b754b68c3f703"
+    },
+    {
+      "method": "POST",
+      "path": "/command/share",
+      "status": 303,
+      "trace_id": "10e3c212cfcb0447271e89e1858ea493"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-286e5e3847b94162983b0dfd02b6aaf6/download",
+      "status": 403,
+      "trace_id": "a2a6efb45b704dd05815d6c3a273edff"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-286e5e3847b94162983b0dfd02b6aaf6/download",
+      "status": 200,
+      "trace_id": "8632b37f858a63033ca9ddbede4d0da0"
+    }
+  ],
+  "actions": [
+    {
+      "name": "login-member1",
+      "trace_id": "a7f008f755c32132b438fef5a097e9ca",
+      "external_parent_span": "ae3ec1cd9e14a908"
+    },
+    {
+      "name": "upload",
+      "trace_id": "21c902db735d448c0b471ca41011dab0",
+      "external_parent_span": "c8cf8c5ba658c110"
+    },
+    {
+      "name": "login-member2",
+      "trace_id": "77dba122863b422637c46067af61baaa",
+      "external_parent_span": "018d69b3e49c301b"
+    },
+    {
+      "name": "download-before-approval",
+      "trace_id": "fef906b3f1e2555e0290bd857d532a00",
+      "external_parent_span": "e39e216099da7982"
+    },
+    {
+      "name": "login-admin1",
+      "trace_id": "1fc4fb742c8bc857b59b4ada6f061c6c",
+      "external_parent_span": "839a755ead5115ea"
+    },
+    {
+      "name": "approve",
+      "trace_id": "beb0fe784cdc5585a96b754b68c3f703",
+      "external_parent_span": "1bd5988b2b5abdee"
+    },
+    {
+      "name": "share",
+      "trace_id": "10e3c212cfcb0447271e89e1858ea493",
+      "external_parent_span": "0d0a2f4056334a7a"
+    },
+    {
+      "name": "download-before-delivery",
+      "trace_id": "a2a6efb45b704dd05815d6c3a273edff",
+      "external_parent_span": "ef7d2b546f5c23e3"
+    },
+    {
+      "name": "download-active",
+      "trace_id": "8632b37f858a63033ca9ddbede4d0da0",
+      "external_parent_span": "c34ee12d3ec58ecd"
+    }
+  ],
+  "checks": [
+    "Real input, review/share waits, actual 403 responses and byte-identical authorized download",
+    "Recorded graph/Timeline share raw cursor and causal lifecycle intervals in 2D/3D"
+  ],
+  "page_errors": []
+}

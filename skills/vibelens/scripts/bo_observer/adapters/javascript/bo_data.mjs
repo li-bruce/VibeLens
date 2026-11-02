@@ -1,9 +1,11 @@
 /** Node database observations share BOProbe and never own database connection lifetimes. */
 import { AsyncLocalStorage } from "node:async_hooks";
 import { randomUUID } from "node:crypto";
-import { bo_selected } from "./bo_runtime.mjs";
+import { bo_selected, bo_use_context_store } from "./bo_runtime.mjs";
 
 const bo_context = new AsyncLocalStorage();
+// Share the probe's native invocation scope across adapters and concurrent requests.
+bo_use_context_store(new AsyncLocalStorage());
 
 /** Exclude observer metadata/transport work, including work resumed after await. */
 export function bo_internal(callback) {
@@ -83,7 +85,11 @@ export class BODataRuntime {
   bo_begin(node, options) {
     try {
       const operation = this.bo_operations.get(node);
-      const context = bo_context.getStore() || {};
+      const overrides = { ...bo_context.getStore(), ...options };
+      const context = this.bo_probe.bo_context_options?.(overrides) || {
+        ...this.bo_probe.bo_current_context?.(),
+        ...overrides,
+      };
       const targets = [...new Set(options.targets || [])]
         .filter((value) => typeof value === "string" && value.length <= 256)
         .slice(0, 64);
@@ -111,13 +117,17 @@ export class BODataRuntime {
           entity: options.entity ?? context.entity,
           attempt: options.attempt ?? context.attempt,
           scope: options.scope ?? context.scope,
-          parentCallId: options.parentCallId ?? context.parentCallId,
+          parentCallId: Object.hasOwn(options, "parentCallId")
+            ? options.parentCallId
+            : context.parentCallId,
+          parentEventId: context.parentEventId,
+          basis: options.basis ?? context.basis,
           depends: (options.depends || []).map((value) =>
             typeof value === "string" ? { event: value, type: "data" } : value,
           ),
         },
       };
-      this.bo_emit(call, "enter", { status: "started" });
+      call.entryId = this.bo_emit(call, "enter", { status: "started" });
       return call;
     } catch {
       this.bo_errors++;
@@ -139,15 +149,21 @@ export class BODataRuntime {
       const id = this.bo_probe.record(call.node, phase, () => ({ inputs: call.inputs, outputs }), {
         ...call.context,
         callId: call.callId,
+        ...(this.bo_probe.bo_boundary_events
+          ? { contextBoundary: phase === "enter" ? "start" : "end" }
+          : {}),
       });
       const state = this.bo_events.getStore();
       if (id && state) state.last = id;
+      return id;
     } catch {
       this.bo_errors++;
     }
   }
 
-  bo_summary(callback, value) {
+  bo_summary(callback, value, node = null) {
+    const selected = this.bo_probe.bo_capture_nodes;
+    if (node !== null && selected !== null && !selected.has(node)) return {};
     try {
       return callback ? bo_internal(() => callback(value)) : {};
     } catch {
@@ -156,10 +172,24 @@ export class BODataRuntime {
     }
   }
 
+  /** Run inside the actual native call without adding a second observation. */
+  bo_call(call, callback, awaited = false) {
+    const adopt = this.bo_probe[awaited ? "bo_call_context_async" : "bo_call_context"];
+    return call && adopt
+      ? adopt.call(
+          this.bo_probe,
+          call.node,
+          call.callId,
+          { ...call.context, entryId: call.entryId },
+          callback,
+        )
+      : callback();
+  }
+
   bo_finish(call, result, options) {
     if (!call) return;
     try {
-      const summary = this.bo_summary(options.summarize, result) || {};
+      const summary = this.bo_summary(options.summarize, result, call.node) || {};
       const outputs = { status: "returned", rows_known: false };
       if (Number.isSafeInteger(summary.rows) && summary.rows >= 0) {
         outputs.rows = summary.rows;
@@ -180,7 +210,7 @@ export class BODataRuntime {
   execute(node, callback, options = {}) {
     const call = this.bo_allowed(options.connection, node) ? this.bo_begin(node, options) : null;
     try {
-      const result = callback();
+      const result = this.bo_call(call, callback);
       this.bo_finish(call, result, options);
       return result;
     } catch (error) {
@@ -196,7 +226,7 @@ export class BODataRuntime {
   async executeAsync(node, callback, options = {}) {
     const call = this.bo_allowed(options.connection, node) ? this.bo_begin(node, options) : null;
     try {
-      const result = await callback();
+      const result = await this.bo_call(call, callback, true);
       this.bo_finish(call, result, options);
       return result;
     } catch (error) {
@@ -215,16 +245,19 @@ export class BODataRuntime {
       : null;
     const operation = this.bo_operations.get(node) || {};
     const before = call
-      ? this.bo_select(this.bo_summary(options.before, value), operation.before || {})
+      ? this.bo_select(this.bo_summary(options.before, value, node), operation.before || {})
       : {};
     const count = Array.isArray(value) ? value.length : null;
     try {
-      const result = callback(value);
+      const result = this.bo_call(call, () => callback(value));
       if (call) {
         const outputs = {
           status: "transformed",
           before,
-          result: this.bo_select(this.bo_summary(options.after, result), operation.after || {}),
+          result: this.bo_select(
+            this.bo_summary(options.after, result, node),
+            operation.after || {},
+          ),
         };
         if (count !== null) outputs.input_count = count;
         if (Array.isArray(result)) outputs.output_count = result.length;
@@ -253,40 +286,46 @@ export class BODataRuntime {
     let resource,
       began = false,
       committing = false;
-    try {
-      resource = await begin();
-      began = true;
-      const result = await bo_context.run(
-        { ...bo_context.getStore(), transactionId: call?.callId },
-        () => callback(resource),
-      );
-      committing = true;
-      await commit(resource);
-      this.bo_emit(call, "commit", { status: "committed", committed: true });
-      return result;
-    } catch (error) {
-      let rolledBack = false;
-      if (began) {
+    return await this.bo_call(
+      call,
+      async () => {
         try {
-          await rollback(resource);
-          rolledBack = true;
-        } catch {
-          // The application error remains authoritative; rollback outcome is evidence.
+          resource = await begin();
+          began = true;
+          const result = await bo_context.run(
+            { ...bo_context.getStore(), transactionId: call?.callId },
+            () => callback(resource),
+          );
+          committing = true;
+          await commit(resource);
+          this.bo_emit(call, "commit", { status: "committed", committed: true });
+          return result;
+        } catch (error) {
+          let rolledBack = false;
+          if (began) {
+            try {
+              await rollback(resource);
+              rolledBack = true;
+            } catch {
+              // The application error remains authoritative; rollback outcome is evidence.
+            }
+          }
+          this.bo_emit(call, "error", {
+            status: committing
+              ? "commit_failed"
+              : rolledBack
+                ? "rolled_back"
+                : began
+                  ? "rollback_failed"
+                  : "failed",
+            ...(committing ? {} : { committed: false }),
+            error_type: error?.constructor?.name || "Error",
+          });
+          throw error;
         }
-      }
-      this.bo_emit(call, "error", {
-        status: committing
-          ? "commit_failed"
-          : rolledBack
-            ? "rolled_back"
-            : began
-              ? "rollback_failed"
-              : "failed",
-        ...(committing ? {} : { committed: false }),
-        error_type: error?.constructor?.name || "Error",
-      });
-      throw error;
-    }
+      },
+      true,
+    );
   }
 }
 

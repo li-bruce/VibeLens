@@ -1,0 +1,372 @@
+{
+  "schema": "bo-iteration-recall/v1",
+  "candidate_id": "67f0f172aa590e3a113b2acbc8625fe98fbd9a764d6d84cc04988a6a3bbfece3",
+  "mode": "drive",
+  "active_change": {
+    "change": ".stategraph/http-entry-responses"
+  },
+  "request": "Complete actual frontend HTTP responses and source/API mappings using upstream Flask instrumentation; preserve native business and state rules.",
+  "changed_files": [
+    "Start-Local.ps1",
+    "Stop-Local.ps1",
+    "acceptance.json",
+    "app/web.py",
+    "bo_stategraph/project.json",
+    "bo_stategraph/telemetry.json",
+    "implementation.json",
+    "integrations/bo_integration.py",
+    "mapping.json",
+    "review/runtime-bindings.json",
+    "sync.json",
+    "tests/http_cases.py",
+    "tests/native_audit.py",
+    "tests/scenarios.py",
+    "tests/test_http_observation.py",
+    "tests/test_observation.py",
+    "tooling/bind_http_context.py",
+    "tooling/observe_complete.py",
+    "tooling/refine_model.py",
+    "tooling/verify.py",
+    "whitebox.json"
+  ],
+  "source_errors": [],
+  "verification": "not_run",
+  "unregistered_files": [],
+  "unclassified_functions": [],
+  "contracts": {
+    "model": "bo_stategraph/project.json",
+    "acceptance": "acceptance.json",
+    "whitebox": "whitebox.json",
+    "mapping_contract": "mapping.json",
+    "discovery": "discovery.json"
+  },
+  "observation_module": "bo_stategraph/__init__.py",
+  "observation_sources": [],
+  "naming": {
+    "wiring": "bo_",
+    "adapters": "BO"
+  },
+  "layers": {
+    "business": {
+      "nodes": 15,
+      "scan": "feature entrypoints and effects",
+      "observe": "actual invocation and selected result",
+      "affected_nodes": [
+        "workspace"
+      ]
+    },
+    "state": {
+      "nodes": 6,
+      "scan": "state declaration and value bindings",
+      "observe": "actual state changes and residence",
+      "affected_nodes": []
+    },
+    "rules": {
+      "nodes": 11,
+      "scan": "predicate sources, arguments and shared dependencies",
+      "observe": "evaluated/skipped conditions and actual enclosing invocation",
+      "affected_nodes": []
+    },
+    "api": {
+      "nodes": 0,
+      "scan": "registered routes and handlers",
+      "observe": "request boundary and actual response",
+      "affected_nodes": []
+    },
+    "execution": {
+      "nodes": 103,
+      "scan": "functions, parameters and explicit probes",
+      "observe": "call boundaries, selected values and actual nested parent identities",
+      "affected_nodes": [
+        "api_get",
+        "api_post",
+        "source:app/web.py::create_app",
+        "source:app/web.py::create_app.index",
+        "source:app/web.py::create_app.command",
+        "source:app/web.py::create_app.details",
+        "source:app/web.py::create_app.api_entry",
+        "source:app/web.py::create_app.domain_error",
+        "source:app/web.py::create_app.internal_error",
+        "source:app/web.py::create_app.headers",
+        "source:integrations/bo_integration.py::BOHTTPRouteFields",
+        "source:integrations/bo_integration.py::BOHTTPRouteFields.__init__",
+        "source:integrations/bo_integration.py::BOHTTPRouteFields.on_start",
+        "source:integrations/bo_integration.py::native_machine",
+        "source:integrations/bo_integration.py::BOIntegration",
+        "source:integrations/bo_integration.py::BOIntegration.bo_authentication_provenance",
+        "source:integrations/bo_integration.py::BOIntegration.bo_provenance",
+        "source:integrations/bo_integration.py::BOIntegration.bo_worker_provenance",
+        "source:integrations/bo_integration.py::BOIntegration.bo_completed_provenance",
+        "source:integrations/bo_integration.py::BOIntegration.bo_queue_metadata",
+        "source:integrations/bo_integration.py::BOIntegration.bo_receive_metadata",
+        "source:integrations/bo_integration.py::BOIntegration.__init__",
+        "source:integrations/bo_integration.py::BOIntegration.__init__.failing_sink",
+        "source:integrations/bo_integration.py::BOIntegration.span",
+        "source:integrations/bo_integration.py::BOIntegration.span.selected",
+        "source:integrations/bo_integration.py::BOIntegration.record",
+        "source:integrations/bo_integration.py::BOIntegration.health",
+        "source:integrations/bo_integration.py::BOIntegration.carrier",
+        "source:integrations/bo_integration.py::BOIntegration.receive",
+        "source:integrations/bo_integration.py::BOIntegration.policy",
+        "source:integrations/bo_integration.py::BOIntegration.state",
+        "source:integrations/bo_integration.py::BOIntegration.attach_flask",
+        "source:integrations/bo_integration.py::BOIntegration.execute",
+        "source:integrations/bo_integration.py::BOIntegration.transaction",
+        "source:integrations/bo_integration.py::BOIntegration.transform",
+        "source:integrations/bo_integration.py::BOIntegration.serve",
+        "source:integrations/bo_integration.py::BOIntegration.close",
+        "api_command",
+        "api_file_info",
+        "api_workspace"
+      ]
+    },
+    "operations": {
+      "nodes": 5,
+      "scan": "model exporters and data-access bindings",
+      "observe": "query, transform, transaction and enclosing native call identity",
+      "affected_nodes": []
+    },
+    "project": {
+      "nodes": 0,
+      "scan": "directories, files, imports and dependencies",
+      "observe": "source projection only",
+      "affected_nodes": []
+    },
+    "code": {
+      "nodes": 37,
+      "scan": "symbols, lexical owners, calls and source maps",
+      "observe": "explicitly mapped runtime evidence",
+      "affected_nodes": [
+        "code.16d005073b1c4710",
+        "code.9ebdbf4acd350e91",
+        "code.44d3b46f75e25b17"
+      ]
+    },
+    "data": {
+      "nodes": 57,
+      "scan": "ORM/ODM/schema metadata and relationships",
+      "observe": "operation-linked structural projection",
+      "affected_nodes": []
+    }
+  },
+  "plan": ".stategraph/observation-plan.json",
+  "telemetry": {
+    "backend": "opentelemetry",
+    "registration_file": "bo_stategraph/telemetry.json",
+    "nodes": [
+      "api_get",
+      "api_post",
+      "api_command",
+      "api_file_info",
+      "api_workspace"
+    ],
+    "preserve": [
+      "state declaration and native executor",
+      "source mappings and selected fields",
+      "trace propagation across async/job boundaries",
+      "observer exclusion and probe health",
+      "native principal/object facts and protected context comparisons"
+    ]
+  },
+  "context_mapping": [
+    {
+      "id": "native/login/sign_in/enter",
+      "case": "login",
+      "node": "sign_in",
+      "phase": "enter",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/login/sign_in/error",
+      "case": "login",
+      "node": "sign_in",
+      "phase": "error",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/login/sign_in/return",
+      "case": "login",
+      "node": "sign_in",
+      "phase": "return",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/login/db_read/enter",
+      "case": "login",
+      "node": "db_read",
+      "phase": "enter",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/login/db_read/return",
+      "case": "login",
+      "node": "db_read",
+      "phase": "return",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/approval/sign_in/enter",
+      "case": "approval",
+      "node": "sign_in",
+      "phase": "enter",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/approval/sign_in/return",
+      "case": "approval",
+      "node": "sign_in",
+      "phase": "return",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/approval/db_read/enter",
+      "case": "approval",
+      "node": "db_read",
+      "phase": "enter",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/approval/db_read/return",
+      "case": "approval",
+      "node": "db_read",
+      "phase": "return",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/approval/upload_file/enter",
+      "case": "approval",
+      "node": "upload_file",
+      "phase": "enter",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/approval/upload_file/change",
+      "case": "approval",
+      "node": "upload_file",
+      "phase": "change",
+      "mapped": [
+        "provenance"
+      ]
+    },
+    {
+      "id": "native/approval/upload_file/return",
+      "case": "approval",
+      "node": "upload_file",
+      "phase": "return",
+      "mapped": [
+        "provenance"
+      ]
+    }
+  ],
+  "context_mapping_count": 420,
+  "context_mapping_omitted": 408,
+  "requirements": [
+    {
+      "id": "R_LOGIN",
+      "text": "Only authenticated seeded members use file operations; no registration.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_ACCESS",
+      "text": "Uploader and administrators access file information and download in every file state; other members require an effective recipient grant.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_REVIEW",
+      "text": "Only administrators other than the uploader may review a pending file.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_ATOMIC",
+      "text": "The recipient message and corresponding review decision or recipient grant take effect in the same SQLite commit; failed delivery retains waiting and no premature effect.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_SHARE",
+      "text": "Only the uploader may share their effectively approved file with a designated colleague; recipients cannot reshare.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_MESSAGES",
+      "text": "Review messages go to the uploader, share messages to the designated recipient, and each account reads only its own messages.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_REJECT",
+      "text": "Retain rejected file bytes and rejection reason; no resubmission or preview.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_SEED",
+      "text": "Provide exactly two synthetic administrators and two synthetic ordinary members.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_BACKGROUND",
+      "text": "Run actual delayed background notification work; preserve pending jobs across restart and prevent duplicate effects.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_OBSERVE",
+      "text": "Maintain the business/state/rule/source graph and actual OTel login, review, share, waiting and delivery evidence independently of business execution.",
+      "status": "confirmed"
+    }
+  ],
+  "requirement_count": 10,
+  "intent": "intent.json",
+  "test_commands": [
+    [
+      "{python}",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ]
+  ],
+  "observations_command": [
+    "{python}",
+    "-B",
+    "-X",
+    "utf8",
+    "observe.py"
+  ],
+  "required_checks": {
+    "source_first_inventory": true,
+    "probe_health": true,
+    "invocation_closure": true,
+    "mapping_witnesses": true,
+    "reports": [
+      "mapping",
+      "state_rules",
+      "business",
+      "project_checks"
+    ]
+  },
+  "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results.",
+  "valid": true
+}

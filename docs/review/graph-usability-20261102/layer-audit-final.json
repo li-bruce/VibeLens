@@ -1,0 +1,108 @@
+{
+  "passed": true,
+  "layers": {
+    "business": {
+      "nodes": 17,
+      "events": 472,
+      "source_only": false
+    },
+    "state": {
+      "nodes": 7,
+      "events": 0,
+      "source_only": false
+    },
+    "rules": {
+      "nodes": 12,
+      "events": 5282,
+      "source_only": false
+    },
+    "api": {
+      "nodes": 5,
+      "events": 134,
+      "source_only": false
+    },
+    "execution": {
+      "nodes": 269,
+      "events": 3100,
+      "source_only": false
+    },
+    "operations": {
+      "nodes": 101,
+      "events": 6290,
+      "source_only": false
+    },
+    "project": {
+      "nodes": 108,
+      "events": 0,
+      "source_only": true
+    },
+    "code": {
+      "nodes": 458,
+      "events": 0,
+      "source_only": true
+    },
+    "data": {
+      "nodes": 57,
+      "events": 0,
+      "source_only": true
+    }
+  },
+  "api_runtime_nodes": [
+    "api_get",
+    "api_post",
+    "api_command",
+    "api_file_info",
+    "api_workspace"
+  ],
+  "state_evidence": {
+    "snapshot_frames": 11,
+    "observed_values": [
+      "active_share",
+      "approved",
+      "pending_review",
+      "review_notice_wait",
+      "revoked_share",
+      "share_notice_wait"
+    ],
+    "values_without_state_nodes": [],
+    "basis": "Exact native snapshots, rather than a second state-node probe."
+  },
+  "missing_source_files": [],
+  "state_instances": [
+    {
+      "snapshot_instance": "4fb4d315f5c94089a65db690bfbf1d50:file-da10b5090e0643e68e99346345463567",
+      "native_instance_id": "file-da10b5090e0643e68e99346345463567",
+      "attempt": "application",
+      "phase": "approved"
+    },
+    {
+      "snapshot_instance": "4fb4d315f5c94089a65db690bfbf1d50:share-8d57c56aea3c4c62ae8a42d278c457d8",
+      "native_instance_id": "share-8d57c56aea3c4c62ae8a42d278c457d8",
+      "attempt": "application",
+      "phase": "revoked_share"
+    },
+    {
+      "snapshot_instance": "4fb4d315f5c94089a65db690bfbf1d50:file-8efaa865079c4858a571886e0f204a37",
+      "native_instance_id": "file-8efaa865079c4858a571886e0f204a37",
+      "attempt": "application",
+      "phase": "approved"
+    },
+    {
+      "snapshot_instance": "4fb4d315f5c94089a65db690bfbf1d50:share-192958eff5374c07b4310738de568852",
+      "native_instance_id": "share-192958eff5374c07b4310738de568852",
+      "attempt": "application",
+      "phase": "revoked_share"
+    }
+  ],
+  "source_projection": {
+    "loaded_nodes": 400,
+    "total_nodes": 844,
+    "loaded_edges": 617,
+    "omitted_nodes": 444,
+    "omitted_edges": 1,
+    "boundary_nodes": 80,
+    "errors": [],
+    "revision": "6dbc452040ac514a79707dae635f71baa6903533c54934775551a62024b036e5"
+  },
+  "meaning": "Captured model plus explicitly bounded live source slice; structural layers do not fabricate runtime events."
+}

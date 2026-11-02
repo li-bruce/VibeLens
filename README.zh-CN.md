@@ -72,6 +72,8 @@ Skill 本身不是监听所有编辑器的后台程序。扫描发现变化后�
 
 ## 安装并开始
 
+本轮开发测试版使用 `feat/otel-provenance` 分支，见[测试版安装与使用](docs/releases/2026-11-02-test.md)。
+
 ```bash
 git clone https://github.com/li-bruce/VibeLens.git
 cd VibeLens

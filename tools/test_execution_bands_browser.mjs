@@ -1,0 +1,301 @@
+/** Native concurrent workers, real SQLite writes and actual canvas controls. */
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { createRequire } from "node:module";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+const { chromium } = createRequire(import.meta.url)("playwright");
+const out = path.resolve(process.env.BO_EXECUTION_EVIDENCE || ".validation/execution-bands");
+await mkdir(out, { recursive: true });
+const python =
+  process.env.BO_PYTHON || (process.platform === "win32" ? ".venv/Scripts/python.exe" : "python");
+const server = spawn(
+  python,
+  [
+    "-B",
+    "-X",
+    "utf8",
+    "-u",
+    "tools/execution_band_fixture.py",
+    "--serve",
+    path.join(out, "project"),
+  ],
+  { stdio: ["ignore", "pipe", "pipe"] },
+);
+let stdout = "",
+  stderr = "",
+  browser,
+  page,
+  ready;
+server.stdout.on("data", (value) => {
+  stdout += value;
+});
+server.stderr.on("data", (value) => {
+  stderr += value;
+});
+const checks = [],
+  errors = [];
+const midSpan = process.env.BO_EXECUTION_MIDSPAN === "1";
+try {
+  ready = await new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(Error("Worker startup timeout: " + stderr)), 20000);
+    const inspect = () => {
+      const line = stdout.split(/\r?\n/).find((value) => value.startsWith('{"observer"'));
+      if (line) {
+        clearTimeout(timer);
+        resolve(JSON.parse(line));
+      }
+    };
+    server.stdout.on("data", inspect);
+    inspect();
+    server.once("exit", (code) => {
+      clearTimeout(timer);
+      reject(Error(`Worker exited ${code}: ${stderr}`));
+    });
+  });
+  browser = await chromium.launch({
+    headless: true,
+    executablePath: process.env.BO_BROWSER_EXECUTABLE,
+  });
+  page = await browser.newPage({ viewport: { width: 1540, height: 1100 } });
+  page.on("pageerror", (error) => errors.push(String(error.stack)));
+  await page.goto(ready.observer + "/graph?lang=en");
+  await page.waitForFunction(() => window.graphDebug?.graph);
+  await page.selectOption(".trace-scope", "all");
+  if (!midSpan) await page.click("#record-start");
+  await Promise.all(
+    ["alice", "bob"].map(async (actor) =>
+      assert.ok((await page.request.post(`${ready.application}/begin?actor=${actor}`)).ok()),
+    ),
+  );
+  await page.waitForFunction(
+    () =>
+      graphDebug.timeline?.groups === 2 &&
+      graphDebug.timeline.lifecycles.filter((slice) => slice.node === "advance" && slice.unfinished)
+        .length === 2,
+  );
+  if (midSpan) {
+    await page.click("#record-start");
+    await page.waitForFunction(
+      () => graphDebug.timeline?.source === "recording" && graphDebug.timeline.groups === 2,
+    );
+  }
+  await page.click(".trace-maximize");
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 10);
+  await page.screenshot({ path: path.join(out, "concurrent-wait.png") });
+  let trace = await page.evaluate(() => graphDebug.timeline);
+  assert.deepEqual(
+    trace.rows.map((row) => row.layer),
+    [
+      "business",
+      "state",
+      "rules",
+      "execution",
+      "project",
+      "business",
+      "state",
+      "rules",
+      "execution",
+      "project",
+    ],
+  );
+  assert.equal(trace.executions.length, 2);
+  assert.ok(
+    trace.lifecycles.filter((slice) => slice.node === "advance").every((slice) => slice.unfinished),
+  );
+  checks.push("two real users wait in two complete five-layer bands including file projections");
+  const canvas = page.locator("#recording-timeline canvas");
+  const box = await canvas.boundingBox();
+  await page.mouse.click(box.x + 50, box.y + trace.geometry.top + 14);
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 6);
+  assert.equal((await page.evaluate(() => graphDebug.timeline.rows))[0].layer, "business");
+  await page.screenshot({ path: path.join(out, "one-group-collapsed.png") });
+  await page.mouse.click(box.x + 50, box.y + trace.geometry.top + 14);
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 10);
+  await page.click(".trace-tracks");
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 2);
+  assert.ok(
+    (await page.evaluate(() => graphDebug.timeline.rows)).every((row) => row.layer === "business"),
+  );
+  await page.click(".trace-tracks");
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 10);
+  checks.push("independent collapse and all-group collapse retain only business rows");
+  await page.request.post(ready.application + "/release");
+  let completed = false;
+  for (let i = 0; i < 60; i++) {
+    const status = await (await page.request.get(ready.application)).json();
+    if (
+      status.results.alice === "done" &&
+      status.results.bob === "done" &&
+      status.health.pending === 0
+    ) {
+      completed = true;
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  assert.ok(completed, "Concurrent workers complete through the actual HTTP interface");
+  const actual = await (await page.request.get(ready.application)).json();
+  await writeFile(path.join(out, "actual-status.json"), JSON.stringify(actual, null, 2));
+  assert.deepEqual(actual.recipients, ["alice", "bob"]);
+  assert.equal(actual.health.errors, 0);
+  assert.ok(actual.closure.valid, JSON.stringify(actual.closure));
+  await page.click("#record-stop");
+  await page.waitForFunction(() => graphDebug.timeline?.source === "saved");
+  await page.selectOption("#replay-grain", "events");
+  await page.click(".trace-fit");
+  await page.waitForFunction(
+    () =>
+      !graphDebug.timeline.zooming &&
+      graphDebug.timeline.routes.some((route) => route.route.length === 21),
+  );
+  trace = await page.evaluate(() => graphDebug.timeline);
+  assert.equal(trace.groups, 2);
+  assert.ok(
+    trace.lifecycles
+      .filter((slice) => slice.node === "advance")
+      .every((slice) => !slice.unfinished && slice.duration > 100),
+  );
+  assert.ok(
+    trace.routes.some((route) => route.type === "control" && route.fromRow === route.toRow),
+  );
+  assert.ok(
+    trace.routes.some((route) => trace.rows[route.fromRow].group !== trace.rows[route.toRow].group),
+  );
+  const recordingId = await page.locator("#record-list").inputValue();
+  const recording = await (
+    await page.request.get(ready.observer + "/api/recordings/" + recordingId)
+  ).json();
+  await writeFile(path.join(out, "actual-recording.json"), JSON.stringify(recording, null, 2));
+  const points = recording.events.filter((event) => event.node === "rule_fact");
+  assert.equal(points.length, midSpan ? 2 : 4);
+  assert.ok(
+    points.every(
+      (point) => point.entity === "file-1" && point.parent_event_id && point.parent_call_id,
+    ),
+  );
+  assert.equal(trace.invocationGroups, 2);
+  assert.equal(trace.unassignedObservations, 0);
+  assert.ok(trace.routes.some((route) => route.type === "observation"));
+  checks.push(
+    "explicit file-scoped rule facts retain actual parent entries and introduce no extra execution bands",
+  );
+  await page.screenshot({ path: path.join(out, "completed-links.png") });
+  checks.push(
+    "real transaction release/acquire dependency curves across bands; both call lifetimes close",
+  );
+  await page.click(".trace-maximize");
+  await page.locator('#semantic [data-node-id="advance"]').evaluate((element) => element.click());
+  await page.click("#selection-menu");
+  await page.click("#node-expand");
+  await page.waitForFunction(() => !graphDebug.layoutBusy && graphDebug.planarPorts.length > 0);
+  for (const mode of ["2D", "3D"]) {
+    if ((await page.locator("#layered-toggle").innerText()) !== mode)
+      await page.click("#layered-toggle");
+    for (const style of ["straight", "curve", "orthogonal", "bus"]) {
+      const previousFrame = await page.evaluate(
+        (mode) => (mode === "3D" ? graphDebug.spatial?.frames || 0 : graphDebug.metrics.drawCount),
+        mode,
+      );
+      await page.selectOption("#edge-routing", style);
+      await page.waitForFunction(
+        ({ mode, style, previousFrame }) =>
+          !graphDebug.layoutBusy &&
+          (mode === "3D"
+            ? graphDebug.spatial?.routing === style &&
+              graphDebug.spatial.frames > previousFrame &&
+              graphDebug.spatial.edgePorts.length > 0
+            : graphDebug.metrics.drawCount > previousFrame && graphDebug.planarPorts.length > 0),
+        { mode, style, previousFrame },
+      );
+      const anchors = await page.evaluate((mode) => {
+        const g = graphDebug,
+          paths = mode === "3D" ? g.spatial.edgePorts : g.planarPorts;
+        return g.presentation.edges.flatMap((edge) => {
+          const route = paths.find((path) => path.id === edge.id);
+          if (!route) return [];
+          return [
+            [edge.from, edge.sourceRegion, route.start],
+            [edge.to, edge.targetRegion, route.end],
+          ].flatMap(([id, region, port]) => {
+            if (region) return [];
+            const box = g.graph.byId.get(id),
+              position =
+                mode === "3D" ? g.spatialPositions[id] : { x: box.x + box.w / 2, y: box.y + 31 };
+            return [
+              {
+                id,
+                error: Math.hypot(
+                  port.x - position.x,
+                  port.y - position.y,
+                  mode === "3D" ? port.z - position.z : 0,
+                ),
+              },
+            ];
+          });
+        });
+      }, mode);
+      assert.ok(anchors.length > 0, `${mode} ${style} exercises actual rendered paths`);
+      assert.ok(
+        anchors.every((anchor) => anchor.error < 1e-5),
+        JSON.stringify({ mode, style, anchors }),
+      );
+    }
+    await page.screenshot({ path: path.join(out, `timeline-${mode.toLowerCase()}.png`) });
+  }
+  checks.push("all four real routed styles use icon centres in 2D and 3D");
+  await page.selectOption(".trace-depth", "rules");
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 6);
+  await page.click(".trace-single");
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 2);
+  assert.ok(
+    (await page.evaluate(() => graphDebug.timeline.rows)).every((row) => row.layer === "rules"),
+  );
+  await page.selectOption(".trace-depth", "all");
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 10);
+  const later = await (await page.request.get(ready.application)).json();
+  assert.equal(later.events, actual.events, "observation controls create zero business events");
+  assert.deepEqual(
+    await (await page.request.get(ready.observer + "/api/recordings/" + recordingId)).json(),
+    recording,
+  );
+  checks.push("layer depth and single-layer controls preserve native events and recording bytes");
+  assert.deepEqual(errors, []);
+  await writeFile(
+    path.join(out, "result.json"),
+    JSON.stringify({ passed: true, checks, actual, trace, errors }, null, 2),
+  );
+  console.log(
+    JSON.stringify({
+      passed: true,
+      checks: checks.length,
+      events: recording.events.length,
+      groups: 2,
+      layerRows: 10,
+    }),
+  );
+} catch (error) {
+  await page?.screenshot({ path: path.join(out, "failure.png") }).catch(() => {});
+  const diagnostic = await page
+    ?.evaluate(() => ({
+      metrics: window.graphDebug?.metrics,
+      presentation: window.graphDebug?.presentation?.edges,
+      planar: window.graphDebug?.planarPorts,
+      spatial: window.graphDebug?.spatial,
+      timeline: window.graphDebug?.timeline,
+    }))
+    .catch(() => null);
+  await writeFile(
+    path.join(out, "result.json"),
+    JSON.stringify(
+      { passed: false, checks, error: String(error.stack), errors, stdout, stderr, diagnostic },
+      null,
+      2,
+    ),
+  );
+  throw error;
+} finally {
+  if (ready) await page?.request.post(ready.application + "/stop").catch(() => {});
+  await browser?.close();
+  if (server.exitCode === null) server.kill();
+}

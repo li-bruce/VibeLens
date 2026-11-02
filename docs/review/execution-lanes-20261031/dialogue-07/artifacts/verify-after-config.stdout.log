@@ -1,0 +1,191 @@
+{
+  "valid": true,
+  "errors": [],
+  "candidate_id": "959dc6fe278fa4ff9a2655756825ea2d7138a5e85bd4554e5f4a483fd55f04bd",
+  "reports": {
+    "mapping": {
+      "status": "passed",
+      "errors": [],
+      "database": {
+        "configured": true,
+        "valid": true,
+        "errors": [],
+        "changed": false,
+        "source_id": "766dbf973497ede6a5484df87c0a8b3364eeb2e3d55a2a15b61518c3b00e3f38",
+        "catalog_id": "c46f16079816cc15c8a231f8988cc3d9e194979c0d8c35d4a7591b0e7c2caa6c",
+        "stores": [
+          {
+            "id": "team_files",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "code_structure": {
+        "enabled": true,
+        "valid": true,
+        "errors": [],
+        "status": "passed",
+        "revision": "812c177c4c834d76a30719606579f763f99ec30a992fd6d2939fae52fa87c0e5",
+        "nodes": 587,
+        "edges": 724
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+      "producer_health": {
+        "valid": true,
+        "checked_runs": 4,
+        "required": true,
+        "errors": []
+      },
+      "invocation_closure": {
+        "valid": true,
+        "closed_calls": 591,
+        "legacy_events": 0,
+        "errors": []
+      },
+      "layers": {
+        "business": {
+          "declared_nodes": 9,
+          "direct_observations": [
+            "access_file",
+            "http_request",
+            "list_files",
+            "list_users",
+            "review_file",
+            "share_file",
+            "sign_in",
+            "sign_out",
+            "upload_file"
+          ],
+          "required_cases": 19,
+          "basis": "actual invocation and selected result"
+        },
+        "state": {
+          "declared_nodes": 4,
+          "direct_observations": [],
+          "required_cases": 0,
+          "basis": "actual state changes and residence"
+        },
+        "rules": {
+          "declared_nodes": 13,
+          "direct_observations": [
+            "authorize_file",
+            "policy:access_allowed",
+            "policy:actor_is_recipient",
+            "policy:actor_is_reviewer",
+            "policy:actor_is_uploader",
+            "policy:file_access_basis",
+            "policy:recipient_access",
+            "policy:review_allowed",
+            "policy:reviewer_is_other",
+            "policy:reviewer_is_uploader",
+            "policy:share_allowed",
+            "policy:upload_allowed"
+          ],
+          "required_cases": 12,
+          "basis": "evaluated/skipped conditions and actual enclosing invocation"
+        },
+        "api": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "basis": "request boundary and actual response"
+        },
+        "execution": {
+          "declared_nodes": 43,
+          "direct_observations": [
+            "policy:actor",
+            "policy:approved",
+            "policy:logged_in",
+            "policy:recipient",
+            "policy:reviewer",
+            "policy:reviewer_exists",
+            "policy:shared",
+            "policy:uploader",
+            "state_transition"
+          ],
+          "required_cases": 10,
+          "basis": "call boundaries, selected values and actual nested parent identities"
+        },
+        "operations": {
+          "declared_nodes": 7,
+          "direct_observations": [
+            "db_candidates",
+            "db_file",
+            "db_insert",
+            "db_metadata",
+            "db_transaction",
+            "db_update",
+            "db_users"
+          ],
+          "required_cases": 7,
+          "basis": "query, transform, transaction and enclosing native call identity"
+        },
+        "project": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "basis": "source projection only"
+        },
+        "code": {
+          "declared_nodes": 19,
+          "direct_observations": [],
+          "required_cases": 0,
+          "basis": "explicitly mapped runtime evidence"
+        },
+        "data": {
+          "declared_nodes": 16,
+          "direct_observations": [],
+          "required_cases": 0,
+          "basis": "operation-linked structural projection"
+        }
+      },
+      "policy": {
+        "valid": true,
+        "errors": []
+      },
+      "stategraph_export": "checked",
+      "witnesses": 12,
+      "projection_checks": 75,
+      "implementation": {
+        "errors": [],
+        "events_checked": 512,
+        "features": 18
+      }
+    },
+    "state_rules": {
+      "status": "passed",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "passed",
+      "errors": [],
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "passed",
+      "errors": [],
+      "assertions": {
+        "required": 12,
+        "executed": 12
+      },
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    }
+  },
+  "review_hash": "af0384a7c80899bdde17efc3e570d6c124be9cb3067c022dda343b83bf8d8fc9",
+  "observations_hash": "2460d535d2ad7b0d04824e02736b843de1f711ea6bbacdd4e67391b6dd98ea39",
+  "tests": [
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "tooling/test_business.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "checked_at": "2026-10-31T16:24:46.297959+00:00",
+  "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+}

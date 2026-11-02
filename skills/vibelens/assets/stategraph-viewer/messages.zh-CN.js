@@ -1,5 +1,9 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "Workflow": "业务实例",
+  "Trace": "执行链",
+  "Span": "调用",
+  "Exception": "异常",
   "AI names": "易懂名称",
   "Use concise AI explanations": "用简短说明解释节点、关系和状态",
   "Timeline": "时间轴",
@@ -577,4 +581,9 @@ export default {
   "Equivalent representation": "等价表达",
   "Live inspection limit reached; start a recording for a new interval.":
     "实时查看已达上限，可开始录制新的区间",
+  "Expand execution groups": "展开执行组",
+  "Collapse execution groups": "收起执行组",
+  "Unassigned observations": "归属待确认",
+  "Observed in": "观测所在调用",
+  "Execution boundary": "执行边界",
 };

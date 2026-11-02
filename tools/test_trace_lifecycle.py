@@ -332,7 +332,8 @@ class LifecycleTests(unittest.TestCase):
                     probe.close()
 
 
-def serve(root, registered=False):
+def serve(root, registered=False, telemetry=False):
+    """Run the same real SQLite operation with native or standard tracing context."""
     project = prepare(root, registered=registered)
     session = GraphSession(root)
     probe = BOProbe(
@@ -341,6 +342,13 @@ def serve(root, registered=False):
         capacity=256,
         sink=lambda body, kind: session.event(body) if kind == "events" else session.snapshot(body),
     )
+    provider = None
+    if telemetry:
+        from opentelemetry.sdk.trace import TracerProvider
+        from bo_observer.adapters.python.bo_otel import BOOpenTelemetry
+
+        provider = TracerProvider()
+        probe.bo_bind_tracing(BOOpenTelemetry(provider.get_tracer("vibelens.browser")))
     gate = threading.Event()
     engine = BOExecutor(
         project["model"]["machine"], {"available": lambda context, payload: context["slots"] > 0}
@@ -439,6 +447,8 @@ def serve(root, registered=False):
     finally:
         business.shutdown()
         probe.close()
+        if provider:
+            provider.shutdown()
         session.close()
 
 
@@ -446,8 +456,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--serve", type=Path)
     parser.add_argument("--registered", action="store_true")
+    parser.add_argument("--telemetry", action="store_true")
     options, rest = parser.parse_known_args()
     if options.serve:
-        serve(options.serve.absolute(), registered=options.registered)
+        serve(options.serve.absolute(), registered=options.registered, telemetry=options.telemetry)
     else:
         unittest.main(argv=[sys.argv[0], *rest])

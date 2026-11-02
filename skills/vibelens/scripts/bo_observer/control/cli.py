@@ -61,7 +61,7 @@ def main(argv=None):
             if not args.url:
                 raise ValueError("Activation requires the verified observer URL")
             base = local_url(args.url)
-            view = get(base, "/api/view")
+            view = get(base, "/api/vibelens/control/context")
             known = set()
             if view.get("stage") == "design":
                 from ..web.bo_design import BODesign
@@ -120,7 +120,7 @@ def main(argv=None):
             else:
                 base = local_url(args.url) if args.url else None
                 view = (
-                    get(base, "/api/view")
+                    get(base, "/api/vibelens/control/context")
                     if base
                     else read(args.snapshot) if args.snapshot else None
                 )

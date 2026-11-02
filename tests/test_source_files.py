@@ -6,6 +6,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from contextvars import ContextVar
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "skills/vibelens/scripts"))
@@ -43,6 +45,42 @@ class SourceFileTests(unittest.TestCase):
         for value in [str(self.file.resolve()), "../source.py", "app/../source.py"]:
             with self.assertRaisesRegex(ValueError, "contained relative"):
                 reader.read(value)
+
+    def extra_sources(self):
+        names = ["app/service.py"]
+        for index in range(7):
+            name = f"app/extra{index}.py"
+            (self.root / name).write_bytes(b"value = 1\n")
+            names.append(name)
+        return names
+
+    def test_group_rereads_every_byte_even_when_size_and_timestamp_match(self):
+        names = self.extra_sources()
+        reader = SourceFiles(self.root)
+        initial = self.file.stat()
+        self.assertTrue(all(value == b"value = 1\n" for value in reader.read_all(names).values()))
+        self.file.write_bytes(b"value = 2\n")
+        os.utime(self.file, ns=(initial.st_atime_ns, initial.st_mtime_ns))
+        self.assertEqual(reader.read_all(names)["app/service.py"], b"value = 2\n")
+
+    def test_group_preserves_observer_context_and_path_rejections(self):
+        names = self.extra_sources()
+        reader = SourceFiles(self.root)
+        scope = ContextVar("test_source_observer_scope", default=False)
+        original = reader.read
+
+        def observe(name):
+            self.assertTrue(scope.get(), "Source I/O lost its observer exclusion context")
+            return original(name)
+
+        token = scope.set(True)
+        try:
+            with patch.object(reader, "read", side_effect=observe):
+                self.assertEqual(set(reader.read_all(names)), set(names))
+                with self.assertRaisesRegex(ValueError, "contained relative"):
+                    reader.read_all([*names, "../outside.py"])
+        finally:
+            scope.reset(token)
 
     def directory_link(self, link, target):
         if os.name == "nt":

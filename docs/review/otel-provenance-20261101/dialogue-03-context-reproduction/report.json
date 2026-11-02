@@ -1,0 +1,103 @@
+{
+  "kind": "public-context-selector-gap",
+  "case": "two_reviewers",
+  "node": "review_file",
+  "phase": "enter",
+  "full_raw_events": 93,
+  "context_only_events": 0,
+  "native_per_invocation_matches": [
+    {
+      "native_username": "admin1",
+      "native_actor": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "native_status": 403,
+      "native_sdk": {
+        "trace_id": "b4b31b1374b5f22442982b7842cce010",
+        "span_id": "5d4f80002b3acc9c"
+      },
+      "actual_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:42",
+      "recorded_actor": {
+        "id": "admin-1",
+        "kind": "user"
+      }
+    },
+    {
+      "native_username": "admin2",
+      "native_actor": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "native_status": 200,
+      "native_sdk": {
+        "trace_id": "30e6a102098b9fcadaba872bc48e6e07",
+        "span_id": "d9a9b4c971090621"
+      },
+      "actual_event_id": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+      "recorded_actor": {
+        "id": "admin-2",
+        "kind": "user"
+      }
+    }
+  ],
+  "canonical_result": {
+    "valid": false,
+    "checks": 4,
+    "errors": [
+      {
+        "check": "reviewer-1",
+        "case": "two_reviewers",
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+        "error": "observed context differs from native implementation",
+        "actual": {
+          "id": "admin-1",
+          "kind": "user"
+        },
+        "mapped": {
+          "id": "admin-2",
+          "kind": "user"
+        },
+        "source": "Native Flask session before the HTTP review, independently read user row and SDK SpanContext at invocation entry."
+      },
+      {
+        "check": "reviewer-2",
+        "case": "two_reviewers",
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:42",
+        "error": "observed context differs from native implementation",
+        "actual": {
+          "id": "admin-2",
+          "kind": "user"
+        },
+        "mapped": {
+          "id": "admin-1",
+          "kind": "user"
+        },
+        "source": "Native Flask session before the HTTP review, independently read user row and SDK SpanContext at invocation entry."
+      }
+    ]
+  },
+  "probe_health": {
+    "enabled": true,
+    "boundary_context": true,
+    "run_id": "e0f17e9e49bb4c938793006ef92d2d07",
+    "producer_id": "1a40044bc304449b97ed9793cd939c7e",
+    "enqueued": 93,
+    "pending": 0,
+    "errors": 0,
+    "dropped": 0,
+    "filtered": 0,
+    "last_error": null,
+    "tracing": {
+      "backend": "opentelemetry",
+      "open_spans": 0,
+      "automatic_open": 0,
+      "automatic_errors": 0,
+      "ignored": 0,
+      "external_build_contexts": 0
+    },
+    "data_errors": 0
+  },
+  "required_binding": "Select each event by its independently read native trace_id and span_id, or another native invocation key; bind that selected event to the corresponding native request fact within the same case.",
+  "acceptance": "This is a minimal public-checker reproduction, not complete application acceptance. No validator, raw event or protected project plan was changed."
+}

@@ -12,6 +12,7 @@ AI maintains this contract. Configure `mapping_contract: "mapping.json"` and `re
 | actual_id | Stable actual instance identity path, e.g. `["id"]` |
 | fields | Unique id, real graph node, actual-value path, mapped path under observed projection |
 | export | Required public-export case and mode |
+| context_fields | Optional event metadata checks: unique id, case, node, phase, native actual path, mapped trace/provenance path, and native source |
 
 Compare at least state, complete revision, build_id, and every declared context field per instance. With activities, compare the complete configuration. A wrapped configuration may specify reviewed keys; the actual configuration must contain exactly those keys, including updates for new fields. Compare actual/projected lists even with zero instances.
 
@@ -37,7 +38,17 @@ payload["mapping_checks"] = [
 
 Each run still supplies its actual `projection`, `authority_snapshot`, events and producer health. A top-level witness does not replace the protected per-instance projection checks.
 
-The checker reads mapped values from the delivered projection and compares required cases, instances, revisions, builds, fields, and public export. Existing mapping_checks and business assertions remain; reports separate witnesses from projection_checks.
+When events record `provenance`, protect native comparisons in `context_fields`
+for each exercised case, node and phase. Compare the complete `actor`,
+`workflow_id` and `objects` components that are present, or the complete
+`provenance` object. Each row's `actual` path starts at that scenario run;
+`mapped` starts at the matching raw event. Read actual values from native
+authentication, storage, job or SDK facts. Observation events and projections
+cannot supply the independent side. If repeated invocations have different
+values, use separate native scenario runs. Missing metadata differs from an
+explicitly observed null. See [standard tracing](telemetry.md) for a row example.
+
+The checker reads mapped values from the delivered projection and compares required cases, instances, revisions, builds, fields, and public export. Existing mapping_checks and business assertions remain; reports separate witnesses, projection_checks and context_checks.
 
 The contract participates in candidate fingerprints and baselines. Add coverage freely; removing cases/fields or changing old bindings blocks delivery. Technical migrations preserve old bindings, add new ones, and verify migration rather than resetting begin. source_moves does not automatically rewrite this contract.
 

@@ -1,0 +1,1017 @@
+{
+  "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+  "native_response": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": "265",
+      "Vary": "Cookie"
+    },
+    "body": "<!doctype html>\n<html lang=en>\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>\n"
+  },
+  "native_exception_types": [
+    "OperationalError"
+  ],
+  "native_file_after": {
+    "state": "pending",
+    "revision": 1
+  },
+  "native_journal_rows": [],
+  "events": [
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 1,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:1",
+      "node": "api:entry",
+      "phase": "enter",
+      "entity": "application",
+      "attempt": "application",
+      "scope": "application",
+      "basis": {},
+      "call_id": "d512ea81b2ee0202",
+      "parent_call_id": null,
+      "parent_event_id": null,
+      "inputs": {
+        "route": "/api/<operation>",
+        "method": "POST"
+      },
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.068514+00:00",
+      "lifecycle": "span",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "d512ea81b2ee0202",
+        "trace_flags": 3,
+        "parent_span_id": null,
+        "tracestate": "",
+        "links": []
+      },
+      "source_seq": 1,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 2,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:2",
+      "node": "review_file",
+      "phase": "enter",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "8cd15aaf67dc4d79ac031d66723d5db9",
+      "parent_call_id": "d512ea81b2ee0202",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:1",
+      "inputs": {
+        "file_id": "02b66a4b0b0c447b9605457fb9630d71",
+        "verdict": "approve",
+        "reason": "",
+        "actor_id": "admin1"
+      },
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.069671+00:00",
+      "lifecycle": "span",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "e8a7e3fda0ab7cb2",
+        "trace_flags": 3,
+        "parent_span_id": "d512ea81b2ee0202",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 2,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 3,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "node": "db_review_tx",
+      "phase": "enter",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_call_id": "8cd15aaf67dc4d79ac031d66723d5db9",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:2",
+      "inputs": {
+        "operation": "transaction",
+        "statement": "transaction",
+        "parameters": {}
+      },
+      "outputs": {
+        "status": "started",
+        "duration_ms": 0.005,
+        "targets": [],
+        "unknown_targets": [],
+        "target_source": "not_applicable",
+        "target_access": []
+      },
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.069917+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 3,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 4,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:4",
+      "node": "policy:fact_logged_in",
+      "phase": "decision",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "83c03ef7e9534173aa2a91c46125e2ac:fact_logged_in",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "bo_check": "83c03ef7e9534173aa2a91c46125e2ac",
+        "bo_basis": "4c15d8ccd0654282bf2d87243f158d46"
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.103549+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 4,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 5,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:5",
+      "node": "policy:signed_in",
+      "phase": "decision",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "83c03ef7e9534173aa2a91c46125e2ac:signed_in",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "bo_check": "83c03ef7e9534173aa2a91c46125e2ac",
+        "bo_basis": "4c15d8ccd0654282bf2d87243f158d46",
+        "value": true
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "depends": [
+        {
+          "event": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:4",
+          "type": "data"
+        }
+      ],
+      "observed_at": "2026-11-01T01:28:48.103638+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 5,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 6,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:6",
+      "node": "policy:fact_is_administrator",
+      "phase": "decision",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "83c03ef7e9534173aa2a91c46125e2ac:fact_is_administrator",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "bo_check": "83c03ef7e9534173aa2a91c46125e2ac",
+        "bo_basis": "4c15d8ccd0654282bf2d87243f158d46"
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.103706+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 6,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 7,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:7",
+      "node": "policy:administrator",
+      "phase": "decision",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "83c03ef7e9534173aa2a91c46125e2ac:administrator",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "bo_check": "83c03ef7e9534173aa2a91c46125e2ac",
+        "bo_basis": "4c15d8ccd0654282bf2d87243f158d46",
+        "value": true
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "depends": [
+        {
+          "event": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:6",
+          "type": "data"
+        }
+      ],
+      "observed_at": "2026-11-01T01:28:48.103770+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 7,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 8,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:8",
+      "node": "policy:fact_actor",
+      "phase": "decision",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "83c03ef7e9534173aa2a91c46125e2ac:fact_actor",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "bo_check": "83c03ef7e9534173aa2a91c46125e2ac",
+        "bo_basis": "4c15d8ccd0654282bf2d87243f158d46"
+      },
+      "outputs": {
+        "value": "admin1",
+        "status": "completed"
+      },
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.103830+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 8,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 9,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:9",
+      "node": "policy:fact_owner",
+      "phase": "decision",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "83c03ef7e9534173aa2a91c46125e2ac:fact_owner",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "bo_check": "83c03ef7e9534173aa2a91c46125e2ac",
+        "bo_basis": "4c15d8ccd0654282bf2d87243f158d46"
+      },
+      "outputs": {
+        "value": "member1",
+        "status": "completed"
+      },
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.103887+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 9,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 10,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:10",
+      "node": "policy:is_owner",
+      "phase": "decision",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "83c03ef7e9534173aa2a91c46125e2ac:is_owner",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "bo_check": "83c03ef7e9534173aa2a91c46125e2ac",
+        "bo_basis": "4c15d8ccd0654282bf2d87243f158d46",
+        "left": "admin1",
+        "right": "member1"
+      },
+      "outputs": {
+        "value": false,
+        "status": "completed"
+      },
+      "depends": [
+        {
+          "event": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:8",
+          "type": "data"
+        },
+        {
+          "event": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:9",
+          "type": "data"
+        }
+      ],
+      "observed_at": "2026-11-01T01:28:48.103943+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 10,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 11,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:11",
+      "node": "policy:not_owner",
+      "phase": "decision",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "83c03ef7e9534173aa2a91c46125e2ac:not_owner",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "bo_check": "83c03ef7e9534173aa2a91c46125e2ac",
+        "bo_basis": "4c15d8ccd0654282bf2d87243f158d46"
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "depends": [
+        {
+          "event": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:10",
+          "type": "data"
+        }
+      ],
+      "observed_at": "2026-11-01T01:28:48.103999+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 11,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 12,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:12",
+      "node": "policy:review_allowed",
+      "phase": "decision",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "83c03ef7e9534173aa2a91c46125e2ac:review_allowed",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "bo_check": "83c03ef7e9534173aa2a91c46125e2ac",
+        "bo_basis": "4c15d8ccd0654282bf2d87243f158d46"
+      },
+      "outputs": {
+        "value": true,
+        "status": "completed"
+      },
+      "depends": [
+        {
+          "event": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:5",
+          "type": "data"
+        },
+        {
+          "event": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:7",
+          "type": "data"
+        },
+        {
+          "event": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:11",
+          "type": "data"
+        }
+      ],
+      "observed_at": "2026-11-01T01:28:48.104054+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 12,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 13,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:13",
+      "node": "review_notice",
+      "phase": "enter",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "674a30eb84ca4af6957841ceae459211",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {
+        "file_id": "02b66a4b0b0c447b9605457fb9630d71",
+        "recipient_id": "member1"
+      },
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.105621+00:00",
+      "lifecycle": "span",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "002461fb3d3e90d8",
+        "trace_flags": 3,
+        "parent_span_id": "1271c389ea0d6851",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          },
+          {
+            "type": "User",
+            "id": "member1",
+            "role": "recipient"
+          }
+        ]
+      },
+      "source_seq": 13,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 14,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:14",
+      "node": "review_notice",
+      "phase": "error",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "674a30eb84ca4af6957841ceae459211",
+      "parent_call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:3",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.106439+00:00",
+      "lifecycle": "span",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "002461fb3d3e90d8",
+        "trace_flags": 3,
+        "parent_span_id": "1271c389ea0d6851",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          },
+          {
+            "type": "User",
+            "id": "member1",
+            "role": "recipient"
+          }
+        ]
+      },
+      "source_seq": 14,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 15,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:15",
+      "node": "db_review_tx",
+      "phase": "error",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "9115c3cd08354e9bb05fd5b95f195d85",
+      "parent_call_id": "8cd15aaf67dc4d79ac031d66723d5db9",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:2",
+      "inputs": {
+        "operation": "transaction",
+        "statement": "transaction",
+        "parameters": {}
+      },
+      "outputs": {
+        "status": "rolled_back",
+        "duration_ms": 36.779,
+        "error_type": "OperationalError",
+        "targets": [],
+        "unknown_targets": [],
+        "committed": false,
+        "target_source": "not_applicable",
+        "target_access": []
+      },
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.106660+00:00",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "1271c389ea0d6851",
+        "trace_flags": 3,
+        "parent_span_id": "e8a7e3fda0ab7cb2",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 15,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 16,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:16",
+      "node": "review_file",
+      "phase": "error",
+      "entity": "02b66a4b0b0c447b9605457fb9630d71",
+      "attempt": "application",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "8cd15aaf67dc4d79ac031d66723d5db9",
+      "parent_call_id": "d512ea81b2ee0202",
+      "parent_event_id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:1",
+      "inputs": {},
+      "outputs": {
+        "error": "OperationalError"
+      },
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.106754+00:00",
+      "lifecycle": "span",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "e8a7e3fda0ab7cb2",
+        "trace_flags": 3,
+        "parent_span_id": "d512ea81b2ee0202",
+        "tracestate": "",
+        "links": []
+      },
+      "provenance": {
+        "actor": {
+          "id": "admin1",
+          "kind": "user"
+        },
+        "objects": [
+          {
+            "type": "File",
+            "id": "02b66a4b0b0c447b9605457fb9630d71",
+            "role": "input"
+          }
+        ]
+      },
+      "source_seq": 16,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "team-file-sharing-otel-20261101-02",
+      "model_revision": "1",
+      "build_id": "d4eb4e852ce9ce35c44768c8f901d76884db767bc9ace2aaf2f58597d26195f4",
+      "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+      "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+      "schema_version": 3,
+      "seq": 17,
+      "id": "a37e77bd3ed24af9891380c2a5dbc6eb:7fed9d383e2f4f58a013f8fd5f9062f9:17",
+      "node": "api:entry",
+      "phase": "return",
+      "entity": "application",
+      "attempt": "application",
+      "scope": "application",
+      "basis": {},
+      "call_id": "d512ea81b2ee0202",
+      "parent_call_id": null,
+      "parent_event_id": null,
+      "inputs": {
+        "route": "/api/<operation>",
+        "method": "POST"
+      },
+      "outputs": {
+        "status": 500
+      },
+      "depends": [],
+      "observed_at": "2026-11-01T01:28:48.124220+00:00",
+      "lifecycle": "span",
+      "trace": {
+        "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+        "span_id": "d512ea81b2ee0202",
+        "trace_flags": 3,
+        "parent_span_id": null,
+        "tracestate": "",
+        "links": []
+      },
+      "source_seq": 17,
+      "stream_id": "3b87e8b6cf2c7d5b08e46a3b"
+    }
+  ],
+  "native_sdk_spans": [
+    {
+      "name": "review_notice",
+      "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+      "span_id": "002461fb3d3e90d8",
+      "status": "UNSET",
+      "attributes": {},
+      "exception_types": []
+    },
+    {
+      "name": "db_review_tx",
+      "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+      "span_id": "1271c389ea0d6851",
+      "status": "UNSET",
+      "attributes": {},
+      "exception_types": []
+    },
+    {
+      "name": "review_file",
+      "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+      "span_id": "e8a7e3fda0ab7cb2",
+      "status": "UNSET",
+      "attributes": {},
+      "exception_types": []
+    },
+    {
+      "name": "POST /api/<operation>",
+      "trace_id": "f60bc9654219c40f6eac1f6720c83f89",
+      "span_id": "d512ea81b2ee0202",
+      "status": "ERROR",
+      "attributes": {
+        "http.method": "POST",
+        "http.route": "/api/<operation>",
+        "http.status_code": 500
+      },
+      "exception_types": [
+        "sqlalchemy.exc.OperationalError"
+      ]
+    }
+  ],
+  "probe_health": {
+    "enabled": true,
+    "boundary_context": true,
+    "run_id": "a37e77bd3ed24af9891380c2a5dbc6eb",
+    "producer_id": "7fed9d383e2f4f58a013f8fd5f9062f9",
+    "enqueued": 17,
+    "pending": 0,
+    "errors": 0,
+    "dropped": 0,
+    "filtered": 0,
+    "last_error": null,
+    "tracing": {
+      "backend": "opentelemetry",
+      "open_spans": 0,
+      "automatic_open": 0,
+      "automatic_errors": 0,
+      "ignored": 0
+    },
+    "data_errors": 0,
+    "capture_failures": []
+  },
+  "checks": {
+    "native_500": true,
+    "framework_status_matches": true,
+    "project_exception_output_matches": true,
+    "rollback_preserved_pending": true,
+    "no_transition_committed": true
+  },
+  "limitation": "Exception type is currently an explicitly allowlisted project outputs.error. This does not establish a shared exception-trace-fact interface or acceptance of a stable SDK."
+}

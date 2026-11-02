@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 import tempfile
 import threading
+import time
 import unittest
 from unittest.mock import patch
 
@@ -26,6 +27,9 @@ class GatedSink:
         self.snapshot_entered = threading.Event()
         self.snapshot_release = threading.Event()
         self.snapshot_release.set()
+        self.suffix_entered = threading.Event()
+        self.suffix_release = threading.Event()
+        self.suffix_release.set()
         self.batches = []
 
     def ready(self):
@@ -39,6 +43,10 @@ class GatedSink:
             self.snapshot_entered.set()
             if not self.snapshot_release.wait(3):
                 raise TimeoutError("test snapshot was not released")
+        if value.get("outputs", {}).get("state") == "done":
+            self.suffix_entered.set()
+            if not self.suffix_release.wait(3):
+                raise TimeoutError("test suffix was not released")
         return self.sink(value, kind)
 
     def bo_accept_many(self, values):
@@ -60,6 +68,7 @@ class EventBatchTests(unittest.TestCase):
         for sink in self.gates:
             sink.release.set()
             sink.snapshot_release.set()
+            sink.suffix_release.set()
         for probe in self.probes:
             probe.flush(3)
             probe.close()
@@ -84,6 +93,8 @@ class EventBatchTests(unittest.TestCase):
         self.assertEqual(self.session.gaps, 0)
         self.assertEqual(self.session.seen, {})
         self.assertEqual(self.session.producers, {})
+        self.assertEqual(self.session.bo_open_invocations, {})
+        self.assertEqual(self.session.bo_context_evictions, 0)
         self.assertEqual(self.session.history.snapshot(), [])
 
     def test_same_facts_and_duplicate_receipts_are_preserved(self):
@@ -254,6 +265,65 @@ class EventBatchTests(unittest.TestCase):
             [event["id"] for event in self.session.history.snapshot()],
             [value["id"] for index, value in enumerate(values) if index != 2],
         )
+
+    def test_backlog_uses_bounded_groups_and_keeps_every_original_fact(self):
+        sink = GatedSink(self.session.bo_sink)
+        self.gates.append(sink)
+        probe = self.probe(sink)
+        emitted = [probe.record("advance", "return", lambda: {"outputs": {"state": "running"}})]
+        self.assertTrue(sink.entered.wait(2))
+        for _ in range(160):
+            emitted.append(
+                probe.record("advance", "return", lambda: {"outputs": {"state": "running"}})
+            )
+        sink.release.set()
+        self.assertTrue(probe.flush(3))
+        self.assertTrue(any(len(batch) > 16 for batch in sink.batches))
+        self.assertTrue(all(len(batch) <= 64 for batch in sink.batches))
+        self.assertEqual([event["id"] for event in self.session.history.snapshot()], emitted)
+        self.assertEqual(probe.bo_health()["errors"], 0)
+        self.assertEqual(probe.bo_health()["dropped"], 0)
+
+    def test_flush_settles_its_snapshot_prefix_under_continuing_traffic(self):
+        """Later native requests cannot extend a recording's settlement barrier."""
+        gate = GatedSink(self.session.bo_sink)
+        gate.release.set()
+        gate.snapshot_release.clear()
+        self.gates.append(gate)
+        gate.suffix_release.clear()
+        probe = self.probe(gate)
+        evidence = probe.record(
+            "advance",
+            "change",
+            lambda: {"outputs": {"state": "pending"}},
+            entity="item",
+            attempt="item",
+            scope="entity",
+            revision=1,
+        )
+        probe.snapshot("item", "pending", {"slots": 1}, 1, evidence)
+        self.assertTrue(gate.snapshot_entered.wait(2))
+        result = []
+        waiter = threading.Thread(target=lambda: result.append(probe.flush(1)))
+        waiter.start()
+        deadline = time.monotonic() + 1
+        while probe.bo_health()["flush_target"] != 2 and time.monotonic() < deadline:
+            threading.Event().wait(0.001)
+        try:
+            self.assertEqual(probe.bo_health()["flush_target"], 2)
+            probe.record("advance", "return", lambda: {"outputs": {"state": "done"}})
+            gate.snapshot_release.set()
+            self.assertTrue(gate.suffix_entered.wait(2))
+            waiter.join(2)
+            self.assertEqual(result, [True])
+            self.assertGreater(probe.bo_health()["pending"], 0)
+            self.assertEqual(probe.bo_health()["errors"], 0)
+            self.assertIn(evidence, self.session.frames)
+        finally:
+            gate.suffix_release.set()
+            waiter.join(2)
+        self.assertTrue(probe.flush(2))
+        self.assertEqual(len(self.session.history.snapshot()), 2)
 
 
 if __name__ == "__main__":

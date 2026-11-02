@@ -16,6 +16,18 @@ export function lifecycleCaption(state, sourceNames = false) {
 }
 
 export function lifecycleTransition(node, event) {
+  if (event.context_only && ["start", "end"].includes(event.context_boundary)) {
+    const ended = event.context_boundary === "end";
+    return {
+      boundary: event.context_boundary,
+      state: ended ? (event.phase === "error" ? "exception" : "returned") : "running",
+      label: ended ? (event.phase === "error" ? "Exception exit" : "Ended") : "Running",
+      kind: ended ? "ended" : "active",
+      registered: false,
+      context_only: true,
+      ...(ended ? { termination: "boundary" } : {}),
+    };
+  }
   const definition = node?.lifecycle;
   const binding = definition?.bindings.find((item) => {
     if (item.phase !== event.phase) return false;
@@ -36,6 +48,26 @@ export function lifecycleTransition(node, event) {
       ...(binding.boundary === "end" ? { termination } : {}),
     };
   }
+  // Compatibility for data recordings made before the projector registered
+  // adapter lifetimes. Only the native adapter's exact action/status can end it.
+  const dataExit =
+    !definition &&
+    ((node?.data_role === "query" &&
+      node.data_metadata?.action === "transaction" &&
+      event.phase === "commit" &&
+      event.outputs?.status === "committed") ||
+      (node?.data_role === "transform" &&
+        event.phase === "change" &&
+        event.outputs?.status === "transformed"));
+  if (dataExit)
+    return {
+      boundary: "end",
+      state: event.outputs.status,
+      label: event.phase === "commit" ? "Committed" : "Transformed",
+      kind: "ended",
+      registered: false,
+      termination: event.phase,
+    };
   const fallback = generic[event.phase];
   return fallback
     ? { ...fallback, registered: false, ...(fallback.boundary === "end" ? { termination } : {}) }

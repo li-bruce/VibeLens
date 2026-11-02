@@ -19,6 +19,14 @@ Explicit delivery choices may disable capture or omit debug Web. Keep structure/
 
 Use `bo_` for observation methods/files and `BO` for adapter classes, e.g. trace.bo_record/events.bo_emit. Preserve domain names. Generated folders declare ownership/tool provenance; editable UI/mapping sources remain project-owned. Optional callbacks invert dependencies. Callback failure, disabled capture, or loss must not decide business outcomes. Skip payload evaluation when disabled/out of scope. Legacy port aliases are compatibility only; update probe_callees and white-box checks on rename.
 
+Keep trace/provenance formatting, SDK setup and carrier handling in the observation
+adapter, with `bo_`/`BO` names. A helper used only to construct observation metadata
+does not belong among unmarked domain methods. Observer-only queue fields use a
+`bo_` name or a clearly separated metadata envelope; standard W3C header names
+remain unchanged. Native business identifiers and authorization stay application
+owned. Record identities/created objects at the phase where native code actually
+knows them, then compare them against independent native reads in mapping checks.
+
 ## Configuration and commands
 
 See [ownership.example.json](../assets/ownership.example.json). `scan` is explicit scope. `layers.paths` uses longest-prefix ownership; `allows` constrains local static imports; `external` may constrain core dependencies. `reject_dynamic` rejects common dynamic import/exec. managed_paths stores generated-file hashes and must not contain its own manifest.

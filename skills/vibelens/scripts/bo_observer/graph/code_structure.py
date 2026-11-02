@@ -38,11 +38,8 @@ def argument_selection(lines, argument):
     }
 
 
-def parse_unit(path, source):
-    """Extract Python symbols, parameters, and call expressions from the syntax tree."""
-    tree = ast.parse(source, filename=path)
-    source_lines = source.splitlines()
-    imports, symbols, shadowed_globals = {}, {}, set()
+def collect_file_references(path, tree):
+    """Read file dependencies without constructing symbols or resolving calls."""
     file_references = []
     package = module_name(path).split(".")
     if not path.endswith("/__init__.py"):
@@ -62,6 +59,20 @@ def parse_unit(path, source):
             {"module": target, "relation": "imports", "line": declaration.lineno}
             for target in targets
         )
+    return file_references
+
+
+def parse_unit(path, source):
+    """Extract Python symbols, parameters, and call expressions from the syntax tree."""
+    tree = ast.parse(source, filename=path)
+    from .python_routes import registrations
+
+    source_lines = source.splitlines()
+    imports, symbols, shadowed_globals = {}, {}, set()
+    file_references = collect_file_references(path, tree)
+    package = module_name(path).split(".")
+    if not path.endswith("/__init__.py"):
+        package = package[:-1]
     for node in tree.body:
         if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
@@ -186,6 +197,14 @@ def parse_unit(path, source):
                             for a in call.args[:2]
                         ):
                             entry["literal_pair"] = [a.value for a in call.args[:2]]
+                        if (
+                            isinstance(call.func, ast.Attribute)
+                            and call.func.attr == "span"
+                            and call.args
+                            and isinstance(call.args[0], ast.Constant)
+                            and isinstance(call.args[0].value, str)
+                        ):
+                            entry["span_node"] = call.args[0].value
                         item["calls"].append(entry)
                         self.generic_visit(call)
 
@@ -255,6 +274,7 @@ def parse_unit(path, source):
         "declarations": declarations,
         "shadowed_globals": sorted(shadowed_globals),
         "module_calls": module_calls,
+        "http_registrations": registrations(tree, path),
     }
 
 

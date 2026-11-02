@@ -125,7 +125,9 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
         raise ValueError("Code limit must be an integer from 1 to 5000")
     if projection not in {"all", "project", "api"}:
         raise ValueError("Code projection must be all, project or api")
-    equivalent = representation_links(model, graph)
+    # File-only views do not contain AST parameters. The full code/check path
+    # still strictly validates equivalences against the complete symbol index.
+    equivalent = [] if projection == "project" else representation_links(model, graph)
     if projection == "project":
         keep = {
             n["id"]
@@ -189,7 +191,13 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
         # Full code view retains each explicit authored-to-source mapping too.
         for item in model.get("nodes", []):
             source = item.get("source", {})
-            sid = graph["symbols"].get(source.get("path", "") + "::" + source.get("symbol", ""))
+            sid = (
+                identity("file", source["path"])
+                if projection == "project" and source.get("path")
+                else graph["symbols"].get(source.get("path", "") + "::" + source.get("symbol", ""))
+            )
+            if sid not in nodes:
+                sid = None
             if sid:
                 links.append(
                     {

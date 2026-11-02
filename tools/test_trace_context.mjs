@@ -101,6 +101,40 @@ assert.equal(
   0,
   "a prior fact gets a boundary marker, not an invented duration",
 );
+const dependencyRows = traceRows(dependency, { scope: "all", order: ["business", "rules"] });
+assert.equal(
+  visibleFlows(dependency, dependencyRows, { start: 0, end: dependency.axis.total }).length,
+  1,
+  "a closed pre-recording fact keeps its boundary connector in the recipient band",
+);
+const sharedHistory = {
+  ...completedDependency,
+  events: [
+    ...completedDependency.events,
+    event("another-check", "check", "enter", 13, {
+      entity: "file-2",
+      depends: [{ event: "old-return", type: "data" }],
+    }),
+  ],
+};
+const sharedDependency = buildTraceIndex(sharedHistory, timeline(sharedHistory), all);
+const sharedRows = traceRows(sharedDependency, { scope: "all", order: ["business", "rules"] });
+const sharedFlows = visibleFlows(sharedDependency, sharedRows, {
+  start: 0,
+  end: sharedDependency.axis.total,
+});
+assert.equal(
+  sharedFlows.length,
+  2,
+  "one historical fact can feed two independent concurrent executions",
+);
+assert.ok(
+  sharedFlows.every((flow) => sharedRows[flow.fromRow].group === sharedRows[flow.toRow].group),
+);
+assert.ok(
+  sharedRows.filter((row) => row.layer === "business").every((row) => row.slices.length === 0),
+  "shared boundary markers never become invented active calls",
+);
 
 const delivered = [],
   probe = new BOProbe({

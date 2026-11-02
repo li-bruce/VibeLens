@@ -1,0 +1,103 @@
+{
+  "valid": true,
+  "build_id": "5226cd62de4a237a415b50f7492dbd2ea82869658e5f810f0e62fc78cc238aa8",
+  "recording_id": "2edb63c126c142d4bdeae2f6d0a23dab",
+  "file_id": "fde6a5e782de45e69da7dbe94e0688cf",
+  "approved_file_id": "8a14454618904e00a05a25bd41f4ad4c",
+  "original_reason": "  缺少签字页。\n请补齐附件 <原件>。  ",
+  "checks": [
+    {
+      "case": "upload for rejection",
+      "status": 201,
+      "expected": 201
+    },
+    {
+      "case": "empty reason",
+      "status": 400,
+      "expected": 400
+    },
+    {
+      "case": "whitespace reason",
+      "status": 400,
+      "expected": 400
+    },
+    {
+      "case": "unrelated reviewer",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "case": "verbatim rejection",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "case": "uploader details JSON",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "case": "uploader details HTML",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "case": "other actor cannot read reason",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "case": "closed rejection",
+      "status": 409,
+      "expected": 409
+    },
+    {
+      "case": "upload for approval",
+      "status": 201,
+      "expected": 201
+    },
+    {
+      "case": "approve without reason",
+      "status": 200,
+      "expected": 200
+    }
+  ],
+  "sqlite_rows": [
+    {
+      "id": "fde6a5e782de45e69da7dbe94e0688cf",
+      "state": "rejected",
+      "revision": 2,
+      "rejection_reason": "  缺少签字页。\n请补齐附件 <原件>。  ",
+      "journal": "[{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 2, \"event\": \"reject\", \"before\": \"pending\", \"after\": \"rejected\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    },
+    {
+      "id": "8a14454618904e00a05a25bd41f4ad4c",
+      "state": "approved",
+      "revision": 2,
+      "rejection_reason": "",
+      "journal": "[{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 2, \"event\": \"approve\", \"before\": \"pending\", \"after\": \"approved\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    }
+  ],
+  "interval_events": 209,
+  "closed_interval_calls": 61,
+  "interval_missing_parents": 0,
+  "interval_ownership_gaps": 0,
+  "prior_context_ownership_gaps": 7,
+  "raw_gaps": [
+    "Pre-recording context retains only the latest 2000 events.",
+    "A parent invocation entry was not retained; its execution boundary is incomplete."
+  ],
+  "producer_settlement": {
+    "flushed": true
+  },
+  "producer_pending_before_stop": 0,
+  "raw_recording_path": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\bo_stategraph\\data\\recordings\\2edb63c126c142d4bdeae2f6d0a23dab.json",
+  "raw_recording_sha256": "8019e98f5e2a86ace22507a88b5be00c10a5645e329859428586a979b8722e7a",
+  "witness_ids": [
+    "3d5d998e688a41c684948e1922765db0:66202f5f70054523acd3b379822108ff:9769",
+    "3d5d998e688a41c684948e1922765db0:66202f5f70054523acd3b379822108ff:9781",
+    "3d5d998e688a41c684948e1922765db0:66202f5f70054523acd3b379822108ff:9782",
+    "3d5d998e688a41c684948e1922765db0:66202f5f70054523acd3b379822108ff:9783",
+    "3d5d998e688a41c684948e1922765db0:66202f5f70054523acd3b379822108ff:9788"
+  ]
+}

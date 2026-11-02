@@ -1,0 +1,681 @@
+{
+  "valid": true,
+  "snapshots": {
+    "01_summary_without_path": {
+      "schema": "bo-relation-index/v1",
+      "nodes": [
+        "business.share",
+        "function.read",
+        "table.files"
+      ],
+      "rules": {
+        "schema": "bo-relation-rules/v1",
+        "definitions": [
+          {
+            "id": "implements",
+            "mode": "direct",
+            "match": {
+              "type": "maps",
+              "origin": "implementation"
+            }
+          },
+          {
+            "id": "reads",
+            "mode": "direct",
+            "match": {
+              "type": "data",
+              "origin": "source"
+            }
+          },
+          {
+            "id": "uses-data",
+            "mode": "summary",
+            "match": {
+              "type": "maps",
+              "origin": "relation-summary",
+              "semantic_relation": "uses-data"
+            }
+          }
+        ],
+        "compositions": [
+          {
+            "id": "implementation-read",
+            "result": "uses-data",
+            "path": [
+              "implements",
+              "reads"
+            ]
+          }
+        ]
+      },
+      "limits": {
+        "max_work": 100000,
+        "max_candidates": 512
+      },
+      "entries": [
+        {
+          "edge": {
+            "id": "share-files",
+            "from": "business.share",
+            "to": "table.files",
+            "type": "maps",
+            "origin": "relation-summary",
+            "evidence": "review-fixture",
+            "semantic_relation": "uses-data"
+          },
+          "relation": "uses-data",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          }
+        }
+      ],
+      "decisions": {
+        "share-files": {
+          "status": "retained",
+          "reason": "no_equivalent_path"
+        }
+      },
+      "canonical_edges": [
+        "share-files"
+      ],
+      "revision": "dc12510e6bbfc9d28e615ea09f1250135810c26171b64d7c17eed1ec57c625e2"
+    },
+    "02_typed_path_arrives": {
+      "schema": "bo-relation-index/v1",
+      "nodes": [
+        "business.share",
+        "function.read",
+        "table.files"
+      ],
+      "rules": {
+        "schema": "bo-relation-rules/v1",
+        "definitions": [
+          {
+            "id": "implements",
+            "mode": "direct",
+            "match": {
+              "type": "maps",
+              "origin": "implementation"
+            }
+          },
+          {
+            "id": "reads",
+            "mode": "direct",
+            "match": {
+              "type": "data",
+              "origin": "source"
+            }
+          },
+          {
+            "id": "uses-data",
+            "mode": "summary",
+            "match": {
+              "type": "maps",
+              "origin": "relation-summary",
+              "semantic_relation": "uses-data"
+            }
+          }
+        ],
+        "compositions": [
+          {
+            "id": "implementation-read",
+            "result": "uses-data",
+            "path": [
+              "implements",
+              "reads"
+            ]
+          }
+        ]
+      },
+      "limits": {
+        "max_work": 100000,
+        "max_candidates": 512
+      },
+      "entries": [
+        {
+          "edge": {
+            "id": "share-files",
+            "from": "business.share",
+            "to": "table.files",
+            "type": "maps",
+            "origin": "relation-summary",
+            "evidence": "review-fixture",
+            "semantic_relation": "uses-data"
+          },
+          "relation": "uses-data",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          }
+        },
+        {
+          "edge": {
+            "id": "share-read",
+            "from": "business.share",
+            "to": "function.read",
+            "type": "maps",
+            "origin": "implementation",
+            "evidence": "review-fixture"
+          },
+          "relation": "implements",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          },
+          "definition_key": "share-implementation"
+        },
+        {
+          "edge": {
+            "id": "read-files",
+            "from": "function.read",
+            "to": "table.files",
+            "type": "data",
+            "origin": "source",
+            "evidence": "review-fixture"
+          },
+          "relation": "reads",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          }
+        }
+      ],
+      "decisions": {
+        "share-files": {
+          "status": "represented",
+          "reason": "registered_path",
+          "rule": "implementation-read",
+          "path": [
+            "share-read",
+            "read-files"
+          ],
+          "leaf_path": [
+            "share-read",
+            "read-files"
+          ]
+        },
+        "share-read": {
+          "status": "retained",
+          "reason": "direct_fact"
+        },
+        "read-files": {
+          "status": "retained",
+          "reason": "direct_fact"
+        }
+      },
+      "canonical_edges": [
+        "share-read",
+        "read-files"
+      ],
+      "revision": "61e79112030475cc32d127df052e3f6d63e642f86b9be38237b70721316da8ca"
+    },
+    "03_duplicate_definition": {
+      "schema": "bo-relation-index/v1",
+      "nodes": [
+        "business.share",
+        "function.read",
+        "table.files"
+      ],
+      "rules": {
+        "schema": "bo-relation-rules/v1",
+        "definitions": [
+          {
+            "id": "implements",
+            "mode": "direct",
+            "match": {
+              "type": "maps",
+              "origin": "implementation"
+            }
+          },
+          {
+            "id": "reads",
+            "mode": "direct",
+            "match": {
+              "type": "data",
+              "origin": "source"
+            }
+          },
+          {
+            "id": "uses-data",
+            "mode": "summary",
+            "match": {
+              "type": "maps",
+              "origin": "relation-summary",
+              "semantic_relation": "uses-data"
+            }
+          }
+        ],
+        "compositions": [
+          {
+            "id": "implementation-read",
+            "result": "uses-data",
+            "path": [
+              "implements",
+              "reads"
+            ]
+          }
+        ]
+      },
+      "limits": {
+        "max_work": 100000,
+        "max_candidates": 512
+      },
+      "entries": [
+        {
+          "edge": {
+            "id": "share-files",
+            "from": "business.share",
+            "to": "table.files",
+            "type": "maps",
+            "origin": "relation-summary",
+            "evidence": "review-fixture",
+            "semantic_relation": "uses-data"
+          },
+          "relation": "uses-data",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          }
+        },
+        {
+          "edge": {
+            "id": "share-read",
+            "from": "business.share",
+            "to": "function.read",
+            "type": "maps",
+            "origin": "implementation",
+            "evidence": "review-fixture"
+          },
+          "relation": "implements",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          },
+          "definition_key": "share-implementation"
+        },
+        {
+          "edge": {
+            "id": "read-files",
+            "from": "function.read",
+            "to": "table.files",
+            "type": "data",
+            "origin": "source",
+            "evidence": "review-fixture"
+          },
+          "relation": "reads",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          }
+        },
+        {
+          "edge": {
+            "id": "share-read-alias",
+            "from": "business.share",
+            "to": "function.read",
+            "type": "maps",
+            "origin": "implementation",
+            "evidence": "review-fixture",
+            "label": "Read the file"
+          },
+          "relation": "implements",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          },
+          "definition_key": "share-implementation"
+        }
+      ],
+      "decisions": {
+        "share-files": {
+          "status": "represented",
+          "reason": "registered_path",
+          "rule": "implementation-read",
+          "path": [
+            "share-read",
+            "read-files"
+          ],
+          "leaf_path": [
+            "share-read",
+            "read-files"
+          ]
+        },
+        "share-read": {
+          "status": "retained",
+          "reason": "direct_fact"
+        },
+        "read-files": {
+          "status": "retained",
+          "reason": "direct_fact"
+        },
+        "share-read-alias": {
+          "status": "duplicate",
+          "reason": "same_definition",
+          "duplicate_of": "share-read"
+        }
+      },
+      "canonical_edges": [
+        "share-read",
+        "read-files"
+      ],
+      "revision": "8c5e6ad379b1dd92ed5a00c70357ef3e53ee4cd0ffd84b01710838163dba1ec7"
+    },
+    "04_independent_witness": {
+      "schema": "bo-relation-index/v1",
+      "nodes": [
+        "business.share",
+        "function.read",
+        "table.files"
+      ],
+      "rules": {
+        "schema": "bo-relation-rules/v1",
+        "definitions": [
+          {
+            "id": "implements",
+            "mode": "direct",
+            "match": {
+              "type": "maps",
+              "origin": "implementation"
+            }
+          },
+          {
+            "id": "reads",
+            "mode": "direct",
+            "match": {
+              "type": "data",
+              "origin": "source"
+            }
+          },
+          {
+            "id": "uses-data",
+            "mode": "summary",
+            "match": {
+              "type": "maps",
+              "origin": "relation-summary",
+              "semantic_relation": "uses-data"
+            }
+          }
+        ],
+        "compositions": [
+          {
+            "id": "implementation-read",
+            "result": "uses-data",
+            "path": [
+              "implements",
+              "reads"
+            ]
+          }
+        ]
+      },
+      "limits": {
+        "max_work": 100000,
+        "max_candidates": 512
+      },
+      "entries": [
+        {
+          "edge": {
+            "id": "share-files",
+            "from": "business.share",
+            "to": "table.files",
+            "type": "maps",
+            "origin": "relation-summary",
+            "evidence": "review-fixture",
+            "semantic_relation": "uses-data",
+            "event_id": "actual-independent-fact"
+          },
+          "relation": "uses-data",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          }
+        },
+        {
+          "edge": {
+            "id": "share-read",
+            "from": "business.share",
+            "to": "function.read",
+            "type": "maps",
+            "origin": "implementation",
+            "evidence": "review-fixture"
+          },
+          "relation": "implements",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          },
+          "definition_key": "share-implementation"
+        },
+        {
+          "edge": {
+            "id": "read-files",
+            "from": "function.read",
+            "to": "table.files",
+            "type": "data",
+            "origin": "source",
+            "evidence": "review-fixture"
+          },
+          "relation": "reads",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          }
+        },
+        {
+          "edge": {
+            "id": "share-read-alias",
+            "from": "business.share",
+            "to": "function.read",
+            "type": "maps",
+            "origin": "implementation",
+            "evidence": "review-fixture",
+            "label": "Read the file"
+          },
+          "relation": "implements",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          },
+          "definition_key": "share-implementation"
+        }
+      ],
+      "decisions": {
+        "share-files": {
+          "status": "retained",
+          "reason": "independent_evidence"
+        },
+        "share-read": {
+          "status": "retained",
+          "reason": "direct_fact"
+        },
+        "read-files": {
+          "status": "retained",
+          "reason": "direct_fact"
+        },
+        "share-read-alias": {
+          "status": "duplicate",
+          "reason": "same_definition",
+          "duplicate_of": "share-read"
+        }
+      },
+      "canonical_edges": [
+        "share-files",
+        "share-read",
+        "read-files"
+      ],
+      "revision": "d01a20087b6278fe9bc64d9403c2dd962148f62d3e38e960fa2321f36cb6eb36"
+    },
+    "05_witness_removed": {
+      "schema": "bo-relation-index/v1",
+      "nodes": [
+        "business.share",
+        "function.read",
+        "table.files"
+      ],
+      "rules": {
+        "schema": "bo-relation-rules/v1",
+        "definitions": [
+          {
+            "id": "implements",
+            "mode": "direct",
+            "match": {
+              "type": "maps",
+              "origin": "implementation"
+            }
+          },
+          {
+            "id": "reads",
+            "mode": "direct",
+            "match": {
+              "type": "data",
+              "origin": "source"
+            }
+          },
+          {
+            "id": "uses-data",
+            "mode": "summary",
+            "match": {
+              "type": "maps",
+              "origin": "relation-summary",
+              "semantic_relation": "uses-data"
+            }
+          }
+        ],
+        "compositions": [
+          {
+            "id": "implementation-read",
+            "result": "uses-data",
+            "path": [
+              "implements",
+              "reads"
+            ]
+          }
+        ]
+      },
+      "limits": {
+        "max_work": 100000,
+        "max_candidates": 512
+      },
+      "entries": [
+        {
+          "edge": {
+            "id": "share-files",
+            "from": "business.share",
+            "to": "table.files",
+            "type": "maps",
+            "origin": "relation-summary",
+            "evidence": "review-fixture",
+            "semantic_relation": "uses-data"
+          },
+          "relation": "uses-data",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          }
+        },
+        {
+          "edge": {
+            "id": "share-read",
+            "from": "business.share",
+            "to": "function.read",
+            "type": "maps",
+            "origin": "implementation",
+            "evidence": "review-fixture"
+          },
+          "relation": "implements",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          },
+          "definition_key": "share-implementation"
+        },
+        {
+          "edge": {
+            "id": "share-read-alias",
+            "from": "business.share",
+            "to": "function.read",
+            "type": "maps",
+            "origin": "implementation",
+            "evidence": "review-fixture",
+            "label": "Read the file"
+          },
+          "relation": "implements",
+          "context": {
+            "scope": "sharing",
+            "revision": "v1",
+            "basis": "confirmed:review-fixture",
+            "bindings": {},
+            "conditions": {}
+          },
+          "definition_key": "share-implementation"
+        }
+      ],
+      "decisions": {
+        "share-files": {
+          "status": "retained",
+          "reason": "no_equivalent_path"
+        },
+        "share-read": {
+          "status": "retained",
+          "reason": "direct_fact"
+        },
+        "share-read-alias": {
+          "status": "duplicate",
+          "reason": "same_definition",
+          "duplicate_of": "share-read"
+        }
+      },
+      "canonical_edges": [
+        "share-files",
+        "share-read"
+      ],
+      "revision": "f902072a33e9b5774f5a6d58adc1f97d06ec311c9232a2b353cf39bb583ab5d5"
+    },
+    "06_conflict": {
+      "error": "Conflicting relation ID; use update: share-files",
+      "unchanged": true
+    }
+  }
+}

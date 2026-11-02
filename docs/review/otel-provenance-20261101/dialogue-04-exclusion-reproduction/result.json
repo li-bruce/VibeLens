@@ -1,0 +1,100 @@
+{
+  "requests": [
+    {
+      "path": "/api/events",
+      "status": 404,
+      "body": {
+        "error": "route_not_found"
+      },
+      "trace_id": "af4a289f21dbd0d6ea7494e5b079eb6c",
+      "events": []
+    },
+    {
+      "path": "/api/unknown-native-operation",
+      "status": 404,
+      "body": {
+        "error": "route_not_found"
+      },
+      "trace_id": "5d6a3da468efa2d966acb3d2d463069b",
+      "events": [
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "team-files-otel-dialogue-20261101-03",
+          "model_revision": "1",
+          "build_id": "a0a1ba503c3275bf89ffa782dc15bdc517ed2679ec923b3f966d538692389a40",
+          "run_id": "d9c109c91b57416a8fa6632cc7d2ae59",
+          "producer_id": "fb0bc00fcb8f4889a122735de6bb8c63",
+          "schema_version": 3,
+          "seq": 9,
+          "id": "d9c109c91b57416a8fa6632cc7d2ae59:fb0bc00fcb8f4889a122735de6bb8c63:9",
+          "node": "api_get",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "5d6a3da468efa2d966acb3d2d463069b:da61ff4dbcd15fd1",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "path": "/api/unknown-native-operation"
+          },
+          "outputs": {},
+          "depends": [],
+          "observed_at": "2026-11-01T07:30:50.065260+00:00",
+          "lifecycle": "span",
+          "trace": {
+            "trace_id": "5d6a3da468efa2d966acb3d2d463069b",
+            "span_id": "da61ff4dbcd15fd1",
+            "trace_flags": 1,
+            "parent_span_id": "8425e07044779424",
+            "tracestate": "",
+            "links": []
+          },
+          "source_seq": 9,
+          "stream_id": "49f800f3d6a4933319dfca1f"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "team-files-otel-dialogue-20261101-03",
+          "model_revision": "1",
+          "build_id": "a0a1ba503c3275bf89ffa782dc15bdc517ed2679ec923b3f966d538692389a40",
+          "run_id": "d9c109c91b57416a8fa6632cc7d2ae59",
+          "producer_id": "fb0bc00fcb8f4889a122735de6bb8c63",
+          "schema_version": 3,
+          "seq": 10,
+          "id": "d9c109c91b57416a8fa6632cc7d2ae59:fb0bc00fcb8f4889a122735de6bb8c63:10",
+          "node": "api_get",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "5d6a3da468efa2d966acb3d2d463069b:da61ff4dbcd15fd1",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "path": "/api/unknown-native-operation"
+          },
+          "outputs": {
+            "status": 404
+          },
+          "depends": [],
+          "observed_at": "2026-11-01T07:30:50.065526+00:00",
+          "lifecycle": "span",
+          "trace": {
+            "trace_id": "5d6a3da468efa2d966acb3d2d463069b",
+            "span_id": "da61ff4dbcd15fd1",
+            "trace_flags": 1,
+            "parent_span_id": "8425e07044779424",
+            "tracestate": "",
+            "links": []
+          },
+          "source_seq": 10,
+          "stream_id": "49f800f3d6a4933319dfca1f"
+        }
+      ]
+    }
+  ],
+  "scope": "Actual application listener and native HTTP errors; observer listener is a separate service. Externally supplied W3C identity is not an actor claim."
+}

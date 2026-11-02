@@ -87,6 +87,8 @@ Viewing, reporting, polling, layout, and recording controls do not create busine
 
 ## Install and use
 
+For the current development test snapshot, use the [`feat/otel-provenance` instructions](docs/releases/2026-11-02-test.md).
+
 Install the **complete** Skill folder in your project:
 
 ```bash

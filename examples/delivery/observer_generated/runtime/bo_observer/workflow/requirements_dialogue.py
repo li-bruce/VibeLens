@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 
 KINDS = {"action", "condition", "state", "effect", "resource", "event", "data"}
-RELATIONS = {"flow", "guard", "data", "event", "resource", "join", "retry", "cancel"}
+RELATIONS = {"flow", "guard", "data", "event", "resource", "join", "retry", "cancel", "maps"}
 STATUSES = {"open", "resolved", "assumed", "deferred"}
 CRITICAL = {
     "authority",
@@ -171,6 +171,13 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
     for ident, edge in edges.items():
         if edge.get("from") not in nodes or edge.get("to") not in nodes:
             error("unknown_edge_endpoint", ident)
+    if not errors:
+        from ..graph.relations.model import discovery as construct_relations
+
+        try:
+            construct_relations(doc)
+        except (ValueError, KeyError, TypeError) as exc:
+            error("invalid_relation_registration", str(exc))
     decisions = records(doc.get("decisions"), "decisions")
     for did, d in decisions.items():
         if d.get("topic") not in TOPICS or d.get("status") not in STATUSES:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from copy import deepcopy
+from functools import lru_cache
 import json
 from pathlib import Path
 
@@ -20,8 +21,14 @@ def _shared():
     return validate_chart, validate_events, observer_nodes
 
 
-def schema_check(value, name):
-    """Validate a protocol envelope and its JSON number range before processing it."""
+@lru_cache(maxsize=32)
+def _validator(directory, name):
+    """Load a packaged protocol once for this observer process/version.
+
+    Schemas belong to the installed runtime, like its Python validation code.
+    Managed schema upgrades reload that runtime. Project declarations are still
+    validated on every call; this cache contains no application values or source.
+    """
     try:
         from jsonschema import Draft202012Validator
         from referencing import Registry, Resource
@@ -29,19 +36,21 @@ def schema_check(value, name):
         raise ValueError(
             "Install the Skill requirements.txt before using the JSON service"
         ) from exc
-    path = SCHEMAS / (name + ".schema.json")
-    if not path.is_file():
-        # Copied project runtime carries the protocol beside its Python package.
-        path = Path(__file__).parent / "schemas" / (name + ".schema.json")
+    path = directory / (name + ".schema.json")
     schema = json.loads(path.read_text(encoding="utf-8"))
     registry = Registry()
     if name == "project":
         # Project envelopes reference the same model contract as standalone
         # models. Register the bundled resource; validation never fetches it.
-        model = json.loads((SCHEMAS / "model.schema.json").read_text(encoding="utf-8"))
+        model = json.loads((directory / "model.schema.json").read_text(encoding="utf-8"))
         registry = registry.with_resource(model["$id"], Resource.from_contents(model))
+    return Draft202012Validator(schema, registry=registry)
+
+
+def schema_check(value, name):
+    """Validate every envelope and portable number against the loaded protocol."""
     errors = sorted(
-        Draft202012Validator(schema, registry=registry).iter_errors(value),
+        _validator(SCHEMAS, name).iter_errors(value),
         key=lambda e: str(list(e.path)),
     )
     if errors:
@@ -75,6 +84,9 @@ def validate_project(project):
     from .data.protocol import validate_data_projection
 
     validate_data_projection(project["model"])
+    from .graph.relations.model import validate as validate_relations
+
+    validate_relations(project["model"])
     if project["model"].get("project_id", project["project_id"]) != project["project_id"]:
         raise ValueError("project identity differs from graph")
     if (
@@ -90,6 +102,14 @@ def validate_project(project):
 def validate_event(event, project, build_id):
     """Check build identity and allowlisted capture fields; return the validated event copy."""
     schema_check(event, "event")
+    from .observation.provenance import trace_metadata, object_metadata, exception_metadata
+
+    if "trace" in event:
+        trace_metadata(event["trace"])
+    if "provenance" in event:
+        object_metadata(event["provenance"])
+    if "exception" in event:
+        exception_metadata(event["exception"])
     if (event["project_id"], event["model_revision"], event["build_id"]) != (
         project["project_id"],
         project["model"]["revision"],

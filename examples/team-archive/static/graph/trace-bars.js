@@ -12,9 +12,9 @@ function pill(ctx, x, y, width, height, radius = 4) {
 export function paintDuration(
   ctx,
   slice,
-  { sx, ex, y, color, x, raw, timeLabel, pulse = 0, sourceNames = false },
+  { sx, ex, y, color, x, raw, timeLabel, pulse = 0, sourceNames = false, caption = "" },
 ) {
-  const width = Math.max(2, ex - sx),
+  const width = Math.max(7, ex - sx),
     top = y + 6;
   const active = !slice.ambiguous && slice.raw <= raw && (slice.unfinished || raw < slice.last);
   const exception = slice.termination === "exception";
@@ -28,10 +28,10 @@ export function paintDuration(
   for (const stage of stages) {
     const start = Math.max(sx, x(stage.start)),
       end = Math.min(ex, x(stage.end));
-    if (end <= start) continue;
+    if (end < start) continue;
     const waiting = stage.phase === "waiting";
     ctx.fillStyle = color + (waiting ? "18" : "b8");
-    ctx.fillRect(start, top, Math.max(2, end - start), 16);
+    ctx.fillRect(start, top, Math.max(7, end - start), 16);
     if (waiting) {
       ctx.strokeStyle = color + "65";
       ctx.lineWidth = 1;
@@ -42,7 +42,7 @@ export function paintDuration(
       }
       ctx.stroke();
     }
-    if (stage.label && end - start > 105) {
+    if ((stage.label || caption) && end - start > 48) {
       ctx.fillStyle = waiting ? "#41576a" : "#ffffff";
       ctx.save();
       ctx.beginPath();
@@ -53,7 +53,8 @@ export function paintDuration(
         16,
       );
       ctx.clip();
-      ctx.fillText(t(lifecycleCaption(stage, sourceNames)), start + 6, y + 18);
+      const meaning = stage.label ? t(lifecycleCaption(stage, sourceNames)) : "";
+      ctx.fillText([caption, meaning].filter(Boolean).join(" · "), start + 6, y + 18);
       ctx.restore();
     }
   }

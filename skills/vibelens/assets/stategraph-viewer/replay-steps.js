@@ -1,7 +1,7 @@
 import { t as boTranslate } from "./i18n.js";
 import { dataTransferLabel } from "./data-layer.js";
 // Observation facts and display steps are independent. No business commands.
-import { runtimeFrame, runtimeChanges } from "./runtime-frames.js";
+import { runtimeFrame, runtimeChanges, rememberRuntimeMachine } from "./runtime-frames.js";
 import { phaseLabel, stateLabels } from "./graph-core.js";
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const cached = new WeakMap();
@@ -76,6 +76,10 @@ export function boFacts(recording, items) {
       for (const [field, value] of Object.entries(values))
         previous.set(boFieldKey(event, direction, field), value);
   for (const event of items) {
+    if (event.context_only) {
+      changes.push([]);
+      continue;
+    }
     const delta = [],
       put = (
         node,
@@ -86,10 +90,24 @@ export function boFacts(recording, items) {
         direction = null,
         attempt = event.attempt,
       ) => {
-        if (kind === "business" && field === boTranslate("Flow") && before === undefined)
+        if (
+          !recording.runtime_frames &&
+          kind === "business" &&
+          field === boTranslate("Flow") &&
+          before === undefined
+        )
           before = phaseByAttempt.get(attempt);
         if (same(before, after)) return;
-        delta.push({ node, field, before, after, kind, direction, event: event.id, attempt });
+        delta.push({
+          node,
+          field,
+          before,
+          after,
+          kind,
+          direction,
+          event: event.id,
+          attempt,
+        });
       };
     if (event.kind === "probe") {
       for (const [direction, values] of Object.entries({
@@ -123,9 +141,7 @@ export function boFacts(recording, items) {
           model.presentation?.runtime_owner || model.machine.execution?.parent || event.node,
           put,
         );
-        priorMachine = exact.machine;
-        for (const cfg of exact.machine.configurations || [])
-          phaseByAttempt.set(cfg.attempt, cfg.phase);
+        priorMachine = rememberRuntimeMachine(priorMachine || {}, exact.machine);
       } else if (
         recording.runtime_frames &&
         (!recording.runtime_frames.partial || Number.isInteger(event.revision))
@@ -227,6 +243,7 @@ export function boStepPlan(recording, items, all, visible, { mode = "view" } = {
       plan.push(i);
       continue;
     }
+    if (event.context_only) continue;
     if (mode === "events") {
       plan.push(i);
       continue;

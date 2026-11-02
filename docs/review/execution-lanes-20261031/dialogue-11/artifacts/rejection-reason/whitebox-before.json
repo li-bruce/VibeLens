@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "review-other",
+      "requirement": "R_REVIEW",
+      "claim": "Self-review submission is denied.",
+      "basis": "R_REVIEW",
+      "category": "decision",
+      "node": "upload_file",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "FileService.upload"
+      },
+      "parameters": {
+        "actor": "str",
+        "reviewer_id": "str"
+      }
+    },
+    {
+      "id": "uploader-withdraw",
+      "requirement": "R_WITHDRAW",
+      "claim": "Only a pending file owned by the caller is withdrawn; the completed operation reports withdrawn at revision two.",
+      "basis": "R_WITHDRAW",
+      "category": "decision",
+      "node": "withdraw_file",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "FileService.withdraw"
+      },
+      "parameters": {
+        "actor": "str",
+        "file_id": "str"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "self-review-error-observed",
+      "rule": "review-other",
+      "case": "denied",
+      "phase": "error",
+      "count": {
+        "min": 2
+      },
+      "fields": [
+        {
+          "path": [
+            "outputs",
+            "error"
+          ],
+          "type": "string",
+          "equals": "DomainError"
+        }
+      ]
+    },
+    {
+      "id": "withdrawn-result-observed",
+      "rule": "uploader-withdraw",
+      "case": "withdrawal",
+      "phase": "return",
+      "count": {
+        "min": 1
+      },
+      "fields": [
+        {
+          "path": [
+            "outputs",
+            "state"
+          ],
+          "type": "string",
+          "equals": "withdrawn"
+        },
+        {
+          "path": [
+            "outputs",
+            "revision"
+          ],
+          "type": "number",
+          "equals": 2
+        }
+      ]
+    },
+    {
+      "id": "withdraw-denials-observed",
+      "rule": "uploader-withdraw",
+      "case": "withdrawal",
+      "phase": "error",
+      "count": {
+        "min": 4
+      },
+      "fields": [
+        {
+          "path": [
+            "outputs",
+            "error"
+          ],
+          "type": "string",
+          "equals": "DomainError"
+        }
+      ]
+    }
+  ]
+}

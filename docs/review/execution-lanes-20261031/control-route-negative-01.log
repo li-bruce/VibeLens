@@ -1,0 +1,31 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+.........E
+======================================================================
+ERROR: test_standard_http_server_exposes_scoped_model_controls (test_capture_context.CaptureContextTests.test_standard_http_server_exposes_scoped_model_controls)
+Exercise the shipped server dispatcher rather than a controller-only fixture.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_capture_context.py", line 108, in test_standard_http_server_exposes_scoped_model_controls
+    with urlopen(base + "/api/vibelens/control/context", timeout=5) as response:
+         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 189, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 495, in open
+    response = meth(req, response)
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 604, in http_response
+    response = self.parent.error(
+        'http', request, response, code, msg, hdrs)
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 533, in error
+    return self._call_chain(*args)
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 613, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+----------------------------------------------------------------------
+Ran 10 tests in 3.356s
+
+FAILED (errors=1)

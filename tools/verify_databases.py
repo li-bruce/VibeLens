@@ -36,6 +36,7 @@ def main():
         )
     for name in ("view", "runtime"):
         subprocess.run(["node", f"tools/test_database_{name}.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_data_context.mjs"], cwd=ROOT, check=True)
     environment = {**os.environ}
     if args.live or args.native:
         # Only the explicitly started Compose test fixture uses these defaults.

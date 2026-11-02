@@ -1,0 +1,214 @@
+{
+  "valid": true,
+  "errors": [],
+  "candidate_id": "c8a10dcd59b9bba33f6461468fcb35d508afbc9b59f7527712b93ec5bced0c2e",
+  "reports": {
+    "mapping": {
+      "status": "passed",
+      "errors": [],
+      "database": {
+        "configured": true,
+        "valid": true,
+        "errors": [],
+        "changed": false,
+        "source_id": "ffed772cb329087a3922538105ae463ac2a24ff4aa5faadc18aee627576772cf",
+        "catalog_id": "ed72970a8a9a868bb83902b14aea8f5fc7d9bf3921b53316465b6a8f1c903e5a",
+        "stores": [
+          {
+            "id": "team_sqlite",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "code_structure": {
+        "enabled": true,
+        "valid": true,
+        "errors": [],
+        "status": "passed",
+        "revision": "45489b2d7f4c5aed8d51ae9c85a56a46caee389c5a8a6c28d12da1815b6aeff5",
+        "nodes": 844,
+        "edges": 1060
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+      "producer_health": {
+        "valid": true,
+        "checked_runs": 16,
+        "required": true,
+        "errors": []
+      },
+      "invocation_closure": {
+        "valid": true,
+        "closed_calls": 1440,
+        "legacy_events": 0,
+        "errors": []
+      },
+      "layers": {
+        "business": {
+          "declared_nodes": 17,
+          "direct_observations": [
+            "deliver_review_notice",
+            "deliver_revoke_notice",
+            "deliver_share_notice",
+            "download_file",
+            "list_colleagues",
+            "list_files",
+            "list_reviews",
+            "message_list",
+            "read_message",
+            "review_file",
+            "revoke_share",
+            "share_file",
+            "sign_in",
+            "sign_out",
+            "upload_file",
+            "view_file",
+            "workspace"
+          ],
+          "required_cases": 318,
+          "boundary_observations": [],
+          "basis": "actual invocation and selected result"
+        },
+        "state": {
+          "declared_nodes": 7,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "actual state changes and residence"
+        },
+        "rules": {
+          "declared_nodes": 12,
+          "direct_observations": [
+            "policy:file_access_allowed",
+            "policy:file_access_basis",
+            "policy:is_active_recipient",
+            "policy:is_admin",
+            "policy:is_approved",
+            "policy:is_uploader",
+            "policy:not_uploader",
+            "policy:review_allowed",
+            "policy:revoke_allowed",
+            "policy:share_allowed",
+            "policy:signed_in"
+          ],
+          "required_cases": 115,
+          "boundary_observations": [],
+          "basis": "evaluated/skipped conditions and actual enclosing invocation"
+        },
+        "api": {
+          "declared_nodes": 5,
+          "direct_observations": [
+            "api_command",
+            "api_file_info",
+            "api_get",
+            "api_post",
+            "api_workspace"
+          ],
+          "required_cases": 82,
+          "boundary_observations": [],
+          "basis": "request boundary and actual response"
+        },
+        "execution": {
+          "declared_nodes": 99,
+          "direct_observations": [
+            "policy:active_recipient",
+            "policy:actor_is_admin",
+            "policy:actor_is_uploader",
+            "policy:authenticated",
+            "policy:file_approved"
+          ],
+          "required_cases": 58,
+          "boundary_observations": [],
+          "basis": "call boundaries, selected values and actual nested parent identities"
+        },
+        "operations": {
+          "declared_nodes": 5,
+          "direct_observations": [
+            "db_context_read",
+            "db_metadata",
+            "db_read",
+            "db_transaction",
+            "db_write"
+          ],
+          "required_cases": 156,
+          "boundary_observations": [],
+          "basis": "query, transform, transaction and enclosing native call identity"
+        },
+        "project": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "source projection only"
+        },
+        "code": {
+          "declared_nodes": 42,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "explicitly mapped runtime evidence"
+        },
+        "data": {
+          "declared_nodes": 57,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "operation-linked structural projection"
+        }
+      },
+      "policy": {
+        "valid": true,
+        "errors": []
+      },
+      "stategraph_export": "checked",
+      "witnesses": 487,
+      "projection_checks": 291,
+      "implementation": {
+        "errors": [],
+        "events_checked": 3602,
+        "features": 23
+      }
+    },
+    "state_rules": {
+      "status": "passed",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "passed",
+      "errors": [],
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "passed",
+      "errors": [],
+      "assertions": {
+        "required": 186,
+        "executed": 186
+      },
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    }
+  },
+  "review_hash": "916ac26630d84e082d68a35ed999d74e45b88d0adfd814e8ccb37635f02bcf6a",
+  "observations_hash": "cbfa19611e946937e003bfc8e82db41be43ffde8a642201958eeedb8ceab5297",
+  "tests": [
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "checked_at": "2026-11-01T19:27:11.086583+00:00",
+  "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+}

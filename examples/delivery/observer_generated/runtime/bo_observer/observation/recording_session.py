@@ -13,6 +13,7 @@ import re
 import threading
 import time
 import uuid
+from .capture_context import context_candidates, retain_scope
 
 try:
     from ...runtime_frames import merge_frames
@@ -22,6 +23,7 @@ except ImportError:
     from observation_scope import bo_internal
 
 SCHEMA = "stategraph-recording/v1"
+OWNERSHIP_GAP = "A parent invocation entry was not retained; its execution boundary is incomplete."
 
 
 def timestamp():
@@ -72,10 +74,19 @@ def checkpoint(view, *, context=False):
         "busy": False,
     }
     if context:
+        if view.get("project_structure"):
+            value["project_structure"] = deepcopy(view["project_structure"])
         value.update(
             model=deepcopy(view["model"]),
             manifest=deepcopy(view["manifest"]),
-            events=deepcopy(view["events"][-2000:]),
+            events=deepcopy(
+                list(
+                    {
+                        e["id"]: e
+                        for e in [*view.get("open_invocations", []), *view["events"][-2000:]]
+                    }.values()
+                )
+            ),
         )
     return value
 
@@ -95,24 +106,38 @@ class Recordings:
         capture_flush=None,
         event_source=None,
         command_fields=(),
+        context_provider=None,
+        version_provider=None,
     ):
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True)
 
-        def observed_view():
-            with bo_internal():
-                return provider()
+        def internal_reader(callback):
+            def read():
+                with bo_internal():
+                    return callback()
 
-        self.provider, self.sources = observed_view, sources
+            return read
+
+        self.provider = internal_reader(provider)
+        self.context_provider = internal_reader(context_provider or provider)
+        self.version_provider = internal_reader(version_provider or provider)
+        self.sources = sources
         self.action_nodes = action_nodes or {}
         self.bo_scope_setter = scope_setter
+        self.bo_boundary_context = bool(
+            getattr(getattr(scope_setter, "__self__", None), "bo_boundary_events", False)
+        )
         self.bo_capture_flush = capture_flush
         self.interval, self.max_events, self.max_bytes = interval, max_events, max_bytes
         self.lock, self.operations = threading.RLock(), threading.Lock()
+        self.stream_lock = threading.Lock()
+        self._capture_open = False
         self.active, self.cached, self.last_error = None, {}, ""
         self.catalog = {}
         self.command_fields = tuple(command_fields)
         self._stream_events = {}
+        self._capture_context = []
         self._starting = self._stream_limited = False
         self._unsubscribe = event_source.subscribe(self.bo_event) if event_source else None
         self.closed = threading.Event()
@@ -137,8 +162,8 @@ class Recordings:
 
     def bo_event(self, event):
         """Retain incoming events during an active or starting recording, within its budget."""
-        with self.lock:
-            if not self.active and not self._starting:
+        with self.stream_lock:
+            if not self._capture_open:
                 return
             if len(self._stream_events) > self.max_events:
                 self._stream_limited = True
@@ -183,7 +208,7 @@ class Recordings:
             captured = {f["event_id"] for f in value["runtime_frames"]["frames"]}
             partial = value["runtime_frames"].get("partial") is True
             missing = sum(
-                e["id"] not in captured
+                not e.get("context_only") and e["id"] not in captured
                 for e in value["events"]
                 if not partial or type(e.get("revision")) is int
             )
@@ -208,6 +233,8 @@ class Recordings:
                 self.active = None
         finally:
             if value["status"] != "recording":
+                with self.stream_lock:
+                    self._capture_open = False
                 self.bo_restore_capture()
 
     def bo_capture_plan(self, model, requested=None):
@@ -244,10 +271,11 @@ class Recordings:
         parent = model.get("machine", {}).get("execution", {}).get("parent")
         if parent in nodes:
             boundary.add(parent)  # Exact state revisions remain interpretable.
-        allowed = selected | boundary
         return {
             "mode": "focused",
-            "nodes": sorted(allowed),
+            "nodes": sorted(selected | boundary),
+            "value_nodes": sorted(selected if self.bo_boundary_context else selected | boundary),
+            "boundary_context": self.bo_boundary_context,
             "roots": sorted(set(roots)),
             "boundary_nodes": sorted(boundary - selected),
         }
@@ -265,7 +293,9 @@ class Recordings:
                 with self.lock:
                     self._starting = False
                     if not self.active:
-                        self._stream_events = {}
+                        with self.stream_lock:
+                            self._capture_open = False
+                            self._stream_events = {}
 
     def _start(self, label, scope):
         """Begin from a current build snapshot and freeze the requested capture scope."""
@@ -280,23 +310,39 @@ class Recordings:
                     return self.summary(self.active)
                 self._capture(self.active["id"], view)
         with self.lock:
-            self._stream_events = {}
+            with self.stream_lock:
+                self._stream_events = {}
+                self._capture_open = True
+                self._stream_limited = False
             self._starting = True
-            self._stream_limited = False
         # The stream listener is already retaining events. Stamp this boundary
         # before the initial snapshot so work during that read cannot predate it.
         started_at = timestamp()
-        view = self.provider()
+        view = self.context_provider()
         if view.get("historical") or view["binding_status"]["status"] != "current":
             raise ValueError("Load the accepted current application first")
         health = view["health"]
         if not health.get("enabled", True):
             raise ValueError("Event capture is disabled for this application")
+        if (
+            health.get("boundary_context") is True
+            or health.get("producer", {}).get("boundary_context") is True
+        ):
+            self.bo_boundary_context = True
         plan = self.bo_capture_plan(view["model"], scope)
         if self.bo_scope_setter:
-            self.bo_scope_setter(plan["nodes"])
+            self.bo_scope_setter(plan.get("value_nodes", plan["nodes"]))
             try:
-                view = self.provider()
+                latest = self.provider()
+                if latest["binding_status"]["status"] != "current" or graph_version(
+                    latest
+                ) != graph_version(view):
+                    raise ValueError("Source or graph changed while recording started")
+                # Only runtime/health changes after capture selection. Retain the
+                # exact static tree already scanned at this same graph version.
+                if view.get("project_structure"):
+                    latest["project_structure"] = view["project_structure"]
+                view = latest
             except Exception:
                 self.bo_restore_capture()
                 raise
@@ -326,21 +372,28 @@ class Recordings:
             .get("command_fields", []),
         }
         if plan["nodes"] is not None:
-            value["context"]["events"] = [
-                e for e in value["context"]["events"] if e["node"] in plan["nodes"]
-            ]
+            value_nodes = set(plan.get("value_nodes", plan["nodes"]))
+            self._capture_context = context_candidates(
+                value["context"]["events"], value_nodes, view["model"]
+            )
+            _, value["context"]["events"] = retain_scope(
+                [], self._capture_context, value_nodes, view["model"]
+            )
+        else:
+            self._capture_context = []
         if len(view["events"]) > 2000:
             value["gaps"].append("Pre-recording context retains only the latest 2000 events.")
         merge_frames(value, view, checkpoint)
         with self.lock:
             try:
-                self._stream_events = {
-                    k: e
-                    for k, e in self._stream_events.items()
-                    if e.get("stream_id", e.get("run_id")) == value["run_id"]
-                    and e["seq"] > value["start_seq"]
-                }
-                self._stream_limited = False
+                with self.stream_lock:
+                    self._stream_events = {
+                        k: e
+                        for k, e in self._stream_events.items()
+                        if e.get("stream_id", e.get("run_id")) == value["run_id"]
+                        and e["seq"] > value["start_seq"]
+                    }
+                    self._stream_limited = False
                 self._write(value)
             except Exception:
                 self.bo_restore_capture()
@@ -369,7 +422,9 @@ class Recordings:
             if end < value["end_seq"]:
                 return  # A slower concurrent sampler cannot replace a newer boundary.
             merged = {e["id"]: e for e in value["events"]}
-            merged.update(self._stream_events)
+            with self.stream_lock:
+                merged.update(self._stream_events)
+                stream_limited = self._stream_limited
             merged.update({e["id"]: e for e in view["events"]})
             events = [
                 e
@@ -378,20 +433,35 @@ class Recordings:
                 and value["start_seq"] < e["seq"] <= end
             ]
             events.sort(key=lambda e: e["seq"])
-            allowed = value.get("capture", {}).get("nodes")
+            capture_plan = value.get("capture", {})
+            allowed = capture_plan.get("value_nodes", capture_plan.get("nodes"))
             excluded = 0
             if allowed is not None:
-                excluded = sum(e["node"] not in allowed for e in events)
-                events = [e for e in events if e["node"] in allowed]
+                received_count = len(events)
+                events, value["context"]["events"] = retain_scope(
+                    events, self._capture_context, set(allowed), view["model"]
+                )
+                excluded = received_count - len(events)
+                value["capture"]["runtime_boundary_nodes"] = sorted(
+                    {
+                        event["node"]
+                        for event in [*value["context"]["events"], *events]
+                        if event.get("context_only")
+                    }
+                )
             value["scope_excluded"] = excluded
             value["capture_filtered"] = max(
-                0, health.get("filtered", 0) - value["context"]["health"].get("filtered", 0)
+                0,
+                health.get("filtered", health.get("producer", {}).get("filtered", 0))
+                - value["context"]["health"].get(
+                    "filtered", value["context"]["health"].get("producer", {}).get("filtered", 0)
+                ),
             )
             value.update(
                 events=deepcopy(events[: self.max_events]), end_seq=end, final=checkpoint(view)
             )
             merge_frames(value, view, checkpoint)
-            if len(events) > self.max_events or self._stream_limited:
+            if len(events) > self.max_events or stream_limited:
                 value.update(status="limited", ended_at=timestamp())
                 value["gaps"].append(
                     "The event limit was reached; recording stopped automatically. Later events were not saved."
@@ -406,6 +476,18 @@ class Recordings:
                 message = "The causal reference cache reached its limit; missing dependencies are not inferred."
                 if message not in value["gaps"]:
                     value["gaps"].append(message)
+            # History/cache expiry is not itself recording loss: the listener
+            # may already retain every required entry. Report actual missing IDs.
+            kept = [*value["context"]["events"], *value["events"]]
+            identities = {event["id"] for event in kept}
+            value["ownership_gaps"] = [
+                {"event": event["id"], "parent_event_id": event["parent_event_id"]}
+                for event in kept
+                if event.get("parent_event_id") and event["parent_event_id"] not in identities
+            ]
+            value["gaps"] = [message for message in value["gaps"] if message != OWNERSHIP_GAP]
+            if value["ownership_gaps"]:
+                value["gaps"].append(OWNERSHIP_GAP)
             self._save(value)
 
     def sample(self):
@@ -444,6 +526,13 @@ class Recordings:
                             )
                     before = value["context"]["health"].get("producer", {})
                     after = value["final"]["health"].get("producer", {})
+                    if settlement is not None and "flush_target" in after:
+                        settlement.update(
+                            target=after["flush_target"],
+                            completed=after.get("queue_completed", 0),
+                            submitted=after.get("queue_submitted", 0),
+                            pending=after.get("pending", 0),
+                        )
                     if any(
                         after.get(key, 0) > before.get(key, 0)
                         for key in ("errors", "dropped", "data_errors")
@@ -469,7 +558,8 @@ class Recordings:
             with self.lock:
                 if not self.active:
                     return
-                allowed = self.active.get("capture", {}).get("nodes")
+                plan = self.active.get("capture", {})
+                allowed = plan.get("value_nodes", plan.get("nodes"))
                 if allowed is not None and self.action_nodes.get(action) not in allowed:
                     return
                 if len(self.active["commands"]) >= 2000:
@@ -518,7 +608,7 @@ class Recordings:
         }
 
     def get(self, ident):
-        current = graph_version(self.provider())
+        current = graph_version(self.version_provider())
         with self.lock:
             path = self._path(ident)
             value = self.cached.get(ident)
@@ -534,7 +624,7 @@ class Recordings:
         """Remove one stopped, current-version recording; leave business data untouched."""
         with self.operations:
             # Never hold the recording lock while reading the application.
-            current = graph_version(self.provider())
+            current = graph_version(self.version_provider())
             with self.lock:
                 path = self._path(ident)
                 if self.active:
@@ -559,11 +649,16 @@ class Recordings:
     def list(self):
         # Read outside the recording lock: a provider may take the application's
         # lock while business operations deliver events back to this recorder.
-        view = self.provider()
-        current = graph_version(view)
+        current = graph_version(self.version_provider())
         with self.lock:
-            if self.active and graph_version(self.active["context"]) != current:
-                self._capture(self.active["id"], view)
+            stale = (
+                self.active["id"]
+                if self.active and graph_version(self.active["context"]) != current
+                else None
+            )
+        if stale:
+            self._capture(stale, self.provider())
+        with self.lock:
             entries = {}
             for path in sorted(
                 self.directory.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True

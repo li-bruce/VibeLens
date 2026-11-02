@@ -1,0 +1,54 @@
+{
+  "valid": false,
+  "checks": [
+    {
+      "case": "one row per layer in every execution group",
+      "groups": 4,
+      "rows": 28,
+      "overlapping_http_pairs_in_separate_lanes": 7,
+      "data_lifecycles_closed": 330
+    },
+    {
+      "case": "single group and all-group collapse, depth and single-layer controls",
+      "valid": true
+    },
+    {
+      "case": "toolbar and Ctrl-wheel zoom, Shift interval, loop and overview pan",
+      "valid": true
+    },
+    {
+      "case": "graph/timeline seek, keyboard, play, pause and steps",
+      "mode": "2D",
+      "event_id": "68a6c92fb532414e93991536db84648c:528fd17ae53e44a09822bad1cca6aba1:357"
+    },
+    {
+      "case": "graph/timeline seek, keyboard, play, pause and steps",
+      "mode": "3D",
+      "event_id": "68a6c92fb532414e93991536db84648c:528fd17ae53e44a09822bad1cca6aba1:357"
+    },
+    {
+      "case": "skip/include and actual recording export preserves raw events",
+      "valid": true
+    },
+    {
+      "case": "complete source file and exact authored function highlight",
+      "marks": [
+        "    def upload(self, actor: str, reviewer_id: str, filename: str, content: bytes) -> dict:",
+        "        with self.bo_probe.span(\"upload_file\", lambda: {\"inputs\": {",
+        "            \"actor\": actor, \"reviewer_id\": reviewer_id, \"filename\": filename, \"size\": len(content)}}) as activation:"
+      ]
+    },
+    {
+      "case": "observer views, layout, source, playback and export create zero business events",
+      "before": 4736,
+      "after": 4736
+    }
+  ],
+  "errors": [
+    {
+      "stage": "source-and-preferences",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\review\\retest-20261101-02\\viewer_acceptance.py\", line 300, in main\n    operation(page)\n    ~~~~~~~~~^^^^^^\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\review\\retest-20261101-02\\viewer_acceptance.py\", line 224, in source_preferences\n    projection_ready(page, \"code\")\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\review\\retest-20261101-02\\viewer_acceptance.py\", line 28, in projection_ready\n    page.wait_for_function(\"id=>document.querySelector('#analysis-view').value===id && !graphDebug.layoutBusy && graphDebug.graph?.nodes?.length>0\", arg=preset)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\.tmp\\browserdeps\\playwright\\sync_api\\_generated.py\", line 21235, in wait_for_function\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.wait_for_function(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n        )\n        ^\n    )\n    ^\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\.tmp\\browserdeps\\playwright\\_impl\\_sync_base.py\", line 111, in _sync\n    return task.result()\n           ~~~~~~~~~~~^^\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\.tmp\\browserdeps\\playwright\\_impl\\_page.py\", line 1158, in wait_for_function\n    return await self._main_frame.wait_for_function(**locals_to_params(locals()))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\.tmp\\browserdeps\\playwright\\_impl\\_frame.py\", line 945, in wait_for_function\n    await self._channel.send(\"waitForFunction\", self._timeout, params)\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\.tmp\\browserdeps\\playwright\\_impl\\_connection.py\", line 78, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n    )\n    ^\n  File \"C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\.tmp\\browserdeps\\playwright\\_impl\\_connection.py\", line 636, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 12000ms exceeded.\n"
+    }
+  ],
+  "recording_id": "2f78c47348d54107b666c579749e3d30"
+}

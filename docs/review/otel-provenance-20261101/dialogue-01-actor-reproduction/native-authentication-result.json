@@ -1,0 +1,35 @@
+{
+  "case": "nonexistent account with independent synthetic credentials",
+  "username": "actor_scope_unknown_30f44ccaa0d84294",
+  "password": "[NOT RETAINED]",
+  "fresh_client_session": true,
+  "login_response": {
+    "status": 401,
+    "content_type": "text/html; charset=utf-8",
+    "invalid_credentials_message_present": true,
+    "body": "native-login-response.raw.html"
+  },
+  "subsequent_protected_request": {
+    "status": 302,
+    "location": "/login"
+  },
+  "database_before": {
+    "requested_username_count": 0,
+    "table_counts": {
+      "users": 4,
+      "files": 0,
+      "shares": 0,
+      "messages": 0
+    }
+  },
+  "database_after": {
+    "requested_username_count": 0,
+    "table_counts": {
+      "users": 4,
+      "files": 0,
+      "shares": 0,
+      "messages": 0
+    }
+  },
+  "scope": "Native HTTP results and independent read-only SQLite facts; no SDK inference is used as authentication authority."
+}

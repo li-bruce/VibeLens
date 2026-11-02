@@ -5,6 +5,7 @@ assembles read-only views; HTTP transport and reload borrowing live in service.p
 """
 
 from collections import OrderedDict
+from contextvars import ContextVar
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -13,6 +14,9 @@ import threading
 from ..protocol import validate_project, validate_event, validate_snapshot
 from ..graph.source_files import SourceFiles
 from .event_batch import BOSessionSink
+from .capture_context import call_key, invocation_boundary, minimal_boundary
+
+OPEN_CONTEXT_LIMIT = 10000
 
 try:
     from ...behavior_model import read, capture, check, contained, digest
@@ -43,6 +47,7 @@ class GraphSession:
         self.bo_project_content_hash = None
         self.bo_sink = BOSessionSink(self)
         self.model = self.project["model"]
+        self.bo_nodes = {node["id"]: node for node in self.model["nodes"]}
         self.manifest = capture(self.root, self.model)
         self.graph = BOStateGraph(
             self.model,
@@ -53,6 +58,8 @@ class GraphSession:
         self.sequence = 0
         self.producers = {}
         self.seen = OrderedDict()
+        self.bo_open_invocations = OrderedDict()
+        self.bo_context_evictions = 0
         self.owners = {}
         self.identities = {}
         self.current_instance = None
@@ -70,11 +77,14 @@ class GraphSession:
         )
         self.preferences = Preferences(self.root, self.project["project_id"])
         self.web = BOWeb(self.root)
+        self.bo_project_context = ContextVar("bo_project_context", default=True)
         self.recordings = Recordings(
             self.root / "bo_stategraph/data/recordings",
-            self.view,
+            self.recording_view,
             self.sources(),
             event_source=self.history,
+            context_provider=self.view,
+            version_provider=self.control_context,
         )
 
     def bo_bind_capture(self, *, scope_setter, flush_capture, health):
@@ -90,6 +100,9 @@ class GraphSession:
             if self.recordings.active:
                 raise ValueError("cannot replace a capture controller during recording")
             self.recordings.bo_scope_setter = scope_setter
+            self.recordings.bo_boundary_context = bool(
+                getattr(getattr(scope_setter, "__self__", None), "bo_boundary_events", False)
+            )
             self.recordings.bo_capture_flush = flush_capture
             self.bo_producer_health = health
 
@@ -102,7 +115,7 @@ class GraphSession:
 
     def binding(self):
         """Report whether current source bytes still match the loaded build."""
-        status = check(self.root, self.model, self.manifest)
+        status = check(self.root, self.model, self.manifest, sources=self.bo_project_sources)
         try:
             # Read actual bytes every time. Only already verified identical bytes
             # may skip JSON parsing; same-size/same-mtime edits still get checked.
@@ -136,8 +149,8 @@ class GraphSession:
         """Advance one validated cursor; the caller holds the lock and source boundary.
 
         Event batches use this same reducer on a detached cursor before the real
-        commit. Keep its mutations confined to seen, producers, sequence, gaps and
-        history so invalid preflight cannot leak into the live graph or recorder.
+        commit. Keep its mutations confined to admission cursors, open-call context
+        and history so invalid preflight cannot leak into the live graph or recorder.
         """
         signature = digest(value)
         producer = (value["run_id"], value["producer_id"])
@@ -145,6 +158,9 @@ class GraphSession:
             if self.seen[value["id"]]["digest"] != signature:
                 raise ValueError("event identity collision")
             return {"accepted": True, "duplicate": True}
+        from .provenance import admission_reference
+
+        admission_reference(value, self.seen)
         if producer not in self.producers and len(self.producers) >= 1024:
             raise ValueError("producer limit reached")
         prior = self.producers.get(producer, 0)
@@ -174,10 +190,24 @@ class GraphSession:
             "entity": value["entity"],
             "attempt": value["attempt"],
             "revision": value.get("revision"),
+            "phase": value["phase"],
+            "call_id": value["call_id"],
+            "parent_event_id": value.get("parent_event_id"),
         }
         while len(self.seen) > 10000:
             self.seen.popitem(last=False)
         self.history.append(stored)
+        boundary = invocation_boundary(stored, self.bo_nodes.get(stored["node"], {}))
+        key = call_key(stored)
+        if stored["phase"] == "enter":
+            self.bo_open_invocations[key] = minimal_boundary(
+                stored, self.bo_nodes.get(stored["node"], {})
+            )
+            while len(self.bo_open_invocations) > OPEN_CONTEXT_LIMIT:
+                self.bo_open_invocations.popitem(last=False)
+                self.bo_context_evictions += 1
+        elif boundary == "end":
+            self.bo_open_invocations.pop(key, None)
         return {"accepted": True, "receipt_seq": self.sequence}
 
     def snapshot(self, value):
@@ -236,6 +266,7 @@ class GraphSession:
                 self.identities[ident] = {
                     "entity": evidence["entity"],
                     "attempt": evidence["attempt"],
+                    "native_instance_id": value["instance_id"],
                 }
                 self.current_instance = ident
                 evidence["snapshot_instance"] = ident
@@ -251,6 +282,11 @@ class GraphSession:
                             "journal": [],
                         }
                     )
+                    # A caller attempt can contain several state machines. Keep
+                    # the validated snapshot identity separate from application
+                    # configuration fields and never join instances by attempt.
+                    cfg["snapshot_instance"] = ident
+                    cfg["native_instance_id"] = value["instance_id"]
                     journal = []
                     if previous and value["event"]:
                         transition = {
@@ -258,6 +294,7 @@ class GraphSession:
                             "source": previous["state"],
                             "target": value["state"],
                             "attempt": evidence["attempt"],
+                            "snapshot_instance": ident,
                             "evidence_id": value["evidence_id"],
                             "revision": value["revision"],
                         }
@@ -270,6 +307,7 @@ class GraphSession:
                         "revision": value["revision"],
                         "machine": {
                             "current": value["state"],
+                            "current_instance": ident,
                             "state_revision": value["revision"],
                             "configurations": [cfg],
                             "journal": journal,
@@ -293,8 +331,45 @@ class GraphSession:
                         self.frame_evictions += 1
             return result
 
+    def _view_model(self):
+        """Copy presentation defaults while the caller holds the session lock."""
+        model = deepcopy(self.model)
+        model.setdefault("presentation", {}).setdefault("subject", self.project["project_id"])
+        model["machine"].setdefault("labels", {s: s for s in model["machine"]["values"]})
+        return model
+
+    def control_context(self):
+        """Read graph/build identity without loading event history or runtime frames."""
+        with self.lock:
+            return {
+                "stage": "runtime",
+                "layout_id": self.project["project_id"],
+                "model": self._view_model(),
+                "manifest": deepcopy(self.manifest),
+            }
+
+    def recording_view(self):
+        """Read runtime evidence through native view overrides without rescanning files.
+
+        Keep the public no-argument view contract used by project adapters. The
+        per-session context changes this reader only; concurrent live views retain
+        their static tree and every native view transformation still runs.
+        """
+        token = self.bo_project_context.set(False)
+        try:
+            return self.view()
+        finally:
+            self.bo_project_context.reset(token)
+
     def view(self):
         """Assemble one consistent viewer snapshot from the graph and retained runtime evidence."""
+        # The recorder needs static structure once at its initial boundary. Its
+        # frequent runtime checkpoints must not repeatedly scan the source tree.
+        project_structure = (
+            self.web.code_graph.view(projection="project", limit=5000)
+            if self.bo_project_context.get()
+            else None
+        )
         with self.lock:
             instances = self.graph.bo_instances()
             current = next(
@@ -308,7 +383,7 @@ class GraphSession:
             configurations = []
             for entry in instances:
                 o = entry["observed"]
-                configurations.append(
+                cfg = deepcopy(
                     o.get("configuration")
                     or {
                         "attempt": self.identities[o["instance_id"]]["attempt"],
@@ -319,23 +394,28 @@ class GraphSession:
                         "journal": [],
                     }
                 )
-            model = deepcopy(self.model)
-            model.setdefault("presentation", {}).setdefault("subject", self.project["project_id"])
-            model["machine"].setdefault("labels", {s: s for s in model["machine"]["values"]})
+                cfg["snapshot_instance"] = o["instance_id"]
+                cfg["native_instance_id"] = self.identities[o["instance_id"]]["native_instance_id"]
+                configurations.append(cfg)
+            model = self._view_model()
             health = self.history.health()
             producer = self.bo_producer_health() if self.bo_producer_health else None
             current_frame = self.frames.get(current.get("evidence_id"), (None, 0))[0]
-            return {
+            events = self.history._capture_references()
+            result = {
                 "stage": "runtime",
                 "program_url": self.program_url,
                 "layout_id": self.project["project_id"],
                 "model": model,
+                "project_structure": project_structure,
                 "manifest": deepcopy(self.manifest),
                 "binding_status": self.binding(),
-                "events": self.current_events(),
+                "events": [],
+                "open_invocations": deepcopy(list(self.bo_open_invocations.values())),
                 "database_status": self.data_status,
                 "machine": {
                     "current": current.get("state"),
+                    "current_instance": current.get("instance_id"),
                     "state_revision": current.get("revision"),
                     "configurations": configurations,
                     "journal": (
@@ -369,6 +449,7 @@ class GraphSession:
                     "enabled": producer["enabled"] if producer is not None else True,
                     **({"producer": producer} if producer is not None else {}),
                     "runtime_frame_evictions": self.frame_evictions,
+                    "context_evictions": self.bo_context_evictions,
                     **health,
                 },
                 "busy": False,
@@ -376,6 +457,12 @@ class GraphSession:
                 "available_cases": ["live"],
                 "instances": instances,
             }
+        # Freeze metadata and event references at one admission boundary, then
+        # clone the immutable event payloads without blocking producer admission.
+        result["events"] = deepcopy(
+            [event for event in events if event.get("build_id") == result["manifest"]["build_id"]]
+        )
+        return result
 
     def export(self):
         """Return the complete declared graph with retained events and matching runtime frames."""
@@ -386,6 +473,7 @@ class GraphSession:
                 binding=self.binding(),
                 runtime={
                     "events": events,
+                    "open_invocations": deepcopy(list(self.bo_open_invocations.values())),
                     "runtime_frames": {
                         "schema": "stategraph-runtime-frames/v1",
                         "partial": True,

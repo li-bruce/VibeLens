@@ -42,11 +42,25 @@ class BOSessionSink:
             staged = copy(session)
             staged.seen = session.seen.copy()
             staged.producers = session.producers.copy()
+            staged.bo_open_invocations = session.bo_open_invocations.copy()
             staged.history = []
-            # _accept_event changes only these maps, sequence/gap counters and
+            # _accept_event changes only these maps, scalar counters and
             # history. Copied counters are integers; no graph snapshot is applied.
-            for value in values:
-                staged._accept_event(value)
+            receipts = [staged._accept_event(value) for value in values]
             if session.binding()["status"] != "current":
                 raise ValueError("source or declaration changed during event admission")
-            return [session._accept_event(value) for value in values]
+            # Preflight already ran the exact single-event reducer. Publish its
+            # detached cursor once, rather than recomputing signatures and call
+            # ownership for every event a second time. No mutation precedes the
+            # second source-byte check. Duplicate receipts publish no event.
+            for name in (
+                "seen",
+                "producers",
+                "bo_open_invocations",
+                "bo_context_evictions",
+                "sequence",
+                "gaps",
+            ):
+                setattr(session, name, getattr(staged, name))
+            session.history.append_many(staged.history)
+            return receipts

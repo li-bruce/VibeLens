@@ -1,0 +1,118 @@
+"""Optional observation ports; failures never authorize or undo business work."""
+from contextlib import contextmanager, nullcontext
+
+
+class BOQuietActivation:
+    def result(self, builder):
+        pass
+
+    def record(self, phase, builder):
+        return None
+
+
+class BOPorts:
+    def __init__(self, probe=None, data=None, policy_recorder=None, tracing=None):
+        self.probe, self.data, self.policy_recorder, self.tracing = probe, data, policy_recorder, tracing
+        self.errors = 0
+        self.http_installer = None
+
+    def install_http(self, app):
+        if self.http_installer:
+            try:
+                self.http_installer(app)
+            except Exception:
+                self.errors += 1
+
+    @contextmanager
+    def span(self, node, builder=lambda: {}, **identity):
+        manager = activation = None
+        if self.probe:
+            try:
+                manager = self.probe.span(node, builder, **identity)
+                activation = manager.__enter__()
+            except Exception:
+                self.errors += 1
+        try:
+            yield activation or BOQuietActivation()
+        except BaseException as error:
+            if manager and activation:
+                try:
+                    manager.__exit__(type(error), error, error.__traceback__)
+                except Exception:
+                    self.errors += 1
+            raise
+        else:
+            if manager and activation:
+                try:
+                    manager.__exit__(None, None, None)
+                except Exception:
+                    self.errors += 1
+
+    def record(self, node, phase, builder, **identity):
+        if self.probe:
+            try:
+                return self.probe.record(node, phase, builder, **identity)
+            except Exception:
+                self.errors += 1
+        return None
+
+    def changed(self, node, row, *, event=None, guards=None):
+        if not self.probe:
+            return
+        from bo_stategraph.workflow import row_context
+        try:
+            evidence = self.record(node, "change", lambda: {"outputs": {"state": row["state"], "revision": row["revision"]}},
+                entity=row["id"], attempt=row["id"], scope="entity", revision=row["revision"])
+            if evidence:
+                self.probe.snapshot(row["id"], row["state"], row_context(row), row["revision"], evidence,
+                    event=event, guards=guards, payload={"allowed": True} if event else None)
+        except Exception:
+            self.errors += 1
+
+    def policy(self, policy, evaluation, file_id):
+        if self.probe and not self.probe.bo_enabled:
+            return
+        if self.policy_recorder:
+            try:
+                self.policy_recorder(policy, evaluation, entity=file_id or "application", attempt=file_id or "application")
+            except Exception:
+                self.errors += 1
+
+    def inject(self):
+        if self.probe and not self.probe.bo_enabled:
+            return {}
+        try:
+            return self.tracing.inject() if self.tracing else {}
+        except Exception:
+            self.errors += 1
+            return {}
+
+    @contextmanager
+    def receive(self, carrier):
+        manager = None
+        if self.tracing and carrier:
+            try:
+                manager = self.tracing.receive(carrier, trusted=True, link=True)
+                manager.__enter__()
+            except Exception:
+                self.errors += 1
+                manager = None
+        try:
+            yield
+        finally:
+            if manager:
+                try:
+                    manager.__exit__(None, None, None)
+                except Exception:
+                    self.errors += 1
+
+    def operation(self, node):
+        return self.data.operation(node) if self.data else nullcontext()
+
+    def transaction(self, manager, write=False):
+        return self.data.transaction("db_transaction", manager, parameters={"write": write}) if self.data else manager
+
+    def transform(self, function, row):
+        if self.data:
+            return self.data.transform("db_transform", function, row, before=lambda value: {"state": value["state"]}, after=lambda value: {"state": value["state"]})
+        return function(row)

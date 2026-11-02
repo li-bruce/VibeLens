@@ -3,6 +3,7 @@ import { t as boTranslate } from "./i18n.js";
 import { graphBounds, nodeTypes, viewTypes, relationType } from "./graph-core.js";
 import { dataRelations, migrateDataFilters } from "./data-layer.js";
 import { codeRelations, migrateCodeFilters } from "./code-layer.js";
+import { layerOf } from "./graph-layers.js";
 export const layoutKey = (model, projectId) =>
   "business-observer.layout.v2:" +
   (projectId ||
@@ -662,7 +663,7 @@ export function renderRevision(view, selection = []) {
     deadlines,
   ]);
 }
-export function edgePorts(graph, edge, nodePort = 32) {
+export function edgePorts(graph, edge) {
   const regions = new Map((graph.regions || []).map((r) => [r.id, r]));
   const a = graph.byId.get(edge.from),
     b = graph.byId.get(edge.to),
@@ -673,8 +674,10 @@ export function edgePorts(graph, edge, nodePort = 32) {
   const dx = q.x - p.x,
     dy = q.y - p.y,
     length = Math.hypot(dx, dy) || 1;
-  const ar = edge.sourceRegion ? regions.get(edge.from)?.radius || 28 : nodePort,
-    br = edge.targetRegion ? regions.get(edge.to)?.radius || 28 : nodePort;
+  // The icon centre is the ordinary node's shared routing/animation coordinate.
+  // An expanded compound node is represented by its region circumference.
+  const ar = edge.sourceRegion ? regions.get(edge.from)?.radius || 28 : 0,
+    br = edge.targetRegion ? regions.get(edge.to)?.radius || 28 : 0;
   return {
     start: { x: p.x + (dx / length) * ar, y: p.y + (dy / length) * ar },
     end: { x: q.x - (dx / length) * br, y: q.y - (dy / length) * br },
@@ -972,6 +975,7 @@ async function clusteredLayout(elk, graph, state) {
     return {
       id: c.id,
       type: graph.byId.get(c.id).type,
+      layer: layerOf(graph.byId.get(c.id).node),
       radius: c.radius,
       pin: pinned
         ? {
@@ -982,11 +986,51 @@ async function clusteredLayout(elk, graph, state) {
     };
   });
   const unitEdges = [...links.values()].map((e) => ({ from: e.sources[0], to: e.targets[0] }));
+  const solver = await import("./cluster-layout.js");
+  const groups = solver.clusterGroups(units);
+  const groupByUnit = new Map(
+    groups.flatMap((group) => group.members.map((unit) => [unit.id, group.id])),
+  );
+  const groupLinks = new Map();
+  for (const edge of unitEdges) {
+    const source = groupByUnit.get(edge.from),
+      target = groupByUnit.get(edge.to);
+    if (source !== target) groupLinks.set(JSON.stringify([source, target]), { source, target });
+  }
+  // ELK orders a small graph of clusters; the worker solves dense local packing.
+  // This preserves full subtrees and keeps both renderers on the same XY seeds.
+  const coarse = await elk.layout({
+    id: "semantic-clusters",
+    layoutOptions: {
+      "elk.algorithm": "layered",
+      "elk.direction": "RIGHT",
+      "elk.randomSeed": "42",
+      "elk.spacing.nodeNode": "170",
+      "elk.spacing.componentComponent": "200",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "200",
+      "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+    },
+    children: groups.map((group) => ({
+      id: group.id,
+      width: group.radius * 2,
+      height: group.radius * 2,
+    })),
+    edges: [...groupLinks.values()].map((edge, i) => ({
+      id: "cluster-link:" + i,
+      sources: [edge.source],
+      targets: [edge.target],
+    })),
+  });
+  const seeds = coarse.children.map((group) => ({
+    id: group.id,
+    x: group.x + group.width / 2,
+    y: group.y + group.height / 2,
+  }));
   // Physics runs away from rendering and input; each request owns its worker.
   const positions =
     typeof Worker === "undefined" && typeof window === "undefined"
       ? // Headless/CLI layout checks execute the same solver, with no browser shim.
-        (await import("./cluster-layout.js")).clusterUnits(units, unitEdges)
+        solver.clusterUnits(units, unitEdges, seeds)
       : await new Promise((resolve, reject) => {
           const worker = new Worker(new URL("./cluster-worker.js", import.meta.url), {
             type: "module",
@@ -1005,7 +1049,7 @@ async function clusteredLayout(elk, graph, state) {
             worker.terminate();
             reject(Error(error.message));
           };
-          worker.postMessage({ units, edges: unitEdges });
+          worker.postMessage({ units, edges: unitEdges, seeds });
         });
   const proposed = new Map(
       positions.map((p) => [

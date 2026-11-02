@@ -496,6 +496,10 @@ def validate_graph(model):
     if not nodes or len(nodes) != len(model["nodes"]):
         raise ValueError("invalid node identities")
     for node in nodes.values():
+        if "observation_root" in node and type(node["observation_root"]) is not bool:
+            raise ValueError("observation_root must be Boolean")
+        if node.get("observation_root") and not node.get("source"):
+            raise ValueError("external observation roots require their native source binding")
         owner = nodes.get(node.get("event_node") or node.get("referenceOf"), node)
         validate_lifecycle(node, capture=owner.get("capture", {}))
         representation = node.get("represents")

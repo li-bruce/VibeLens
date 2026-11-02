@@ -140,20 +140,19 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                     return self.reply(
                         404, {"error": "Debug Web is disabled", "code": "bo_web_disabled"}
                     )
+                # Shared Web services own their route dispatch. A second HTTP
+                # whitelist previously dropped newly added control endpoints.
+                shared = session.web.get(self.path)
+                if shared is not None:
+                    return self.reply(200, shared)
                 if path == "/api/view":
                     return self.reply(200, session.view())
-                if path.startswith("/api/code/"):
-                    return self.reply(200, session.web.get(self.path))
                 if path in ("/api/stategraph", "/api/stategraph/export"):
                     return self.reply(200, session.export())
                 if path == "/api/preferences":
                     return self.reply(
                         200, session.web.preferences_for(self.path, session.preferences).read()
                     )
-                if path == "/api/vibelens/control":
-                    return self.reply(200, session.web.get(self.path))
-                if path == "/api/design":
-                    return self.reply(200, session.web.design.snapshot())
                 if path == "/api/versions":
                     return self.reply(200, [])
                 if path == "/api/recordings":

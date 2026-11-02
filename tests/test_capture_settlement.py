@@ -6,6 +6,8 @@ import sys
 import tempfile
 import threading
 import unittest
+from copy import deepcopy
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "skills/vibelens/scripts"), str(ROOT / "tools")]
@@ -58,7 +60,10 @@ class CaptureSettlementTests(unittest.TestCase):
             release.join()
         saved = self.session.recordings.get(identifier)
         self.assertEqual([event["id"] for event in saved["events"]], emitted)
-        self.assertEqual(saved["producer_settlement"], {"flushed": True})
+        self.assertEqual(
+            saved["producer_settlement"],
+            {"flushed": True, "target": 40, "completed": 40, "submitted": 40, "pending": 0},
+        )
         self.assertEqual(saved["gaps"], [])
         self.assertEqual(saved["status"], "stopped")
 
@@ -69,6 +74,131 @@ class CaptureSettlementTests(unittest.TestCase):
         saved = self.session.recordings.get(identifier)
         self.assertEqual([event["id"] for event in saved["context"]["events"]], emitted)
         self.assertEqual(saved["events"], [])
+
+    def test_saving_a_recording_does_not_block_event_admission(self):
+        identifier = self.session.recordings.start()["id"]
+        first = self.event()
+        self.assertTrue(self.probe.flush(2))
+        entered, release = threading.Event(), threading.Event()
+        writer = self.session.recordings._write
+
+        def gated_write(value):
+            entered.set()
+            if not release.wait(3):
+                raise TimeoutError("test writer was not released")
+            return writer(value)
+
+        with patch.object(self.session.recordings, "_write", side_effect=gated_write):
+            sampler = threading.Thread(target=self.session.recordings.sample)
+            sampler.start()
+            try:
+                self.assertTrue(entered.wait(2))
+                second = self.event()
+                self.assertTrue(
+                    self.probe.flush(0.5), "Disk serialization blocked the incoming queue"
+                )
+            finally:
+                release.set()
+                sampler.join(3)
+        self.session.recordings.stop()
+        saved = self.session.recordings.get(identifier)
+        self.assertEqual([e["id"] for e in saved["events"]], [first, second])
+        self.assertEqual(saved["gaps"], [])
+        self.assertEqual(self.probe.bo_health()["dropped"], 0)
+
+    def test_checkpoint_and_metadata_reads_do_not_rescan_the_project_tree(self):
+        identifier = self.session.recordings.start()["id"]
+        expected = self.event()
+        self.assertTrue(self.probe.flush(2))
+        with patch.object(
+            self.session.web.code_graph, "view", side_effect=AssertionError("source tree rescan")
+        ):
+            self.session.recordings.sample()
+            self.session.recordings.stop()
+            with patch.object(
+                self.session.graph, "bo_instances", side_effect=AssertionError("runtime assembled")
+            ):
+                self.assertIsNone(self.session.recordings.list()["active"])
+                saved = self.session.recordings.get(identifier)
+            self.assertEqual([event["id"] for event in saved["events"]], [expected])
+            self.assertGreater(saved["context"]["project_structure"]["loaded_nodes"], 0)
+            self.assertEqual(saved["gaps"], [])
+        self.assertGreater(self.session.view()["project_structure"]["loaded_nodes"], 0)
+
+    def test_runtime_reader_preserves_existing_no_argument_view_overrides(self):
+        class NativeSession(GraphSession):
+            def view(self):
+                result = super().view()
+                result["machine"]["adapter_projection"] = "native"
+                return result
+
+        self.session.close()
+        self.session = NativeSession(self.root)
+        self.session.bo_bind_capture(
+            scope_setter=self.probe.bo_set_scope,
+            flush_capture=lambda: self.probe.flush(2),
+            health=self.probe.bo_health,
+        )
+        identifier = self.session.recordings.start()["id"]
+        with patch.object(
+            self.session.web.code_graph, "view", side_effect=AssertionError("source tree rescan")
+        ):
+            self.session.recordings.sample()
+            self.session.recordings.stop()
+        saved = self.session.recordings.get(identifier)
+        self.assertEqual(saved["context"]["machine"]["adapter_projection"], "native")
+        self.assertEqual(saved["final"]["machine"]["adapter_projection"], "native")
+        self.assertGreater(saved["context"]["project_structure"]["loaded_nodes"], 0)
+        self.assertEqual(saved["gaps"], [])
+
+    def test_changed_source_during_scope_selection_rejects_recording_start(self):
+        path = self.root / "worker.py"
+        original = path.read_bytes()
+        before = self.session.recordings.bo_scope_setter
+
+        def change_source(nodes):
+            before(nodes)
+            path.write_bytes(original + b"\n# Changed during capture selection\n")
+
+        self.session.recordings.bo_scope_setter = change_source
+        try:
+            with self.assertRaisesRegex(ValueError, "changed while recording started"):
+                self.session.recordings.start()
+            self.assertIsNone(self.session.recordings.active)
+            self.assertIsNone(self.probe.bo_capture_nodes)
+        finally:
+            path.write_bytes(original)
+
+    def test_large_view_copy_has_one_boundary_without_holding_admission_lock(self):
+        first = self.event()
+        self.assertTrue(self.probe.flush(2))
+        entered, release = threading.Event(), threading.Event()
+        views = []
+
+        def copy_payload(value):
+            if isinstance(value, list) and value and value[0].get("id") == first:
+                entered.set()
+                if not release.wait(3):
+                    raise TimeoutError("test view copy was not released")
+            return deepcopy(value)
+
+        with patch("bo_observer.observation.session.deepcopy", side_effect=copy_payload):
+            reader = threading.Thread(target=lambda: views.append(self.session.view()))
+            reader.start()
+            try:
+                self.assertTrue(entered.wait(2))
+                self.event()
+                self.assertTrue(
+                    self.probe.flush(0.5), "View payload copying held the admission lock"
+                )
+            finally:
+                release.set()
+                reader.join(3)
+        self.assertEqual(len(views), 1)
+        self.assertEqual(views[0]["health"]["attempted"], 1)
+        self.assertEqual([e["id"] for e in views[0]["events"]], [first])
+        views[0]["events"][0]["outputs"]["state"] = "edited view"
+        self.assertEqual(self.session.history.snapshot()[0]["outputs"]["state"], "running")
 
     def test_timed_out_stop_retains_partial_evidence_as_interrupted(self):
         ready = [True]

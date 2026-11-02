@@ -43,6 +43,8 @@ def config(root, name):
         raise ValueError("probe_modes must be a nonempty unique list of on/off/fault")
     if type(result.get("require_probe_health", False)) is not bool:
         raise ValueError("require_probe_health must be Boolean")
+    if type(result.get("require_observation_closure", False)) is not bool:
+        raise ValueError("require_observation_closure must be Boolean")
     stategraph = result.get("stategraph")
     if stategraph is not None:
         if not isinstance(stategraph, dict) or not stategraph.get("module"):
@@ -97,6 +99,11 @@ def snapshot(root, cfg, previous=None):
                 *([cfg["whitebox"]] if cfg.get("whitebox") else []),
                 *([cfg["mapping_contract"]] if cfg.get("mapping_contract") else []),
                 *([cfg["reconciliation"]] if cfg.get("reconciliation") else []),
+                *(
+                    ["bo_stategraph/telemetry.json"]
+                    if (root / "bo_stategraph/telemetry.json").is_file()
+                    else []
+                ),
             ]
         )
         - {cfg["manifest"]}
@@ -132,6 +139,7 @@ def snapshot(root, cfg, previous=None):
                 "required_execution_cases",
                 "require_mapping_witnesses",
                 "require_probe_health",
+                "require_observation_closure",
             )
         },
         "whitebox": read(contained(root, cfg["whitebox"])) if cfg.get("whitebox") else None,

@@ -26,7 +26,7 @@ const functionLike = (n) =>
 const routeNames = new Set(["get", "post", "put", "patch", "delete", "route", "websocket"]);
 
 /** Extract declarations, parameters, call sites, and frontend handlers from one source file. */
-function parseUnit(path, original) {
+function parseUnit(path, original, fileOnly = false) {
   let source = original,
     template;
   if (path.endsWith(".vue")) {
@@ -105,6 +105,10 @@ function parseUnit(path, original) {
       ts.isStringLiteral(n.arguments[0])
     )
       fileReferences.push({ module: n.arguments[0].text, relation: "imports", line: line(n) });
+    if (fileOnly) {
+      ts.forEachChild(n, (child) => register(child));
+      return;
+    }
     // CommonJS declarations share import facts with ES modules. Dynamic require
     // expressions remain unresolved rather than executing a module to discover it.
     if (
@@ -223,6 +227,13 @@ function parseUnit(path, original) {
           };
           if (args.length >= 2 && args.slice(0, 2).every(ts.isStringLiteral))
             c.literal_pair = args.slice(0, 2).map((a) => a.text);
+          if (
+            ts.isPropertyAccessExpression(part.expression) &&
+            part.expression.name.text === "span" &&
+            args.length &&
+            ts.isStringLiteral(args[0])
+          )
+            c.span_node = args[0].text;
           item.calls.push(c);
         }
         if (ts.isIfStatement(part) || ts.isConditionalExpression(part))
@@ -240,6 +251,8 @@ function parseUnit(path, original) {
     ts.forEachChild(n, (child) => register(child, owner, className));
   }
   register(sf);
+  if (fileOnly)
+    return { imports, file_references: fileReferences, symbols: {}, language: "javascript" };
   function addEntry(node, label) {
     let parent = node.parent,
       owner;
@@ -412,7 +425,7 @@ const units = {},
   errors = [];
 for (const file of request.files) {
   try {
-    units[file.path] = parseUnit(file.path, file.source);
+    units[file.path] = parseUnit(file.path, file.source, request.file_only === true);
   } catch (error) {
     errors.push({ path: file.path, error: String(error.message || error) });
   }

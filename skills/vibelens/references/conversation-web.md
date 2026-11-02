@@ -21,6 +21,8 @@ Always present the first graph in the conversation as well. After checking the a
 
 After an answer, AI updates requirements, decisions, graph, scenarios, and focus. Web reloads the projection. The API marks stale focus; the viewer clears its highlights silently. Focus changes presentation only, never answers or check outcomes. Existing history/mapping gates remain active.
 
+If a localhost request times out, check the host process and an actual HTTP response with the available local-network permissions before diagnosing the application. A printed URL alone does not prove availability, and a sandbox network restriction alone does not prove a viewer defect.
+
 ## Continue into implementation
 
 Reuse assets through `BOWeb(root, assets=project_graph_assets)`:

@@ -1,0 +1,517 @@
+[
+  {
+    "project": "delivery",
+    "check": {
+      "valid": true,
+      "status": "current",
+      "errors": [],
+      "candidate_id": "df3c13c65d2e629529f9d9092ad145c647194503f138b32b1f384ec6de9c2acf"
+    },
+    "begin": {
+      "valid": true,
+      "status": "editing",
+      "baseline_id": "df3c13c65d2e629529f9d9092ad145c647194503f138b32b1f384ec6de9c2acf",
+      "change": ".stategraph/view-visibility-reload-20261102",
+      "recall": {
+        "schema": "bo-iteration-recall/v1",
+        "candidate_id": "df3c13c65d2e629529f9d9092ad145c647194503f138b32b1f384ec6de9c2acf",
+        "mode": "drive",
+        "active_change": {
+          "change": ".stategraph/view-visibility-reload-20261102"
+        },
+        "request": "Managed viewer persistence repair: modern per-view layer lists preserve explicit omissions across reload; the legacy shared-filter migration applies only once. Existing business, state machine, protocols and checks are unchanged.",
+        "changed_files": [],
+        "source_errors": [],
+        "verification": "not_run",
+        "unregistered_files": [],
+        "unclassified_functions": [],
+        "contracts": {
+          "model": "observer_generated/behavior.json",
+          "acceptance": "acceptance.json",
+          "whitebox": "whitebox.json",
+          "mapping_contract": "mapping.json"
+        },
+        "observation_module": "bo_stategraph/__init__.py",
+        "observation_sources": [
+          "app/ports.py::BOEvents.__init__",
+          "app/ports.py::BOEvents.bo_emit"
+        ],
+        "naming": {
+          "wiring": "bo_",
+          "adapters": "BO"
+        },
+        "layers": {
+          "business": {
+            "nodes": 5,
+            "scan": "feature entrypoints and effects",
+            "observe": "actual invocation and selected result",
+            "affected_nodes": []
+          },
+          "state": {
+            "nodes": 8,
+            "scan": "state declaration and value bindings",
+            "observe": "actual state changes and residence",
+            "affected_nodes": []
+          },
+          "rules": {
+            "nodes": 5,
+            "scan": "predicate sources, arguments and shared dependencies",
+            "observe": "evaluated/skipped conditions and actual enclosing invocation",
+            "affected_nodes": []
+          },
+          "api": {
+            "nodes": 0,
+            "scan": "registered routes and handlers",
+            "observe": "request boundary and actual response",
+            "affected_nodes": []
+          },
+          "execution": {
+            "nodes": 22,
+            "scan": "functions, parameters and explicit probes",
+            "observe": "call boundaries, selected values and actual nested parent identities",
+            "affected_nodes": []
+          },
+          "operations": {
+            "nodes": 0,
+            "scan": "model exporters and data-access bindings",
+            "observe": "query, transform, transaction and enclosing native call identity",
+            "affected_nodes": []
+          },
+          "project": {
+            "nodes": 0,
+            "scan": "directories, files, imports and dependencies",
+            "observe": "source projection only",
+            "affected_nodes": []
+          },
+          "code": {
+            "nodes": 24,
+            "scan": "symbols, lexical owners, calls and source maps",
+            "observe": "explicitly mapped runtime evidence",
+            "affected_nodes": []
+          },
+          "data": {
+            "nodes": 0,
+            "scan": "ORM/ODM/schema metadata and relationships",
+            "observe": "operation-linked structural projection",
+            "affected_nodes": []
+          }
+        },
+        "plan": ".stategraph/observation-plan.json",
+        "telemetry": {
+          "backend": "native",
+          "registration_file": null,
+          "nodes": [],
+          "preserve": [
+            "state declaration and native executor",
+            "source mappings and selected fields",
+            "trace propagation across async/job boundaries",
+            "observer exclusion and probe health",
+            "native principal/object facts and protected context comparisons"
+          ]
+        },
+        "context_mapping": [],
+        "context_mapping_count": 0,
+        "context_mapping_omitted": 0,
+        "requirements": [
+          {
+            "id": "R1",
+            "text": "typed input and versioned edits",
+            "status": "assumption"
+          },
+          {
+            "id": "R2",
+            "text": "engineer AND ANY eligible grant; substitute authorization",
+            "status": "assumption"
+          },
+          {
+            "id": "R3",
+            "text": "lifecycle, wait, retry and cancellation",
+            "status": "assumption"
+          },
+          {
+            "id": "R4",
+            "text": "checksum and fresh commit authorization",
+            "status": "assumption"
+          },
+          {
+            "id": "R5",
+            "text": "one committed artifact per version",
+            "status": "assumption"
+          },
+          {
+            "id": "R6",
+            "text": "observer isolation and equal business effects",
+            "status": "assumption"
+          },
+          {
+            "id": "R7",
+            "text": "Concurrent checks share per-run capacity, wait for slots, return slots and require all results; reject synthetic SECRET: marker.",
+            "status": "assumption"
+          },
+          {
+            "id": "R8",
+            "text": "All declared activity instances are queryable by run and version; stale runs cannot overwrite or commit new runs; historical views retain the selected state.",
+            "status": "assumption"
+          }
+        ],
+        "requirement_count": 8,
+        "intent": "intent.json",
+        "test_commands": [
+          [
+            "{python}",
+            "-B",
+            "-X",
+            "utf8",
+            "tests/test_business.py"
+          ],
+          [
+            "{python}",
+            "-B",
+            "-X",
+            "utf8",
+            "observer_generated/runtime/architecture_guard.py",
+            "check",
+            "--root",
+            "."
+          ],
+          [
+            "{python}",
+            "-B",
+            "-X",
+            "utf8",
+            "tests/test_execution.py"
+          ],
+          [
+            "{python}",
+            "-B",
+            "-X",
+            "utf8",
+            "tooling/graph_fixture.py"
+          ],
+          [
+            "node",
+            "tests/test_graph_projection.mjs"
+          ],
+          [
+            "node",
+            "tests/test_graph_layout.mjs"
+          ],
+          [
+            "{python}",
+            "-X",
+            "utf8",
+            "-B",
+            "tests/test_recording.py"
+          ],
+          [
+            "node",
+            "tests/test_recorded_views.mjs"
+          ],
+          [
+            "{python}",
+            "-X",
+            "utf8",
+            "-B",
+            "tests/test_stategraph_module.py"
+          ]
+        ],
+        "observations_command": [
+          "{python}",
+          "-B",
+          "-X",
+          "utf8",
+          "tests/observe.py"
+        ],
+        "required_checks": {
+          "source_first_inventory": true,
+          "probe_health": false,
+          "invocation_closure": false,
+          "mapping_witnesses": true,
+          "reports": [
+            "mapping",
+            "state_rules",
+            "business",
+            "project_checks"
+          ]
+        },
+        "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results."
+      }
+    }
+  },
+  {
+    "project": "team-archive",
+    "check": {
+      "valid": true,
+      "status": "current",
+      "errors": [],
+      "candidate_id": "88c9b7a1df176c197c04b868638c74e7ee116928c53613729b4fd6cb8911a02f"
+    },
+    "begin": {
+      "valid": true,
+      "status": "editing",
+      "baseline_id": "88c9b7a1df176c197c04b868638c74e7ee116928c53613729b4fd6cb8911a02f",
+      "change": ".stategraph/view-visibility-reload-20261102",
+      "recall": {
+        "schema": "bo-iteration-recall/v1",
+        "candidate_id": "88c9b7a1df176c197c04b868638c74e7ee116928c53613729b4fd6cb8911a02f",
+        "mode": "drive",
+        "active_change": {
+          "change": ".stategraph/view-visibility-reload-20261102"
+        },
+        "request": "Managed viewer persistence repair: modern per-view layer lists preserve explicit omissions across reload; the legacy shared-filter migration applies only once. Existing business, state machine, protocols and checks are unchanged.",
+        "changed_files": [],
+        "source_errors": [],
+        "verification": "not_run",
+        "unregistered_files": [],
+        "unclassified_functions": [],
+        "contracts": {
+          "model": "behavior.json",
+          "acceptance": "acceptance.json",
+          "whitebox": "whitebox.json",
+          "mapping_contract": "mapping.json",
+          "discovery": "discovery.json"
+        },
+        "observation_module": "bo_stategraph/__init__.py",
+        "observation_sources": [
+          "archive_app/ports.py::BOTracePort.__init__",
+          "archive_app/ports.py::BOTracePort.bo_record",
+          "archive_app/ports.py::no_trace",
+          "archive_app/ports.py::bo_record_change",
+          "integrations/bo_observer.py::BOObserver.__init__",
+          "integrations/bo_observer.py::BOObserver.write",
+          "integrations/bo_observer.py::BOObserver.trace",
+          "integrations/bo_observer.py::BOObserver.snapshot",
+          "integrations/bo_observer.py::BOObserver.health",
+          "integrations/bo_observer.py::BOObserver.close",
+          "integrations/bo_server.py::LocalApplication.__init__",
+          "integrations/bo_server.py::LocalApplication.recording_view",
+          "integrations/bo_server.py::LocalApplication.bo_export_graph",
+          "integrations/bo_server.py::LocalApplication.cases",
+          "integrations/bo_server.py::LocalApplication.version_sources",
+          "integrations/bo_server.py::LocalApplication.graph_view",
+          "integrations/bo_server.py::LocalApplication.state",
+          "integrations/bo_server.py::LocalApplication.command",
+          "integrations/bo_server.py::serve",
+          "integrations/bo_server.py::serve.Handler.log_message",
+          "integrations/bo_server.py::serve.Handler.reply",
+          "integrations/bo_server.py::serve.Handler.do_GET",
+          "integrations/bo_server.py::serve.Handler.do_POST",
+          "run.py::main",
+          "static/app.js::bo_record",
+          "integrations/bo_observer.py::BOObserver.trace.broken"
+        ],
+        "naming": {
+          "wiring": "bo_",
+          "adapters": "BO"
+        },
+        "layers": {
+          "business": {
+            "nodes": 6,
+            "scan": "feature entrypoints and effects",
+            "observe": "actual invocation and selected result",
+            "affected_nodes": []
+          },
+          "state": {
+            "nodes": 10,
+            "scan": "state declaration and value bindings",
+            "observe": "actual state changes and residence",
+            "affected_nodes": []
+          },
+          "rules": {
+            "nodes": 8,
+            "scan": "predicate sources, arguments and shared dependencies",
+            "observe": "evaluated/skipped conditions and actual enclosing invocation",
+            "affected_nodes": []
+          },
+          "api": {
+            "nodes": 0,
+            "scan": "registered routes and handlers",
+            "observe": "request boundary and actual response",
+            "affected_nodes": []
+          },
+          "execution": {
+            "nodes": 30,
+            "scan": "functions, parameters and explicit probes",
+            "observe": "call boundaries, selected values and actual nested parent identities",
+            "affected_nodes": []
+          },
+          "operations": {
+            "nodes": 0,
+            "scan": "model exporters and data-access bindings",
+            "observe": "query, transform, transaction and enclosing native call identity",
+            "affected_nodes": []
+          },
+          "project": {
+            "nodes": 0,
+            "scan": "directories, files, imports and dependencies",
+            "observe": "source projection only",
+            "affected_nodes": []
+          },
+          "code": {
+            "nodes": 70,
+            "scan": "symbols, lexical owners, calls and source maps",
+            "observe": "explicitly mapped runtime evidence",
+            "affected_nodes": []
+          },
+          "data": {
+            "nodes": 0,
+            "scan": "ORM/ODM/schema metadata and relationships",
+            "observe": "operation-linked structural projection",
+            "affected_nodes": []
+          }
+        },
+        "plan": ".stategraph/observation-plan.json",
+        "telemetry": {
+          "backend": "native",
+          "registration_file": null,
+          "nodes": [],
+          "preserve": [
+            "state declaration and native executor",
+            "source mappings and selected fields",
+            "trace propagation across async/job boundaries",
+            "observer exclusion and probe health",
+            "native principal/object facts and protected context comparisons"
+          ]
+        },
+        "context_mapping": [],
+        "context_mapping_count": 0,
+        "context_mapping_omitted": 0,
+        "requirements": [
+          {
+            "id": "R01",
+            "text": "\u5728\u672c\u5730\u7528 Python \u548c SQLite \u5efa\u7acb\u56e2\u961f\u8d44\u6599\u5f52\u6863\u5de5\u5177\uff1b\u8d44\u6599\u4f4d\u4e8e\u9879\u76ee\u7684\u591a\u5c42\u6587\u4ef6\u5939\u4e2d\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R02",
+            "text": "\u4ec5\u8d44\u6599\u6240\u5728\u6587\u4ef6\u5939\u7684\u76f4\u63a5\u8d1f\u8d23\u4eba\u53ef\u4ee5\u5904\u7406\uff1b\u4e0a\u7ea7\u6587\u4ef6\u5939\u8d1f\u8d23\u4eba\u4e0d\u81ea\u52a8\u7ee7\u627f\u4e0b\u7ea7\u6743\u9650\uff0c\u4e0b\u7ea7\u6309\u81ea\u5df1\u7684\u76f4\u63a5\u8d1f\u8d23\u4eba\u5224\u65ad\u3002\u672c\u89c4\u5219\u4ec5\u9002\u7528\u4e8e\u672c\u6f14\u7ec3\u9879\u76ee\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R03",
+            "text": "\u4efb\u4e00\u5ba1\u6279\u76ee\u6807\u56db\u5b57\u6bb5\u5339\u914d\u3001\u5ba1\u6838\u5458\u975e\u64cd\u4f5c\u4eba\u3001\u672a\u64a4\u9500\u4e14 now < deadline \u5373\u6709\u6548\uff1b\u64a4\u9500\u91cd\u8bc4\uff0c\u65e0\u6709\u6548\u5ba1\u6279\u7b49\u5f85\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R04",
+            "text": "\u5185\u5bb9\u4e0d\u5f97\u5305\u542b SECRET:\uff1b\u7d22\u5f15\u8981\u6c42\u6807\u9898\u3001\u9879\u76ee\u3001\u8d44\u6599\u7f16\u53f7\u9f50\u5168\u3002\u4e24\u9879\u90fd\u901a\u8fc7\u624d\u53ef\u63d0\u4ea4\uff0c\u5931\u8d25\u540e\u65b0\u5efa\u8fd0\u884c\uff0c\u4e0d\u62fc\u7528\u4e0d\u540c\u8fd0\u884c\u7ed3\u679c\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R05",
+            "text": "\u6bcf\u6b21\u8fd0\u884c\u72ec\u4eab\u540d\u989d\uff0c\u521b\u5efa\u65f6\u9009\u62e9 1 \u6216 2\uff0c\u9ed8\u8ba4 2\uff1b\u4e24\u9879\u68c0\u67e5\u5404\u5360 1\uff0c\u5b9e\u9645\u7ed3\u675f\u540e\u5f52\u8fd8\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R06",
+            "text": "\u5185\u5bb9\u6539\u7248\u540e\u65e7\u8fd0\u884c\u7981\u6b62\u63d0\u4ea4\uff1b\u672a\u5f00\u59cb\u68c0\u67e5\u4f5c\u5e9f\uff0c\u5df2\u5f00\u59cb\u68c0\u67e5\u81ea\u7136\u7ed3\u675f\uff1b\u4fdd\u7559\u5168\u90e8\u8fd0\u884c\uff0c\u65b0\u7248\u672c\u72ec\u7acb\u542f\u52a8\u4e14\u4e0d\u590d\u7528\u65e7\u5ba1\u6279\u6216\u65e7\u7ed3\u679c\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R07",
+            "text": "\u5f00\u53d1\u8005\u56fe\u53ef\u62d6\u52a8\u3001\u9010\u5c42\u5c55\u5f00\uff0c\u80fd\u89e3\u91ca\u5f52\u6863\u4f9d\u636e\u3001\u7b49\u5f85\u539f\u56e0\u548c\u5173\u952e\u51fd\u6570\u5b9e\u9645\u53c2\u6570\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R08",
+            "text": "\u5f52\u6863\u5bf9\u8c61\u662f\u4e00\u4efd\u8d44\u6599\u6761\u76ee\uff1b\u6210\u529f\u540e\u5728 SQLite \u4fdd\u5b58\u5f53\u65f6\u5185\u5bb9\u7684\u56fa\u5b9a\u5feb\u7167\u548c\u5bf9\u5e94\u5185\u5bb9\u7248\u672c\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R09",
+            "text": "\u540c\u4e00\u4efd\u8d44\u6599\u7684\u540c\u4e00\u5185\u5bb9\u7248\u672c\u4e0d\u5f97\u91cd\u590d\u751f\u6210\u5f52\u6863\u8bb0\u5f55\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R10",
+            "text": "\u6587\u4ef6\u5939\u4ec5\u4f5c\u5206\u7c7b\uff0c\u4e0d\u5f52\u6863\u6587\u4ef6\u5939\uff1b\u5f52\u6863\u4e0d\u79fb\u52a8\u6216\u5220\u9664\u539f\u8d44\u6599\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R11",
+            "text": "\u65b0\u8fd0\u884c\u987b\u5177\u5907\u5f53\u524d\u8d44\u683c\u624d\u542f\u52a8\u68c0\u67e5\uff1b\u5931\u53bb\u5ba1\u6279\u540e\u5df2\u542f\u52a8\u7684\u81ea\u7136\u7ed3\u675f\uff0c\u5c1a\u672a\u542f\u52a8\u7684\u7b49\u5f85\uff1b\u70b9\u51fb\u7ee7\u7eed\u5e76\u91cd\u67e5\u8d44\u683c\u540e\u518d\u5f00\u59cb\u6216\u63d0\u4ea4\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R12",
+            "text": "\u53d6\u6d88\u672c\u6b21\u8fd0\u884c\uff1a\u505c\u6b62\u542f\u52a8\u672a\u5f00\u59cb\u7684\u68c0\u67e5\uff0c\u5df2\u542f\u52a8\u68c0\u67e5\u5b9e\u9645\u7ed3\u675f\u540e\u5f52\u8fd8\u540d\u989d\uff0c\u4e0d\u63d0\u4ea4\u3001\u4e0d\u5220\u9664\u8d44\u6599\uff0c\u4e5f\u4e0d\u5f71\u54cd\u5176\u4ed6\u8fd0\u884c\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R13",
+            "text": "\u76ee\u5f55\u5f52\u5c5e\u53d8\u5316\u6309\u5f53\u524d\u76f4\u63a5\u5173\u7cfb\u5224\u65ad\uff1b\u63d0\u4ea4\u4e8b\u52a1\u91cd\u65b0\u9a8c\u8bc1\u6743\u9650\u3001\u5ba1\u6279\u6709\u6548\u671f\u3001\u5185\u5bb9\u7248\u672c\u548c\u540c\u8fd0\u884c\u68c0\u67e5\u7ed3\u679c\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R14",
+            "text": "\u6bcf\u4e2a\u9879\u76ee\u5171\u7528\u5f52\u6863\u6b63\u6587\u5927\u5c0f\u4e0a\u9650\uff0c\u9ed8\u8ba4 8192 \u5b57\u8282\uff1b\u4ec5\u6309 UTF-8 \u6b63\u6587\u8ba1\u91cf\uff0c\u7b49\u4e8e\u4e0a\u9650\u5141\u8bb8\u3002\u8bbe\u7f6e\u503c\u5fc5\u987b\u4e3a\u6b63\u6574\u6570\uff0c\u62d2\u7edd\u5c0f\u6570\u3001\u96f6\u3001\u8d1f\u6570\u4e14\u4e0d\u53d6\u6574\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R15",
+            "text": "\u5f00\u59cb/\u7ee7\u7eed/\u63d0\u4ea4\u6309\u5f53\u524d\u9879\u76ee\u4e0a\u9650\u5224\u65ad\u3002\u8d85\u9650\u65f6\u5df2\u542f\u52a8\u68c0\u67e5\u81ea\u7136\u7ed3\u675f\u3001\u672a\u542f\u52a8\u7b49\u5f85\u3001\u7981\u6b62\u63d0\u4ea4\uff1b\u8c03\u5927\u540e\u987b\u624b\u52a8\u7ee7\u7eed\uff0c\u590d\u7528\u540c\u7248\u672c\u5df2\u901a\u8fc7\u68c0\u67e5\u3002\u4e0a\u9650\u53d8\u5316\u4e0d\u6539\u5185\u5bb9\u7248\u672c\u3001\u4e0d\u81ea\u52a8\u64a4\u9500\u5ba1\u6279\uff0c\u4e0d\u6539\u5df2\u6709\u5feb\u7167\u3002",
+            "status": "confirmed"
+          },
+          {
+            "id": "R16",
+            "text": "\u540c\u4e00\u5f00\u53d1\u8005\u56fe\u663e\u793a\u6b63\u6587\u5b9e\u9645\u5b57\u8282\u6570\u3001\u8bfb\u53d6\u7684\u4e0a\u9650/\u4fee\u8ba2\u53f7\u53ca\u8d85\u9650\u539f\u56e0\uff1b\u4fdd\u7559\u9996\u7248\u5750\u6807\u3001\u6807\u6ce8\u548c\u7a33\u5b9a\u8282\u70b9 ID\uff0c\u63d0\u4f9b\u53ef\u6bd4\u8f83\u7684\u9996\u7248/\u5f53\u524d\u56fe\u53ca\u5bf9\u5e94\u52a0\u8f7d\u6e90\u7801\u3002",
+            "status": "confirmed"
+          }
+        ],
+        "requirement_count": 16,
+        "intent": "intent.json",
+        "test_commands": [
+          [
+            "{python}",
+            "-X",
+            "utf8",
+            "-B",
+            "tooling/tests.py"
+          ],
+          [
+            "node",
+            "tooling/graph_tests.mjs"
+          ],
+          [
+            "{python}",
+            "-X",
+            "utf8",
+            "-B",
+            "tooling/test_recording.py"
+          ],
+          [
+            "node",
+            "tooling/test_recorded_views.mjs"
+          ],
+          [
+            "{python}",
+            "-X",
+            "utf8",
+            "-B",
+            "tooling/test_stategraph_module.py"
+          ]
+        ],
+        "observations_command": [
+          "{python}",
+          "-X",
+          "utf8",
+          "-B",
+          "tooling/observe.py"
+        ],
+        "required_checks": {
+          "source_first_inventory": true,
+          "probe_health": false,
+          "invocation_closure": false,
+          "mapping_witnesses": true,
+          "reports": [
+            "mapping",
+            "state_rules",
+            "business",
+            "project_checks"
+          ]
+        },
+        "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results."
+      }
+    }
+  }
+]

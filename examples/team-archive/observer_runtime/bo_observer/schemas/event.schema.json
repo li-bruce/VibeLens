@@ -4,6 +4,14 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "exception": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    },
     "protocol": {
       "const": "bo-event/v1"
     },
@@ -37,6 +45,15 @@
     "seq": {
       "type": "integer",
       "minimum": 1
+    },
+    "context_only": {
+      "type": "boolean"
+    },
+    "context_boundary": {
+      "enum": [
+        "start",
+        "end"
+      ]
     },
     "revision": {
       "type": "integer",
@@ -83,6 +100,15 @@
         "null"
       ]
     },
+    "parent_event_id": {
+      "description": "Actual enclosing invocation entry; independent of the observed entity identity.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 512
+    },
     "basis": {
       "type": "object"
     },
@@ -126,6 +152,143 @@
     },
     "lifecycle": {
       "const": "span"
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "trace_id": {
+          "type": "string",
+          "pattern": "^(?!0{32}$)[0-9a-f]{32}$"
+        },
+        "span_id": {
+          "type": "string",
+          "pattern": "^(?!0{16}$)[0-9a-f]{16}$"
+        },
+        "trace_flags": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "parent_span_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!0{16}$)[0-9a-f]{16}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tracestate": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "links": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source_build_id": {"type": "string", "minLength": 1, "maxLength": 256},
+              "trace_id": {
+                "type": "string",
+                "pattern": "^(?!0{32}$)[0-9a-f]{32}$"
+              },
+              "span_id": {
+                "type": "string",
+                "pattern": "^(?!0{16}$)[0-9a-f]{16}$"
+              },
+              "relation": {
+                "enum": [
+                  "trigger",
+                  "data",
+                  "control",
+                  "recheck"
+                ]
+              }
+            },
+            "required": [
+              "trace_id",
+              "span_id"
+            ]
+          }
+        }
+      },
+      "required": [
+        "trace_id",
+        "span_id",
+        "trace_flags"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "workflow_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "objects": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "type": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "role": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "role"
+            ]
+          }
+        },
+        "actor": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "kind": {
+              "enum": [
+                "user",
+                "service"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "kind"
+          ]
+        }
+      }
     }
   },
   "required": [
@@ -150,5 +313,92 @@
     "outputs",
     "depends",
     "observed_at"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "context_only"
+        ],
+        "properties": {
+          "context_only": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "context_boundary"
+        ],
+        "properties": {
+          "inputs": {
+            "maxProperties": 0
+          },
+          "outputs": {
+            "maxProperties": 0
+          },
+          "basis": {
+            "maxProperties": 0
+          },
+          "depends": {
+            "maxItems": 0
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "revision"
+              ]
+            },
+            {
+              "required": [
+                "provenance"
+              ]
+            },
+            {
+              "required": ["exception"]
+            }
+          ]
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "context_boundary": {
+                  "const": "start"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "phase": {
+                  "const": "enter"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "phase": {
+                  "enum": [
+                    "return",
+                    "error",
+                    "commit",
+                    "change"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "context_boundary"
+          ]
+        }
+      }
+    }
   ]
 }

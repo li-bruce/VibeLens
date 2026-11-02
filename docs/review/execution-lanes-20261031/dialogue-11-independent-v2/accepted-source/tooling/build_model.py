@@ -1,0 +1,239 @@
+"""Generate graph bindings from confirmed intent, declarations, and current source."""
+import ast
+import json
+from pathlib import Path
+import sys
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+sys.path.append(str(ROOT / "observer_runtime"))
+from code_structure import scan, enrich
+from bo_observer.policy.projection import project as project_policy
+
+def read(name):
+    return json.loads((ROOT / name).read_text(encoding="utf-8-sig"))
+
+def write(name, value):
+    path = ROOT / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+FEATURES = [
+    ("sign_in","app/service.py","FileService.login",{"username":"string","password_present":"boolean"},{"allowed":"boolean"},"R_LOGIN"),
+    ("list_users","app/service.py","FileService.users",{},{"count":"number"},"R_SCOPE"),
+    ("upload_file","app/service.py","FileService.upload",{"actor":"string","reviewer_id":"string","filename":"string","size":"number"},{"file_id":"string","state":"string","revision":"number","error":"string"},"R_REVIEW"),
+    ("review_file","app/service.py","FileService.review",{"actor":"string","file_id":"string","decision":"string"},{"state":"string","revision":"number"},"R_REVIEW"),
+    ("withdraw_file","app/service.py","FileService.withdraw",{"actor":"string","file_id":"string"},{"state":"string","revision":"number","error":"string"},"R_WITHDRAW"),
+    ("share_file","app/service.py","FileService.share",{"actor":"string","file_id":"string","recipient_id":"string"},{"recipient_id":"string","state":"string","revision":"number"},"R_SHARE"),
+    ("access_file","app/service.py","FileService.access",{"actor":"string","file_id":"string","download":"boolean"},{"allowed":"boolean","size":"number","state":"string"},"R_ACCESS"),
+    ("list_files","app/service.py","FileService.visible_files",{"actor":"string"},{"count":"number"},"R_ACCESS"),
+    ("http_request","app/web.py","WebRoutes.before_request",{"method":"string","path":"string"},{"status":"number"},"R_LOGIN"),
+    ("sign_out","app/web.py","WebRoutes.logout",{"actor":"string"},{"logged_out":"boolean"},"R_LOGIN")
+]
+LABELS = {
+"sign_in":"登录","sign_out":"退出登录","list_users":"选择已有同事","upload_file":"上传并指定审核人",
+"review_file":"指定同事审核","share_file":"上传者定向分享","access_file":"查看信息或下载",
+"list_files":"列出我能访问的文件","http_request":"网页请求","authorize_file":"核验当前权限",
+"state_transition":"执行声明中的状态变化","state_new":"未提交","pending_review":"待指定同事审核",
+"approved":"审核通过","review_not_approved":"未通过：流程结束","assigned_reviewer":"指定审核人不能是自己",
+"uploader_access":"上传者始终可读；审核人撤回后不可读","designated_recipient":"唯一指定接收人",
+"withdraw_file":"上传者撤回待审核文件","withdrawn":"已撤回：本次流程结束"
+}
+
+def build():
+    project = read("bo_stategraph/project.json")
+    model = {key: value for key, value in project["model"].items() if key in
+        {"schema_version","revision","intent","machine","scope","layout_id"}}
+    model.update(project_id=project["project_id"], title="Team File Review")
+    nodes = []
+    for identifier, path, symbol, inputs, outputs, requirement in FEATURES:
+        nodes.append({"id":identifier,"kind":"action","layer":"business","label":identifier,
+            "summary":"Application operation: " + identifier.replace("_"," "),
+            "source":{"path":path,"symbol":symbol},"capture":{"in":inputs,"out":outputs},
+            "requirements":[requirement]})
+    nodes.extend([
+        {"id":"authorize_file","kind":"decision","layer":"rules","label":"Authorize file operation",
+            "summary":"Evaluate shared rules against facts read for this request.",
+            "source":{"path":"app/service.py","symbol":"FileService.authorize"},
+            "capture":{"in":{"actor":"string","operation":"string","file_id":"string","revision":"number"},"out":{"allowed":"boolean"}}},
+        {"id":"state_transition","kind":"function","label":"Apply declared transition",
+            "summary":"Use the native executor result and preserve its evaluated guard and path.",
+            "source":{"path":"app/service.py","symbol":"FileService.advance"},
+            "capture":{"in":{"event":"string","before":"string"},"out":{"after":"string","allowed":"boolean"}}}
+    ])
+    for identifier,value in [("state_new","new"),("pending_review","pending"),("approved","approved"),("review_not_approved","rejected"),("withdrawn","withdrawn")]:
+        nodes.append({"id":identifier,"kind":"state","layer":"state","value":value,"label":value,
+            "summary":"Persisted file state: " + value,"parent":"review_file"})
+    nodes.extend([
+        {"id":"assigned_reviewer","kind":"data","label":"Assigned reviewer","summary":"Exactly one other existing user.",
+            "represents":{"path":"app/service.py","symbol":"FileService.upload","parameter":"reviewer_id"}},
+        {"id":"designated_recipient","kind":"data","label":"Designated recipient","summary":"One recipient account; recipients cannot forward.",
+            "represents":{"path":"app/service.py","symbol":"FileService.share","parameter":"recipient_id"}},
+        {"id":"uploader_access","kind":"data","label":"Uploader and reviewer access",
+            "summary":"The uploader may always read; the assigned reviewer loses access after withdrawal. Login is required."}
+    ])
+    model["nodes"], model["edges"] = nodes, []
+    for source,target,event in [("state_new","pending_review","submit"),("pending_review","approved","approve"),
+        ("pending_review","review_not_approved","reject"),("approved","approved","share"),("pending_review","withdrawn","withdraw")]:
+        model["edges"].append({"id":"transition:"+event,"from":source,"to":target,"type":"flow","event":event,
+            "conditions":"operation_allowed","label":event,"evidence":"The canonical machine consumed by FileWorkflow."})
+    discovery = read("discovery.json")
+    for decision in discovery["decisions"]:
+        for field in ("requirements","model_nodes","checks"):
+            if isinstance(decision.get(field),str):
+                decision[field]=[decision[field]]
+        if decision["id"]=="D_REVIEWER":
+            decision["checks"]=["rejected-business"]
+        if decision["id"]=="D_GRAPH_CONFIRM":
+            decision["requirements"]=["R_LOGIN","R_REVIEW","R_SHARE","R_ACCESS","R_SCOPE"]
+        decision["links"]={field:decision[field] for field in ("requirements","model_nodes","checks")}
+    write("discovery.json",discovery)
+    ids = {node["id"] for node in nodes}
+    for edge in discovery["networks"][0]["edges"]:
+        if edge["from"] in ids and edge["to"] in ids:
+            model["edges"].append({"id":edge["id"],"from":edge["from"],"to":edge["to"],"type":edge["relation"],
+                "label":edge["label"],"evidence":"Confirmed simulated-user requirements: " + ", ".join(edge["source_refs"])})
+    model["overview"] = [{"node":identifier} for identifier in ["upload_file","review_file","withdraw_file","share_file","access_file"]]
+    model["presentation"] = {"names":{"nodes":{identifier:{"en":identifier.replace("_"," "),"zh-CN":label}
+        for identifier,label in LABELS.items()},"states":{"pending":{"en":"Pending","zh-CN":"待审核"},
+        "approved":{"en":"Approved","zh-CN":"已通过"},"rejected":{"en":"Rejected","zh-CN":"未通过"},"withdrawn":{"en":"Withdrawn","zh-CN":"已撤回"}},
+        "events":{"submit":{"en":"Submit","zh-CN":"送审"},"approve":{"en":"Approve","zh-CN":"通过"},
+        "reject":{"en":"Reject","zh-CN":"不通过"},"share":{"en":"Share","zh-CN":"分享"},"withdraw":{"en":"Withdraw","zh-CN":"撤回"}}},
+        "subject":"Team Files", "layout_aliases":["execution-bands-dialogue-20261031-03"]}
+    policy = discovery["policy"]
+    policy["stage"], policy["revision"] = "bound", "2"
+    policy["predicates"][0]["source"] = {"path":"app/predicates.py","symbol":"same_identity"}
+    for operation in policy["operations"]:
+        operation["cases"] = ["withdrawal"] if operation["id"]=="withdraw" else ["workflow","denied","rejected"]
+    model["policy"] = policy
+    sync = read("sync.json")
+    code_files = ["app/__init__.py","app/predicates.py","app/ports.py","app/models.py","app/storage.py",
+        "app/service.py","app/web.py","bo_stategraph/workflow.py","bo_stategraph/native_executor.py","integrations/__init__.py","integrations/bo_integration.py","run.py"]
+    sync["code_files"] = code_files
+    sync["watch_files"] = ["tooling/build_model.py","tooling/export_models.py","tooling/observe.py","tooling/test_business.py","tooling/test_withdrawal.py",
+        "tooling/verify.py","bo_stategraph/__init__.py","bo_stategraph/native_executor.py","bo_stategraph/databases.json",
+        "templates/login.html","templates/index.html","templates/error.html","static/app/app.css","ownership.json"]
+    for name in ["__init__.py","bo_contracts.py","execution_contract.py"]:
+        sync["source_scope"]["exclude"]["bo_stategraph/"+name] = "Canonical native core installed without modification; parity and protocol checked."
+    sync["source_scope"]["exclude"]["bo_stategraph/policy/**"] = "Canonical policy execution core installed without modification; predicates are inventoried in app/predicates.py."
+    sync["source_scope"]["exclude"][".stategraph/**"] = "Frozen gate baselines and generated verification evidence."
+    sync["source_scope"]["exclude"].pop("bo_stategraph/native_executor.py", None)
+    sync["probe_callees"] += ["self.bo_probe.span","self.bo_probe.record"]
+    sync["probe_callees"] = sorted(set(sync["probe_callees"]))
+    model["source_files"] = sorted(set(code_files + sync["watch_files"] + ["intent.json","implementation.json","requirements.txt"]))
+    index = scan(ROOT, code_files)
+    features, support, excluded = [], {}, {}
+    feature_sources = set()
+    for identifier,path,symbol,inputs,outputs,requirement in FEATURES:
+        sid = path + "::" + symbol
+        feature_sources.add(sid)
+        parameters = []
+        entry = next(item for item in index["symbols"].values() if item["path"]==path and item["symbol"]==symbol)
+        for parameter in entry["parameters"]:
+            name = parameter["name"]
+            if name == "self":
+                continue
+            field, direction, policy_name, reason = name,"in","value",None
+            if name == "password":
+                field, policy_name, reason = "password_present","derived","Only Boolean presence is captured; no credential text."
+            elif name == "content":
+                field, policy_name, reason = "size","derived","Only the byte length is captured; file content is never observed."
+            parameters.append({"source":sid,"name":name,"node":identifier,"direction":direction,"field":field,"policy":policy_name,
+                **({"reason":reason} if reason else {})})
+        feature_cases = [{"case":"withdrawal" if identifier=="withdraw_file" else "workflow","node":identifier,"phase":phase} for phase in ("enter","return")]
+        if identifier=="withdraw_file":
+            feature_cases.append({"case":"withdrawal","node":identifier,"phase":"error"})
+        if identifier == "upload_file":
+            feature_cases.append({"case":"denied","node":identifier,"phase":"error"})
+        features.append({"id":identifier,"label":identifier.replace("_"," "),"business_node":identifier,"nodes":[identifier],
+            "sources":[sid],"parameters":parameters,"requirements":[requirement],"cases":feature_cases})
+    extras = [
+        ("authorization","authorize_file","app/service.py::FileService.authorize",["authorize_file"]+["policy:"+item["id"] for item in policy["nodes"]]),
+        ("transition","state_transition","app/service.py::FileService.advance",["state_transition"])
+    ]
+    for operation in read("bo_stategraph/databases.json")["operations"]:
+        extras.append((operation["id"],operation["parent"],operation["source"]["path"]+"::"+operation["source"]["symbol"],[operation["id"]]))
+    for fid,business,sid,owned in extras:
+        feature_sources.add(sid)
+        entry = index["symbols"][sid]
+        parameters=[]
+        for parameter in entry["parameters"]:
+            name=parameter["name"]
+            if name=="self":
+                continue
+            node=owned[0]
+            if name=="db":
+                parameters.append({"source":sid,"name":name,"policy":"context","reason":"Native connection handle; never serialized."})
+                continue
+            field,direction,disposition=name,"in","value"
+            if fid.startswith("db_"):
+                field,disposition="parameters","derived"
+                if fid=="db_metadata":
+                    field,direction="result","out"
+            elif name=="row":
+                field,disposition=("file_id" if fid=="authorization" else "before"),"derived"
+            elif name=="allowed":
+                direction="out"
+            parameters.append({"source":sid,"name":name,"node":node,"direction":direction,"field":field,
+                "policy":disposition,**({"reason":"Select only the declared scalar identity, state, or query summary from the actual argument."} if disposition=="derived" else {})})
+        phase="decision" if fid=="authorization" else "commit" if fid=="db_transaction" else "change" if fid=="db_metadata" else "return"
+        cases=[{"case":"withdrawal" if node in {"policy:pending","policy:withdrawn","policy:not_withdrawn","policy:reviewer_access","policy:withdraw_allowed"} else "workflow","node":node,"phase":phase} for node in owned]
+        if fid=="transition":
+            cases.append({"case":"workflow","node":"state_transition","phase":"enter"})
+        features.append({"id":fid,"label":fid.replace("_"," "),"business_node":business,"nodes":owned,
+            "sources":[sid],"parameters":parameters,"requirements":["R_SCOPE"],"cases":cases})
+    for sid,item in index["symbols"].items():
+        if item["kind"] != "function" or sid in feature_sources:
+            continue
+        name = item["symbol"]
+        if name.split(".")[-1] == "__init__":
+            excluded[sid] = {"category":"construction","reason":"Object construction; behavior is represented by mapped operations."}
+        elif item["path"] in {"app/ports.py","integrations/bo_integration.py","run.py"}:
+            excluded[sid] = {"category":"observer","reason":"Optional observation, launcher, or no-op port; does not authorize business work."}
+        else:
+            support[sid] = {"node":"http_request" if item["path"]=="app/web.py" else "state_transition" if item["path"].startswith("bo_stategraph/") else "authorize_file",
+                "reason":"Native helper retained as a static source mapping; runtime execution is claimed only when captured."}
+    http_feature=next(feature for feature in features if feature["id"]=="http_request")
+    for sid,item in index["symbols"].items():
+        if item["kind"]=="function" and item["path"]=="app/web.py" and item["symbol"] not in {"WebRoutes.__init__","WebRoutes.before_request","WebRoutes.logout","create_app","WebRoutes.actor"}:
+            http_feature["sources"].append(sid)
+            support.pop(sid,None)
+            for parameter in item["parameters"]:
+                name=parameter["name"]
+                if name=="self":
+                    continue
+                if name=="response":
+                    http_feature["parameters"].append({"source":sid,"name":name,"policy":"context","reason":"Flask response object; the final HTTP status is captured by the request boundary."})
+                else:
+                    http_feature["parameters"].append({"source":sid,"name":name,"node":"http_request","direction":"in" if name=="file_id" else "out","field":"path" if name=="file_id" else "status","policy":"derived","reason":"The request path retains the file identity; exception objects are represented by the actual HTTP exit status."})
+    source_nodes={node["source"]["path"]+"::"+node["source"]["symbol"] for node in nodes if node.get("source")}
+    for sid,item in index["symbols"].items():
+        if item["kind"]=="function" and sid not in excluded and sid not in source_nodes:
+            nodes.append({"id":"source:"+sid,"kind":"function","label":item["symbol"],
+                "summary":"Native source declaration; execution requires its own captured evidence.","source":{"path":item["path"],"symbol":item["symbol"]},"capture":{"in":{},"out":{}}})
+    plan = {"schema":"bo-implementation/v1","features":features,"support":support,"excluded":excluded}
+    model["implementation"] = plan
+    model["nodes"].append({"id":"login_result","kind":"data","parent":"sign_in","label":"Authentication result",
+        "summary":"A captured credential check result without password data."})
+    model["nodes"][0]["lifecycle"] = {"states":[{"id":"checking","label":"Checking credentials","kind":"active"},
+        {"id":"accepted","label":"Accepted","kind":"ended"},{"id":"denied","label":"Denied","kind":"ended"}],
+        "bindings":[{"phase":"enter","boundary":"start","state":"checking"},
+        {"phase":"return","boundary":"end","state":"accepted","when":{"direction":"out","field":"allowed","equals":True}},
+        {"phase":"return","boundary":"end","state":"denied","when":{"direction":"out","field":"allowed","equals":False}}]}
+    model = project_policy(model)
+    model = enrich(model, index, sync["slice_depth"])
+    project["model"] = model
+    write("implementation.json",plan)
+    write("sync.json",sync)
+    write("bo_stategraph/project.json",project)
+    from bo_observer.data.sync import synchronize
+    database=synchronize(ROOT,model_path="bo_stategraph/project.json",update=True)
+    if database["errors"]:
+        raise ValueError(database["errors"])
+    project=read("bo_stategraph/project.json")
+    project["model"]=enrich(project["model"],index,sync["slice_depth"])
+    write("bo_stategraph/project.json",project)
+    return project["model"]
+
+if __name__ == "__main__":
+    model=build()
+    print(json.dumps({"nodes":len(model["nodes"]),"edges":len(model["edges"])}))

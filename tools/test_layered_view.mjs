@@ -28,6 +28,7 @@ import {
 } from "../skills/vibelens/assets/stategraph-viewer/layout.js";
 
 assert.equal(layerOf({ kind: "wait" }), "state");
+assert.equal(layerOf({ kind: "function", layer: "api" }), "api");
 assert.equal(layerOf({ kind: "function", execution_role: "join" }), "rules");
 assert.equal(layerOf({ kind: "function", execution_role: "resource" }), "rules");
 const owner = {

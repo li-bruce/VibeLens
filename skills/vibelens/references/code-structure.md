@@ -4,8 +4,9 @@
 
 The **Project structure** view ends at directories/files and named dependency
 boundaries. The **Code structure** view continues through classes, functions and
-declared parameters. Both are projections of the same source index and share IDs
-with focused code neighborhoods. The project tree is scanned after coding; it is
+declared parameters. Both use the same source scope and stable path IDs. The
+file/import projection has its own incremental cache and does not build or seal
+the optional symbol/call index. The project tree is scanned after coding; it is
 not a model that the AI must design or maintain by hand.
 
 The engineering layer uses `code_role: directory|file`, `project_path`, and one
@@ -35,6 +36,9 @@ python SKILL/scripts/bo_code.py query --root PROJECT --projection project --limi
 ```
 
 The same projection is available at `/api/code/graph?projection=project`.
+Live views include it as `project_structure`; new recordings capture their own
+tree for replay. Verify the project preset before enabling Local code. Old
+recordings without a tree must not substitute today's files.
 Full scans export `project.entries`, `project.file_cycles` and scope exclusions;
 bounded queries report omitted project entries and cycles explicitly.
 The live file reader remains revision-bound and exposes indexed source, HTML,
@@ -113,3 +117,9 @@ inside the viewer; graph JSON carries locations rather than complete source file
 Opening another parameter in the same version reuses that file. Changed revisions
 invalidate the source cache. Captured adapter fields locate their collection owner;
 a missing source-variable binding must not be replaced with a guessed text match.
+
+Project-only refresh reads current source bytes before reusing parsed exclusions
+or a validated model. Matching timestamps or file sizes alone do not establish
+freshness. Packaged protocol schemas are compiled once per observer process;
+managed framework/schema upgrades require reloading that process. Every new event
+still runs schema, project, node and capture-field validation.

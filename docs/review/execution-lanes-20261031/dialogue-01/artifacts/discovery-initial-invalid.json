@@ -1,0 +1,63 @@
+{
+  "schema": "business-discovery/v1",
+  "project_id": "execution-bands-dialogue-20261031-01",
+  "layout_id": "execution-bands-dialogue-20261031-01",
+  "title": "Team file review and sharing",
+  "goal": "Run an independent local Python and SQLite file-sharing website with colleague review, designated recipients, authenticated access, and VibeLens observation.",
+  "sources": [
+    {"id": "U_INITIAL", "kind": "user", "text": "我要做一个小团队的文件共享网页。上传后交给同事审核，审核通过才能分享给指定的人，文件只能登录后访问。先在本机用 Python 和 SQLite 跑起来，我想用 VibeLens 看里面怎么运转。先把需要确认的需求跟我聊清楚，再开始实现。", "locator": "Current chat, initial user request; complete original preserved in review/design-dialogue.md#u_initial-original-user-request"},
+    {"id": "A_MODE", "kind": "assistant", "text": "VibeLens 的两种接入方式都会维护流程图和运行记录：drive 让程序按状态声明执行；observe 让程序自己处理业务，VibeLens 观察实际执行。这个工程选哪一种？", "locator": "Current chat, first clarification panel, question 1; review/design-dialogue.md"},
+    {"id": "A_AUTHORITY", "kind": "assistant", "text": "上传后，审核人由谁确定？审核人能否审核自己上传的文件？审核通过后，由谁选择接收人并发起分享？", "locator": "Current chat, first clarification panel, question 2; review/design-dialogue.md"},
+    {"id": "A_ACCESS", "kind": "assistant", "text": "你说的“访问文件”需要哪些能力：查看文件信息、下载、网页预览？另外，上传者和审核人在审核通过前是否可以读取文件内容？", "locator": "Current chat, first clarification panel, question 3; review/design-dialogue.md"}
+  ],
+  "networks": [
+    {
+      "id": "file_review_sharing",
+      "title": "File review and recipient access",
+      "actors": ["Uploader", "Colleague reviewer", "Designated recipient"],
+      "trigger": "A team member uploads a file",
+      "outcome": "An approved file is shared with designated people who must sign in before access; exact authority and access capabilities remain open.",
+      "nodes": [
+        {"id": "upload_file", "label": "上传文件", "kind": "action", "source_refs": ["U_INITIAL"]},
+        {"id": "pending_review", "label": "等待同事审核", "kind": "state", "source_refs": ["U_INITIAL"]},
+        {"id": "review_file", "label": "审核文件（权限待确认）", "kind": "action", "source_refs": ["U_INITIAL", "A_AUTHORITY"]},
+        {"id": "approved", "label": "审核通过", "kind": "state", "source_refs": ["U_INITIAL"]},
+        {"id": "share_file", "label": "分享给指定人员（操作者待确认）", "kind": "action", "source_refs": ["U_INITIAL", "A_AUTHORITY"]},
+        {"id": "recipient_access", "label": "接收人访问（能力待确认）", "kind": "action", "source_refs": ["U_INITIAL", "A_ACCESS"]},
+        {"id": "signed_in", "label": "已登录", "kind": "condition", "source_refs": ["U_INITIAL"]},
+        {"id": "designated_recipient", "label": "是指定接收人", "kind": "condition", "source_refs": ["U_INITIAL"]}
+      ],
+      "edges": [
+        {"id": "upload_to_pending", "from": "upload_file", "to": "pending_review", "relation": "flow", "label": "上传后等待审核", "source_refs": ["U_INITIAL"]},
+        {"id": "pending_to_review", "from": "pending_review", "to": "review_file", "relation": "flow", "label": "由同事审核", "source_refs": ["U_INITIAL"], "decision_refs": ["D_AUTHORITY"]},
+        {"id": "review_to_approved", "from": "review_file", "to": "approved", "relation": "flow", "label": "审核通过", "source_refs": ["U_INITIAL"]},
+        {"id": "approved_to_share", "from": "approved", "to": "share_file", "relation": "guard", "label": "通过后才能分享", "source_refs": ["U_INITIAL"]},
+        {"id": "share_to_access", "from": "share_file", "to": "recipient_access", "relation": "flow", "label": "指定人员访问", "source_refs": ["U_INITIAL"], "decision_refs": ["D_ACCESS"]},
+        {"id": "login_guards_access", "from": "signed_in", "to": "recipient_access", "relation": "guard", "label": "访问必须登录", "source_refs": ["U_INITIAL"]},
+        {"id": "recipient_guards_access", "from": "designated_recipient", "to": "recipient_access", "relation": "guard", "label": "接收人匹配", "source_refs": ["U_INITIAL"]}
+      ]
+    }
+  ],
+  "decisions": [
+    {"id": "D_MODE", "topic": "development_mode", "question": "VibeLens 的两种接入方式都会维护流程图和运行记录：drive 让程序按状态声明执行；observe 让程序自己处理业务，VibeLens 观察实际执行。这个工程选哪一种？", "why": "The explicit mode choice determines whether the application executes the state declaration or exposes its own authoritative execution.", "affects": ["upload_file", "review_file", "share_file", "recipient_access"], "blocking": true, "status": "open", "priority": 1, "source_refs": ["U_INITIAL"], "asked_in": ["A_MODE"], "options": [{"id": "observe", "label": "Observe application execution", "effect": "The application owns its business logic; VibeLens observes actual execution."}, {"id": "drive", "label": "Execute the state declaration", "effect": "A project-local executor consumes the state declaration; VibeLens records execution."}]},
+    {"id": "D_AUTHORITY", "topic": "review_and_sharing_authority", "question": "上传后，审核人由谁确定？审核人能否审核自己上传的文件？审核通过后，由谁选择接收人并发起分享？", "why": "Review assignment, self-review, and sharing authority determine the actual permission rules and cannot be inferred from colleague review.", "affects": ["review_file", "share_file", "pending_to_review"], "blocking": true, "status": "open", "priority": 2, "source_refs": ["U_INITIAL"], "asked_in": ["A_AUTHORITY"]},
+    {"id": "D_ACCESS", "topic": "file_access_capabilities", "question": "你说的“访问文件”需要哪些能力：查看文件信息、下载、网页预览？另外，上传者和审核人在审核通过前是否可以读取文件内容？", "why": "Recipient access capabilities and pre-approval content access have distinct permission rules.", "affects": ["upload_file", "review_file", "recipient_access", "share_to_access"], "blocking": true, "status": "open", "priority": 3, "source_refs": ["U_INITIAL"], "asked_in": ["A_ACCESS"]}
+  ],
+  "policy": {
+    "schema": "bo-policy/v1",
+    "revision": "discovery-1",
+    "stage": "draft",
+    "inputs": {"logged_in": "boolean", "file_approved": "boolean", "recipient_matches": "boolean"},
+    "predicates": [],
+    "nodes": [
+      {"id": "logged_in", "op": "input", "name": "logged_in", "label": "已登录", "source_refs": ["U_INITIAL"]},
+      {"id": "file_approved", "op": "input", "name": "file_approved", "label": "审核已通过", "source_refs": ["U_INITIAL"]},
+      {"id": "recipient_matches", "op": "input", "name": "recipient_matches", "label": "接收人匹配", "source_refs": ["U_INITIAL"]},
+      {"id": "shared_access_conditions", "op": "all", "inputs": ["logged_in", "file_approved", "recipient_matches"], "label": "接收人访问的必要条件", "summary": "Draft recipient path only; owner and reviewer access remain unresolved.", "source_refs": ["U_INITIAL"]}
+    ],
+    "operations": [
+      {"id": "share_file", "root": "file_approved", "business_nodes": ["share_file"], "cases": [], "source_refs": ["U_INITIAL"]},
+      {"id": "recipient_access", "root": "shared_access_conditions", "business_nodes": ["recipient_access"], "cases": [], "source_refs": ["U_INITIAL"]}
+    ]
+  }
+}

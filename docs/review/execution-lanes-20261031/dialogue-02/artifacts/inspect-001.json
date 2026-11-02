@@ -1,0 +1,505 @@
+{
+  "candidate_id": "754ce4d549b6c1f1ecbcb28e4e49b127d03d1bdf28500ad9962d4c66cf847cd0",
+  "changed_files": [
+    "app/__init__.py",
+    "app/models.py",
+    "app/ports.py",
+    "app/predicates.py",
+    "app/service.py",
+    "app/storage.py",
+    "app/web.py",
+    "bo_stategraph/__init__.py",
+    "bo_stategraph/database-catalog.json",
+    "bo_stategraph/databases.json",
+    "bo_stategraph/model-catalog.json",
+    "bo_stategraph/native_executor.py",
+    "bo_stategraph/project.json",
+    "bo_stategraph/workflow.py",
+    "implementation.json",
+    "integrations/__init__.py",
+    "integrations/bo_integration.py",
+    "mapping.json",
+    "requirements.txt",
+    "run.py",
+    "static/app/app.css",
+    "sync.json",
+    "templates/error.html",
+    "templates/index.html",
+    "templates/login.html",
+    "tooling/build_model.py",
+    "tooling/export_models.py",
+    "tooling/observe.py",
+    "tooling/test_business.py",
+    "tooling/verify.py",
+    "whitebox.json"
+  ],
+  "changed_symbols": [
+    "app/ports.py::NullActivation",
+    "app/ports.py::NullActivation.result",
+    "app/ports.py::NullData",
+    "app/ports.py::NullData.execute",
+    "app/ports.py::NullData.transaction",
+    "app/ports.py::NullData.transform",
+    "app/ports.py::NullObserver",
+    "app/ports.py::NullObserver.policy",
+    "app/ports.py::NullObserver.state",
+    "app/ports.py::NullProbe",
+    "app/ports.py::NullProbe.record",
+    "app/ports.py::NullProbe.span",
+    "app/predicates.py::operation_allowed",
+    "app/predicates.py::same_identity",
+    "app/service.py::DomainError",
+    "app/service.py::DomainError.__init__",
+    "app/service.py::FileService",
+    "app/service.py::FileService.__init__",
+    "app/service.py::FileService.access",
+    "app/service.py::FileService.advance",
+    "app/service.py::FileService.authorize",
+    "app/service.py::FileService.login",
+    "app/service.py::FileService.review",
+    "app/service.py::FileService.share",
+    "app/service.py::FileService.upload",
+    "app/service.py::FileService.users",
+    "app/service.py::FileService.visible_files",
+    "app/storage.py::Store",
+    "app/storage.py::Store.__init__",
+    "app/storage.py::Store.initialize",
+    "app/storage.py::Store.insert_file",
+    "app/storage.py::Store.read_candidates",
+    "app/storage.py::Store.read_file",
+    "app/storage.py::Store.read_users",
+    "app/storage.py::Store.snapshots",
+    "app/storage.py::Store.update_file",
+    "app/storage.py::Store.write_transaction",
+    "app/storage.py::configure_sqlite",
+    "app/storage.py::metadata_view",
+    "app/web.py::WebRoutes",
+    "app/web.py::WebRoutes.__init__",
+    "app/web.py::WebRoutes.actor",
+    "app/web.py::WebRoutes.after_request",
+    "app/web.py::WebRoutes.before_request",
+    "app/web.py::WebRoutes.download",
+    "app/web.py::WebRoutes.error",
+    "app/web.py::WebRoutes.file_info",
+    "app/web.py::WebRoutes.index",
+    "app/web.py::WebRoutes.login",
+    "app/web.py::WebRoutes.logout",
+    "app/web.py::WebRoutes.review",
+    "app/web.py::WebRoutes.share",
+    "app/web.py::WebRoutes.teardown_request",
+    "app/web.py::WebRoutes.upload",
+    "app/web.py::create_app",
+    "bo_stategraph/workflow.py::FileWorkflow",
+    "bo_stategraph/workflow.py::FileWorkflow.__init__",
+    "bo_stategraph/workflow.py::FileWorkflow.step",
+    "bo_stategraph/workflow.py::file_context",
+    "bo_stategraph/workflow.py::machine_snapshot",
+    "integrations/bo_integration.py::BOIntegration",
+    "integrations/bo_integration.py::BOIntegration.__init__",
+    "integrations/bo_integration.py::BOIntegration.bo_broken_sink",
+    "integrations/bo_integration.py::BOIntegration.close",
+    "integrations/bo_integration.py::BOIntegration.health",
+    "integrations/bo_integration.py::BOIntegration.policy",
+    "integrations/bo_integration.py::BOIntegration.state",
+    "integrations/bo_integration.py::bo_snapshot_store",
+    "run.py::main"
+  ],
+  "affected_callers": [],
+  "affected_nodes": [
+    "access_file",
+    "authorize_file",
+    "code.2b4ce20bc4971c2a",
+    "code.30326d5d01115958",
+    "code.397e92f0b630e7fa",
+    "code.3edeec461b08e152",
+    "code.4d30fd12e3103997",
+    "code.61ad245cb873fe20",
+    "code.7ac1e3434af643f0",
+    "code.94c27a9ca04798cb",
+    "code.994b0f065dc58597",
+    "code.dcb3cefb04ba1a1d",
+    "code.f01e24ca5c7b9b65",
+    "code.ffe99097306a6c85",
+    "db_candidates",
+    "db_file",
+    "db_insert",
+    "db_metadata",
+    "db_transaction",
+    "db_update",
+    "db_users",
+    "http_request",
+    "implementation.1c4db9a332e7a983",
+    "implementation.234d830263ebf103",
+    "implementation.2aea9c48c2c29dd2",
+    "implementation.35371a04d71f4520",
+    "implementation.5bdb65925faa5d5c",
+    "implementation.64c6587c577c7de1",
+    "implementation.6d95fc86640a673c",
+    "implementation.883b1a919dea8882",
+    "implementation.897974abffb7c6eb",
+    "implementation.89bec321fc173038",
+    "implementation.8cee59c854955a26",
+    "implementation.934897c79748a8f4",
+    "implementation.98a49f7890a212c9",
+    "implementation.9dc333c7d33dee07",
+    "implementation.9ff255556ffdd0aa",
+    "implementation.a558bdfc4ae87bcb",
+    "implementation.acc8d3d67a2d2b0f",
+    "implementation.b26c027bb33cb844",
+    "implementation.b554c2af95022605",
+    "implementation.d09515cdf92b324a",
+    "implementation.d74e67f67f3d2013",
+    "implementation.df3bd9f9ca903fd9",
+    "implementation.eb3bba42f32e106a",
+    "implementation.ff77cd620dd18521",
+    "list_files",
+    "list_users",
+    "policy:actor_is_recipient",
+    "policy:actor_is_reviewer",
+    "policy:actor_is_uploader",
+    "policy:function:same_identity",
+    "policy:network",
+    "policy:reviewer_is_uploader",
+    "review_file",
+    "share_file",
+    "sign_in",
+    "sign_out",
+    "state_transition",
+    "upload_file"
+  ],
+  "unmapped_changed_symbols": [
+    "app/ports.py::NullActivation",
+    "app/ports.py::NullActivation.result",
+    "app/ports.py::NullData",
+    "app/ports.py::NullData.execute",
+    "app/ports.py::NullData.transaction",
+    "app/ports.py::NullData.transform",
+    "app/ports.py::NullObserver",
+    "app/ports.py::NullObserver.policy",
+    "app/ports.py::NullObserver.state",
+    "app/ports.py::NullProbe",
+    "app/ports.py::NullProbe.record",
+    "app/ports.py::NullProbe.span",
+    "app/service.py::DomainError",
+    "app/service.py::DomainError.__init__",
+    "app/service.py::FileService",
+    "app/service.py::FileService.__init__",
+    "app/storage.py::Store",
+    "app/storage.py::Store.__init__",
+    "app/web.py::WebRoutes",
+    "app/web.py::WebRoutes.__init__",
+    "bo_stategraph/workflow.py::FileWorkflow",
+    "bo_stategraph/workflow.py::FileWorkflow.__init__",
+    "integrations/bo_integration.py::BOIntegration",
+    "integrations/bo_integration.py::BOIntegration.__init__",
+    "integrations/bo_integration.py::BOIntegration.bo_broken_sink",
+    "integrations/bo_integration.py::BOIntegration.close",
+    "integrations/bo_integration.py::BOIntegration.health",
+    "integrations/bo_integration.py::BOIntegration.policy",
+    "integrations/bo_integration.py::BOIntegration.state",
+    "integrations/bo_integration.py::bo_snapshot_store",
+    "run.py::main"
+  ],
+  "unmapped_implementation_symbols": [
+    "app/ports.py::NullActivation",
+    "app/ports.py::NullActivation.result",
+    "app/ports.py::NullData",
+    "app/ports.py::NullData.execute",
+    "app/ports.py::NullData.transaction",
+    "app/ports.py::NullData.transform",
+    "app/ports.py::NullObserver",
+    "app/ports.py::NullObserver.policy",
+    "app/ports.py::NullObserver.state",
+    "app/ports.py::NullProbe",
+    "app/ports.py::NullProbe.record",
+    "app/ports.py::NullProbe.span",
+    "app/service.py::DomainError",
+    "app/service.py::DomainError.__init__",
+    "app/service.py::FileService",
+    "app/service.py::FileService.__init__",
+    "app/storage.py::Store",
+    "app/storage.py::Store.__init__",
+    "app/web.py::WebRoutes",
+    "app/web.py::WebRoutes.__init__",
+    "bo_stategraph/workflow.py::FileWorkflow",
+    "bo_stategraph/workflow.py::FileWorkflow.__init__",
+    "integrations/bo_integration.py::BOIntegration",
+    "integrations/bo_integration.py::BOIntegration.__init__",
+    "integrations/bo_integration.py::BOIntegration.bo_broken_sink",
+    "integrations/bo_integration.py::BOIntegration.close",
+    "integrations/bo_integration.py::BOIntegration.health",
+    "integrations/bo_integration.py::BOIntegration.policy",
+    "integrations/bo_integration.py::BOIntegration.state",
+    "integrations/bo_integration.py::bo_snapshot_store",
+    "run.py::main"
+  ],
+  "changed_requirements": [],
+  "unresolved_call_count": 236,
+  "meaning": "Potential impact plus authored abstraction mapping; semantic truth still needs contract and runtime checks.",
+  "errors": [
+    {
+      "excluded_application_implementation": "bo_stategraph/native_executor.py",
+      "action": "inventory its functions and map them; only infrastructure can be excluded"
+    },
+    {
+      "capture_without_feature": "authorize_file"
+    },
+    {
+      "capture_without_feature": "state_transition"
+    },
+    {
+      "capture_without_feature": "policy:actor"
+    },
+    {
+      "capture_without_feature": "policy:uploader"
+    },
+    {
+      "capture_without_feature": "policy:reviewer"
+    },
+    {
+      "capture_without_feature": "policy:recipient"
+    },
+    {
+      "capture_without_feature": "policy:logged_in"
+    },
+    {
+      "capture_without_feature": "policy:approved"
+    },
+    {
+      "capture_without_feature": "policy:shared"
+    },
+    {
+      "capture_without_feature": "policy:reviewer_exists"
+    },
+    {
+      "capture_without_feature": "policy:actor_is_uploader"
+    },
+    {
+      "capture_without_feature": "policy:actor_is_reviewer"
+    },
+    {
+      "capture_without_feature": "policy:actor_is_recipient"
+    },
+    {
+      "capture_without_feature": "policy:reviewer_is_uploader"
+    },
+    {
+      "capture_without_feature": "policy:reviewer_is_other"
+    },
+    {
+      "capture_without_feature": "policy:upload_allowed"
+    },
+    {
+      "capture_without_feature": "policy:review_allowed"
+    },
+    {
+      "capture_without_feature": "policy:share_allowed"
+    },
+    {
+      "capture_without_feature": "policy:recipient_access"
+    },
+    {
+      "capture_without_feature": "policy:file_access_basis"
+    },
+    {
+      "capture_without_feature": "policy:access_allowed"
+    },
+    {
+      "capture_without_feature": "db_users"
+    },
+    {
+      "capture_without_feature": "db_file"
+    },
+    {
+      "capture_without_feature": "db_candidates"
+    },
+    {
+      "capture_without_feature": "db_insert"
+    },
+    {
+      "capture_without_feature": "db_update"
+    },
+    {
+      "capture_without_feature": "db_transaction"
+    },
+    {
+      "capture_without_feature": "db_metadata"
+    },
+    "static projection is stale: rebuild model with code_structure.enrich",
+    "check needs observed field assertions",
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_REVIEWER.requirements"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_REVIEWER.model_nodes"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_REVIEWER.checks"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_ACCESS.requirements"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_ACCESS.model_nodes"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_ACCESS.checks"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_REJECTION.requirements"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_REJECTION.model_nodes"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_REJECTION.checks"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_GRAPH_CONFIRM.requirements"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_GRAPH_CONFIRM.model_nodes"
+      }
+    },
+    {
+      "discovery": {
+        "code": "missing_decision_link",
+        "item": "D_GRAPH_CONFIRM.checks"
+      }
+    }
+  ],
+  "required_classification": [
+    "app/ports.py::NullActivation",
+    "app/ports.py::NullActivation.result",
+    "app/ports.py::NullData",
+    "app/ports.py::NullData.execute",
+    "app/ports.py::NullData.transaction",
+    "app/ports.py::NullData.transform",
+    "app/ports.py::NullObserver",
+    "app/ports.py::NullObserver.policy",
+    "app/ports.py::NullObserver.state",
+    "app/ports.py::NullProbe",
+    "app/ports.py::NullProbe.record",
+    "app/ports.py::NullProbe.span",
+    "app/service.py::DomainError",
+    "app/service.py::DomainError.__init__",
+    "app/service.py::FileService",
+    "app/service.py::FileService.__init__",
+    "app/storage.py::Store",
+    "app/storage.py::Store.__init__",
+    "app/web.py::WebRoutes",
+    "app/web.py::WebRoutes.__init__",
+    "bo_stategraph/workflow.py::FileWorkflow",
+    "bo_stategraph/workflow.py::FileWorkflow.__init__",
+    "integrations/bo_integration.py::BOIntegration",
+    "integrations/bo_integration.py::BOIntegration.__init__",
+    "integrations/bo_integration.py::BOIntegration.bo_broken_sink",
+    "integrations/bo_integration.py::BOIntegration.close",
+    "integrations/bo_integration.py::BOIntegration.health",
+    "integrations/bo_integration.py::BOIntegration.policy",
+    "integrations/bo_integration.py::BOIntegration.state",
+    "integrations/bo_integration.py::bo_snapshot_store",
+    "run.py::main"
+  ],
+  "review_errors": [
+    "missing review.json for this candidate"
+  ],
+  "stategraph": {
+    "module": "bo_stategraph/__init__.py",
+    "development_mode": "drive",
+    "execution_mode": "drive",
+    "decision_source": "user",
+    "decision": "��״̬ͼ��������"
+  },
+  "discovery": {
+    "valid": false,
+    "ready": false,
+    "errors": [
+      {
+        "code": "missing_decision_link",
+        "item": "D_REVIEWER.requirements"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_REVIEWER.model_nodes"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_REVIEWER.checks"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_ACCESS.requirements"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_ACCESS.model_nodes"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_ACCESS.checks"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_REJECTION.requirements"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_REJECTION.model_nodes"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_REJECTION.checks"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_GRAPH_CONFIRM.requirements"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_GRAPH_CONFIRM.model_nodes"
+      },
+      {
+        "code": "missing_decision_link",
+        "item": "D_GRAPH_CONFIRM.checks"
+      }
+    ],
+    "warnings": [],
+    "blocked": [],
+    "questions": [],
+    "awaiting_answers": []
+  },
+  "valid": false
+}

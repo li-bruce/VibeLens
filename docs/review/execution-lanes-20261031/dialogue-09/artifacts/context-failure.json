@@ -1,0 +1,72 @@
+{
+  "valid": true,
+  "classification": "shared-runtime-http-control-context-dispatch-gap",
+  "acceptance_ready": false,
+  "context_responses": [
+    {
+      "status": 404,
+      "body": "{\"error\": \"not found\"}",
+      "bytes": 22
+    },
+    {
+      "status": 404,
+      "body": "{\"error\": \"not found\"}",
+      "bytes": 22
+    }
+  ],
+  "large_view_bytes": 12363566,
+  "events": 10000,
+  "build_id": "9c1d97e05955481ca1c1a46b1955bb9513a50893d6ecbe40fd1f79eb1b02af60",
+  "health": {
+    "errors": 0,
+    "dropped": 0,
+    "run_id": "b46a7027f4b2efa651e40791",
+    "attempted": 17061,
+    "written": 17061,
+    "enabled": true,
+    "producer": {
+      "enabled": true,
+      "boundary_context": true,
+      "run_id": "9e5edd58b361497ab313b591f51dc533",
+      "producer_id": "02d2f0050d184bc9ac66be06da77d14e",
+      "enqueued": 17061,
+      "pending": 0,
+      "errors": 0,
+      "dropped": 0,
+      "filtered": 0,
+      "last_error": null,
+      "data_errors": 0,
+      "integration_errors": 0
+    },
+    "runtime_frame_evictions": 0,
+    "context_evictions": 0,
+    "retained_events": 10000,
+    "evicted_events": 7061,
+    "history_start_seq": 7062,
+    "log_errors": 0,
+    "listener_errors": 0,
+    "retention": {
+      "memory_events": 10000,
+      "memory_seconds": 1800,
+      "log_bytes": 8388608,
+      "log_backups": 2
+    }
+  },
+  "binding_status": {
+    "status": "current",
+    "changed_files": [],
+    "model_changed": false,
+    "intent_changed": false,
+    "directly_affected": [],
+    "possibly_affected": []
+  },
+  "managed_parity": {
+    "bo_observer/service.py": "3fe59a8916122cb221fee9922665fa2eb07c1e97268e5c419124c421bf969700",
+    "bo_observer/control/cli.py": "614b2183f410bf25e761c79e4c7e3a9afcc6cff3bc9e291017ee55e5afd1da15",
+    "bo_observer/observation/session.py": "00f0b2b56d800f56b0f0d943c53f907837561963ee16b6ebda9358d5668bc0f4",
+    "bo_observer/web/bo_web.py": "45e2be6383dcc4619bf7c76c42186db17a3d18af296e9a0aa28cad84c7b74ef5"
+  },
+  "observer_requests_added_zero_business_events": true,
+  "cause": "service.Handler.do_GET delegates only exact /api/vibelens/control to BOWeb.get; /api/vibelens/control/context falls through to 404 although BOWeb implements it.",
+  "remediation_boundary": "Repair canonical runtime HTTP dispatch and add standard make_server end-to-end regression, then normal project upgrade; do not patch installed runtime or bypass CLI with a snapshot."
+}

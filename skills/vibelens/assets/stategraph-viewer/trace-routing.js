@@ -7,7 +7,7 @@ export function routeFlow(fx, fy, tx, ty, lane = 0, bounds = null) {
   if (same) {
     const top = fy - 11 - (lane % 2) * 2;
     if (Math.abs(tx - fx) < 4) {
-      const side = bounds && fx + 12 > bounds.right ? fx - 12 : fx + 12;
+      const side = bounds && fx + 24 > bounds.right ? fx - 24 : fx + 24;
       return [
         { x: fx, y: fy - 6 },
         { x: fx, y: top },
@@ -58,6 +58,19 @@ export function roundedRoute(ctx, points, radius = 5) {
     );
   }
   ctx.lineTo(points.at(-1).x, points.at(-1).y);
+}
+
+/** A smooth bridge distinguishes evidence between concurrent execution bands. */
+export function groupCurve(fx, fy, tx, ty, bounds) {
+  const bend = Math.min(bounds.right, Math.max(bounds.left, Math.max(fx, tx) + 30));
+  return Array.from({ length: 21 }, (_, i) => {
+    const t = i / 20,
+      u = 1 - t;
+    return {
+      x: u ** 3 * fx + 3 * u * t * bend + t ** 3 * tx,
+      y: u ** 3 * fy + 3 * u * u * t * fy + 3 * u * t * t * ty + t ** 3 * ty,
+    };
+  });
 }
 
 /** Approximate arc position on the same route, with bounded work per connector. */

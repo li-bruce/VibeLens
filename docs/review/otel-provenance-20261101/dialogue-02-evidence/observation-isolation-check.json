@@ -1,0 +1,34 @@
+{
+  "checks": {
+    "old_principal_helper_absent": true,
+    "old_identity_helper_absent": true,
+    "helpers_in_isolated_port": true,
+    "carrier_is_explicitly_observation_only": true,
+    "serialization_is_in_adapter": true,
+    "no_shared_observer_import_in_business": true
+  },
+  "schema_migration": {
+    "before": [
+      {
+        "id": "794b407fc499445b92397a8cdddc299f",
+        "recipient_id": "member1",
+        "kind": "review",
+        "text": "approved",
+        "bo_carrier": "{}",
+        "state": "queued"
+      }
+    ],
+    "after": [
+      {
+        "id": "794b407fc499445b92397a8cdddc299f",
+        "recipient_id": "member1",
+        "kind": "review",
+        "text": "approved",
+        "bo_carrier": "{}",
+        "state": "queued"
+      }
+    ],
+    "equal": true
+  },
+  "source_note": "Inline self.bo capture calls remain explicit observation-port calls. Native authorization and state execution retain their own authority."
+}

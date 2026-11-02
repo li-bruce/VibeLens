@@ -31,6 +31,14 @@ export class LiveTrace {
         build_id: view.manifest.build_id,
         run_id: view.health.run_id,
       };
+      this.current.context.events = [
+        ...new Map(
+          [...(view.open_invocations || []), ...(view.events || [])].map((event) => [
+            event.id,
+            structuredClone(event),
+          ]),
+        ).values(),
+      ];
     }
     const value = this.current;
     if (value.status === "limited") return value;

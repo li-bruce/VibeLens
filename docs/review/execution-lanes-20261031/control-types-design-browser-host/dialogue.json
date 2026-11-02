@@ -1,0 +1,178 @@
+{
+  "kind": "scripted-controls-against-real-design-server",
+  "dialogue": [
+    {
+      "action": "activate",
+      "message": "$vibelens for this project",
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "result": {
+          "active": true,
+          "session": "ef8a416fd3a6de1544da7deef3aced34",
+          "graph_url": "http://127.0.0.1:59097/graph?vl_session=ef8a416fd3a6de1544da7deef3aced34"
+        }
+      }
+    },
+    {
+      "action": "inspect",
+      "message": "/vibelens show the draft graph",
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "result": {
+          "project_id": "design-control-browser",
+          "model_revision": "7ae7a32f20495632639c847e55c695a4c8a168b3e546d8cdad7c4d5f5c4c7342",
+          "nodes": [
+            {
+              "id": "upload",
+              "label": "Receive data",
+              "kind": "action"
+            },
+            {
+              "id": "validate",
+              "label": "Check format",
+              "kind": "action"
+            },
+            {
+              "id": "preview",
+              "label": "Generate preview",
+              "kind": "action"
+            },
+            {
+              "id": "download",
+              "label": "Provide download",
+              "kind": "effect"
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "from": "upload",
+              "to": "validate",
+              "type": "flow",
+              "label": "Validate uploaded data",
+              "origin": "design"
+            },
+            {
+              "id": "e2",
+              "from": "upload",
+              "to": "preview",
+              "type": "data",
+              "label": "Generate preview from uploaded data",
+              "origin": "design"
+            },
+            {
+              "id": "e3",
+              "from": "validate",
+              "to": "download",
+              "type": "guard",
+              "label": "Format check passes",
+              "origin": "design"
+            },
+            {
+              "id": "e4",
+              "from": "preview",
+              "to": "download",
+              "type": "join",
+              "label": "Whether preview is required remains pending",
+              "origin": "design"
+            }
+          ],
+          "recordings": []
+        }
+      }
+    },
+    {
+      "action": "apply",
+      "message": "/vibelens focus upload and its adjacent steps",
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "result": {
+          "schema": "vibelens-control-session/v1",
+          "session": "ef8a416fd3a6de1544da7deef3aced34",
+          "root": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\docs\\review\\execution-lanes-20261031\\control-types-design-browser-host\\project",
+          "conversation": "design-control-browser",
+          "project_id": "design-control-browser",
+          "active": true,
+          "revision": 1,
+          "plan": {
+            "schema": "vibelens-control-plan/v1",
+            "base": {
+              "project_id": "design-control-browser",
+              "model_revision": "7ae7a32f20495632639c847e55c695a4c8a168b3e546d8cdad7c4d5f5c4c7342",
+              "model_hash": "d3c14a5bba30ff279bdf0a770c0896458f5781bf163ad825cf0273988ca4b166",
+              "build_id": "7ae7a32f20495632639c847e55c695a4c8a168b3e546d8cdad7c4d5f5c4c7342"
+            },
+            "action": "view",
+            "label": "Draft focus",
+            "anchors": [
+              "upload"
+            ],
+            "node_ids": [
+              "preview",
+              "upload",
+              "validate"
+            ],
+            "context_node_ids": [],
+            "edge_ids": [
+              "e1",
+              "e2"
+            ],
+            "boundaries": [
+              {
+                "id": "e3",
+                "from": "validate",
+                "to": "download",
+                "type": "guard",
+                "label": "Format check passes",
+                "origin": "design"
+              },
+              {
+                "id": "e4",
+                "from": "preview",
+                "to": "download",
+                "type": "join",
+                "label": "Whether preview is required remains pending",
+                "origin": "design"
+              }
+            ],
+            "limits_hit": false,
+            "filters": {
+              "nodes": [
+                "business",
+                "data",
+                "decision"
+              ],
+              "regions": [
+                "business",
+                "data",
+                "decision"
+              ],
+              "edges": [
+                "data",
+                "flow",
+                "guard"
+              ]
+            },
+            "layout": "layered",
+            "recording": null,
+            "view_id": "63ef7b899c956c78",
+            "id": "control-96a29b3aec4f6e718328"
+          },
+          "result": null
+        }
+      }
+    },
+    {
+      "action": "apply",
+      "message": "/vibelens replay this draft",
+      "exit_code": 1,
+      "result": {
+        "valid": false,
+        "error": "Design graphs have no runtime recordings; choose a live implementation"
+      }
+    }
+  ]
+}

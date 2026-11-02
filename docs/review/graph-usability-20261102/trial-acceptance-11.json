@@ -1,0 +1,541 @@
+{
+  "passed": true,
+  "modified_protected": [],
+  "stable_node_ids": true,
+  "receipts": {
+    "verify": {
+      "valid": true,
+      "errors": [],
+      "candidate_id": "ecc61b27d5beaccdff39b381bba418804c6213ba24f0a79e0224fa3e6fe3d77e",
+      "reports": {
+        "mapping": {
+          "status": "passed",
+          "errors": [],
+          "database": {
+            "configured": true,
+            "valid": true,
+            "errors": [],
+            "changed": false,
+            "source_id": "ffed772cb329087a3922538105ae463ac2a24ff4aa5faadc18aee627576772cf",
+            "catalog_id": "ed72970a8a9a868bb83902b14aea8f5fc7d9bf3921b53316465b6a8f1c903e5a",
+            "stores": [
+              {
+                "id": "team_sqlite",
+                "coverage": "complete",
+                "limitations": [
+                  "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+                ]
+              }
+            ]
+          },
+          "code_structure": {
+            "enabled": true,
+            "valid": true,
+            "errors": [],
+            "status": "passed",
+            "revision": "24c94f9b7111489775839121da3da5ae971e726d469408552e41675910c48187",
+            "nodes": 844,
+            "edges": 1060
+          },
+          "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+          "producer_health": {
+            "valid": true,
+            "checked_runs": 16,
+            "required": true,
+            "errors": []
+          },
+          "invocation_closure": {
+            "valid": true,
+            "closed_calls": 1440,
+            "legacy_events": 0,
+            "errors": []
+          },
+          "layers": {
+            "business": {
+              "declared_nodes": 17,
+              "direct_observations": [
+                "deliver_review_notice",
+                "deliver_revoke_notice",
+                "deliver_share_notice",
+                "download_file",
+                "list_colleagues",
+                "list_files",
+                "list_reviews",
+                "message_list",
+                "read_message",
+                "review_file",
+                "revoke_share",
+                "share_file",
+                "sign_in",
+                "sign_out",
+                "upload_file",
+                "view_file",
+                "workspace"
+              ],
+              "required_cases": 318,
+              "boundary_observations": [],
+              "basis": "actual invocation and selected result"
+            },
+            "state": {
+              "declared_nodes": 7,
+              "direct_observations": [],
+              "required_cases": 0,
+              "boundary_observations": [],
+              "basis": "actual state changes and residence"
+            },
+            "rules": {
+              "declared_nodes": 12,
+              "direct_observations": [
+                "policy:file_access_allowed",
+                "policy:file_access_basis",
+                "policy:is_active_recipient",
+                "policy:is_admin",
+                "policy:is_approved",
+                "policy:is_uploader",
+                "policy:not_uploader",
+                "policy:review_allowed",
+                "policy:revoke_allowed",
+                "policy:share_allowed",
+                "policy:signed_in"
+              ],
+              "required_cases": 115,
+              "boundary_observations": [],
+              "basis": "evaluated/skipped conditions and actual enclosing invocation"
+            },
+            "api": {
+              "declared_nodes": 5,
+              "direct_observations": [
+                "api_command",
+                "api_file_info",
+                "api_get",
+                "api_post",
+                "api_workspace"
+              ],
+              "required_cases": 82,
+              "boundary_observations": [],
+              "basis": "request boundary and actual response"
+            },
+            "execution": {
+              "declared_nodes": 99,
+              "direct_observations": [
+                "policy:active_recipient",
+                "policy:actor_is_admin",
+                "policy:actor_is_uploader",
+                "policy:authenticated",
+                "policy:file_approved"
+              ],
+              "required_cases": 58,
+              "boundary_observations": [],
+              "basis": "call boundaries, selected values and actual nested parent identities"
+            },
+            "operations": {
+              "declared_nodes": 5,
+              "direct_observations": [
+                "db_context_read",
+                "db_metadata",
+                "db_read",
+                "db_transaction",
+                "db_write"
+              ],
+              "required_cases": 156,
+              "boundary_observations": [],
+              "basis": "query, transform, transaction and enclosing native call identity"
+            },
+            "project": {
+              "declared_nodes": 0,
+              "direct_observations": [],
+              "required_cases": 0,
+              "boundary_observations": [],
+              "basis": "source projection only"
+            },
+            "code": {
+              "declared_nodes": 42,
+              "direct_observations": [],
+              "required_cases": 0,
+              "boundary_observations": [],
+              "basis": "explicitly mapped runtime evidence"
+            },
+            "data": {
+              "declared_nodes": 57,
+              "direct_observations": [],
+              "required_cases": 0,
+              "boundary_observations": [],
+              "basis": "operation-linked structural projection"
+            }
+          },
+          "policy": {
+            "valid": true,
+            "errors": []
+          },
+          "stategraph_export": "checked",
+          "witnesses": 487,
+          "projection_checks": 291,
+          "implementation": {
+            "errors": [],
+            "events_checked": 3602,
+            "features": 23
+          }
+        },
+        "state_rules": {
+          "status": "passed",
+          "errors": []
+        },
+        "project_checks": {
+          "status": "passed",
+          "errors": [],
+          "scope": "Configured project tests, architecture and viewer checks"
+        },
+        "business": {
+          "status": "passed",
+          "errors": [],
+          "assertions": {
+            "required": 186,
+            "executed": 186
+          },
+          "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+        }
+      },
+      "review_hash": "dcf26c094d1ac2aaae4268dc1124b7edc5ba882f3da882bfce8ef0466d9e53d7",
+      "observations_hash": "2f5bfdcf85ff284ba95f1c9735e45bbf78c69eeb4d2357d55e1e0ad80799861c",
+      "tests": [
+        {
+          "argv": [
+            "{python}",
+            "-B",
+            "-X",
+            "utf8",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-v"
+          ],
+          "exit_code": 0
+        }
+      ],
+      "checked_at": "2026-11-01T21:40:58.499873+00:00",
+      "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+    },
+    "accept": {
+      "valid": true,
+      "status": "current",
+      "errors": [],
+      "candidate_id": "ecc61b27d5beaccdff39b381bba418804c6213ba24f0a79e0224fa3e6fe3d77e"
+    },
+    "check": {
+      "valid": true,
+      "status": "current",
+      "errors": [],
+      "candidate_id": "ecc61b27d5beaccdff39b381bba418804c6213ba24f0a79e0224fa3e6fe3d77e"
+    },
+    "recall": {
+      "schema": "bo-iteration-recall/v1",
+      "candidate_id": "ecc61b27d5beaccdff39b381bba418804c6213ba24f0a79e0224fa3e6fe3d77e",
+      "mode": "drive",
+      "active_change": {
+        "change": ".stategraph/view-visibility-reload-20261102"
+      },
+      "request": "Managed viewer persistence repair: preserve explicit per-view layer omissions across page reload without repeating legacy migration.",
+      "changed_files": [],
+      "source_errors": [],
+      "verification": "not_run",
+      "unregistered_files": [],
+      "unclassified_functions": [],
+      "contracts": {
+        "model": "bo_stategraph/project.json",
+        "acceptance": "acceptance.json",
+        "whitebox": "whitebox.json",
+        "mapping_contract": "mapping.json",
+        "discovery": "discovery.json"
+      },
+      "observation_module": "bo_stategraph/__init__.py",
+      "observation_sources": [],
+      "naming": {
+        "wiring": "bo_",
+        "adapters": "BO"
+      },
+      "layers": {
+        "business": {
+          "nodes": 17,
+          "scan": "feature entrypoints and effects",
+          "observe": "actual invocation and selected result",
+          "affected_nodes": []
+        },
+        "state": {
+          "nodes": 7,
+          "scan": "state declaration and value bindings",
+          "observe": "actual state changes and residence",
+          "affected_nodes": []
+        },
+        "rules": {
+          "nodes": 12,
+          "scan": "predicate sources, arguments and shared dependencies",
+          "observe": "evaluated/skipped conditions and actual enclosing invocation",
+          "affected_nodes": []
+        },
+        "api": {
+          "nodes": 5,
+          "scan": "registered routes and handlers",
+          "observe": "request boundary and actual response",
+          "affected_nodes": []
+        },
+        "execution": {
+          "nodes": 99,
+          "scan": "functions, parameters and explicit probes",
+          "observe": "call boundaries, selected values and actual nested parent identities",
+          "affected_nodes": []
+        },
+        "operations": {
+          "nodes": 5,
+          "scan": "model exporters and data-access bindings",
+          "observe": "query, transform, transaction and enclosing native call identity",
+          "affected_nodes": []
+        },
+        "project": {
+          "nodes": 0,
+          "scan": "directories, files, imports and dependencies",
+          "observe": "source projection only",
+          "affected_nodes": []
+        },
+        "code": {
+          "nodes": 42,
+          "scan": "symbols, lexical owners, calls and source maps",
+          "observe": "explicitly mapped runtime evidence",
+          "affected_nodes": []
+        },
+        "data": {
+          "nodes": 57,
+          "scan": "ORM/ODM/schema metadata and relationships",
+          "observe": "operation-linked structural projection",
+          "affected_nodes": []
+        }
+      },
+      "plan": ".stategraph/observation-plan.json",
+      "telemetry": {
+        "backend": "opentelemetry",
+        "registration_file": "bo_stategraph/telemetry.json",
+        "nodes": [
+          "api_get",
+          "api_post",
+          "api_command",
+          "api_file_info",
+          "api_workspace"
+        ],
+        "preserve": [
+          "state declaration and native executor",
+          "source mappings and selected fields",
+          "trace propagation across async/job boundaries",
+          "observer exclusion and probe health",
+          "native principal/object facts and protected context comparisons"
+        ]
+      },
+      "context_mapping": [
+        {
+          "id": "native/login/sign_in/enter",
+          "case": "login",
+          "node": "sign_in",
+          "phase": "enter",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/login/sign_in/error",
+          "case": "login",
+          "node": "sign_in",
+          "phase": "error",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/login/sign_in/return",
+          "case": "login",
+          "node": "sign_in",
+          "phase": "return",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/login/db_read/enter",
+          "case": "login",
+          "node": "db_read",
+          "phase": "enter",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/login/db_read/return",
+          "case": "login",
+          "node": "db_read",
+          "phase": "return",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/approval/sign_in/enter",
+          "case": "approval",
+          "node": "sign_in",
+          "phase": "enter",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/approval/sign_in/return",
+          "case": "approval",
+          "node": "sign_in",
+          "phase": "return",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/approval/db_read/enter",
+          "case": "approval",
+          "node": "db_read",
+          "phase": "enter",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/approval/db_read/return",
+          "case": "approval",
+          "node": "db_read",
+          "phase": "return",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/approval/upload_file/enter",
+          "case": "approval",
+          "node": "upload_file",
+          "phase": "enter",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/approval/upload_file/change",
+          "case": "approval",
+          "node": "upload_file",
+          "phase": "change",
+          "mapped": [
+            "provenance"
+          ]
+        },
+        {
+          "id": "native/approval/upload_file/return",
+          "case": "approval",
+          "node": "upload_file",
+          "phase": "return",
+          "mapped": [
+            "provenance"
+          ]
+        }
+      ],
+      "context_mapping_count": 635,
+      "context_mapping_omitted": 623,
+      "requirements": [
+        {
+          "id": "R_LOGIN",
+          "text": "Only authenticated seeded members use file operations; no registration.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_ACCESS",
+          "text": "Uploader and administrators access file information and download in every file state; other members require an effective recipient grant.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_REVIEW",
+          "text": "Only administrators other than the uploader may review a pending file.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_ATOMIC",
+          "text": "The recipient message and corresponding review decision or recipient grant take effect in the same SQLite commit; failed delivery retains waiting and no premature effect.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_SHARE",
+          "text": "Only the uploader may share their effectively approved file with a designated colleague; recipients cannot reshare.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_MESSAGES",
+          "text": "Review messages go to the uploader, share messages to the designated recipient, and each account reads only its own messages.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_REJECT",
+          "text": "Retain rejected file bytes and rejection reason; no resubmission or preview.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_SEED",
+          "text": "Provide exactly two synthetic administrators and two synthetic ordinary members.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_BACKGROUND",
+          "text": "Run actual delayed background notification work; preserve pending jobs across restart and prevent duplicate effects.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_OBSERVE",
+          "text": "Maintain the business/state/rule/source graph and actual OTel login, review, share, waiting and delivery evidence independently of business execution.",
+          "status": "confirmed"
+        },
+        {
+          "id": "R_REVOKE",
+          "text": "Only the uploader may revoke a designated pending or active share. Commit withdraws its grant immediately; stale original delivery cannot regrant it. A separate delayed revocation ",
+          "status": "confirmed"
+        }
+      ],
+      "requirement_count": 11,
+      "intent": "intent.json",
+      "test_commands": [
+        [
+          "{python}",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ]
+      ],
+      "observations_command": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "observe.py"
+      ],
+      "required_checks": {
+        "source_first_inventory": true,
+        "probe_health": true,
+        "invocation_closure": true,
+        "mapping_witnesses": true,
+        "reports": [
+          "mapping",
+          "state_rules",
+          "business",
+          "project_checks"
+        ]
+      },
+      "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results.",
+      "valid": true
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "scope": "Focused selector only; complete application acceptance is separate.",
+  "raw_event_count": 93,
+  "unchanged_input_hashes": {
+    "raw-events.json": "17ca50a82ac9376d708295b272572719499a641a50b0c9c327cfc84edc36278f",
+    "native-facts.json": "226e04e3a016e56217ce82c69bf4b07a5886785ab641379846b80d86780c0408",
+    "context-plan.json": "467f6c6d37d92666f8b39982393dc1245f624d92b5a5f574e7adbf8061653dc4"
+  },
+  "joined": {
+    "valid": true,
+    "checks": 2,
+    "errors": []
+  },
+  "wrong_principal_rejected": {
+    "valid": false,
+    "checks": 2,
+    "errors": [
+      {
+        "check": "both-native-reviewers",
+        "case": "two_reviewers",
+        "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:42",
+        "error": "observed context differs from native implementation",
+        "actual": {
+          "id": "admin-1",
+          "kind": "user"
+        },
+        "mapped": {
+          "id": "wrong-principal",
+          "kind": "user"
+        },
+        "source": "Native Flask session before the HTTP review, independently read user row and SDK SpanContext at invocation entry."
+      }
+    ]
+  },
+  "missing_native_record_rejected": {
+    "valid": false,
+    "checks": 0,
+    "errors": [
+      {
+        "check": "both-native-reviewers",
+        "error": "observed invocation has no independent native context record"
+      }
+    ]
+  }
+}

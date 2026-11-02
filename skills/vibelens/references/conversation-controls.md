@@ -49,6 +49,14 @@ Examples of actual user requests:
 
 Controls read parent relationships from the canonical model and preserve generated capture fields. A display boundary may omit its parent to simplify the current view; that omission does not change the declaration. Open the ancestors needed for explicitly selected nested nodes. Enable advanced detail when the user explicitly requests a source node, and reject an incomplete resulting view rather than acknowledging it as applied.
 
+Node filters constrain neighbor expansion using the same memberships as the
+viewer. Preserve the original ordered path: a necessary cross-type bridge is
+listed in `context_node_ids` and shown through the existing one-hop boundary
+presentation. Other excluded neighbors remain omitted boundary relations. If a
+longer hidden chain cannot be shown completely, clarify the view's types before
+publication. Keep the requested anchors and depth, original relation IDs and the
+visible-node admission check; never invent a direct edge across hidden nodes.
+
 The AI interprets natural language; the script does not pretend to understand arbitrary business prose. It validates the resolved specification and refuses unknown fields, unsupported operations, missing prefixes, unactivated conversations and cross-project/conversation use. A new interpretation is required after the graph build changes.
 
 ## Filter an existing recording
@@ -64,5 +72,12 @@ The supported control operations are custom views, presentation filters/layouts 
 The scope and prefix checks are enforced by the control entrypoint. A skill is instruction plus tools, not an operating-system sandbox: it cannot prevent an unrelated agent or manual shell from bypassing those tools and editing files directly. Avoid claiming otherwise. Ordinary project verification still detects unsynchronized implementation changes.
 
 For custom Python HTTP integrations, call `BOWeb.preferences_for(request_path, default_preferences)` for both preference reads and writes, route control reads through `BOWeb.get`, and route acknowledgements through `BOWeb.control_reply`. Bind `control_view` to the existing view query and `control_recording` to the existing recording reader. The unified `bo.py serve` and design server provide these bindings. Missing evidence bindings reject controls rather than applying an unverified plan.
+
+Model controls read `/api/vibelens/control/context`, containing only the model and
+current graph/build identity. They do not load the live event/frame response.
+`GraphSession` supplies this query directly; existing custom view callbacks remain
+compatible. Keep the fixed inspection budget and strict project/build checks.
+Replay filtering still reads the exact stopped recording and preserves its
+original events, digest checks and bounded response size.
 
 Tests must cover two conversations and two projects, quoted/missing prefixes, unsupported source-edit requests, ambiguous names, exact relation paths/depth/budgets, stale models/recordings, original event preservation, saved positions/notes, reload, 2D/3D parity, and exclusion of all control/polling traffic from business events. Distinguish deterministic script/browser checks from actual model conversation evaluation.

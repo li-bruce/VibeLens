@@ -1,0 +1,10 @@
+{
+  "valid": true,
+  "all_prior_rows_and_content_preserved": true,
+  "files": 152,
+  "backup_sha256": "803192277bc4f3559c8d409a6fded73b06b67c648ea31a1f94d52fd0df3c72d4",
+  "protected_files": 296,
+  "migration": "Store.initialize / migrate_file_states",
+  "canonical_observer_did_not_migrate": true,
+  "schema": "CREATE TABLE \"files\" (\n\tid VARCHAR NOT NULL, \n\tuploader_id VARCHAR NOT NULL, \n\treviewer_id VARCHAR NOT NULL, \n\trecipient_id VARCHAR, \n\tfilename VARCHAR NOT NULL, \n\tsize INTEGER NOT NULL, \n\tcontent BLOB NOT NULL, \n\tstate VARCHAR NOT NULL, \n\trevision INTEGER NOT NULL, \n\tjournal VARCHAR NOT NULL, \n\tPRIMARY KEY (id), \n\tCHECK (size >= 0), \n\tCHECK (uploader_id <> reviewer_id), \n\tFOREIGN KEY(reviewer_id) REFERENCES users (id), \n\tCHECK (recipient_id IS NULL OR state = 'approved'), \n\tCHECK (revision >= 1), \n\tFOREIGN KEY(uploader_id) REFERENCES users (id), \n\tCHECK (state IN ('pending', 'approved', 'rejected', 'withdrawn')), \n\tFOREIGN KEY(recipient_id) REFERENCES users (id)\n)"
+}

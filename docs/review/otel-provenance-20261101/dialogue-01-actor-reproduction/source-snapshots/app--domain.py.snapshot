@@ -1,0 +1,233 @@
+"""Confirmed team-file operations with transactional, declaration-driven state."""
+import json
+import time
+import uuid
+from pathlib import Path
+from sqlalchemy import select, and_
+from werkzeug.security import check_password_hash
+from .ports import BOPorts
+from .policy import file_facts, decide
+from .store import USERS, FILES, SHARES, MESSAGES
+from bo_stategraph.workflow import Workflow
+
+
+class DomainError(Exception):
+    def __init__(self, code: str, status: int = 403):
+        super().__init__(code)
+        self.code, self.status = code, status
+
+
+class SharingService:
+    def __init__(self, root: Path, store, bo=None, delay: float = 5):
+        self.root, self.store, self.bo, self.delay = root, store, bo or BOPorts(), delay
+        self.workflow = Workflow(root)
+        self.policy = self.workflow.project["model"]["policy"]
+
+    def authorize(self, connection, actor_id: str, operation: str, file=None, message=None) -> bool:
+        actor = self.store.user(connection, actor_id)
+        file = file or {}
+        granted = bool(file and self.store.read(connection, select(SHARES.c.file_id).where(and_(SHARES.c.file_id == file["id"], SHARES.c.recipient_id == actor_id))))
+        facts = file_facts(actor, file, granted, observer=self.bo)
+        if message:
+            facts.update(actor_is_message_recipient=message["recipient_id"] == actor_id, message_is_delivered=message["state"] == "delivered")
+        evaluation = decide(self.policy, operation, facts, str(file.get("revision", 0)) + ":" + uuid.uuid4().hex, str(self.root))
+        self.bo.policy(self.policy, evaluation, file.get("id", ""))
+        return evaluation["value"] is True
+
+    def demand(self, allowed: bool):
+        if not allowed:
+            raise DomainError("permission_denied")
+
+    def require_file(self, connection, file_id: str) -> dict:
+        row = self.store.file(connection, file_id)
+        if not row:
+            raise DomainError("file_not_found", 404)
+        return row
+
+    def public_file(self, row: dict) -> dict:
+        return self.bo.transform(self.file_metadata, row)
+
+    def file_metadata(self, row: dict) -> dict:
+        return {"id": row["id"], "filename": row["filename"], "owner_id": row["owner_id"], "state": row["state"], "revision": row["revision"]}
+
+    def provenance(self, actor_id: str, file_id: str = "", recipient_id: str = "") -> dict:
+        return {"workflow_id": "file:" + file_id if file_id else "session:" + actor_id,
+            "actor": {"id": actor_id or "anonymous", "kind": "user"},
+            "objects": ([{"type": "File", "id": file_id, "role": "input"}] if file_id else []) +
+                       ([{"type": "User", "id": recipient_id, "role": "recipient"}] if recipient_id else [])}
+
+    def authenticate(self, username: str, password: str) -> dict:
+        bo = self.bo
+        with bo.span("sign_in", lambda: {"inputs": {"username": username, "credential_supplied": bool(password)}},
+                     scope="application", provenance=self.provenance(username)) as observed:
+            with self.store.transaction() as connection:
+                actor = self.store.user(connection, username)
+                if not actor or not check_password_hash(actor["password_hash"], password):
+                    raise DomainError("invalid_credentials", 401)
+                result = {key: actor[key] for key in ("id", "username", "role")}
+            observed.result(lambda: {"outputs": {"actor_id": result["id"], "role": result["role"]}})
+            return result
+
+    def upload(self, actor_id: str, filename: str, content: bytes) -> dict:
+        bo = self.bo
+        file_id = uuid.uuid4().hex
+        with bo.span("upload_file", lambda: {"inputs": {"actor_id": actor_id, "filename": filename, "size": len(content)}},
+                     entity=file_id, attempt=file_id, scope="entity", provenance=self.provenance(actor_id, file_id)) as observed:
+            filename = filename.replace("\\", "/").split("/")[-1].strip()
+            if not filename or len(filename) > 200 or any(ord(c) < 32 for c in filename):
+                raise DomainError("invalid_filename", 400)
+            if len(content) > 16 * 1024 * 1024:
+                raise DomainError("file_too_large", 413)
+            row = {"id": file_id, "filename": filename, "owner_id": actor_id,
+                "state": self.workflow.initial("file"), "revision": 1, "journal": "[]", "entity_kind": "file"}
+            with self.store.transaction(True) as connection:
+                self.demand(self.authorize(connection, actor_id, "upload"))
+                self.store.write(connection, FILES.insert().values(**{key: value for key, value in row.items() if key != "entity_kind"}, content=content, created_at=time.time()))
+            bo.record("upload_file", "commit", lambda: {"outputs": {"file_id": row["id"], "state": row["state"], "size": len(content)}}, entity=row["id"], attempt=row["id"], scope="entity")
+            bo.changed("upload_file", row)
+            result = self.public_file(row)
+            observed.result(lambda: {"outputs": {"file_id": row["id"], "state": row["state"], "size": len(content)}})
+            return result
+
+    def queue_message(self, connection, file: dict, recipient_id: str, kind: str) -> dict:
+        row = {"id": uuid.uuid4().hex, "file_id": file["id"], "owner_id": file["owner_id"], "recipient_id": recipient_id,
+            "kind": kind, "state": self.workflow.initial("message"), "revision": 1, "available_at": time.time() + self.delay,
+            "carrier": json.dumps(self.bo.inject()), "journal": "[]", "entity_kind": "message"}
+        self.store.write(connection, MESSAGES.insert().values(**{key: value for key, value in row.items() if key != "entity_kind"}))
+        return row
+
+    def transition(self, connection, row: dict, event: str, allowed: bool, table) -> dict:
+        step = self.workflow.step(row, event, allowed)
+        journal = json.loads(row["journal"])
+        journal.append({"event": event, "source": row["state"], "target": step["state"], "revision": row["revision"] + 1, "guards": step["guards"]})
+        changed = self.store.write(connection, table.update().where(and_(table.c.id == row["id"], table.c.revision == row["revision"])).values(
+            state=step["state"], revision=row["revision"] + 1, journal=json.dumps(journal)))
+        if changed != 1:
+            raise DomainError("state_conflict", 409)
+        return {**row, "state": step["state"], "revision": row["revision"] + 1, "journal": json.dumps(journal), "guard_evidence": step["guards"]}
+
+    def review(self, actor_id: str, file_id: str, decision: str) -> dict:
+        bo = self.bo
+        with bo.span("review_file", lambda: {"inputs": {"actor_id": actor_id, "file_id": file_id, "decision": decision}},
+                     entity=file_id, attempt=file_id, scope="entity", provenance=self.provenance(actor_id, file_id)) as observed:
+            if decision not in {"approve", "reject"}:
+                raise DomainError("invalid_decision", 400)
+            with self.store.transaction(True) as connection:
+                row = self.require_file(connection, file_id)
+                permitted = self.authorize(connection, actor_id, "review", row)
+                self.demand(permitted)
+                updated = self.transition(connection, row, decision, permitted, FILES)
+                message = self.queue_message(connection, updated, row["owner_id"], updated["state"])
+            bo.changed("review_file", updated, event=decision, guards=updated["guard_evidence"])
+            bo.changed("review_file", message)
+            observed.result(lambda: {"outputs": {"state": updated["state"], "revision": updated["revision"], "message_id": message["id"]}})
+            return self.public_file(updated)
+
+    def share(self, actor_id: str, file_id: str, recipient_id: str) -> dict:
+        bo = self.bo
+        with bo.span("share_file", lambda: {"inputs": {"actor_id": actor_id, "file_id": file_id, "recipient_id": recipient_id}},
+                     entity=file_id, attempt=file_id, scope="entity", provenance=self.provenance(actor_id, file_id, recipient_id)) as observed:
+            with self.store.transaction(True) as connection:
+                row = self.require_file(connection, file_id)
+                permitted = self.authorize(connection, actor_id, "share", row)
+                self.demand(permitted)
+                if not self.store.user(connection, recipient_id):
+                    raise DomainError("recipient_not_found", 400)
+                existing = self.store.read(connection, select(SHARES).where(and_(SHARES.c.file_id == file_id, SHARES.c.recipient_id == recipient_id)))
+                if existing:
+                    observed.result(lambda: {"outputs": {"state": row["state"], "recipient_id": recipient_id, "created": False}})
+                    return {"created": False}
+                self.store.write(connection, SHARES.insert().values(file_id=file_id, recipient_id=recipient_id))
+                updated = self.transition(connection, row, "share", permitted, FILES)
+                message = self.queue_message(connection, updated, recipient_id, "shared")
+            bo.changed("share_file", updated, event="share", guards=updated["guard_evidence"])
+            bo.changed("share_file", message)
+            observed.result(lambda: {"outputs": {"state": updated["state"], "recipient_id": recipient_id, "created": True}})
+            return {"created": True}
+
+    def details(self, actor_id: str, file_id: str) -> dict:
+        bo = self.bo
+        with bo.span("view_file", lambda: {"inputs": {"actor_id": actor_id, "file_id": file_id}}, entity=file_id, attempt=file_id, scope="entity") as observed:
+            with self.store.transaction() as connection:
+                row = self.require_file(connection, file_id)
+                self.demand(self.authorize(connection, actor_id, "view", row))
+                result = self.public_file(row)
+            observed.result(lambda: {"outputs": {"state": result["state"], "filename": result["filename"]}})
+            return result
+
+    def download(self, actor_id: str, file_id: str) -> tuple:
+        bo = self.bo
+        with bo.span("download_file", lambda: {"inputs": {"actor_id": actor_id, "file_id": file_id}}, entity=file_id, attempt=file_id, scope="entity") as observed:
+            with self.store.transaction() as connection:
+                row = self.require_file(connection, file_id)
+                self.demand(self.authorize(connection, actor_id, "download", row))
+                result = (row["filename"], bytes(row["content"]))
+            observed.result(lambda: {"outputs": {"filename": result[0], "size": len(result[1])}})
+            return result
+
+    def list_files(self, actor_id: str) -> list:
+        bo = self.bo
+        with bo.span("list_files", lambda: {"inputs": {"actor_id": actor_id}}, scope="application") as observed:
+            with self.store.transaction() as connection:
+                self.demand(bool(self.store.user(connection, actor_id)))
+                rows = self.store.read(connection, select(FILES).order_by(FILES.c.created_at.desc()))
+                result = [self.public_file(row) for row in rows if self.authorize(connection, actor_id, "list_files", row)]
+            observed.result(lambda: {"outputs": {"count": len(result)}})
+            return result
+
+    def list_reviews(self, actor_id: str) -> list:
+        bo = self.bo
+        with bo.span("list_reviews", lambda: {"inputs": {"actor_id": actor_id}}, scope="application") as observed:
+            with self.store.transaction() as connection:
+                actor = self.store.user(connection, actor_id)
+                self.demand(actor.get("role") == "admin")
+                rows = self.store.read(connection, select(FILES).where(FILES.c.state == "pending"))
+                result = [self.public_file(row) for row in rows if self.authorize(connection, actor_id, "list_reviews", row)]
+            observed.result(lambda: {"outputs": {"count": len(result)}})
+            return result
+
+    def list_messages(self, actor_id: str) -> list:
+        bo = self.bo
+        with bo.span("list_messages", lambda: {"inputs": {"actor_id": actor_id}}, scope="application") as observed:
+            with self.store.transaction() as connection:
+                self.demand(bool(self.store.user(connection, actor_id)))
+                rows = self.store.read(connection, select(MESSAGES.c.id, MESSAGES.c.file_id, MESSAGES.c.recipient_id, MESSAGES.c.kind, MESSAGES.c.state,
+                    FILES.c.filename).join(FILES, MESSAGES.c.file_id == FILES.c.id).where(and_(MESSAGES.c.state == "delivered", MESSAGES.c.recipient_id == actor_id)))
+                result = [row for row in rows if self.authorize(connection, actor_id, "list_messages", message=row)]
+            observed.result(lambda: {"outputs": {"count": len(result)}})
+            return result
+
+    def deliver(self, message_id: str) -> bool:
+        bo = self.bo
+        with self.store.engine.connect() as reader:
+            found = reader.execute(select(MESSAGES).where(MESSAGES.c.id == message_id)).mappings().first()
+        if not found:
+            return False
+        carrier = json.loads(found["carrier"])
+        with bo.receive(carrier), bo.span("deliver_message", lambda: {"inputs": {"message_id": message_id}}, entity=message_id, attempt=message_id, scope="entity",
+                provenance={"workflow_id": "message:" + message_id, "actor": {"id": "message-worker", "kind": "service"},
+                    "objects": [{"type": "Message", "id": message_id, "role": "input"}, {"type": "File", "id": found["file_id"], "role": "input"}, {"type": "User", "id": found["recipient_id"], "role": "recipient"}]}) as observed:
+            with self.store.transaction(True) as connection:
+                rows = self.store.read(connection, select(MESSAGES).where(MESSAGES.c.id == message_id))
+                row = {**rows[0], "entity_kind": "message"}
+                if row["state"] != "message_pending" or row["available_at"] > time.time():
+                    observed.result(lambda: {"outputs": {"delivered": False}})
+                    return False
+                updated = self.transition(connection, row, "deliver", True, MESSAGES)
+            bo.changed("deliver_message", updated, event="deliver", guards=updated["guard_evidence"])
+            observed.result(lambda: {"outputs": {"delivered": True}})
+            return True
+
+    def due_messages(self) -> list:
+        with self.store.engine.connect() as connection:
+            return list(connection.execute(select(MESSAGES.c.id).where(and_(MESSAGES.c.state == "message_pending", MESSAGES.c.available_at <= time.time()))).scalars())
+
+    def logout(self, actor_id: str):
+        bo = self.bo
+        with bo.span("sign_out", lambda: {"inputs": {"actor_id": actor_id}}, scope="application") as observed:
+            observed.result(lambda: {"outputs": {"outcome": "signed_out"}})
+
+    def users(self, actor_id: str) -> list:
+        with self.store.transaction() as connection:
+            self.demand(bool(self.store.user(connection, actor_id)))
+            return self.store.read(connection, select(USERS.c.id, USERS.c.username, USERS.c.role))

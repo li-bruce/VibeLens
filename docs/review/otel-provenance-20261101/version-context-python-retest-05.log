@@ -1,0 +1,23 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+.................E..........
+======================================================================
+ERROR: test_old_build_queue_keeps_cause_but_never_old_model_ownership (__main__.TelemetryTests.test_old_build_queue_keeps_cause_but_never_old_model_ownership)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_telemetry.py", line 655, in test_old_build_queue_keeps_cause_but_never_old_model_ownership
+    self.check_events()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_telemetry.py", line 76, in check_events
+    validate_event(event, self.project, "build")
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\protocol.py", line 92, in validate_event
+    schema_check(event, "event")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\protocol.py", line 48, in schema_check
+    raise ValueError("; ".join(f"{list(e.path)}: {e.message}" for e in errors[:12]))
+ValueError: ['trace', 'links', 0]: Additional properties are not allowed ('source_build_id' was unexpected)
+
+----------------------------------------------------------------------
+Ran 28 tests in 3.491s
+
+FAILED (errors=1)

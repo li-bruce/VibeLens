@@ -51,3 +51,12 @@ The active viewer's `viewer.js`, `graph-core.js`, `layout.js` and `viewer.css` a
 original project code under MIT. There is no proprietary styling library or remote
 font dependency. `tools/check_package.py` checks the reviewed browser bundle hashes,
 license files and script entrypoints so a dependency change requires another review.
+
+# Optional OpenTelemetry dependencies
+
+The native tracing adapters use the upstream OpenTelemetry Python and JavaScript
+API/SDK packages under Apache-2.0. These are installed dependencies, not modified
+vendored engines. Their release locks are in `requirements-telemetry.txt` and the
+JavaScript adapter lockfile. Source and license:
+[OpenTelemetry Python](https://github.com/open-telemetry/opentelemetry-python),
+[OpenTelemetry JavaScript](https://github.com/open-telemetry/opentelemetry-js).

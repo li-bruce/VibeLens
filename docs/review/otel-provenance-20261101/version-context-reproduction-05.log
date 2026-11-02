@@ -1,0 +1,27 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+FF
+======================================================================
+FAIL: test_automatic_ownership_uses_trace_and_span_together (__main__.TelemetryTests.test_automatic_ownership_uses_trace_and_span_together)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_telemetry.py", line 635, in test_automatic_ownership_uses_trace_and_span_together
+    self.assertNotEqual(a["call_id"], b["call_id"])
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '0000000000000007' == '0000000000000007'
+
+======================================================================
+FAIL: test_old_build_queue_keeps_cause_but_never_old_model_ownership (__main__.TelemetryTests.test_old_build_queue_keeps_cause_but_never_old_model_ownership)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_telemetry.py", line 655, in test_old_build_queue_keeps_cause_but_never_old_model_ownership
+    self.check_events()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_telemetry.py", line 81, in check_events
+    self.assertEqual(self.probe.bo_errors, 0, self.probe.bo_health())
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : {'enabled': True, 'boundary_context': True, 'run_id': '76d4e0806e6340b69c22649e443a4338', 'producer_id': 'c48d852883e44340922185a0b707bdcc', 'enqueued': 2, 'pending': 0, 'errors': 1, 'dropped': 0, 'filtered': 0, 'last_error': {'stage': 'trace_context', 'type': 'ValueError'}, 'tracing': {'backend': 'opentelemetry', 'open_spans': 0, 'automatic_open': 0, 'automatic_errors': 0, 'ignored': 0}}
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.256s
+
+FAILED (failures=2)

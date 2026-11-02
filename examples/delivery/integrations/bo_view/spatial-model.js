@@ -1,4 +1,4 @@
-import { layerOf, layers } from "./graph-layers.js";
+import { layerOf, layers, layerColor } from "./graph-layers.js";
 
 /** Lift planar node centers into X/Z without changing either saved layout.
  * Box coordinates use a top-left origin; spatial objects use their center.
@@ -72,6 +72,7 @@ export function spatialModel(graph, presentation) {
       parent: visible.has(box.node.parent) ? box.node.parent : null,
       layer: layerOf(box.node),
       type: box.type,
+      color: layerColor(box.node),
       open: !!box.open,
       glyph: presentation.glyphs.has(box.id),
       region: presentation.regions.has(box.id),

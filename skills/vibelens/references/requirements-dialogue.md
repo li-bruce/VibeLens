@@ -2,6 +2,8 @@
 
 Use this during initial setup or when behavior requirements change. Express the user's current understanding as task, business, and state networks, then confirm that understanding in conversation. Do not infer a comprehensive business process, recommend business policies, or expand the user's scope.
 
+For later development turns, follow [iteration dialogue](iteration-dialogue.md): identify the affected existing region, preview the proposed local change and resolve only the changed meaning before coding.
+
 ## State the current understanding
 
 Read the request, previous answers, and adopted project rules. Identify the stated goal, actors, business objects, triggers, actions, and effects. Present short sentences and a focused graph. Preserve stated concurrency, dependencies, shared resources, loops, and multiple entry points. Do not add approval, compensation, or recovery mechanisms from a generic business template.

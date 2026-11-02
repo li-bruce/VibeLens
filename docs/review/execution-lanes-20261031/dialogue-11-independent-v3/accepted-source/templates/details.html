@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ file.filename }} · 文件详情</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">同事文件柜<span>TEAM FILES</span></a>
+    <div class="account">{{ actor }}</div>
+  </header>
+  <main class="details-page">
+    <p><a href="/">← 返回文件列表</a></p>
+    <article class="file-card">
+      <div class="file-top">
+        <div><p class="file-kind">文件详情</p><h1>{{ file.filename }}</h1></div>
+        <span class="badge {{ file.state }}">{{ {'pending':'待审核','approved':'已通过','rejected':'未通过','withdrawn':'已撤回'}[file.state] }}</span>
+      </div>
+      <p class="file-meta">上传者 {{ file.uploader_id }} · 审核人 {{ file.reviewer_id }} · {{ file.size }} 字节</p>
+      {% if file.state == 'rejected' %}
+      <section class="rejection-details" aria-label="拒绝原因">
+        <h2>拒绝原因</h2>
+        {% if file.rejection_reason %}<div class="reason-text">{{ file.rejection_reason }}</div>{% else %}<p>这条历史记录未填写拒绝原因。</p>{% endif %}
+      </section>
+      {% endif %}
+      <div class="file-actions"><a class="download" href="/files/{{ file.id }}/download">下载文件 ↓</a></div>
+    </article>
+  </main>
+</body>
+</html>

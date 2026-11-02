@@ -1,7 +1,7 @@
 /** Pair actual invocation boundaries. Shared by the timeline and graph activation overlay.
  * Parentage is producer/entity scoped; containment and source mappings never create calls.
  */
-import { callKey, callScope } from "./trace-evidence.js";
+import { callKey, callScope, referencedParent } from "./trace-evidence.js";
 import { lifecycleTransition, lifecycleBoundary } from "./node-lifecycle.js";
 
 export function traceLifecycles(items, all, { projections = true, registeredOnly = false } = {}) {
@@ -10,6 +10,9 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
     slices = [],
     links = [],
     childEnds = new Map();
+  const activeEntries = new Map();
+  const knownEntries = new Map();
+  const byEventId = new Map(items.map((event) => [event.id, event]));
   const parentKey = (event) => JSON.stringify([callScope(event), event.call_id]);
   const finish = (slice, raw, unfinished = false) => {
     slice.last = raw;
@@ -30,6 +33,7 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
     }
     const active = parents.get(parentKey(items[slice.raw]));
     if (active?.at(-1) === slice) active.pop();
+    activeEntries.delete(items[slice.raw].id);
   };
   for (const [raw, event] of items.entries()) {
     if (event.kind !== "probe") continue;
@@ -38,6 +42,13 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
     const transition = lifecycleTransition(all.get(event.node), event);
     if (registeredOnly && !transition?.registered) continue;
     const stack = opened.get(key) || [];
+    const explicitParent = referencedParent(event, byEventId);
+    const enclosing = event.parent_event_id
+      ? explicitParent &&
+        (activeEntries.get(explicitParent.id) ||
+          (event.phase === "enter" ? knownEntries.get(explicitParent.id) : null))
+      : event.parent_call_id &&
+        parents.get(JSON.stringify([callScope(event), event.parent_call_id]))?.at(-1);
     if (transition?.boundary === "start") {
       // Legacy commit-only producers remain supported. A later owned child is
       // evidence that the commit was not the end of the enclosing operation.
@@ -46,9 +57,7 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
         stack.pop();
         finish(prior, prior.candidate);
       }
-      const parent = event.parent_call_id
-        ? parents.get(JSON.stringify([callScope(event), event.parent_call_id]))?.at(-1)
-        : null;
+      const parent = enclosing;
       if (parent) {
         if (parent.candidate !== null) parent.afterCommit = true;
         links.push({
@@ -76,6 +85,8 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
       opened.set(key, stack);
       if (!parents.has(parentKey(event))) parents.set(parentKey(event), []);
       parents.get(parentKey(event)).push(slice);
+      activeEntries.set(event.id, slice);
+      knownEntries.set(event.id, slice);
     } else if (stack.length) {
       const slice = stack.at(-1);
       slice.observed = raw;
@@ -84,14 +95,14 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
         if (slice.stages.at(-1).state !== transition.state)
           slice.stages.push({ raw, phase, ...transition });
       }
-      const transformed =
-        event.phase === "change" &&
-        all.get(event.node)?.data_role === "transform" &&
-        event.outputs?.status === "transformed";
-      if (transition?.boundary === "end" || (transformed && !slice.explicit)) {
+      if (transition?.boundary === "end") {
         stack.pop();
         finish(slice, raw);
-      } else if (!slice.explicit && ["commit", "decision"].includes(event.phase))
+      } else if (
+        !slice.explicit &&
+        !all.get(event.node)?.lifecycle &&
+        ["commit", "decision"].includes(event.phase)
+      )
         slice.candidate = raw;
       if (slice.parent !== undefined) {
         const parent = parents
@@ -100,6 +111,10 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
         if (parent?.candidate !== null && parent?.candidate !== undefined)
           parent.afterCommit = true;
       }
+    } else if (enclosing) {
+      // A selected value/rule fact was witnessed inside this invocation. It is
+      // an ownership link, not a new call or an invented duration.
+      links.push({ from: enclosing.raw, to: raw, at: raw, type: "observation" });
     }
   }
   for (const stack of opened.values())
@@ -119,6 +134,23 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
     link.outlivesParent = !!(parent?.closed && link.at > parent.last);
   }
   const byId = new Map(items.map((event, raw) => [event.id, raw]));
+  // Standard Span Links connect distinct executions; equal object IDs never do.
+  const bySpan = new Map(),
+    linked = new Set();
+  const spanKey = (value) => (value ? `${value.trace_id}:${value.span_id}` : null);
+  items.forEach((event, raw) => {
+    const key = spanKey(event.trace);
+    if (key && event.phase === "enter" && !bySpan.has(key)) bySpan.set(key, raw);
+  });
+  items.forEach((event, to) => {
+    for (const relation of event.trace?.links || []) {
+      const from = bySpan.get(spanKey(relation));
+      const key = `${spanKey(event.trace)}:${spanKey(relation)}:${relation.relation || "trigger"}`;
+      if (from === undefined || linked.has(key)) continue;
+      linked.add(key);
+      links.push({ from, to, at: to, type: relation.relation || "trigger", evidence: "otel-link" });
+    }
+  });
   for (const [to, event] of items.entries())
     for (const dependency of event.depends || []) {
       const from = byId.get(dependency.event);
@@ -132,7 +164,7 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
       // bindings. The owner's entry never invents a parameter invocation.
       const projected = items.map((event) =>
         event.node === owner
-          ? { ...event, node: node.id, parent_call_id: null }
+          ? { ...event, node: node.id, parent_call_id: null, parent_event_id: null }
           : { kind: "projection-boundary" },
       );
       const observed = traceLifecycles(projected, new Map([[node.id, node]]), {

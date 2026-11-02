@@ -1,0 +1,548 @@
+{
+  "kind": "scripted synthetic clarification fixture",
+  "previous": {
+    "schema": "business-discovery/v1",
+    "project_id": "sharing",
+    "goal": "Upload and share files with selected recipients",
+    "sources": [
+      {
+        "id": "U0",
+        "kind": "user",
+        "text": "Recipients can download a shared file. Send them a message when I share it.",
+        "locator": "Synthetic initial confirmation"
+      }
+    ],
+    "networks": [
+      {
+        "id": "sharing",
+        "title": "Share a file",
+        "actors": [
+          "Owner",
+          "Recipient"
+        ],
+        "trigger": "Owner shares an uploaded file",
+        "outcome": "Recipient can download it",
+        "nodes": [
+          {
+            "id": "upload",
+            "kind": "action",
+            "label": "Upload file",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.upload"
+            ]
+          },
+          {
+            "id": "share",
+            "kind": "action",
+            "label": "Share file",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.share"
+            ]
+          },
+          {
+            "id": "allowed",
+            "kind": "condition",
+            "label": "Recipient may download",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.allowed"
+            ]
+          },
+          {
+            "id": "download",
+            "kind": "action",
+            "label": "Download file",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.download"
+            ]
+          },
+          {
+            "id": "message",
+            "kind": "action",
+            "label": "Receive sharing message",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.message"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "uploaded",
+            "from": "upload",
+            "to": "share",
+            "relation": "flow",
+            "label": "Select uploaded file",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "shared",
+            "from": "share",
+            "to": "allowed",
+            "relation": "flow",
+            "label": "Check access",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "download_allowed",
+            "from": "allowed",
+            "to": "download",
+            "relation": "guard",
+            "label": "Recipient can download",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "notified",
+            "from": "share",
+            "to": "message",
+            "relation": "flow",
+            "label": "Send sharing message",
+            "source_refs": [
+              "U0"
+            ]
+          }
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "id": "D_ACCESS",
+        "topic": "authority",
+        "blocking": true,
+        "status": "resolved",
+        "source_refs": [
+          "U0"
+        ],
+        "affects": [
+          "allowed",
+          "download_allowed"
+        ],
+        "question": "Who may download the file?",
+        "why": "The link checks recipient access.",
+        "resolution": {
+          "kind": "user_answer",
+          "text": "The selected recipient may download.",
+          "source_refs": [
+            "U0"
+          ]
+        }
+      }
+    ]
+  },
+  "pending": {
+    "schema": "business-discovery/v1",
+    "project_id": "sharing",
+    "goal": "Upload and share files with selected recipients",
+    "sources": [
+      {
+        "id": "U0",
+        "kind": "user",
+        "text": "Recipients can download a shared file. Send them a message when I share it.",
+        "locator": "Synthetic initial confirmation"
+      },
+      {
+        "id": "U1",
+        "kind": "user",
+        "text": "我还要能撤回共享。已经发出的下载链接怎么办？",
+        "locator": "Synthetic later user request"
+      }
+    ],
+    "networks": [
+      {
+        "id": "sharing",
+        "title": "Share a file",
+        "actors": [
+          "Owner",
+          "Recipient"
+        ],
+        "trigger": "Owner shares an uploaded file",
+        "outcome": "Recipient can download it",
+        "nodes": [
+          {
+            "id": "upload",
+            "kind": "action",
+            "label": "Upload file",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.upload"
+            ]
+          },
+          {
+            "id": "share",
+            "kind": "action",
+            "label": "Share file",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.share"
+            ]
+          },
+          {
+            "id": "allowed",
+            "kind": "condition",
+            "label": "Recipient may download",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.allowed"
+            ]
+          },
+          {
+            "id": "download",
+            "kind": "action",
+            "label": "Download file",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.download"
+            ]
+          },
+          {
+            "id": "message",
+            "kind": "action",
+            "label": "Receive sharing message",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.message"
+            ]
+          },
+          {
+            "id": "withdraw",
+            "kind": "action",
+            "label": "Withdraw share",
+            "source_refs": [
+              "U1"
+            ],
+            "model_nodes": [
+              "business.withdraw"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "uploaded",
+            "from": "upload",
+            "to": "share",
+            "relation": "flow",
+            "label": "Select uploaded file",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "shared",
+            "from": "share",
+            "to": "allowed",
+            "relation": "flow",
+            "label": "Check access",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "download_allowed",
+            "from": "allowed",
+            "to": "download",
+            "relation": "guard",
+            "label": "Recipient can download",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "notified",
+            "from": "share",
+            "to": "message",
+            "relation": "flow",
+            "label": "Send sharing message",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "withdrawal_access",
+            "from": "withdraw",
+            "to": "allowed",
+            "relation": "data",
+            "label": "Withdrawal affects access",
+            "source_refs": [
+              "U1"
+            ]
+          }
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "id": "D_ACCESS",
+        "topic": "authority",
+        "blocking": true,
+        "status": "resolved",
+        "source_refs": [
+          "U0"
+        ],
+        "affects": [
+          "allowed",
+          "download_allowed"
+        ],
+        "question": "Who may download the file?",
+        "why": "The link checks recipient access.",
+        "resolution": {
+          "kind": "user_answer",
+          "text": "The selected recipient may download.",
+          "source_refs": [
+            "U0"
+          ]
+        }
+      },
+      {
+        "id": "D_WITHDRAW",
+        "topic": "authority",
+        "blocking": true,
+        "status": "open",
+        "source_refs": [
+          "U1"
+        ],
+        "affects": [
+          "withdraw",
+          "allowed",
+          "download_allowed"
+        ],
+        "question": "撤回后，已经发出的链接也要停止下载吗？",
+        "why": "This changes the existing download condition."
+      }
+    ]
+  },
+  "answered": {
+    "schema": "business-discovery/v1",
+    "project_id": "sharing",
+    "goal": "Upload and share files with selected recipients",
+    "sources": [
+      {
+        "id": "U0",
+        "kind": "user",
+        "text": "Recipients can download a shared file. Send them a message when I share it.",
+        "locator": "Synthetic initial confirmation"
+      },
+      {
+        "id": "U1",
+        "kind": "user",
+        "text": "我还要能撤回共享。已经发出的下载链接怎么办？",
+        "locator": "Synthetic later user request"
+      },
+      {
+        "id": "U2",
+        "kind": "user",
+        "text": "是的，撤回以后旧链接的下一次下载也要拒绝。",
+        "locator": "Synthetic later user clarification"
+      }
+    ],
+    "networks": [
+      {
+        "id": "sharing",
+        "title": "Share a file",
+        "actors": [
+          "Owner",
+          "Recipient"
+        ],
+        "trigger": "Owner shares an uploaded file",
+        "outcome": "Recipient can download it",
+        "nodes": [
+          {
+            "id": "upload",
+            "kind": "action",
+            "label": "Upload file",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.upload"
+            ]
+          },
+          {
+            "id": "share",
+            "kind": "action",
+            "label": "Share file",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.share"
+            ]
+          },
+          {
+            "id": "allowed",
+            "kind": "condition",
+            "label": "Recipient with active share",
+            "source_refs": [
+              "U0",
+              "U2"
+            ],
+            "model_nodes": [
+              "business.allowed"
+            ]
+          },
+          {
+            "id": "download",
+            "kind": "action",
+            "label": "Download file",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.download"
+            ]
+          },
+          {
+            "id": "message",
+            "kind": "action",
+            "label": "Receive sharing message",
+            "source_refs": [
+              "U0"
+            ],
+            "model_nodes": [
+              "business.message"
+            ]
+          },
+          {
+            "id": "withdraw",
+            "kind": "action",
+            "label": "Withdraw share",
+            "source_refs": [
+              "U1"
+            ],
+            "model_nodes": [
+              "business.withdraw"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "uploaded",
+            "from": "upload",
+            "to": "share",
+            "relation": "flow",
+            "label": "Select uploaded file",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "shared",
+            "from": "share",
+            "to": "allowed",
+            "relation": "flow",
+            "label": "Check access",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "download_allowed",
+            "from": "allowed",
+            "to": "download",
+            "relation": "guard",
+            "label": "Recipient and share still active",
+            "source_refs": [
+              "U0",
+              "U2"
+            ]
+          },
+          {
+            "id": "notified",
+            "from": "share",
+            "to": "message",
+            "relation": "flow",
+            "label": "Send sharing message",
+            "source_refs": [
+              "U0"
+            ]
+          },
+          {
+            "id": "withdrawal_access",
+            "from": "withdraw",
+            "to": "allowed",
+            "relation": "data",
+            "label": "Withdrawal affects access",
+            "source_refs": [
+              "U1"
+            ]
+          }
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "id": "D_ACCESS",
+        "topic": "authority",
+        "blocking": true,
+        "status": "resolved",
+        "source_refs": [
+          "U0"
+        ],
+        "affects": [
+          "allowed",
+          "download_allowed"
+        ],
+        "question": "Who may download the file?",
+        "why": "The link checks recipient access.",
+        "resolution": {
+          "kind": "user_answer",
+          "text": "The selected recipient may download.",
+          "source_refs": [
+            "U0"
+          ]
+        }
+      },
+      {
+        "id": "D_WITHDRAW",
+        "topic": "authority",
+        "blocking": true,
+        "status": "resolved",
+        "source_refs": [
+          "U1"
+        ],
+        "affects": [
+          "withdraw",
+          "allowed",
+          "download_allowed"
+        ],
+        "question": "撤回后，已经发出的链接也要停止下载吗？",
+        "why": "This changes the existing download condition.",
+        "resolution": {
+          "kind": "user_answer",
+          "text": "The next download through an old link is rejected after withdrawal.",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      }
+    ]
+  }
+}

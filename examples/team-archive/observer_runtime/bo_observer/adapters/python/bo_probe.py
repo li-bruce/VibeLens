@@ -1,4 +1,4 @@
-"""Bounded, fault-isolated JSON transport. Standard library only."""
+"""Bounded JSON transport with an optional standard tracing backend."""
 
 from contextvars import ContextVar
 from contextlib import contextmanager, nullcontext
@@ -22,7 +22,24 @@ except ImportError:
 
 
 _bo_internal = ContextVar("bo_transport_internal", default=False)
+
+
+def bo_exception_metadata(value):
+    """Keep this adapter usable as a standalone standard-library module."""
+    if not isinstance(value, dict) or set(value) != {"type"}:
+        raise ValueError("invalid exception metadata fields")
+    name = value["type"]
+    if (
+        not isinstance(name, str)
+        or not 0 < len(name) <= 256
+        or any(not part.replace("$", "_").isidentifier() for part in name.split("."))
+    ):
+        raise ValueError("exception type must identify a code class")
+    return {"type": name}
+
+
 _bo_span = ContextVar("bo_activation_scope", default=None)
+_bo_unset = object()
 
 
 class BOActivation:
@@ -33,6 +50,7 @@ class BOActivation:
         self.call_id = options["call_id"]
         self.entry_id = None
         self.bo_result = lambda: {}
+        self.bo_active = True
 
     def result(self, builder):
         """Select completion values lazily; transport failures do not alter the result."""
@@ -71,6 +89,72 @@ def bo_selected(value, spec, depth=0):
 
 
 class BOProbe:
+    bo_boundary_events = True
+
+    def bo_current_context(self, *, allow_ended=False):
+        """Copy the active same-probe invocation identity for native adapters."""
+        parent = self.bo_tracing.current() if self.bo_tracing else _bo_span.get()
+        if (
+            parent is None
+            or parent.bo_probe is not self
+            or (not parent.bo_active and not allow_ended)
+        ):
+            return {}
+        return {
+            **{
+                key: value
+                for key, value in parent.bo_options.items()
+                if key in {"entity", "attempt", "scope", "basis", "provenance"}
+            },
+            "parent_call_id": parent.call_id,
+            "parent_event_id": parent.entry_id,
+        }
+
+    def bo_context_options(self, identity, *, allow_ended=False):
+        """Inherit causal context while keeping explicit application identities.
+
+        An explicit parent override cannot retain the other half of an inherited
+        reference. In particular, null parent_call_id starts an independent scope.
+        """
+        current = self.bo_current_context(allow_ended=allow_ended)
+        if "parent_call_id" in identity and identity["parent_call_id"] != current.get(
+            "parent_call_id"
+        ):
+            current.pop("parent_event_id", None)
+        if "parent_event_id" in identity and identity["parent_event_id"] != current.get(
+            "parent_event_id"
+        ):
+            current.pop("parent_call_id", None)
+        return {**current, **identity}
+
+    @contextmanager
+    def bo_call_context(self, node, call_id, *, entry_id=None, **identity):
+        """Scope a native adapter's already-recorded call without emitting extra events."""
+        activation = BOActivation(self, node, {**identity, "call_id": call_id})
+        activation.entry_id = entry_id
+        with self.bo_activation_context(activation):
+            yield
+
+    @contextmanager
+    def bo_activation_context(self, activation):
+        """Use SDK task context when configured; retain the dependency-free backend."""
+        token = _bo_span.set(activation) if self.bo_tracing is None else None
+        try:
+            with self.bo_tracing.activate(activation) if self.bo_tracing else nullcontext():
+                yield
+        finally:
+            activation.bo_active = False
+            if token is not None:
+                _bo_span.reset(token)
+
+    def bo_bind_tracing(self, backend):
+        """Bind one observation backend without changing execution or global providers."""
+        if self.bo_tracing is not None:
+            raise ValueError("tracing backend already bound")
+        backend.bind(self)
+        self.bo_tracing = backend
+        return backend
+
     @contextmanager
     def span(self, node, builder=lambda: {}, **options):
         """Witness entry through completion, including awaited children and exceptions.
@@ -78,30 +162,28 @@ class BOProbe:
         Use ``with`` in synchronous or asynchronous code. Nested spans inherit only
         this probe's invocation context. Detached tasks must own a separate span.
         """
-        parent = _bo_span.get()
-        if parent is not None and parent.bo_probe is self:
-            inherited = {
-                k: v
-                for k, v in parent.bo_options.items()
-                if k in {"entity", "attempt", "scope", "basis"}
-            }
-            inherited["parent_call_id"] = parent.call_id
-            options = {**inherited, **options}
+        options = self.bo_context_options(options, allow_ended=True)
         options.setdefault("call_id", uuid.uuid4().hex)
+        options.setdefault("parent_call_id", None)
+        options.setdefault("parent_event_id", None)
         options["lifecycle"] = "span"
         activation = BOActivation(self, node, options)
         activation.entry_id = activation.record("enter", builder)
-        token = _bo_span.set(activation)
-        try:
-            yield activation
-        except BaseException as error:
-            error_name = type(error).__name__
-            activation.record("error", lambda: {"outputs": {"error": error_name}})
-            raise
-        else:
-            activation.record("return", activation.bo_result)
-        finally:
-            _bo_span.reset(token)
+        with self.bo_activation_context(activation):
+            try:
+                yield activation
+            except BaseException as error:
+                error_name = type(error).__name__
+                activation.record(
+                    "error",
+                    lambda: {
+                        "outputs": {"error": error_name},
+                        "exception": {"type": error_name},
+                    },
+                )
+                raise
+            else:
+                activation.record("return", activation.bo_result)
 
     def __init__(
         self,
@@ -126,12 +208,16 @@ class BOProbe:
         )
         self.bo_run, self.bo_producer = run_id or uuid.uuid4().hex, producer_id or uuid.uuid4().hex
         self.bo_enabled = enabled
+        self.bo_tracing = None
         self.bo_seq = self.bo_errors = self.bo_dropped = self.bo_suppressed = 0
         self.bo_filtered = 0
         self.bo_capture_nodes = None
         self.bo_last_error = None
         self.bo_queue = queue.Queue(maxsize=max(1, capacity))
         self.bo_lock = threading.Lock()
+        self.bo_progress = threading.Condition()
+        self.bo_submitted = self.bo_completed = 0
+        self.bo_flush_target = 0
         self.bo_closed = threading.Event()
         self.bo_nodes = {n["id"]: n for n in project["model"]["nodes"]}
         excluded = project["model"].get("implementation", {}).get("excluded", {})
@@ -177,21 +263,28 @@ class BOProbe:
         with self.bo_lock:
             return {
                 "enabled": self.bo_enabled and not self.bo_closed.is_set(),
+                "boundary_context": True,
                 "run_id": self.bo_run,
                 "producer_id": self.bo_producer,
                 "enqueued": self.bo_seq,
                 "pending": self.bo_queue.unfinished_tasks,
+                "queue_submitted": self.bo_submitted,
+                "queue_completed": self.bo_completed,
+                "flush_target": self.bo_flush_target,
                 "errors": self.bo_errors,
                 "dropped": self.bo_dropped,
                 "filtered": self.bo_filtered,
                 "last_error": dict(self.bo_last_error) if self.bo_last_error else None,
+                **({"tracing": self.bo_tracing.health()} if self.bo_tracing else {}),
             }
 
     def bo_put(self, kind, body):
         raw = json.dumps(body, ensure_ascii=False, allow_nan=False).encode()
         if len(raw) > 24576:
             raise ValueError("observation too large")
-        self.bo_queue.put_nowait((kind, raw))
+        with self.bo_progress:
+            self.bo_queue.put_nowait((kind, raw))
+            self.bo_submitted += 1
         return True
 
     def record(
@@ -200,15 +293,19 @@ class BOProbe:
         phase,
         builder,
         *,
-        entity="application",
-        attempt="application",
-        scope="application",
-        basis=None,
+        entity=_bo_unset,
+        attempt=_bo_unset,
+        scope=_bo_unset,
+        basis=_bo_unset,
         call_id=None,
-        parent_call_id=None,
+        parent_call_id=_bo_unset,
+        parent_event_id=_bo_unset,
         depends=(),
         revision=None,
         lifecycle=None,
+        bo_boundary=None,
+        trace=None,
+        provenance=_bo_unset,
     ):
         """Build and enqueue a selected observation without changing the business result.
 
@@ -220,10 +317,21 @@ class BOProbe:
         if _bo_internal.get() or bo_is_internal() or node in self.bo_excluded:
             self.bo_suppressed += 1
             return None
+        boundary = (
+            bo_boundary
+            if bo_boundary is not None
+            else (
+                {"enter": "start", "return": "end", "error": "end"}.get(phase)
+                if lifecycle == "span"
+                else None
+            )
+        )
         with self.bo_lock:
-            if self.bo_capture_nodes is not None and node not in self.bo_capture_nodes:
+            filtered = self.bo_capture_nodes is not None and node not in self.bo_capture_nodes
+            if filtered:
                 self.bo_filtered += 1
-                return None
+                if boundary not in ("start", "end"):
+                    return None
         token = _bo_internal.set(True)
         try:
             if phase not in {
@@ -237,10 +345,53 @@ class BOProbe:
                 "error",
             }:
                 raise ValueError("invalid phase")
+            identity = self.bo_context_options(
+                {
+                    key: value
+                    for key, value in {
+                        "entity": entity,
+                        "attempt": attempt,
+                        "scope": scope,
+                        "basis": basis,
+                        "parent_call_id": parent_call_id,
+                        "parent_event_id": parent_event_id,
+                        "provenance": provenance,
+                    }.items()
+                    if value is not _bo_unset
+                },
+                allow_ended=boundary == "start",
+            )
+            entity = identity.get("entity", "application")
+            attempt = identity.get("attempt", "application")
+            scope = identity.get("scope", "application")
+            basis = identity.get("basis")
+            parent_call_id = identity.get("parent_call_id")
+            parent_event_id = identity.get("parent_event_id")
+            provenance = identity.get("provenance")
             spec = self.bo_nodes[node].get("capture", {})
-            values = builder()
+            values = {} if filtered else builder()
+            # Identity and generated object references may become known only at
+            # completion. A selected builder supplies facts for this event only.
+            provenance = values.get("provenance", provenance)
+            exception = values.get("exception")
+            if "exception" in values and exception is None:
+                raise ValueError("exception metadata must identify an observed class")
+            if bo_boundary not in (None, "start", "end"):
+                raise ValueError("invalid physical context boundary")
             if lifecycle not in (None, "span"):
                 raise ValueError("invalid lifecycle boundary mode")
+            if self.bo_tracing and trace is None:
+                trace = self.bo_tracing.observe(node, phase, call_id, boundary)
+            if trace is not None or provenance is not None:
+                from ...observation.provenance import trace_metadata, object_metadata
+
+                trace = trace_metadata(trace) if trace is not None else None
+                provenance = object_metadata(provenance) if provenance is not None else None
+            exception = bo_exception_metadata(exception) if exception is not None else None
+            if exception is not None and self.bo_tracing:
+                callback = getattr(self.bo_tracing, "exception", None)
+                if callback:
+                    callback(call_id, exception)
             with self.bo_lock:
                 self.bo_seq += 1
                 eid = f"{self.bo_run}:{self.bo_producer}:{self.bo_seq}"
@@ -260,6 +411,7 @@ class BOProbe:
                     ),
                     "call_id": call_id or eid,
                     "parent_call_id": parent_call_id,
+                    "parent_event_id": parent_event_id,
                     "inputs": bo_selected(values.get("inputs", {}), spec.get("in", {})),
                     "outputs": bo_selected(values.get("outputs", {}), spec.get("out", {})),
                     "depends": list(depends),
@@ -271,6 +423,22 @@ class BOProbe:
                     body["revision"] = revision
                 if lifecycle is not None:
                     body["lifecycle"] = lifecycle
+                if trace is not None:
+                    body["trace"] = trace
+                if provenance is not None and not filtered:
+                    body["provenance"] = provenance
+                if exception is not None and not filtered:
+                    body["exception"] = exception
+                if filtered:
+                    body.update(
+                        context_only=True,
+                        context_boundary=boundary,
+                        inputs={},
+                        outputs={},
+                        depends=[],
+                        basis={},
+                    )
+                    body.pop("revision", None)
                 self.bo_put("events", body)
             return eid
         except queue.Full:
@@ -291,6 +459,12 @@ class BOProbe:
                 ),
             }
         finally:
+            if self.bo_tracing:
+                try:
+                    self.bo_tracing.complete(call_id, phase, boundary)
+                except Exception:
+                    self.bo_errors += 1
+                    self.bo_last_error = {"stage": "tracing", "type": "Error"}
             _bo_internal.reset(token)
         return None
 
@@ -373,13 +547,20 @@ class BOProbe:
             batch = [raw]
             token = _bo_internal.set(True)
             try:
-                with bo_internal():
+                with (
+                    bo_internal(),
+                    self.bo_tracing.internal() if self.bo_tracing else nullcontext(),
+                ):
                     try:
                         accept_many = getattr(self.bo_sink, "bo_accept_many", None)
                     except Exception:
                         accept_many = None  # An optional capability cannot break a plain sink.
                     if kind == "events" and callable(accept_many):
-                        while len(batch) < 16:
+                        # Amortize the sink's strict pre/post source checks over
+                        # its existing 64-event contract during a real backlog.
+                        # Ordinary traffic keeps the smaller low-latency group.
+                        batch_limit = 64 if self.bo_queue.qsize() >= 64 else 16
+                        while len(batch) < batch_limit:
                             try:
                                 following = self.bo_queue.get_nowait()
                             except queue.Empty:
@@ -415,13 +596,26 @@ class BOProbe:
                 _bo_internal.reset(token)
                 for _ in batch:
                     self.bo_queue.task_done()
+                with self.bo_progress:
+                    self.bo_completed += len(batch)
+                    self.bo_progress.notify_all()
 
     def flush(self, timeout=2):
-        """Wait up to the supplied timeout for queued observations to finish sending."""
+        """Settle the accepted queue prefix; later business work cannot move this goal.
+
+        Snapshot envelopes count too. Errors/loss still remain in producer health,
+        and the original deadline still bounds a genuinely slow or stalled sink.
+        """
         deadline = time.monotonic() + timeout
-        while self.bo_queue.unfinished_tasks and time.monotonic() < deadline:
-            time.sleep(0.005)
-        return not self.bo_queue.unfinished_tasks
+        with self.bo_progress:
+            target = self.bo_submitted
+            self.bo_flush_target = target
+            while self.bo_completed < target:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    return False
+                self.bo_progress.wait(remaining)
+            return True
 
     def close(self):
         """Request worker shutdown and bound the time spent joining it."""

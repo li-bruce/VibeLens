@@ -1,0 +1,169 @@
+{
+  "schema": "bo-iteration-recall/v1",
+  "candidate_id": "959dc6fe278fa4ff9a2655756825ea2d7138a5e85bd4554e5f4a483fd55f04bd",
+  "mode": "drive",
+  "active_change": {
+    "change": "resume-first-integration-20261031"
+  },
+  "request": "Resume confirmed drive-mode file sharing; upgrade current canonical runtime and viewer, integrate real execution, preserve strict independent expectations, verify actual runtime and browser without publication.",
+  "changed_files": [
+    "bo_stategraph/database-catalog.json",
+    "bo_stategraph/model-catalog.json",
+    "bo_stategraph/project.json",
+    "implementation.json",
+    "integrations/bo_integration.py",
+    "ownership.json",
+    "requirements.txt",
+    "sync.json",
+    "templates/index.html",
+    "tooling/build_model.py",
+    "tooling/observe.py",
+    "tooling/verify.py"
+  ],
+  "source_errors": [],
+  "verification": "not_run",
+  "unregistered_files": [],
+  "unclassified_functions": [],
+  "contracts": {
+    "model": "bo_stategraph/project.json",
+    "acceptance": "acceptance.json",
+    "whitebox": "whitebox.json",
+    "mapping_contract": "mapping.json",
+    "discovery": "discovery.json"
+  },
+  "observation_module": "bo_stategraph/__init__.py",
+  "observation_sources": [
+    "app/ports.py::NullActivation.result",
+    "app/ports.py::NullProbe.span",
+    "app/ports.py::NullProbe.record",
+    "app/ports.py::NullData.execute",
+    "app/ports.py::NullData.transaction",
+    "app/ports.py::NullData.transform",
+    "app/ports.py::NullObserver.state",
+    "app/ports.py::NullObserver.policy",
+    "integrations/bo_integration.py::BOIntegration.bo_fault",
+    "integrations/bo_integration.py::BOIntegration.policy",
+    "integrations/bo_integration.py::BOIntegration.state",
+    "integrations/bo_integration.py::BOIntegration.health",
+    "integrations/bo_integration.py::BOIntegration.close",
+    "run.py::main"
+  ],
+  "naming": {
+    "wiring": "bo_",
+    "adapters": "BO"
+  },
+  "layers": {
+    "business": {
+      "nodes": 9,
+      "scan": "feature entrypoints and effects",
+      "observe": "actual invocation and selected result",
+      "affected_nodes": []
+    },
+    "state": {
+      "nodes": 4,
+      "scan": "state declaration and value bindings",
+      "observe": "actual state changes and residence",
+      "affected_nodes": []
+    },
+    "rules": {
+      "nodes": 13,
+      "scan": "predicate sources, arguments and shared dependencies",
+      "observe": "evaluated/skipped conditions and actual enclosing invocation",
+      "affected_nodes": []
+    },
+    "api": {
+      "nodes": 0,
+      "scan": "registered routes and handlers",
+      "observe": "request boundary and actual response",
+      "affected_nodes": []
+    },
+    "execution": {
+      "nodes": 43,
+      "scan": "functions, parameters and explicit probes",
+      "observe": "call boundaries, selected values and actual nested parent identities",
+      "affected_nodes": []
+    },
+    "operations": {
+      "nodes": 7,
+      "scan": "model exporters and data-access bindings",
+      "observe": "query, transform, transaction and enclosing native call identity",
+      "affected_nodes": []
+    },
+    "project": {
+      "nodes": 0,
+      "scan": "directories, files, imports and dependencies",
+      "observe": "source projection only",
+      "affected_nodes": []
+    },
+    "code": {
+      "nodes": 19,
+      "scan": "symbols, lexical owners, calls and source maps",
+      "observe": "explicitly mapped runtime evidence",
+      "affected_nodes": []
+    },
+    "data": {
+      "nodes": 16,
+      "scan": "ORM/ODM/schema metadata and relationships",
+      "observe": "operation-linked structural projection",
+      "affected_nodes": []
+    }
+  },
+  "plan": ".stategraph/observation-plan.json",
+  "requirements": [
+    {
+      "id": "R_LOGIN",
+      "text": "Every file metadata/content request requires a logged-in existing test account.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_REVIEW",
+      "text": "Each upload assigns exactly one other existing user as reviewer; only that user reviews. Non-approval ends the file workflow without resubmission.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_SHARE",
+      "text": "Only the uploader shares an approved file with one existing recipient; the recipient cannot forward.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_ACCESS",
+      "text": "Uploader and assigned reviewer may read metadata and download at every stage. A recipient needs approval and an actual share to that account; other users have no access.",
+      "status": "confirmed"
+    },
+    {
+      "id": "R_SCOPE",
+      "text": "Use fixed local test accounts, Python, SQLite, a declaration-driven state machine, independent ports/data, and VibeLens observation. Preserve trial evidence and do not publish or a",
+      "status": "confirmed"
+    }
+  ],
+  "requirement_count": 5,
+  "intent": "intent.json",
+  "test_commands": [
+    [
+      "{python}",
+      "-B",
+      "tooling/test_business.py"
+    ]
+  ],
+  "observations_command": [
+    "{python}",
+    "-B",
+    "-X",
+    "utf8",
+    "tooling/observe.py"
+  ],
+  "required_checks": {
+    "source_first_inventory": true,
+    "probe_health": true,
+    "invocation_closure": true,
+    "mapping_witnesses": true,
+    "reports": [
+      "mapping",
+      "state_rules",
+      "business",
+      "project_checks"
+    ]
+  },
+  "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results.",
+  "valid": true
+}

@@ -1,3 +1,4 @@
+import { stepHierarchy } from "./step-hierarchy.js";
 /** Viewer coordinator: connect API snapshots, graph presentation and user actions.
  * Feature modules own drawing, source/edge/change panels, layout, evidence and
  * persistence. This module owns view selection and lifecycle; it never executes
@@ -14,7 +15,13 @@ import { cleanRoute } from "./edge-routing.js";
 import { cleanReplaySelection, selectedReplayPlan, nextReplayIndex } from "./replay-selection.js";
 import { SemanticView } from "./semantic-view.js";
 import { prepareSpatialHierarchy, planarSeeds } from "./spatial-model.js";
-import { layers, cleanLayers, layerSlice } from "./graph-layers.js";
+import {
+  layers,
+  cleanLayers,
+  layerSlice,
+  cleanLayerVisibility,
+  visibilityForView,
+} from "./graph-layers.js";
 import { spatialLegend } from "./spatial-geometry.js";
 import { SpatialRenderer } from "./spatial-renderer.js";
 import { runtimeOwners } from "./graph-links.js";
@@ -641,7 +648,10 @@ function cancelLayout() {
 function project() {
   if (!view) return;
   if (!recording && latestLive) view = withCodeGraph(latestLive, codeLayer.slice);
-  else if (recording?.transient) view = withCodeGraph(view, codeLayer.slice);
+  else if (recording) {
+    // Saved replay may use its captured file tree, never today's lazy AST slice.
+    view = withCodeGraph(view, recording.transient ? codeLayer.slice : null);
+  }
   view = namedView(view, analysisSettings?.explainedNames !== false);
   preferences.nameMode = view.model.presentation.name_mode;
   $("name-mode").disabled = false;
@@ -1946,6 +1956,7 @@ function loadAnalysis(baseKey) {
     selected: "overview",
     annotations: null,
     layers: cleanLayers(saved?.layers),
+    layerVisibility: cleanLayerVisibility(saved?.layerVisibility, saved?.layers),
     routing: cleanRoute(saved?.routing),
     timeline: cleanTimeline(saved?.timeline),
     sourceTreeInitialized: Array.isArray(saved?.sourceTreeInitialized)
@@ -1987,6 +1998,8 @@ function loadAnalysis(baseKey) {
       analysisSettings.selected = saved.selected;
   }
   analysisId = analysisSettings.selected;
+  analysisSettings.layers.visible = visibilityForView(analysisSettings, analysisId);
+  updateLayerControls();
   analysisOverride = analysisSettings.overrides[analysisId] || null;
   updateAnalysisOptions();
 }
@@ -2079,6 +2092,7 @@ async function applyConversationControl(plan, session) {
 function saveAnalysis() {
   if (!analysisKey || !analysisSettings) return;
   analysisSettings.selected = analysisId;
+  analysisSettings.layerVisibility[analysisId] = [...cleanLayers(analysisSettings.layers).visible];
   analysisSettings.annotations = preferences?.annotations || analysisSettings.annotations;
   if (analysisOverride) analysisSettings.overrides[analysisId] = analysisOverride;
   else delete analysisSettings.overrides[analysisId];
@@ -2091,7 +2105,7 @@ function updateAnalysisOptions() {
     ...[...presets, ...analysisSettings.custom].map((p) => {
       const option = new Option(p.label, p.id);
       // The lazy source index is current-source evidence, not a recorded frame.
-      option.disabled = !!recording && ["project", "code", "api"].includes(p.id);
+      option.disabled = recordedSourceUnavailable(p.id);
       if (option.disabled)
         option.title = boTranslate("Return to live view to browse code structure");
       return option;
@@ -2101,18 +2115,20 @@ function updateAnalysisOptions() {
   $("analysis-view").value = analysisId;
   $("delete-view").hidden = !analysisId.startsWith("custom-");
 }
+function recordedSourceUnavailable(id) {
+  return (
+    !!recording &&
+    (["code", "api"].includes(id) || (id === "project" && !recording.context?.project_structure))
+  );
+}
 function changeAnalysis(id) {
-  if (
-    !analysisSettings ||
-    id === analysisId ||
-    (recording && ["project", "code", "api"].includes(id))
-  )
-    return;
+  if (!analysisSettings || id === analysisId || recordedSourceUnavailable(id)) return;
   stopPlayback();
   cancelLayout();
   save();
   clearTimeout(saveTimer);
   analysisId = id;
+  analysisSettings.layers.visible = visibilityForView(analysisSettings, id);
   codeLayer.clear();
   if (["resources", "permission"].includes(id)) analysisSettings.advanced = true;
   analysisOverride = analysisSettings.overrides[id] || null;
@@ -2321,11 +2337,21 @@ function boUpdateReplay() {
     });
     boPlan = selectedReplayPlan(replayItems, boFullPlan, replaySelection());
     $("replay-range").max = Math.max(0, boPlan.length - 1);
+    const hierarchy = stepHierarchy(replayItems, graph.all, recording.context.events);
     $("replay-events").replaceChildren(
-      ...boPlan.map(
-        (raw, i) =>
-          new Option(`${i + 1} · ${eventLabel(replayItems[raw], view.model)}`, String(raw)),
-      ),
+      ...boPlan.map((raw, i) => {
+        const meta = hierarchy.get(raw),
+          indent = "\u00a0".repeat(Math.min(12, meta.depth) * 3);
+        const option = new Option(
+          `${indent}${i + 1} · ${eventLabel(replayItems[raw], view.model)}`,
+          String(raw),
+        );
+        option.style.color = meta.color || "#18866b";
+        option.dataset.layer = meta.layer;
+        option.dataset.depth = String(meta.depth);
+        option.title = replayItems[raw].id;
+        return option;
+      }),
     );
   }
   const previous = boFullPlan.filter((i) => i < replayIndex).at(-1) ?? -1,
@@ -2338,6 +2364,7 @@ function boUpdateReplay() {
   boSetTransfers(replayItems.slice(Math.max(1, previous + 1), replayIndex + 1));
   $("replay-range").value = position;
   $("replay-events").value = String(boPlan[position]);
+  $("replay-events").style.color = $("replay-events").selectedOptions[0]?.style.color || "";
   $("replay-position").value =
     `${boPlan.includes(replayIndex) ? position + 1 : "—"} / ${boPlan.length}`;
   Object.assign($("replay-position").dataset, {
@@ -2403,7 +2430,9 @@ function boUpdateLiveTimeline() {
   const source = liveTraceSource,
     items = timeline(source),
     visible = boVisible();
-  const plan = boStepPlan(source, items, graph.all, visible, { mode: $("replay-grain").value });
+  const plan = boStepPlan(source, items, graph.all, visible, {
+    mode: $("replay-grain").value,
+  });
   recordingTimeline.update({
     recording: source,
     model: view.model,
@@ -2895,6 +2924,17 @@ window.graphDebug = {
   },
   get spatialPositions() {
     return spatial ? structuredClone(spatial.positions) : {};
+  },
+  get planarPorts() {
+    return [...edgePaths].slice(0, 500).map(([id, path]) => ({
+      id,
+      start: { ...path.start },
+      end: { ...path.end },
+      vertices: path.points?.length,
+    }));
+  },
+  get planarCaptions() {
+    return renderer.captions;
   },
   get metrics() {
     if (spatialActive()) return spatial?.diagnostics || {};

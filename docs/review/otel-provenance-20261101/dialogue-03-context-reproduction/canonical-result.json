@@ -1,0 +1,36 @@
+{
+  "valid": false,
+  "checks": 4,
+  "errors": [
+    {
+      "check": "reviewer-1",
+      "case": "two_reviewers",
+      "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:64",
+      "error": "observed context differs from native implementation",
+      "actual": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "mapped": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "source": "Native Flask session before the HTTP review, independently read user row and SDK SpanContext at invocation entry."
+    },
+    {
+      "check": "reviewer-2",
+      "case": "two_reviewers",
+      "event": "e0f17e9e49bb4c938793006ef92d2d07:1a40044bc304449b97ed9793cd939c7e:42",
+      "error": "observed context differs from native implementation",
+      "actual": {
+        "id": "admin-2",
+        "kind": "user"
+      },
+      "mapped": {
+        "id": "admin-1",
+        "kind": "user"
+      },
+      "source": "Native Flask session before the HTTP review, independently read user row and SDK SpanContext at invocation entry."
+    }
+  ]
+}

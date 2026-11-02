@@ -155,6 +155,7 @@ class Trace:
         depends=(),
         call_id=None,
         parent_call_id=None,
+        parent_event_id=None,
         scope="attempt",
     ):
         p = self.pins
@@ -196,6 +197,7 @@ class Trace:
                     "phase": phase,
                     "call_id": call_id or f"{self.attempt_id}:{node}",
                     "parent_call_id": parent_call_id,
+                    **({"parent_event_id": parent_event_id} if parent_event_id is not None else {}),
                     "basis": clean_basis,
                     "inputs": inputs,
                     "outputs": outputs,

@@ -1,0 +1,1654 @@
+{
+  "schema": "stategraph-recording/v1",
+  "id": "04c4083617ff4caca3bbfc5cff95a42e",
+  "label": "Operation recording",
+  "status": "stopped",
+  "started_at": "2026-10-31T14:08:55.725861+00:00",
+  "ended_at": "2026-10-31T14:08:56.541288+00:00",
+  "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+  "run_id": "a1df24d64ae47bdf006e9f22",
+  "start_seq": 0,
+  "end_seq": 29,
+  "context": {
+    "authority": {
+      "entity": null,
+      "state": null,
+      "basis": {},
+      "parameters": {},
+      "effects": []
+    },
+    "machine": {
+      "current": null,
+      "state_revision": null,
+      "configurations": [],
+      "journal": []
+    },
+    "health": {
+      "errors": 0,
+      "dropped": 0,
+      "run_id": "a1df24d64ae47bdf006e9f22",
+      "attempted": 0,
+      "written": 0,
+      "enabled": true,
+      "runtime_frame_evictions": 0,
+      "retained_events": 0,
+      "evicted_events": 0,
+      "history_start_seq": null,
+      "log_errors": 0,
+      "listener_errors": 0,
+      "retention": {
+        "memory_events": 10000,
+        "memory_seconds": 1800,
+        "log_bytes": 8388608,
+        "log_backups": 2
+      }
+    },
+    "binding_status": {
+      "status": "current",
+      "changed_files": [],
+      "model_changed": false,
+      "intent_changed": false,
+      "directly_affected": [],
+      "possibly_affected": []
+    },
+    "historical": true,
+    "busy": false,
+    "model": {
+      "schema_version": 3,
+      "revision": "1",
+      "project_id": "fixture",
+      "intent": "intent.json",
+      "source_files": [
+        "worker.py"
+      ],
+      "nodes": [
+        {
+          "id": "advance",
+          "kind": "action",
+          "layer": "business",
+          "label": "Share file",
+          "summary": "Share the file after checking its grant",
+          "source": {
+            "path": "worker.py",
+            "symbol": "advance"
+          },
+          "capture": {
+            "in": {
+              "state": "string",
+              "actor": "string"
+            },
+            "out": {
+              "state": "string",
+              "error": "string"
+            }
+          },
+          "requirements": [
+            "R1"
+          ],
+          "lifecycle": {
+            "states": [
+              {
+                "id": "checking",
+                "label": "Checking access",
+                "kind": "active"
+              },
+              {
+                "id": "awaiting_release",
+                "label": "Waiting for confirmation",
+                "kind": "waiting"
+              },
+              {
+                "id": "shared",
+                "label": "File shared",
+                "kind": "ended"
+              }
+            ],
+            "bindings": [
+              {
+                "phase": "enter",
+                "state": "checking",
+                "boundary": "start"
+              },
+              {
+                "phase": "wait",
+                "state": "awaiting_release",
+                "boundary": "update"
+              },
+              {
+                "phase": "read",
+                "state": "checking",
+                "boundary": "update"
+              },
+              {
+                "phase": "return",
+                "state": "shared",
+                "boundary": "end",
+                "when": {
+                  "direction": "out",
+                  "field": "state",
+                  "equals": "done"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "check",
+          "kind": "decision",
+          "parent": "advance",
+          "label": "Check sharing permission",
+          "summary": "Check sharing permission",
+          "source": {
+            "path": "worker.py",
+            "symbol": "advance"
+          },
+          "capture": {
+            "in": {},
+            "out": {
+              "allowed": "boolean"
+            }
+          }
+        },
+        {
+          "id": "query",
+          "kind": "function",
+          "parent": "advance",
+          "label": "Read grant",
+          "summary": "Read grant",
+          "source": {
+            "path": "worker.py",
+            "symbol": "read_grant"
+          },
+          "capture": {
+            "in": {},
+            "out": {
+              "allowed": "boolean"
+            }
+          }
+        },
+        {
+          "id": "write",
+          "kind": "function",
+          "parent": "advance",
+          "label": "Save share",
+          "summary": "Save share",
+          "source": {
+            "path": "worker.py",
+            "symbol": "write_share"
+          },
+          "capture": {
+            "in": {},
+            "out": {
+              "count": "number"
+            }
+          }
+        },
+        {
+          "id": "state-parameter",
+          "kind": "data",
+          "label": "Sharing status",
+          "summary": "The state argument of advance",
+          "semantic_role": "state_parameter",
+          "event_node": "advance",
+          "field": "state",
+          "direction": "out",
+          "represents": {
+            "path": "worker.py",
+            "symbol": "advance",
+            "parameter": "state"
+          }
+        },
+        {
+          "id": "state-pending",
+          "kind": "state",
+          "layer": "state",
+          "value": "pending",
+          "label": "pending",
+          "summary": "Actual pending state"
+        },
+        {
+          "id": "state-waiting",
+          "kind": "state",
+          "layer": "state",
+          "value": "waiting",
+          "label": "waiting",
+          "summary": "Actual waiting state"
+        },
+        {
+          "id": "state-running",
+          "kind": "state",
+          "layer": "state",
+          "value": "running",
+          "label": "running",
+          "summary": "Actual running state"
+        },
+        {
+          "id": "state-done",
+          "kind": "state",
+          "layer": "state",
+          "value": "done",
+          "label": "done",
+          "summary": "Actual done state"
+        }
+      ],
+      "edges": [
+        {
+          "id": "check-sharing",
+          "from": "advance",
+          "to": "check",
+          "type": "flow",
+          "label": "check-sharing",
+          "evidence": "worker.py explicit nested spans"
+        },
+        {
+          "id": "query-grant",
+          "from": "check",
+          "to": "query",
+          "type": "flow",
+          "label": "query-grant",
+          "evidence": "worker.py explicit nested spans"
+        },
+        {
+          "id": "write-sharing",
+          "from": "advance",
+          "to": "write",
+          "type": "flow",
+          "label": "write-sharing",
+          "evidence": "worker.py explicit nested spans"
+        },
+        {
+          "id": "current-state",
+          "from": "advance",
+          "to": "state-parameter",
+          "type": "data",
+          "label": "current-state",
+          "evidence": "worker.py explicit nested spans"
+        }
+      ],
+      "overview": [
+        {
+          "node": "advance"
+        }
+      ],
+      "scope": {
+        "unknowns": []
+      },
+      "machine": {
+        "engine": "bo.fsm",
+        "version": "1",
+        "state_type": "enum",
+        "states": [
+          "pending",
+          "waiting",
+          "running",
+          "done"
+        ],
+        "values": [
+          "pending",
+          "waiting",
+          "running",
+          "done"
+        ],
+        "initial": "pending",
+        "transitions": [
+          {
+            "source": "pending",
+            "dest": "running",
+            "trigger": "start",
+            "conditions": "available"
+          },
+          {
+            "source": "pending",
+            "dest": "waiting",
+            "trigger": "start",
+            "unless": "available"
+          },
+          {
+            "source": "waiting",
+            "dest": "running",
+            "trigger": "resume",
+            "conditions": "available"
+          },
+          {
+            "source": "running",
+            "dest": "done",
+            "trigger": "finish"
+          }
+        ],
+        "events": {
+          "start": {
+            "payload": {}
+          },
+          "resume": {
+            "payload": {}
+          },
+          "finish": {
+            "payload": {}
+          }
+        },
+        "context": {
+          "slots": {
+            "type": "integer",
+            "min": 0
+          }
+        },
+        "guards": {
+          "available": "at least one slot"
+        },
+        "labels": {
+          "pending": "pending",
+          "waiting": "waiting",
+          "running": "running",
+          "done": "done"
+        }
+      },
+      "presentation": {
+        "subject": "fixture"
+      }
+    },
+    "manifest": {
+      "schema_version": 3,
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "files": {
+        "worker.py": "618a2c287dd1550cef77908408286124ad607309e87e12809c3a186c97f93b39"
+      },
+      "model_hash": "3ce61facc99b228b787a0ed018a7d8fdd414d4d0349822dbeebb3b61881ead4c",
+      "intent_hash": "0e560b565cd199cfffcd7519252f4ded8248573a5206f57c936ca81c5c7108ab",
+      "model_revision": "1",
+      "bindings": {
+        "advance": {
+          "path": "worker.py",
+          "symbol": "advance",
+          "line": 13,
+          "end_line": 46,
+          "signature": "actor, probe, ready, release, path, resource_lock, publication, engine, report",
+          "ast_sha256": "043be029a3a7b4218813b60881146cdfefb018addd2c440576280bf6e3c70ff6",
+          "snippet": "def advance(actor, probe, ready, release, path, resource_lock, publication, engine, report):\n    state = \"pending\"\n    with probe.span(\"advance\", lambda: {\"inputs\": {\"state\": state, \"actor\": actor}},\n                    entity=actor, attempt=\"share:\" + actor, scope=\"entity\") as operation:\n        report(actor, state, 0, None, operation)\n        state = engine.step(state, \"start\", {\"slots\": 1})[\"state\"]\n        report(actor, state, 1, \"start\", operation)\n        with closing(sqlite3.connect(path)) as db:\n            with probe.span(\"check\") as check:\n                with probe.span(\"query\") as query:\n                    allowed = read_grant(db)\n                    query.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n                check.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n            if not allowed:\n                raise PermissionError(\"Share denied\")\n            waited = operation.record(\"wait\", lambda: {\"outputs\": {\"state\": state}})\n            ready.wait(15)\n            if not release.wait(25):\n                raise TimeoutError(\"Operation was not released\")\n            probe.record(\"advance\", \"read\", lambda: {\"outputs\": {\"state\": state}},\n                         **operation.bo_options, depends=[{\"event\": waited, \"type\": \"control\"}])\n            with probe.span(\"write\") as transaction:\n                with resource_lock:\n                    previous = publication.get(\"release\")\n                    if previous:\n                        probe.record(\"write\", \"read\", lambda: {}, **transaction.bo_options,\n                                     depends=[{\"event\": previous, \"type\": \"control\"}])\n                    count = write_share(db, actor)\n                    publication[\"release\"] = transaction.record(\"commit\", lambda: {\"outputs\": {\"count\": count}})\n                    transaction.result(lambda: {\"outputs\": {\"count\": count}})\n        state = engine.step(state, \"finish\", {\"slots\": 1})[\"state\"]\n        report(actor, state, 2, \"finish\", operation)\n        operation.result(lambda: {\"outputs\": {\"state\": state}})\n        return state",
+          "calls": [
+            "PermissionError",
+            "TimeoutError",
+            "check.result",
+            "closing",
+            "engine.step",
+            "operation.record",
+            "operation.result",
+            "probe.record",
+            "probe.span",
+            "publication.get",
+            "query.result",
+            "read_grant",
+            "ready.wait",
+            "release.wait",
+            "report",
+            "sqlite3.connect",
+            "transaction.record",
+            "transaction.result",
+            "write_share"
+          ],
+          "guards": [
+            {
+              "line": 26,
+              "expression": "not allowed"
+            },
+            {
+              "line": 30,
+              "expression": "not release.wait(25)"
+            },
+            {
+              "line": 37,
+              "expression": "previous"
+            }
+          ],
+          "file_sha256": "618a2c287dd1550cef77908408286124ad607309e87e12809c3a186c97f93b39"
+        },
+        "check": {
+          "path": "worker.py",
+          "symbol": "advance",
+          "line": 13,
+          "end_line": 46,
+          "signature": "actor, probe, ready, release, path, resource_lock, publication, engine, report",
+          "ast_sha256": "043be029a3a7b4218813b60881146cdfefb018addd2c440576280bf6e3c70ff6",
+          "snippet": "def advance(actor, probe, ready, release, path, resource_lock, publication, engine, report):\n    state = \"pending\"\n    with probe.span(\"advance\", lambda: {\"inputs\": {\"state\": state, \"actor\": actor}},\n                    entity=actor, attempt=\"share:\" + actor, scope=\"entity\") as operation:\n        report(actor, state, 0, None, operation)\n        state = engine.step(state, \"start\", {\"slots\": 1})[\"state\"]\n        report(actor, state, 1, \"start\", operation)\n        with closing(sqlite3.connect(path)) as db:\n            with probe.span(\"check\") as check:\n                with probe.span(\"query\") as query:\n                    allowed = read_grant(db)\n                    query.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n                check.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n            if not allowed:\n                raise PermissionError(\"Share denied\")\n            waited = operation.record(\"wait\", lambda: {\"outputs\": {\"state\": state}})\n            ready.wait(15)\n            if not release.wait(25):\n                raise TimeoutError(\"Operation was not released\")\n            probe.record(\"advance\", \"read\", lambda: {\"outputs\": {\"state\": state}},\n                         **operation.bo_options, depends=[{\"event\": waited, \"type\": \"control\"}])\n            with probe.span(\"write\") as transaction:\n                with resource_lock:\n                    previous = publication.get(\"release\")\n                    if previous:\n                        probe.record(\"write\", \"read\", lambda: {}, **transaction.bo_options,\n                                     depends=[{\"event\": previous, \"type\": \"control\"}])\n                    count = write_share(db, actor)\n                    publication[\"release\"] = transaction.record(\"commit\", lambda: {\"outputs\": {\"count\": count}})\n                    transaction.result(lambda: {\"outputs\": {\"count\": count}})\n        state = engine.step(state, \"finish\", {\"slots\": 1})[\"state\"]\n        report(actor, state, 2, \"finish\", operation)\n        operation.result(lambda: {\"outputs\": {\"state\": state}})\n        return state",
+          "calls": [
+            "PermissionError",
+            "TimeoutError",
+            "check.result",
+            "closing",
+            "engine.step",
+            "operation.record",
+            "operation.result",
+            "probe.record",
+            "probe.span",
+            "publication.get",
+            "query.result",
+            "read_grant",
+            "ready.wait",
+            "release.wait",
+            "report",
+            "sqlite3.connect",
+            "transaction.record",
+            "transaction.result",
+            "write_share"
+          ],
+          "guards": [
+            {
+              "line": 26,
+              "expression": "not allowed"
+            },
+            {
+              "line": 30,
+              "expression": "not release.wait(25)"
+            },
+            {
+              "line": 37,
+              "expression": "previous"
+            }
+          ],
+          "file_sha256": "618a2c287dd1550cef77908408286124ad607309e87e12809c3a186c97f93b39"
+        },
+        "query": {
+          "path": "worker.py",
+          "symbol": "read_grant",
+          "line": 5,
+          "end_line": 6,
+          "signature": "db",
+          "ast_sha256": "4b36777b7dd43d1c1b4cd518571ab6955ae5b9bb3aa8259670f57dd97bff5219",
+          "snippet": "def read_grant(db):\n    return bool(db.execute(\"select allowed from grants where actor = ?\", (\"owner\",)).fetchone()[0])",
+          "calls": [
+            "bool",
+            "db.execute",
+            "db.execute('select allowed from grants where actor = ?', ('owner',)).fetchone"
+          ],
+          "guards": [],
+          "file_sha256": "618a2c287dd1550cef77908408286124ad607309e87e12809c3a186c97f93b39"
+        },
+        "write": {
+          "path": "worker.py",
+          "symbol": "write_share",
+          "line": 8,
+          "end_line": 11,
+          "signature": "db, actor",
+          "ast_sha256": "456a3ec380d9e893cac1f5a6d0a12b96da6e299c016d4b0e5a501892451fe965",
+          "snippet": "def write_share(db, actor):\n    db.execute(\"insert into shares(file_id, recipient) values (?, ?)\", (\"file-1\", actor))\n    db.commit()\n    return db.execute(\"select count(*) from shares\").fetchone()[0]",
+          "calls": [
+            "db.commit",
+            "db.execute",
+            "db.execute('select count(*) from shares').fetchone"
+          ],
+          "guards": [],
+          "file_sha256": "618a2c287dd1550cef77908408286124ad607309e87e12809c3a186c97f93b39"
+        }
+      },
+      "python": "3.13.13",
+      "unknowns": [
+        "AST evidence does not prove value flow, guard dominance or behavioral equivalence",
+        "External dependencies, interpreter, dynamic patching and omitted files are not attested"
+      ]
+    },
+    "events": []
+  },
+  "final": {
+    "authority": {
+      "entity": "alice",
+      "state": "done",
+      "basis": {},
+      "parameters": {
+        "slots": 1
+      },
+      "effects": []
+    },
+    "machine": {
+      "current": "done",
+      "state_revision": 2,
+      "configurations": [
+        {
+          "attempt": "share:alice",
+          "phase": "done",
+          "param_version": 2,
+          "activities": {},
+          "resources": {},
+          "journal": []
+        },
+        {
+          "attempt": "share:bob",
+          "phase": "done",
+          "param_version": 2,
+          "activities": {},
+          "resources": {},
+          "journal": []
+        }
+      ],
+      "journal": [
+        {
+          "event": "finish",
+          "source": "running",
+          "target": "done",
+          "attempt": "share:alice",
+          "evidence_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:28",
+          "revision": 2
+        }
+      ]
+    },
+    "health": {
+      "errors": 0,
+      "dropped": 0,
+      "run_id": "a1df24d64ae47bdf006e9f22",
+      "attempted": 29,
+      "written": 29,
+      "enabled": true,
+      "runtime_frame_evictions": 0,
+      "retained_events": 29,
+      "evicted_events": 0,
+      "history_start_seq": 1,
+      "log_errors": 0,
+      "listener_errors": 0,
+      "retention": {
+        "memory_events": 10000,
+        "memory_seconds": 1800,
+        "log_bytes": 8388608,
+        "log_backups": 2
+      }
+    },
+    "binding_status": {
+      "status": "current",
+      "changed_files": [],
+      "model_changed": false,
+      "intent_changed": false,
+      "directly_affected": [],
+      "possibly_affected": []
+    },
+    "historical": true,
+    "busy": false
+  },
+  "sources": {
+    "worker.py": "\"\"\"Sharing operations with one real transaction lock and two independent callers.\"\"\"\nimport sqlite3\nfrom contextlib import closing\n\ndef read_grant(db):\n    return bool(db.execute(\"select allowed from grants where actor = ?\", (\"owner\",)).fetchone()[0])\n\ndef write_share(db, actor):\n    db.execute(\"insert into shares(file_id, recipient) values (?, ?)\", (\"file-1\", actor))\n    db.commit()\n    return db.execute(\"select count(*) from shares\").fetchone()[0]\n\ndef advance(actor, probe, ready, release, path, resource_lock, publication, engine, report):\n    state = \"pending\"\n    with probe.span(\"advance\", lambda: {\"inputs\": {\"state\": state, \"actor\": actor}},\n                    entity=actor, attempt=\"share:\" + actor, scope=\"entity\") as operation:\n        report(actor, state, 0, None, operation)\n        state = engine.step(state, \"start\", {\"slots\": 1})[\"state\"]\n        report(actor, state, 1, \"start\", operation)\n        with closing(sqlite3.connect(path)) as db:\n            with probe.span(\"check\") as check:\n                with probe.span(\"query\") as query:\n                    allowed = read_grant(db)\n                    query.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n                check.result(lambda: {\"outputs\": {\"allowed\": allowed}})\n            if not allowed:\n                raise PermissionError(\"Share denied\")\n            waited = operation.record(\"wait\", lambda: {\"outputs\": {\"state\": state}})\n            ready.wait(15)\n            if not release.wait(25):\n                raise TimeoutError(\"Operation was not released\")\n            probe.record(\"advance\", \"read\", lambda: {\"outputs\": {\"state\": state}},\n                         **operation.bo_options, depends=[{\"event\": waited, \"type\": \"control\"}])\n            with probe.span(\"write\") as transaction:\n                with resource_lock:\n                    previous = publication.get(\"release\")\n                    if previous:\n                        probe.record(\"write\", \"read\", lambda: {}, **transaction.bo_options,\n                                     depends=[{\"event\": previous, \"type\": \"control\"}])\n                    count = write_share(db, actor)\n                    publication[\"release\"] = transaction.record(\"commit\", lambda: {\"outputs\": {\"count\": count}})\n                    transaction.result(lambda: {\"outputs\": {\"count\": count}})\n        state = engine.step(state, \"finish\", {\"slots\": 1})[\"state\"]\n        report(actor, state, 2, \"finish\", operation)\n        operation.result(lambda: {\"outputs\": {\"state\": state}})\n        return state\n"
+  },
+  "events": [
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 1,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:1",
+      "node": "advance",
+      "phase": "enter",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "parent_call_id": null,
+      "inputs": {
+        "state": "pending",
+        "actor": "alice"
+      },
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.730360+00:00",
+      "lifecycle": "span",
+      "source_seq": 1,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 2,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:2",
+      "node": "advance",
+      "phase": "change",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "pending"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.730432+00:00",
+      "revision": 0,
+      "lifecycle": "span",
+      "source_seq": 2,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 3,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:3",
+      "node": "advance",
+      "phase": "change",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "running"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.730524+00:00",
+      "revision": 1,
+      "lifecycle": "span",
+      "source_seq": 3,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 4,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:4",
+      "node": "advance",
+      "phase": "enter",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "5609592a3de64780ad35a77877e64120",
+      "parent_call_id": null,
+      "inputs": {
+        "state": "pending",
+        "actor": "bob"
+      },
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.730713+00:00",
+      "lifecycle": "span",
+      "source_seq": 4,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 5,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:5",
+      "node": "advance",
+      "phase": "change",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "5609592a3de64780ad35a77877e64120",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "pending"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.730750+00:00",
+      "revision": 0,
+      "lifecycle": "span",
+      "source_seq": 5,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 6,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:6",
+      "node": "advance",
+      "phase": "change",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "5609592a3de64780ad35a77877e64120",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "running"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.730805+00:00",
+      "revision": 1,
+      "lifecycle": "span",
+      "source_seq": 6,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 7,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:7",
+      "node": "check",
+      "phase": "enter",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "2fe89f5ab4844067a26e6f91eff4e57f",
+      "parent_call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.731110+00:00",
+      "lifecycle": "span",
+      "source_seq": 7,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 8,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:8",
+      "node": "query",
+      "phase": "enter",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "26398acd0efe47788cc3107bfb7979ad",
+      "parent_call_id": "2fe89f5ab4844067a26e6f91eff4e57f",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.731157+00:00",
+      "lifecycle": "span",
+      "source_seq": 8,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 9,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:9",
+      "node": "check",
+      "phase": "enter",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "dee7fce541f043858568d50f0755eaac",
+      "parent_call_id": "5609592a3de64780ad35a77877e64120",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.731399+00:00",
+      "lifecycle": "span",
+      "source_seq": 9,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 10,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:10",
+      "node": "query",
+      "phase": "enter",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "6d76281c21b24fdfb797dbe2cce74a2a",
+      "parent_call_id": "dee7fce541f043858568d50f0755eaac",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.731458+00:00",
+      "lifecycle": "span",
+      "source_seq": 10,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 11,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:11",
+      "node": "query",
+      "phase": "return",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "26398acd0efe47788cc3107bfb7979ad",
+      "parent_call_id": "2fe89f5ab4844067a26e6f91eff4e57f",
+      "inputs": {},
+      "outputs": {
+        "allowed": true
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.731900+00:00",
+      "lifecycle": "span",
+      "source_seq": 11,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 12,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:12",
+      "node": "check",
+      "phase": "return",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "2fe89f5ab4844067a26e6f91eff4e57f",
+      "parent_call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "inputs": {},
+      "outputs": {
+        "allowed": true
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.731946+00:00",
+      "lifecycle": "span",
+      "source_seq": 12,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 13,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:13",
+      "node": "advance",
+      "phase": "wait",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "running"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.731971+00:00",
+      "lifecycle": "span",
+      "source_seq": 13,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 14,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:14",
+      "node": "query",
+      "phase": "return",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "6d76281c21b24fdfb797dbe2cce74a2a",
+      "parent_call_id": "dee7fce541f043858568d50f0755eaac",
+      "inputs": {},
+      "outputs": {
+        "allowed": true
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.732607+00:00",
+      "lifecycle": "span",
+      "source_seq": 14,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 15,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:15",
+      "node": "check",
+      "phase": "return",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "dee7fce541f043858568d50f0755eaac",
+      "parent_call_id": "5609592a3de64780ad35a77877e64120",
+      "inputs": {},
+      "outputs": {
+        "allowed": true
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.732649+00:00",
+      "lifecycle": "span",
+      "source_seq": 15,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 16,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:16",
+      "node": "advance",
+      "phase": "wait",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "5609592a3de64780ad35a77877e64120",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "running"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:55.732672+00:00",
+      "lifecycle": "span",
+      "source_seq": 16,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 17,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:17",
+      "node": "advance",
+      "phase": "read",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "5609592a3de64780ad35a77877e64120",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "running"
+      },
+      "depends": [
+        {
+          "event": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:16",
+          "type": "control"
+        }
+      ],
+      "observed_at": "2026-10-31T14:08:56.367006+00:00",
+      "lifecycle": "span",
+      "source_seq": 17,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 18,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:18",
+      "node": "write",
+      "phase": "enter",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "666f8bcbcefa48b187b0b98aa9bf56cb",
+      "parent_call_id": "5609592a3de64780ad35a77877e64120",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.367083+00:00",
+      "lifecycle": "span",
+      "source_seq": 18,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 19,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:19",
+      "node": "advance",
+      "phase": "read",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "running"
+      },
+      "depends": [
+        {
+          "event": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:13",
+          "type": "control"
+        }
+      ],
+      "observed_at": "2026-10-31T14:08:56.367210+00:00",
+      "lifecycle": "span",
+      "source_seq": 19,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 20,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:20",
+      "node": "write",
+      "phase": "enter",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "29ef8f22d0c94896ae6608e350fc3681",
+      "parent_call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.367331+00:00",
+      "lifecycle": "span",
+      "source_seq": 20,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 21,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:21",
+      "node": "write",
+      "phase": "commit",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "666f8bcbcefa48b187b0b98aa9bf56cb",
+      "parent_call_id": "5609592a3de64780ad35a77877e64120",
+      "inputs": {},
+      "outputs": {
+        "count": 1
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.371789+00:00",
+      "lifecycle": "span",
+      "source_seq": 21,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 22,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:22",
+      "node": "write",
+      "phase": "return",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "666f8bcbcefa48b187b0b98aa9bf56cb",
+      "parent_call_id": "5609592a3de64780ad35a77877e64120",
+      "inputs": {},
+      "outputs": {
+        "count": 1
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.371839+00:00",
+      "lifecycle": "span",
+      "source_seq": 22,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 23,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:23",
+      "node": "write",
+      "phase": "read",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "29ef8f22d0c94896ae6608e350fc3681",
+      "parent_call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "inputs": {},
+      "outputs": {},
+      "depends": [
+        {
+          "event": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:21",
+          "type": "control"
+        }
+      ],
+      "observed_at": "2026-10-31T14:08:56.371892+00:00",
+      "lifecycle": "span",
+      "source_seq": 23,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 24,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:24",
+      "node": "advance",
+      "phase": "change",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "5609592a3de64780ad35a77877e64120",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "done"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.371990+00:00",
+      "revision": 2,
+      "lifecycle": "span",
+      "source_seq": 24,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 25,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:25",
+      "node": "advance",
+      "phase": "return",
+      "entity": "bob",
+      "attempt": "share:bob",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "5609592a3de64780ad35a77877e64120",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "done"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.372038+00:00",
+      "lifecycle": "span",
+      "source_seq": 25,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 26,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:26",
+      "node": "write",
+      "phase": "commit",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "29ef8f22d0c94896ae6608e350fc3681",
+      "parent_call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "inputs": {},
+      "outputs": {
+        "count": 2
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.375783+00:00",
+      "lifecycle": "span",
+      "source_seq": 26,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 27,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:27",
+      "node": "write",
+      "phase": "return",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "29ef8f22d0c94896ae6608e350fc3681",
+      "parent_call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "inputs": {},
+      "outputs": {
+        "count": 2
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.375821+00:00",
+      "lifecycle": "span",
+      "source_seq": 27,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 28,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:28",
+      "node": "advance",
+      "phase": "change",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "done"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.376226+00:00",
+      "revision": 2,
+      "lifecycle": "span",
+      "source_seq": 28,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "fixture",
+      "model_revision": "1",
+      "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+      "run_id": "b319775e13924a42adf7750cb61dfe5a",
+      "producer_id": "df859b5a1ed24a15bfe2e6b001ad4365",
+      "schema_version": 3,
+      "seq": 29,
+      "id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:29",
+      "node": "advance",
+      "phase": "return",
+      "entity": "alice",
+      "attempt": "share:alice",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "e19d1ccb4ca84ffd90a8ed6c9e468762",
+      "parent_call_id": null,
+      "inputs": {},
+      "outputs": {
+        "state": "done"
+      },
+      "depends": [],
+      "observed_at": "2026-10-31T14:08:56.376305+00:00",
+      "lifecycle": "span",
+      "source_seq": 29,
+      "stream_id": "a1df24d64ae47bdf006e9f22"
+    }
+  ],
+  "commands": [],
+  "gaps": [],
+  "capture": {
+    "mode": "all",
+    "nodes": null,
+    "roots": [],
+    "boundary_nodes": []
+  },
+  "command_fields": [],
+  "runtime_frames": {
+    "schema": "stategraph-runtime-frames/v1",
+    "frames": [
+      {
+        "event_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:2",
+        "run_id": "b319775e13924a42adf7750cb61dfe5a",
+        "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+        "revision": 0,
+        "machine": {
+          "current": "pending",
+          "state_revision": 0,
+          "configurations": [
+            {
+              "attempt": "share:alice",
+              "phase": "pending",
+              "param_version": 0,
+              "activities": {},
+              "resources": {},
+              "journal": []
+            }
+          ],
+          "journal": []
+        },
+        "authority": {
+          "entity": "alice",
+          "state": "pending",
+          "basis": {},
+          "parameters": {
+            "slots": 1
+          },
+          "effects": []
+        }
+      },
+      {
+        "event_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:3",
+        "run_id": "b319775e13924a42adf7750cb61dfe5a",
+        "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+        "revision": 1,
+        "machine": {
+          "current": "running",
+          "state_revision": 1,
+          "configurations": [
+            {
+              "attempt": "share:alice",
+              "phase": "running",
+              "param_version": 1,
+              "activities": {},
+              "resources": {},
+              "journal": [],
+              "state_transition": {
+                "event": "start",
+                "source": "pending",
+                "target": "running",
+                "attempt": "share:alice",
+                "evidence_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:3",
+                "revision": 1
+              }
+            }
+          ],
+          "journal": [
+            {
+              "event": "start",
+              "source": "pending",
+              "target": "running",
+              "attempt": "share:alice",
+              "evidence_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:3",
+              "revision": 1
+            }
+          ]
+        },
+        "authority": {
+          "entity": "alice",
+          "state": "running",
+          "basis": {},
+          "parameters": {
+            "slots": 1
+          },
+          "effects": []
+        }
+      },
+      {
+        "event_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:5",
+        "run_id": "b319775e13924a42adf7750cb61dfe5a",
+        "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+        "revision": 0,
+        "machine": {
+          "current": "pending",
+          "state_revision": 0,
+          "configurations": [
+            {
+              "attempt": "share:bob",
+              "phase": "pending",
+              "param_version": 0,
+              "activities": {},
+              "resources": {},
+              "journal": []
+            }
+          ],
+          "journal": []
+        },
+        "authority": {
+          "entity": "bob",
+          "state": "pending",
+          "basis": {},
+          "parameters": {
+            "slots": 1
+          },
+          "effects": []
+        }
+      },
+      {
+        "event_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:6",
+        "run_id": "b319775e13924a42adf7750cb61dfe5a",
+        "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+        "revision": 1,
+        "machine": {
+          "current": "running",
+          "state_revision": 1,
+          "configurations": [
+            {
+              "attempt": "share:bob",
+              "phase": "running",
+              "param_version": 1,
+              "activities": {},
+              "resources": {},
+              "journal": [],
+              "state_transition": {
+                "event": "start",
+                "source": "pending",
+                "target": "running",
+                "attempt": "share:bob",
+                "evidence_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:6",
+                "revision": 1
+              }
+            }
+          ],
+          "journal": [
+            {
+              "event": "start",
+              "source": "pending",
+              "target": "running",
+              "attempt": "share:bob",
+              "evidence_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:6",
+              "revision": 1
+            }
+          ]
+        },
+        "authority": {
+          "entity": "bob",
+          "state": "running",
+          "basis": {},
+          "parameters": {
+            "slots": 1
+          },
+          "effects": []
+        }
+      },
+      {
+        "event_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:24",
+        "run_id": "b319775e13924a42adf7750cb61dfe5a",
+        "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+        "revision": 2,
+        "machine": {
+          "current": "done",
+          "state_revision": 2,
+          "configurations": [
+            {
+              "attempt": "share:bob",
+              "phase": "done",
+              "param_version": 2,
+              "activities": {},
+              "resources": {},
+              "journal": [],
+              "state_transition": {
+                "event": "finish",
+                "source": "running",
+                "target": "done",
+                "attempt": "share:bob",
+                "evidence_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:24",
+                "revision": 2
+              }
+            }
+          ],
+          "journal": [
+            {
+              "event": "finish",
+              "source": "running",
+              "target": "done",
+              "attempt": "share:bob",
+              "evidence_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:24",
+              "revision": 2
+            }
+          ]
+        },
+        "authority": {
+          "entity": "bob",
+          "state": "done",
+          "basis": {},
+          "parameters": {
+            "slots": 1
+          },
+          "effects": []
+        }
+      },
+      {
+        "event_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:28",
+        "run_id": "b319775e13924a42adf7750cb61dfe5a",
+        "build_id": "e6fd5d38697159e5fc075ba623793f256772207f69ebd398c7619828a88bbbdf",
+        "revision": 2,
+        "machine": {
+          "current": "done",
+          "state_revision": 2,
+          "configurations": [
+            {
+              "attempt": "share:alice",
+              "phase": "done",
+              "param_version": 2,
+              "activities": {},
+              "resources": {},
+              "journal": [],
+              "state_transition": {
+                "event": "finish",
+                "source": "running",
+                "target": "done",
+                "attempt": "share:alice",
+                "evidence_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:28",
+                "revision": 2
+              }
+            }
+          ],
+          "journal": [
+            {
+              "event": "finish",
+              "source": "running",
+              "target": "done",
+              "attempt": "share:alice",
+              "evidence_id": "b319775e13924a42adf7750cb61dfe5a:df859b5a1ed24a15bfe2e6b001ad4365:28",
+              "revision": 2
+            }
+          ]
+        },
+        "authority": {
+          "entity": "alice",
+          "state": "done",
+          "basis": {},
+          "parameters": {
+            "slots": 1
+          },
+          "effects": []
+        }
+      }
+    ],
+    "partial": true
+  },
+  "scope_excluded": 0,
+  "capture_filtered": 0
+}

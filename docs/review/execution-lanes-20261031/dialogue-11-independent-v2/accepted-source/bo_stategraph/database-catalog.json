@@ -1,0 +1,438 @@
+{
+  "protocol": "bo-database-bundle/v1",
+  "source_id": "33ec43bb3123593f0d73834ff3be444d2ffc5ee9c2eb7d1eb720fe3da3e65836",
+  "catalog_id": "81ec69f33839d01c5bccf5f5b5f0c8b6a1ea822b018a48230f52e96245afbda7",
+  "catalogs": [
+    {
+      "protocol": "bo-data-catalog/v1",
+      "store_id": "team_files",
+      "engine": "sqlalchemy",
+      "origin": "database",
+      "coverage": "complete",
+      "limitations": [
+        "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+      ],
+      "resources": [
+        {
+          "key": "table:files",
+          "kind": "table",
+          "name": "files",
+          "fields": [
+            {
+              "name": "content",
+              "native_type": "BLOB",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "filename",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": true,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "journal",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "recipient_id",
+              "native_type": "VARCHAR",
+              "nullable": true,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "reviewer_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "revision",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "size",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "state",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "uploader_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "recipient_id IS NULL OR state = 'approved'"
+            },
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "revision >= 1"
+            },
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "size >= 0"
+            },
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "state IN ('pending', 'approved', 'rejected', 'withdrawn')"
+            },
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "uploader_id <> reviewer_id"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "recipient_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "reviewer_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "uploader_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "table:users",
+          "kind": "table",
+          "name": "users",
+          "fields": [
+            {
+              "name": "display_name",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": true,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "password_hash",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "protocol": "bo-data-catalog/v1",
+      "store_id": "team_files",
+      "engine": "sqlalchemy",
+      "origin": "declaration",
+      "coverage": "complete",
+      "limitations": [
+        "Declared SQLAlchemy metadata; this does not prove that migrations were applied.",
+        "Unspecified autoincrement and server-fetched defaults depend on the dialect and are not asserted as absent defaults."
+      ],
+      "resources": [
+        {
+          "key": "table:files",
+          "kind": "table",
+          "name": "files",
+          "fields": [
+            {
+              "name": "content",
+              "native_type": "BLOB",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "filename",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": true,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "journal",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "recipient_id",
+              "native_type": "VARCHAR",
+              "nullable": true,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "reviewer_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "revision",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "size",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "state",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "uploader_id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "recipient_id IS NULL OR state = 'approved'"
+            },
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "revision >= 1"
+            },
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "size >= 0"
+            },
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "state IN ('pending', 'approved', 'rejected', 'withdrawn')"
+            },
+            {
+              "kind": "check",
+              "name": "",
+              "fields": [],
+              "description": "uploader_id <> reviewer_id"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "recipient_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "reviewer_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "uploader_id"
+              ],
+              "target": "table:users",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "table:users",
+          "kind": "table",
+          "name": "users",
+          "fields": [
+            {
+              "name": "display_name",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "id",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": true,
+              "generated": false,
+              "default": null
+            },
+            {
+              "name": "password_hash",
+              "native_type": "VARCHAR",
+              "nullable": false,
+              "primary_key": false,
+              "generated": false,
+              "default": null
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

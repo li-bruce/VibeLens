@@ -1,0 +1,529 @@
+{
+  "passed": false,
+  "checks": [],
+  "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(\n    trace.lifecycles.filter((slice) => slice.node === \"advance\").every((slice) => slice.unfinished),\n  )\n\n    at file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/tools/test_execution_bands_browser.mjs:90:10",
+  "errors": [],
+  "stdout": "{\"observer\": \"http://127.0.0.1:57850\", \"application\": \"http://127.0.0.1:57849\"}\r\n",
+  "stderr": "",
+  "diagnostic": {
+    "metrics": {
+      "nodes": 6,
+      "edges": 5,
+      "texts": 20,
+      "drawCount": 21,
+      "routeSolver": {
+        "wasm": 0,
+        "cached": 0,
+        "bundles": 0,
+        "routed": 5,
+        "unresolved": 0,
+        "total": 5,
+        "elapsed": 0.7000000476837158,
+        "busy": false
+      },
+      "webgl": true
+    },
+    "presentation": [
+      {
+        "id": "summary:advance|state-parameter|data|false|false|model",
+        "from": "advance",
+        "to": "state-parameter",
+        "type": "data",
+        "label": "current-state",
+        "evidence": "worker.py explicit nested spans",
+        "authored_label": "current-state",
+        "labels": {},
+        "members": [
+          {
+            "id": "current-state",
+            "from": "advance",
+            "to": "state-parameter",
+            "type": "data",
+            "label": "current-state",
+            "evidence": "worker.py explicit nested spans",
+            "authored_label": "current-state",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": false,
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-pending|state-running|transition|false|false|model",
+        "from": "state-pending",
+        "to": "state-running",
+        "type": "transition",
+        "event": "start",
+        "label": "start · when available",
+        "conditions": [
+          "available"
+        ],
+        "unless": [],
+        "machine_transition": {
+          "index": 0,
+          "source": "pending",
+          "dest": "running",
+          "internal": false
+        },
+        "observed": true,
+        "current": true,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:start:pending:%5B%22state-running%22%2C%5B%22available%22%5D%2C%5B%5D%2Cfalse%5D",
+            "from": "state-pending",
+            "to": "state-running",
+            "type": "transition",
+            "event": "start",
+            "label": "start · when available",
+            "conditions": [
+              "available"
+            ],
+            "unless": [],
+            "machine_transition": {
+              "index": 0,
+              "source": "pending",
+              "dest": "running",
+              "internal": false
+            },
+            "observed": true,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-pending|state-waiting|transition|false|false|model",
+        "from": "state-pending",
+        "to": "state-waiting",
+        "type": "transition",
+        "event": "start",
+        "label": "start · unless available",
+        "conditions": [],
+        "unless": [
+          "available"
+        ],
+        "machine_transition": {
+          "index": 1,
+          "source": "pending",
+          "dest": "waiting",
+          "internal": false
+        },
+        "observed": false,
+        "current": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:start:pending:%5B%22state-waiting%22%2C%5B%5D%2C%5B%22available%22%5D%2Cfalse%5D",
+            "from": "state-pending",
+            "to": "state-waiting",
+            "type": "transition",
+            "event": "start",
+            "label": "start · unless available",
+            "conditions": [],
+            "unless": [
+              "available"
+            ],
+            "machine_transition": {
+              "index": 1,
+              "source": "pending",
+              "dest": "waiting",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-waiting|state-running|transition|false|false|model",
+        "from": "state-waiting",
+        "to": "state-running",
+        "type": "transition",
+        "event": "resume",
+        "label": "resume · when available",
+        "conditions": [
+          "available"
+        ],
+        "unless": [],
+        "machine_transition": {
+          "index": 2,
+          "source": "waiting",
+          "dest": "running",
+          "internal": false
+        },
+        "observed": false,
+        "current": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:resume:waiting",
+            "from": "state-waiting",
+            "to": "state-running",
+            "type": "transition",
+            "event": "resume",
+            "label": "resume · when available",
+            "conditions": [
+              "available"
+            ],
+            "unless": [],
+            "machine_transition": {
+              "index": 2,
+              "source": "waiting",
+              "dest": "running",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      },
+      {
+        "id": "summary:state-running|state-done|transition|false|false|model",
+        "from": "state-running",
+        "to": "state-done",
+        "type": "transition",
+        "event": "finish",
+        "label": "finish",
+        "conditions": [],
+        "unless": [],
+        "machine_transition": {
+          "index": 3,
+          "source": "running",
+          "dest": "done",
+          "internal": false
+        },
+        "observed": false,
+        "current": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:finish:running",
+            "from": "state-running",
+            "to": "state-done",
+            "type": "transition",
+            "event": "finish",
+            "label": "finish",
+            "conditions": [],
+            "unless": [],
+            "machine_transition": {
+              "index": 3,
+              "source": "running",
+              "dest": "done",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ],
+        "sourceRegion": false,
+        "targetRegion": false,
+        "crossing": false,
+        "edgeIds": {}
+      }
+    ],
+    "planar": [
+      {
+        "id": "summary:advance|state-parameter|data|false|false|model",
+        "start": {
+          "x": 328.83819383302927,
+          "y": 56.68391299374049,
+          "level": 0
+        },
+        "end": {
+          "x": -115.63913802113962,
+          "y": 311.876973702126,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-pending|state-running|transition|false|false|model",
+        "start": {
+          "x": -423.8266284156814,
+          "y": -414.1122039060078,
+          "level": 0
+        },
+        "end": {
+          "x": -337.9292429356381,
+          "y": -706.5217566855083,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-pending|state-waiting|transition|false|false|model",
+        "start": {
+          "x": -423.8266284156814,
+          "y": -414.1122039060078,
+          "level": 0
+        },
+        "end": {
+          "x": -169.9974293719702,
+          "y": -245.73131147555046,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-waiting|state-running|transition|false|false|model",
+        "start": {
+          "x": -169.9974293719702,
+          "y": -245.73131147555046,
+          "level": 0
+        },
+        "end": {
+          "x": -337.9292429356381,
+          "y": -706.5217566855083,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:state-running|state-done|transition|false|false|model",
+        "start": {
+          "x": -337.9292429356381,
+          "y": -706.5217566855083,
+          "level": 0
+        },
+        "end": {
+          "x": -84.44493601014557,
+          "y": -537.875145362698,
+          "level": 0
+        },
+        "vertices": 25
+      }
+    ],
+    "spatial": null,
+    "timeline": {
+      "eventId": "493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:18",
+      "raw": 2,
+      "window": {
+        "start": 0,
+        "end": 27266.990966796875
+      },
+      "range": null,
+      "rows": [
+        {
+          "id": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9:business",
+          "layer": "business",
+          "group": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9",
+          "groupStart": true,
+          "folded": false,
+          "members": [
+            "advance"
+          ]
+        },
+        {
+          "id": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9:state",
+          "layer": "state",
+          "group": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9",
+          "groupStart": false,
+          "folded": false,
+          "members": [
+            "state-running"
+          ]
+        },
+        {
+          "id": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9:rules",
+          "layer": "rules",
+          "group": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9",
+          "groupStart": false,
+          "folded": false,
+          "members": []
+        },
+        {
+          "id": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9:execution",
+          "layer": "execution",
+          "group": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9",
+          "groupStart": false,
+          "folded": false,
+          "members": [
+            "field:advance:out:error"
+          ]
+        },
+        {
+          "id": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1:business",
+          "layer": "business",
+          "group": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1",
+          "groupStart": true,
+          "folded": false,
+          "members": [
+            "advance"
+          ]
+        },
+        {
+          "id": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1:state",
+          "layer": "state",
+          "group": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1",
+          "groupStart": false,
+          "folded": false,
+          "members": [
+            "state-running"
+          ]
+        },
+        {
+          "id": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1:rules",
+          "layer": "rules",
+          "group": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1",
+          "groupStart": false,
+          "folded": false,
+          "members": []
+        },
+        {
+          "id": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1:execution",
+          "layer": "execution",
+          "group": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1",
+          "groupStart": false,
+          "folded": false,
+          "members": [
+            "field:advance:out:error"
+          ]
+        }
+      ],
+      "executions": [
+        {
+          "id": "execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9",
+          "start": 0,
+          "end": 24669.828857421875,
+          "root": "493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9",
+          "lane": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9"
+        },
+        {
+          "id": "execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1",
+          "start": 0,
+          "end": 24670.046875,
+          "root": "493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1",
+          "lane": "lane:execution:493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1"
+        }
+      ],
+      "groups": 2,
+      "points": [
+        {
+          "raw": 0,
+          "time": 0
+        },
+        {
+          "raw": 1,
+          "time": 24669.828857421875
+        },
+        {
+          "raw": 2,
+          "time": 24670.046875
+        }
+      ],
+      "transfers": [],
+      "clock": "time",
+      "scroll": 0,
+      "painted": 11,
+      "flows": 0,
+      "source": "recording",
+      "depth": "all",
+      "layerMode": "through",
+      "lifecycles": [
+        {
+          "node": "advance",
+          "start": 0,
+          "end": 24669.828857421875,
+          "duration": 24669.828857421875,
+          "unfinished": false,
+          "clippedStart": true,
+          "entryEventId": "493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:9",
+          "raw": 0,
+          "last": 1,
+          "stages": [
+            {
+              "state": "awaiting_release",
+              "label": "Waiting for confirmation",
+              "start": 0,
+              "end": 24669.828857421875,
+              "registered": true
+            }
+          ],
+          "terminal": {
+            "boundary": "end",
+            "state": "exception",
+            "label": "Exception exit",
+            "kind": "ended",
+            "registered": false,
+            "termination": "exception"
+          }
+        },
+        {
+          "node": "advance",
+          "start": 0,
+          "end": 24670.046875,
+          "duration": 24670.046875,
+          "unfinished": false,
+          "clippedStart": true,
+          "entryEventId": "493ad6f55adc4b71bb9b8c2bf7fb1fb6:5d129b1157a145359dd2dbd11b5a77ad:1",
+          "raw": 0,
+          "last": 2,
+          "stages": [
+            {
+              "state": "awaiting_release",
+              "label": "Waiting for confirmation",
+              "start": 0,
+              "end": 24670.046875,
+              "registered": true
+            }
+          ],
+          "terminal": {
+            "boundary": "end",
+            "state": "exception",
+            "label": "Exception exit",
+            "kind": "ended",
+            "registered": false,
+            "termination": "exception"
+          }
+        },
+        {
+          "node": "state-running",
+          "start": 0,
+          "end": 27266.990966796875,
+          "duration": null,
+          "unfinished": true,
+          "clippedStart": true,
+          "entryEventId": "start",
+          "raw": 0,
+          "last": 2
+        },
+        {
+          "node": "state-running",
+          "start": 0,
+          "end": 27266.990966796875,
+          "duration": null,
+          "unfinished": true,
+          "clippedStart": true,
+          "entryEventId": "start",
+          "raw": 0,
+          "last": 2
+        }
+      ],
+      "paintMs": 0.2999999523162842,
+      "routes": [],
+      "zooming": false,
+      "geometry": {
+        "left": 186,
+        "plot": 1320,
+        "top": 50
+      }
+    }
+  }
+}

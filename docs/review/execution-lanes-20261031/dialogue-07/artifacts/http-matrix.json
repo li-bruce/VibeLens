@@ -1,0 +1,405 @@
+{
+  "valid": true,
+  "transport": "actual threaded HTTP server",
+  "checks": [
+    {
+      "case": "anonymous metadata",
+      "status": 401,
+      "expected": 401,
+      "body": "<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><title>\u64cd\u4f5c\u63d0\u793a \u00b7 \u540c\u4e8b\u6587\u4ef6\u67dc</title><link rel=\"s"
+    },
+    {
+      "case": "incorrect password",
+      "status": 401,
+      "expected": 401,
+      "body": {
+        "error": "invalid_credentials"
+      }
+    },
+    {
+      "case": "missing csrf",
+      "status": 400,
+      "expected": 400,
+      "body": {
+        "error": "csrf_denied"
+      }
+    },
+    {
+      "case": "self reviewer rolls back",
+      "status": 403,
+      "expected": 403,
+      "body": {
+        "error": "upload_denied"
+      }
+    },
+    {
+      "case": "unknown reviewer rolls back",
+      "status": 403,
+      "expected": 403,
+      "body": {
+        "error": "upload_denied"
+      }
+    },
+    {
+      "case": "concurrent upload 2",
+      "status": 201,
+      "expected": 201,
+      "body": {
+        "filename": "concurrent-2-fresh.txt",
+        "id": "90be865a6377443b908a8bf641799d47",
+        "recipient_id": "",
+        "reviewer_id": "alice",
+        "revision": 1,
+        "size": 65,
+        "state": "pending",
+        "uploader_id": "dan"
+      }
+    },
+    {
+      "case": "concurrent upload 0",
+      "status": 201,
+      "expected": 201,
+      "body": {
+        "filename": "concurrent-0-fresh.txt",
+        "id": "e2a75aa795b84f299f08ddc407fed84a",
+        "recipient_id": "",
+        "reviewer_id": "ben",
+        "revision": 1,
+        "size": 65,
+        "state": "pending",
+        "uploader_id": "alice"
+      }
+    },
+    {
+      "case": "concurrent upload 1",
+      "status": 201,
+      "expected": 201,
+      "body": {
+        "filename": "concurrent-1-fresh.txt",
+        "id": "b5323ec0ba5d430797bc4e7677bfb330",
+        "recipient_id": "",
+        "reviewer_id": "dan",
+        "revision": 1,
+        "size": 65,
+        "state": "pending",
+        "uploader_id": "cara"
+      }
+    },
+    {
+      "case": "concurrent upload 3",
+      "status": 201,
+      "expected": 201,
+      "body": {
+        "filename": "concurrent-3-fresh.txt",
+        "id": "98f61bbb8a5445fbb509da6bf5178697",
+        "recipient_id": "",
+        "reviewer_id": "cara",
+        "revision": 1,
+        "size": 65,
+        "state": "pending",
+        "uploader_id": "ben"
+      }
+    },
+    {
+      "case": "recipient before approval",
+      "status": 403,
+      "expected": 403,
+      "body": "<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><title>\u64cd\u4f5c\u63d0\u793a \u00b7 \u540c\u4e8b\u6587\u4ef6\u67dc</title><link rel=\"s"
+    },
+    {
+      "case": "uploader cannot review",
+      "status": 403,
+      "expected": 403,
+      "body": {
+        "error": "review_denied"
+      }
+    },
+    {
+      "case": "share before approval",
+      "status": 403,
+      "expected": 403,
+      "body": {
+        "error": "share_denied"
+      }
+    },
+    {
+      "case": "invalid review decision",
+      "status": 400,
+      "expected": 400,
+      "body": {
+        "error": "invalid_decision"
+      }
+    },
+    {
+      "case": "recipient still unshared",
+      "status": 403,
+      "expected": 403,
+      "body": "<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><title>\u64cd\u4f5c\u63d0\u793a \u00b7 \u540c\u4e8b\u6587\u4ef6\u67dc</title><link rel=\"s"
+    },
+    {
+      "case": "reviewer cannot share",
+      "status": 403,
+      "expected": 403,
+      "body": {
+        "error": "share_denied"
+      }
+    },
+    {
+      "case": "unknown recipient rolls back",
+      "status": 400,
+      "expected": 400,
+      "body": {
+        "error": "recipient_not_found"
+      }
+    },
+    {
+      "case": "uploader shares once",
+      "status": 200,
+      "expected": 200,
+      "body": {
+        "filename": "concurrent-0-fresh.txt",
+        "id": "e2a75aa795b84f299f08ddc407fed84a",
+        "recipient_id": "cara",
+        "reviewer_id": "ben",
+        "revision": 3,
+        "size": 65,
+        "state": "approved",
+        "uploader_id": "alice"
+      }
+    },
+    {
+      "case": "recipient cannot forward",
+      "status": 403,
+      "expected": 403,
+      "body": {
+        "error": "share_denied"
+      }
+    },
+    {
+      "case": "cannot replace recipient",
+      "status": 409,
+      "expected": 409,
+      "body": {
+        "error": "recipient_already_set"
+      }
+    },
+    {
+      "case": "unrelated user metadata",
+      "status": 403,
+      "expected": 403,
+      "body": "<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><title>\u64cd\u4f5c\u63d0\u793a \u00b7 \u540c\u4e8b\u6587\u4ef6\u67dc</title><link rel=\"s"
+    },
+    {
+      "case": "unrelated user download",
+      "status": 403,
+      "expected": 403,
+      "body": "<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><title>\u64cd\u4f5c\u63d0\u793a \u00b7 \u540c\u4e8b\u6587\u4ef6\u67dc</title><link rel=\"s"
+    },
+    {
+      "case": "recipient download",
+      "status": 200,
+      "expected": 200,
+      "body": "Fresh real concurrent application upload: concurrent-0-fresh.txt\n"
+    },
+    {
+      "case": "missing file",
+      "status": 404,
+      "expected": 404,
+      "body": "<!doctype html><html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><title>\u64cd\u4f5c\u63d0\u793a \u00b7 \u540c\u4e8b\u6587\u4ef6\u67dc</title><link rel=\"s"
+    },
+    {
+      "case": "upload for rejection",
+      "status": 201,
+      "expected": 201,
+      "body": {
+        "filename": "fresh-rejected.txt",
+        "id": "9d32c46b864c437eb125db9eae34783f",
+        "recipient_id": "",
+        "reviewer_id": "ben",
+        "revision": 1,
+        "size": 61,
+        "state": "pending",
+        "uploader_id": "alice"
+      }
+    },
+    {
+      "case": "assigned reviewer rejects",
+      "status": 200,
+      "expected": 200,
+      "body": {
+        "filename": "fresh-rejected.txt",
+        "id": "9d32c46b864c437eb125db9eae34783f",
+        "recipient_id": "",
+        "reviewer_id": "ben",
+        "revision": 2,
+        "size": 61,
+        "state": "rejected",
+        "uploader_id": "alice"
+      }
+    },
+    {
+      "case": "rejected flow remains closed",
+      "status": 409,
+      "expected": 409,
+      "body": {
+        "error": "review_closed"
+      }
+    },
+    {
+      "case": "rejected file cannot share",
+      "status": 403,
+      "expected": 403,
+      "body": {
+        "error": "share_denied"
+      }
+    },
+    {
+      "case": "reviewer retains rejected download",
+      "status": 200,
+      "expected": 200,
+      "body": "Fresh real concurrent application upload: fresh-rejected.txt\n"
+    }
+  ],
+  "concurrent_requests": [
+    {
+      "index": 0,
+      "started_ns": 1897161397940600,
+      "ended_ns": 1897161544792200,
+      "row": {
+        "filename": "concurrent-0-fresh.txt",
+        "id": "e2a75aa795b84f299f08ddc407fed84a",
+        "recipient_id": "",
+        "reviewer_id": "ben",
+        "revision": 1,
+        "size": 65,
+        "state": "pending",
+        "uploader_id": "alice"
+      }
+    },
+    {
+      "index": 1,
+      "started_ns": 1897161398020500,
+      "ended_ns": 1897161561140200,
+      "row": {
+        "filename": "concurrent-1-fresh.txt",
+        "id": "b5323ec0ba5d430797bc4e7677bfb330",
+        "recipient_id": "",
+        "reviewer_id": "dan",
+        "revision": 1,
+        "size": 65,
+        "state": "pending",
+        "uploader_id": "cara"
+      }
+    },
+    {
+      "index": 2,
+      "started_ns": 1897161398121100,
+      "ended_ns": 1897161416460000,
+      "row": {
+        "filename": "concurrent-2-fresh.txt",
+        "id": "90be865a6377443b908a8bf641799d47",
+        "recipient_id": "",
+        "reviewer_id": "alice",
+        "revision": 1,
+        "size": 65,
+        "state": "pending",
+        "uploader_id": "dan"
+      }
+    },
+    {
+      "index": 3,
+      "started_ns": 1897161397759400,
+      "ended_ns": 1897161594243800,
+      "row": {
+        "filename": "concurrent-3-fresh.txt",
+        "id": "98f61bbb8a5445fbb509da6bf5178697",
+        "recipient_id": "",
+        "reviewer_id": "cara",
+        "revision": 1,
+        "size": 65,
+        "state": "pending",
+        "uploader_id": "ben"
+      }
+    }
+  ],
+  "review_race": [
+    {
+      "status": 200,
+      "body": {
+        "filename": "concurrent-0-fresh.txt",
+        "id": "e2a75aa795b84f299f08ddc407fed84a",
+        "recipient_id": "",
+        "reviewer_id": "ben",
+        "revision": 2,
+        "size": 65,
+        "state": "approved",
+        "uploader_id": "alice"
+      }
+    },
+    {
+      "status": 409,
+      "body": {
+        "error": "review_closed"
+      }
+    }
+  ],
+  "sqlite_rows": [
+    {
+      "id": "90be865a6377443b908a8bf641799d47",
+      "filename": "concurrent-2-fresh.txt",
+      "state": "pending",
+      "revision": 1,
+      "uploader_id": "dan",
+      "reviewer_id": "alice",
+      "recipient_id": null,
+      "size": 65,
+      "journal": "[{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    },
+    {
+      "id": "98f61bbb8a5445fbb509da6bf5178697",
+      "filename": "concurrent-3-fresh.txt",
+      "state": "pending",
+      "revision": 1,
+      "uploader_id": "ben",
+      "reviewer_id": "cara",
+      "recipient_id": null,
+      "size": 65,
+      "journal": "[{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    },
+    {
+      "id": "9d32c46b864c437eb125db9eae34783f",
+      "filename": "fresh-rejected.txt",
+      "state": "rejected",
+      "revision": 2,
+      "uploader_id": "alice",
+      "reviewer_id": "ben",
+      "recipient_id": null,
+      "size": 61,
+      "journal": "[{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 2, \"event\": \"reject\", \"before\": \"pending\", \"after\": \"rejected\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    },
+    {
+      "id": "b5323ec0ba5d430797bc4e7677bfb330",
+      "filename": "concurrent-1-fresh.txt",
+      "state": "pending",
+      "revision": 1,
+      "uploader_id": "cara",
+      "reviewer_id": "dan",
+      "recipient_id": null,
+      "size": 65,
+      "journal": "[{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    },
+    {
+      "id": "e2a75aa795b84f299f08ddc407fed84a",
+      "filename": "concurrent-0-fresh.txt",
+      "state": "approved",
+      "revision": 3,
+      "uploader_id": "alice",
+      "reviewer_id": "ben",
+      "recipient_id": "cara",
+      "size": 65,
+      "journal": "[{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 2, \"event\": \"approve\", \"before\": \"pending\", \"after\": \"approved\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 3, \"event\": \"share\", \"before\": \"approved\", \"after\": \"approved\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    }
+  ],
+  "concurrent_overlap": true,
+  "rollback_effects_checked": true
+}

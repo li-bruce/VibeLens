@@ -94,6 +94,14 @@ export function migrateCodeFilters(value) {
 
 /** Merge by stable identity; never replace the authored graph or its build. */
 export function withCodeGraph(view, slice) {
+  if (view.project_structure) {
+    const project = view.project_structure;
+    view = {
+      ...view,
+      model: mergeGraph(view.model, project),
+      manifest: { ...view.manifest, bindings: { ...view.manifest.bindings, ...project.bindings } },
+    };
+  }
   if (!slice) return view;
   return {
     ...view,

@@ -1,0 +1,1828 @@
+{
+  "build_id": "844233058e05a8b842c75510c89bef5d07b608c944ed24b648afa8ef09a7916c",
+  "bindings": {
+    "sign_in": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.authenticate",
+      "line": 59,
+      "end_line": 69,
+      "signature": "self, username: str, password: str",
+      "ast_sha256": "055ef4460cf572ef07e6cc998e088cf3a3a64648d227530c805621a772c0648f",
+      "snippet": "    def authenticate(self, username: str, password: str) -> dict:\n        bo = self.bo\n        with bo.span(\"sign_in\", lambda: {\"inputs\": {\"username\": username, \"credential_supplied\": bool(password)}},\n                     scope=\"application\", provenance=self.provenance(username)) as observed:\n            with self.store.transaction() as connection:\n                actor = self.store.user(connection, username)\n                if not actor or not check_password_hash(actor[\"password_hash\"], password):\n                    raise DomainError(\"invalid_credentials\", 401)\n                result = {key: actor[key] for key in (\"id\", \"username\", \"role\")}\n            observed.result(lambda: {\"outputs\": {\"actor_id\": result[\"id\"], \"role\": result[\"role\"]}})\n            return result",
+      "calls": [
+        "DomainError",
+        "bo.span",
+        "bool",
+        "check_password_hash",
+        "observed.result",
+        "self.provenance",
+        "self.store.transaction",
+        "self.store.user"
+      ],
+      "guards": [
+        {
+          "line": 65,
+          "expression": "not actor or not check_password_hash(actor['password_hash'], password)"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "upload_file": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.upload",
+      "line": 71,
+      "end_line": 90,
+      "signature": "self, actor_id: str, filename: str, content: bytes",
+      "ast_sha256": "b255f1e2c9bfa397c2361cbae78299583f1b049d3895670498d59dc6cabe3eba",
+      "snippet": "    def upload(self, actor_id: str, filename: str, content: bytes) -> dict:\n        bo = self.bo\n        file_id = uuid.uuid4().hex\n        with bo.span(\"upload_file\", lambda: {\"inputs\": {\"actor_id\": actor_id, \"filename\": filename, \"size\": len(content)}},\n                     entity=file_id, attempt=file_id, scope=\"entity\", provenance=self.provenance(actor_id, file_id)) as observed:\n            filename = filename.replace(\"\\\\\", \"/\").split(\"/\")[-1].strip()\n            if not filename or len(filename) > 200 or any(ord(c) < 32 for c in filename):\n                raise DomainError(\"invalid_filename\", 400)\n            if len(content) > 16 * 1024 * 1024:\n                raise DomainError(\"file_too_large\", 413)\n            row = {\"id\": file_id, \"filename\": filename, \"owner_id\": actor_id,\n                \"state\": self.workflow.initial(\"file\"), \"revision\": 1, \"journal\": \"[]\", \"entity_kind\": \"file\"}\n            with self.store.transaction(True) as connection:\n                self.demand(self.authorize(connection, actor_id, \"upload\"))\n                self.store.write(connection, FILES.insert().values(**{key: value for key, value in row.items() if key != \"entity_kind\"}, content=content, created_at=time.time()))\n            bo.record(\"upload_file\", \"commit\", lambda: {\"outputs\": {\"file_id\": row[\"id\"], \"state\": row[\"state\"], \"size\": len(content)}}, entity=row[\"id\"], attempt=row[\"id\"], scope=\"entity\")\n            bo.changed(\"upload_file\", row)\n            result = self.public_file(row)\n            observed.result(lambda: {\"outputs\": {\"file_id\": row[\"id\"], \"state\": row[\"state\"], \"size\": len(content)}})\n            return result",
+      "calls": [
+        "DomainError",
+        "FILES.insert",
+        "FILES.insert().values",
+        "any",
+        "bo.changed",
+        "bo.record",
+        "bo.span",
+        "filename.replace",
+        "filename.replace('\\\\', '/').split",
+        "filename.replace('\\\\', '/').split('/')[-1].strip",
+        "len",
+        "observed.result",
+        "ord",
+        "row.items",
+        "self.authorize",
+        "self.demand",
+        "self.provenance",
+        "self.public_file",
+        "self.store.transaction",
+        "self.store.write",
+        "self.workflow.initial",
+        "time.time",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 77,
+          "expression": "not filename or len(filename) > 200 or any((ord(c) < 32 for c in filename))"
+        },
+        {
+          "line": 79,
+          "expression": "len(content) > 16 * 1024 * 1024"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "review_file": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.review",
+      "line": 109,
+      "end_line": 124,
+      "signature": "self, actor_id: str, file_id: str, decision: str",
+      "ast_sha256": "d0bb81965734ce7569ce6a1120f70e3169b950a3f7964d3e47ac619a13e36f3b",
+      "snippet": "    def review(self, actor_id: str, file_id: str, decision: str) -> dict:\n        bo = self.bo\n        with bo.span(\"review_file\", lambda: {\"inputs\": {\"actor_id\": actor_id, \"file_id\": file_id, \"decision\": decision}},\n                     entity=file_id, attempt=file_id, scope=\"entity\", provenance=self.provenance(actor_id, file_id)) as observed:\n            if decision not in {\"approve\", \"reject\"}:\n                raise DomainError(\"invalid_decision\", 400)\n            with self.store.transaction(True) as connection:\n                row = self.require_file(connection, file_id)\n                permitted = self.authorize(connection, actor_id, \"review\", row)\n                self.demand(permitted)\n                updated = self.transition(connection, row, decision, permitted, FILES)\n                message = self.queue_message(connection, updated, row[\"owner_id\"], updated[\"state\"])\n            bo.changed(\"review_file\", updated, event=decision, guards=updated[\"guard_evidence\"])\n            bo.changed(\"review_file\", message)\n            observed.result(lambda: {\"outputs\": {\"state\": updated[\"state\"], \"revision\": updated[\"revision\"], \"message_id\": message[\"id\"]}})\n            return self.public_file(updated)",
+      "calls": [
+        "DomainError",
+        "bo.changed",
+        "bo.span",
+        "observed.result",
+        "self.authorize",
+        "self.demand",
+        "self.provenance",
+        "self.public_file",
+        "self.queue_message",
+        "self.require_file",
+        "self.store.transaction",
+        "self.transition"
+      ],
+      "guards": [
+        {
+          "line": 113,
+          "expression": "decision not in {'approve', 'reject'}"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "share_file": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.share",
+      "line": 126,
+      "end_line": 146,
+      "signature": "self, actor_id: str, file_id: str, recipient_id: str",
+      "ast_sha256": "3b16e0c2aa39fcd1bce1540bd2a83a76bbc476a47fd301ed57e372d0ea702346",
+      "snippet": "    def share(self, actor_id: str, file_id: str, recipient_id: str) -> dict:\n        bo = self.bo\n        with bo.span(\"share_file\", lambda: {\"inputs\": {\"actor_id\": actor_id, \"file_id\": file_id, \"recipient_id\": recipient_id}},\n                     entity=file_id, attempt=file_id, scope=\"entity\", provenance=self.provenance(actor_id, file_id, recipient_id)) as observed:\n            with self.store.transaction(True) as connection:\n                row = self.require_file(connection, file_id)\n                permitted = self.authorize(connection, actor_id, \"share\", row)\n                self.demand(permitted)\n                if not self.store.user(connection, recipient_id):\n                    raise DomainError(\"recipient_not_found\", 400)\n                existing = self.store.read(connection, select(SHARES).where(and_(SHARES.c.file_id == file_id, SHARES.c.recipient_id == recipient_id)))\n                if existing:\n                    observed.result(lambda: {\"outputs\": {\"state\": row[\"state\"], \"recipient_id\": recipient_id, \"created\": False}})\n                    return {\"created\": False}\n                self.store.write(connection, SHARES.insert().values(file_id=file_id, recipient_id=recipient_id))\n                updated = self.transition(connection, row, \"share\", permitted, FILES)\n                message = self.queue_message(connection, updated, recipient_id, \"shared\")\n            bo.changed(\"share_file\", updated, event=\"share\", guards=updated[\"guard_evidence\"])\n            bo.changed(\"share_file\", message)\n            observed.result(lambda: {\"outputs\": {\"state\": updated[\"state\"], \"recipient_id\": recipient_id, \"created\": True}})\n            return {\"created\": True}",
+      "calls": [
+        "DomainError",
+        "SHARES.insert",
+        "SHARES.insert().values",
+        "and_",
+        "bo.changed",
+        "bo.span",
+        "observed.result",
+        "select",
+        "select(SHARES).where",
+        "self.authorize",
+        "self.demand",
+        "self.provenance",
+        "self.queue_message",
+        "self.require_file",
+        "self.store.read",
+        "self.store.transaction",
+        "self.store.user",
+        "self.store.write",
+        "self.transition"
+      ],
+      "guards": [
+        {
+          "line": 134,
+          "expression": "not self.store.user(connection, recipient_id)"
+        },
+        {
+          "line": 137,
+          "expression": "existing"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "view_file": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.details",
+      "line": 148,
+      "end_line": 156,
+      "signature": "self, actor_id: str, file_id: str",
+      "ast_sha256": "5fda7cb288cff62d5159cfec973216dd2ac224bd47762e8ad2194ad71afbb66e",
+      "snippet": "    def details(self, actor_id: str, file_id: str) -> dict:\n        bo = self.bo\n        with bo.span(\"view_file\", lambda: {\"inputs\": {\"actor_id\": actor_id, \"file_id\": file_id}}, entity=file_id, attempt=file_id, scope=\"entity\") as observed:\n            with self.store.transaction() as connection:\n                row = self.require_file(connection, file_id)\n                self.demand(self.authorize(connection, actor_id, \"view\", row))\n                result = self.public_file(row)\n            observed.result(lambda: {\"outputs\": {\"state\": result[\"state\"], \"filename\": result[\"filename\"]}})\n            return result",
+      "calls": [
+        "bo.span",
+        "observed.result",
+        "self.authorize",
+        "self.demand",
+        "self.public_file",
+        "self.require_file",
+        "self.store.transaction"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "download_file": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.download",
+      "line": 158,
+      "end_line": 166,
+      "signature": "self, actor_id: str, file_id: str",
+      "ast_sha256": "fce607d6075260c3a14a2555f39b9994a489260d3bea2269e3343e2f5f7a3f8a",
+      "snippet": "    def download(self, actor_id: str, file_id: str) -> tuple:\n        bo = self.bo\n        with bo.span(\"download_file\", lambda: {\"inputs\": {\"actor_id\": actor_id, \"file_id\": file_id}}, entity=file_id, attempt=file_id, scope=\"entity\") as observed:\n            with self.store.transaction() as connection:\n                row = self.require_file(connection, file_id)\n                self.demand(self.authorize(connection, actor_id, \"download\", row))\n                result = (row[\"filename\"], bytes(row[\"content\"]))\n            observed.result(lambda: {\"outputs\": {\"filename\": result[0], \"size\": len(result[1])}})\n            return result",
+      "calls": [
+        "bo.span",
+        "bytes",
+        "len",
+        "observed.result",
+        "self.authorize",
+        "self.demand",
+        "self.require_file",
+        "self.store.transaction"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "deliver_message": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.deliver",
+      "line": 200,
+      "end_line": 219,
+      "signature": "self, message_id: str",
+      "ast_sha256": "7ee2701ac8d831dd9427df2c6e6c4930bf0da94860a3eb26ae4146aa54e50cf1",
+      "snippet": "    def deliver(self, message_id: str) -> bool:\n        bo = self.bo\n        with self.store.engine.connect() as reader:\n            found = reader.execute(select(MESSAGES).where(MESSAGES.c.id == message_id)).mappings().first()\n        if not found:\n            return False\n        carrier = json.loads(found[\"carrier\"])\n        with bo.receive(carrier), bo.span(\"deliver_message\", lambda: {\"inputs\": {\"message_id\": message_id}}, entity=message_id, attempt=message_id, scope=\"entity\",\n                provenance={\"workflow_id\": \"message:\" + message_id, \"actor\": {\"id\": \"message-worker\", \"kind\": \"service\"},\n                    \"objects\": [{\"type\": \"Message\", \"id\": message_id, \"role\": \"input\"}, {\"type\": \"File\", \"id\": found[\"file_id\"], \"role\": \"input\"}, {\"type\": \"User\", \"id\": found[\"recipient_id\"], \"role\": \"recipient\"}]}) as observed:\n            with self.store.transaction(True) as connection:\n                rows = self.store.read(connection, select(MESSAGES).where(MESSAGES.c.id == message_id))\n                row = {**rows[0], \"entity_kind\": \"message\"}\n                if row[\"state\"] != \"message_pending\" or row[\"available_at\"] > time.time():\n                    observed.result(lambda: {\"outputs\": {\"delivered\": False}})\n                    return False\n                updated = self.transition(connection, row, \"deliver\", True, MESSAGES)\n            bo.changed(\"deliver_message\", updated, event=\"deliver\", guards=updated[\"guard_evidence\"])\n            observed.result(lambda: {\"outputs\": {\"delivered\": True}})\n            return True",
+      "calls": [
+        "bo.changed",
+        "bo.receive",
+        "bo.span",
+        "json.loads",
+        "observed.result",
+        "reader.execute",
+        "reader.execute(select(MESSAGES).where(MESSAGES.c.id == message_id)).mappings",
+        "reader.execute(select(MESSAGES).where(MESSAGES.c.id == message_id)).mappings().first",
+        "select",
+        "select(MESSAGES).where",
+        "self.store.engine.connect",
+        "self.store.read",
+        "self.store.transaction",
+        "self.transition",
+        "time.time"
+      ],
+      "guards": [
+        {
+          "line": 204,
+          "expression": "not found"
+        },
+        {
+          "line": 213,
+          "expression": "row['state'] != 'message_pending' or row['available_at'] > time.time()"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "list_files": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.list_files",
+      "line": 168,
+      "end_line": 176,
+      "signature": "self, actor_id: str",
+      "ast_sha256": "6653b6fd7bdf2bbdaddb889dd971eb8cc85bc96645422e0318846be4b6c5bd33",
+      "snippet": "    def list_files(self, actor_id: str) -> list:\n        bo = self.bo\n        with bo.span(\"list_files\", lambda: {\"inputs\": {\"actor_id\": actor_id}}, scope=\"application\") as observed:\n            with self.store.transaction() as connection:\n                self.demand(bool(self.store.user(connection, actor_id)))\n                rows = self.store.read(connection, select(FILES).order_by(FILES.c.created_at.desc()))\n                result = [self.public_file(row) for row in rows if self.authorize(connection, actor_id, \"list_files\", row)]\n            observed.result(lambda: {\"outputs\": {\"count\": len(result)}})\n            return result",
+      "calls": [
+        "FILES.c.created_at.desc",
+        "bo.span",
+        "bool",
+        "len",
+        "observed.result",
+        "select",
+        "select(FILES).order_by",
+        "self.authorize",
+        "self.demand",
+        "self.public_file",
+        "self.store.read",
+        "self.store.transaction",
+        "self.store.user"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "list_reviews": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.list_reviews",
+      "line": 178,
+      "end_line": 187,
+      "signature": "self, actor_id: str",
+      "ast_sha256": "502a4084882bfb3b3bc78cb8e504a31b07d201205debbf8dfbfe8899fcf2ebf7",
+      "snippet": "    def list_reviews(self, actor_id: str) -> list:\n        bo = self.bo\n        with bo.span(\"list_reviews\", lambda: {\"inputs\": {\"actor_id\": actor_id}}, scope=\"application\") as observed:\n            with self.store.transaction() as connection:\n                actor = self.store.user(connection, actor_id)\n                self.demand(actor.get(\"role\") == \"admin\")\n                rows = self.store.read(connection, select(FILES).where(FILES.c.state == \"pending\"))\n                result = [self.public_file(row) for row in rows if self.authorize(connection, actor_id, \"list_reviews\", row)]\n            observed.result(lambda: {\"outputs\": {\"count\": len(result)}})\n            return result",
+      "calls": [
+        "actor.get",
+        "bo.span",
+        "len",
+        "observed.result",
+        "select",
+        "select(FILES).where",
+        "self.authorize",
+        "self.demand",
+        "self.public_file",
+        "self.store.read",
+        "self.store.transaction",
+        "self.store.user"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "list_messages": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.list_messages",
+      "line": 189,
+      "end_line": 198,
+      "signature": "self, actor_id: str",
+      "ast_sha256": "757b17cbb63f2918c74b2e1bb58d05ce392fcc20c77b1158a88e6cdacbf4efaa",
+      "snippet": "    def list_messages(self, actor_id: str) -> list:\n        bo = self.bo\n        with bo.span(\"list_messages\", lambda: {\"inputs\": {\"actor_id\": actor_id}}, scope=\"application\") as observed:\n            with self.store.transaction() as connection:\n                self.demand(bool(self.store.user(connection, actor_id)))\n                rows = self.store.read(connection, select(MESSAGES.c.id, MESSAGES.c.file_id, MESSAGES.c.recipient_id, MESSAGES.c.kind, MESSAGES.c.state,\n                    FILES.c.filename).join(FILES, MESSAGES.c.file_id == FILES.c.id).where(and_(MESSAGES.c.state == \"delivered\", MESSAGES.c.recipient_id == actor_id)))\n                result = [row for row in rows if self.authorize(connection, actor_id, \"list_messages\", message=row)]\n            observed.result(lambda: {\"outputs\": {\"count\": len(result)}})\n            return result",
+      "calls": [
+        "and_",
+        "bo.span",
+        "bool",
+        "len",
+        "observed.result",
+        "select",
+        "select(MESSAGES.c.id, MESSAGES.c.file_id, MESSAGES.c.recipient_id, MESSAGES.c.kind, MESSAGES.c.state, FILES.c.filename).join",
+        "select(MESSAGES.c.id, MESSAGES.c.file_id, MESSAGES.c.recipient_id, MESSAGES.c.kind, MESSAGES.c.state, FILES.c.filename).join(FILES, MESSAGES.c.file_id == FILES.c.id).where",
+        "self.authorize",
+        "self.demand",
+        "self.store.read",
+        "self.store.transaction",
+        "self.store.user"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "file_details": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.file_metadata",
+      "line": 50,
+      "end_line": 51,
+      "signature": "self, row: dict",
+      "ast_sha256": "55da04382aed255e8e69534c37dce84ddfbfa18bdf1d412f96a169197666b634",
+      "snippet": "    def file_metadata(self, row: dict) -> dict:\n        return {\"id\": row[\"id\"], \"filename\": row[\"filename\"], \"owner_id\": row[\"owner_id\"], \"state\": row[\"state\"], \"revision\": row[\"revision\"]}",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "sign_out": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.logout",
+      "line": 225,
+      "end_line": 228,
+      "signature": "self, actor_id: str",
+      "ast_sha256": "228006d96d395c3ea960a8d9d700b1c91aef4f589d95911eaade5b8750aba745",
+      "snippet": "    def logout(self, actor_id: str):\n        bo = self.bo\n        with bo.span(\"sign_out\", lambda: {\"inputs\": {\"actor_id\": actor_id}}, scope=\"application\") as observed:\n            observed.result(lambda: {\"outputs\": {\"outcome\": \"signed_out\"}})",
+      "calls": [
+        "bo.span",
+        "observed.result"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "api_request": {
+      "path": "app/web.py",
+      "symbol": "create_app.request_begin",
+      "line": 56,
+      "end_line": 67,
+      "signature": "",
+      "ast_sha256": "416bdce00599cc13622296c23144773b278a476d2d5b1033bcfdefedc141a423",
+      "snippet": "    @app.before_request\n    def request_begin():\n        if request.path.startswith(\"/static/\"):\n            return None\n        manager = bo.span(\"api_request\", lambda: {\"inputs\": {\"method\": request.method, \"path\": request.path}}, scope=\"application\")\n        g.bo_manager, g.bo_activation = manager, manager.__enter__()\n        if request.args.get(\"lang\") in {\"en\", \"zh-CN\"}:\n            session[\"locale\"] = request.args[\"lang\"]\n        if request.method == \"POST\" and not secrets.compare_digest(request.form.get(\"csrf\", \"\"), session.get(\"csrf\", \"missing\")):\n            raise DomainError(\"csrf_invalid\", 400)\n        if request.endpoint not in {\"login\", \"static\"} and not current_actor():\n            return redirect(url_for(\"login\"))",
+      "calls": [
+        "DomainError",
+        "bo.span",
+        "current_actor",
+        "manager.__enter__",
+        "redirect",
+        "request.args.get",
+        "request.form.get",
+        "request.path.startswith",
+        "secrets.compare_digest",
+        "session.get",
+        "url_for"
+      ],
+      "guards": [
+        {
+          "line": 58,
+          "expression": "request.path.startswith('/static/')"
+        },
+        {
+          "line": 62,
+          "expression": "request.args.get('lang') in {'en', 'zh-CN'}"
+        },
+        {
+          "line": 64,
+          "expression": "request.method == 'POST' and (not secrets.compare_digest(request.form.get('csrf', ''), session.get('csrf', 'missing')))"
+        },
+        {
+          "line": 66,
+          "expression": "request.endpoint not in {'login', 'static'} and (not current_actor())"
+        }
+      ],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "db_transform": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.file_metadata",
+      "line": 50,
+      "end_line": 51,
+      "signature": "self, row: dict",
+      "ast_sha256": "55da04382aed255e8e69534c37dce84ddfbfa18bdf1d412f96a169197666b634",
+      "snippet": "    def file_metadata(self, row: dict) -> dict:\n        return {\"id\": row[\"id\"], \"filename\": row[\"filename\"], \"owner_id\": row[\"owner_id\"], \"state\": row[\"state\"], \"revision\": row[\"revision\"]}",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "api_login": {
+      "path": "app/web.py",
+      "symbol": "create_app.login",
+      "line": 86,
+      "end_line": 96,
+      "signature": "",
+      "ast_sha256": "708dfc951ab7d8d12ce48c114371f279975de03bce970b59e6f3f655f4b58250",
+      "snippet": "    @app.route(\"/login\", methods=[\"GET\", \"POST\"])\n    def login():\n        with bo.span(\"api_login\", lambda: {}, scope=\"application\"):\n            if request.method == \"POST\":\n                actor = service.authenticate(request.form.get(\"username\", \"\"), request.form.get(\"password\", \"\"))\n                locale = session.get(\"locale\", \"zh-CN\")\n                session.clear()\n                session.update(actor_id=actor[\"id\"], role=actor[\"role\"], locale=locale)\n                csrf_token()\n                return redirect(url_for(\"files\"))\n            return render_template(\"login.html\", accounts=[a[\"username\"] for a in store.credentials])",
+      "calls": [
+        "app.route",
+        "bo.span",
+        "csrf_token",
+        "redirect",
+        "render_template",
+        "request.form.get",
+        "service.authenticate",
+        "session.clear",
+        "session.get",
+        "session.update",
+        "url_for"
+      ],
+      "guards": [
+        {
+          "line": 89,
+          "expression": "request.method == 'POST'"
+        }
+      ],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_index": {
+      "path": "app/web.py",
+      "symbol": "create_app.index",
+      "line": 98,
+      "end_line": 101,
+      "signature": "",
+      "ast_sha256": "6ebd9baee229529e46f09b1395889d2112597c5fc5ef3b2b919ff9c422b27536",
+      "snippet": "    @app.get(\"/\")\n    def index():\n        with bo.span(\"api_index\", lambda: {}, scope=\"application\"):\n            return redirect(url_for(\"files\"))",
+      "calls": [
+        "app.get",
+        "bo.span",
+        "redirect",
+        "url_for"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_files": {
+      "path": "app/web.py",
+      "symbol": "create_app.files",
+      "line": 103,
+      "end_line": 107,
+      "signature": "",
+      "ast_sha256": "3a981e7ab6cc6a0b5d536d2fe23b3544f76ef39db67b6e2f12e3e4184734e293",
+      "snippet": "    @app.get(\"/files\")\n    def files():\n        with bo.span(\"api_files\", lambda: {}, scope=\"application\"):\n            actor_id = current_actor()\n            return render_template(\"files.html\", items=service.list_files(actor_id), recipients=[a for a in service.users(actor_id) if a[\"id\"] != actor_id])",
+      "calls": [
+        "app.get",
+        "bo.span",
+        "current_actor",
+        "render_template",
+        "service.list_files",
+        "service.users"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_upload": {
+      "path": "app/web.py",
+      "symbol": "create_app.upload",
+      "line": 109,
+      "end_line": 117,
+      "signature": "",
+      "ast_sha256": "c772727c1631c55a2da8175178a9d7acb834dd4ad3e52c08e7f4bf4a73640a35",
+      "snippet": "    @app.post(\"/upload\")\n    def upload():\n        with bo.span(\"api_upload\", lambda: {}, scope=\"application\"):\n            item = request.files.get(\"file\")\n            if not item:\n                raise DomainError(\"file_required\", 400)\n            service.upload(current_actor(), item.filename or \"\", item.read(16 * 1024 * 1024 + 1))\n            flash(translate(\"Uploaded\"))\n            return redirect(url_for(\"files\"))",
+      "calls": [
+        "DomainError",
+        "app.post",
+        "bo.span",
+        "current_actor",
+        "flash",
+        "item.read",
+        "redirect",
+        "request.files.get",
+        "service.upload",
+        "translate",
+        "url_for"
+      ],
+      "guards": [
+        {
+          "line": 113,
+          "expression": "not item"
+        }
+      ],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_details": {
+      "path": "app/web.py",
+      "symbol": "create_app.details",
+      "line": 119,
+      "end_line": 122,
+      "signature": "file_id: str",
+      "ast_sha256": "91f07f974bc731fdbca3637c81c1049575e9166fab365a0df65bedb5e741294c",
+      "snippet": "    @app.get(\"/files/<file_id>\")\n    def details(file_id: str):\n        with bo.span(\"api_details\", lambda: {\"inputs\": {\"file_id\": file_id}}, scope=\"application\"):\n            return render_template(\"details.html\", item=service.details(current_actor(), file_id))",
+      "calls": [
+        "app.get",
+        "bo.span",
+        "current_actor",
+        "render_template",
+        "service.details"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_download": {
+      "path": "app/web.py",
+      "symbol": "create_app.download",
+      "line": 124,
+      "end_line": 128,
+      "signature": "file_id: str",
+      "ast_sha256": "0e25c8d817402a31816feb92282fc30b1e2e531755177029f4b9c093a1f09947",
+      "snippet": "    @app.get(\"/files/<file_id>/download\")\n    def download(file_id: str):\n        with bo.span(\"api_download\", lambda: {\"inputs\": {\"file_id\": file_id}}, scope=\"application\"):\n            filename, content = service.download(current_actor(), file_id)\n            return send_file(io.BytesIO(content), as_attachment=True, download_name=filename, mimetype=\"application/octet-stream\", max_age=0)",
+      "calls": [
+        "app.get",
+        "bo.span",
+        "current_actor",
+        "io.BytesIO",
+        "send_file",
+        "service.download"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_share": {
+      "path": "app/web.py",
+      "symbol": "create_app.share",
+      "line": 130,
+      "end_line": 135,
+      "signature": "file_id: str",
+      "ast_sha256": "e708651a42995c571a09ca3884ca2da1d5fda3ae2544f3a45fd7e6f24a8b232d",
+      "snippet": "    @app.post(\"/files/<file_id>/share\")\n    def share(file_id: str):\n        with bo.span(\"api_share\", lambda: {\"inputs\": {\"file_id\": file_id}}, scope=\"application\"):\n            result = service.share(current_actor(), file_id, request.form.get(\"recipient_id\", \"\"))\n            flash(translate(\"Shared\" if result[\"created\"] else \"Already shared\"))\n            return redirect(url_for(\"files\"))",
+      "calls": [
+        "app.post",
+        "bo.span",
+        "current_actor",
+        "flash",
+        "redirect",
+        "request.form.get",
+        "service.share",
+        "translate",
+        "url_for"
+      ],
+      "guards": [
+        {
+          "line": 134,
+          "expression": "result['created']"
+        }
+      ],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_reviews": {
+      "path": "app/web.py",
+      "symbol": "create_app.reviews",
+      "line": 137,
+      "end_line": 140,
+      "signature": "",
+      "ast_sha256": "49ed1dca7fe306f9de0fbdcea9f0526a63a5cade4c2cbd86f11e1c8184134f02",
+      "snippet": "    @app.get(\"/reviews\")\n    def reviews():\n        with bo.span(\"api_reviews\", lambda: {}, scope=\"application\"):\n            return render_template(\"reviews.html\", items=service.list_reviews(current_actor()))",
+      "calls": [
+        "app.get",
+        "bo.span",
+        "current_actor",
+        "render_template",
+        "service.list_reviews"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_review": {
+      "path": "app/web.py",
+      "symbol": "create_app.review",
+      "line": 142,
+      "end_line": 147,
+      "signature": "file_id: str",
+      "ast_sha256": "eebef2ac055430a4dc87766eb7ab58640073fb89d35936ab8952449d37ea4dad",
+      "snippet": "    @app.post(\"/files/<file_id>/review\")\n    def review(file_id: str):\n        with bo.span(\"api_review\", lambda: {\"inputs\": {\"file_id\": file_id}}, scope=\"application\"):\n            service.review(current_actor(), file_id, request.form.get(\"decision\", \"\"))\n            flash(translate(\"Reviewed\"))\n            return redirect(url_for(\"reviews\"))",
+      "calls": [
+        "app.post",
+        "bo.span",
+        "current_actor",
+        "flash",
+        "redirect",
+        "request.form.get",
+        "service.review",
+        "translate",
+        "url_for"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_messages": {
+      "path": "app/web.py",
+      "symbol": "create_app.messages",
+      "line": 149,
+      "end_line": 152,
+      "signature": "",
+      "ast_sha256": "dd16c203f53a2774adfdddf324e77ea7ab93e1001955c096c69306dea5bac00a",
+      "snippet": "    @app.get(\"/messages\")\n    def messages():\n        with bo.span(\"api_messages\", lambda: {}, scope=\"application\"):\n            return render_template(\"messages.html\", items=service.list_messages(current_actor()))",
+      "calls": [
+        "app.get",
+        "bo.span",
+        "current_actor",
+        "render_template",
+        "service.list_messages"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "api_logout": {
+      "path": "app/web.py",
+      "symbol": "create_app.logout",
+      "line": 154,
+      "end_line": 161,
+      "signature": "",
+      "ast_sha256": "60e2a9692998e1a04b0ad732ca2cd671a4c948d5bb0e878312257ba96b2858e2",
+      "snippet": "    @app.post(\"/logout\")\n    def logout():\n        with bo.span(\"api_logout\", lambda: {}, scope=\"application\"):\n            service.logout(current_actor())\n            locale = session.get(\"locale\", \"zh-CN\")\n            session.clear()\n            session[\"locale\"] = locale\n            return redirect(url_for(\"login\"))",
+      "calls": [
+        "app.post",
+        "bo.span",
+        "current_actor",
+        "redirect",
+        "service.logout",
+        "session.clear",
+        "session.get",
+        "url_for"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.488452c9a4cd24b2": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.provenance",
+      "line": 53,
+      "end_line": 57,
+      "signature": "self, actor_id: str, file_id: str='', recipient_id: str=''",
+      "ast_sha256": "6e37025e48fbe2b8f2359a4e1f247d38c8b50278ec726e426835ca106864c689",
+      "snippet": "    def provenance(self, actor_id: str, file_id: str = \"\", recipient_id: str = \"\") -> dict:\n        return {\"workflow_id\": \"file:\" + file_id if file_id else \"session:\" + actor_id,\n            \"actor\": {\"id\": actor_id or \"anonymous\", \"kind\": \"user\"},\n            \"objects\": ([{\"type\": \"File\", \"id\": file_id, \"role\": \"input\"}] if file_id else []) +\n                       ([{\"type\": \"User\", \"id\": recipient_id, \"role\": \"recipient\"}] if recipient_id else [])}",
+      "calls": [],
+      "guards": [
+        {
+          "line": 54,
+          "expression": "file_id"
+        },
+        {
+          "line": 56,
+          "expression": "file_id"
+        },
+        {
+          "line": 57,
+          "expression": "recipient_id"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.0a5e7d50f459a7ee": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.provenance",
+      "line": 53,
+      "end_line": 57,
+      "signature": "self, actor_id: str, file_id: str='', recipient_id: str=''",
+      "ast_sha256": "6e37025e48fbe2b8f2359a4e1f247d38c8b50278ec726e426835ca106864c689",
+      "snippet": "    def provenance(self, actor_id: str, file_id: str = \"\", recipient_id: str = \"\") -> dict:\n        return {\"workflow_id\": \"file:\" + file_id if file_id else \"session:\" + actor_id,\n            \"actor\": {\"id\": actor_id or \"anonymous\", \"kind\": \"user\"},\n            \"objects\": ([{\"type\": \"File\", \"id\": file_id, \"role\": \"input\"}] if file_id else []) +\n                       ([{\"type\": \"User\", \"id\": recipient_id, \"role\": \"recipient\"}] if recipient_id else [])}",
+      "calls": [],
+      "guards": [
+        {
+          "line": 54,
+          "expression": "file_id"
+        },
+        {
+          "line": 56,
+          "expression": "file_id"
+        },
+        {
+          "line": 57,
+          "expression": "recipient_id"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.a9e5de3f375f3d48": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.demand",
+      "line": 37,
+      "end_line": 39,
+      "signature": "self, allowed: bool",
+      "ast_sha256": "40f783939083ff9b41600dc440f461430a96008c9262a294455446be43376dc6",
+      "snippet": "    def demand(self, allowed: bool):\n        if not allowed:\n            raise DomainError(\"permission_denied\")",
+      "calls": [
+        "DomainError"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "not allowed"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.a29ca7dadd540cee": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.authorize",
+      "line": 26,
+      "end_line": 35,
+      "signature": "self, connection, actor_id: str, operation: str, file=None, message=None",
+      "ast_sha256": "7592a97bc1b32d7da85d1233e74994b3b21ad12ffdb6538b17b71083c4cfbdaf",
+      "snippet": "    def authorize(self, connection, actor_id: str, operation: str, file=None, message=None) -> bool:\n        actor = self.store.user(connection, actor_id)\n        file = file or {}\n        granted = bool(file and self.store.read(connection, select(SHARES.c.file_id).where(and_(SHARES.c.file_id == file[\"id\"], SHARES.c.recipient_id == actor_id))))\n        facts = file_facts(actor, file, granted, observer=self.bo)\n        if message:\n            facts.update(actor_is_message_recipient=message[\"recipient_id\"] == actor_id, message_is_delivered=message[\"state\"] == \"delivered\")\n        evaluation = decide(self.policy, operation, facts, str(file.get(\"revision\", 0)) + \":\" + uuid.uuid4().hex, str(self.root))\n        self.bo.policy(self.policy, evaluation, file.get(\"id\", \"\"))\n        return evaluation[\"value\"] is True",
+      "calls": [
+        "and_",
+        "bool",
+        "decide",
+        "facts.update",
+        "file.get",
+        "file_facts",
+        "select",
+        "select(SHARES.c.file_id).where",
+        "self.bo.policy",
+        "self.store.read",
+        "self.store.user",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 31,
+          "expression": "message"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.ec1ebf4d84cd33e2": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.public_file",
+      "line": 47,
+      "end_line": 48,
+      "signature": "self, row: dict",
+      "ast_sha256": "a99d41d510fae71defaaec105b6e55a51b04dd2dc3c6fe9683769ef6f73e5a95",
+      "snippet": "    def public_file(self, row: dict) -> dict:\n        return self.bo.transform(self.file_metadata, row)",
+      "calls": [
+        "self.bo.transform"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.4cb5025f9ecaf00f": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.provenance",
+      "line": 53,
+      "end_line": 57,
+      "signature": "self, actor_id: str, file_id: str='', recipient_id: str=''",
+      "ast_sha256": "6e37025e48fbe2b8f2359a4e1f247d38c8b50278ec726e426835ca106864c689",
+      "snippet": "    def provenance(self, actor_id: str, file_id: str = \"\", recipient_id: str = \"\") -> dict:\n        return {\"workflow_id\": \"file:\" + file_id if file_id else \"session:\" + actor_id,\n            \"actor\": {\"id\": actor_id or \"anonymous\", \"kind\": \"user\"},\n            \"objects\": ([{\"type\": \"File\", \"id\": file_id, \"role\": \"input\"}] if file_id else []) +\n                       ([{\"type\": \"User\", \"id\": recipient_id, \"role\": \"recipient\"}] if recipient_id else [])}",
+      "calls": [],
+      "guards": [
+        {
+          "line": 54,
+          "expression": "file_id"
+        },
+        {
+          "line": 56,
+          "expression": "file_id"
+        },
+        {
+          "line": 57,
+          "expression": "recipient_id"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.d38678de4546fde8": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.require_file",
+      "line": 41,
+      "end_line": 45,
+      "signature": "self, connection, file_id: str",
+      "ast_sha256": "cbf3df15b975c40d592cb30d123aaceb6537593755bd24104c80a657d0e8fed8",
+      "snippet": "    def require_file(self, connection, file_id: str) -> dict:\n        row = self.store.file(connection, file_id)\n        if not row:\n            raise DomainError(\"file_not_found\", 404)\n        return row",
+      "calls": [
+        "DomainError",
+        "self.store.file"
+      ],
+      "guards": [
+        {
+          "line": 43,
+          "expression": "not row"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.cf59eb586062b17d": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.authorize",
+      "line": 26,
+      "end_line": 35,
+      "signature": "self, connection, actor_id: str, operation: str, file=None, message=None",
+      "ast_sha256": "7592a97bc1b32d7da85d1233e74994b3b21ad12ffdb6538b17b71083c4cfbdaf",
+      "snippet": "    def authorize(self, connection, actor_id: str, operation: str, file=None, message=None) -> bool:\n        actor = self.store.user(connection, actor_id)\n        file = file or {}\n        granted = bool(file and self.store.read(connection, select(SHARES.c.file_id).where(and_(SHARES.c.file_id == file[\"id\"], SHARES.c.recipient_id == actor_id))))\n        facts = file_facts(actor, file, granted, observer=self.bo)\n        if message:\n            facts.update(actor_is_message_recipient=message[\"recipient_id\"] == actor_id, message_is_delivered=message[\"state\"] == \"delivered\")\n        evaluation = decide(self.policy, operation, facts, str(file.get(\"revision\", 0)) + \":\" + uuid.uuid4().hex, str(self.root))\n        self.bo.policy(self.policy, evaluation, file.get(\"id\", \"\"))\n        return evaluation[\"value\"] is True",
+      "calls": [
+        "and_",
+        "bool",
+        "decide",
+        "facts.update",
+        "file.get",
+        "file_facts",
+        "select",
+        "select(SHARES.c.file_id).where",
+        "self.bo.policy",
+        "self.store.read",
+        "self.store.user",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 31,
+          "expression": "message"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.5603e90f2161fb0e": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.demand",
+      "line": 37,
+      "end_line": 39,
+      "signature": "self, allowed: bool",
+      "ast_sha256": "40f783939083ff9b41600dc440f461430a96008c9262a294455446be43376dc6",
+      "snippet": "    def demand(self, allowed: bool):\n        if not allowed:\n            raise DomainError(\"permission_denied\")",
+      "calls": [
+        "DomainError"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "not allowed"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.df9cf807d280beca": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.transition",
+      "line": 99,
+      "end_line": 107,
+      "signature": "self, connection, row: dict, event: str, allowed: bool, table",
+      "ast_sha256": "734535ca74a450be0a8ee47c77079aa1e340efa103e94787ec4aabd148a5137c",
+      "snippet": "    def transition(self, connection, row: dict, event: str, allowed: bool, table) -> dict:\n        step = self.workflow.step(row, event, allowed)\n        journal = json.loads(row[\"journal\"])\n        journal.append({\"event\": event, \"source\": row[\"state\"], \"target\": step[\"state\"], \"revision\": row[\"revision\"] + 1, \"guards\": step[\"guards\"]})\n        changed = self.store.write(connection, table.update().where(and_(table.c.id == row[\"id\"], table.c.revision == row[\"revision\"])).values(\n            state=step[\"state\"], revision=row[\"revision\"] + 1, journal=json.dumps(journal)))\n        if changed != 1:\n            raise DomainError(\"state_conflict\", 409)\n        return {**row, \"state\": step[\"state\"], \"revision\": row[\"revision\"] + 1, \"journal\": json.dumps(journal), \"guard_evidence\": step[\"guards\"]}",
+      "calls": [
+        "DomainError",
+        "and_",
+        "journal.append",
+        "json.dumps",
+        "json.loads",
+        "self.store.write",
+        "self.workflow.step",
+        "table.update",
+        "table.update().where",
+        "table.update().where(and_(table.c.id == row['id'], table.c.revision == row['revision'])).values"
+      ],
+      "guards": [
+        {
+          "line": 105,
+          "expression": "changed != 1"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.5dd73d5650477ae5": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.queue_message",
+      "line": 92,
+      "end_line": 97,
+      "signature": "self, connection, file: dict, recipient_id: str, kind: str",
+      "ast_sha256": "581a4f0e938a9b71db30a2ffd2d1fcb5429038554c46038e91362923abfc0c73",
+      "snippet": "    def queue_message(self, connection, file: dict, recipient_id: str, kind: str) -> dict:\n        row = {\"id\": uuid.uuid4().hex, \"file_id\": file[\"id\"], \"owner_id\": file[\"owner_id\"], \"recipient_id\": recipient_id,\n            \"kind\": kind, \"state\": self.workflow.initial(\"message\"), \"revision\": 1, \"available_at\": time.time() + self.delay,\n            \"carrier\": json.dumps(self.bo.inject()), \"journal\": \"[]\", \"entity_kind\": \"message\"}\n        self.store.write(connection, MESSAGES.insert().values(**{key: value for key, value in row.items() if key != \"entity_kind\"}))\n        return row",
+      "calls": [
+        "MESSAGES.insert",
+        "MESSAGES.insert().values",
+        "json.dumps",
+        "row.items",
+        "self.bo.inject",
+        "self.store.write",
+        "self.workflow.initial",
+        "time.time",
+        "uuid.uuid4"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.1d68b4330a1e90af": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.public_file",
+      "line": 47,
+      "end_line": 48,
+      "signature": "self, row: dict",
+      "ast_sha256": "a99d41d510fae71defaaec105b6e55a51b04dd2dc3c6fe9683769ef6f73e5a95",
+      "snippet": "    def public_file(self, row: dict) -> dict:\n        return self.bo.transform(self.file_metadata, row)",
+      "calls": [
+        "self.bo.transform"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.3ade4e21210ce491": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.provenance",
+      "line": 53,
+      "end_line": 57,
+      "signature": "self, actor_id: str, file_id: str='', recipient_id: str=''",
+      "ast_sha256": "6e37025e48fbe2b8f2359a4e1f247d38c8b50278ec726e426835ca106864c689",
+      "snippet": "    def provenance(self, actor_id: str, file_id: str = \"\", recipient_id: str = \"\") -> dict:\n        return {\"workflow_id\": \"file:\" + file_id if file_id else \"session:\" + actor_id,\n            \"actor\": {\"id\": actor_id or \"anonymous\", \"kind\": \"user\"},\n            \"objects\": ([{\"type\": \"File\", \"id\": file_id, \"role\": \"input\"}] if file_id else []) +\n                       ([{\"type\": \"User\", \"id\": recipient_id, \"role\": \"recipient\"}] if recipient_id else [])}",
+      "calls": [],
+      "guards": [
+        {
+          "line": 54,
+          "expression": "file_id"
+        },
+        {
+          "line": 56,
+          "expression": "file_id"
+        },
+        {
+          "line": 57,
+          "expression": "recipient_id"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.cc75d742bd4d893c": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.require_file",
+      "line": 41,
+      "end_line": 45,
+      "signature": "self, connection, file_id: str",
+      "ast_sha256": "cbf3df15b975c40d592cb30d123aaceb6537593755bd24104c80a657d0e8fed8",
+      "snippet": "    def require_file(self, connection, file_id: str) -> dict:\n        row = self.store.file(connection, file_id)\n        if not row:\n            raise DomainError(\"file_not_found\", 404)\n        return row",
+      "calls": [
+        "DomainError",
+        "self.store.file"
+      ],
+      "guards": [
+        {
+          "line": 43,
+          "expression": "not row"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.02bdb8a181843dca": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.authorize",
+      "line": 26,
+      "end_line": 35,
+      "signature": "self, connection, actor_id: str, operation: str, file=None, message=None",
+      "ast_sha256": "7592a97bc1b32d7da85d1233e74994b3b21ad12ffdb6538b17b71083c4cfbdaf",
+      "snippet": "    def authorize(self, connection, actor_id: str, operation: str, file=None, message=None) -> bool:\n        actor = self.store.user(connection, actor_id)\n        file = file or {}\n        granted = bool(file and self.store.read(connection, select(SHARES.c.file_id).where(and_(SHARES.c.file_id == file[\"id\"], SHARES.c.recipient_id == actor_id))))\n        facts = file_facts(actor, file, granted, observer=self.bo)\n        if message:\n            facts.update(actor_is_message_recipient=message[\"recipient_id\"] == actor_id, message_is_delivered=message[\"state\"] == \"delivered\")\n        evaluation = decide(self.policy, operation, facts, str(file.get(\"revision\", 0)) + \":\" + uuid.uuid4().hex, str(self.root))\n        self.bo.policy(self.policy, evaluation, file.get(\"id\", \"\"))\n        return evaluation[\"value\"] is True",
+      "calls": [
+        "and_",
+        "bool",
+        "decide",
+        "facts.update",
+        "file.get",
+        "file_facts",
+        "select",
+        "select(SHARES.c.file_id).where",
+        "self.bo.policy",
+        "self.store.read",
+        "self.store.user",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 31,
+          "expression": "message"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.1e631e6836ddf80c": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.demand",
+      "line": 37,
+      "end_line": 39,
+      "signature": "self, allowed: bool",
+      "ast_sha256": "40f783939083ff9b41600dc440f461430a96008c9262a294455446be43376dc6",
+      "snippet": "    def demand(self, allowed: bool):\n        if not allowed:\n            raise DomainError(\"permission_denied\")",
+      "calls": [
+        "DomainError"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "not allowed"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.ea647103030c1afe": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.transition",
+      "line": 99,
+      "end_line": 107,
+      "signature": "self, connection, row: dict, event: str, allowed: bool, table",
+      "ast_sha256": "734535ca74a450be0a8ee47c77079aa1e340efa103e94787ec4aabd148a5137c",
+      "snippet": "    def transition(self, connection, row: dict, event: str, allowed: bool, table) -> dict:\n        step = self.workflow.step(row, event, allowed)\n        journal = json.loads(row[\"journal\"])\n        journal.append({\"event\": event, \"source\": row[\"state\"], \"target\": step[\"state\"], \"revision\": row[\"revision\"] + 1, \"guards\": step[\"guards\"]})\n        changed = self.store.write(connection, table.update().where(and_(table.c.id == row[\"id\"], table.c.revision == row[\"revision\"])).values(\n            state=step[\"state\"], revision=row[\"revision\"] + 1, journal=json.dumps(journal)))\n        if changed != 1:\n            raise DomainError(\"state_conflict\", 409)\n        return {**row, \"state\": step[\"state\"], \"revision\": row[\"revision\"] + 1, \"journal\": json.dumps(journal), \"guard_evidence\": step[\"guards\"]}",
+      "calls": [
+        "DomainError",
+        "and_",
+        "journal.append",
+        "json.dumps",
+        "json.loads",
+        "self.store.write",
+        "self.workflow.step",
+        "table.update",
+        "table.update().where",
+        "table.update().where(and_(table.c.id == row['id'], table.c.revision == row['revision'])).values"
+      ],
+      "guards": [
+        {
+          "line": 105,
+          "expression": "changed != 1"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.c8481287c35629d5": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.queue_message",
+      "line": 92,
+      "end_line": 97,
+      "signature": "self, connection, file: dict, recipient_id: str, kind: str",
+      "ast_sha256": "581a4f0e938a9b71db30a2ffd2d1fcb5429038554c46038e91362923abfc0c73",
+      "snippet": "    def queue_message(self, connection, file: dict, recipient_id: str, kind: str) -> dict:\n        row = {\"id\": uuid.uuid4().hex, \"file_id\": file[\"id\"], \"owner_id\": file[\"owner_id\"], \"recipient_id\": recipient_id,\n            \"kind\": kind, \"state\": self.workflow.initial(\"message\"), \"revision\": 1, \"available_at\": time.time() + self.delay,\n            \"carrier\": json.dumps(self.bo.inject()), \"journal\": \"[]\", \"entity_kind\": \"message\"}\n        self.store.write(connection, MESSAGES.insert().values(**{key: value for key, value in row.items() if key != \"entity_kind\"}))\n        return row",
+      "calls": [
+        "MESSAGES.insert",
+        "MESSAGES.insert().values",
+        "json.dumps",
+        "row.items",
+        "self.bo.inject",
+        "self.store.write",
+        "self.workflow.initial",
+        "time.time",
+        "uuid.uuid4"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.b74fa8daa6e6d07e": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.require_file",
+      "line": 41,
+      "end_line": 45,
+      "signature": "self, connection, file_id: str",
+      "ast_sha256": "cbf3df15b975c40d592cb30d123aaceb6537593755bd24104c80a657d0e8fed8",
+      "snippet": "    def require_file(self, connection, file_id: str) -> dict:\n        row = self.store.file(connection, file_id)\n        if not row:\n            raise DomainError(\"file_not_found\", 404)\n        return row",
+      "calls": [
+        "DomainError",
+        "self.store.file"
+      ],
+      "guards": [
+        {
+          "line": 43,
+          "expression": "not row"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.4391e2b1d7d3db1c": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.demand",
+      "line": 37,
+      "end_line": 39,
+      "signature": "self, allowed: bool",
+      "ast_sha256": "40f783939083ff9b41600dc440f461430a96008c9262a294455446be43376dc6",
+      "snippet": "    def demand(self, allowed: bool):\n        if not allowed:\n            raise DomainError(\"permission_denied\")",
+      "calls": [
+        "DomainError"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "not allowed"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.edfd3e2927944636": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.authorize",
+      "line": 26,
+      "end_line": 35,
+      "signature": "self, connection, actor_id: str, operation: str, file=None, message=None",
+      "ast_sha256": "7592a97bc1b32d7da85d1233e74994b3b21ad12ffdb6538b17b71083c4cfbdaf",
+      "snippet": "    def authorize(self, connection, actor_id: str, operation: str, file=None, message=None) -> bool:\n        actor = self.store.user(connection, actor_id)\n        file = file or {}\n        granted = bool(file and self.store.read(connection, select(SHARES.c.file_id).where(and_(SHARES.c.file_id == file[\"id\"], SHARES.c.recipient_id == actor_id))))\n        facts = file_facts(actor, file, granted, observer=self.bo)\n        if message:\n            facts.update(actor_is_message_recipient=message[\"recipient_id\"] == actor_id, message_is_delivered=message[\"state\"] == \"delivered\")\n        evaluation = decide(self.policy, operation, facts, str(file.get(\"revision\", 0)) + \":\" + uuid.uuid4().hex, str(self.root))\n        self.bo.policy(self.policy, evaluation, file.get(\"id\", \"\"))\n        return evaluation[\"value\"] is True",
+      "calls": [
+        "and_",
+        "bool",
+        "decide",
+        "facts.update",
+        "file.get",
+        "file_facts",
+        "select",
+        "select(SHARES.c.file_id).where",
+        "self.bo.policy",
+        "self.store.read",
+        "self.store.user",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 31,
+          "expression": "message"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.ccb3e77af3ad09fb": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.public_file",
+      "line": 47,
+      "end_line": 48,
+      "signature": "self, row: dict",
+      "ast_sha256": "a99d41d510fae71defaaec105b6e55a51b04dd2dc3c6fe9683769ef6f73e5a95",
+      "snippet": "    def public_file(self, row: dict) -> dict:\n        return self.bo.transform(self.file_metadata, row)",
+      "calls": [
+        "self.bo.transform"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.c3e647ce88928da8": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.require_file",
+      "line": 41,
+      "end_line": 45,
+      "signature": "self, connection, file_id: str",
+      "ast_sha256": "cbf3df15b975c40d592cb30d123aaceb6537593755bd24104c80a657d0e8fed8",
+      "snippet": "    def require_file(self, connection, file_id: str) -> dict:\n        row = self.store.file(connection, file_id)\n        if not row:\n            raise DomainError(\"file_not_found\", 404)\n        return row",
+      "calls": [
+        "DomainError",
+        "self.store.file"
+      ],
+      "guards": [
+        {
+          "line": 43,
+          "expression": "not row"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.62aa990a7d6fc0b0": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.demand",
+      "line": 37,
+      "end_line": 39,
+      "signature": "self, allowed: bool",
+      "ast_sha256": "40f783939083ff9b41600dc440f461430a96008c9262a294455446be43376dc6",
+      "snippet": "    def demand(self, allowed: bool):\n        if not allowed:\n            raise DomainError(\"permission_denied\")",
+      "calls": [
+        "DomainError"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "not allowed"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.04a0c4c5ef53892c": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.authorize",
+      "line": 26,
+      "end_line": 35,
+      "signature": "self, connection, actor_id: str, operation: str, file=None, message=None",
+      "ast_sha256": "7592a97bc1b32d7da85d1233e74994b3b21ad12ffdb6538b17b71083c4cfbdaf",
+      "snippet": "    def authorize(self, connection, actor_id: str, operation: str, file=None, message=None) -> bool:\n        actor = self.store.user(connection, actor_id)\n        file = file or {}\n        granted = bool(file and self.store.read(connection, select(SHARES.c.file_id).where(and_(SHARES.c.file_id == file[\"id\"], SHARES.c.recipient_id == actor_id))))\n        facts = file_facts(actor, file, granted, observer=self.bo)\n        if message:\n            facts.update(actor_is_message_recipient=message[\"recipient_id\"] == actor_id, message_is_delivered=message[\"state\"] == \"delivered\")\n        evaluation = decide(self.policy, operation, facts, str(file.get(\"revision\", 0)) + \":\" + uuid.uuid4().hex, str(self.root))\n        self.bo.policy(self.policy, evaluation, file.get(\"id\", \"\"))\n        return evaluation[\"value\"] is True",
+      "calls": [
+        "and_",
+        "bool",
+        "decide",
+        "facts.update",
+        "file.get",
+        "file_facts",
+        "select",
+        "select(SHARES.c.file_id).where",
+        "self.bo.policy",
+        "self.store.read",
+        "self.store.user",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 31,
+          "expression": "message"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.8e7c1671f5e26414": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.transition",
+      "line": 99,
+      "end_line": 107,
+      "signature": "self, connection, row: dict, event: str, allowed: bool, table",
+      "ast_sha256": "734535ca74a450be0a8ee47c77079aa1e340efa103e94787ec4aabd148a5137c",
+      "snippet": "    def transition(self, connection, row: dict, event: str, allowed: bool, table) -> dict:\n        step = self.workflow.step(row, event, allowed)\n        journal = json.loads(row[\"journal\"])\n        journal.append({\"event\": event, \"source\": row[\"state\"], \"target\": step[\"state\"], \"revision\": row[\"revision\"] + 1, \"guards\": step[\"guards\"]})\n        changed = self.store.write(connection, table.update().where(and_(table.c.id == row[\"id\"], table.c.revision == row[\"revision\"])).values(\n            state=step[\"state\"], revision=row[\"revision\"] + 1, journal=json.dumps(journal)))\n        if changed != 1:\n            raise DomainError(\"state_conflict\", 409)\n        return {**row, \"state\": step[\"state\"], \"revision\": row[\"revision\"] + 1, \"journal\": json.dumps(journal), \"guard_evidence\": step[\"guards\"]}",
+      "calls": [
+        "DomainError",
+        "and_",
+        "journal.append",
+        "json.dumps",
+        "json.loads",
+        "self.store.write",
+        "self.workflow.step",
+        "table.update",
+        "table.update().where",
+        "table.update().where(and_(table.c.id == row['id'], table.c.revision == row['revision'])).values"
+      ],
+      "guards": [
+        {
+          "line": 105,
+          "expression": "changed != 1"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.4bbbf17373921430": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.demand",
+      "line": 37,
+      "end_line": 39,
+      "signature": "self, allowed: bool",
+      "ast_sha256": "40f783939083ff9b41600dc440f461430a96008c9262a294455446be43376dc6",
+      "snippet": "    def demand(self, allowed: bool):\n        if not allowed:\n            raise DomainError(\"permission_denied\")",
+      "calls": [
+        "DomainError"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "not allowed"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.fb8301f88b18094a": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.public_file",
+      "line": 47,
+      "end_line": 48,
+      "signature": "self, row: dict",
+      "ast_sha256": "a99d41d510fae71defaaec105b6e55a51b04dd2dc3c6fe9683769ef6f73e5a95",
+      "snippet": "    def public_file(self, row: dict) -> dict:\n        return self.bo.transform(self.file_metadata, row)",
+      "calls": [
+        "self.bo.transform"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.505a11829e5425c4": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.authorize",
+      "line": 26,
+      "end_line": 35,
+      "signature": "self, connection, actor_id: str, operation: str, file=None, message=None",
+      "ast_sha256": "7592a97bc1b32d7da85d1233e74994b3b21ad12ffdb6538b17b71083c4cfbdaf",
+      "snippet": "    def authorize(self, connection, actor_id: str, operation: str, file=None, message=None) -> bool:\n        actor = self.store.user(connection, actor_id)\n        file = file or {}\n        granted = bool(file and self.store.read(connection, select(SHARES.c.file_id).where(and_(SHARES.c.file_id == file[\"id\"], SHARES.c.recipient_id == actor_id))))\n        facts = file_facts(actor, file, granted, observer=self.bo)\n        if message:\n            facts.update(actor_is_message_recipient=message[\"recipient_id\"] == actor_id, message_is_delivered=message[\"state\"] == \"delivered\")\n        evaluation = decide(self.policy, operation, facts, str(file.get(\"revision\", 0)) + \":\" + uuid.uuid4().hex, str(self.root))\n        self.bo.policy(self.policy, evaluation, file.get(\"id\", \"\"))\n        return evaluation[\"value\"] is True",
+      "calls": [
+        "and_",
+        "bool",
+        "decide",
+        "facts.update",
+        "file.get",
+        "file_facts",
+        "select",
+        "select(SHARES.c.file_id).where",
+        "self.bo.policy",
+        "self.store.read",
+        "self.store.user",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 31,
+          "expression": "message"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.b562de6a102a3997": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.demand",
+      "line": 37,
+      "end_line": 39,
+      "signature": "self, allowed: bool",
+      "ast_sha256": "40f783939083ff9b41600dc440f461430a96008c9262a294455446be43376dc6",
+      "snippet": "    def demand(self, allowed: bool):\n        if not allowed:\n            raise DomainError(\"permission_denied\")",
+      "calls": [
+        "DomainError"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "not allowed"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.750647280a2b2b70": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.public_file",
+      "line": 47,
+      "end_line": 48,
+      "signature": "self, row: dict",
+      "ast_sha256": "a99d41d510fae71defaaec105b6e55a51b04dd2dc3c6fe9683769ef6f73e5a95",
+      "snippet": "    def public_file(self, row: dict) -> dict:\n        return self.bo.transform(self.file_metadata, row)",
+      "calls": [
+        "self.bo.transform"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.73399699fdd4a79b": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.authorize",
+      "line": 26,
+      "end_line": 35,
+      "signature": "self, connection, actor_id: str, operation: str, file=None, message=None",
+      "ast_sha256": "7592a97bc1b32d7da85d1233e74994b3b21ad12ffdb6538b17b71083c4cfbdaf",
+      "snippet": "    def authorize(self, connection, actor_id: str, operation: str, file=None, message=None) -> bool:\n        actor = self.store.user(connection, actor_id)\n        file = file or {}\n        granted = bool(file and self.store.read(connection, select(SHARES.c.file_id).where(and_(SHARES.c.file_id == file[\"id\"], SHARES.c.recipient_id == actor_id))))\n        facts = file_facts(actor, file, granted, observer=self.bo)\n        if message:\n            facts.update(actor_is_message_recipient=message[\"recipient_id\"] == actor_id, message_is_delivered=message[\"state\"] == \"delivered\")\n        evaluation = decide(self.policy, operation, facts, str(file.get(\"revision\", 0)) + \":\" + uuid.uuid4().hex, str(self.root))\n        self.bo.policy(self.policy, evaluation, file.get(\"id\", \"\"))\n        return evaluation[\"value\"] is True",
+      "calls": [
+        "and_",
+        "bool",
+        "decide",
+        "facts.update",
+        "file.get",
+        "file_facts",
+        "select",
+        "select(SHARES.c.file_id).where",
+        "self.bo.policy",
+        "self.store.read",
+        "self.store.user",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 31,
+          "expression": "message"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.d6b05780539a66a9": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.demand",
+      "line": 37,
+      "end_line": 39,
+      "signature": "self, allowed: bool",
+      "ast_sha256": "40f783939083ff9b41600dc440f461430a96008c9262a294455446be43376dc6",
+      "snippet": "    def demand(self, allowed: bool):\n        if not allowed:\n            raise DomainError(\"permission_denied\")",
+      "calls": [
+        "DomainError"
+      ],
+      "guards": [
+        {
+          "line": 38,
+          "expression": "not allowed"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.9baf56b4f1622287": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.authorize",
+      "line": 26,
+      "end_line": 35,
+      "signature": "self, connection, actor_id: str, operation: str, file=None, message=None",
+      "ast_sha256": "7592a97bc1b32d7da85d1233e74994b3b21ad12ffdb6538b17b71083c4cfbdaf",
+      "snippet": "    def authorize(self, connection, actor_id: str, operation: str, file=None, message=None) -> bool:\n        actor = self.store.user(connection, actor_id)\n        file = file or {}\n        granted = bool(file and self.store.read(connection, select(SHARES.c.file_id).where(and_(SHARES.c.file_id == file[\"id\"], SHARES.c.recipient_id == actor_id))))\n        facts = file_facts(actor, file, granted, observer=self.bo)\n        if message:\n            facts.update(actor_is_message_recipient=message[\"recipient_id\"] == actor_id, message_is_delivered=message[\"state\"] == \"delivered\")\n        evaluation = decide(self.policy, operation, facts, str(file.get(\"revision\", 0)) + \":\" + uuid.uuid4().hex, str(self.root))\n        self.bo.policy(self.policy, evaluation, file.get(\"id\", \"\"))\n        return evaluation[\"value\"] is True",
+      "calls": [
+        "and_",
+        "bool",
+        "decide",
+        "facts.update",
+        "file.get",
+        "file_facts",
+        "select",
+        "select(SHARES.c.file_id).where",
+        "self.bo.policy",
+        "self.store.read",
+        "self.store.user",
+        "str",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 31,
+          "expression": "message"
+        }
+      ],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "code.6671ccae3015b6b8": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.abc44207ae86af82": {
+      "path": "app/web.py",
+      "symbol": "csrf_token",
+      "line": 31,
+      "end_line": 33,
+      "signature": "",
+      "ast_sha256": "29d158bc52c78eccbbc7b7fec64eec428c619dba9bc8d011e3d49d60fd1b030f",
+      "snippet": "def csrf_token():\n    session.setdefault(\"csrf\", secrets.token_urlsafe(24))\n    return session[\"csrf\"]",
+      "calls": [
+        "secrets.token_urlsafe",
+        "session.setdefault"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.560de1db41e69fae": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.d7e0c81df0386278": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.2423c859d68206a9": {
+      "path": "app/web.py",
+      "symbol": "translate",
+      "line": 27,
+      "end_line": 28,
+      "signature": "key",
+      "ast_sha256": "3e29338239e4182fefb7c661122085288ae750cea2e62a075e56ae41df2623ad",
+      "snippet": "def translate(key):\n    return LABELS.get(session.get(\"locale\", \"zh-CN\"), {}).get(key, key)",
+      "calls": [
+        "LABELS.get",
+        "LABELS.get(session.get('locale', 'zh-CN'), {}).get",
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.46d5196d0b68ea05": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.779b7ab90ec139f6": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.28243aa7dcc195a9": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.64e5452b47a145b6": {
+      "path": "app/web.py",
+      "symbol": "translate",
+      "line": 27,
+      "end_line": 28,
+      "signature": "key",
+      "ast_sha256": "3e29338239e4182fefb7c661122085288ae750cea2e62a075e56ae41df2623ad",
+      "snippet": "def translate(key):\n    return LABELS.get(session.get(\"locale\", \"zh-CN\"), {}).get(key, key)",
+      "calls": [
+        "LABELS.get",
+        "LABELS.get(session.get('locale', 'zh-CN'), {}).get",
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.9b15ddc31c13dc23": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.b8586b82a6853011": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.d19422ff6c65a96a": {
+      "path": "app/web.py",
+      "symbol": "translate",
+      "line": 27,
+      "end_line": 28,
+      "signature": "key",
+      "ast_sha256": "3e29338239e4182fefb7c661122085288ae750cea2e62a075e56ae41df2623ad",
+      "snippet": "def translate(key):\n    return LABELS.get(session.get(\"locale\", \"zh-CN\"), {}).get(key, key)",
+      "calls": [
+        "LABELS.get",
+        "LABELS.get(session.get('locale', 'zh-CN'), {}).get",
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.9750bbe53e08bd0b": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "code.b42987712715e96d": {
+      "path": "app/web.py",
+      "symbol": "current_actor",
+      "line": 36,
+      "end_line": 37,
+      "signature": "",
+      "ast_sha256": "2ab92802976f98881984368bd29126ae6c4a08a2f72443f8abe4404c4a9d66ed",
+      "snippet": "def current_actor():\n    return session.get(\"actor_id\", \"\")",
+      "calls": [
+        "session.get"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "implementation.9a720debdae4a5c5": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.due_messages",
+      "line": 221,
+      "end_line": 223,
+      "signature": "self",
+      "ast_sha256": "e78a9dcfecc6df54552fcbd286a55d40a5cccc73373fbf39489294dddc103e17",
+      "snippet": "    def due_messages(self) -> list:\n        with self.store.engine.connect() as connection:\n            return list(connection.execute(select(MESSAGES.c.id).where(and_(MESSAGES.c.state == \"message_pending\", MESSAGES.c.available_at <= time.time()))).scalars())",
+      "calls": [
+        "and_",
+        "connection.execute",
+        "connection.execute(select(MESSAGES.c.id).where(and_(MESSAGES.c.state == 'message_pending', MESSAGES.c.available_at <= time.time()))).scalars",
+        "list",
+        "select",
+        "select(MESSAGES.c.id).where",
+        "self.store.engine.connect",
+        "time.time"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "implementation.012453eca8d9417f": {
+      "path": "app/domain.py",
+      "symbol": "SharingService.users",
+      "line": 230,
+      "end_line": 233,
+      "signature": "self, actor_id: str",
+      "ast_sha256": "84ea186d9608fd9efef843c405399a08aeeffcc96d625d305e908e84db84b6e2",
+      "snippet": "    def users(self, actor_id: str) -> list:\n        with self.store.transaction() as connection:\n            self.demand(bool(self.store.user(connection, actor_id)))\n            return self.store.read(connection, select(USERS.c.id, USERS.c.username, USERS.c.role))",
+      "calls": [
+        "bool",
+        "select",
+        "self.demand",
+        "self.store.read",
+        "self.store.transaction",
+        "self.store.user"
+      ],
+      "guards": [],
+      "file_sha256": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258"
+    },
+    "implementation.acc8d3d67a2d2b0f": {
+      "path": "app/web.py",
+      "symbol": "create_app",
+      "line": 40,
+      "end_line": 167,
+      "signature": "root: Path, database=None, bo=None, graph_url='http://127.0.0.1:59263/graph', delay=5",
+      "ast_sha256": "e2b9188f2d9cd3b039bc51e5f97da130d940d3f9d01af9d5ab888ad573635935",
+      "snippet": "def create_app(root: Path, database=None, bo=None, graph_url=\"http://127.0.0.1:59263/graph\", delay=5):\n    app = Flask(__name__, template_folder=str(root / \"templates\"), static_folder=str(root / \"static\"))\n    data_dir = Path(database).parent if database else root / \"data\"\n    data_dir.mkdir(parents=True, exist_ok=True)\n    key_path = data_dir / \"session.key\"\n    if not key_path.exists():\n        key_path.write_text(secrets.token_hex(32), encoding=\"ascii\")\n    app.config.update(SECRET_KEY=key_path.read_text(encoding=\"ascii\"), MAX_CONTENT_LENGTH=17 * 1024 * 1024,\n        SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE=\"Lax\", TRUSTED_HOSTS=[\"localhost\", \"127.0.0.1\"], GRAPH_URL=graph_url)\n    bo = bo or BOPorts()\n    bo.install_http(app)\n    store = Store(Path(database or data_dir / \"sharing.sqlite3\"), bo)\n    service = SharingService(root, store, bo, delay=delay)\n    app.extensions[\"sharing\"] = service\n    app.jinja_env.globals.update(t=translate, csrf_token=csrf_token)\n\n    @app.before_request\n    def request_begin():\n        if request.path.startswith(\"/static/\"):\n            return None\n        manager = bo.span(\"api_request\", lambda: {\"inputs\": {\"method\": request.method, \"path\": request.path}}, scope=\"application\")\n        g.bo_manager, g.bo_activation = manager, manager.__enter__()\n        if request.args.get(\"lang\") in {\"en\", \"zh-CN\"}:\n            session[\"locale\"] = request.args[\"lang\"]\n        if request.method == \"POST\" and not secrets.compare_digest(request.form.get(\"csrf\", \"\"), session.get(\"csrf\", \"missing\")):\n            raise DomainError(\"csrf_invalid\", 400)\n        if request.endpoint not in {\"login\", \"static\"} and not current_actor():\n            return redirect(url_for(\"login\"))\n\n    @app.after_request\n    def request_end(response):\n        response.headers.update({\"Cache-Control\": \"no-store\", \"X-Content-Type-Options\": \"nosniff\", \"Referrer-Policy\": \"same-origin\",\n            \"Content-Security-Policy\": \"default-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'\"})\n        if hasattr(g, \"bo_manager\"):\n            status = response.status_code\n            g.bo_activation.result(lambda: {\"outputs\": {\"status\": status}})\n            g.bo_manager.__exit__(None, None, None)\n            del g.bo_manager\n        return response\n\n    @app.teardown_request\n    def request_error(error):\n        if hasattr(g, \"bo_manager\"):\n            g.bo_manager.__exit__(type(error) if error else None, error, getattr(error, \"__traceback__\", None))\n            del g.bo_manager\n\n    @app.route(\"/login\", methods=[\"GET\", \"POST\"])\n    def login():\n        with bo.span(\"api_login\", lambda: {}, scope=\"application\"):\n            if request.method == \"POST\":\n                actor = service.authenticate(request.form.get(\"username\", \"\"), request.form.get(\"password\", \"\"))\n                locale = session.get(\"locale\", \"zh-CN\")\n                session.clear()\n                session.update(actor_id=actor[\"id\"], role=actor[\"role\"], locale=locale)\n                csrf_token()\n                return redirect(url_for(\"files\"))\n            return render_template(\"login.html\", accounts=[a[\"username\"] for a in store.credentials])\n\n    @app.get(\"/\")\n    def index():\n        with bo.span(\"api_index\", lambda: {}, scope=\"application\"):\n            return redirect(url_for(\"files\"))\n\n    @app.get(\"/files\")\n    def files():\n        with bo.span(\"api_files\", lambda: {}, scope=\"application\"):\n            actor_id = current_actor()\n            return render_template(\"files.html\", items=service.list_files(actor_id), recipients=[a for a in service.users(actor_id) if a[\"id\"] != actor_id])\n\n    @app.post(\"/upload\")\n    def upload():\n        with bo.span(\"api_upload\", lambda: {}, scope=\"application\"):\n            item = request.files.get(\"file\")\n            if not item:\n                raise DomainError(\"file_required\", 400)\n            service.upload(current_actor(), item.filename or \"\", item.read(16 * 1024 * 1024 + 1))\n            flash(translate(\"Uploaded\"))\n            return redirect(url_for(\"files\"))\n\n    @app.get(\"/files/<file_id>\")\n    def details(file_id: str):\n        with bo.span(\"api_details\", lambda: {\"inputs\": {\"file_id\": file_id}}, scope=\"application\"):\n            return render_template(\"details.html\", item=service.details(current_actor(), file_id))\n\n    @app.get(\"/files/<file_id>/download\")\n    def download(file_id: str):\n        with bo.span(\"api_download\", lambda: {\"inputs\": {\"file_id\": file_id}}, scope=\"application\"):\n            filename, content = service.download(current_actor(), file_id)\n            return send_file(io.BytesIO(content), as_attachment=True, download_name=filename, mimetype=\"application/octet-stream\", max_age=0)\n\n    @app.post(\"/files/<file_id>/share\")\n    def share(file_id: str):\n        with bo.span(\"api_share\", lambda: {\"inputs\": {\"file_id\": file_id}}, scope=\"application\"):\n            result = service.share(current_actor(), file_id, request.form.get(\"recipient_id\", \"\"))\n            flash(translate(\"Shared\" if result[\"created\"] else \"Already shared\"))\n            return redirect(url_for(\"files\"))\n\n    @app.get(\"/reviews\")\n    def reviews():\n        with bo.span(\"api_reviews\", lambda: {}, scope=\"application\"):\n            return render_template(\"reviews.html\", items=service.list_reviews(current_actor()))\n\n    @app.post(\"/files/<file_id>/review\")\n    def review(file_id: str):\n        with bo.span(\"api_review\", lambda: {\"inputs\": {\"file_id\": file_id}}, scope=\"application\"):\n            service.review(current_actor(), file_id, request.form.get(\"decision\", \"\"))\n            flash(translate(\"Reviewed\"))\n            return redirect(url_for(\"reviews\"))\n\n    @app.get(\"/messages\")\n    def messages():\n        with bo.span(\"api_messages\", lambda: {}, scope=\"application\"):\n            return render_template(\"messages.html\", items=service.list_messages(current_actor()))\n\n    @app.post(\"/logout\")\n    def logout():\n        with bo.span(\"api_logout\", lambda: {}, scope=\"application\"):\n            service.logout(current_actor())\n            locale = session.get(\"locale\", \"zh-CN\")\n            session.clear()\n            session[\"locale\"] = locale\n            return redirect(url_for(\"login\"))\n\n    @app.errorhandler(DomainError)\n    def domain_error(error):\n        return render_template(\"error.html\", message=translate(error.code)), error.status\n\n    return app",
+      "calls": [
+        "BOPorts",
+        "DomainError",
+        "Flask",
+        "Path",
+        "SharingService",
+        "Store",
+        "app.config.update",
+        "app.errorhandler",
+        "app.get",
+        "app.jinja_env.globals.update",
+        "app.post",
+        "app.route",
+        "bo.install_http",
+        "bo.span",
+        "csrf_token",
+        "current_actor",
+        "data_dir.mkdir",
+        "flash",
+        "g.bo_activation.result",
+        "g.bo_manager.__exit__",
+        "getattr",
+        "hasattr",
+        "io.BytesIO",
+        "item.read",
+        "key_path.exists",
+        "key_path.read_text",
+        "key_path.write_text",
+        "manager.__enter__",
+        "redirect",
+        "render_template",
+        "request.args.get",
+        "request.files.get",
+        "request.form.get",
+        "request.path.startswith",
+        "response.headers.update",
+        "secrets.compare_digest",
+        "secrets.token_hex",
+        "send_file",
+        "service.authenticate",
+        "service.details",
+        "service.download",
+        "service.list_files",
+        "service.list_messages",
+        "service.list_reviews",
+        "service.logout",
+        "service.review",
+        "service.share",
+        "service.upload",
+        "service.users",
+        "session.clear",
+        "session.get",
+        "session.update",
+        "str",
+        "translate",
+        "type",
+        "url_for"
+      ],
+      "guards": [
+        {
+          "line": 45,
+          "expression": "not key_path.exists()"
+        },
+        {
+          "line": 42,
+          "expression": "database"
+        },
+        {
+          "line": 58,
+          "expression": "request.path.startswith('/static/')"
+        },
+        {
+          "line": 62,
+          "expression": "request.args.get('lang') in {'en', 'zh-CN'}"
+        },
+        {
+          "line": 64,
+          "expression": "request.method == 'POST' and (not secrets.compare_digest(request.form.get('csrf', ''), session.get('csrf', 'missing')))"
+        },
+        {
+          "line": 66,
+          "expression": "request.endpoint not in {'login', 'static'} and (not current_actor())"
+        },
+        {
+          "line": 73,
+          "expression": "hasattr(g, 'bo_manager')"
+        },
+        {
+          "line": 82,
+          "expression": "hasattr(g, 'bo_manager')"
+        },
+        {
+          "line": 89,
+          "expression": "request.method == 'POST'"
+        },
+        {
+          "line": 113,
+          "expression": "not item"
+        },
+        {
+          "line": 83,
+          "expression": "error"
+        },
+        {
+          "line": 134,
+          "expression": "result['created']"
+        }
+      ],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "implementation.6689019d5d32f7b6": {
+      "path": "app/web.py",
+      "symbol": "create_app.domain_error",
+      "line": 163,
+      "end_line": 165,
+      "signature": "error",
+      "ast_sha256": "83e391be32406bb46c2ab115bbaf862f458e133af31a3786bda520f1aa4c8204",
+      "snippet": "    @app.errorhandler(DomainError)\n    def domain_error(error):\n        return render_template(\"error.html\", message=translate(error.code)), error.status",
+      "calls": [
+        "app.errorhandler",
+        "render_template",
+        "translate"
+      ],
+      "guards": [],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "implementation.c54331f83984226d": {
+      "path": "app/web.py",
+      "symbol": "create_app.request_end",
+      "line": 69,
+      "end_line": 78,
+      "signature": "response",
+      "ast_sha256": "065337618142694f0cc51a194d0f4b8b4b7ecc21654eefbeaae9b45c6bd17dc0",
+      "snippet": "    @app.after_request\n    def request_end(response):\n        response.headers.update({\"Cache-Control\": \"no-store\", \"X-Content-Type-Options\": \"nosniff\", \"Referrer-Policy\": \"same-origin\",\n            \"Content-Security-Policy\": \"default-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'\"})\n        if hasattr(g, \"bo_manager\"):\n            status = response.status_code\n            g.bo_activation.result(lambda: {\"outputs\": {\"status\": status}})\n            g.bo_manager.__exit__(None, None, None)\n            del g.bo_manager\n        return response",
+      "calls": [
+        "g.bo_activation.result",
+        "g.bo_manager.__exit__",
+        "hasattr",
+        "response.headers.update"
+      ],
+      "guards": [
+        {
+          "line": 73,
+          "expression": "hasattr(g, 'bo_manager')"
+        }
+      ],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    },
+    "implementation.2149ca9762b10586": {
+      "path": "app/web.py",
+      "symbol": "create_app.request_error",
+      "line": 80,
+      "end_line": 84,
+      "signature": "error",
+      "ast_sha256": "399f524cc0865f444b9fe8cb279dda610f949664ab1164fa91be1a1a64916781",
+      "snippet": "    @app.teardown_request\n    def request_error(error):\n        if hasattr(g, \"bo_manager\"):\n            g.bo_manager.__exit__(type(error) if error else None, error, getattr(error, \"__traceback__\", None))\n            del g.bo_manager",
+      "calls": [
+        "g.bo_manager.__exit__",
+        "getattr",
+        "hasattr",
+        "type"
+      ],
+      "guards": [
+        {
+          "line": 82,
+          "expression": "hasattr(g, 'bo_manager')"
+        },
+        {
+          "line": 83,
+          "expression": "error"
+        }
+      ],
+      "file_sha256": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed"
+    }
+  },
+  "file_hashes": {
+    "app/domain.py": "616498b106e0d4e93d1fce71ea2105fa4dab5b5ab06e6ea1a0ca10a6f4daa258",
+    "app/web.py": "2069b93081c2416fb984bef0fb0de0393c12cd68e20710a9f52d47d66d5bf3ed",
+    "app/ports.py": "52a25d87c4e060511253414002733478031365746b6e0ac8a5d8d5cff443dd76",
+    "integrations/bo_adapter.py": "48e2da4ac278ea4474db7a5c481513dda6b8784b339792981970c133d15f1a26"
+  }
+}

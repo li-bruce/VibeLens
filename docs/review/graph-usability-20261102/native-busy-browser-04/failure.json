@@ -1,0 +1,133 @@
+{
+  "type": "Error",
+  "message": "Page.reload: net::ERR_ABORTED; maybe frame was detached?\nCall log:\n  - waiting for navigation until \"networkidle\"\n",
+  "responses": [
+    {
+      "method": "POST",
+      "path": "/command/login",
+      "status": 303,
+      "trace_id": "b4c37846a1311f4195c483d9641d7d6e"
+    },
+    {
+      "method": "POST",
+      "path": "/command/upload",
+      "status": 303,
+      "trace_id": "4ab4796549849fc30b190964fa486a07"
+    },
+    {
+      "method": "POST",
+      "path": "/command/login",
+      "status": 303,
+      "trace_id": "ab893f5b40963cc7aa1acf41d39c3c33"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-2629357838d142dd8857479db5af3119/download",
+      "status": 403,
+      "trace_id": "3223f9f17503d8c282c1cc92d1b06552"
+    },
+    {
+      "method": "POST",
+      "path": "/command/login",
+      "status": 303,
+      "trace_id": "4ce0fb9bc95993d65a5ba020516b7eae"
+    },
+    {
+      "method": "POST",
+      "path": "/command/review",
+      "status": 303,
+      "trace_id": "1420be921b31a8aa440e660617ffdfbb"
+    },
+    {
+      "method": "POST",
+      "path": "/command/share",
+      "status": 303,
+      "trace_id": "58b1fb92598fecf90b175c2317632035"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-2629357838d142dd8857479db5af3119/download",
+      "status": 403,
+      "trace_id": "128ea910ae20e8f4fbdd1942a6fa5df0"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-2629357838d142dd8857479db5af3119/download",
+      "status": 200,
+      "trace_id": "ef9b3c607df18dd90a5cae7c7c2dd944"
+    },
+    {
+      "method": "POST",
+      "path": "/command/revoke",
+      "status": 303,
+      "trace_id": "d57a1472a432ca4d01fb6d5e09c28437"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-2629357838d142dd8857479db5af3119/download",
+      "status": 403,
+      "trace_id": "b9d6b5eb218b94849de0bdc29af15c10"
+    }
+  ],
+  "actions": [
+    {
+      "name": "login-member1",
+      "trace_id": "b4c37846a1311f4195c483d9641d7d6e",
+      "external_parent_span": "683bd814fe75b068"
+    },
+    {
+      "name": "upload",
+      "trace_id": "4ab4796549849fc30b190964fa486a07",
+      "external_parent_span": "26e34f869fc25312"
+    },
+    {
+      "name": "login-member2",
+      "trace_id": "ab893f5b40963cc7aa1acf41d39c3c33",
+      "external_parent_span": "fd7fc5eadddd3351"
+    },
+    {
+      "name": "download-before-approval",
+      "trace_id": "3223f9f17503d8c282c1cc92d1b06552",
+      "external_parent_span": "0a148cf67a5ccec5"
+    },
+    {
+      "name": "login-admin1",
+      "trace_id": "4ce0fb9bc95993d65a5ba020516b7eae",
+      "external_parent_span": "ab1b1b997cb8c6de"
+    },
+    {
+      "name": "approve",
+      "trace_id": "1420be921b31a8aa440e660617ffdfbb",
+      "external_parent_span": "4184a262c570bd21"
+    },
+    {
+      "name": "share",
+      "trace_id": "58b1fb92598fecf90b175c2317632035",
+      "external_parent_span": "f1485ac46a2fdcb1"
+    },
+    {
+      "name": "download-before-delivery",
+      "trace_id": "128ea910ae20e8f4fbdd1942a6fa5df0",
+      "external_parent_span": "2de686c139c29b6d"
+    },
+    {
+      "name": "download-active",
+      "trace_id": "ef9b3c607df18dd90a5cae7c7c2dd944",
+      "external_parent_span": "bb7c0dbca5284439"
+    },
+    {
+      "name": "revoke-active",
+      "trace_id": "d57a1472a432ca4d01fb6d5e09c28437",
+      "external_parent_span": "dde7c36ebe9b5746"
+    },
+    {
+      "name": "download-revoked",
+      "trace_id": "b9d6b5eb218b94849de0bdc29af15c10",
+      "external_parent_span": "40955f1329623f05"
+    }
+  ],
+  "checks": [
+    "Real input, review/share waits, actual 403 responses and byte-identical authorized download"
+  ],
+  "page_errors": []
+}

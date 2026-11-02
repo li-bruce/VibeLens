@@ -12,7 +12,6 @@ import { cleanLayers, layerHeights } from "./graph-layers.js";
 import { cleanRoute, polylineAt } from "./edge-routing.js";
 import { RoutingClient } from "./routing-client.js";
 import { spatialScene } from "./routing-scene.js";
-import { nodeTypes } from "./graph-core.js";
 import { nodeGeometry } from "./spatial-geometry.js";
 import { regionLabelAnchor } from "./spatial-labels.js";
 import { relationStyle, relationName, displayName, annotationFor } from "./layout.js";
@@ -251,6 +250,7 @@ export class SpatialRenderer {
   rebuild() {
     if (!this.model || !this.input || this.disposed) return;
     this.clearScene();
+    this.glyphCamera = null;
     this.group = new T.Group();
     this.scene.add(this.group);
     this.pickable = [];
@@ -272,12 +272,12 @@ export class SpatialRenderer {
         if (!p) continue;
         const box = graph.byId.get(node.id),
           core = annotationFor(preferences, box.node.referenceOf || node.id).core;
-        const size = selected === node.id ? 27 : core ? 24 : 19;
+        const size = this.glyphScale(node, p, selected === node.id ? 40 : core ? 35 : 29);
         matrix.position.copy(vector(p));
         matrix.scale.setScalar(size);
         matrix.updateMatrix();
         mesh.setMatrixAt(i, matrix.matrix);
-        const color = new T.Color(nodeTypes[type].color);
+        const color = new T.Color(node.color);
         if (focusContext.active && !focusContext.nodes.has(node.id))
           color.lerp(new T.Color(0xe1e7eb), 0.8);
         mesh.setColorAt(i, color);
@@ -292,7 +292,7 @@ export class SpatialRenderer {
     for (const volume of this.volumes) {
       if (volume.projection && !this.settings.projections) continue;
       const node = this.model.byId.get(volume.id),
-        color = nodeTypes[node.type].color;
+        color = node.color;
       const active = selected === volume.id || focusContext.regions.has(volume.id);
       const shell = new T.Mesh(
         circle,
@@ -344,10 +344,7 @@ export class SpatialRenderer {
         label = document.createElement("div");
       label.className = "spatial-label" + (node.id === selected ? " selected" : "");
       label.dataset.spatialLabel = node.id;
-      label.style.setProperty(
-        "--node-color",
-        "#" + nodeTypes[node.type].color.toString(16).padStart(6, "0"),
-      );
+      label.style.setProperty("--node-color", "#" + node.color.toString(16).padStart(6, "0"));
       const title = document.createElement("span");
       title.className = "spatial-label-title";
       title.textContent = displayName(box.node, preferences);
@@ -380,10 +377,7 @@ export class SpatialRenderer {
       const owner = this.model.byId.get(volume.id);
       label.textContent = displayName(graph.byId.get(volume.id).node, preferences);
       this.updateBadges(label, graph.byId.get(volume.id));
-      label.style.setProperty(
-        "--node-color",
-        "#" + nodeTypes[owner.type].color.toString(16).padStart(6, "0"),
-      );
+      label.style.setProperty("--node-color", "#" + owner.color.toString(16).padStart(6, "0"));
       label.onpointerdown = (event) => this.startDrag(event, { region: volume.id });
       label.onclick = () => this.callbacks.onSelect?.(volume.id);
       this.labels.append(label);
@@ -391,6 +385,43 @@ export class SpatialRenderer {
     }
     this.updateTransferLabels();
     this.schedule();
+  }
+
+  /** Keep instanced objects readable at overview scale without adding DOM sprites. */
+  glyphScale(_node, position, base = 29) {
+    const distance = this.camera.position.distanceTo(vector(position));
+    const worldPixel =
+      (2 * distance * Math.tan((this.camera.fov * Math.PI) / 360)) /
+      Math.max(1, this.viewportSize?.height || 1) /
+      this.camera.zoom;
+    return Math.max(base, worldPixel * (this.model.nodes.length > 2000 ? 5 : 7));
+  }
+
+  resizeGlyphs() {
+    const key = [
+      ...this.camera.position.toArray(),
+      this.camera.zoom,
+      this.viewportSize?.height,
+    ].join(":");
+    if (key === this.glyphCamera) return;
+    this.glyphCamera = key;
+    const matrix = new T.Object3D();
+    for (const mesh of this.pickable || []) {
+      for (const [i, id] of mesh.userData.ids.entries()) {
+        const node = this.model.byId.get(id),
+          p = this.positions[id];
+        if (!p) continue;
+        matrix.position.copy(vector(p));
+        const core = annotationFor(this.input.preferences, node.node?.referenceOf || id).core;
+        matrix.scale.setScalar(
+          this.glyphScale(node, p, id === this.input.selected ? 40 : core ? 35 : 29),
+        );
+        matrix.updateMatrix();
+        mesh.setMatrixAt(i, matrix.matrix);
+      }
+      mesh.instanceMatrix.needsUpdate = true;
+      mesh.computeBoundingSphere();
+    }
   }
 
   nodeGeometry(type) {
@@ -449,10 +480,10 @@ export class SpatialRenderer {
         if (!node || !box || !p) continue;
         const core = annotationFor(preferences, box.node.referenceOf || id).core;
         matrix.position.copy(vector(p));
-        matrix.scale.setScalar(selected === id ? 27 : core ? 24 : 19);
+        matrix.scale.setScalar(this.glyphScale(node, p, selected === id ? 40 : core ? 35 : 29));
         matrix.updateMatrix();
         mesh.setMatrixAt(i, matrix.matrix);
-        const color = new T.Color(nodeTypes[node.type].color);
+        const color = new T.Color(node.color);
         if (focusContext.active && !focusContext.nodes.has(id))
           color.lerp(new T.Color(0xe1e7eb), 0.8);
         mesh.setColorAt(i, color);
@@ -655,19 +686,19 @@ export class SpatialRenderer {
       geometry.setColors(colors);
       const material = new T.LineMaterial({
         vertexColors: true,
-        linewidth: 1.4,
+        linewidth: 0.7,
         transparent: true,
-        opacity: 0.88,
+        opacity: 0.48,
         depthWrite: false,
       });
-      material.resolution.set(this.host.clientWidth, this.host.clientHeight);
+      material.resolution.set(this.viewportSize?.width || 1, this.viewportSize?.height || 1);
       this.lines = new T.LineSegments2(geometry, material);
       this.group.add(this.lines);
     }
     if (arrows.length) {
       const mesh = new T.InstancedMesh(
         new T.ConeGeometry(3.4, 11, 7),
-        new T.MeshBasicMaterial(),
+        new T.MeshBasicMaterial({ transparent: true, opacity: 0.45, depthWrite: false }),
         arrows.length,
       );
       const up = new T.Vector3(0, 1, 0);
@@ -1009,6 +1040,7 @@ export class SpatialRenderer {
     const start = performance.now(),
       moving = this.controls.update();
     this.updateParticles(now);
+    this.resizeGlyphs();
     this.renderer.render(this.scene, this.camera);
     // Labels with colliding screen rectangles yield to selected/region labels.
     const occupied = new Set();

@@ -1,0 +1,493 @@
+{
+  "markdown": "# Business network draft\n\n```mermaid\nflowchart LR\n  n0[\"待指定同事审核\"]\n  n1[\"AND · 已登录上传者且仍为待审核 · all\"]\n  n2[\"指定同事审核\"]\n  n3[\"上传并指定一位同事\"]\n  n4[\"上传者撤回待审核文件\"]\n  n5[\"已撤回：本次流程结束\"]\n  n1 -->|\"Requires\"| n4\n  n0 -->|\"仅上传者且仍为待审核\"| n4\n  n3 -->|\"上传后交审\"| n0\n  n0 -->|\"只由本次指定的同事审核\"| n2\n  n4 -->|\"撤回后结束；本版不再提交\"| n5\n  b0[\"登录 (outside scope)\"]\n  b0 -.->|\"上传入口\"| n3\n  b1[\"审核通过 (outside scope)\"]\n  n2 -.->|\"通过\"| b1\n  b2[\"未通过：流程结束 (outside scope)\"]\n  n2 -.->|\"未通过即结束，不重提\"| b2\n  b3[\"指定审核人不能是自己 (outside scope)\"]\n  b3 -.->|\"从已有用户中选择一位其他同事\"| n3\n  b4[\"查看信息或下载 (outside scope)\"]\n  n5 -.->|\"保留文件；仅上传者可读取\"| b4\n  b5[\"Rules (outside scope)\"]\n  b5 -.->|\"Rule expression\"| n1\n  b6[\"已登录 (outside scope)\"]\n  b6 -.->|\"all\"| n1\n  b7[\"当前用户是上传者 (outside scope)\"]\n  b7 -.->|\"all\"| n1\n  b8[\"仍为待审核 (outside scope)\"]\n  b8 -.->|\"all\"| n1\n  b9[\"AND · 仅指定审核人可审核 (outside scope)\"]\n  b9 -.->|\"Requires\"| n2\n  b10[\"AND · 登录且选择一位已有的其他同事 (outside scope)\"]\n  b10 -.->|\"Requires\"| n3\n```\n\n[Open the live graph](http://127.0.0.1:8985/graph)\n\nThis is a focused view. Dashed boundaries retain original relations; open Web for the complete graph.\n\nConfirm this understanding in the conversation, or describe a correction. Viewing the graph is not confirmation.\n",
+  "focus": {
+    "schema_version": 1,
+    "base": {
+      "project_id": "execution_bands_dialogue_20261031_03",
+      "model_revision": "d7dddb8d76f2fb1eb37058f52fe05796d19e188bd21d200a5f70a38ae612a350",
+      "model_hash": "b2093c663cb9ca019d4050ba15cc66dd5cc22c26f799d50d5517b250f25b74a5",
+      "build_id": null
+    },
+    "selection": {
+      "nodes": [
+        "pending_review",
+        "withdraw_file",
+        "withdrawn"
+      ],
+      "depth": 1,
+      "max_nodes": 6,
+      "max_edges": 48,
+      "relations": null,
+      "run_id": null
+    },
+    "nodes": [
+      {
+        "id": "pending_review",
+        "label": "待指定同事审核",
+        "kind": "state",
+        "layer": "state",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      },
+      {
+        "id": "policy:withdraw_allowed",
+        "kind": "decision",
+        "layer": "predicate",
+        "parent": "policy:network",
+        "label": "AND · 已登录上传者且仍为待审核",
+        "summary": "已登录上传者且仍为待审核",
+        "origin": "policy-definition",
+        "policy_node": "withdraw_allowed",
+        "operator": "all",
+        "source_refs": [
+          "U004"
+        ],
+        "capture": {
+          "in": {
+            "bo_check": "string",
+            "bo_basis": "string"
+          },
+          "out": {
+            "value": "boolean",
+            "status": "string"
+          }
+        },
+        "capture_metadata": {
+          "in": [
+            "bo_check",
+            "bo_basis"
+          ],
+          "out": [
+            "status"
+          ]
+        }
+      },
+      {
+        "id": "review_file",
+        "label": "指定同事审核",
+        "kind": "action",
+        "layer": "business",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      },
+      {
+        "id": "upload_file",
+        "label": "上传并指定一位同事",
+        "kind": "action",
+        "layer": "business",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      },
+      {
+        "id": "withdraw_file",
+        "label": "上传者撤回待审核文件",
+        "kind": "action",
+        "layer": "business",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      },
+      {
+        "id": "withdrawn",
+        "label": "已撤回：本次流程结束",
+        "kind": "state",
+        "layer": "state",
+        "summary": "",
+        "origin": "design",
+        "capture": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "policy:operation:withdraw:withdraw_file",
+        "from": "policy:withdraw_allowed",
+        "to": "withdraw_file",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "flow_pending_withdraw",
+        "from": "pending_review",
+        "to": "withdraw_file",
+        "type": "flow",
+        "label": "仅上传者且仍为待审核",
+        "origin": "design"
+      },
+      {
+        "id": "flow_upload_review",
+        "from": "upload_file",
+        "to": "pending_review",
+        "type": "flow",
+        "label": "上传后交审",
+        "origin": "design"
+      },
+      {
+        "id": "flow_wait_reviewer",
+        "from": "pending_review",
+        "to": "review_file",
+        "type": "flow",
+        "label": "只由本次指定的同事审核",
+        "origin": "design"
+      },
+      {
+        "id": "flow_withdrawn",
+        "from": "withdraw_file",
+        "to": "withdrawn",
+        "type": "flow",
+        "label": "撤回后结束；本版不再提交",
+        "origin": "design"
+      }
+    ],
+    "boundaries": [
+      {
+        "id": "view:boundary:fcb2c919a554c88e",
+        "edge_id": "flow_login_upload",
+        "from": "sign_in",
+        "to": "upload_file",
+        "type": "flow",
+        "label": "上传入口",
+        "relation": {
+          "id": "flow_login_upload",
+          "from": "sign_in",
+          "to": "upload_file",
+          "type": "flow",
+          "label": "上传入口",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "sign_in",
+            "label": "登录",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:865183f3c652624b",
+        "edge_id": "flow_review_approve",
+        "from": "review_file",
+        "to": "approved",
+        "type": "flow",
+        "label": "通过",
+        "relation": {
+          "id": "flow_review_approve",
+          "from": "review_file",
+          "to": "approved",
+          "type": "flow",
+          "label": "通过",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "approved",
+            "label": "审核通过",
+            "kind": "state"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:3d26f63dc46e5603",
+        "edge_id": "flow_review_not_approved",
+        "from": "review_file",
+        "to": "review_not_approved",
+        "type": "flow",
+        "label": "未通过即结束，不重提",
+        "relation": {
+          "id": "flow_review_not_approved",
+          "from": "review_file",
+          "to": "review_not_approved",
+          "type": "flow",
+          "label": "未通过即结束，不重提",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "review_not_approved",
+            "label": "未通过：流程结束",
+            "kind": "state"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:560af566ac049f93",
+        "edge_id": "guard_reviewer_selection",
+        "from": "assigned_reviewer",
+        "to": "upload_file",
+        "type": "guard",
+        "label": "从已有用户中选择一位其他同事",
+        "relation": {
+          "id": "guard_reviewer_selection",
+          "from": "assigned_reviewer",
+          "to": "upload_file",
+          "type": "guard",
+          "label": "从已有用户中选择一位其他同事",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "assigned_reviewer",
+            "label": "指定审核人不能是自己",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:7b26cc1664929aef",
+        "edge_id": "guard_withdrawn_access",
+        "from": "withdrawn",
+        "to": "access_file",
+        "type": "guard",
+        "label": "保留文件；仅上传者可读取",
+        "relation": {
+          "id": "guard_withdrawn_access",
+          "from": "withdrawn",
+          "to": "access_file",
+          "type": "guard",
+          "label": "保留文件；仅上传者可读取",
+          "origin": "design"
+        },
+        "outside": [
+          {
+            "id": "access_file",
+            "label": "查看信息或下载",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:7538286adaf0548d",
+        "edge_id": "policy:contains:withdraw_allowed",
+        "from": "policy:network",
+        "to": "policy:withdraw_allowed",
+        "type": "contains",
+        "label": "Rule expression",
+        "relation": {
+          "id": "policy:contains:withdraw_allowed",
+          "from": "policy:network",
+          "to": "policy:withdraw_allowed",
+          "type": "contains",
+          "label": "Rule expression",
+          "origin": "policy-definition",
+          "evidence": "policy declaration",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy:network",
+            "label": "Rules",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:7be1c9786aad5487",
+        "edge_id": "policy:dependency:withdraw_allowed:0",
+        "from": "policy:logged_in",
+        "to": "policy:withdraw_allowed",
+        "type": "guard",
+        "label": "all",
+        "relation": {
+          "id": "policy:dependency:withdraw_allowed:0",
+          "from": "policy:logged_in",
+          "to": "policy:withdraw_allowed",
+          "type": "guard",
+          "label": "all",
+          "origin": "policy-definition",
+          "evidence": "policy declaration",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy:logged_in",
+            "label": "已登录",
+            "kind": "data"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:7e023355861f91a4",
+        "edge_id": "policy:dependency:withdraw_allowed:1",
+        "from": "policy:actor_is_uploader",
+        "to": "policy:withdraw_allowed",
+        "type": "guard",
+        "label": "all",
+        "relation": {
+          "id": "policy:dependency:withdraw_allowed:1",
+          "from": "policy:actor_is_uploader",
+          "to": "policy:withdraw_allowed",
+          "type": "guard",
+          "label": "all",
+          "origin": "policy-definition",
+          "evidence": "policy declaration",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy:actor_is_uploader",
+            "label": "当前用户是上传者",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:e856e41f06c60cd6",
+        "edge_id": "policy:dependency:withdraw_allowed:2",
+        "from": "policy:pending",
+        "to": "policy:withdraw_allowed",
+        "type": "guard",
+        "label": "all",
+        "relation": {
+          "id": "policy:dependency:withdraw_allowed:2",
+          "from": "policy:pending",
+          "to": "policy:withdraw_allowed",
+          "type": "guard",
+          "label": "all",
+          "origin": "policy-definition",
+          "evidence": "policy declaration",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy:pending",
+            "label": "仍为待审核",
+            "kind": "data"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:00de6eda94583840",
+        "edge_id": "policy:operation:review:review_file",
+        "from": "policy:review_allowed",
+        "to": "review_file",
+        "type": "guard",
+        "label": "Requires",
+        "relation": {
+          "id": "policy:operation:review:review_file",
+          "from": "policy:review_allowed",
+          "to": "review_file",
+          "type": "guard",
+          "label": "Requires",
+          "origin": "policy-definition",
+          "evidence": "policy declaration",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy:review_allowed",
+            "label": "AND · 仅指定审核人可审核",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:cb361e1db56064e3",
+        "edge_id": "policy:operation:upload:upload_file",
+        "from": "policy:upload_allowed",
+        "to": "upload_file",
+        "type": "guard",
+        "label": "Requires",
+        "relation": {
+          "id": "policy:operation:upload:upload_file",
+          "from": "policy:upload_allowed",
+          "to": "upload_file",
+          "type": "guard",
+          "label": "Requires",
+          "origin": "policy-definition",
+          "evidence": "policy declaration",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy:upload_allowed",
+            "label": "AND · 登录且选择一位已有的其他同事",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      }
+    ],
+    "mapping": {
+      "pending_review": {
+        "nodes": [
+          "pending_review"
+        ],
+        "source": null
+      },
+      "policy:withdraw_allowed": {
+        "nodes": [
+          "policy:withdraw_allowed"
+        ],
+        "source": null
+      },
+      "review_file": {
+        "nodes": [
+          "review_file"
+        ],
+        "source": null
+      },
+      "upload_file": {
+        "nodes": [
+          "upload_file"
+        ],
+        "source": null
+      },
+      "withdraw_file": {
+        "nodes": [
+          "withdraw_file"
+        ],
+        "source": null
+      },
+      "withdrawn": {
+        "nodes": [
+          "withdrawn"
+        ],
+        "source": null
+      }
+    },
+    "events": [],
+    "coverage": {
+      "selected_nodes": 6,
+      "total_nodes": 38,
+      "crossing_or_omitted_edges": 11,
+      "reported_boundaries": 11,
+      "limits_hit": [
+        "nodes"
+      ],
+      "source_unknowns": [],
+      "evidence_gaps": [],
+      "runtime_evidence": "not_selected",
+      "complete": false
+    },
+    "questions": [],
+    "focus_id": "focus:3137e70985a056a63022"
+  },
+  "url": "http://127.0.0.1:8985/graph",
+  "discovery_revision": "d7dddb8d76f2fb1eb37058f52fe05796d19e188bd21d200a5f70a38ae612a350"
+}

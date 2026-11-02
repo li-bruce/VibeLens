@@ -1,16 +1,18 @@
 /** Semantic layers are shared by renderers, filters and the spatial layout worker. */
 import { nodeType } from "./graph-core.js";
+import { layerPalette } from "./layer-style.js";
 export const layers = [
   { id: "business", label: "Business", color: 0x208b73 },
   { id: "state", label: "States", color: 0x8c57ad },
   { id: "rules", label: "Rules", color: 0xaf731c },
   { id: "api", label: "API", color: 0x986345 },
   { id: "execution", label: "Functions and values", color: 0x477b9c },
-  { id: "operations", label: "Data operations", color: 0x3b839c },
   { id: "project", label: "Project structure", color: 0x997c4f },
   { id: "code", label: "Code symbols", color: 0x8172a3 },
+  { id: "operations", label: "Data operations", color: 0x3b839c },
   { id: "data", label: "Data structure", color: 0x638b98 },
 ];
+for (const layer of layers) layer.color = layerPalette[layer.id];
 
 // Earlier releases stored the default order as an ordinary preference. Recognize
 // those exact defaults so an upgrade can improve them without sorting custom views.
@@ -26,13 +28,25 @@ const legacyOrder = [
   "code",
 ];
 const sameOrder = (a, b) => a.length === b.length && a.every((id, index) => id === b[index]);
+const previousDefault = [
+  "business",
+  "state",
+  "rules",
+  "api",
+  "execution",
+  "operations",
+  "project",
+  "code",
+  "data",
+];
+export const layerColor = (node) => layerPalette[layerOf(node)];
 
 /** Classify facts by their declared role, never by an AI-generated display name. */
 export function layerOf(node) {
   const type = nodeType(node);
   if (["query", "transform"].includes(node.data_role || node.capture_owner_role))
     return "operations";
-  if (node.code_role === "endpoint") return "api";
+  if (node.layer === "api" || node.code_role === "endpoint") return "api";
   if (["directory", "file"].includes(node.code_role) || node.reference_scope === "project")
     return "project";
   if (node.code_role || ["python-ast", "source-ast"].includes(node.origin)) return "code";
@@ -52,8 +66,8 @@ export function cleanLayers(value) {
     value?.orderMode === "default" ||
     (value?.orderMode !== "custom" &&
       (!priorOrder.length ||
-        [ids, legacyOrder, legacyOrder.filter((id) => id !== "project")].some((order) =>
-          sameOrder(priorOrder, order),
+        [ids, previousDefault, legacyOrder, legacyOrder.filter((id) => id !== "project")].some(
+          (order) => sameOrder(priorOrder, order),
         )));
   if (value?.schema !== 2 && !priorOrder.includes("project") && priorOrder.includes("code"))
     priorOrder.splice(priorOrder.indexOf("code"), 0, "project");
@@ -85,6 +99,29 @@ export function cleanLayers(value) {
       : layers.filter((layer) => only === "all" || only === layer.id).map((layer) => layer.id),
     projections: value?.projections !== false,
   };
+}
+
+/** Keep visibility per analysis view; order, spacing and renderer remain shared. */
+export function cleanLayerVisibility(value, legacy) {
+  const result = Object.create(null);
+  if (value && typeof value === "object" && !Array.isArray(value))
+    for (const [id, visible] of Object.entries(value).slice(0, 40))
+      if (/^[a-z][a-z0-9-]{0,79}$/.test(id) && Array.isArray(visible))
+        // Per-view lists already use the current schema, including explicit omissions.
+        result[id] = cleanLayers({ schema: 2, visible }).visible;
+  // Earlier releases applied one visibility filter to every preset. Preserve it
+  // in the overview rather than allowing it to empty unrelated focused views.
+  if (!Object.hasOwn(result, "overview")) result.overview = cleanLayers(legacy).visible;
+  return result;
+}
+
+export function visibilityForView(settings, id) {
+  const visible = settings.layerVisibility?.[id];
+  return Array.isArray(visible)
+    ? [...visible]
+    : id === "overview"
+      ? cleanLayers(settings.layers).visible
+      : layers.map((layer) => layer.id);
 }
 
 /** Visible, populated planes occupy consecutive slots in the chosen order. */

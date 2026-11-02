@@ -6,9 +6,9 @@ Application code decides when to consume results and when to commit transactions
 Only configured fields enter the existing BOProbe event stream.
 """
 
-from contextlib import asynccontextmanager, contextmanager
+from contextlib import asynccontextmanager, contextmanager, nullcontext
 from contextvars import ContextVar
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import re
 import time
 import uuid
@@ -154,7 +154,11 @@ class _Scope:
     attempt: str = "application"
     scope: str = "application"
     parent_call_id: str | None = None
+    parent_event_id: str | None = None
     depends: tuple = ()
+    basis: dict | None = None
+    provenance: dict | None = None
+    identity: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -168,6 +172,7 @@ class _Call:
     transaction_id: str | None
     target_source: str
     target_access: list
+    entry_id: str | None = None
 
 
 class BODataRuntime:
@@ -231,14 +236,39 @@ class BODataRuntime:
     def _scope(self, node, parameters=None, **context):
         operation = self.bo_operations[node]
         selected = self._selected(parameters or {}, operation.get("parameters", {}))
+        parent = _bo_scope.get()
+        if parent is not None and parent.runtime is self:
+            context = {**parent.identity, **context}
         context["depends"] = tuple(
             {"event": value, "type": "data"} if isinstance(value, str) else value
             for value in context.get("depends", ())
         )
-        parent = _bo_scope.get()
-        if "parent_call_id" not in context and parent is not None:
-            context["parent_call_id"] = parent.parent_call_id
-        return _Scope(self, node, selected, **context)
+        return _Scope(self, node, selected, **context, identity=context)
+
+    def _call_context(self, call):
+        """Expose the real native call to nested probes, without synthesizing events."""
+        adopt = getattr(self.bo_probe, "bo_call_context", None)
+        if call is None or adopt is None:
+            return nullcontext()
+        scope = call.scope
+        return adopt(
+            scope.node,
+            call.call_id,
+            entry_id=call.entry_id,
+            entity=scope.entity,
+            attempt=scope.attempt,
+            scope=scope.scope,
+            basis=scope.basis,
+            parent_call_id=scope.parent_call_id,
+            parent_event_id=scope.parent_event_id,
+            provenance=scope.provenance,
+        )
+
+    @asynccontextmanager
+    async def _call_context_async(self, call):
+        """Keep task-local identity through an awaited native transaction manager."""
+        with self._call_context(call):
+            yield
 
     @contextmanager
     def operation(self, node, parameters=None, **context):
@@ -274,7 +304,15 @@ class BODataRuntime:
                 scope=call.scope.scope,
                 call_id=call.call_id,
                 parent_call_id=call.scope.parent_call_id,
+                parent_event_id=call.scope.parent_event_id,
                 depends=call.scope.depends,
+                basis=call.scope.basis,
+                provenance=call.scope.provenance,
+                **(
+                    {"bo_boundary": "start" if phase == "enter" else "end"}
+                    if getattr(self.bo_probe, "bo_boundary_events", False)
+                    else {}
+                ),
             )
             if event_id is not None:
                 self.bo_last_event.set(event_id)
@@ -289,6 +327,18 @@ class BODataRuntime:
         self, scope, statement="", language="command", targets=(), dialect=None, target_source=None
     ):
         try:
+            # Resolve at the actual driver boundary: operation() may have been
+            # installed before the surrounding request/function began.
+            inherit = getattr(self.bo_probe, "bo_context_options", None)
+            current = (
+                inherit(scope.identity)
+                if inherit
+                else {
+                    **getattr(self.bo_probe, "bo_current_context", lambda: {})(),
+                    **scope.identity,
+                }
+            )
+            scope = replace(scope, **current)
             with bo_internal():
                 shape, inferred, unknown = bo_query_shape(statement, language, dialect)
                 access, access_unknown = (
@@ -337,7 +387,7 @@ class BODataRuntime:
                 ),
                 access,
             )
-            self._emit(call, "enter", {"status": "started"})
+            call.entry_id = self._emit(call, "enter", {"status": "started"})
             return call
         except Exception:
             self.bo_errors += 1
@@ -361,8 +411,11 @@ class BODataRuntime:
         except Exception:
             self.bo_errors += 1
 
-    def _summary(self, summarize, result):
-        if summarize is None:
+    def _summary(self, summarize, result, node=None):
+        selected = self.bo_probe.bo_capture_nodes
+        if summarize is None or (
+            node is not None and selected is not None and node not in selected
+        ):
             return None
         try:
             with bo_internal():
@@ -396,11 +449,12 @@ class BODataRuntime:
                 self._scope(node, parameters, **context), statement, language, targets
             )
         try:
-            result = callback()
+            with self._call_context(call):
+                result = callback()
         except BaseException as error:
             self._finish(call, "failed", error=error)
             raise
-        self._finish(call, summary=self._summary(summarize, result) if call else None)
+        self._finish(call, summary=self._summary(summarize, result, node) if call else None)
         return result
 
     async def execute_async(
@@ -423,11 +477,12 @@ class BODataRuntime:
                 self._scope(node, parameters, **context), statement, language, targets
             )
         try:
-            result = await callback()
+            with self._call_context(call):
+                result = await callback()
         except BaseException as error:
             self._finish(call, "failed", error=error)
             raise
-        self._finish(call, summary=self._summary(summarize, result) if call else None)
+        self._finish(call, summary=self._summary(summarize, result, node) if call else None)
         return result
 
     def transform(
@@ -439,12 +494,13 @@ class BODataRuntime:
             if self._allowed(node=node)
             else None
         )
-        initial = self._summary(before, value) if call and before else {}
+        initial = self._summary(before, value, node) if call and before else {}
         if call:
             initial = self._selected(initial, self.bo_operations[node].get("before", {}))
         input_count = len(value) if type(value) in (list, tuple, dict) else None
         try:
-            result = function(value)
+            with self._call_context(call):
+                result = function(value)
         except BaseException as error:
             if call:
                 self._emit(
@@ -454,7 +510,7 @@ class BODataRuntime:
                 )
             raise
         if call:
-            final = self._summary(after, result) if after else {}
+            final = self._summary(after, result, node) if after else {}
             outputs = {
                 "status": "transformed",
                 "before": initial,
@@ -510,7 +566,7 @@ class BODataRuntime:
         body_error = None
         active_before_exit = True
         try:
-            with manager as resource:
+            with self._call_context(call), manager as resource:
                 transaction = self._transaction_object(resource)
                 try:
                     yield resource
@@ -572,7 +628,7 @@ class BODataRuntime:
         body_error = None
         active_before_exit = True
         try:
-            async with manager as resource:
+            async with self._call_context_async(call), manager as resource:
                 transaction = self._transaction_object(resource)
                 try:
                     yield resource

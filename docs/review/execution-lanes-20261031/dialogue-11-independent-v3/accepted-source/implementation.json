@@ -1,0 +1,1205 @@
+{
+  "schema": "bo-implementation/v1",
+  "features": [
+    {
+      "id": "sign_in",
+      "label": "sign in",
+      "business_node": "sign_in",
+      "nodes": [
+        "sign_in"
+      ],
+      "sources": [
+        "app/service.py::FileService.login"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.login",
+          "name": "username",
+          "node": "sign_in",
+          "direction": "in",
+          "field": "username",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.login",
+          "name": "password",
+          "node": "sign_in",
+          "direction": "in",
+          "field": "password_present",
+          "policy": "derived",
+          "reason": "Only Boolean presence is captured; no credential text."
+        }
+      ],
+      "requirements": [
+        "R_LOGIN"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "sign_in",
+          "phase": "enter"
+        },
+        {
+          "case": "workflow",
+          "node": "sign_in",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "list_users",
+      "label": "list users",
+      "business_node": "list_users",
+      "nodes": [
+        "list_users"
+      ],
+      "sources": [
+        "app/service.py::FileService.users"
+      ],
+      "parameters": [],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "list_users",
+          "phase": "enter"
+        },
+        {
+          "case": "workflow",
+          "node": "list_users",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "upload_file",
+      "label": "upload file",
+      "business_node": "upload_file",
+      "nodes": [
+        "upload_file"
+      ],
+      "sources": [
+        "app/service.py::FileService.upload"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.upload",
+          "name": "actor",
+          "node": "upload_file",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.upload",
+          "name": "reviewer_id",
+          "node": "upload_file",
+          "direction": "in",
+          "field": "reviewer_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.upload",
+          "name": "filename",
+          "node": "upload_file",
+          "direction": "in",
+          "field": "filename",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.upload",
+          "name": "content",
+          "node": "upload_file",
+          "direction": "in",
+          "field": "size",
+          "policy": "derived",
+          "reason": "Only the byte length is captured; file content is never observed."
+        }
+      ],
+      "requirements": [
+        "R_REVIEW"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "upload_file",
+          "phase": "enter"
+        },
+        {
+          "case": "workflow",
+          "node": "upload_file",
+          "phase": "return"
+        },
+        {
+          "case": "denied",
+          "node": "upload_file",
+          "phase": "error"
+        }
+      ]
+    },
+    {
+      "id": "review_file",
+      "label": "review file",
+      "business_node": "review_file",
+      "nodes": [
+        "review_file"
+      ],
+      "sources": [
+        "app/service.py::FileService.review"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.review",
+          "name": "actor",
+          "node": "review_file",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.review",
+          "name": "file_id",
+          "node": "review_file",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.review",
+          "name": "decision",
+          "node": "review_file",
+          "direction": "in",
+          "field": "decision",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.review",
+          "name": "reason",
+          "node": "review_file",
+          "direction": "in",
+          "field": "reason",
+          "policy": "value"
+        }
+      ],
+      "requirements": [
+        "R_REVIEW"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "review_file",
+          "phase": "enter"
+        },
+        {
+          "case": "workflow",
+          "node": "review_file",
+          "phase": "return"
+        },
+        {
+          "case": "rejection_reason",
+          "node": "review_file",
+          "phase": "error"
+        }
+      ]
+    },
+    {
+      "id": "withdraw_file",
+      "label": "withdraw file",
+      "business_node": "withdraw_file",
+      "nodes": [
+        "withdraw_file"
+      ],
+      "sources": [
+        "app/service.py::FileService.withdraw"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.withdraw",
+          "name": "actor",
+          "node": "withdraw_file",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.withdraw",
+          "name": "file_id",
+          "node": "withdraw_file",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        }
+      ],
+      "requirements": [
+        "R_WITHDRAW"
+      ],
+      "cases": [
+        {
+          "case": "withdrawal",
+          "node": "withdraw_file",
+          "phase": "enter"
+        },
+        {
+          "case": "withdrawal",
+          "node": "withdraw_file",
+          "phase": "return"
+        },
+        {
+          "case": "withdrawal",
+          "node": "withdraw_file",
+          "phase": "error"
+        }
+      ]
+    },
+    {
+      "id": "share_file",
+      "label": "share file",
+      "business_node": "share_file",
+      "nodes": [
+        "share_file"
+      ],
+      "sources": [
+        "app/service.py::FileService.share"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.share",
+          "name": "actor",
+          "node": "share_file",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.share",
+          "name": "file_id",
+          "node": "share_file",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.share",
+          "name": "recipient_id",
+          "node": "share_file",
+          "direction": "in",
+          "field": "recipient_id",
+          "policy": "value"
+        }
+      ],
+      "requirements": [
+        "R_SHARE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "share_file",
+          "phase": "enter"
+        },
+        {
+          "case": "workflow",
+          "node": "share_file",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "access_file",
+      "label": "access file",
+      "business_node": "access_file",
+      "nodes": [
+        "access_file"
+      ],
+      "sources": [
+        "app/service.py::FileService.access"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.access",
+          "name": "actor",
+          "node": "access_file",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.access",
+          "name": "file_id",
+          "node": "access_file",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.access",
+          "name": "download",
+          "node": "access_file",
+          "direction": "in",
+          "field": "download",
+          "policy": "value"
+        }
+      ],
+      "requirements": [
+        "R_ACCESS"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "access_file",
+          "phase": "enter"
+        },
+        {
+          "case": "workflow",
+          "node": "access_file",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "list_files",
+      "label": "list files",
+      "business_node": "list_files",
+      "nodes": [
+        "list_files"
+      ],
+      "sources": [
+        "app/service.py::FileService.visible_files"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.visible_files",
+          "name": "actor",
+          "node": "list_files",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        }
+      ],
+      "requirements": [
+        "R_ACCESS"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "list_files",
+          "phase": "enter"
+        },
+        {
+          "case": "workflow",
+          "node": "list_files",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "http_request",
+      "label": "http request",
+      "business_node": "http_request",
+      "nodes": [
+        "http_request"
+      ],
+      "sources": [
+        "app/web.py::WebRoutes.before_request",
+        "app/web.py::WebRoutes.after_request",
+        "app/web.py::WebRoutes.teardown_request",
+        "app/web.py::WebRoutes.index",
+        "app/web.py::WebRoutes.login",
+        "app/web.py::WebRoutes.upload",
+        "app/web.py::WebRoutes.review",
+        "app/web.py::WebRoutes.share",
+        "app/web.py::WebRoutes.withdraw",
+        "app/web.py::WebRoutes.file_info",
+        "app/web.py::WebRoutes.download",
+        "app/web.py::WebRoutes.error"
+      ],
+      "parameters": [
+        {
+          "source": "app/web.py::WebRoutes.after_request",
+          "name": "response",
+          "policy": "context",
+          "reason": "Flask response object; the final HTTP status is captured by the request boundary."
+        },
+        {
+          "source": "app/web.py::WebRoutes.teardown_request",
+          "name": "error",
+          "node": "http_request",
+          "direction": "out",
+          "field": "status",
+          "policy": "derived",
+          "reason": "The request path retains the file identity; exception objects are represented by the actual HTTP exit status."
+        },
+        {
+          "source": "app/web.py::WebRoutes.review",
+          "name": "file_id",
+          "node": "http_request",
+          "direction": "in",
+          "field": "path",
+          "policy": "derived",
+          "reason": "The request path retains the file identity; exception objects are represented by the actual HTTP exit status."
+        },
+        {
+          "source": "app/web.py::WebRoutes.share",
+          "name": "file_id",
+          "node": "http_request",
+          "direction": "in",
+          "field": "path",
+          "policy": "derived",
+          "reason": "The request path retains the file identity; exception objects are represented by the actual HTTP exit status."
+        },
+        {
+          "source": "app/web.py::WebRoutes.withdraw",
+          "name": "file_id",
+          "node": "http_request",
+          "direction": "in",
+          "field": "path",
+          "policy": "derived",
+          "reason": "The request path retains the file identity; exception objects are represented by the actual HTTP exit status."
+        },
+        {
+          "source": "app/web.py::WebRoutes.file_info",
+          "name": "file_id",
+          "node": "http_request",
+          "direction": "in",
+          "field": "path",
+          "policy": "derived",
+          "reason": "The request path retains the file identity; exception objects are represented by the actual HTTP exit status."
+        },
+        {
+          "source": "app/web.py::WebRoutes.download",
+          "name": "file_id",
+          "node": "http_request",
+          "direction": "in",
+          "field": "path",
+          "policy": "derived",
+          "reason": "The request path retains the file identity; exception objects are represented by the actual HTTP exit status."
+        },
+        {
+          "source": "app/web.py::WebRoutes.error",
+          "name": "error",
+          "node": "http_request",
+          "direction": "out",
+          "field": "status",
+          "policy": "derived",
+          "reason": "The request path retains the file identity; exception objects are represented by the actual HTTP exit status."
+        }
+      ],
+      "requirements": [
+        "R_LOGIN"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "http_request",
+          "phase": "enter"
+        },
+        {
+          "case": "workflow",
+          "node": "http_request",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "sign_out",
+      "label": "sign out",
+      "business_node": "sign_out",
+      "nodes": [
+        "sign_out"
+      ],
+      "sources": [
+        "app/web.py::WebRoutes.logout"
+      ],
+      "parameters": [],
+      "requirements": [
+        "R_LOGIN"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "sign_out",
+          "phase": "enter"
+        },
+        {
+          "case": "workflow",
+          "node": "sign_out",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "review_validation",
+      "label": "review validation",
+      "business_node": "review_file",
+      "nodes": [
+        "review_reason_check"
+      ],
+      "sources": [
+        "app/service.py::FileService.review_reason"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.review_reason",
+          "name": "decision",
+          "node": "review_reason_check",
+          "direction": "in",
+          "field": "decision",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.review_reason",
+          "name": "reason",
+          "node": "review_reason_check",
+          "direction": "in",
+          "field": "reason",
+          "policy": "value"
+        }
+      ],
+      "requirements": [
+        "R_REASON"
+      ],
+      "cases": [
+        {
+          "case": "rejection_reason",
+          "node": "review_reason_check",
+          "phase": "decision"
+        }
+      ]
+    },
+    {
+      "id": "authorization",
+      "label": "authorization",
+      "business_node": "authorize_file",
+      "nodes": [
+        "authorize_file",
+        "policy:actor",
+        "policy:uploader",
+        "policy:reviewer",
+        "policy:recipient",
+        "policy:logged_in",
+        "policy:approved",
+        "policy:shared",
+        "policy:reviewer_exists",
+        "policy:actor_is_uploader",
+        "policy:actor_is_reviewer",
+        "policy:actor_is_recipient",
+        "policy:reviewer_is_uploader",
+        "policy:reviewer_is_other",
+        "policy:upload_allowed",
+        "policy:review_allowed",
+        "policy:share_allowed",
+        "policy:recipient_access",
+        "policy:file_access_basis",
+        "policy:access_allowed",
+        "policy:pending",
+        "policy:withdrawn",
+        "policy:not_withdrawn",
+        "policy:reviewer_access",
+        "policy:withdraw_allowed"
+      ],
+      "sources": [
+        "app/service.py::FileService.authorize"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.authorize",
+          "name": "db",
+          "policy": "context",
+          "reason": "Native connection handle; never serialized."
+        },
+        {
+          "source": "app/service.py::FileService.authorize",
+          "name": "actor",
+          "node": "authorize_file",
+          "direction": "in",
+          "field": "actor",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.authorize",
+          "name": "operation",
+          "node": "authorize_file",
+          "direction": "in",
+          "field": "operation",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.authorize",
+          "name": "row",
+          "node": "authorize_file",
+          "direction": "in",
+          "field": "file_id",
+          "policy": "derived",
+          "reason": "Select only the declared scalar identity, state, or query summary from the actual argument."
+        }
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "authorize_file",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:actor",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:uploader",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:reviewer",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:recipient",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:logged_in",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:approved",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:shared",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:reviewer_exists",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:actor_is_uploader",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:actor_is_reviewer",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:actor_is_recipient",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:reviewer_is_uploader",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:reviewer_is_other",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:upload_allowed",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:review_allowed",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:share_allowed",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:recipient_access",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:file_access_basis",
+          "phase": "decision"
+        },
+        {
+          "case": "workflow",
+          "node": "policy:access_allowed",
+          "phase": "decision"
+        },
+        {
+          "case": "withdrawal",
+          "node": "policy:pending",
+          "phase": "decision"
+        },
+        {
+          "case": "withdrawal",
+          "node": "policy:withdrawn",
+          "phase": "decision"
+        },
+        {
+          "case": "withdrawal",
+          "node": "policy:not_withdrawn",
+          "phase": "decision"
+        },
+        {
+          "case": "withdrawal",
+          "node": "policy:reviewer_access",
+          "phase": "decision"
+        },
+        {
+          "case": "withdrawal",
+          "node": "policy:withdraw_allowed",
+          "phase": "decision"
+        }
+      ]
+    },
+    {
+      "id": "transition",
+      "label": "transition",
+      "business_node": "state_transition",
+      "nodes": [
+        "state_transition"
+      ],
+      "sources": [
+        "app/service.py::FileService.advance"
+      ],
+      "parameters": [
+        {
+          "source": "app/service.py::FileService.advance",
+          "name": "row",
+          "node": "state_transition",
+          "direction": "in",
+          "field": "before",
+          "policy": "derived",
+          "reason": "Select only the declared scalar identity, state, or query summary from the actual argument."
+        },
+        {
+          "source": "app/service.py::FileService.advance",
+          "name": "event",
+          "node": "state_transition",
+          "direction": "in",
+          "field": "event",
+          "policy": "value"
+        },
+        {
+          "source": "app/service.py::FileService.advance",
+          "name": "allowed",
+          "node": "state_transition",
+          "direction": "out",
+          "field": "allowed",
+          "policy": "value"
+        }
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "state_transition",
+          "phase": "return"
+        },
+        {
+          "case": "workflow",
+          "node": "state_transition",
+          "phase": "enter"
+        }
+      ]
+    },
+    {
+      "id": "db_users",
+      "label": "db users",
+      "business_node": "list_users",
+      "nodes": [
+        "db_users"
+      ],
+      "sources": [
+        "app/storage.py::Store.read_users"
+      ],
+      "parameters": [
+        {
+          "source": "app/storage.py::Store.read_users",
+          "name": "db",
+          "policy": "context",
+          "reason": "Native connection handle; never serialized."
+        }
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "db_users",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "db_file",
+      "label": "db file",
+      "business_node": "review_file",
+      "nodes": [
+        "db_file"
+      ],
+      "sources": [
+        "app/storage.py::Store.read_file"
+      ],
+      "parameters": [
+        {
+          "source": "app/storage.py::Store.read_file",
+          "name": "db",
+          "policy": "context",
+          "reason": "Native connection handle; never serialized."
+        },
+        {
+          "source": "app/storage.py::Store.read_file",
+          "name": "file_id",
+          "node": "db_file",
+          "direction": "in",
+          "field": "parameters",
+          "policy": "derived",
+          "reason": "Select only the declared scalar identity, state, or query summary from the actual argument."
+        }
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "db_file",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "db_candidates",
+      "label": "db candidates",
+      "business_node": "review_file",
+      "nodes": [
+        "db_candidates"
+      ],
+      "sources": [
+        "app/storage.py::Store.read_candidates"
+      ],
+      "parameters": [
+        {
+          "source": "app/storage.py::Store.read_candidates",
+          "name": "db",
+          "policy": "context",
+          "reason": "Native connection handle; never serialized."
+        },
+        {
+          "source": "app/storage.py::Store.read_candidates",
+          "name": "actor",
+          "node": "db_candidates",
+          "direction": "in",
+          "field": "parameters",
+          "policy": "derived",
+          "reason": "Select only the declared scalar identity, state, or query summary from the actual argument."
+        }
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "db_candidates",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "db_insert",
+      "label": "db insert",
+      "business_node": "upload_file",
+      "nodes": [
+        "db_insert"
+      ],
+      "sources": [
+        "app/storage.py::Store.insert_file"
+      ],
+      "parameters": [
+        {
+          "source": "app/storage.py::Store.insert_file",
+          "name": "db",
+          "policy": "context",
+          "reason": "Native connection handle; never serialized."
+        },
+        {
+          "source": "app/storage.py::Store.insert_file",
+          "name": "row",
+          "node": "db_insert",
+          "direction": "in",
+          "field": "parameters",
+          "policy": "derived",
+          "reason": "Select only the declared scalar identity, state, or query summary from the actual argument."
+        }
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "db_insert",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "db_update",
+      "label": "db update",
+      "business_node": "review_file",
+      "nodes": [
+        "db_update"
+      ],
+      "sources": [
+        "app/storage.py::Store.update_file"
+      ],
+      "parameters": [
+        {
+          "source": "app/storage.py::Store.update_file",
+          "name": "db",
+          "policy": "context",
+          "reason": "Native connection handle; never serialized."
+        },
+        {
+          "source": "app/storage.py::Store.update_file",
+          "name": "row",
+          "node": "db_update",
+          "direction": "in",
+          "field": "parameters",
+          "policy": "derived",
+          "reason": "Select only the declared scalar identity, state, or query summary from the actual argument."
+        }
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "db_update",
+          "phase": "return"
+        }
+      ]
+    },
+    {
+      "id": "db_transaction",
+      "label": "db transaction",
+      "business_node": "upload_file",
+      "nodes": [
+        "db_transaction"
+      ],
+      "sources": [
+        "app/storage.py::Store.write_transaction"
+      ],
+      "parameters": [],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "db_transaction",
+          "phase": "commit"
+        }
+      ]
+    },
+    {
+      "id": "db_metadata",
+      "label": "db metadata",
+      "business_node": "access_file",
+      "nodes": [
+        "db_metadata"
+      ],
+      "sources": [
+        "app/storage.py::metadata_view"
+      ],
+      "parameters": [
+        {
+          "source": "app/storage.py::metadata_view",
+          "name": "row",
+          "node": "db_metadata",
+          "direction": "out",
+          "field": "result",
+          "policy": "derived",
+          "reason": "Select only the declared scalar identity, state, or query summary from the actual argument."
+        }
+      ],
+      "requirements": [
+        "R_SCOPE"
+      ],
+      "cases": [
+        {
+          "case": "workflow",
+          "node": "db_metadata",
+          "phase": "change"
+        }
+      ]
+    }
+  ],
+  "support": {
+    "app/predicates.py::same_identity": {
+      "node": "authorize_file",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "app/predicates.py::operation_allowed": {
+      "node": "authorize_file",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "app/storage.py::configure_sqlite": {
+      "node": "authorize_file",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "app/storage.py::Store.initialize": {
+      "node": "authorize_file",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "app/storage.py::Store.migrate_rejection_reason": {
+      "node": "authorize_file",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "app/storage.py::Store.migrate_file_states": {
+      "node": "authorize_file",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "app/storage.py::Store.snapshots": {
+      "node": "authorize_file",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "app/web.py::WebRoutes.actor": {
+      "node": "http_request",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "app/web.py::create_app": {
+      "node": "http_request",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "bo_stategraph/native_executor.py::bo_list": {
+      "node": "state_transition",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "bo_stategraph/native_executor.py::BOExecutor.step": {
+      "node": "state_transition",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "bo_stategraph/native_executor.py::BOExecutor.step.guard": {
+      "node": "state_transition",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "bo_stategraph/workflow.py::FileWorkflow.step": {
+      "node": "state_transition",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "bo_stategraph/workflow.py::file_context": {
+      "node": "state_transition",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    },
+    "bo_stategraph/workflow.py::machine_snapshot": {
+      "node": "state_transition",
+      "reason": "Native helper retained as a static source mapping; runtime execution is claimed only when captured."
+    }
+  },
+  "excluded": {
+    "app/ports.py::NullActivation.result": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "app/ports.py::NullProbe.span": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "app/ports.py::NullProbe.record": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "app/ports.py::NullData.execute": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "app/ports.py::NullData.transaction": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "app/ports.py::NullData.transform": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "app/ports.py::NullObserver.state": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "app/ports.py::NullObserver.policy": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "app/service.py::DomainError.__init__": {
+      "category": "construction",
+      "reason": "Object construction; behavior is represented by mapped operations."
+    },
+    "app/service.py::FileService.__init__": {
+      "category": "construction",
+      "reason": "Object construction; behavior is represented by mapped operations."
+    },
+    "app/storage.py::Store.__init__": {
+      "category": "construction",
+      "reason": "Object construction; behavior is represented by mapped operations."
+    },
+    "app/web.py::WebRoutes.__init__": {
+      "category": "construction",
+      "reason": "Object construction; behavior is represented by mapped operations."
+    },
+    "bo_stategraph/native_executor.py::BOExecutor.__init__": {
+      "category": "construction",
+      "reason": "Object construction; behavior is represented by mapped operations."
+    },
+    "bo_stategraph/workflow.py::FileWorkflow.__init__": {
+      "category": "construction",
+      "reason": "Object construction; behavior is represented by mapped operations."
+    },
+    "integrations/bo_integration.py::BOIntegration.__init__": {
+      "category": "construction",
+      "reason": "Object construction; behavior is represented by mapped operations."
+    },
+    "integrations/bo_integration.py::BOIntegration.bo_fault": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "integrations/bo_integration.py::BOIntegration.policy": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "integrations/bo_integration.py::BOIntegration.state": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "integrations/bo_integration.py::BOIntegration.health": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "integrations/bo_integration.py::BOIntegration.close": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    },
+    "run.py::main": {
+      "category": "observer",
+      "reason": "Optional observation, launcher, or no-op port; does not authorize business work."
+    }
+  }
+}

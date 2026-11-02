@@ -68,6 +68,9 @@ def contained(root, name):
 
 def validate(root, model):
     nodes = validate_graph(model)
+    from .relations.model import validate as validate_relations
+
+    validate_relations(model)
     if model.get("schema_version") != 3:
         raise ValueError("expected model v3")
     intent = read(contained(root, model["intent"]))
@@ -194,18 +197,22 @@ def capture(root, model):
     }
 
 
-def check(root, model, baseline):
+def check(root, model, baseline, *, sources=None):
     from .source_files import SourceFiles
 
-    sources = SourceFiles(root)
+    sources = sources or SourceFiles(root)
     changed = []
-    for name in set(baseline["files"]) | set(model["source_files"]):
-        current = sources.read(name)
+    names = set(baseline["files"]) | set(model["source_files"])
+    for name, current in sources.read_all(names).items():
         if current is None or digest(current) != baseline["files"].get(name):
             changed.append(name)
     model_changed = digest(model) != baseline["model_hash"]
     try:
-        intent_changed = digest(read(contained(root, model["intent"]))) != baseline["intent_hash"]
+        raw_intent = sources.read(model["intent"])
+        intent_changed = (
+            raw_intent is None
+            or digest(json.loads(raw_intent.decode("utf-8-sig"))) != baseline["intent_hash"]
+        )
     except (OSError, ValueError):
         intent_changed = True
     affected = {n["id"] for n in model["nodes"] if n.get("source", {}).get("path") in changed}
@@ -228,6 +235,8 @@ def check(root, model, baseline):
 
 
 def validate_events(events, model, build_id=None):
+    from ..observation.ownership import parent_references
+
     nodes = {n["id"]: n for n in model["nodes"]}
     seen, errors, gaps = {}, [], []
     for e in events:
@@ -271,6 +280,9 @@ def validate_events(events, model, build_id=None):
             ):
                 errors.append("cross-parameter-version data reference")
         seen[e["id"]] = e
+    ownership = parent_references(events)
+    errors.extend(ownership["errors"])
+    gaps.extend(ownership["gaps"])
     return {
         "valid": not errors,
         "events": len(events),

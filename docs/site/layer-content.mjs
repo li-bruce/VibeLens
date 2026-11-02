@@ -2,7 +2,7 @@
 export const layerContent = [
   {
     id: "business",
-    color: 0x208b73,
+    color: 0x18866b,
     type: "business",
     group: ["Intent", "意图"],
     name: ["Business flow", "业务流程"],
@@ -18,7 +18,7 @@ export const layerContent = [
   },
   {
     id: "state",
-    color: 0x8c57ad,
+    color: 0x9658b5,
     type: "state",
     group: ["Model", "模型"],
     name: ["States", "状态"],
@@ -34,7 +34,7 @@ export const layerContent = [
   },
   {
     id: "rules",
-    color: 0xaf731c,
+    color: 0xbb7a13,
     type: "decision",
     group: ["Model", "模型"],
     name: ["Rules", "规则"],
@@ -50,7 +50,7 @@ export const layerContent = [
   },
   {
     id: "api",
-    color: 0x986345,
+    color: 0xc15463,
     type: "code-endpoint",
     group: ["Implementation", "实现"],
     name: ["API", "API 接口"],
@@ -66,7 +66,7 @@ export const layerContent = [
   },
   {
     id: "execution",
-    color: 0x477b9c,
+    color: 0x327db9,
     type: "function",
     group: ["Implementation", "实现"],
     name: ["Functions & values", "核心函数与值"],
@@ -82,7 +82,7 @@ export const layerContent = [
   },
   {
     id: "operations",
-    color: 0x3b839c,
+    color: 0x008f98,
     type: "query",
     group: ["Implementation", "实现"],
     name: ["Data operations", "数据处理"],
@@ -98,7 +98,7 @@ export const layerContent = [
   },
   {
     id: "project",
-    color: 0x997c4f,
+    color: 0x8f7047,
     type: "code-directory",
     group: ["Structure", "结构"],
     name: ["Project structure", "工程结构"],
@@ -114,7 +114,7 @@ export const layerContent = [
   },
   {
     id: "code",
-    color: 0x8172a3,
+    color: 0x6566bd,
     type: "code-function",
     group: ["Structure", "结构"],
     name: ["Code symbols", "代码功能"],
@@ -130,7 +130,7 @@ export const layerContent = [
   },
   {
     id: "data",
-    color: 0x638b98,
+    color: 0x71963c,
     type: "store",
     group: ["Structure", "结构"],
     name: ["Data structure", "数据结构"],
@@ -145,3 +145,16 @@ export const layerContent = [
     ],
   },
 ];
+
+const order = [
+  "business",
+  "state",
+  "rules",
+  "api",
+  "execution",
+  "project",
+  "code",
+  "operations",
+  "data",
+];
+layerContent.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));

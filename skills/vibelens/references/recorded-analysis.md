@@ -20,6 +20,17 @@ Preserve producer/run/attempt/event/call/build identities. Pre-start context is 
 
 The provider must read consistent state/events at the project's state boundary. Background persistence runs each second; stop resamples and writes. Normal stop saves the complete interval; abnormal exit may lose the last unsaved segment and marks interruption. Limits: 20,000 probe events, 2,000 operation markers, 32 MiB. Overflow, capture failure, and save failure expose gaps. Record only chosen fields, never arbitrary locals/bodies/credentials. Disabled capture cannot be presented as recording real events.
 
+Stop flushes the queue prefix already submitted when the barrier begins; later
+application refreshes cannot extend that target. Include snapshots in the prefix
+and retain target/completed/submitted/pending counters. Do not raise deadlines,
+hide dropped events or exclude native refresh requests to make a trial pass.
+
+Keep three read boundaries separate: current graph identity for list/get/clear,
+runtime evidence for periodic checkpoints, and static source context when capture
+starts. A saved recording retains its initial file tree; checkpointing and record
+catalog polling must not rescan that tree. Live graph views still rescan their
+declared source scope. Reject source/version changes during capture selection.
+
 Saved records bind loaded model/source. Do not display new code as old implementation. Replay includes only prior events and exact journal revisions. Never copy final check/approval/commit outcomes into early frames. Missing boundaries are unknown; final snapshot is used only at the end. Header replay values require explicit presentation.replay_parameters node/direction/field bindings, e.g. limit_bytes from project_limit out.limit_bytes; matching field names alone are insufficient.
 
 Edge animation requires real dependency references, same-call parent identity, captured input/return, or exact activity resource/join evidence. Static calls/shared references/temporal adjacency are not transfers. Use a separate animation layer, stop when done, and handle background tabs, reduced motion, and disposal.
@@ -30,6 +41,17 @@ Live observation, active capture and saved replay share the timeline below the g
 same recorded step as graph playback in both 2D and 3D. Filled bars show matched
 entry/completion observations; diamonds show events and state/value changes.
 Hollow marks and dashed cross-layer connectors locate source mappings.
+
+Each concurrent root invocation has a band with one row per visible graph layer.
+Collapse a band to its business row. Parallel intervals share that row through
+nonoverlapping subtracks, rather than creating a row for every node. State and
+activity residence must match the actual snapshot instance. Short measured calls
+get a minimum selectable width while preserving their real duration. Horizontal
+links and cross-layer links use the same witnessed causal references as Graph.
+
+The recorded-step selector indents actual parent/child calls and colors each
+entry by layer. Entry references and qualified call identities establish nesting;
+layer order alone does not. Raw event order and IDs remain unchanged.
 
 Drag the ruler to seek, drag empty tracks to pan, and Ctrl/Command-wheel to zoom.
 The overview window can be moved and resized. Expand a layer to inspect its nodes.
@@ -80,6 +102,11 @@ All views filter the same graph. Users need not manually expand every parent bef
 Authorization uses explicit semantic mapping, not name-based proof of coverage. A ! badge can mean wait/reject/error; inspect the reason. Static function edges still do not prove execution.
 
 Combine node/edge/region types, depth, scope, and text; save up to 20 custom views. Each has separate coordinates/expansion/camera, with aliases/notes shared by canonical node ID. New presets do not overwrite old views. Persist in bo_stategraph/config/views/local.json, with browser cache only. Ports/restarts preserve the project file; concurrent-save conflicts prompt refresh rather than silent overwrite.
+
+Layer visibility is saved per analysis view. Migrating an older shared layer filter
+preserves it in Overview; opening a new focused preset starts with its relevant
+layers available. Explicitly hiding every layer in one view remains a saved user
+choice. Layer order, spacing and the 2D/3D mode remain shared controls.
 
 ## Shared abstraction membership
 

@@ -1,5 +1,6 @@
 /** State occupancy is not a function call. Its interval follows witnessed state changes. */
 import { activeMachineStates } from "./machine-projection.js";
+import { runtimeFrame, runtimeConfigurations } from "./runtime-frames.js";
 export function stateResidencies(recording, items, changes, nodes, axis) {
   const states = [...nodes.values()].filter(
     (node) => node.kind === "state" && node.value !== undefined,
@@ -26,38 +27,53 @@ export function stateResidencies(recording, items, changes, nodes, axis) {
     unfinished,
     duration: !unfinished && axis.ordered ? axis.times[raw] - axis.times[slice.raw] : null,
   });
+  const visit = (value, raw, scope) => {
+    for (const [key, slice] of opened) {
+      if (slice.scope !== scope && (recording.runtime_frames || slice.scope !== "application"))
+        continue;
+      const node = nodes.get(slice.node);
+      if (!active(value).includes(node.value)) {
+        for (const target of states.filter((candidate) => active(value).includes(candidate.value)))
+          links.push({
+            from: slice.raw,
+            to: raw,
+            at: raw,
+            fromNode: node.id,
+            toNode: target.id,
+            type: "transition",
+            scope,
+          });
+        slices.push(close(slice, raw, false));
+        opened.delete(key);
+      }
+    }
+    enter(value, raw, scope);
+  };
   const initial = recording.context.machine || {};
   if (initial.configurations?.length) {
-    for (const cfg of initial.configurations) enter(cfg.phase, 0, cfg.attempt || "application");
+    for (const [scope, cfg] of runtimeConfigurations(initial)) if (cfg) enter(cfg.phase, 0, scope);
   } else enter(initial.current, 0, "application");
-  for (const [raw, list] of changes.entries())
-    for (const change of list || []) {
-      if (change.kind !== "business") continue;
-      const scope = change.attempt || items[raw].attempt || "application";
-      for (const [key, slice] of opened) {
-        if (slice.scope !== scope && slice.scope !== "application") continue;
-        const node = nodes.get(slice.node);
-        if (!active(change.after).includes(node.value)) {
-          for (const target of states.filter(
-            (candidate) =>
-              values(change.before).includes(node.value) &&
-              values(change.after).includes(candidate.value) &&
-              !values(change.before).includes(candidate.value),
-          ))
-            links.push({
-              from: slice.raw,
-              to: raw,
-              at: raw,
-              fromNode: node.id,
-              toNode: target.id,
-              type: "transition",
-            });
-          slices.push(close(slice, raw, false));
-          opened.delete(key);
-        }
-      }
-      enter(change.after, raw, scope);
+  if (recording.runtime_frames) {
+    // Snapshots witness occupancy even before the first transition. A caller's
+    // attempt is not a machine identity when multiple configurations share it.
+    const legacy = runtimeConfigurations(recording.final?.machine || initial);
+    for (const [raw, event] of items.entries()) {
+      const frame = runtimeFrame(recording, event);
+      if (!frame) continue;
+      for (const [scope, cfg] of runtimeConfigurations(frame.machine))
+        if (cfg && (cfg.snapshot_instance || legacy.get(scope))) visit(cfg.phase, raw, scope);
     }
+  } else {
+    for (const [raw, list] of changes.entries())
+      for (const change of list || []) {
+        if (change.kind !== "business") continue;
+        visit(
+          change.after,
+          raw,
+          change.instance || "attempt:" + (change.attempt || items[raw].attempt || "application"),
+        );
+      }
+  }
   for (const slice of opened.values())
     slices.push(close(slice, Math.max(0, items.length - 1), true));
   return { slices, links };
@@ -104,18 +120,29 @@ export function activityResidencies(recording, items, changes, nodes, axis) {
       opened.delete(key);
     }
   };
-  for (const cfg of recording.context.machine?.configurations || [])
-    for (const [node, value] of Object.entries(cfg.activities || {}))
-      update(node, value, 0, cfg.attempt || "application");
-  for (const [raw, list] of changes.entries())
-    for (const change of list || [])
-      if (change.kind === "state")
-        update(
-          change.node,
-          change.after,
-          raw,
-          change.attempt || items[raw].attempt || "application",
-        );
+  for (const [scope, cfg] of runtimeConfigurations(recording.context.machine || {}))
+    if (cfg)
+      for (const [node, value] of Object.entries(cfg.activities || {}))
+        update(node, value, 0, scope);
+  if (recording.runtime_frames) {
+    for (const [raw, event] of items.entries()) {
+      const frame = runtimeFrame(recording, event);
+      if (frame)
+        for (const [scope, cfg] of runtimeConfigurations(frame.machine))
+          if (cfg)
+            for (const [node, value] of Object.entries(cfg.activities || {}))
+              update(node, value, raw, scope);
+    }
+  } else
+    for (const [raw, list] of changes.entries())
+      for (const change of list || [])
+        if (change.kind === "state")
+          update(
+            change.node,
+            change.after,
+            raw,
+            change.instance || "attempt:" + (change.attempt || items[raw].attempt || "application"),
+          );
   for (const slice of opened.values())
     slices.push(close(slice, Math.max(0, items.length - 1), true));
   return slices;

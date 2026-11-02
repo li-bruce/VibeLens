@@ -1,12 +1,14 @@
+import { layerColor } from "./graph-layers.js";
 import { polylineAt, cleanRoute } from "./edge-routing.js";
 import { t as boTranslate } from "./i18n.js";
 // Graph drawing owns Pixi objects and hit geometry, but no fetching, storage or UI commands.
-import { colors as C, nodeTypes } from "./graph-core.js";
+import { colors as C } from "./graph-core.js";
 import { annotationFor, displayName, relationStyle, relationName } from "./layout.js";
 import { drawGlyph, glyphAppearance } from "./glyphs.js";
 import { boKinds } from "./replay-steps.js";
 import { RoutingClient } from "./routing-client.js";
 import { planarScene } from "./routing-scene.js";
+import { fitCaption } from "./caption-layout.js";
 export function short(value, count = 27) {
   const chars = [...String(value)];
   return chars.length > count ? chars.slice(0, count - 1).join("") + "…" : String(value);
@@ -42,6 +44,7 @@ export function createGraphRenderer({
   let graph, presentation, focusContext, preferences, selected, scale, pan;
   let renderedEdges, boDetail, boTransfers, formatChange, formatValue, contextLost;
   let drawCount = 0;
+  const captions = [];
   const point = (box) => nodePoint(graph, presentation, box);
   function visible(x, y, w, h) {
     return (
@@ -79,20 +82,39 @@ export function createGraphRenderer({
   function graphic() {
     return retained("graphics", () => new PIXI.Graphics()).clear();
   }
-  function text(value, x, y, size = 12, color = C.ink, align = "left", weight = "400") {
+  function text(value, x, y, size = 12, color = C.ink, align = "left", weight = "400", bounds) {
     const t = retained("text", () => new PIXI.Text({ text: "", resolution: 1 })),
-      label = String(value);
-    const styleKey = [size, color, weight].join(":");
+      raw = String(value);
+    const styleKey = [size, color, weight, !!bounds].join(":");
     if (t._observerStyle !== styleKey) {
       t.style = {
         fontFamily: "Segoe UI, Microsoft YaHei, sans-serif",
         fontSize: size,
         fill: color,
         fontWeight: weight,
+        ...(bounds ? { lineHeight: size * 1.1 } : {}),
       };
       t._observerStyle = styleKey;
     }
-    if (t.text !== label) t.text = label;
+    const layoutKey = JSON.stringify([raw, styleKey, bounds]);
+    if (t._observerCaption !== layoutKey) {
+      let label = raw;
+      if (bounds) {
+        const measure = (value) => PIXI.CanvasTextMetrics.measureText(value, t.style).width;
+        for (let lines = bounds.lines || 2; lines > 0; lines--) {
+          label = fitCaption(raw, {
+            maxWidth: bounds.width,
+            maxLines: lines,
+            measure,
+          });
+          if (!label || PIXI.CanvasTextMetrics.measureText(label, t.style).height <= bounds.height)
+            break;
+          label = "";
+        }
+      }
+      if (t.text !== label) t.text = label;
+      t._observerCaption = layoutKey;
+    }
     t.anchor.set(align === "center" ? 0.5 : 0, 0);
     t.position.set(x, y);
     scene.addChild(t);
@@ -127,7 +149,7 @@ export function createGraphRenderer({
       if (!presentation.regions.has(r.id) || !visible(r.x, r.y, r.w, r.h)) continue;
       scope("region:" + r.id);
       const owner = graph.byId.get(r.id),
-        color = nodeTypes[owner.type].color;
+        color = layerColor(owner.node);
       const highlighted = focusContext.regions.has(r.id),
         dim = focusContext.active && !highlighted;
       const core = annotationFor(preferences, owner.node.referenceOf || r.id).core;
@@ -153,7 +175,13 @@ export function createGraphRenderer({
           alpha: dim ? 0.2 : highlighted ? 0.8 : 0.45,
         });
       scene.addChild(shape);
-      hits.push({ cx: r.cx, cy: r.cy, radius: r.radius, region: r.id, border: true });
+      hits.push({
+        cx: r.cx,
+        cy: r.cy,
+        radius: r.radius,
+        region: r.id,
+        border: true,
+      });
       labels.push({ r, owner, color, dim });
     }
     // Draw titles after every enclosure so a child fill cannot cover its parent title.
@@ -267,11 +295,15 @@ export function createGraphRenderer({
         col = style.color;
       const resolved = router.routes.get(e.id);
       if (!resolved) continue;
-      const path = { start: resolved[0], end: resolved.at(-1), points: resolved };
+      const path = {
+        start: resolved[0],
+        end: resolved.at(-1),
+        points: resolved,
+      };
       const { end } = path;
       let mid = bezierAt(path, 0.5);
       edgePaths.set(e.id, path);
-      const alpha = dim ? 0.1 : highlight ? 0.95 : 0.65,
+      const alpha = dim ? 0.1 : highlight ? 0.95 : 0.32,
         g = graphic();
       if (foreground && !dim)
         strokeRelation(g, path, { color: 0xf6f8fa, dash: [] }, Math.max(5, 3 / scale), 0.9);
@@ -279,7 +311,7 @@ export function createGraphRenderer({
         g,
         path,
         { ...style, dash: style.dash.map((n) => n / Math.min(1, scale)) },
-        Math.max(highlight ? 2.3 : e.observed ? 2 : 1.5, (highlight ? 1.5 : 1) / scale),
+        Math.max(highlight ? 2.3 : e.observed ? 1.35 : 1, (highlight ? 1.5 : 0.65) / scale),
         alpha,
       );
       scene.addChild(g);
@@ -385,12 +417,16 @@ export function createGraphRenderer({
     metrics.nodes++;
     scope("node:" + b.id);
     const p = point(b),
-      stroke = nodeTypes[b.type].color,
+      stroke = layerColor(b.node),
       g = graphic(),
       r = b.type === "business" ? 29 : 24;
     const size = Math.max(1, 11 / (r * scale));
     if (focusContext.active && focusContext.nodes.has(b.id) && selected !== b.id)
-      g.circle(p.x, p.y, r + 5).stroke({ color: 0x5d87b1, width: 1.6, alpha: 0.65 });
+      g.circle(p.x, p.y, r + 5).stroke({
+        color: 0x5d87b1,
+        width: 1.6,
+        alpha: 0.65,
+      });
     if (selected === b.id)
       g.circle(p.x, p.y, r + 8).stroke({ color: 0x356ba4, width: 3, alpha: 1 });
     const appearance = glyphAppearance(stroke, {
@@ -410,8 +446,12 @@ export function createGraphRenderer({
       );
     if (b.state !== "declared") {
       const statusColor =
-        { active: 0x22876e, ok: 0x22876e, blocked: 0xbd8237, historical: 0x8192a2 }[b.state] ||
-        0x8192a2;
+        {
+          active: 0x22876e,
+          ok: 0x22876e,
+          blocked: 0xbd8237,
+          historical: 0x8192a2,
+        }[b.state] || 0x8192a2;
       const badgeX = p.x + 23 * size,
         badgeY = p.y + 21 * size,
         font = Math.max(11, 8 / scale);
@@ -467,16 +507,46 @@ export function createGraphRenderer({
         expand: b.id,
       });
     }
-    if (scale > 0.24 || b.type === "business" || presentation.glyphs.size <= 30)
-      text(
-        short(displayName(b.node, preferences), scale < 0.45 ? 15 : 19),
-        p.x,
-        p.y + r * size + 7 / scale,
-        Math.max(14 / Math.sqrt(Math.min(1, scale)), 10 / scale),
-        0x2b4658,
-        "center",
-        b.type === "business" ? "600" : "500",
-      );
+    let detailY = p.y + r * size + 7 / scale;
+    if (scale > 0.24 || b.type === "business" || presentation.glyphs.size <= 30) {
+      const raw = displayName(b.node, preferences),
+        font = Math.max(14 / Math.sqrt(Math.min(1, scale)), 10 / scale),
+        // Icons retain a minimum screen size while node boxes shrink. Reserve
+        // one caption line below them even when it extends past the world box.
+        limitBottom = Math.max(b.y + b.h, detailY + font * 1.6),
+        label = text(
+          raw,
+          p.x,
+          detailY,
+          font,
+          0x2b4658,
+          "center",
+          b.type === "business" ? "600" : "500",
+          { width: b.w - 12, height: limitBottom - detailY, lines: 2 },
+        );
+      if (label.text && captions.length < 500)
+        captions.push({
+          id: b.id,
+          raw,
+          text: label.text,
+          x: label.x - label.width / 2,
+          y: label.y,
+          w: label.width,
+          h: label.height,
+          limitBottom,
+          node: { x: b.x, y: b.y, w: b.w, h: b.h },
+        });
+      detailY += (label.text ? label.height : 0) + 4 / scale;
+    }
+    // Detail rows consume the remaining box height; overview captions keep priority.
+    function detail(value, color, font) {
+      const label = text(value, p.x, detailY, font, color, "center", "400", {
+        width: b.w - 12,
+        height: b.y + b.h - detailY,
+        lines: 1,
+      });
+      if (label.text) detailY += label.height + 3 / scale;
+    }
     if (scale > 0.48) {
       let rows;
       if (b.type === "state") rows = b.rows.filter((r) => r.role === "value").slice(0, 1);
@@ -492,37 +562,28 @@ export function createGraphRenderer({
         ]
           .filter(Boolean)
           .slice(0, 2);
-      rows.forEach((row, i) =>
-        text(
-          short(row.text, 29),
-          p.x,
-          b.y + 91 + i * 18,
-          11.5 / Math.sqrt(Math.min(1, scale)),
+      rows.forEach((row) =>
+        detail(
+          row.text,
           row.role === "bad" ? 0xa76d2c : row.role === "good" ? 0x327e6b : 0x637c8d,
-          "center",
+          11.5 / Math.sqrt(Math.min(1, scale)),
         ),
       );
       if (annotation.note)
-        text(
-          short(boTranslate("Note: ") + annotation.note.replace(/\s+/g, " "), 27),
-          p.x,
-          b.y + b.h - 19,
-          11.5 / Math.sqrt(Math.min(1, scale)),
+        detail(
+          boTranslate("Note: ") + annotation.note.replace(/\s+/g, " "),
           0x5075b5,
-          "center",
+          11.5 / Math.sqrt(Math.min(1, scale)),
         );
     } else if (presentation.glyphs.size <= 30) {
       const row =
         b.rows.find((r) => ["good", "bad"].includes(r.role)) ||
         b.rows.find((r) => r.role === "value");
       if (row)
-        text(
-          short(row.text, 22),
-          p.x,
-          p.y + r * size + 20 / scale,
-          Math.max(11, 9 / scale),
+        detail(
+          row.text,
           row.role === "bad" ? 0xa76d2c : row.role === "good" ? 0x327e6b : 0x637c8d,
-          "center",
+          Math.max(11, 9 / scale),
         );
     }
     boDrawChange(b, p.x, b.y + b.h + 3);
@@ -531,7 +592,7 @@ export function createGraphRenderer({
       x: b.x,
       y: b.y + 5,
       w: b.w,
-      h: b.h - 4,
+      h: Math.max(b.h - 4, detailY - b.y),
       cx: p.x,
       cy: p.y,
       r: (r + 6) * size,
@@ -579,6 +640,7 @@ export function createGraphRenderer({
     router.request(planarScene(graph, presentation, cleanRoute(preferences.routing), scale));
     scene.removeChildren();
     edgePaths.clear();
+    captions.length = 0;
     scene.position.set(pan.x, pan.y);
     scene.scale.set(scale);
     hits.length = 0;
@@ -607,6 +669,12 @@ export function createGraphRenderer({
     },
     get frames() {
       return drawCount;
+    },
+    get captions() {
+      return captions.map((caption) => ({
+        ...caption,
+        node: { ...caption.node },
+      }));
     },
   };
 }

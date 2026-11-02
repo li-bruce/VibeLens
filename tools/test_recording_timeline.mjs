@@ -211,8 +211,8 @@ try {
 
   const viewRows = traceRows(result, { visible: new Set(["check"]), expanded: ["rules"] });
   assert.deepEqual(
-    viewRows.map((row) => row.id),
-    ["layer:rules", "check"],
+    viewRows.map((row) => ({ layer: row.layer, members: row.members })),
+    [{ layer: "rules", members: ["check"] }],
   );
   assert.deepEqual(
     tracePoints(viewRows, result, [0, 2, 5, 8]).map((point) => point.raw),

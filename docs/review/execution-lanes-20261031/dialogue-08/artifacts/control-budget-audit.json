@@ -1,0 +1,68 @@
+{
+  "valid": true,
+  "classification": "shared-framework-control-cli-defect",
+  "acceptance_ready": false,
+  "http_status": 200,
+  "response_bytes": 9078736,
+  "fixed_cli_budget": 8388608,
+  "response_sha256": "0ed98a69a676a8a64e96bfc0c07fb21b85f4322c725280550f9110fd153b5a78",
+  "build_id": "fc5642726c7ef64bc86c122afe3135de439e19b95d4ba2da65a34cc46b680538",
+  "events": 7597,
+  "current_binding": {
+    "status": "current",
+    "changed_files": [],
+    "model_changed": false,
+    "intent_changed": false,
+    "directly_affected": [],
+    "possibly_affected": []
+  },
+  "health": {
+    "errors": 0,
+    "dropped": 0,
+    "run_id": "54261c000df60b82c86a0d11",
+    "attempted": 7597,
+    "written": 7597,
+    "enabled": true,
+    "producer": {
+      "enabled": true,
+      "boundary_context": true,
+      "run_id": "86f5ff00a51349f8bfa92995fd291b13",
+      "producer_id": "c57bc385e50e464ba88dfb77d5510e0d",
+      "enqueued": 7597,
+      "pending": 0,
+      "errors": 0,
+      "dropped": 0,
+      "filtered": 38,
+      "last_error": null,
+      "data_errors": 0,
+      "integration_errors": 0
+    },
+    "runtime_frame_evictions": 0,
+    "context_evictions": 0,
+    "retained_events": 7597,
+    "evicted_events": 0,
+    "history_start_seq": 1,
+    "log_errors": 0,
+    "listener_errors": 0,
+    "retention": {
+      "memory_events": 10000,
+      "memory_seconds": 1800,
+      "log_bytes": 8388608,
+      "log_backups": 2
+    }
+  },
+  "real_cli_result": {
+    "valid": false,
+    "error": "Observer response exceeds the inspection budget"
+  },
+  "managed_cli_matches_canonical": true,
+  "cli_sha256": "9bfe2b5dfbea4d0e7c29b5db2dae69f1966b472336c880935d233aea96b03c75",
+  "source_locations": [
+    "observer_runtime/bo_observer/control/cli.py:27-32 reads at most 8 MiB plus one byte and rejects larger responses",
+    "observer_runtime/bo_observer/control/cli.py:60-64 activation unconditionally fetches the full /api/view",
+    "observer_runtime/bo_observer/control/cli.py:116-125 snapshot support is confined to non-activation commands"
+  ],
+  "observer_requests_added_zero_business_events": true,
+  "preservation": "No control budget, managed source, raw events, capture requirements, baselines or assertions were changed. Do not clear retained events to make activation pass.",
+  "maintenance_boundary": "Repair the canonical activation/inspection identity transport for a normal large live view while preserving explicit project/conversation authorization and bounded reads; include large-view and wrong-project regressions. Upgrade this project only through the normal interface and resume the same active change."
+}

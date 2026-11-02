@@ -1,13 +1,15 @@
 """Lazy source index shared by the CLI and the optional Web code view."""
 
 import json
+from copy import deepcopy
 from pathlib import Path
 import threading
 from ..graph.behavior_model import contained, read, digest
-from ..model_io import read_model
+from ..model_io import model_from_value
 from ..sources import scan
 from ..workflow.bo_sync import source_inventory
-from .index import build
+from .index import build, identity
+from .file_dependencies import file_units
 from .query import query, representation_links
 from .filesystem import inventory as project_inventory
 
@@ -20,6 +22,8 @@ class CodeGraph:
         self.graph = None
         self.fingerprint = None
         self.persist = persist
+        self.project_inspections = {}
+        self.model_cache = None
         self.cache = contained(self.root, ".stategraph/code-graph.json")
 
     def inputs(self):
@@ -49,9 +53,13 @@ class CodeGraph:
                 },
             }
         model_path = contained(self.root, cfg.get("model", "bo_stategraph/project.json"))
-        model = (
-            read_model(model_path) if model_path.is_file() else {"nodes": [], "source_files": []}
-        )
+        model = {"nodes": [], "source_files": []}
+        if model_path.is_file():
+            raw = model_path.read_bytes()
+            if self.model_cache is None or raw != self.model_cache[0]:
+                parsed = model_from_value(json.loads(raw.decode("utf-8-sig")))
+                self.model_cache = raw, parsed
+            model = deepcopy(self.model_cache[1])
         return cfg, model
 
     def refresh(self):
@@ -91,8 +99,55 @@ class CodeGraph:
             return self.graph, model
 
     def view(self, **options):
+        if options.get("projection") == "project":
+            return self.project_view(**options)
         with self.lock:
             graph, model = self.refresh()
+            result = query(graph, model, **options)
+            result["scope"] = graph["scope"]
+            return result
+
+    def project_view(self, **options):
+        """Expose files/containment independently of the optional symbol parser.
+
+        This projection never replaces or seals the full AST cache. A fresh source
+        inventory keeps additions, deletions and file links visible after coding.
+        """
+        with self.lock:
+            cfg, model = self.inputs()
+            inventory = source_inventory(self.root, cfg, inspection_cache=self.project_inspections)
+            project = project_inventory(self.root, cfg, inventory)
+            fingerprint = digest(project)
+            cached = getattr(self, "project_cache", None)
+            if cached is None or cached[0] != fingerprint:
+                empty = scan(self.root, [])
+                units, errors = file_units(
+                    self.root, inventory["files"], getattr(self, "project_units", None)
+                )
+                self.project_units = units
+                empty["units"] = units
+                empty["errors"] += errors
+                empty["errors"] += project["errors"]
+                graph = build(empty, project, self.root)
+                graph["scope"] = {
+                    "files": list(inventory["files"]),
+                    "excluded": inventory["excluded"],
+                    "project_excluded": project["excluded"],
+                }
+                self.project_cache = fingerprint, graph
+            graph = self.project_cache[1]
+            # Source bindings resolve to files here; optional symbols remain absent.
+            graph = {
+                **graph,
+                "symbols": {
+                    node["source"]["path"]
+                    + "::"
+                    + node["source"].get("symbol", ""): identity("file", node["source"]["path"])
+                    for node in model.get("nodes", [])
+                    if node.get("source", {}).get("path")
+                    and node["source"]["path"] in project["entries"]
+                },
+            }
             result = query(graph, model, **options)
             result["scope"] = graph["scope"]
             return result
@@ -169,14 +224,12 @@ def main():
         result = service.check()
         print(json.dumps(result, ensure_ascii=False))
         return int(not result["valid"])
-    graph, _ = service.refresh()
-    result = (
-        service.view(
+    if args.command == "query":
+        result = service.view(
             focus=args.focus, depth=args.depth, limit=args.limit, projection=args.projection
         )
-        if args.command == "query"
-        else graph
-    )
+    else:
+        result, _ = service.refresh()
     if args.out:
         target = contained(service.root, args.out)
         target.parent.mkdir(parents=True, exist_ok=True)

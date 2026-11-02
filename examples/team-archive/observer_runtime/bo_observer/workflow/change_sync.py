@@ -50,6 +50,18 @@ def verify(root, cfg, change):
 def structural_errors(root, cfg, snap):
     """Check source scope, model bindings, probes, declarations, and test contracts together."""
     errors = list(snap["structure"]["errors"])
+    from .observation_requirements import deferred_builder_errors
+    from ..observation.telemetry import business_layer_errors, load_registrations, automatic_sites
+
+    errors.extend(business_layer_errors(snap["model"]))
+    telemetry = None
+    try:
+        telemetry = load_registrations(root, snap["model"])
+    except (ValueError, OSError) as error:
+        errors.append("telemetry registration: " + str(error))
+
+    if not errors:
+        errors.extend(deferred_builder_errors(root, snap["model"]))
     if snap["model"].get("policy"):
         from ..policy.evidence import binding_errors
 
@@ -124,17 +136,19 @@ def structural_errors(root, cfg, snap):
             errors.append("static projection is stale: rebuild model with code_structure.enrich")
     except (OSError, ValueError, KeyError, SyntaxError) as exc:
         errors.append(str(exc))
+    from .observation_requirements import probe_sites
+
+    sites = probe_sites(snap["structure"], cfg)
+    try:
+        sites.extend(automatic_sites(telemetry, snap["structure"]))
+    except ValueError as error:
+        errors.append(str(error))
     ids = {n["id"] for n in snap["model"]["nodes"]}
-    sites = []
-    for s in snap["structure"]["symbols"].values():
-        for c in s["calls"]:
-            if c["expression"] in cfg.get("probe_callees", ["trace.record"]) and c.get(
-                "literal_pair"
-            ):
-                node, phase = c["literal_pair"]
-                sites.append({"symbol": s["id"], "node": node, "phase": phase})
-                if node not in ids:
-                    errors.append("probe references missing node: " + node)
+    errors.extend(
+        "probe references missing node: " + site["node"]
+        for site in sites
+        if site["node"] not in ids
+    )
     for required in cfg.get("required_probes", []):
         if not any(all(site.get(k) == v for k, v in required.items()) for site in sites):
             errors.append({"missing_required_probe": required})
@@ -432,7 +446,9 @@ def verified_receipt(root, cfg, change):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["begin", "inspect", "verify", "accept", "check"])
+    parser.add_argument(
+        "command", choices=["recall", "begin", "inspect", "verify", "accept", "check"]
+    )
     parser.add_argument("--root", required=True)
     parser.add_argument("--config", default="sync.json")
     parser.add_argument("--change")
@@ -442,7 +458,15 @@ def main():
     root = Path(a.root).absolute().resolve()
     cfg = config(root, a.config)
     active = contained(root, cfg.get("active_change", ".stategraph/active.json"))
-    if a.command == "begin":
+    from .iteration_recall import recall
+
+    if a.command == "recall":
+        previous = None
+        if active.exists():
+            previous = read(contained(root, read(active)["change"]) / "baseline.json")
+        result = recall(root, cfg, snapshot(root, cfg, previous), previous)
+        result["valid"] = True
+    elif a.command == "begin":
         if not a.change or not a.request:
             raise ValueError("begin requires --change and --request")
         change = contained(root, a.change)
@@ -484,11 +508,13 @@ def main():
         )
         write(change / "baseline.json", initial)
         write(active, {"change": a.change})
+        restored = recall(root, cfg, initial, initial)
         result = {
             "valid": True,
             "status": "editing",
             "baseline_id": initial["id"],
             "change": a.change,
+            "recall": restored,
         }
     else:
         change = contained(root, a.change or read(active)["change"])

@@ -1,0 +1,167 @@
+"""Small server-rendered interface; every file operation rechecks permission."""
+import io
+from pathlib import Path
+import secrets
+from flask import Flask, request, session, redirect, url_for, render_template, jsonify, flash, send_file, g
+from .domain import DomainError, SharingService
+from .ports import BOPorts
+from .store import Store
+
+LABELS = {"zh-CN": {"Files": "文件列表", "Reviews": "审核列表", "Messages": "消息列表", "Sign in": "登录", "Sign out": "退出登录",
+    "Username": "账号", "Password": "密码", "Upload": "上传文件", "File": "文件名", "Uploader": "上传者", "Review result": "审核结果", "Actions": "操作",
+    "Details": "详情", "Download": "下载", "Share": "分享", "Recipient": "接收同事", "Approve": "通过", "Reject": "拒绝", "Refresh": "刷新",
+    "pending": "待审核", "approved": "已通过", "rejected": "已拒绝", "shared": "收到共享", "admin": "管理员", "member": "普通用户",
+    "No files": "暂无可访问的文件", "No reviews": "暂无可审核的文件", "No messages": "暂无已送达的消息", "Team files": "团队文件共享",
+    "Upload hint": "文件上传后等待管理员审核，最大 16 MB。", "Message hint": "这里只显示后台已送达给你的消息。", "Review hint": "只能审核他人的待审核文件。",
+    "Uploaded": "上传成功，文件正在等待审核。", "Reviewed": "审核结果已生效，通知将由后台稍后送达。", "Shared": "共享已生效，接收人立即可访问，通知稍后送达。",
+    "Already shared": "该同事已获得访问权限。", "Back": "返回文件列表", "Error": "操作未完成", "Fixed accounts": "本试验使用四个固定账号，密码见交付说明。",
+    "invalid_credentials": "账号或密码不正确。", "permission_denied": "你没有执行此操作的权限。", "file_not_found": "文件不存在。", "csrf_invalid": "页面凭证已过期，请刷新后重试。",
+    "invalid_filename": "文件名无效。", "file_too_large": "文件超过 16 MB。", "recipient_not_found": "接收账号不存在。", "invalid_decision": "无效的审核操作。",
+    "state_conflict": "文件状态已变化，请刷新后重试。", "file_required": "请先选择文件。"},
+    "en": {"Upload hint": "Uploads await administrator review. Maximum 16 MB.", "Message hint": "Only messages delivered to your account appear here.",
+        "Review hint": "Only other users' pending files can be reviewed.", "Fixed accounts": "Use the four fixed trial accounts and the supplied passwords.",
+        "Uploaded": "Uploaded and waiting for review.", "Reviewed": "Review is effective. The background worker will deliver the notification later.",
+        "Shared": "Access is effective immediately. The notification will arrive later.", "Already shared": "This colleague already has access."}}
+
+
+def translate(key):
+    return LABELS.get(session.get("locale", "zh-CN"), {}).get(key, key)
+
+
+def csrf_token():
+    session.setdefault("csrf", secrets.token_urlsafe(24))
+    return session["csrf"]
+
+
+def current_actor():
+    return session.get("actor_id", "")
+
+
+def create_app(root: Path, database=None, bo=None, graph_url="http://127.0.0.1:59263/graph", delay=5):
+    app = Flask(__name__, template_folder=str(root / "templates"), static_folder=str(root / "static"))
+    data_dir = Path(database).parent if database else root / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    key_path = data_dir / "session.key"
+    if not key_path.exists():
+        key_path.write_text(secrets.token_hex(32), encoding="ascii")
+    app.config.update(SECRET_KEY=key_path.read_text(encoding="ascii"), MAX_CONTENT_LENGTH=17 * 1024 * 1024,
+        SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax", TRUSTED_HOSTS=["localhost", "127.0.0.1"], GRAPH_URL=graph_url)
+    bo = bo or BOPorts()
+    bo.install_http(app)
+    store = Store(Path(database or data_dir / "sharing.sqlite3"), bo)
+    service = SharingService(root, store, bo, delay=delay)
+    app.extensions["sharing"] = service
+    app.jinja_env.globals.update(t=translate, csrf_token=csrf_token)
+
+    @app.before_request
+    def request_begin():
+        if request.path.startswith("/static/"):
+            return None
+        manager = bo.span("api_request", lambda: {"inputs": {"method": request.method, "path": request.path}}, scope="application")
+        g.bo_manager, g.bo_activation = manager, manager.__enter__()
+        if request.args.get("lang") in {"en", "zh-CN"}:
+            session["locale"] = request.args["lang"]
+        if request.method == "POST" and not secrets.compare_digest(request.form.get("csrf", ""), session.get("csrf", "missing")):
+            raise DomainError("csrf_invalid", 400)
+        if request.endpoint not in {"login", "static"} and not current_actor():
+            return redirect(url_for("login"))
+
+    @app.after_request
+    def request_end(response):
+        response.headers.update({"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "same-origin",
+            "Content-Security-Policy": "default-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'"})
+        if hasattr(g, "bo_manager"):
+            status = response.status_code
+            g.bo_activation.result(lambda: {"outputs": {"status": status}})
+            g.bo_manager.__exit__(None, None, None)
+            del g.bo_manager
+        return response
+
+    @app.teardown_request
+    def request_error(error):
+        if hasattr(g, "bo_manager"):
+            g.bo_manager.__exit__(type(error) if error else None, error, getattr(error, "__traceback__", None))
+            del g.bo_manager
+
+    @app.route("/login", methods=["GET", "POST"])
+    def login():
+        with bo.span("api_login", lambda: {}, scope="application"):
+            if request.method == "POST":
+                actor = service.authenticate(request.form.get("username", ""), request.form.get("password", ""))
+                locale = session.get("locale", "zh-CN")
+                session.clear()
+                session.update(actor_id=actor["id"], role=actor["role"], locale=locale)
+                csrf_token()
+                return redirect(url_for("files"))
+            return render_template("login.html", accounts=[a["username"] for a in store.credentials])
+
+    @app.get("/")
+    def index():
+        with bo.span("api_index", lambda: {}, scope="application"):
+            return redirect(url_for("files"))
+
+    @app.get("/files")
+    def files():
+        with bo.span("api_files", lambda: {}, scope="application"):
+            actor_id = current_actor()
+            return render_template("files.html", items=service.list_files(actor_id), recipients=[a for a in service.users(actor_id) if a["id"] != actor_id])
+
+    @app.post("/upload")
+    def upload():
+        with bo.span("api_upload", lambda: {}, scope="application"):
+            item = request.files.get("file")
+            if not item:
+                raise DomainError("file_required", 400)
+            service.upload(current_actor(), item.filename or "", item.read(16 * 1024 * 1024 + 1))
+            flash(translate("Uploaded"))
+            return redirect(url_for("files"))
+
+    @app.get("/files/<file_id>")
+    def details(file_id: str):
+        with bo.span("api_details", lambda: {"inputs": {"file_id": file_id}}, scope="application"):
+            return render_template("details.html", item=service.details(current_actor(), file_id))
+
+    @app.get("/files/<file_id>/download")
+    def download(file_id: str):
+        with bo.span("api_download", lambda: {"inputs": {"file_id": file_id}}, scope="application"):
+            filename, content = service.download(current_actor(), file_id)
+            return send_file(io.BytesIO(content), as_attachment=True, download_name=filename, mimetype="application/octet-stream", max_age=0)
+
+    @app.post("/files/<file_id>/share")
+    def share(file_id: str):
+        with bo.span("api_share", lambda: {"inputs": {"file_id": file_id}}, scope="application"):
+            result = service.share(current_actor(), file_id, request.form.get("recipient_id", ""))
+            flash(translate("Shared" if result["created"] else "Already shared"))
+            return redirect(url_for("files"))
+
+    @app.get("/reviews")
+    def reviews():
+        with bo.span("api_reviews", lambda: {}, scope="application"):
+            return render_template("reviews.html", items=service.list_reviews(current_actor()))
+
+    @app.post("/files/<file_id>/review")
+    def review(file_id: str):
+        with bo.span("api_review", lambda: {"inputs": {"file_id": file_id}}, scope="application"):
+            service.review(current_actor(), file_id, request.form.get("decision", ""))
+            flash(translate("Reviewed"))
+            return redirect(url_for("reviews"))
+
+    @app.get("/messages")
+    def messages():
+        with bo.span("api_messages", lambda: {}, scope="application"):
+            return render_template("messages.html", items=service.list_messages(current_actor()))
+
+    @app.post("/logout")
+    def logout():
+        with bo.span("api_logout", lambda: {}, scope="application"):
+            service.logout(current_actor())
+            locale = session.get("locale", "zh-CN")
+            session.clear()
+            session["locale"] = locale
+            return redirect(url_for("login"))
+
+    @app.errorhandler(DomainError)
+    def domain_error(error):
+        return render_template("error.html", message=translate(error.code)), error.status
+
+    return app

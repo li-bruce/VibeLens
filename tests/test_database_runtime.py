@@ -1,11 +1,13 @@
 """Real SQLite execution plus fault, privacy, cursor, and transaction regressions."""
 
 import asyncio
+from copy import deepcopy
 from contextlib import asynccontextmanager, contextmanager
 import json
 from pathlib import Path
 import sys
 import tempfile
+import subprocess
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,6 +17,8 @@ from bo_observer.adapters.python.bo_probe import BOProbe
 from bo_observer.data.runtime import BODataRuntime, bo_query_shape, _bo_sql_access
 from bo_observer.observation.observation_scope import bo_internal
 from bo_observer.protocol import schema_check
+from bo_observer.observation.lifecycle import data_lifecycle, lifecycle_transition
+from bo_observer.workflow.observation_requirements import invocation_closure
 
 
 def bo_fixture():
@@ -398,6 +402,244 @@ class DatabaseRuntimeTests(unittest.TestCase):
         with self.bo_runtime.operation("query"), self.bo_engine.connect() as connection:
             connection.exec_driver_sql("SELECT * FROM image").all()
         self.assertEqual(self.bo_results(), [])
+
+    def lifecycle_payload(self):
+        """Exercise real read, transform, commit and rollback boundaries, with native effects."""
+        with self.bo_engine.connect() as connection:
+            result = self.bo_runtime.execute(
+                "query",
+                lambda: connection.exec_driver_sql("SELECT id FROM image").fetchall(),
+                connection=connection,
+                statement="SELECT id FROM image",
+                language="sql",
+                summarize=lambda rows: {"rows": len(rows), "result": {"count": len(rows)}},
+            )
+        self.assertEqual(len(result), 1)
+        with self.bo_runtime.transaction("transaction", self.bo_engine.begin()) as connection:
+            connection.exec_driver_sql("INSERT INTO image VALUES (2, 'committed')")
+        result = self.bo_runtime.transform(
+            "transform",
+            lambda values: [value + 1 for value in values],
+            [1, 2],
+            before=lambda values: {"count": len(values)},
+            after=lambda values: {"count": len(values)},
+        )
+        self.assertEqual(result, [2, 3])
+        with self.assertRaises(ValueError):
+            self.bo_runtime.transform("transform", lambda value: int(value), "invalid")
+        with self.assertRaises(ValueError):
+            with self.bo_runtime.transaction("transaction", self.bo_engine.begin()) as connection:
+                connection.exec_driver_sql("INSERT INTO image VALUES (3, 'rolled back')")
+                raise ValueError("Abort native transaction")
+        with self.bo_engine.connect() as connection:
+            self.assertEqual(connection.exec_driver_sql("SELECT COUNT(*) FROM image").scalar(), 2)
+        events = self.bo_results()
+        project, config = bo_fixture()
+        legacy = project["model"]["nodes"]
+        for node, operation in zip(legacy, config["operations"]):
+            node.update(
+                kind="function",
+                data_role="transform" if operation["action"] == "transform" else "query",
+                data_metadata={"action": operation["action"]},
+            )
+        registered = deepcopy(legacy)
+        for node, operation in zip(registered, config["operations"]):
+            node["lifecycle"] = data_lifecycle(operation["action"])
+        return {"events": events, "legacy": legacy, "registered": registered}
+
+    def test_real_data_exits_close_in_verifier_graph_and_timeline(self):
+        payload = self.lifecycle_payload()
+        payload["boundaries"] = {}
+        for key in ("legacy", "registered"):
+            model = {"nodes": payload[key]}
+            checked = invocation_closure(
+                {"runs": [{"mode": "on", "events": payload["events"]}]}, required=True, model=model
+            )
+            self.assertTrue(checked["valid"], checked)
+            self.assertEqual(checked["closed_calls"], 5)
+            nodes = {node["id"]: node for node in payload[key]}
+            payload["boundaries"][key] = [
+                {
+                    "raw": raw,
+                    "node": event["node"],
+                    "transition": lifecycle_transition(nodes[event["node"]], event),
+                }
+                for raw, event in enumerate(payload["events"])
+            ]
+        filename = Path(self.bo_folder.name) / "actual-lifetimes.json"
+        filename.write_text(json.dumps(payload), encoding="utf-8")
+        result = subprocess.run(
+            ["node", "tools/test_data_lifecycles.mjs", str(filename)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_native_query_inherits_the_actual_enclosing_invocation(self):
+        project, config = bo_fixture()
+        project["model"]["nodes"].append({"id": "business", "capture": {"in": {}, "out": {}}})
+        events = []
+        probe = BOProbe(project, "context-test", sink=lambda body, kind: events.append(body))
+        runtime = BODataRuntime(probe, config)
+        detach = runtime.attach_sqlalchemy(self.bo_engine)
+        try:
+            # Attribution may be installed before the actual request begins.
+            with runtime.operation("query"):
+                with probe.span(
+                    "business", entity="file-a", attempt="request-a", scope="entity"
+                ) as parent:
+                    with self.bo_engine.connect() as connection:
+                        self.assertEqual(
+                            connection.exec_driver_sql("SELECT COUNT(*) FROM image").scalar(), 1
+                        )
+            self.assertTrue(probe.flush())
+            query = next(
+                event for event in events if event["node"] == "query" and event["phase"] == "enter"
+            )
+            self.assertEqual(query["parent_call_id"], parent.call_id)
+            self.assertEqual(
+                (query["entity"], query["attempt"], query["scope"]),
+                ("file-a", "request-a", "entity"),
+            )
+            self.assertEqual(runtime.bo_errors, 0)
+            self.assertEqual(probe.bo_errors, 0)
+        finally:
+            detach()
+            runtime.close()
+            probe.close()
+
+    def test_native_callbacks_and_transaction_body_preserve_parentage(self):
+        project, config = bo_fixture()
+        project["model"]["nodes"].extend(
+            {"id": node, "capture": {"in": {}, "out": {}}} for node in ("business", "callback")
+        )
+        events = []
+        probe = BOProbe(project, "nested-context", sink=lambda body, kind: events.append(body))
+        runtime = BODataRuntime(probe, config)
+        detach = runtime.attach_sqlalchemy(self.bo_engine)
+        try:
+            with probe.span("business", entity="file", attempt="request", scope="entity") as parent:
+
+                def read():
+                    with probe.span("callback"):
+                        with self.bo_engine.connect() as connection:
+                            return connection.exec_driver_sql("SELECT COUNT(*) FROM image").scalar()
+
+                self.assertEqual(runtime.execute("query", read), 1)
+                with runtime.transaction("transaction", self.bo_engine.begin()):
+                    runtime.transform("transform", lambda values: values + [2], [1])
+                self.assertEqual(probe.bo_current_context()["parent_call_id"], parent.call_id)
+            self.assertTrue(probe.flush())
+            entered = {event["node"]: event for event in events if event["phase"] == "enter"}
+            self.assertEqual(entered["query"]["parent_call_id"], parent.call_id)
+            self.assertEqual(entered["callback"]["parent_call_id"], entered["query"]["call_id"])
+            self.assertEqual(entered["transaction"]["parent_call_id"], parent.call_id)
+            self.assertEqual(
+                entered["transform"]["parent_call_id"], entered["transaction"]["call_id"]
+            )
+            self.assertEqual(probe.bo_current_context(), {})
+            self.assertEqual(runtime.bo_errors, 0)
+            self.assertEqual(probe.bo_errors, 0)
+        finally:
+            detach()
+            runtime.close()
+            probe.close()
+
+    def test_async_requests_do_not_share_or_retain_invocation_context(self):
+        from contextvars import copy_context
+
+        project, config = bo_fixture()
+        project["model"]["nodes"].append({"id": "business", "capture": {"in": {}, "out": {}}})
+        events = []
+        probe = BOProbe(project, "async-context", sink=lambda body, kind: events.append(body))
+        runtime = BODataRuntime(probe, config)
+        stale = None
+        failure = ValueError("Native failure")
+        try:
+
+            async def request(entity):
+                nonlocal stale
+                with probe.span("business", entity=entity, attempt=entity, scope="entity"):
+                    stale = copy_context()
+
+                    async def read():
+                        await asyncio.sleep(0)
+                        with self.bo_engine.connect() as connection:
+                            count = connection.exec_driver_sql(
+                                "SELECT COUNT(*) FROM image"
+                            ).scalar()
+                        if entity == "b":
+                            raise failure
+                        return count
+
+                    return await runtime.execute_async("query", read)
+
+            async def both():
+                return await asyncio.gather(request("a"), request("b"), return_exceptions=True)
+
+            results = asyncio.run(both())
+            self.assertEqual(results[0], 1)
+            self.assertIs(results[1], failure)
+            self.assertTrue(probe.flush())
+            roots = {
+                event["entity"]: event
+                for event in events
+                if event["node"] == "business" and event["phase"] == "enter"
+            }
+            queries = [
+                event for event in events if event["node"] == "query" and event["phase"] == "enter"
+            ]
+            self.assertEqual(len(queries), 2)
+            for query in queries:
+                self.assertEqual(query["parent_call_id"], roots[query["entity"]]["call_id"])
+            self.assertEqual(probe.bo_current_context(), {})
+            self.assertEqual(stale.run(probe.bo_current_context), {})
+            checked = invocation_closure(
+                {"runs": [{"mode": "on", "events": events}]}, required=True
+            )
+            self.assertTrue(checked["valid"], checked)
+            self.assertEqual(probe.bo_errors, 0)
+        finally:
+            runtime.close()
+            probe.close()
+
+    def test_missing_data_exits_and_changed_identities_still_fail(self):
+        payload = self.lifecycle_payload()
+        model = {"nodes": payload["registered"]}
+        for phase in ("commit", "change"):
+            original = next(event for event in payload["events"] if event["phase"] == phase)
+            missing = [event for event in payload["events"] if event is not original]
+            checked = invocation_closure(
+                {"runs": [{"mode": "on", "events": missing}]}, required=True, model=model
+            )
+            self.assertFalse(checked["valid"])
+            self.assertEqual(len(checked["errors"]), 1)
+            corrupted = deepcopy(payload["events"])
+            next(event for event in corrupted if event["id"] == original["id"])[
+                "producer_id"
+            ] = "other"
+            self.assertFalse(
+                invocation_closure(
+                    {"runs": [{"mode": "on", "events": corrupted}]}, required=True, model=model
+                )["valid"]
+            )
+
+    def test_unrelated_change_or_wrong_status_cannot_close_a_data_call(self):
+        payload = self.lifecycle_payload()
+        for key in ("legacy", "registered"):
+            events = deepcopy(payload["events"])
+            next(event for event in events if event["phase"] == "change")["outputs"][
+                "status"
+            ] = "still_running"
+            checked = invocation_closure(
+                {"runs": [{"mode": "on", "events": events}]},
+                required=True,
+                model={"nodes": payload[key]},
+            )
+            self.assertFalse(checked["valid"])
+            self.assertEqual(len(checked["errors"]), 1)
 
 
 class QueryShapeTests(unittest.TestCase):

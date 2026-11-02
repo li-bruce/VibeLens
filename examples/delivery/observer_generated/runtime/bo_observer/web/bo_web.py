@@ -5,6 +5,7 @@ collection, Python state queries and executable state definitions.
 """
 
 import argparse
+from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import mimetypes
@@ -78,6 +79,28 @@ class BOWeb:
         session = parse_qs(urlsplit(path).query).get("vl_session", [None])[0]
         return self.control.preferences(session, fallback) if session else fallback
 
+    def control_context(self):
+        """Return graph/build evidence without transferring unrelated runtime history.
+
+        Standard sessions expose a model-only query. Existing custom integrations
+        keep their view callback; only the fields needed by controls are exported.
+        """
+        if not self.control_view:
+            raise ValueError("This observer integration has not connected its control view")
+        owner = getattr(self.control_view, "__self__", None)
+        query = getattr(owner, "control_context", None)
+        view = query() if callable(query) else self.control_view()
+        return {
+            "schema": "vibelens-control-context/v1",
+            **deepcopy(
+                {
+                    key: view[key]
+                    for key in ("stage", "layout_id", "model", "manifest")
+                    if key in view
+                }
+            ),
+        }
+
     def control_reply(self, path, value=None):
         """Control polling and acknowledgements never execute a business operation."""
         parsed = urlsplit(path)
@@ -99,7 +122,7 @@ class BOWeb:
                     if plan["recording"] and self.control_recording
                     else None
                 )
-                validate_evidence(plan, self.control_view(), recording)
+                validate_evidence(plan, self.control_context(), recording)
             except (ValueError, KeyError, TypeError) as error:
                 result["result"] = {
                     "revision": result["revision"],
@@ -159,6 +182,8 @@ class BOWeb:
         if control is not None:
             return control
         parsed = urlsplit(path)
+        if parsed.path == "/api/vibelens/control/context":
+            return self.control_context()
         if parsed.path == "/api/code/graph":
             query = parse_qs(parsed.query)
             return self.code_graph.view(

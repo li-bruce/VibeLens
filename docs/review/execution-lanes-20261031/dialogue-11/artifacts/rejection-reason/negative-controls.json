@@ -1,0 +1,210 @@
+{
+  "valid": true,
+  "basis": "Fresh real application observations; mutations are confined to copies.",
+  "results": {
+    "clean_mapping": {
+      "valid": true,
+      "errors": [],
+      "checks": 27,
+      "projection_checks": 210,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "missing_selected_recipient": {
+      "valid": false,
+      "errors": [
+        "invalid or incomplete implementation mapping: scenario instances differ from its runtime machine"
+      ],
+      "checks": 27,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "incorrect_revision": {
+      "valid": false,
+      "errors": [
+        "invalid or incomplete implementation mapping: scenario instances differ from its runtime machine"
+      ],
+      "checks": 27,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "missing_selected_rejection_reason": {
+      "valid": false,
+      "errors": [
+        "invalid or incomplete implementation mapping: scenario instances differ from its runtime machine"
+      ],
+      "checks": 27,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "incorrect_rejection_reason": {
+      "valid": false,
+      "errors": [
+        "invalid or incomplete implementation mapping: scenario instances differ from its runtime machine"
+      ],
+      "checks": 27,
+      "projection_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "missing_invocation_exit": {
+      "valid": false,
+      "closed_calls": 1085,
+      "legacy_events": 0,
+      "errors": [
+        {
+          "invocation_without_exit": "5ec7c56572c7454983cc67b8eb6aae82:af9566ffba28423aa2e6e21b10b9ec03:84",
+          "node": "upload_file",
+          "case": "workflow",
+          "call_id": "7e18f18d3ac3451484e2ccc0b15e4869"
+        }
+      ]
+    },
+    "missing_internal_point_owner": {
+      "valid": false,
+      "closed_calls": 1086,
+      "legacy_events": 0,
+      "errors": [
+        {
+          "event": "5ec7c56572c7454983cc67b8eb6aae82:af9566ffba28423aa2e6e21b10b9ec03:88",
+          "node": "policy:logged_in",
+          "missing_observation_owner": true,
+          "case": "workflow"
+        }
+      ]
+    },
+    "missing_native_transition": {
+      "detected": true,
+      "error": "missing native transition witness: [{\"seq\": 1, \"event\": \"submit\", \"before\": \"new\", \"after\": \"pending\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 2, \"event\": \"approve\", \"before\": \"pending\", \"after\": \"approved\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}, {\"seq\": 3, \"event\": \"share\", \"before\": \"approved\", \"after\": \"approved\", \"guards\": {\"operation_allowed\": true}, \"payload\": {\"allowed\": true}}]"
+    },
+    "unsynchronized_source": {
+      "status": "stale",
+      "changed_files": [
+        "app/service.py"
+      ],
+      "model_changed": false,
+      "intent_changed": false,
+      "directly_affected": [
+        "access_file",
+        "authorize_file",
+        "code.2b4ce20bc4971c2a",
+        "code.30326d5d01115958",
+        "code.358f50e0de5580fc",
+        "code.4d30fd12e3103997",
+        "code.7ac1e3434af643f0",
+        "code.7d0910b485a716ad",
+        "code.994b0f065dc58597",
+        "code.dcb3cefb04ba1a1d",
+        "code.df8f62768de49945",
+        "code.f01e24ca5c7b9b65",
+        "code.ffe99097306a6c85",
+        "list_files",
+        "list_users",
+        "review_file",
+        "review_reason_check",
+        "share_file",
+        "sign_in",
+        "state_transition",
+        "upload_file",
+        "withdraw_file"
+      ],
+      "possibly_affected": [
+        "access_file",
+        "approved",
+        "authorize_file",
+        "code.2b4ce20bc4971c2a",
+        "code.30326d5d01115958",
+        "code.358f50e0de5580fc",
+        "code.3edeec461b08e152",
+        "code.4d30fd12e3103997",
+        "code.61ad245cb873fe20",
+        "code.7ac1e3434af643f0",
+        "code.7d0910b485a716ad",
+        "code.94c27a9ca04798cb",
+        "code.994b0f065dc58597",
+        "code.dcb3cefb04ba1a1d",
+        "code.df8f62768de49945",
+        "code.f01e24ca5c7b9b65",
+        "code.f948b79a71a97708",
+        "code.ffe99097306a6c85",
+        "db:team_files:table%3Afiles",
+        "db:team_files:table%3Afiles:field:content",
+        "db:team_files:table%3Afiles:field:filename",
+        "db:team_files:table%3Afiles:field:id",
+        "db:team_files:table%3Afiles:field:journal",
+        "db:team_files:table%3Afiles:field:recipient_id",
+        "db:team_files:table%3Afiles:field:rejection_reason",
+        "db:team_files:table%3Afiles:field:reviewer_id",
+        "db:team_files:table%3Afiles:field:revision",
+        "db:team_files:table%3Afiles:field:size",
+        "db:team_files:table%3Afiles:field:state",
+        "db:team_files:table%3Afiles:field:uploader_id",
+        "db:team_files:table%3Ausers",
+        "db:team_files:table%3Ausers:field:display_name",
+        "db:team_files:table%3Ausers:field:id",
+        "db:team_files:table%3Ausers:field:password_hash",
+        "db_candidates",
+        "db_file",
+        "db_insert",
+        "db_metadata",
+        "db_transaction",
+        "db_update",
+        "db_users",
+        "designated_recipient",
+        "list_files",
+        "list_users",
+        "pending_review",
+        "rejection_reason",
+        "review_file",
+        "review_not_approved",
+        "review_reason_check",
+        "share_file",
+        "sign_in",
+        "source:app/storage.py::metadata_view",
+        "source:bo_stategraph/workflow.py::file_context",
+        "state_transition",
+        "upload_file",
+        "withdraw_file",
+        "withdrawn"
+      ]
+    },
+    "real_isolated_schema_change": {
+      "clean": {
+        "configured": true,
+        "valid": true,
+        "errors": [],
+        "changed": false,
+        "source_id": "0c70eccb590ac5c9014d653180738edb85bc60b02b9bbab986a27313dd3c96c0",
+        "catalog_id": "515e90b883ca3175649ace14ec1433ead594aec576f5318330d633a90553ab78",
+        "stores": [
+          {
+            "id": "team_files",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "altered": {
+        "configured": true,
+        "valid": false,
+        "errors": [
+          "database catalog or graph projection is stale; run bo_db sync"
+        ],
+        "changed": true,
+        "source_id": "0c70eccb590ac5c9014d653180738edb85bc60b02b9bbab986a27313dd3c96c0",
+        "catalog_id": "e62c99fbcd7f90ba95fddc945d9b78a68f5a8655c9f307cb9144b6c2597b0527",
+        "stores": [
+          {
+            "id": "team_files",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "statement": "ALTER TABLE files ADD COLUMN isolated_audit_marker TEXT",
+      "production_database_modified": false
+    }
+  }
+}

@@ -1,0 +1,34 @@
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\review\retest-20261101-02\focused_capture.py", line 104, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\review\retest-20261101-02\focused_capture.py", line 75, in main
+    page.wait_for_function("document.querySelector('#replay-events').options.length === 1")
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.tmp\browserdeps\playwright\sync_api\_generated.py", line 21235, in wait_for_function
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
+    )
+    ^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.tmp\browserdeps\playwright\_impl\_sync_base.py", line 111, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.tmp\browserdeps\playwright\_impl\_page.py", line 1158, in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.tmp\browserdeps\playwright\_impl\_frame.py", line 945, in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.tmp\browserdeps\playwright\_impl\_connection.py", line 78, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\VibeLensTrials\execution-bands-dialogue-20261031-03\.tmp\browserdeps\playwright\_impl\_connection.py", line 636, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.

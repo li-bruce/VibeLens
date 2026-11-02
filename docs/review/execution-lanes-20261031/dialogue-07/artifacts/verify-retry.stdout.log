@@ -1,0 +1,126 @@
+{
+  "valid": false,
+  "errors": [
+    {
+      "excluded_application_entrypoint": "review/retest-20261031-03/core-extracted/app/web.py",
+      "declarations": [
+        "app.add_url_rule('/', 'index', routes.index)",
+        "app.add_url_rule('/login', 'login', routes.login, methods=['POST'])",
+        "app.add_url_rule('/logout', 'logout', routes.logout, methods=['POST'])",
+        "app.add_url_rule('/upload', 'upload', routes.upload, methods=['POST'])",
+        "app.add_url_rule('/files/<file_id>/review', 'review', routes.review, methods=['POST'])",
+        "app.add_url_rule('/files/<file_id>/share', 'share', routes.share, methods=['POST'])",
+        "app.add_url_rule('/files/<file_id>', 'file_info', routes.file_info)",
+        "app.add_url_rule('/files/<file_id>/download', 'download', routes.download)"
+      ]
+    },
+    "review belongs to an older candidate",
+    {
+      "path": "review/retest-20261031-03/core-extracted/app/web.py",
+      "error": "Excluded entrypoint",
+      "details": [
+        "app.add_url_rule('/', 'index', routes.index)",
+        "app.add_url_rule('/login', 'login', routes.login, methods=['POST'])",
+        "app.add_url_rule('/logout', 'logout', routes.logout, methods=['POST'])",
+        "app.add_url_rule('/upload', 'upload', routes.upload, methods=['POST'])",
+        "app.add_url_rule('/files/<file_id>/review', 'review', routes.review, methods=['POST'])",
+        "app.add_url_rule('/files/<file_id>/share', 'share', routes.share, methods=['POST'])",
+        "app.add_url_rule('/files/<file_id>', 'file_info', routes.file_info)",
+        "app.add_url_rule('/files/<file_id>/download', 'download', routes.download)"
+      ]
+    }
+  ],
+  "reports": {
+    "mapping": {
+      "status": "failed",
+      "errors": [
+        {
+          "excluded_application_entrypoint": "review/retest-20261031-03/core-extracted/app/web.py",
+          "declarations": [
+            "app.add_url_rule('/', 'index', routes.index)",
+            "app.add_url_rule('/login', 'login', routes.login, methods=['POST'])",
+            "app.add_url_rule('/logout', 'logout', routes.logout, methods=['POST'])",
+            "app.add_url_rule('/upload', 'upload', routes.upload, methods=['POST'])",
+            "app.add_url_rule('/files/<file_id>/review', 'review', routes.review, methods=['POST'])",
+            "app.add_url_rule('/files/<file_id>/share', 'share', routes.share, methods=['POST'])",
+            "app.add_url_rule('/files/<file_id>', 'file_info', routes.file_info)",
+            "app.add_url_rule('/files/<file_id>/download', 'download', routes.download)"
+          ]
+        },
+        "review belongs to an older candidate",
+        {
+          "path": "review/retest-20261031-03/core-extracted/app/web.py",
+          "error": "Excluded entrypoint",
+          "details": [
+            "app.add_url_rule('/', 'index', routes.index)",
+            "app.add_url_rule('/login', 'login', routes.login, methods=['POST'])",
+            "app.add_url_rule('/logout', 'logout', routes.logout, methods=['POST'])",
+            "app.add_url_rule('/upload', 'upload', routes.upload, methods=['POST'])",
+            "app.add_url_rule('/files/<file_id>/review', 'review', routes.review, methods=['POST'])",
+            "app.add_url_rule('/files/<file_id>/share', 'share', routes.share, methods=['POST'])",
+            "app.add_url_rule('/files/<file_id>', 'file_info', routes.file_info)",
+            "app.add_url_rule('/files/<file_id>/download', 'download', routes.download)"
+          ]
+        }
+      ],
+      "database": {
+        "configured": true,
+        "valid": true,
+        "errors": [],
+        "changed": false,
+        "source_id": "766dbf973497ede6a5484df87c0a8b3364eeb2e3d55a2a15b61518c3b00e3f38",
+        "catalog_id": "c46f16079816cc15c8a231f8988cc3d9e194979c0d8c35d4a7591b0e7c2caa6c",
+        "stores": [
+          {
+            "id": "team_files",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "code_structure": {
+        "enabled": true,
+        "valid": false,
+        "errors": [
+          {
+            "path": "review/retest-20261031-03/core-extracted/app/web.py",
+            "error": "Excluded entrypoint",
+            "details": [
+              "app.add_url_rule('/', 'index', routes.index)",
+              "app.add_url_rule('/login', 'login', routes.login, methods=['POST'])",
+              "app.add_url_rule('/logout', 'logout', routes.logout, methods=['POST'])",
+              "app.add_url_rule('/upload', 'upload', routes.upload, methods=['POST'])",
+              "app.add_url_rule('/files/<file_id>/review', 'review', routes.review, methods=['POST'])",
+              "app.add_url_rule('/files/<file_id>/share', 'share', routes.share, methods=['POST'])",
+              "app.add_url_rule('/files/<file_id>', 'file_info', routes.file_info)",
+              "app.add_url_rule('/files/<file_id>/download', 'download', routes.download)"
+            ]
+          }
+        ],
+        "status": "failed",
+        "revision": "ff432d456d88fa9eb0bb65e44019e83e0ff8e7fe5fa4a1c417d12b04a31011cd",
+        "nodes": 587,
+        "edges": 724
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses"
+    },
+    "state_rules": {
+      "status": "not_run",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "not_run",
+      "errors": [],
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "not_run",
+      "errors": [],
+      "assertions": {},
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    }
+  },
+  "candidate_id": "334b555c96729125e6c642b95d336ab2699480cb16a2c9822bc1ba65669ed17d"
+}

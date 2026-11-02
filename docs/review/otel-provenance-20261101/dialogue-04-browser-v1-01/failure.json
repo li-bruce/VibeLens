@@ -1,0 +1,111 @@
+{
+  "type": "AssertionError",
+  "message": "",
+  "responses": [
+    {
+      "method": "POST",
+      "path": "/command/login",
+      "status": 303,
+      "trace_id": "86beaf8061eb318a97e0aafba5beaeda"
+    },
+    {
+      "method": "POST",
+      "path": "/command/upload",
+      "status": 303,
+      "trace_id": "72f698f1ddd4eace2fbdc228153070e5"
+    },
+    {
+      "method": "POST",
+      "path": "/command/login",
+      "status": 303,
+      "trace_id": "c3ebcb29e0c570bef47a049ef4851b8e"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-a11b6e2f821c4fdb9325089504703aba/download",
+      "status": 403,
+      "trace_id": "8b881e56cb512a1be3d4a87060d8f526"
+    },
+    {
+      "method": "POST",
+      "path": "/command/login",
+      "status": 303,
+      "trace_id": "413e95cb6c3bbfc4c30ec67bfca4696f"
+    },
+    {
+      "method": "POST",
+      "path": "/command/review",
+      "status": 303,
+      "trace_id": "0a11290eb579c1c7b47c27a81987562d"
+    },
+    {
+      "method": "POST",
+      "path": "/command/share",
+      "status": 303,
+      "trace_id": "3bd2aa8a11bb94300f4d1d69cec07a52"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-a11b6e2f821c4fdb9325089504703aba/download",
+      "status": 403,
+      "trace_id": "837bd2722d6e58341827c85cc6d34458"
+    },
+    {
+      "method": "GET",
+      "path": "/api/files/file-a11b6e2f821c4fdb9325089504703aba/download",
+      "status": 200,
+      "trace_id": "e3f560b6bc047fb9676810da626fe52f"
+    }
+  ],
+  "actions": [
+    {
+      "name": "login-member1",
+      "trace_id": "86beaf8061eb318a97e0aafba5beaeda",
+      "external_parent_span": "d86f59a5df8ddf2f"
+    },
+    {
+      "name": "upload",
+      "trace_id": "72f698f1ddd4eace2fbdc228153070e5",
+      "external_parent_span": "aacac7eef5ccd3da"
+    },
+    {
+      "name": "login-member2",
+      "trace_id": "c3ebcb29e0c570bef47a049ef4851b8e",
+      "external_parent_span": "8be20db7478e7577"
+    },
+    {
+      "name": "download-before-approval",
+      "trace_id": "8b881e56cb512a1be3d4a87060d8f526",
+      "external_parent_span": "ae08391ce6a8fd21"
+    },
+    {
+      "name": "login-admin1",
+      "trace_id": "413e95cb6c3bbfc4c30ec67bfca4696f",
+      "external_parent_span": "34fbcedeedfec699"
+    },
+    {
+      "name": "approve",
+      "trace_id": "0a11290eb579c1c7b47c27a81987562d",
+      "external_parent_span": "219394067700710b"
+    },
+    {
+      "name": "share",
+      "trace_id": "3bd2aa8a11bb94300f4d1d69cec07a52",
+      "external_parent_span": "6d807d35f20aa0c5"
+    },
+    {
+      "name": "download-before-delivery",
+      "trace_id": "837bd2722d6e58341827c85cc6d34458",
+      "external_parent_span": "f207ca39c0f8ad85"
+    },
+    {
+      "name": "download-active",
+      "trace_id": "e3f560b6bc047fb9676810da626fe52f",
+      "external_parent_span": "7cffa5736512f303"
+    }
+  ],
+  "checks": [
+    "Real input, review/share waits, actual 403 responses and byte-identical authorized download"
+  ],
+  "page_errors": []
+}

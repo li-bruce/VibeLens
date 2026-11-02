@@ -28,7 +28,7 @@ export function planarScene(graph, presentation, style, scale) {
         level: 0,
       });
   const edges = presentation.edges.map((e) => {
-    const { start, end } = edgePorts(graph, e, Math.max(33, 15 / scale));
+    const { start, end } = edgePorts(graph, e);
     return {
       id: e.id,
       from: e.from,
@@ -68,22 +68,14 @@ export function spatialScene(model, positions, volumes, style) {
     const to = volumes.find((v) => v.id === e.to && !v.projection)?.center || b;
     if (e.sourceRegion) a = regionPort(e.from, e.to, to, positions, volumes);
     if (e.targetRegion) b = regionPort(e.to, e.from, from, positions, volumes);
-    // Ordinary glyphs use a radial port; region ports are already clipped.
-    const port = (p, q, region) => {
-      if (region || e.from === e.to) return p;
-      const length = Math.hypot(q.x - p.x, q.z - p.z);
-      return length > 64
-        ? { x: p.x + ((q.x - p.x) * 32) / length, y: p.y, z: p.z + ((q.z - p.z) * 32) / length }
-        : p;
-    };
     return [
       {
         id: e.id,
         from: e.from,
         to: e.to,
         type: e.type,
-        a: flat(port(a, b, e.sourceRegion)),
-        b: flat(port(b, a, e.targetRegion)),
+        a: flat(a),
+        b: flat(b),
         allowed: [],
       },
     ];

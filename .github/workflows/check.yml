@@ -39,7 +39,7 @@ jobs:
           node-version: '22'
       - run: python -m pip install -r examples/delivery/requirements.txt
       - run: python -m pip install -r examples/file-sharing/requirements.txt
-      - run: python -m pip install -r skills/vibelens/requirements.txt -r skills/vibelens/requirements-database.txt
+      - run: python -m pip install -r skills/vibelens/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt
       - run: python tools/setup_adapters.py
       - run: npm ci --prefix examples/multilanguage
       - run: python tools/check_release_export.py
@@ -88,6 +88,9 @@ jobs:
       - run: node tools/test_graph_names_browser.mjs
         env:
           BO_NAMES_EVIDENCE: .validation/semantic-names-browser
+      - run: node tools/test_caption_bounds_browser.mjs
+        env:
+          BO_CAPTION_EVIDENCE: .validation/caption-bounds
       - run: node tools/test_trace_lifecycle_browser.mjs
         env:
           BO_LIFECYCLE_EVIDENCE: .validation/lifecycle-browser
@@ -99,6 +102,13 @@ jobs:
         env:
           BO_LIFECYCLE_EVIDENCE: .validation/lifecycle-registered
           BO_REGISTERED_LIFECYCLE: '1'
+      - run: node tools/test_execution_bands_browser.mjs
+        env:
+          BO_EXECUTION_EVIDENCE: .validation/execution-bands
+      - run: node tools/test_execution_bands_browser.mjs
+        env:
+          BO_EXECUTION_EVIDENCE: .validation/execution-midspan
+          BO_EXECUTION_MIDSPAN: '1'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -107,3 +117,5 @@ jobs:
             .validation/timeline-*
             .validation/semantic-names-*
             .validation/lifecycle-*
+            .validation/execution-*
+            .validation/caption-*

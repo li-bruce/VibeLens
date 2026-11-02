@@ -2,11 +2,12 @@
 import json
 from pathlib import Path
 import sys
-import shutil
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from bo_stategraph.workflow import definition
 from observer_generated.runtime.code_structure import scan,enrich
+from observer_generated.runtime.bo_upgrade import replace_copy
+from observer_generated.runtime.sync_io import write
 
 
 def build():
@@ -112,8 +113,10 @@ def build():
         ('id','string'),('project','string'),('actor','string'),('version','number'),('expires','number'),
         ('role','string'),('clock','number'),('capacity','number'),('content_length','number')]}}
     model=enrich(model,scan(ROOT,cfg['code_files']),depth=1)
-    (ROOT/'observer_generated/behavior.json').write_text(json.dumps(model,ensure_ascii=False,indent=2),encoding='utf-8',newline='\n')
-    for source in (ROOT/'integrations/bo_view').glob('*'):shutil.copyfile(source,ROOT/'observer_generated/static'/source.name)
+    # Publish complete files atomically; active Windows readers retain their snapshot.
+    write(ROOT/'observer_generated/behavior.json', model)
+    for source in (ROOT/'integrations/bo_view').glob('*'):
+        replace_copy(source.read_bytes(), ROOT/'observer_generated/static'/source.name)
     return model
 
 

@@ -1,0 +1,1661 @@
+{
+  "valid": true,
+  "url": "http://127.0.0.1:8983/graph?vl_session=fefe6a3951b55b60ba392843f91ba281",
+  "plan": {
+    "schema": "vibelens-control-plan/v1",
+    "base": {
+      "project_id": "execution_bands_dialogue_20261031_03",
+      "model_revision": "1",
+      "model_hash": "cba83db1227476f3e8a55388d813ad1437578a7fd47f06c76b1848e275b1e866",
+      "build_id": "28ec8463cd649107ff1257bc4a1cfee1ec2db5e8366ae66e1ac6d077585c33b8"
+    },
+    "action": "view",
+    "label": "上传、审核、分享和读取",
+    "anchors": [
+      "upload_file",
+      "review_file",
+      "share_file",
+      "access_file"
+    ],
+    "node_ids": [
+      "access_file",
+      "approved",
+      "designated_recipient",
+      "pending_review",
+      "review_file",
+      "share_file",
+      "upload_file"
+    ],
+    "edge_ids": [
+      "transition:approve",
+      "transition:share",
+      "flow_upload_review",
+      "flow_wait_reviewer",
+      "flow_review_approve",
+      "guard_approval_share",
+      "data_share_recipient",
+      "guard_recipient_access"
+    ],
+    "boundaries": [
+      {
+        "id": "transition:submit",
+        "from": "state_new",
+        "to": "pending_review",
+        "type": "flow",
+        "event": "submit",
+        "conditions": "operation_allowed",
+        "label": "submit",
+        "evidence": "The canonical machine consumed by FileWorkflow."
+      },
+      {
+        "id": "transition:reject",
+        "from": "pending_review",
+        "to": "review_not_approved",
+        "type": "flow",
+        "event": "reject",
+        "conditions": "operation_allowed",
+        "label": "reject",
+        "evidence": "The canonical machine consumed by FileWorkflow."
+      },
+      {
+        "id": "flow_login_upload",
+        "from": "sign_in",
+        "to": "upload_file",
+        "type": "flow",
+        "label": "上传入口",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "flow_review_not_approved",
+        "from": "review_file",
+        "to": "review_not_approved",
+        "type": "flow",
+        "label": "未通过即结束，不重提",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "guard_login_access",
+        "from": "sign_in",
+        "to": "access_file",
+        "type": "guard",
+        "label": "访问必须已登录",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "guard_reviewer_selection",
+        "from": "assigned_reviewer",
+        "to": "upload_file",
+        "type": "guard",
+        "label": "从已有用户中选择一位其他同事",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "guard_uploader_reviewer_access",
+        "from": "uploader_access",
+        "to": "access_file",
+        "type": "guard",
+        "label": "审核前后均可读取",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002."
+      },
+      {
+        "id": "policy:operation:upload:upload_file",
+        "from": "policy:upload_allowed",
+        "to": "upload_file",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:operation:review:review_file",
+        "from": "policy:review_allowed",
+        "to": "review_file",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:operation:share:share_file",
+        "from": "policy:share_allowed",
+        "to": "share_file",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "policy:operation:access:access_file",
+        "from": "policy:access_allowed",
+        "to": "access_file",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "db-edge:review_file:contains:db_file",
+        "from": "review_file",
+        "to": "db_file",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:review_file:contains:db_candidates",
+        "from": "review_file",
+        "to": "db_candidates",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:upload_file:contains:db_insert",
+        "from": "upload_file",
+        "to": "db_insert",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:review_file:contains:db_update",
+        "from": "review_file",
+        "to": "db_update",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:upload_file:contains:db_transaction",
+        "from": "upload_file",
+        "to": "db_transaction",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "db-edge:access_file:contains:db_metadata",
+        "from": "access_file",
+        "to": "db_metadata",
+        "type": "contains",
+        "label": "contains",
+        "evidence": "database catalog and configured source binding",
+        "managed_by": "bo-database/v1"
+      },
+      {
+        "id": "contains.code.4d30fd12e3103997",
+        "from": "upload_file",
+        "to": "code.4d30fd12e3103997",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.0702943770fafcf3",
+        "from": "upload_file",
+        "to": "code.4d30fd12e3103997",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 73,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'upload'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.dcb3cefb04ba1a1d",
+        "from": "upload_file",
+        "to": "code.dcb3cefb04ba1a1d",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.098a03b07e03d675",
+        "from": "upload_file",
+        "to": "code.dcb3cefb04ba1a1d",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 75,
+          "column": 29,
+          "args": [
+            "row",
+            "'submit'",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.30326d5d01115958",
+        "from": "review_file",
+        "to": "code.30326d5d01115958",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.52e0a23a10c81d9c",
+        "from": "review_file",
+        "to": "code.30326d5d01115958",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 92,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'review'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.7ac1e3434af643f0",
+        "from": "review_file",
+        "to": "code.7ac1e3434af643f0",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.2e1d9f8c8f55eade",
+        "from": "review_file",
+        "to": "code.7ac1e3434af643f0",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 95,
+          "column": 33,
+          "args": [
+            "row",
+            "decision",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.3edeec461b08e152",
+        "from": "review_file",
+        "to": "code.3edeec461b08e152",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.98c6c41c06892407",
+        "from": "review_file",
+        "to": "code.3edeec461b08e152",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 101,
+          "column": 19,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.2b4ce20bc4971c2a",
+        "from": "share_file",
+        "to": "code.2b4ce20bc4971c2a",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.3b673d4a03053c89",
+        "from": "share_file",
+        "to": "code.2b4ce20bc4971c2a",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 110,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'share'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.f01e24ca5c7b9b65",
+        "from": "share_file",
+        "to": "code.f01e24ca5c7b9b65",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.10095339714d0a37",
+        "from": "share_file",
+        "to": "code.f01e24ca5c7b9b65",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 117,
+          "column": 29,
+          "args": [
+            "row",
+            "'share'",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.94c27a9ca04798cb",
+        "from": "share_file",
+        "to": "code.94c27a9ca04798cb",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.0ede71e1014786c5",
+        "from": "share_file",
+        "to": "code.94c27a9ca04798cb",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 121,
+          "column": 19,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "contains.code.ffe99097306a6c85",
+        "from": "access_file",
+        "to": "code.ffe99097306a6c85",
+        "type": "contains",
+        "label": "Local function",
+        "origin": "source-ast",
+        "evidence": "business-map anchor + source AST call"
+      },
+      {
+        "id": "call.5388a6b5f8d28e00",
+        "from": "access_file",
+        "to": "code.ffe99097306a6c85",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 130,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'access'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "call.364929c8ccc6549b",
+        "from": "access_file",
+        "to": "db_metadata",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 132,
+          "column": 21,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.d08904955c4aaa8a",
+        "from": "upload_file",
+        "to": "authorize_file",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 73,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'upload'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.57284c7fe29a6327",
+        "from": "upload_file",
+        "to": "state_transition",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 75,
+          "column": 29,
+          "args": [
+            "row",
+            "'submit'",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.0d492f8d10bc5906",
+        "from": "review_file",
+        "to": "authorize_file",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 92,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'review'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.644075cb2071522a",
+        "from": "review_file",
+        "to": "state_transition",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 95,
+          "column": 33,
+          "args": [
+            "row",
+            "decision",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.69a3d203ac3bfaef",
+        "from": "review_file",
+        "to": "source:app/storage.py::metadata_view",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 101,
+          "column": 19,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.a003f12f4f7c5088",
+        "from": "share_file",
+        "to": "authorize_file",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 110,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'share'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.b251b313612870f6",
+        "from": "share_file",
+        "to": "state_transition",
+        "type": "flow",
+        "label": "Static call self.advance",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 117,
+          "column": 29,
+          "args": [
+            "row",
+            "'share'",
+            "True"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.31ed8855c720e455",
+        "from": "share_file",
+        "to": "source:app/storage.py::metadata_view",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 121,
+          "column": 19,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.d5732fa91948d032",
+        "from": "access_file",
+        "to": "authorize_file",
+        "type": "flow",
+        "label": "Static call self.authorize",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 130,
+          "column": 23,
+          "args": [
+            "connection",
+            "actor",
+            "'access'",
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.566424849026a3f1",
+        "from": "access_file",
+        "to": "source:app/storage.py::metadata_view",
+        "type": "flow",
+        "label": "Static call metadata_view",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 132,
+          "column": 21,
+          "args": [
+            "row"
+          ],
+          "keywords": {}
+        }
+      },
+      {
+        "id": "inventory-call.a076cae8c791eb63",
+        "from": "list_files",
+        "to": "access_file",
+        "type": "flow",
+        "label": "Static call self.access",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 142,
+          "column": 20,
+          "args": [
+            "actor",
+            "identifier"
+          ],
+          "keywords": {}
+        }
+      }
+    ],
+    "limits_hit": false,
+    "filters": {
+      "nodes": [
+        "business",
+        "decision"
+      ],
+      "regions": [
+        "business",
+        "decision"
+      ],
+      "edges": [
+        "data",
+        "flow",
+        "guard"
+      ]
+    },
+    "layout": "layered",
+    "recording": null,
+    "view_id": "eccb266c31fe3ed9",
+    "id": "control-3bf1a7888e7d9de412c9"
+  },
+  "acknowledgement": {
+    "revision": 1,
+    "status": "applied",
+    "view_id": "custom-vl-fefe6a39-eccb266c31fe3ed9",
+    "nodes": [
+      "upload_file",
+      "review_file",
+      "share_file",
+      "access_file",
+      "pending_review",
+      "approved",
+      "review_not_approved",
+      "designated_recipient"
+    ],
+    "events": [],
+    "error": ""
+  },
+  "geometry": {
+    "visible": [
+      {
+        "id": "upload_file",
+        "node": {
+          "id": "upload_file",
+          "kind": "action",
+          "layer": "business",
+          "label": "上传并指定审核人",
+          "summary": "Application operation: upload file",
+          "source": {
+            "path": "app/service.py",
+            "symbol": "FileService.upload"
+          },
+          "capture": {
+            "in": {
+              "actor": "string",
+              "reviewer_id": "string",
+              "filename": "string",
+              "size": "number"
+            },
+            "out": {
+              "file_id": "string",
+              "state": "string",
+              "revision": "number",
+              "error": "string"
+            }
+          },
+          "requirements": [
+            "R_REVIEW"
+          ],
+          "code_evidence": {
+            "symbol": "app/service.py::FileService.upload",
+            "ast_hash": "b78cd1c47b018ecb37041601d40e4157414d0187e3de94445ad484bfb84ef714",
+            "origin": "source-ast"
+          },
+          "semantic_roles": [
+            "business"
+          ],
+          "authored_label": "upload_file",
+          "source_name": "FileService.upload",
+          "explained_name": "上传并指定审核人",
+          "projection_depth": 0,
+          "parent": null
+        },
+        "rect": {
+          "x": 72,
+          "y": 74.5,
+          "w": 190,
+          "h": 135
+        }
+      },
+      {
+        "id": "review_file",
+        "node": {
+          "id": "review_file",
+          "kind": "action",
+          "layer": "business",
+          "label": "指定同事审核",
+          "summary": "Application operation: review file",
+          "source": {
+            "path": "app/service.py",
+            "symbol": "FileService.review"
+          },
+          "capture": {
+            "in": {
+              "actor": "string",
+              "file_id": "string",
+              "decision": "string"
+            },
+            "out": {
+              "state": "string",
+              "revision": "number"
+            }
+          },
+          "requirements": [
+            "R_REVIEW"
+          ],
+          "code_evidence": {
+            "symbol": "app/service.py::FileService.review",
+            "ast_hash": "4078bda9dedc199faafff28b321290147f21ff84d42d5bcdf8764f084630b6f7",
+            "origin": "source-ast"
+          },
+          "semantic_roles": [
+            "business"
+          ],
+          "authored_label": "review_file",
+          "source_name": "FileService.review",
+          "explained_name": "指定同事审核",
+          "projection_depth": 0,
+          "parent": null
+        },
+        "rect": {
+          "x": 672,
+          "y": 135.5,
+          "w": 190,
+          "h": 135
+        }
+      },
+      {
+        "id": "share_file",
+        "node": {
+          "id": "share_file",
+          "kind": "action",
+          "layer": "business",
+          "label": "上传者定向分享",
+          "summary": "Application operation: share file",
+          "source": {
+            "path": "app/service.py",
+            "symbol": "FileService.share"
+          },
+          "capture": {
+            "in": {
+              "actor": "string",
+              "file_id": "string",
+              "recipient_id": "string"
+            },
+            "out": {
+              "recipient_id": "string",
+              "state": "string",
+              "revision": "number"
+            }
+          },
+          "requirements": [
+            "R_SHARE"
+          ],
+          "code_evidence": {
+            "symbol": "app/service.py::FileService.share",
+            "ast_hash": "160599f6e20b33378a0d6d5ed7bc6229b412b14e534d09447eab8a2a6895273f",
+            "origin": "source-ast"
+          },
+          "semantic_roles": [
+            "business"
+          ],
+          "authored_label": "share_file",
+          "source_name": "FileService.share",
+          "explained_name": "上传者定向分享",
+          "projection_depth": 0,
+          "parent": null
+        },
+        "rect": {
+          "x": 1272,
+          "y": 247,
+          "w": 190,
+          "h": 135
+        }
+      },
+      {
+        "id": "access_file",
+        "node": {
+          "id": "access_file",
+          "kind": "action",
+          "layer": "business",
+          "label": "查看信息或下载",
+          "summary": "Application operation: access file",
+          "source": {
+            "path": "app/service.py",
+            "symbol": "FileService.access"
+          },
+          "capture": {
+            "in": {
+              "actor": "string",
+              "file_id": "string",
+              "download": "boolean"
+            },
+            "out": {
+              "allowed": "boolean",
+              "size": "number",
+              "state": "string"
+            }
+          },
+          "requirements": [
+            "R_ACCESS"
+          ],
+          "code_evidence": {
+            "symbol": "app/service.py::FileService.access",
+            "ast_hash": "5dfaa4584a2937f340149b7ec59d3ba20d80710b45145a7f949179c2eb5aee41",
+            "origin": "source-ast"
+          },
+          "semantic_roles": [
+            "business"
+          ],
+          "authored_label": "access_file",
+          "source_name": "FileService.access",
+          "explained_name": "查看信息或下载",
+          "projection_depth": 0,
+          "parent": null
+        },
+        "rect": {
+          "x": 1872,
+          "y": 247,
+          "w": 190,
+          "h": 135
+        }
+      },
+      {
+        "id": "pending_review",
+        "node": {
+          "id": "pending_review",
+          "kind": "state",
+          "layer": "state",
+          "value": "pending",
+          "label": "待审核",
+          "summary": "Persisted file state: pending",
+          "parent": null,
+          "authored_label": "pending",
+          "source_name": "pending",
+          "explained_name": "待审核",
+          "machine_state": true,
+          "declaration": "machine.states",
+          "projection_depth": 1,
+          "filter_context": true
+        },
+        "rect": {
+          "x": 372,
+          "y": 89.5,
+          "w": 190,
+          "h": 105
+        }
+      },
+      {
+        "id": "approved",
+        "node": {
+          "id": "approved",
+          "kind": "state",
+          "layer": "state",
+          "value": "approved",
+          "label": "已通过",
+          "summary": "Persisted file state: approved",
+          "parent": null,
+          "authored_label": "approved",
+          "source_name": "approved",
+          "explained_name": "已通过",
+          "machine_state": true,
+          "declaration": "machine.states",
+          "projection_depth": 1,
+          "filter_context": true
+        },
+        "rect": {
+          "x": 972,
+          "y": 262,
+          "w": 190,
+          "h": 105
+        }
+      },
+      {
+        "id": "review_not_approved",
+        "node": {
+          "id": "review_not_approved",
+          "kind": "state",
+          "layer": "state",
+          "value": "rejected",
+          "label": "未通过",
+          "summary": "Persisted file state: rejected",
+          "parent": null,
+          "authored_label": "rejected",
+          "source_name": "rejected",
+          "explained_name": "未通过",
+          "machine_state": true,
+          "declaration": "machine.states",
+          "projection_depth": 1,
+          "filter_context": true
+        },
+        "rect": {
+          "x": 972,
+          "y": 72,
+          "w": 190,
+          "h": 105
+        }
+      },
+      {
+        "id": "designated_recipient",
+        "node": {
+          "id": "designated_recipient",
+          "kind": "data",
+          "label": "唯一指定接收人",
+          "summary": "One recipient account; recipients cannot forward.",
+          "represents": {
+            "path": "app/service.py",
+            "symbol": "FileService.share",
+            "parameter": "recipient_id"
+          },
+          "authored_label": "Designated recipient",
+          "source_name": "designated_recipient",
+          "explained_name": "唯一指定接收人",
+          "projection_depth": 0,
+          "filter_context": true,
+          "parent": null
+        },
+        "rect": {
+          "x": 1572,
+          "y": 247,
+          "w": 190,
+          "h": 135
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "transition:approve",
+        "from": "pending_review",
+        "to": "approved",
+        "type": "flow",
+        "event": "approve",
+        "conditions": "operation_allowed",
+        "label": "approve",
+        "evidence": "The canonical machine consumed by FileWorkflow.",
+        "authored_label": "approve",
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:approve",
+            "from": "pending_review",
+            "to": "approved",
+            "type": "flow",
+            "event": "approve",
+            "conditions": "operation_allowed",
+            "label": "approve",
+            "evidence": "The canonical machine consumed by FileWorkflow.",
+            "authored_label": "approve",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "transition:reject",
+        "from": "pending_review",
+        "to": "review_not_approved",
+        "type": "flow",
+        "event": "reject",
+        "conditions": "operation_allowed",
+        "label": "reject",
+        "evidence": "The canonical machine consumed by FileWorkflow.",
+        "authored_label": "reject",
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:reject",
+            "from": "pending_review",
+            "to": "review_not_approved",
+            "type": "flow",
+            "event": "reject",
+            "conditions": "operation_allowed",
+            "label": "reject",
+            "evidence": "The canonical machine consumed by FileWorkflow.",
+            "authored_label": "reject",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "transition:share",
+        "from": "approved",
+        "to": "approved",
+        "type": "flow",
+        "event": "share",
+        "conditions": "operation_allowed",
+        "label": "share",
+        "evidence": "The canonical machine consumed by FileWorkflow.",
+        "authored_label": "share",
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:share",
+            "from": "approved",
+            "to": "approved",
+            "type": "flow",
+            "event": "share",
+            "conditions": "operation_allowed",
+            "label": "share",
+            "evidence": "The canonical machine consumed by FileWorkflow.",
+            "authored_label": "share",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "flow_upload_review",
+        "from": "upload_file",
+        "to": "pending_review",
+        "type": "flow",
+        "label": "上传后交审",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+        "authored_label": "上传后交审",
+        "labels": {},
+        "members": [
+          {
+            "id": "flow_upload_review",
+            "from": "upload_file",
+            "to": "pending_review",
+            "type": "flow",
+            "label": "上传后交审",
+            "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+            "authored_label": "上传后交审",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "flow_wait_reviewer",
+        "from": "pending_review",
+        "to": "review_file",
+        "type": "flow",
+        "label": "只由本次指定的同事审核",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+        "authored_label": "只由本次指定的同事审核",
+        "labels": {},
+        "members": [
+          {
+            "id": "flow_wait_reviewer",
+            "from": "pending_review",
+            "to": "review_file",
+            "type": "flow",
+            "label": "只由本次指定的同事审核",
+            "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+            "authored_label": "只由本次指定的同事审核",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "flow_review_approve",
+        "from": "review_file",
+        "to": "approved",
+        "type": "flow",
+        "label": "通过",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+        "authored_label": "通过",
+        "labels": {},
+        "members": [
+          {
+            "id": "flow_review_approve",
+            "from": "review_file",
+            "to": "approved",
+            "type": "flow",
+            "label": "通过",
+            "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+            "authored_label": "通过",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "guard_approval_share",
+        "from": "approved",
+        "to": "share_file",
+        "type": "guard",
+        "label": "仅通过后由上传者分享",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+        "authored_label": "仅通过后由上传者分享",
+        "labels": {},
+        "members": [
+          {
+            "id": "guard_approval_share",
+            "from": "approved",
+            "to": "share_file",
+            "type": "guard",
+            "label": "仅通过后由上传者分享",
+            "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+            "authored_label": "仅通过后由上传者分享",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "flow_review_not_approved",
+        "from": "review_file",
+        "to": "review_not_approved",
+        "type": "flow",
+        "label": "未通过即结束，不重提",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+        "authored_label": "未通过即结束，不重提",
+        "labels": {},
+        "members": [
+          {
+            "id": "flow_review_not_approved",
+            "from": "review_file",
+            "to": "review_not_approved",
+            "type": "flow",
+            "label": "未通过即结束，不重提",
+            "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+            "authored_label": "未通过即结束，不重提",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "data_share_recipient",
+        "from": "share_file",
+        "to": "designated_recipient",
+        "type": "data",
+        "label": "指定一个已有账号",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+        "authored_label": "指定一个已有账号",
+        "labels": {},
+        "members": [
+          {
+            "id": "data_share_recipient",
+            "from": "share_file",
+            "to": "designated_recipient",
+            "type": "data",
+            "label": "指定一个已有账号",
+            "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+            "authored_label": "指定一个已有账号",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "guard_recipient_access",
+        "from": "designated_recipient",
+        "to": "access_file",
+        "type": "guard",
+        "label": "通过且已分享给本人",
+        "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+        "authored_label": "通过且已分享给本人",
+        "labels": {},
+        "members": [
+          {
+            "id": "guard_recipient_access",
+            "from": "designated_recipient",
+            "to": "access_file",
+            "type": "guard",
+            "label": "通过且已分享给本人",
+            "evidence": "Confirmed simulated-user requirements U001 and graph confirmation U002.",
+            "authored_label": "通过且已分享给本人",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "transition:approve:pending",
+        "from": "pending_review",
+        "to": "approved",
+        "type": "transition",
+        "event": "approve",
+        "label": "通过 · 条件 operation_allowed",
+        "conditions": [
+          "operation_allowed"
+        ],
+        "unless": [],
+        "machine_transition": {
+          "index": 1,
+          "source": "pending",
+          "dest": "approved",
+          "internal": false
+        },
+        "observed": false,
+        "current": true,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:approve:pending",
+            "from": "pending_review",
+            "to": "approved",
+            "type": "transition",
+            "event": "approve",
+            "label": "通过 · 条件 operation_allowed",
+            "conditions": [
+              "operation_allowed"
+            ],
+            "unless": [],
+            "machine_transition": {
+              "index": 1,
+              "source": "pending",
+              "dest": "approved",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ]
+      },
+      {
+        "id": "transition:reject:pending",
+        "from": "pending_review",
+        "to": "review_not_approved",
+        "type": "transition",
+        "event": "reject",
+        "label": "不通过 · 条件 operation_allowed",
+        "conditions": [
+          "operation_allowed"
+        ],
+        "unless": [],
+        "machine_transition": {
+          "index": 2,
+          "source": "pending",
+          "dest": "rejected",
+          "internal": false
+        },
+        "observed": false,
+        "current": true,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:reject:pending",
+            "from": "pending_review",
+            "to": "review_not_approved",
+            "type": "transition",
+            "event": "reject",
+            "label": "不通过 · 条件 operation_allowed",
+            "conditions": [
+              "operation_allowed"
+            ],
+            "unless": [],
+            "machine_transition": {
+              "index": 2,
+              "source": "pending",
+              "dest": "rejected",
+              "internal": false
+            },
+            "observed": false,
+            "current": true
+          }
+        ]
+      },
+      {
+        "id": "transition:share:approved",
+        "from": "approved",
+        "to": "approved",
+        "type": "transition",
+        "event": "share",
+        "label": "分享 · 条件 operation_allowed",
+        "conditions": [
+          "operation_allowed"
+        ],
+        "unless": [],
+        "machine_transition": {
+          "index": 3,
+          "source": "approved",
+          "dest": "approved",
+          "internal": false
+        },
+        "observed": true,
+        "current": true,
+        "labels": {},
+        "members": [
+          {
+            "id": "transition:share:approved",
+            "from": "approved",
+            "to": "approved",
+            "type": "transition",
+            "event": "share",
+            "label": "分享 · 条件 operation_allowed",
+            "conditions": [
+              "operation_allowed"
+            ],
+            "unless": [],
+            "machine_transition": {
+              "index": 3,
+              "source": "approved",
+              "dest": "approved",
+              "internal": false
+            },
+            "observed": true,
+            "current": true
+          }
+        ]
+      }
+    ],
+    "ports": [
+      {
+        "id": "summary:pending_review|approved|flow|false|false|model",
+        "start": {
+          "x": 467,
+          "y": 120.5,
+          "level": 0
+        },
+        "end": {
+          "x": 1067,
+          "y": 293,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:pending_review|review_not_approved|flow|false|false|model",
+        "start": {
+          "x": 467,
+          "y": 120.5,
+          "level": 0
+        },
+        "end": {
+          "x": 1067,
+          "y": 103,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:approved|approved|flow|false|false|model",
+        "start": {
+          "x": 1067,
+          "y": 293,
+          "level": 0
+        },
+        "end": {
+          "x": 1067,
+          "y": 293,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:upload_file|pending_review|flow|false|false|model",
+        "start": {
+          "x": 167,
+          "y": 105.5,
+          "level": 0
+        },
+        "end": {
+          "x": 467,
+          "y": 120.5,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:pending_review|review_file|flow|false|false|model",
+        "start": {
+          "x": 467,
+          "y": 120.5,
+          "level": 0
+        },
+        "end": {
+          "x": 767,
+          "y": 166.5,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:review_file|approved|flow|false|false|model",
+        "start": {
+          "x": 767,
+          "y": 166.5,
+          "level": 0
+        },
+        "end": {
+          "x": 1067,
+          "y": 293,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:approved|share_file|guard|false|false|model",
+        "start": {
+          "x": 1067,
+          "y": 293,
+          "level": 0
+        },
+        "end": {
+          "x": 1367,
+          "y": 278,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:review_file|review_not_approved|flow|false|false|model",
+        "start": {
+          "x": 767,
+          "y": 166.5,
+          "level": 0
+        },
+        "end": {
+          "x": 1067,
+          "y": 103,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:share_file|designated_recipient|data|false|false|model",
+        "start": {
+          "x": 1367,
+          "y": 278,
+          "level": 0
+        },
+        "end": {
+          "x": 1667,
+          "y": 278,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:designated_recipient|access_file|guard|false|false|model",
+        "start": {
+          "x": 1667,
+          "y": 278,
+          "level": 0
+        },
+        "end": {
+          "x": 1967,
+          "y": 278,
+          "level": 0
+        },
+        "vertices": 25
+      }
+    ],
+    "algorithm": "layered",
+    "bodyControlPlan": "control-3bf1a7888e7d9de412c9",
+    "analysis": "custom-vl-fefe6a39-eccb266c31fe3ed9",
+    "build": "28ec8463cd649107ff1257bc4a1cfee1ec2db5e8366ae66e1ac6d077585c33b8",
+    "metrics": {
+      "nodes": 8,
+      "edges": 10,
+      "texts": 27,
+      "drawCount": 8,
+      "routeSolver": {
+        "wasm": 0,
+        "cached": 0,
+        "bundles": 0,
+        "routed": 10,
+        "unresolved": 0,
+        "total": 10,
+        "elapsed": 0.20000004768371582,
+        "busy": false
+      },
+      "webgl": true
+    },
+    "missing_requested_nodes": [],
+    "missing_requested_edges": [
+      "data_share_recipient",
+      "flow_review_approve",
+      "flow_upload_review",
+      "flow_wait_reviewer",
+      "guard_approval_share",
+      "guard_recipient_access",
+      "transition:approve",
+      "transition:share"
+    ]
+  },
+  "reload_visible": [
+    "upload_file",
+    "review_file",
+    "share_file",
+    "access_file",
+    "pending_review",
+    "approved",
+    "review_not_approved",
+    "designated_recipient"
+  ],
+  "page_errors": [],
+  "observer_reads_added_zero_events": true,
+  "before_health": {
+    "errors": 0,
+    "dropped": 941,
+    "run_id": "89e579de608de2f8027940b5",
+    "attempted": 18000,
+    "written": 18000,
+    "enabled": true,
+    "producer": {
+      "enabled": true,
+      "boundary_context": true,
+      "run_id": "db146d5339ef4b59afedaf824d631645",
+      "producer_id": "8fba95fef7f04827a4ed674bbbffa255",
+      "enqueued": 18941,
+      "pending": 0,
+      "errors": 0,
+      "dropped": 942,
+      "filtered": 0,
+      "last_error": {
+        "stage": "queue",
+        "type": "Full"
+      },
+      "data_errors": 0,
+      "integration_errors": 0
+    },
+    "runtime_frame_evictions": 0,
+    "context_evictions": 0,
+    "retained_events": 10000,
+    "evicted_events": 8000,
+    "history_start_seq": 8001,
+    "log_errors": 0,
+    "listener_errors": 0,
+    "retention": {
+      "memory_events": 10000,
+      "memory_seconds": 1800,
+      "log_bytes": 8388608,
+      "log_backups": 2
+    }
+  },
+  "after_health": {
+    "errors": 0,
+    "dropped": 941,
+    "run_id": "89e579de608de2f8027940b5",
+    "attempted": 18000,
+    "written": 18000,
+    "enabled": true,
+    "producer": {
+      "enabled": true,
+      "boundary_context": true,
+      "run_id": "db146d5339ef4b59afedaf824d631645",
+      "producer_id": "8fba95fef7f04827a4ed674bbbffa255",
+      "enqueued": 18941,
+      "pending": 0,
+      "errors": 0,
+      "dropped": 942,
+      "filtered": 0,
+      "last_error": {
+        "stage": "queue",
+        "type": "Full"
+      },
+      "data_errors": 0,
+      "integration_errors": 0
+    },
+    "runtime_frame_evictions": 0,
+    "context_evictions": 0,
+    "retained_events": 10000,
+    "evicted_events": 8000,
+    "history_start_seq": 8001,
+    "log_errors": 0,
+    "listener_errors": 0,
+    "retention": {
+      "memory_events": 10000,
+      "memory_seconds": 1800,
+      "log_bytes": 8388608,
+      "log_backups": 2
+    }
+  }
+}

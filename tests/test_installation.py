@@ -16,8 +16,9 @@ class InstallationTests(unittest.TestCase):
     def test_relative_project_from_target_directory(self):
         (ROOT/'.validation').mkdir(exist_ok=True)
         with tempfile.TemporaryDirectory(dir=ROOT/'.validation') as folder:
-            subprocess.run([*PYTHON, str(ROOT/'tools/install_skill.py'), '--project', '.'],
-                           cwd=folder, check=True, capture_output=True)
+            result = subprocess.run([*PYTHON, str(ROOT/'tools/install_skill.py'), '--project', '.'],
+                                    cwd=folder, capture_output=True, text=True, encoding='utf-8')
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertTrue((Path(folder)/'.agents/skills/vibelens/SKILL.md').is_file())
 
     def test_full_copy_and_refuse_overwrite(self):

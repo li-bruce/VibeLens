@@ -10,18 +10,23 @@ import { boDisplayValue } from "./replay-steps.js";
 import { traceHit } from "./trace-routing.js";
 import { traceDescription } from "./trace-tooltip.js";
 import { lifecycleCaption } from "./node-lifecycle.js";
+import { rowMetrics } from "./trace-tracks.js";
 
 export function cleanTimeline(value) {
   return {
+    schema: 2,
     visible: value?.visible !== false,
     height: Number.isFinite(value?.height) ? Math.max(180, Math.min(500, value.height)) : 340,
     scope: value?.scope === "all" ? "all" : "view",
-    expanded: Array.isArray(value?.expanded)
-      ? value.expanded.filter((id) => layers.some((layer) => layer.id === id))
-      : layers.map((layer) => layer.id),
     follow: value?.follow !== false,
     depth: layers.some((layer) => layer.id === value?.depth) ? value.depth : "all",
     layerMode: value?.layerMode === "single" ? "single" : "through",
+    collapsed: Array.isArray(value?.collapsed)
+      ? value.collapsed
+          .filter((id) => typeof id === "string" && id.startsWith("lane:"))
+          .slice(0, 1000)
+      : [],
+    collapseAll: value?.collapseAll === true,
   };
 }
 
@@ -94,7 +99,8 @@ export class RecordingTimeline {
     });
     this.listen(find("tracks"), "click", () =>
       this.configure({
-        expanded: this.settings.expanded.length ? [] : layers.map((layer) => layer.id),
+        collapseAll: !this.settings.collapseAll,
+        collapsed: [],
       }),
     );
     find("scope").setAttribute("aria-label", t("Timeline scope"));
@@ -261,7 +267,8 @@ export class RecordingTimeline {
       this.settings.scope,
       this.settings.depth,
       this.settings.layerMode,
-      this.settings.expanded,
+      this.settings.collapsed,
+      this.settings.collapseAll,
       [...visible],
       order,
       plan,
@@ -272,7 +279,8 @@ export class RecordingTimeline {
         visible,
         order,
         scope: this.settings.scope,
-        expanded: this.settings.expanded,
+        collapsed: this.settings.collapsed,
+        collapseAll: this.settings.collapseAll,
         depth: this.settings.depth,
         layerMode: this.settings.layerMode,
       });
@@ -304,8 +312,8 @@ export class RecordingTimeline {
     this.find("single").setAttribute("aria-pressed", String(this.settings.layerMode === "single"));
     iconButton(
       this.find("tracks"),
-      this.settings.expanded.length ? "collapse" : "expand",
-      t(this.settings.expanded.length ? "Collapse node tracks" : "Expand node tracks"),
+      this.settings.collapseAll ? "expand" : "collapse",
+      t(this.settings.collapseAll ? "Expand execution groups" : "Collapse execution groups"),
     );
     this.find("live").hidden = !recording.transient && recording.status !== "recording";
     this.host.dataset.source = recording.transient
@@ -417,6 +425,8 @@ export class RecordingTimeline {
         inputs: event.inputs,
         outputs: event.outputs,
         depends: event.depends,
+        ...(event.trace ? { trace: event.trace } : {}),
+        ...(event.provenance ? { provenance: event.provenance } : {}),
         changes,
         graph_transfers: this.transfers,
         ...(slice
@@ -444,7 +454,7 @@ export class RecordingTimeline {
     const height = this.find("body").clientHeight - traceGeometry.overview - traceGeometry.ruler;
     this.scroll = Math.max(
       0,
-      Math.min(Math.max(0, this.rows.length * traceGeometry.row - height), this.scroll),
+      Math.min(Math.max(0, rowMetrics(this.rows).total - height), this.scroll),
     );
   }
 
@@ -481,7 +491,6 @@ export class RecordingTimeline {
         ...this,
         width,
         height,
-        expanded: this.settings.expanded,
         depth: this.settings.depth,
         layerMode: this.settings.layerMode,
       });
@@ -544,18 +553,21 @@ export class RecordingTimeline {
         (hit) =>
           p.x >= hit.x && p.x <= hit.x + hit.width && p.y >= hit.y && p.y <= hit.y + hit.height,
       );
-      if (hit?.kind === "layer") {
-        const id = hit.row.slice(6);
+      if (hit?.kind === "group") {
+        const row = this.rows.find((item) => item.id === hit.row),
+          id = row.group;
+        const current = this.settings.collapseAll
+          ? this.index.executions.lanes.map((lane) => lane.id)
+          : this.settings.collapsed;
         this.configure({
-          expanded: this.settings.expanded.includes(id)
-            ? this.settings.expanded.filter((key) => key !== id)
-            : [...this.settings.expanded, id],
+          collapseAll: false,
+          collapsed: current.includes(id) ? current.filter((key) => key !== id) : [...current, id],
         });
-      } else if (hit?.kind === "node")
+      } else if (hit?.kind === "layer")
         this.requestSeek(
           nearestEvent(
-            this.index.rows
-              .get(hit.row)
+            this.rows
+              .find((row) => row.id === hit.row)
               .marks.map((mark) => ({ ...mark, time: this.index.axis.times[mark.raw] }))
               .filter((mark) => this.allowed.has(mark.raw)),
             this.index.axis.times[this.raw],
@@ -599,8 +611,11 @@ export class RecordingTimeline {
         const nearest =
           hit.kind === "slice"
             ? nearestEvent(
-                this.index.rows.get(hit.row)?.marks.filter((mark) => this.allowed.has(mark.raw)) ||
-                  [],
+                this.rows
+                  .find((row) => row.id === hit.row)
+                  ?.marks.filter(
+                    (mark) => mark.node === hit.slice.node && this.allowed.has(mark.raw),
+                  ) || [],
                 this.time(p.x),
               )?.raw
             : hit.raw;
@@ -809,7 +824,29 @@ export class RecordingTimeline {
           raw: this.raw,
           window: { ...this.window },
           range: this.range && [...this.range],
-          rows: this.rows.map((row) => ({ id: row.id, layer: row.layer })),
+          rows: this.rows.map((row) => ({
+            id: row.id,
+            layer: row.layer,
+            group: row.group,
+            groupStart: row.groupStart,
+            groupKind: row.groupKind,
+            folded: row.folded,
+            members: [...row.members],
+          })),
+          executions: this.index.executions.chains.map((chain) => ({
+            id: chain.id,
+            start: chain.start,
+            end: chain.end,
+            root: chain.root.id,
+            kind: chain.kind,
+            lane: this.index.executions.laneByChain.get(chain.id),
+          })),
+          groups: this.index.executions.lanes.length,
+          invocationGroups: this.index.executions.lanes.filter((lane) => lane.kind === "invocation")
+            .length,
+          unassignedObservations: this.index.executions.chains.filter(
+            (chain) => chain.kind === "observation",
+          ).length,
           points: this.points.map((point) => ({ ...point })),
           transfers: [...this.transfers],
           clock: this.index.axis.ordered ? "time" : "order",

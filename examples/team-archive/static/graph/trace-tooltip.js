@@ -13,6 +13,7 @@ const relationNames = {
   completion: "Lifecycle end",
   trigger: "Trigger",
   recheck: "Recheck",
+  observation: "Observed in",
 };
 
 export function traceDescription(hit, index, all, preferences, timeLabel) {
@@ -60,10 +61,16 @@ export function traceDescription(hit, index, all, preferences, timeLabel) {
         ? t("End not observed")
         : "";
   return {
-    title: name(row?.id || event.node),
+    title: name(slice?.node || row?.id || event.node),
     lines: [
       [t(label), duration].filter(Boolean).join(" · "),
       hit.contextEvent ? t("Before recording") : "",
+      event.context_only ? t("Execution boundary") : "",
+      event.exception?.type ? `${t("Exception")}: ${event.exception.type}` : "",
+      event.provenance?.workflow_id ? `${t("Workflow")}: ${event.provenance.workflow_id}` : "",
+      event.trace
+        ? `${t("Trace")}: ${event.trace.trace_id} · ${t("Span")}: ${event.trace.span_id}`
+        : "",
       ...Object.entries(event.outputs || {})
         .slice(0, 3)
         .map(([key, value]) => `${key}: ${JSON.stringify(value)}`),

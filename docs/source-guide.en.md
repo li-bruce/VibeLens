@@ -13,6 +13,7 @@ The product story is separate from the runtime. [export_file_case.py](../tools/e
 | [SKILL.md](../skills/vibelens/SKILL.md) | The conversation and iteration workflow followed by the coding agent. |
 | [scripts/bo_observer/control](../skills/vibelens/scripts/bo_observer/control/) | Explicit conversation/project scope, validated view/replay plans and the control CLI. |
 | [scripts/bo_observer/policy](../skills/vibelens/scripts/bo_observer/policy/) | Shared rule declarations, projection into the main graph, native evaluations and source/event verification. |
+| [graph/relations](../skills/vibelens/scripts/bo_observer/graph/relations/) | Construction-time edge registration: strict meanings/context, duplicate definitions, typed summary proofs, restoration and atomic JSON updates. |
 | [scripts/bo.py](../skills/vibelens/scripts/bo.py) | Entry point for serving, validating, inspecting, and exporting a native project. |
 | [scripts/bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) | Independent state declaration, observed instances, and complete graph export. |
 | [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | Value types, state hierarchy, active-state calculation, and strict declaration checks. |
@@ -49,8 +50,39 @@ recording service and removes one stopped interval after version and identity ch
 
 An inspection does not advance the accepted baseline. Acceptance is the explicit boundary after all configured checks succeed.
 
-The optional source view adds a physical **Project structure** layer above code
-symbols. [filesystem.py](../skills/vibelens/scripts/bo_observer/code_graph/filesystem.py)
+For authored relations, [contract.py](../skills/vibelens/scripts/bo_observer/graph/relations/contract.py) validates meanings and exact contexts; [paths.py](../skills/vibelens/scripts/bo_observer/graph/relations/paths.py) performs bounded typed searches; [index.py](../skills/vibelens/scripts/bo_observer/graph/relations/index.py) commits insertion decisions and retains all raw IDs. [model.py](../skills/vibelens/scripts/bo_observer/graph/relations/model.py) connects design/model construction and strict revalidation; [bo_relations.py](../skills/vibelens/scripts/bo_relations.py) exposes atomic file mutations. Read the [decision criteria](../skills/vibelens/references/relation-insertion.md) before adding composition rules. Physical execution facts remain direct.
+
+[workflow/iteration_recall.py](../skills/vibelens/scripts/bo_observer/workflow/iteration_recall.py) restores the current contracts, observation ownership and affected layers before a coding turn. [observation_requirements.py](../skills/vibelens/scripts/bo_observer/workflow/observation_requirements.py) derives layer obligations, recognizes configured probe APIs, checks deferred results and audits actual invocation closure. Both use the existing implementation inventory rather than a separate authored graph.
+
+[observation/lifecycle.py](../skills/vibelens/scripts/bo_observer/observation/lifecycle.py) registers native data-operation boundaries and resolves lifecycle bindings for verification. The generated model JSON supplies the same declarations to graph activation and Timeline; explicit function returns remain distinct from transaction commits.
+
+[observation/ownership.py](../skills/vibelens/scripts/bo_observer/observation/ownership.py)
+validates invocation-entry references separately from file identities. Strict
+closure also requires internal point facts to have an actual owner. Python
+ContextVar and Node AsyncLocalStorage carry that context through native calls;
+browser producers can pass explicit entry references. Declared external point
+roots stay in the existing model. The viewer's `trace-evidence.js` and
+`trace-executions.js` use the same identities without guessing from timestamps.
+
+[adapters/python/bo_otel.py](../skills/vibelens/scripts/bo_observer/adapters/python/bo_otel.py)
+and [adapters/javascript/bo_otel.mjs](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_otel.mjs)
+optionally replace ambient invocation context with OpenTelemetry context and W3C
+propagation. [observation/telemetry.py](../skills/vibelens/scripts/bo_observer/observation/telemetry.py)
+checks source-bound technical registrations; [provenance.py](../skills/vibelens/scripts/bo_observer/observation/provenance.py)
+validates trace identity and qualified business/object references. They supplement
+existing events without changing state declarations or native execution. See the
+[integration contract](../skills/vibelens/references/telemetry.md).
+
+[observation/capture_context.py](../skills/vibelens/scripts/bo_observer/observation/capture_context.py)
+projects actual invocation boundaries to value-free headers and extracts the
+ancestors required by focused facts. `session.py` retains bounded open-call
+context independently of ordinary history expiry; batch preflight copies that
+cache. `recording_session.py` keeps selected values plus those original boundaries.
+Python/Node probes skip unselected builders. `replay-steps.js` excludes headers
+from normal playback steps while Timeline retains their actual intervals.
+
+The physical **Project structure** layer is available independently of optional
+code symbols. Its live file/import projection is captured when recording starts. [filesystem.py](../skills/vibelens/scripts/bo_observer/code_graph/filesystem.py)
 scans directories/files; [manifests.py](../skills/vibelens/scripts/bo_observer/code_graph/manifests.py)
 reads declared package dependencies. [structure.py](../skills/vibelens/scripts/bo_observer/code_graph/structure.py)
 attaches containment and computes file dependency counts/cycles.
@@ -80,10 +112,22 @@ event ingestion and a build reload.
 
 The HTTP adapter in `service.py` handles request authorization, routes and session borrowing. `observation/session.py` admits events and provides consistent state frames. Existing imports of `service.GraphSession` remain supported. Database shape comparison lives in [data/schema_compare.py](../skills/vibelens/scripts/bo_observer/data/schema_compare.py); `data/projection.py` assembles the graph and reexports the comparator.
 
+The recorder separates current version metadata (`control_context`), runtime
+checkpoints (`recording_view`) and initial source context (`view`).
+Record list/get/clear queries do not scan source or assemble runtime history.
+The file tree remains in the recording; live graph views still check source.
+`event_batch.py` preflights each event and both source-byte boundaries, then
+publishes its detached cursor. `bo_retention.py` delivers each event to listeners
+and writes bounded groups with the same per-line log rotation. The recorder's
+stream lock is independent of JSON serialization; public views are detached.
+
 ### 3. A click changes the view
 
 | Viewer module | Responsibility |
 |---|---|
+| [layer-style.js](../skills/vibelens/assets/stategraph-viewer/layer-style.js) | One layer order/palette shared by 2D, 3D, regions and controls; shapes identify types. |
+| [trace-tracks.js](../skills/vibelens/assets/stategraph-viewer/trace-tracks.js) | Pack simultaneous lifetimes into nonoverlapping tracks within one layer row. |
+| [step-hierarchy.js](../skills/vibelens/assets/stategraph-viewer/step-hierarchy.js) | Derive recorded-step indentation from actual call references and apply layer colors. |
 | [viewer.js](../skills/vibelens/assets/stategraph-viewer/viewer.js) | Connect controls, graph data, live updates, and recording selection. Start here for UI wiring. |
 | [detail-panel.js](../skills/vibelens/assets/stategraph-viewer/detail-panel.js) | Show selected values and the complete revision-bound source file; discard obsolete asynchronous responses. |
 | [edge-panel.js](../skills/vibelens/assets/stategraph-viewer/edge-panel.js) | Explain original relation members and delegate selection/hiding to the coordinator. |
@@ -99,10 +143,12 @@ The HTTP adapter in `service.py` handles request authorization, routes and sessi
 | [layout.js](../skills/vibelens/assets/stategraph-viewer/layout.js) | Expand/collapse regions, position groups, apply filters, and retain annotations. |
 | [view-lifecycle.js](../skills/vibelens/assets/stategraph-viewer/view-lifecycle.js) | Keep project view identity stable across builds; compare recording and live graph versions. |
 | [renderer.js](../skills/vibelens/assets/stategraph-viewer/renderer.js) | Draw nodes, regions, and edges in Pixi; maintain hit regions for interaction. |
+| [caption-layout.js](../skills/vibelens/assets/stategraph-viewer/caption-layout.js) | Fit display captions to measured width and readable height; preserve complete names and saved layout. |
 | [recording.js](../skills/vibelens/assets/stategraph-viewer/recording.js) | Construct replay frames and evidence-supported transfers. |
 | [recording-timeline.js](../skills/vibelens/assets/stategraph-viewer/recording-timeline.js) | Timeline dock, pointer/keyboard gestures and requests to the shared replay cursor. |
 | [trace-evidence.js](../skills/vibelens/assets/stategraph-viewer/trace-evidence.js) | Invocation scope and parent-call evidence shared with graph animation. |
 | [trace-index.js](../skills/vibelens/assets/stategraph-viewer/trace-index.js) | Duration pairing, event/dependency indexes and explicit cross-layer projections. |
+| [trace-executions.js](../skills/vibelens/assets/stategraph-viewer/trace-executions.js) | Group actual invocation roots into concurrent bands, reuse completed bands, and project one row per layer. |
 | [trace-viewport.js](../skills/vibelens/assets/stategraph-viewer/trace-viewport.js) and [trace-paint.js](../skills/vibelens/assets/stategraph-viewer/trace-paint.js) | Pure window/search arithmetic and visible-range Canvas drawing. |
 | [runtime-frames.js](../skills/vibelens/assets/stategraph-viewer/runtime-frames.js) | Locate exact snapshots and compare state/resource changes. |
 | [replay-steps.js](../skills/vibelens/assets/stategraph-viewer/replay-steps.js) | Choose which recorded changes are meaningful at the current view level. |
@@ -117,11 +163,25 @@ The complete model, the selected view, and the captured evidence are separate va
 
 [spatial-model.js](../skills/vibelens/assets/stategraph-viewer/spatial-model.js) describes 3D membership and containment projections. [spatial-layout.js](../skills/vibelens/assets/stategraph-viewer/spatial-layout.js) runs its constrained 3D force solver in a worker. [spatial-renderer.js](../skills/vibelens/assets/stategraph-viewer/spatial-renderer.js) owns the perspective camera, GPU resources and pointer interactions. [semantic-view.js](../skills/vibelens/assets/stategraph-viewer/semantic-view.js) maintains shared accessible controls with indexed, incremental attribute updates. [layer-ruler.js](../skills/vibelens/assets/stategraph-viewer/layer-ruler.js) draws the Canvas2D sorting/visibility navigator; [edge-routing.js](../skills/vibelens/assets/stategraph-viewer/edge-routing.js) shares path and boundary math. [replay-selection.js](../skills/vibelens/assets/stategraph-viewer/replay-selection.js) owns non-destructive playback inclusion and range rules. Read [spatial graph](../skills/vibelens/references/spatial-graph.md) for interaction and verification details.
 
-[cluster-layout.js](../skills/vibelens/assets/stategraph-viewer/cluster-layout.js) and [cluster-worker.js](../skills/vibelens/assets/stategraph-viewer/cluster-worker.js) arrange typed subtree clusters using the existing D3 forces. [route-shapes.js](../skills/vibelens/assets/stategraph-viewer/route-shapes.js) owns faithful straight/cubic shapes and continuous dash tessellation. [spatial-geometry.js](../skills/vibelens/assets/stategraph-viewer/spatial-geometry.js) merges semantic solid objects for instanced rendering and shared legend thumbnails.
+[cluster-layout.js](../skills/vibelens/assets/stategraph-viewer/cluster-layout.js) and [cluster-worker.js](../skills/vibelens/assets/stategraph-viewer/cluster-worker.js) pack layer/type subtree clusters locally with D3; `layout.js` seeds coarse group positions with ELK crossing minimization. [route-shapes.js](../skills/vibelens/assets/stategraph-viewer/route-shapes.js) owns faithful straight/cubic shapes and continuous dash tessellation. [spatial-geometry.js](../skills/vibelens/assets/stategraph-viewer/spatial-geometry.js) merges semantic solid objects for instanced rendering and shared legend thumbnails.
 
 ## Database structure and operations
 
 Start at [data/contract.py](../skills/vibelens/scripts/bo_observer/data/contract.py) for strict JSON and identity, then [catalog.py](../skills/vibelens/scripts/bo_observer/data/catalog.py) for native metadata, [projection.py](../skills/vibelens/scripts/bo_observer/data/projection.py) for graph nodes and relations, and [sync.py](../skills/vibelens/scripts/bo_observer/data/sync.py) for refresh and independent verification. [runtime.py](../skills/vibelens/scripts/bo_observer/data/runtime.py) and [bo_data.mjs](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_data.mjs) observe native calls. [watcher.py](../skills/vibelens/scripts/bo_observer/data/watcher.py) replaces the validated Web build; [data-layer.js](../skills/vibelens/assets/stategraph-viewer/data-layer.js) renders its provenance and values. These modules share the existing event, recording and preference services.
+
+Native data adapters borrow the active same-probe invocation context. Python uses
+ContextVar; Node registers AsyncLocalStorage through the probe's public context
+interface. The adapter owns each native call interval, including transaction body
+parentage, while the probe owns delivery. Explicit caller identities remain
+authoritative. Finished or foreign contexts are never inherited. See
+`tests/test_database_runtime.py` and `tools/test_data_context.mjs` for native
+callback, concurrent-request and actual captured Timeline-index checks.
+
+`graph/python_routes.py` extracts Python native route registrations as source
+facts. `graph/code_structure.py` includes them in the cached unit; the adapter
+fingerprint includes both files. `code_graph/index.py` links known registrations
+to their actual local/imported handler symbols. The source factory location stays
+separate from the handler definition. Unknown dispatch stays unresolved.
 
 ## Optional source structure
 

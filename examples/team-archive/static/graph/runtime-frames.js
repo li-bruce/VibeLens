@@ -4,7 +4,7 @@ const copy = (value) => structuredClone(value);
 /** Find the exact recorded state snapshot associated with this event. */
 export function runtimeFrame(recording, event) {
   if (recording.runtime_frames?.schema !== "stategraph-runtime-frames/v1" || !event) return null;
-  return (
+  const frame =
     recording.runtime_frames.frames.find(
       (f) =>
         f.event_id === event.id &&
@@ -13,8 +13,22 @@ export function runtimeFrame(recording, event) {
         Number.isInteger(event.revision) &&
         f.revision === event.revision &&
         f.machine.state_revision === event.revision,
-    ) || null
-  );
+    ) || null;
+  // Older recordings retained the validated identity on the event, but not
+  // its single-instance projection. Use that explicit evidence only.
+  if (frame && event.snapshot_instance && frame.machine.configurations?.length === 1) {
+    const cfg = frame.machine.configurations[0];
+    if (cfg.snapshot_instance && cfg.snapshot_instance !== event.snapshot_instance) return null;
+    if (!cfg.snapshot_instance)
+      return {
+        ...frame,
+        machine: {
+          ...frame.machine,
+          configurations: [{ ...cfg, snapshot_instance: event.snapshot_instance }],
+        },
+      };
+  }
+  return frame;
 }
 export function applyRuntimeFrame(recording, event, view) {
   if (!recording.runtime_frames) return false;
@@ -39,11 +53,36 @@ export function applyRuntimeFrame(recording, event, view) {
   }
   return true;
 }
-/** Compare available snapshots and emit state/resource changes for the replay display. */
+/** Index proven instances; duplicate legacy attempt IDs are ambiguous, not a match. */
+export function runtimeConfigurations(machine) {
+  const result = new Map();
+  for (const cfg of machine.configurations || []) {
+    const key = cfg.snapshot_instance
+      ? `instance:${cfg.snapshot_instance}`
+      : cfg.attempt
+        ? `attempt:${cfg.attempt}`
+        : null;
+    if (key) result.set(key, result.has(key) ? null : cfg);
+  }
+  return result;
+}
+/** Retain last witnessed configurations when an exact frame covers one instance. */
+export function rememberRuntimeMachine(before, after) {
+  const configurations = new Map([
+    ...runtimeConfigurations(before),
+    ...runtimeConfigurations(after),
+  ]);
+  return {
+    ...after,
+    configurations: [...configurations.values()].filter(Boolean),
+  };
+}
+/** Compare only the same known instance; never invent a prior state for a new one. */
 export function runtimeChanges(before, after, owner, put) {
-  const previous = new Map((before.configurations || []).map((c) => [c.attempt, c]));
-  for (const cfg of after.configurations || []) {
-    const old = previous.get(cfg.attempt) || {};
+  const previous = runtimeConfigurations(before);
+  for (const [key, cfg] of runtimeConfigurations(after)) {
+    const old = previous.get(key);
+    if (!cfg || !old) continue;
     put(owner, boTranslate("Flow"), old.phase, cfg.phase, "business", null, cfg.attempt);
     for (const [node, value] of Object.entries(cfg.activities || {}))
       put(node, boTranslate("Activity"), old.activities?.[node], value, "state", null, cfg.attempt);

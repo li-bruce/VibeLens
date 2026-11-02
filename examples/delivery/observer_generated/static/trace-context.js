@@ -18,7 +18,7 @@ export function contextualLifecycles(recording, items, all) {
     .filter((slice) => slice.last >= offset)
     .map((slice) => {
       const clipped = slice.raw < offset;
-      if (clipped) sources.set(slice.node, combined[slice.raw]);
+      if (clipped) sources.set(combined[slice.raw].id, combined[slice.raw]);
       const before = slice.stages.filter((stage) => stage.raw < offset).at(-1);
       return {
         ...slice,
@@ -43,7 +43,7 @@ export function contextualLifecycles(recording, items, all) {
       for (const end of ["from", "to"])
         if (link[end] < offset) {
           const original = combined[link[end]];
-          sources.set(original.node, original);
+          sources.set(original.id, original);
           extra[end + "Node"] = original.node;
           extra[end + "Event"] = original.id;
         }

@@ -1,0 +1,120 @@
+{
+  "model": "bo_stategraph/project.json",
+  "manifest": "manifest.json",
+  "code_files": [
+    "app/__init__.py",
+    "app/predicates.py",
+    "app/ports.py",
+    "app/models.py",
+    "app/storage.py",
+    "app/service.py",
+    "app/web.py",
+    "bo_stategraph/workflow.py",
+    "bo_stategraph/native_executor.py",
+    "integrations/__init__.py",
+    "integrations/bo_integration.py",
+    "run.py"
+  ],
+  "watch_files": [
+    "tooling/build_model.py",
+    "tooling/export_models.py",
+    "tooling/observe.py",
+    "tooling/test_business.py",
+    "tooling/test_withdrawal.py",
+    "tooling/verify.py",
+    "bo_stategraph/__init__.py",
+    "bo_stategraph/native_executor.py",
+    "bo_stategraph/databases.json",
+    "templates/login.html",
+    "templates/index.html",
+    "templates/error.html",
+    "static/app/app.css",
+    "ownership.json"
+  ],
+  "source_scope": {
+    "roots": [
+      "."
+    ],
+    "require_symbol_classification": true,
+    "exclude": {
+      ".venv/**": "Project-local dependency environment; package versions retained separately.",
+      "review/**": "Historical review evidence and review utilities; not business implementation.",
+      "observer_runtime/**": "Canonical managed observer runtime, validated by upgrade hashes.",
+      "static/**": "Declarative styles only; browser forms call the mapped Python HTTP routes.",
+      "tooling/**": "Offline generation and independent verification entrypoints, tracked separately.",
+      "bo_stategraph/__init__.py": "Canonical native core installed without modification; parity and protocol checked.",
+      "bo_stategraph/bo_contracts.py": "Canonical native core installed without modification; parity and protocol checked.",
+      "bo_stategraph/execution_contract.py": "Canonical native core installed without modification; parity and protocol checked.",
+      "bo_stategraph/policy/**": "Canonical policy execution core installed without modification; predicates are inventoried in app/predicates.py.",
+      ".stategraph/**": "Frozen gate baselines and generated verification evidence.",
+      "resume-first-integration-20261031/**": "Immutable coding-iteration baseline and generated verification records, not application source.",
+      "withdraw-pending-20261101/**": "Immutable iteration baseline, review and verification JSON receipts only; business implementation remains fully inventoried under app and declared sources."
+    },
+    "frozen_sources": {
+      "review/retest-20261031-03/core-extracted": "review/retest-20261101-01/frozen-core-sources.json"
+    }
+  },
+  "stategraph": {
+    "module": "bo_stategraph/__init__.py",
+    "development_mode": "drive",
+    "execution_mode": "drive",
+    "decision_source": "user",
+    "decision": "按状态图驱动开发"
+  },
+  "require_mapping_witnesses": true,
+  "require_probe_health": true,
+  "require_observation_closure": true,
+  "mapping_contract": "mapping.json",
+  "whitebox": "whitebox.json",
+  "discovery": "discovery.json",
+  "implementation": "implementation.json",
+  "acceptance": "acceptance.json",
+  "slice_depth": 1,
+  "probe_callees": [
+    "bo_probe.record",
+    "bo_probe.span",
+    "self.bo_probe.record",
+    "self.bo_probe.span"
+  ],
+  "required_probes": [
+    {
+      "symbol": "app/service.py::FileService.upload",
+      "node": "upload_file",
+      "phase": "enter"
+    }
+  ],
+  "required_runtime_probes": [
+    {
+      "case": "workflow",
+      "node": "upload_file",
+      "phase": "return"
+    }
+  ],
+  "probe_modes": [
+    "on",
+    "off",
+    "fault"
+  ],
+  "observations_command": [
+    "{python}",
+    "-B",
+    "-X",
+    "utf8",
+    "tooling/observe.py"
+  ],
+  "test_commands": [
+    [
+      "{python}",
+      "-B",
+      "tooling/test_business.py"
+    ],
+    [
+      "{python}",
+      "-B",
+      "-X",
+      "utf8",
+      "tooling/test_withdrawal.py"
+    ]
+  ],
+  "timeout_seconds": 180
+}

@@ -21,6 +21,7 @@ At first integration, retain the project's graph integrity requirements in its e
 ```text
 This project retains a developer graph with source bindings and selected runtime evidence.
 Run the normal validation entrypoint, including change_sync check, before delivery.
+Before editing, run the project-local change_sync recall command to restore contracts and observation ownership.
 Preserve accepted baselines and independent expectations; repair failures rather than reset them.
 Activate VibeLens conversation guidance only when the user explicitly invokes $vibelens in this conversation.
 In an activated conversation, reuse the recorded drive/observe choice and maintain graph/probes during coding.
@@ -40,7 +41,10 @@ The normal validation command propagates synchronization failures for everyone c
 
 ## During each behavior change
 
+- Before coding a later business request, follow [iteration dialogue](iteration-dialogue.md). Locate the existing graph region, show the proposed local change and clarify only changed or unresolved business meaning. Reuse recorded confirmations; behavior-preserving refactors reconcile mappings without repeating business questions.
 - Run `change_sync begin` before editing, preserving old requirements and expectations and declaring allowed requirement changes. Continue an existing change record; do not reset its baseline.
+- Run `change_sync recall` at each later coding turn. Read its affected layer/source summary and preserve its project-local contract paths. Use [observation continuity](observation-continuity.md) for per-layer scans and invocation closure; enable `require_observation_closure` for new integrations.
+- Recall previews a bounded set of context comparisons and reports the total and omitted counts. Read the referenced mapping contract for affected details; verification always checks the complete contract.
 - Configure `source_scope` in `sync.json`: roots, justified excludes, and `require_symbol_classification`. After editing, run `python observer_runtime/bo_sync.py scan --root .`, read `maintenance.json`, and reconcile nodes, declarations, bindings, probes. `watch` produces the same work request; a host or coding AI must consume it. It cannot wake every editor by itself.
 - Source inventory includes untracked files. Business code belongs in `code_files`, not merely `watch_files`. Maintain the [implementation inventory](implementation-coverage.md) linking features, support symbols, parameters, and actual events. Free-text `excluded_symbols` cannot bypass a feature. Repeated scans retain pending work; only accepted current candidates advance the source baseline.
 - In drive mode implement rules/states/effects from the declaration; in observe mode adapt actual application behavior. Both modes use static analysis for function/parameter/call candidates, bind actual states and key decisions to business nodes, and maintain probes and checks.

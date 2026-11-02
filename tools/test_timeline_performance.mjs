@@ -78,7 +78,9 @@ try {
   await page.mouse.wheel(0, -500);
   await page.keyboard.up("Control");
   await page.waitForTimeout(80);
-  // Expand a real canvas-painted layer header, then inspect its node row.
+  // Collapse/expand an execution band without adding per-node tracks.
+  await page.mouse.click(box.x + 50, box.y + state.geometry.top + 14);
+  assert.equal((await page.evaluate(() => tracePerf.state)).rows.length, 1);
   await page.mouse.click(box.x + 50, box.y + state.geometry.top + 14);
   await page.waitForTimeout(50);
   await page.screenshot({ path: path.join(out, "timeline-20000-events.png") });
@@ -111,6 +113,7 @@ try {
   measured = report;
   assert.ok(perf.seeks.length >= 20, "pointer drag produces many real seeks");
   assert.equal(report.semanticLayers, 9, "all nine graph layers participate in the load fixture");
+  assert.equal(report.visibleRows, 9, "20k sequential events reuse exactly nine layer rows");
   assert.ok(report.initialMs < 2500);
   assert.ok(report.seekP95Ms < 100, "20k timeline seek/render p95 under 100 ms on this host");
   assert.ok(report.drawP95Ms < 60);

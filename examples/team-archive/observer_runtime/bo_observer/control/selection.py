@@ -104,6 +104,63 @@ def relation_type(edge):
     return edge["type"] if edge.get("type") in RELATIONS else "other"
 
 
+def view_types(node):
+    """Match graph-core.js membership: one physical node may serve several views."""
+    if node.get("code_role"):
+        return {"code-" + node["code_role"]}
+    data_role = node.get("data_role")
+    if data_role in {"store", "dataset", "column", "query", "transform"}:
+        return {data_role}
+    kind, role = node.get("kind"), node.get("execution_role")
+    if node.get("layer") == "business":
+        visual = "business"
+    elif kind == "state":
+        visual = "state"
+    elif kind == "resource" or role == "resource":
+        visual = "resource"
+    elif kind == "decision" or role == "join":
+        visual = "decision"
+    elif kind in {"data", "effect", "wait"}:
+        visual = kind
+    else:
+        visual = "function"
+    types = {visual}
+    if "business" in (node.get("semantic_roles") or []):
+        types.add("business")
+    if node.get("semantic_role") == "state_parameter":
+        types.add("state")
+
+    # Empty JSON objects/arrays are truthy in the browser. A field descriptor is
+    # still a descriptor when empty; it must not become a callable source node.
+    def js_truthy(value):
+        return value is not None and value is not False and value != "" and value != 0
+
+    if js_truthy(node.get("source")) and kind != "state" and not js_truthy(node.get("field")):
+        types.add("function")
+    return types
+
+
+def check_path_context(nodes, edges, selected, eligible, edge_types):
+    """Keep real cross-type bridges within the viewer's one-hop boundary contract."""
+    context = set(nodes)
+    if not context:
+        return
+    adjacent = {identity: set() for identity in selected}
+    for edge in edges:
+        if (
+            edge["from"] == edge["to"]
+            or edge["type"] == "contains"
+            or relation_type(edge) not in edge_types
+            or edge["from"] not in selected
+            or edge["to"] not in selected
+        ):
+            continue
+        adjacent[edge["from"]].add(edge["to"])
+        adjacent[edge["to"]].add(edge["from"])
+    if any(len(adjacent[node]) < 2 or not adjacent[node] & eligible for node in context):
+        raise ValueError("The path needs additional node types beyond one-hop boundary context")
+
+
 def build_plan(view, spec, recording=None):
     """Produce a view specification over current identities; never rewrite the graph."""
     allowed = {
@@ -167,6 +224,8 @@ def build_plan(view, spec, recording=None):
     if any(edge["from"] not in nodes or edge["to"] not in nodes for edge in edges):
         raise ValueError("Graph contains an unknown relation endpoint")
     seeds = list(dict.fromkeys(resolve(nodes, query) for query in anchors))
+    requested_types = set(node_types)
+    eligible = {identity for identity, node in nodes.items() if view_types(node) & requested_types}
     adjacent = {node: [] for node in nodes}
     for edge in edges:
         if relation_type(edge) not in edge_types:
@@ -188,7 +247,7 @@ def build_plan(view, spec, recording=None):
                     queue.append(other)
         if end not in previous:
             raise ValueError(
-                "No declared path connects focus nodes under these relation filters: "
+                "No declared path connects focus nodes under these node/relation filters: "
                 + start
                 + " -> "
                 + end
@@ -197,6 +256,10 @@ def build_plan(view, spec, recording=None):
         while here is not None:
             selected.add(here)
             here = previous[here]
+    if not set(seeds) <= eligible:
+        raise ValueError("Focus nodes are excluded by the requested node type filter")
+    path_context = selected - eligible
+    check_path_context(path_context, edges, selected, eligible, edge_types)
     if len(selected) > budget:
         raise ValueError("The focus path exceeds the display budget; narrow the chain")
     queue, visited = deque((node, 0) for node in sorted(selected)), set(selected)
@@ -206,7 +269,7 @@ def build_plan(view, spec, recording=None):
         if level >= depth:
             continue
         for other, _ in sorted(adjacent[node]):
-            if other in visited:
+            if other in visited or other not in eligible:
                 continue
             if len(selected) >= budget:
                 limited = True
@@ -237,6 +300,7 @@ def build_plan(view, spec, recording=None):
         "label": label.strip(),
         "anchors": seeds,
         "node_ids": sorted(selected),
+        "context_node_ids": sorted(path_context),
         "edge_ids": included,
         "boundaries": boundaries[:300],
         "limits_hit": limited or len(boundaries) > 300,
@@ -300,7 +364,7 @@ def validate_plan(plan):
     }
     if (
         not isinstance(plan, dict)
-        or set(plan) != fields
+        or set(plan) - {"context_node_ids"} != fields
         or plan.get("schema") != "vibelens-control-plan/v1"
         or plan.get("action") not in {"view", "replay"}
     ):
@@ -333,6 +397,9 @@ def validate_plan(plan):
         or not identities(plan["node_ids"], 300, empty=False)
         or not identities(plan["anchors"], 12, empty=False)
         or not set(plan["anchors"]) <= set(plan["node_ids"])
+        or not identities(plan.get("context_node_ids", []), 300)
+        or not set(plan.get("context_node_ids", [])) <= set(plan["node_ids"])
+        or bool(set(plan.get("context_node_ids", [])) & set(plan["anchors"]))
         or not identities(plan["edge_ids"], 50000)
         or type(plan["limits_hit"]) is not bool
     ):
@@ -421,6 +488,14 @@ def validate_evidence(plan, view, recording=None):
         or plan["boundaries"] != expected_boundaries
     ):
         raise ValueError("The selection must retain original nodes and declared relations")
+    requested_types = set(plan["filters"]["nodes"])
+    eligible = {node["id"] for node in view["model"]["nodes"] if view_types(node) & requested_types}
+    context = set(plan.get("context_node_ids", []))
+    if context != selected - eligible:
+        raise ValueError("The selection contains unmarked context outside its node type filter")
+    check_path_context(
+        context, view["model"]["edges"], selected, eligible, plan["filters"]["edges"]
+    )
     if plan["action"] == "replay" and (
         not recording
         or recording.get("id") != plan["recording"]["id"]

@@ -6,7 +6,7 @@ const cache = new WeakMap();
 export function graphActivations(events, nodes) {
   const prior = cache.get(events);
   const signature = `${events.length}:${events.at(-1)?.id || ""}`;
-  if (prior?.signature === signature) return prior.states;
+  if (prior?.signature === signature && prior.nodes === nodes) return prior.states;
   const items = events.map((event) => ({ ...event, kind: event.kind || "probe" }));
   const all = new Map(nodes.map((node) => [node.id, node]));
   const facts = traceLifecycles(items, all),
@@ -61,7 +61,7 @@ export function graphActivations(events, nodes) {
       parent: slice.parent === undefined ? null : items[slice.parent].node,
     });
   }
-  cache.set(events, { signature, states });
+  cache.set(events, { signature, nodes, states });
   return states;
 }
 

@@ -181,6 +181,24 @@ def plan(
     }
 
 
+def replace_copy(source, target):
+    """Stage bytes beside the target so readers never see a truncated module.
+
+    Replacing also avoids Windows EINVAL when an existing file has a mapped
+    read section. Any sharing/permission failure still aborts the upgrade.
+    """
+    temporary = target.with_name(target.name + ".upgrade-" + uuid.uuid4().hex)
+    try:
+        if isinstance(source, bytes):
+            temporary.write_bytes(source)
+        else:
+            shutil.copyfile(source, temporary)
+        temporary.replace(target)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
 def apply(root, **options):
     """Apply a conflict-free upgrade plan while preserving project definitions, data, and preferences."""
     root = Path(root).absolute().resolve()
@@ -201,10 +219,7 @@ def apply(root, **options):
             target.parent.mkdir(parents=True, exist_ok=True)
             written.append(name)
             original = proposed["sources"][name]
-            if isinstance(original, bytes):
-                target.write_bytes(original)
-            else:
-                shutil.copyfile(original, target)
+            replace_copy(original, target)
         for name in proposed["retired_files"]:
             target = contained(root, name)
             if target.exists():
@@ -219,7 +234,7 @@ def apply(root, **options):
         for name in reversed(written):
             target, saved = contained(root, name), backup / name
             if saved.exists():
-                shutil.copyfile(saved, target)
+                replace_copy(saved, target)
             elif target.exists():
                 target.unlink()
         raise

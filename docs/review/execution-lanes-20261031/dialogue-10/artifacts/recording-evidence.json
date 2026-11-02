@@ -1,0 +1,96 @@
+{
+  "valid": true,
+  "recording_id": "2775c52691fb44249ad5ff11cf15dca2",
+  "build_id": "28ec8463cd649107ff1257bc4a1cfee1ec2db5e8366ae66e1ac6d077585c33b8",
+  "status": "stopped",
+  "interval_events": 153,
+  "closed_interval_calls": 38,
+  "interval_http_roots": 7,
+  "missing_interval_parents": [],
+  "interval_ownership_gaps": [],
+  "prior_context_events": 2077,
+  "prior_context_ownership_gaps": 195,
+  "raw_gaps": [
+    "Pre-recording context retains only the latest 2000 events.",
+    "A parent invocation entry was not retained; its execution boundary is incomplete."
+  ],
+  "producer_settlement": {
+    "flushed": true
+  },
+  "independent_sqlite": {
+    "id": "f082bfd825c848f78d452f6c72dc4aa5",
+    "state": "approved",
+    "revision": 3,
+    "uploader_id": "alice",
+    "reviewer_id": "ben",
+    "recipient_id": "cara",
+    "filename": "stopped-round04-chain.txt",
+    "journal": [
+      {
+        "seq": 1,
+        "event": "submit",
+        "before": "new",
+        "after": "pending",
+        "guards": {
+          "operation_allowed": true
+        },
+        "payload": {
+          "allowed": true
+        }
+      },
+      {
+        "seq": 2,
+        "event": "approve",
+        "before": "pending",
+        "after": "approved",
+        "guards": {
+          "operation_allowed": true
+        },
+        "payload": {
+          "allowed": true
+        }
+      },
+      {
+        "seq": 3,
+        "event": "share",
+        "before": "approved",
+        "after": "approved",
+        "guards": {
+          "operation_allowed": true
+        },
+        "payload": {
+          "allowed": true
+        }
+      }
+    ]
+  },
+  "native_transition_witnesses": 3,
+  "exact_parameters": {
+    "upload": {
+      "actor": "alice",
+      "reviewer_id": "ben",
+      "filename": "stopped-round04-chain.txt",
+      "size": 68
+    },
+    "review": {
+      "actor": "ben",
+      "file_id": "f082bfd825c848f78d452f6c72dc4aa5",
+      "decision": "approve"
+    },
+    "share": {
+      "actor": "alice",
+      "file_id": "f082bfd825c848f78d452f6c72dc4aa5",
+      "recipient_id": "cara"
+    }
+  },
+  "http_statuses": {
+    "201": 1,
+    "403": 2,
+    "200": 4
+  },
+  "raw_recording_path": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\\u5e73\u53f0\u8f6f\u8457\\VibeLensTrials\\execution-bands-dialogue-20261031-03\\bo_stategraph\\data\\recordings\\2775c52691fb44249ad5ff11cf15dca2.json",
+  "raw_recording_sha256": "eafa75954832656b9934e65a51d870fbf544249aaf7ba2af8ef942f89a5fe735",
+  "http_payload_sha256": "360b6f2803c27df59622a0846688af79163a27a9fa1cad40000b897b1181bbd0",
+  "limit": "Prior context is capped at 2000 and has incomplete ancestors. The new 153-event interval has closed calls and no missing parents. Do not call the whole recording gap-free.",
+  "filtered_control_and_replay": "pending separate scoped control and browser receipts"
+}

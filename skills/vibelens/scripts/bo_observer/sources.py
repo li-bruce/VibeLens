@@ -37,13 +37,14 @@ def adapter_identity():
     files = [
         Path(__file__),
         Path(__file__).parent / "graph/code_structure.py",
+        Path(__file__).parent / "graph/python_routes.py",
         ADAPTER / "scan.mjs",
         ADAPTER / "package-lock.json",
     ]
     return hashlib.sha256(b"".join(p.read_bytes() for p in files if p.is_file())).hexdigest()
 
 
-def parse_javascript(files):
+def parse_javascript(files, *, file_only=False):
     """Send a batch of source texts to the Node parser and return its structured result.
 
     A parser failure is explicit so missing code cannot appear successfully mapped.
@@ -53,7 +54,7 @@ def parse_javascript(files):
         raise ValueError("JavaScript adapter requires Node >=20; set BO_NODE or install Node")
     result = subprocess.run(
         [node, str(ADAPTER / "scan.mjs")],
-        input=json.dumps({"files": files}),
+        input=json.dumps({"files": files, "file_only": file_only}),
         capture_output=True,
         text=True,
         encoding="utf-8",

@@ -24,6 +24,109 @@ def equal(a, b):
     )
 
 
+def context_path(path, *, native=False):
+    """Validate a concrete JSON path and exclude observation-derived native roots."""
+    if not isinstance(path, list) or not path or any(type(part) not in (str, int) for part in path):
+        raise ValueError("invalid context mapping path")
+    if native and path[0] in {"events", "projection", "mapping_checks", "stategraph_export"}:
+        raise ValueError("context mapping requires native facts independent of observation")
+
+
+def context_fields(plan):
+    """Validate optional event-context rows before any acceptance code consumes them."""
+    fields = (plan or {}).get("context_fields", [])
+    if not isinstance(fields, list):
+        raise ValueError("context_fields must be a list")
+    for field in fields:
+        required = {
+            "id",
+            "node",
+            "phase",
+            "case",
+            "actual",
+            "mapped",
+            "source",
+        }
+        if not isinstance(field, dict) or not required <= set(field) <= required | {"each"}:
+            raise ValueError("context mapping needs exact source/event/native bindings")
+        for name in ("id", "node", "phase", "case", "source"):
+            if not isinstance(field[name], str) or not field[name].strip():
+                raise ValueError("context mapping needs nonempty string bindings")
+        for name in ("actual", "mapped"):
+            context_path(field[name], native=name == "actual")
+        if field["mapped"][0] not in {"trace", "provenance", "exception"}:
+            raise ValueError("context mapping must address tracing metadata")
+        if "each" in field:
+            selected = field["each"]
+            if not isinstance(selected, dict) or set(selected) != {
+                "collection",
+                "actual_key",
+                "mapped_key",
+            }:
+                raise ValueError("context collection needs exact native/event key bindings")
+            context_path(selected["collection"], native=True)
+            if (
+                not isinstance(selected["actual_key"], list)
+                or not selected["actual_key"]
+                or not isinstance(selected["mapped_key"], list)
+                or len(selected["actual_key"]) != len(selected["mapped_key"])
+            ):
+                raise ValueError("context collection needs matching nonempty key paths")
+            for name in ("actual_key", "mapped_key"):
+                for path in selected[name]:
+                    context_path(path, native=name == "actual_key")
+    return fields
+
+
+def context_pairs(run, field):
+    """Join complete event facts to native rows without pairing by arrival order.
+
+    Legacy rows compare one native fact with every matching event. Collection
+    rows require both sides of each explicit key; no native sample or observed
+    invocation may silently disappear. Several equal-key point facts are all
+    compared, while duplicate native keys are ambiguous and rejected.
+    """
+    events = [
+        event
+        for event in run.get("events", [])
+        if event.get("node") == field["node"]
+        and event.get("phase") == field["phase"]
+        and not event.get("context_only")
+    ]
+    if not events:
+        raise ValueError("required context observation is missing")
+    if "each" not in field:
+        actual = at(run, field["actual"])
+        return [(actual, event) for event in events]
+    selected = field["each"]
+    records = at(run, selected["collection"])
+    if not isinstance(records, list) or not records:
+        raise ValueError("required native context records are missing")
+
+    def key(value, paths):
+        parts = tuple(at(value, path) for path in paths)
+        if any(type(part) not in (str, int) or part == "" for part in parts):
+            raise ValueError("context join keys must be concrete strings or integers")
+        return parts
+
+    indexed = {}
+    for record in records:
+        identity = key(record, selected["actual_key"])
+        if identity in indexed:
+            raise ValueError("duplicate native context join key")
+        indexed[identity] = at(record, field["actual"])
+    seen, pairs = set(), []
+    for event in events:
+        identity = key(event, selected["mapped_key"])
+        if identity not in indexed:
+            raise ValueError("observed invocation has no independent native context record")
+        seen.add(identity)
+        pairs.append((indexed[identity], event))
+    if seen != set(indexed):
+        raise ValueError("native invocation has no required context observation")
+    return pairs
+
+
 def validate_plan(plan, model):
     """The project owns a protected list, not a list inferred from submitted checks."""
     if not isinstance(plan, dict) or plan.get("schema") != "bo-mapping/v1":
@@ -64,6 +167,23 @@ def validate_plan(plan, model):
     selected = plan.get("export", {})
     if selected.get("case") not in plan["cases"] or selected.get("mode") not in plan["modes"]:
         raise ValueError("mapping plan must select the actual public export case and mode")
+    for field in context_fields(plan):
+        if not field["id"] or field["id"] in ids or field["node"] not in nodes:
+            raise ValueError("context mapping needs a unique identity and known node")
+        ids.add(field["id"])
+        if field["case"] not in plan["cases"] or not field["source"]:
+            raise ValueError("context mapping needs a protected case and native source")
+        if field["phase"] not in {
+            "enter",
+            "return",
+            "read",
+            "decision",
+            "wait",
+            "commit",
+            "change",
+            "error",
+        }:
+            raise ValueError("invalid context mapping phase")
     return plan
 
 
@@ -76,10 +196,90 @@ def protected_plan_errors(before, after):
     for name in ("cases", "modes", "fields"):
         if any(v not in after.get(name, []) for v in before[name]):
             errors.append("mapping coverage was removed or changed: " + name)
+    if any(
+        field not in after.get("context_fields", []) for field in before.get("context_fields", [])
+    ):
+        errors.append("mapping coverage was removed or changed: context_fields")
     for name in ("source", "actual_collection", "actual_id", "export"):
         if before.get(name) != after.get(name):
             errors.append("mapping binding changed: " + name)
     return errors
+
+
+def assess_context_fields(payload, plan):
+    """Compare observed identity/object context with separately read native facts.
+
+    Missing is not null. A known absent principal must be explicitly observed as
+    null; a missing field is an incomplete witness, even when business HTTP is right.
+    """
+    errors, checked = [], 0
+    try:
+        fields = context_fields(plan)
+    except (ValueError, TypeError, AttributeError) as error:
+        return {"valid": False, "checks": 0, "errors": ["invalid context mapping: " + str(error)]}
+    for field in fields:
+        try:
+            runs = [
+                run
+                for run in payload.get("runs", [])
+                if run.get("case") == field["case"] and run.get("mode") == "on"
+            ]
+            if len(runs) != 1:
+                raise ValueError("context mapping needs one actual enabled case")
+            run = runs[0]
+            for actual, event in context_pairs(run, field):
+                checked += 1
+                mapped = at(event, field["mapped"])
+                if not equal(actual, mapped):
+                    errors.append(
+                        {
+                            "check": field["id"],
+                            "case": field["case"],
+                            "event": event["id"],
+                            "error": "observed context differs from native implementation",
+                            "actual": actual,
+                            "mapped": mapped,
+                            "source": field["source"],
+                        }
+                    )
+        except (ValueError, TypeError, KeyError, IndexError) as error:
+            errors.append({"check": field["id"], "error": str(error)})
+    return {"valid": not errors, "checks": checked, "errors": errors}
+
+
+def context_coverage_errors(payload, plan):
+    """New observation metadata cannot bypass the existing independent mapping plan."""
+    try:
+        fields = context_fields(plan)
+    except (ValueError, TypeError, AttributeError) as error:
+        return ["invalid context mapping: " + str(error)]
+    observed = {
+        (run.get("case"), event.get("id"), event.get("node"), event.get("phase"), key)
+        for run in payload.get("runs", [])
+        if run.get("mode") == "on"
+        for event in run.get("events", [])
+        if not event.get("context_only")
+        for key in event.get("provenance", {})
+    }
+    covered, errors = set(), []
+    for field in fields:
+        for run in payload.get("runs", []):
+            if run.get("case") != field["case"] or run.get("mode") != "on":
+                continue
+            try:
+                for _, event in context_pairs(run, field):
+                    for key in ("actor", "workflow_id", "objects"):
+                        if field["mapped"] in (["provenance"], ["provenance", key]):
+                            covered.add(
+                                (field["case"], event.get("id"), field["node"], field["phase"], key)
+                            )
+            except (ValueError, TypeError, KeyError, IndexError) as error:
+                errors.append({"check": field["id"], "error": str(error)})
+    missing = {(case, node, phase, key) for case, _, node, phase, key in observed - covered}
+    return [
+        "native context mapping omits observed component: " + "/".join(map(str, item))
+        for item in sorted(missing, key=str)
+    ] + errors
 
 
 def assess_projections(payload, plan, model, build_id):
@@ -186,6 +386,10 @@ def instance_witnesses(instances, actual, *, case, source):
 def assess(payload, *, required=False, plan=None, model=None, build_id=None):
     checks = payload.get("mapping_checks", [])
     errors = []
+    context = assess_context_fields(payload, plan)
+    errors.extend(context["errors"])
+    if required:
+        errors.extend(context_coverage_errors(payload, plan))
     if required and not checks:
         errors.append("no implementation mapping witnesses")
     projected = 0
@@ -223,5 +427,6 @@ def assess(payload, *, required=False, plan=None, model=None, build_id=None):
         "errors": errors,
         "checks": len(checks),
         "projection_checks": projected,
+        "context_checks": context["checks"],
         "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown.",
     }

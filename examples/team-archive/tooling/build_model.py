@@ -6,6 +6,7 @@ ROOT = Path(__file__).absolute().parents[1]
 sys.path.insert(0,str(ROOT))
 from bo_stategraph.workflow import definition
 from observer_runtime.code_structure import scan, enrich
+from observer_runtime.sync_io import write
 
 
 def build() -> dict:
@@ -211,7 +212,9 @@ def build() -> dict:
                        {'id':'ui-dirty','from':'ui.dirty','to':'ui.command','type':'data','label':"Submit page input",'evidence':'DOM handlers'}]
     model['source_files'].extend(['tooling/frontend_nodes.json','integrations/bo_client.mjs'])
     model=enrich(model,scan(ROOT,cfg["code_files"]),depth=cfg.get("slice_depth",1))
-    (ROOT/"behavior.json").write_text(json.dumps(model,ensure_ascii=False,indent=2),encoding="utf-8",newline="\n")
+    # Publish a complete graph beside the previous file before replacing it.
+    # Existing readers keep their old snapshot without blocking Windows truncation.
+    write(ROOT/"behavior.json", model)
     return model
 
 

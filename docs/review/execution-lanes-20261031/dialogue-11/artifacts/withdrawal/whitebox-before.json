@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "review-other",
+      "requirement": "R_REVIEW",
+      "claim": "Self-review submission is denied.",
+      "basis": "R_REVIEW",
+      "category": "decision",
+      "node": "upload_file",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "FileService.upload"
+      },
+      "parameters": {
+        "actor": "str",
+        "reviewer_id": "str"
+      }
+    }
+  ],
+  "checks": [{"id":"self-review-error-observed","rule":"review-other","case":"denied","phase":"error","count":{"min":2},"fields":[{"path":["outputs","error"],"type":"string","equals":"DomainError"}]}]
+}

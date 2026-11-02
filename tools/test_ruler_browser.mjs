@@ -104,16 +104,33 @@ try {
     (order) => JSON.stringify(graphDebug.layers.order) === JSON.stringify(order),
     customOrder,
   );
-  await page.waitForFunction(async (expected) => {
-    const saved = await (await fetch("/api/preferences")).json();
-    return Object.entries(saved.entries).some(
-      ([key, body]) => key.endsWith(":analysis") && JSON.parse(body).layers?.orderMode === "custom"
-        && JSON.stringify(JSON.parse(body).layers.order) === JSON.stringify(expected),
-    );
-  }, customOrder);
-  await writeFile(path.join(output, "ruler-before-reload.json"), JSON.stringify({
-    layers: await page.evaluate(() => graphDebug.layers), saved: preferences,
-  }, null, 2));
+  // Assert the server-owned acknowledgement before reload. An in-page Promise
+  // or a keepalive write during navigation is not persistence evidence.
+  const persisted = () =>
+    Object.entries(preferences.entries).some(([key, body]) => {
+      const saved = JSON.parse(body);
+      return (
+        key.endsWith(":analysis") &&
+        saved.layers?.orderMode === "custom" &&
+        JSON.stringify(saved.layers.order) === JSON.stringify(customOrder)
+      );
+    });
+  const deadline = Date.now() + 5000;
+  while (!persisted() && Date.now() < deadline)
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  assert.ok(persisted(), "The actual fixture server acknowledged the custom layer order");
+  assert.ok(preferences.revision > 0);
+  await writeFile(
+    path.join(output, "ruler-before-reload.json"),
+    JSON.stringify(
+      {
+        layers: await page.evaluate(() => graphDebug.layers),
+        saved: preferences,
+      },
+      null,
+      2,
+    ),
+  );
   await page.reload();
   await page.waitForFunction(() => window.graphDebug?.graph);
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), customOrder);

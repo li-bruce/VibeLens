@@ -1,0 +1,188 @@
+{
+  "valid": true,
+  "cases": [
+    {
+      "case": "success",
+      "valid": true,
+      "actual_http_status": 200,
+      "download_bytes": 38,
+      "before": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "8b166332a017424082186fcb7f7ee9fa",
+        "producer_id": "5dae3d31495d40a3bdb81d86c7fb5331",
+        "enqueued": 180,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "data_errors": 0,
+        "integration_errors": 0
+      },
+      "queued": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "8b166332a017424082186fcb7f7ee9fa",
+        "producer_id": "5dae3d31495d40a3bdb81d86c7fb5331",
+        "enqueued": 202,
+        "pending": 22,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "data_errors": 0,
+        "integration_errors": 0
+      },
+      "stop_waited_for_queue": true,
+      "status": "stopped",
+      "gaps": [],
+      "events": 22,
+      "settlement": {
+        "flushed": true
+      },
+      "capture_restored": true,
+      "final_health": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "8b166332a017424082186fcb7f7ee9fa",
+        "producer_id": "5dae3d31495d40a3bdb81d86c7fb5331",
+        "enqueued": 202,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "data_errors": 0,
+        "integration_errors": 0
+      }
+    },
+    {
+      "case": "timeout",
+      "valid": true,
+      "actual_http_status": 200,
+      "download_bytes": 38,
+      "before": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "415d17d5f010445eba477d2de8c43bb1",
+        "producer_id": "237d9061779a44c481414861a00bf1d2",
+        "enqueued": 180,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "data_errors": 0,
+        "integration_errors": 0
+      },
+      "queued": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "415d17d5f010445eba477d2de8c43bb1",
+        "producer_id": "237d9061779a44c481414861a00bf1d2",
+        "enqueued": 202,
+        "pending": 22,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "data_errors": 0,
+        "integration_errors": 0
+      },
+      "stop_waited_for_queue": null,
+      "status": "interrupted",
+      "gaps": [
+        "Producer queue did not drain; only received events are retained."
+      ],
+      "events": 0,
+      "settlement": {
+        "flushed": false
+      },
+      "capture_restored": true,
+      "final_health": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "415d17d5f010445eba477d2de8c43bb1",
+        "producer_id": "237d9061779a44c481414861a00bf1d2",
+        "enqueued": 202,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "data_errors": 0,
+        "integration_errors": 0
+      }
+    },
+    {
+      "case": "loss",
+      "valid": true,
+      "actual_http_status": 200,
+      "download_bytes": 38,
+      "before": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "a1a9b1d690794ae1a437bc2a45c28f7f",
+        "producer_id": "f0e77047e7534d179bb82afa917c6e44",
+        "enqueued": 180,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 171,
+        "filtered": 0,
+        "last_error": {
+          "stage": "queue",
+          "type": "Full"
+        },
+        "data_errors": 0,
+        "integration_errors": 0
+      },
+      "queued": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "a1a9b1d690794ae1a437bc2a45c28f7f",
+        "producer_id": "f0e77047e7534d179bb82afa917c6e44",
+        "enqueued": 202,
+        "pending": 3,
+        "errors": 0,
+        "dropped": 190,
+        "filtered": 0,
+        "last_error": {
+          "stage": "queue",
+          "type": "Full"
+        },
+        "data_errors": 0,
+        "integration_errors": 0
+      },
+      "stop_waited_for_queue": null,
+      "status": "interrupted",
+      "gaps": [
+        "Capture failures or lost events occurred in this interval; the path may be incomplete.",
+        "Producer capture or transport failed during this recording."
+      ],
+      "events": 3,
+      "settlement": {
+        "flushed": true
+      },
+      "capture_restored": true,
+      "final_health": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "a1a9b1d690794ae1a437bc2a45c28f7f",
+        "producer_id": "f0e77047e7534d179bb82afa917c6e44",
+        "enqueued": 202,
+        "pending": 0,
+        "errors": 0,
+        "dropped": 190,
+        "filtered": 0,
+        "last_error": {
+          "stage": "queue",
+          "type": "Full"
+        },
+        "data_errors": 0,
+        "integration_errors": 0
+      }
+    }
+  ],
+  "boundary": "Actual Flask request, canonical probe/session/recorder and delayed real native sink in isolated project copies."
+}

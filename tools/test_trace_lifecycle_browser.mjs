@@ -10,6 +10,7 @@ const out = path.resolve(process.env.BO_LIFECYCLE_EVIDENCE || ".validation/lifec
 await mkdir(out, { recursive: true });
 const trial = path.join(out, "project-" + Date.now());
 const registered = process.env.BO_REGISTERED_LIFECYCLE === "1";
+const telemetry = process.env.BO_TELEMETRY_BACKEND === "1";
 const python =
   process.env.BO_PYTHON || (process.platform === "win32" ? ".venv/Scripts/python.exe" : "python");
 const server = spawn(
@@ -23,6 +24,7 @@ const server = spawn(
     "--serve",
     trial,
     ...(registered ? ["--registered"] : []),
+    ...(telemetry ? ["--telemetry"] : []),
   ],
   { stdio: ["ignore", "pipe", "pipe"] },
 );
@@ -220,8 +222,11 @@ try {
   if (registered) {
     assert.equal(parent.terminal.state, "shared");
     assert.equal(parent.terminal.termination, "return");
-    if (!state.rows.some((row) => row.id === "advance")) await page.click(".trace-tracks");
-    await page.waitForFunction(() => graphDebug.timeline.rows.some((row) => row.id === "advance"));
+    if (!state.rows.some((row) => row.members.includes("advance")))
+      await page.click(".trace-tracks");
+    await page.waitForFunction(() =>
+      graphDebug.timeline.rows.some((row) => row.members.includes("advance")),
+    );
     await page.click(".trace-maximize");
     await page.waitForFunction(() =>
       document.querySelector("#recording-timeline").classList.contains("trace-maximized"),
@@ -369,6 +374,18 @@ try {
   assert.ok(during.window.end - during.window.start >= after.window.end - after.window.start);
   await page.screenshot({ path: path.join(out, "zoomed.png") });
   const countBefore = facts.events;
+  if (telemetry) {
+    const rawEvents = await page.evaluate(() => graphDebug.view.events);
+    assert.ok(rawEvents.some((event) => event.trace?.span_id));
+    assert.ok(
+      rawEvents
+        .filter((event) => event.lifecycle === "span")
+        .every((event) => event.trace?.trace_id),
+    );
+    checks.push(
+      "real OpenTelemetry SpanContexts survive live observation, recording, Timeline and both graph renderers",
+    );
+  }
   await page.click(".trace-fit");
   await page.click("#replay-timeline");
   await page.click("#replay-timeline");

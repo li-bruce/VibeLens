@@ -1,0 +1,21 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+.F.......................
+======================================================================
+FAIL: test_async_requests_do_not_share_or_retain_invocation_context (__main__.DatabaseRuntimeTests.test_async_requests_do_not_share_or_retain_invocation_context)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_runtime.py", line 598, in test_async_requests_do_not_share_or_retain_invocation_context
+    self.assertEqual(stale.run(probe.bo_current_context), {})
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'entity': 'b', 'attempt': 'b', 'scope': '[147 chars]a:3'} != {}
++ {}
+- {'attempt': 'b',
+-  'entity': 'b',
+-  'parent_call_id': '58f81889a52747129aa3d54304f1544a',
+-  'parent_event_id': '9fcfa89650fa460682b94f4d427a14f8:271533d5cfc84c0da06e0d9eff2011ba:3',
+-  'scope': 'entity'}
+
+----------------------------------------------------------------------
+Ran 25 tests in 2.028s
+
+FAILED (failures=1)

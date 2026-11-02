@@ -16,12 +16,15 @@
 
 数据库部分从 [data/contract.py](../skills/vibelens/scripts/bo_observer/data/contract.py) 的 JSON 校验开始，依次是 `catalog.py` 读取原生元数据、`projection.py` 生成同一张图的节点与关系、`sync.py` 更新与独立核验。`runtime.py` 和原生 `bo_data.mjs` 观察实际调用，`watcher.py` 切换已校验的 Web 图版本。记录、回放及个人配置继续使用现有共用服务。完整接口见[数据库接入说明](../skills/vibelens/references/database-observation.md)。
 
+数据适配器通过同一探针的当前调用上下文，保留请求、数据库调用与事务内部调用之间的父子关系。Python 使用 ContextVar，Node 使用 AsyncLocalStorage；已结束或属于另一探针的上下文不会继承。适配器管理原生调用区间，探针负责发送事件。真实 SQLite 回归见 `tests/test_database_runtime.py`，Node 原生回调、并发隔离和采集事实的 Timeline 索引回归见 `tools/test_data_context.mjs`。
+
 工程结构由 [code_graph/filesystem.py](../skills/vibelens/scripts/bo_observer/code_graph/filesystem.py) 扫描目录与文件，`manifests.py` 读取包依赖，`structure.py` 连接包含树并分析文件依赖与循环。`index.py` 把这些结果与函数、类、参数串联；`query.py` 提供局部检索，`service.py` 负责自动刷新、源码读取和独立核验。界面的“工程结构”查看目录与文件，“代码结构”继续下钻到符号。它们共享同一份索引，详见[接口说明](../skills/vibelens/references/code-structure.md)。
 
 | 位置 | 负责什么 |
 |---|---|
 | [SKILL.md](../skills/vibelens/SKILL.md) | 开发对话、业务图确认、迭代检查的操作流程。 |
 | [scripts/bo_observer/control](../skills/vibelens/scripts/bo_observer/control/) | 对话与项目范围、视图及回放计划校验，以及控制命令入口。 |
+| [graph/relations](../skills/vibelens/scripts/bo_observer/graph/relations/) | 构图时登记关系，检查重复定义、汇总路径及条件；路径失效后恢复原边，原始 ID 始终保留。 |
 | [scripts/bo.py](../skills/vibelens/scripts/bo.py) | 原生项目的启动、校验、源码检索与导出入口。 |
 | [scripts/bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) | 独立状态声明、观测到的实例与完整关系结构导出。 |
 | [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | 参数类型、状态层次、活动状态计算和声明的严格校验。 |
@@ -49,6 +52,14 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 
 扫描与检查只更新诊断信息。只有当前候选通过完整验证后，accept 才推进验收基线。
 
+关系模块按职责分为：[contract.py](../skills/vibelens/scripts/bo_observer/graph/relations/contract.py) 检查关系含义和上下文，[paths.py](../skills/vibelens/scripts/bo_observer/graph/relations/paths.py) 检索有类型且工作量受限的路径，[index.py](../skills/vibelens/scripts/bo_observer/graph/relations/index.py) 处理原子插入和判定，[model.py](../skills/vibelens/scripts/bo_observer/graph/relations/model.py) 接入构图及重新校验，[bo_relations.py](../skills/vibelens/scripts/bo_relations.py) 提供 JSON 文件接口。新增组合规则前先看[判定条件](../skills/vibelens/references/relation-insertion.md)。实际调用、传值和状态转移保留为直接关系。
+
+[workflow/iteration_recall.py](../skills/vibelens/scripts/bo_observer/workflow/iteration_recall.py) 在编码前恢复约定、观测代码位置及受影响的图层。[observation_requirements.py](../skills/vibelens/scripts/bo_observer/workflow/observation_requirements.py) 按层整理扫描与采集要求，识别埋点 API，检查延迟取值和实际调用闭合。它们复用原有实现清单，不维护第二张图。
+
+[observation/ownership.py](../skills/vibelens/scripts/bo_observer/observation/ownership.py) 单独校验执行归属，与文件等业务对象标识区分。严格闭合检查同时拒绝缺少归属的内部观测。Python ContextVar 和 Node AsyncLocalStorage 在原生调用中传递上下文；浏览器采集器可显式传递入口事件引用。真正的外部点事件在原有节点中声明。前端 `trace-evidence.js` 与 `trace-executions.js` 依据相同标识关联，不用时间接近程度推测。
+
+[observation/capture_context.py](../skills/vibelens/scripts/bo_observer/observation/capture_context.py) 将真实调用边界转为不含业务值的记录，并提取局部观测需要的父调用。`session.py` 独立保留有数量上限的执行中入口，批量预检复制这份缓存；普通历史过期不会直接丢失入口。`recording_session.py` 保留选中的值及所需边界，Python/Node 采集器跳过未选取值函数。`replay-steps.js` 将边界排除在普通回放步骤外，Timeline 仍按实际区间呈现调用。
+
 ### 一次业务操作怎样进入运行图
 
 1. 应用完成业务判断，通过 [Python BOProbe](../skills/vibelens/scripts/bo_observer/adapters/python/bo_probe.py) 或 [JavaScript BOProbe](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs) 提交指定参数。
@@ -66,16 +77,18 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 |---|---|
 | [viewer.js](../skills/vibelens/assets/stategraph-viewer/viewer.js) | 页面按钮、数据刷新和记录选择的连接入口。 |
 | [graph-core.js](../skills/vibelens/assets/stategraph-viewer/graph-core.js) | 节点值、源码关联、事件筛选与图内容。 |
-| [trace-lifecycles.js](../skills/vibelens/assets/stategraph-viewer/trace-lifecycles.js)、[graph-activation.js](../skills/vibelens/assets/stategraph-viewer/graph-activation.js) | 解析真实调用周期，持续呈现执行、等待、完成、失败及并发数量。 |
+| [trace-lifecycles.js](../skills/vibelens/assets/stategraph-viewer/trace-lifecycles.js)、[graph-activation.js](../skills/vibelens/assets/stategraph-viewer/graph-activation.js) | 解析真实调用周期，呈现进入、等待、返回、异常退出及并发数量。 |
 | [trace-residencies.js](../skills/vibelens/assets/stategraph-viewer/trace-residencies.js)、[trace-flows.js](../skills/vibelens/assets/stategraph-viewer/trace-flows.js) | 呈现原生状态和任务的持续区间，以及调用、返回和状态转换。 |
 | [trace-session.js](../skills/vibelens/assets/stategraph-viewer/trace-session.js)、[recording-timeline.js](../skills/vibelens/assets/stategraph-viewer/recording-timeline.js) | 管理实时查看的数据边界，以及时间轴的深度、选区、缩放和共同定位。 |
 | [layout.js](../skills/vibelens/assets/stategraph-viewer/layout.js) | 展开收起、分组位置、筛选和批注。 |
 | [view-lifecycle.js](../skills/vibelens/assets/stategraph-viewer/view-lifecycle.js) | 项目视图的稳定标识，以及录制与当前图版本的匹配。 |
 | [renderer.js](../skills/vibelens/assets/stategraph-viewer/renderer.js) | Pixi 绘制和鼠标可命中的区域。 |
+| [caption-layout.js](../skills/vibelens/assets/stategraph-viewer/caption-layout.js) | 按实际文字宽度适配节点标签，保留完整名称和已保存布局。 |
 | [recording.js](../skills/vibelens/assets/stategraph-viewer/recording.js) | 回放步骤及运行证据支持的连线传递。 |
 | [recording-timeline.js](../skills/vibelens/assets/stategraph-viewer/recording-timeline.js) | 时间轴面板、鼠标与键盘交互；通过同一个回放游标联动 Graph。 |
 | [trace-evidence.js](../skills/vibelens/assets/stategraph-viewer/trace-evidence.js) | 图动画与时间轴共用的调用身份和父调用判定。 |
 | [trace-index.js](../skills/vibelens/assets/stategraph-viewer/trace-index.js) | 调用耗时配对、事件依赖索引和跨层映射。 |
+| [trace-executions.js](../skills/vibelens/assets/stategraph-viewer/trace-executions.js) | 按实际调用根识别执行链，为并发分组，每层保留一行，结束后复用同一组行。 |
 | [node-lifecycle.js](../skills/vibelens/assets/stategraph-viewer/node-lifecycle.js) | 解析节点注册的事件、值与生命周期含义，提供通用执行描述。 |
 | [trace-bars.js](../skills/vibelens/assets/stategraph-viewer/trace-bars.js)、[trace-routing.js](../skills/vibelens/assets/stategraph-viewer/trace-routing.js)、[trace-tooltip.js](../skills/vibelens/assets/stategraph-viewer/trace-tooltip.js) | 持续区间、圆角连线及其命中与动画位置，以及对应事实的悬停详情。 |
 | [trace-density.js](../skills/vibelens/assets/stategraph-viewer/trace-density.js) | 将过密的短区间显示为像素计数；选中或放大后保留各区间的实际边界。 |
@@ -149,3 +162,13 @@ python tools/verify.py --database
 发布前暂存候选版本，再运行 `python tools/check_release_export.py --staged`。CI 检查 `HEAD`：导出两个示例，只恢复已冻结的验收记录，并运行严格的 `check`。这个过程不重建图、不重新批准变更，可发现换行转换、漏提交文件等本地运行不容易暴露的问题。
 
 HTTP 等待测试通过现有检查钩子暂停真实任务，观察到“运行中＋等待中”后释放。状态、函数和 SQLite 写入仍由程序实际执行，保留原有断言。
+
+
+## 图层和录制的读取边界
+
+- `layer-style.js` 统一九层顺序与颜色；二维图标、三维对象和区域共用颜色，形状表示节点类型。
+- `layout.js` 用 ELK 排列层与类型分组，`cluster-layout.js` 和 worker 用 D3 排列组内完整子树；两种视图共用初始平面坐标。
+- `trace-tracks.js` 在同一层行内错开并发区间；`step-hierarchy.js` 按真实父调用缩进记录条目，并显示层颜色。
+- `code_graph/service.py` 单独维护文件与导入关系，完整符号分析仍按需加载。开始录制时保存文件树，旧记录使用当时保存的树。
+- 录制列表、读取和清除只检查当前图版本；周期检查点读取运行事实；实时图仍检查源码。它们共用 `GraphSession`，分别读取所需内容。
+- `event_batch.py` 完成逐条预检与批次前后源码检查后，一次提交游标；`bo_retention.py` 批量写入日志，保持逐条通知、错误计数和原有文件轮转规则。
