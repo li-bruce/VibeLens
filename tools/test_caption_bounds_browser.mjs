@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
 
@@ -20,8 +21,14 @@ await copyFile(
 );
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const original = hash(await readFile(path.join(source, "discovery.json")));
+// CI's setup-python uses PATH; local checkouts may keep dependencies in a venv.
+const localPython = path.resolve(
+  ".venv",
+  process.platform === "win32" ? "Scripts/python.exe" : "bin/python",
+);
+const python = process.env.BO_PYTHON || (existsSync(localPython) ? localPython : "python");
 const server = spawn(
-  path.resolve(".venv", process.platform === "win32" ? "Scripts/python.exe" : "bin/python"),
+  python,
   [
     "-B",
     "-X",
@@ -46,6 +53,10 @@ try {
       () => reject(Error("Design host did not print its URL: " + error)),
       15000,
     );
+    server.once("error", (error) => {
+      clearTimeout(timeout);
+      reject(Error(`Design host could not launch Python (${python}): ${error.message}`));
+    });
     server.stderr.on("data", (chunk) => (error += chunk));
     server.stdout.on("data", (chunk) => {
       output += chunk;

@@ -1,0 +1,835 @@
+{
+  "schema": "business-discovery/v1",
+  "project_id": "execution-bands-dialogue-20261031-01",
+  "layout_id": "execution-bands-dialogue-20261031-01",
+  "title": "Team file review and sharing",
+  "goal": "Run an independent local Python and SQLite file-sharing website with colleague review, designated recipients, authenticated access, and VibeLens observation.",
+  "sources": [
+    {
+      "id": "U_INITIAL",
+      "kind": "user",
+      "text": "我要做一个小团队的文件共享网页。上传后交给同事审核，审核通过才能分享给指定的人，文件只能登录后访问。先在本机用 Python 和 SQLite 跑起来，我想用 VibeLens 看里面怎么运转。先把需要确认的需求跟我聊清楚，再开始实现。",
+      "locator": "Current chat, initial user request; complete original preserved in review/design-dialogue.md#u_initial-original-user-request"
+    },
+    {
+      "id": "A_MODE",
+      "kind": "assistant",
+      "text": "VibeLens 的两种接入方式都会维护流程图和运行记录：drive 让程序按状态声明执行；observe 让程序自己处理业务，VibeLens 观察实际执行。这个工程选哪一种？",
+      "locator": "Current chat, first clarification panel, question 1; review/design-dialogue.md"
+    },
+    {
+      "id": "A_AUTHORITY",
+      "kind": "assistant",
+      "text": "上传后，审核人由谁确定？审核人能否审核自己上传的文件？审核通过后，由谁选择接收人并发起分享？",
+      "locator": "Current chat, first clarification panel, question 2; review/design-dialogue.md"
+    },
+    {
+      "id": "A_ACCESS",
+      "kind": "assistant",
+      "text": "你说的“访问文件”需要哪些能力：查看文件信息、下载、网页预览？另外，上传者和审核人在审核通过前是否可以读取文件内容？",
+      "locator": "Current chat, first clarification panel, question 3; review/design-dialogue.md"
+    },
+    {
+      "id": "U_DETAIL",
+      "kind": "user",
+      "text": "就按状态图来驱动吧。上传时由上传者从已有用户里选审核人，不能自己审核自己上传的文件。审核通过后，还是由上传者选一个接收人并发起分享。\n\n访问先做文件信息和下载，暂时不用网页预览。上传者和指定审核人在审核前可以下载，其他人不可以；接收人要等审核通过、并且确实分享给他以后才能下载。\n\n先把按这些规则更新后的流程图给我看一下。",
+      "locator": "Current chat, detailed business answer forwarded from source chat 01a1439a-dceb-7ba2-bada-546619caf220; review/answers-round2.md"
+    },
+    {
+      "id": "U_PANEL",
+      "kind": "user",
+      "text": "接入方式：drive：由状态声明驱动业务执行\n权限回答：上传者决定，管理员，上传者\n访问回答：最简单的查看和下载就行",
+      "locator": "Current chat, actual clarification panel reply; review/answers-round2.md"
+    },
+    {
+      "id": "A_ADMIN",
+      "kind": "assistant",
+      "text": "你在第二项回答中的“管理员”具体指什么？它是否修改了你前面“从已有用户中选审核人，不能审核自己上传的文件”的规则？",
+      "locator": "Current chat, administrator clarification panel; review/answers-round2.md"
+    },
+    {
+      "id": "U_ADMIN_FORWARD",
+      "kind": "user",
+      "text": "更准确一点：审核人只能从管理员账号中选，普通用户不能审核。管理员也不能审核自己上传的文件，要交给另一位管理员。分享接收人仍由上传者在审核通过后选择。\n\n管理员没有查看所有文件的特权，只能读自己的文件，或者明确分给自己审核、接收的文件。这次先用预置账号，不做注册和账号管理页面。",
+      "locator": "Forwarded instruction from source chat 01a1439a-dceb-7ba2-bada-546619caf220; distinct from direct panel answers; review/answers-round3.md"
+    },
+    {
+      "id": "U_CORRECTION",
+      "kind": "user",
+      "text": "写错了，按照之前的原则来",
+      "locator": "Current chat, latest direct clarification-panel answer to A_ADMIN; review/answers-round3.md"
+    }
+  ],
+  "networks": [
+    {
+      "id": "file_review_sharing",
+      "title": "File review and recipient access",
+      "actors": [
+        "Uploader",
+        "Colleague reviewer",
+        "Designated recipient"
+      ],
+      "trigger": "A team member uploads a file",
+      "outcome": "Uploader-selected existing-user review without self-review gates uploader-initiated sharing to one recipient. Authentication is required. Uploader and assigned reviewer may read before approval; an addressed recipient needs approval and an actual share.",
+      "nodes": [
+        {
+          "id": "upload_file",
+          "label": "上传并指定他人审核（已有用户）",
+          "kind": "action",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL",
+            "U_PANEL",
+            "U_CORRECTION"
+          ],
+          "summary": "Reviewer is an existing user distinct from the uploader. The latest direct correction removes the administrator-only interpretation."
+        },
+        {
+          "id": "pending_review",
+          "label": "等待审核",
+          "kind": "state",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL",
+            "U_PANEL"
+          ]
+        },
+        {
+          "id": "review_file",
+          "label": "指定审核人审核（禁止自审）",
+          "kind": "action",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL",
+            "U_PANEL",
+            "U_CORRECTION"
+          ],
+          "summary": "Reviewer is an existing user distinct from the uploader. The latest direct correction removes the administrator-only interpretation."
+        },
+        {
+          "id": "approved",
+          "label": "审核通过",
+          "kind": "state",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL",
+            "U_PANEL"
+          ]
+        },
+        {
+          "id": "share_file",
+          "label": "上传者选一个接收人并分享",
+          "kind": "action",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL",
+            "U_PANEL"
+          ]
+        },
+        {
+          "id": "recipient_access",
+          "label": "接收人查看信息、下载",
+          "kind": "action",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL",
+            "U_PANEL"
+          ]
+        },
+        {
+          "id": "signed_in",
+          "label": "已登录",
+          "kind": "condition",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL",
+            "U_PANEL"
+          ]
+        },
+        {
+          "id": "designated_recipient",
+          "label": "确实已分享给当前接收人",
+          "kind": "condition",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL",
+            "U_PANEL"
+          ]
+        },
+        {
+          "id": "privileged_access",
+          "label": "上传者、指定审核人查看信息或下载",
+          "kind": "action",
+          "source_refs": [
+            "U_DETAIL"
+          ],
+          "summary": "Available before approval. Authentication is required. This path does not create a recipient share."
+        }
+      ],
+      "edges": [
+        {
+          "id": "upload_to_pending",
+          "from": "upload_file",
+          "to": "pending_review",
+          "relation": "flow",
+          "label": "上传后等待审核",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL"
+          ]
+        },
+        {
+          "id": "pending_to_review",
+          "from": "pending_review",
+          "to": "review_file",
+          "relation": "flow",
+          "label": "由同事审核",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL"
+          ],
+          "decision_refs": [
+            "D_AUTHORITY"
+          ]
+        },
+        {
+          "id": "review_to_approved",
+          "from": "review_file",
+          "to": "approved",
+          "relation": "flow",
+          "label": "审核通过",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL"
+          ]
+        },
+        {
+          "id": "approved_to_share",
+          "from": "approved",
+          "to": "share_file",
+          "relation": "guard",
+          "label": "通过后才能分享",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL"
+          ]
+        },
+        {
+          "id": "share_to_access",
+          "from": "share_file",
+          "to": "recipient_access",
+          "relation": "flow",
+          "label": "指定人员访问",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL"
+          ]
+        },
+        {
+          "id": "login_guards_access",
+          "from": "signed_in",
+          "to": "recipient_access",
+          "relation": "guard",
+          "label": "访问必须登录",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL"
+          ]
+        },
+        {
+          "id": "recipient_guards_access",
+          "from": "designated_recipient",
+          "to": "recipient_access",
+          "relation": "guard",
+          "label": "确实分享给本人",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL"
+          ]
+        },
+        {
+          "id": "upload_to_privileged_access",
+          "from": "upload_file",
+          "to": "privileged_access",
+          "relation": "flow",
+          "label": "审核前即可访问",
+          "source_refs": [
+            "U_DETAIL"
+          ]
+        },
+        {
+          "id": "login_guards_privileged_access",
+          "from": "signed_in",
+          "to": "privileged_access",
+          "relation": "guard",
+          "label": "访问必须登录",
+          "source_refs": [
+            "U_INITIAL",
+            "U_DETAIL"
+          ]
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D_MODE",
+      "topic": "other",
+      "question": "VibeLens 的两种接入方式都会维护流程图和运行记录：drive 让程序按状态声明执行；observe 让程序自己处理业务，VibeLens 观察实际执行。这个工程选哪一种？",
+      "why": "The explicit mode choice determines whether the application executes the state declaration or exposes its own authoritative execution.",
+      "affects": [
+        "upload_file",
+        "review_file",
+        "share_file",
+        "recipient_access"
+      ],
+      "blocking": true,
+      "status": "resolved",
+      "priority": 1,
+      "source_refs": [
+        "U_INITIAL"
+      ],
+      "asked_in": [
+        "A_MODE"
+      ],
+      "options": [
+        {
+          "id": "observe",
+          "label": "Observe application execution",
+          "effect": "The application owns its business logic; VibeLens observes actual execution."
+        },
+        {
+          "id": "drive",
+          "label": "Execute the state declaration",
+          "effect": "A project-local executor consumes the state declaration; VibeLens records execution."
+        }
+      ],
+      "resolution": {
+        "kind": "user_answer",
+        "text": "Use drive mode.",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      }
+    },
+    {
+      "id": "D_AUTHORITY",
+      "topic": "authority",
+      "question": "你在第二项回答中的“管理员”具体指什么？它是否修改了你前面“从已有用户中选审核人，不能审核自己上传的文件”的规则？",
+      "why": "Uploader assignment and sharing authority are answered. The later word administrator is ambiguous about reviewer scope or a self-review exception.",
+      "affects": [
+        "review_file",
+        "share_file",
+        "pending_to_review"
+      ],
+      "blocking": true,
+      "status": "resolved",
+      "priority": 2,
+      "source_refs": [
+        "U_INITIAL",
+        "U_DETAIL",
+        "U_PANEL"
+      ],
+      "asked_in": [
+        "A_AUTHORITY",
+        "A_ADMIN"
+      ],
+      "resolution": {
+        "kind": "user_answer",
+        "text": "The uploader selects a reviewer from existing users. Nobody may review their own upload. The uploader selects one recipient and shares after approval. The latest direct reply identifies administrator as a typo; no administrator-only reviewer restriction is adopted.",
+        "source_refs": [
+          "U_DETAIL",
+          "U_CORRECTION"
+        ]
+      }
+    },
+    {
+      "id": "D_ACCESS",
+      "topic": "scope",
+      "question": "你说的“访问文件”需要哪些能力：查看文件信息、下载、网页预览？另外，上传者和审核人在审核通过前是否可以读取文件内容？",
+      "why": "Recipient access capabilities and pre-approval content access have distinct permission rules.",
+      "affects": [
+        "upload_file",
+        "review_file",
+        "recipient_access",
+        "share_to_access"
+      ],
+      "blocking": true,
+      "status": "resolved",
+      "priority": 3,
+      "source_refs": [
+        "U_INITIAL"
+      ],
+      "asked_in": [
+        "A_ACCESS"
+      ],
+      "resolution": {
+        "kind": "user_answer",
+        "text": "File information and download only. No web preview. Uploader and assigned reviewer can download before approval. A recipient needs approval and an actual share addressed to that person.",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      }
+    },
+    {
+      "id": "D_ACCOUNTS",
+      "topic": "scope",
+      "question": "How are accounts supplied in this local trial?",
+      "why": "Preserve the explicitly supplied preset-account scope without building registration or account-management pages.",
+      "affects": [
+        "signed_in",
+        "upload_file"
+      ],
+      "blocking": false,
+      "status": "resolved",
+      "source_refs": [
+        "U_ADMIN_FORWARD"
+      ],
+      "resolution": {
+        "kind": "user_answer",
+        "text": "Use preset accounts. No registration or account-management pages in this iteration.",
+        "source_refs": [
+          "U_ADMIN_FORWARD"
+        ]
+      }
+    }
+  ],
+  "policy": {
+    "schema": "bo-policy/v1",
+    "revision": "discovery-3",
+    "stage": "draft",
+    "inputs": {
+      "logged_in": "boolean",
+      "actor_is_uploader": "boolean",
+      "actor_is_reviewer": "boolean",
+      "reviewer_exists": "boolean",
+      "reviewer_is_other": "boolean",
+      "file_pending": "boolean",
+      "file_approved": "boolean",
+      "recipient_exists": "boolean",
+      "recipient_matches": "boolean",
+      "share_exists": "boolean"
+    },
+    "predicates": [],
+    "nodes": [
+      {
+        "id": "logged_in",
+        "op": "input",
+        "name": "logged_in",
+        "label": "已登录",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "actor_is_uploader",
+        "op": "input",
+        "name": "actor_is_uploader",
+        "label": "当前用户是上传者",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "actor_is_reviewer",
+        "op": "input",
+        "name": "actor_is_reviewer",
+        "label": "当前用户是指定审核人",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "reviewer_exists",
+        "op": "input",
+        "name": "reviewer_exists",
+        "label": "审核人是已有用户",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "reviewer_is_other",
+        "op": "input",
+        "name": "reviewer_is_other",
+        "label": "审核人与上传者不同",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "file_pending",
+        "op": "input",
+        "name": "file_pending",
+        "label": "文件待审核",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "file_approved",
+        "op": "input",
+        "name": "file_approved",
+        "label": "审核已通过",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "recipient_exists",
+        "op": "input",
+        "name": "recipient_exists",
+        "label": "已选择一个接收人",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "recipient_matches",
+        "op": "input",
+        "name": "recipient_matches",
+        "label": "接收人是当前用户",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "share_exists",
+        "op": "input",
+        "name": "share_exists",
+        "label": "实际分享已存在",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "upload_conditions",
+        "op": "all",
+        "inputs": [
+          "logged_in",
+          "reviewer_exists",
+          "reviewer_is_other"
+        ],
+        "label": "已登录、审核人存在且不是本人",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL",
+          "U_CORRECTION"
+        ]
+      },
+      {
+        "id": "review_conditions",
+        "op": "all",
+        "inputs": [
+          "logged_in",
+          "actor_is_reviewer",
+          "file_pending",
+          "reviewer_is_other"
+        ],
+        "label": "已登录、待审核、指定他人审核",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL",
+          "U_CORRECTION"
+        ]
+      },
+      {
+        "id": "share_conditions",
+        "op": "all",
+        "inputs": [
+          "logged_in",
+          "actor_is_uploader",
+          "file_approved",
+          "recipient_exists"
+        ],
+        "label": "上传者、已通过、选定接收人",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "privileged_reader",
+        "op": "any",
+        "inputs": [
+          "actor_is_uploader",
+          "actor_is_reviewer"
+        ],
+        "label": "上传者或指定审核人",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "shared_access_conditions",
+        "op": "all",
+        "inputs": [
+          "file_approved",
+          "share_exists",
+          "recipient_matches"
+        ],
+        "label": "已通过且确实分享给本人",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "file_reader",
+        "op": "any",
+        "inputs": [
+          "privileged_reader",
+          "shared_access_conditions"
+        ],
+        "label": "具备文件访问身份",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "file_access_conditions",
+        "op": "all",
+        "inputs": [
+          "logged_in",
+          "file_reader"
+        ],
+        "label": "已登录并具备文件访问权限",
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      }
+    ],
+    "operations": [
+      {
+        "id": "upload_file",
+        "root": "upload_conditions",
+        "business_nodes": [
+          "upload_file"
+        ],
+        "cases": [],
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL",
+          "U_CORRECTION"
+        ]
+      },
+      {
+        "id": "review_file",
+        "root": "review_conditions",
+        "business_nodes": [
+          "review_file"
+        ],
+        "cases": [],
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL",
+          "U_CORRECTION"
+        ]
+      },
+      {
+        "id": "share_file",
+        "root": "share_conditions",
+        "business_nodes": [
+          "share_file"
+        ],
+        "cases": [],
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "view_file_info",
+        "root": "file_access_conditions",
+        "business_nodes": [
+          "privileged_access",
+          "recipient_access"
+        ],
+        "cases": [],
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      },
+      {
+        "id": "download_file",
+        "root": "file_access_conditions",
+        "business_nodes": [
+          "privileged_access",
+          "recipient_access"
+        ],
+        "cases": [],
+        "source_refs": [
+          "U_DETAIL",
+          "U_PANEL"
+        ]
+      }
+    ]
+  },
+  "development_mode": {
+    "value": "drive",
+    "source_refs": [
+      "U_DETAIL",
+      "U_PANEL"
+    ],
+    "status": "confirmed"
+  },
+  "changes": [
+    {
+      "id": "C_ROUND2_D_MODE",
+      "decision": "D_MODE",
+      "previous": {
+        "id": "D_MODE",
+        "topic": "other",
+        "question": "VibeLens 的两种接入方式都会维护流程图和运行记录：drive 让程序按状态声明执行；observe 让程序自己处理业务，VibeLens 观察实际执行。这个工程选哪一种？",
+        "why": "The explicit mode choice determines whether the application executes the state declaration or exposes its own authoritative execution.",
+        "affects": [
+          "upload_file",
+          "review_file",
+          "share_file",
+          "recipient_access"
+        ],
+        "blocking": true,
+        "status": "open",
+        "priority": 1,
+        "source_refs": [
+          "U_INITIAL"
+        ],
+        "asked_in": [
+          "A_MODE"
+        ],
+        "options": [
+          {
+            "id": "observe",
+            "label": "Observe application execution",
+            "effect": "The application owns its business logic; VibeLens observes actual execution."
+          },
+          {
+            "id": "drive",
+            "label": "Execute the state declaration",
+            "effect": "A project-local executor consumes the state declaration; VibeLens records execution."
+          }
+        ]
+      },
+      "source_refs": [
+        "U_DETAIL",
+        "U_PANEL"
+      ],
+      "reason": "Record actual human answers; retain the administrator ambiguity instead of inventing a policy."
+    },
+    {
+      "id": "C_ROUND2_D_AUTHORITY",
+      "decision": "D_AUTHORITY",
+      "previous": {
+        "id": "D_AUTHORITY",
+        "topic": "authority",
+        "question": "上传后，审核人由谁确定？审核人能否审核自己上传的文件？审核通过后，由谁选择接收人并发起分享？",
+        "why": "Review assignment, self-review, and sharing authority determine the actual permission rules and cannot be inferred from colleague review.",
+        "affects": [
+          "review_file",
+          "share_file",
+          "pending_to_review"
+        ],
+        "blocking": true,
+        "status": "open",
+        "priority": 2,
+        "source_refs": [
+          "U_INITIAL"
+        ],
+        "asked_in": [
+          "A_AUTHORITY"
+        ]
+      },
+      "source_refs": [
+        "U_DETAIL",
+        "U_PANEL"
+      ],
+      "reason": "Record actual human answers; retain the administrator ambiguity instead of inventing a policy."
+    },
+    {
+      "id": "C_ROUND2_D_ACCESS",
+      "decision": "D_ACCESS",
+      "previous": {
+        "id": "D_ACCESS",
+        "topic": "scope",
+        "question": "你说的“访问文件”需要哪些能力：查看文件信息、下载、网页预览？另外，上传者和审核人在审核通过前是否可以读取文件内容？",
+        "why": "Recipient access capabilities and pre-approval content access have distinct permission rules.",
+        "affects": [
+          "upload_file",
+          "review_file",
+          "recipient_access",
+          "share_to_access"
+        ],
+        "blocking": true,
+        "status": "open",
+        "priority": 3,
+        "source_refs": [
+          "U_INITIAL"
+        ],
+        "asked_in": [
+          "A_ACCESS"
+        ]
+      },
+      "source_refs": [
+        "U_DETAIL",
+        "U_PANEL"
+      ],
+      "reason": "Record actual human answers; retain the administrator ambiguity instead of inventing a policy."
+    },
+    {
+      "id": "C_ROUND3_AUTHORITY",
+      "decision": "D_AUTHORITY",
+      "previous": {
+        "id": "D_AUTHORITY",
+        "topic": "authority",
+        "question": "你在第二项回答中的“管理员”具体指什么？它是否修改了你前面“从已有用户中选审核人，不能审核自己上传的文件”的规则？",
+        "why": "Uploader assignment and sharing authority are answered. The later word administrator is ambiguous about reviewer scope or a self-review exception.",
+        "affects": [
+          "review_file",
+          "share_file",
+          "pending_to_review"
+        ],
+        "blocking": true,
+        "status": "open",
+        "priority": 2,
+        "source_refs": [
+          "U_INITIAL",
+          "U_DETAIL",
+          "U_PANEL"
+        ],
+        "asked_in": [
+          "A_AUTHORITY",
+          "A_ADMIN"
+        ],
+        "note": "The earlier detailed answer prohibits self-review. Preserve that statement; do not infer an administrator exception or restriction from the later shorthand answer."
+      },
+      "source_refs": [
+        "U_CORRECTION"
+      ],
+      "reason": "The latest direct answer resolves the administrator shorthand as a typo and restores the existing-user no-self-review rule."
+    }
+  ],
+  "account_scope": {
+    "provisioning": "preset",
+    "registration": false,
+    "account_management_ui": false,
+    "source_refs": [
+      "U_ADMIN_FORWARD"
+    ]
+  }
+}

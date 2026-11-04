@@ -1,0 +1,56 @@
+{
+  "scope": "Test infrastructure only; caption assertions and thresholds unchanged",
+  "changed": [
+    "tools/test_caption_bounds_browser.mjs"
+  ],
+  "local_venv": {
+    "chunk_id": "f33d37",
+    "exit_code": 0,
+    "checks": 4,
+    "actual_browser": "Google Chrome",
+    "evidence": "caption-ci-portability-retest/result.json"
+  },
+  "setup_python_style": {
+    "chunk_id": "a92d91",
+    "exit_code": 0,
+    "checks": 4,
+    "actual_browser": "Google Chrome",
+    "local_venv_present": false,
+    "BO_PYTHON_present": false,
+    "python_resolution": "python from PATH",
+    "evidence": "caption-ci-no-venv-retest/result.json",
+    "fixture": "Scratch copy of the unchanged test and retained caption data; a test-only bo_web entrypoint imports the canonical module. No business sources or observer implementation changed."
+  },
+  "bad_override": {
+    "exit_code": 1,
+    "chunk_id": "9f9761",
+    "expected_failure": true,
+    "evidence": "caption-ci-python-missing/result.json",
+    "child_error_caught": true,
+    "unhandled_child_error_event": false,
+    "elapsed_seconds": 1.0725469
+  },
+  "style": {
+    "prettier": true,
+    "eslint": true
+  },
+  "remaining_timeline_CI_fixtures": {
+    "test_trace_lifecycle_browser": "BO_PYTHON or platform python on non-Windows",
+    "test_execution_bands_browser": "BO_PYTHON or platform python on non-Windows",
+    "recording_and_performance": "Read-only Node recording fixture; no hardcoded Python spawn in these tests"
+  },
+  "deferred_non_CI_browser_assumptions": [
+    "tools/test_case_browser.mjs",
+    "tools/test_database_browser.mjs",
+    "tools/test_code_browser.mjs",
+    "tools/test_delivery_browser.mjs",
+    "tools/test_design_controls_browser.mjs",
+    "tools/test_cluster_browser.mjs",
+    "tools/test_conversation_controls_browser.mjs",
+    "tools/test_layered_browser.mjs",
+    "tools/test_pages_controls_browser.mjs",
+    "tools/test_site_browser.mjs"
+  ],
+  "inventory_note": "These other utilities retain their existing venv startup convention. A wider shared helper migration was intentionally not combined with this single failing CI fixture. No existing shared JS Python resolution helper was found; test_case_artifacts.mjs has the same env/existing-venv/PATH inline convention."
+}
+
