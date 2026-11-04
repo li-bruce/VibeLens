@@ -87,12 +87,10 @@ Viewing, reporting, polling, layout, and recording controls do not create busine
 
 ## Install and use
 
-For the current development test snapshot, use the [`feat/otel-provenance` instructions](docs/releases/2026-11-02-test.md).
-
-Install the **complete** Skill folder in your project:
+Install the **complete** Skill folder from the fixed **v0.11.3** release:
 
 ```bash
-git clone https://github.com/li-bruce/VibeLens.git
+git clone --branch v0.11.3 --single-branch https://github.com/li-bruce/VibeLens.git
 cd VibeLens
 python tools/install_skill.py --project /path/to/your-project
 ```
@@ -109,13 +107,13 @@ Confirm unclear details before implementation, and keep the graph in sync while 
 
 Answer the important business questions, choose drive or observe, and confirm the initial graph. The AI handles the intermediate artifacts and checks.
 
-Alternatively, install with the Skills CLI:
+For rolling updates from `main`, install with the Skills CLI:
 
 ```bash
 npx skills add li-bruce/VibeLens --skill vibelens
 ```
 
-You can also ask Codex's Skill installer to install from [the Skill directory](https://github.com/li-bruce/VibeLens/tree/main/skills/vibelens). Use `main` for current updates or `v0.11.3` for this fixed release. Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.11.3.md), [release validation](docs/review/release-v0.11.3/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
+You can also ask Codex's Skill installer to install from [the v0.11.3 Skill directory](https://github.com/li-bruce/VibeLens/tree/v0.11.3/skills/vibelens), or download the [release ZIP](https://github.com/li-bruce/VibeLens/releases/download/v0.11.3/vibelens-v0.11.3.zip). Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.11.3.md), [release validation](docs/review/release-v0.11.3/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
 
 English is the maintained source/documentation language. Conversation follows the user; the viewer offers English/Chinese and saves the preference in the project. Original answers and historical evidence retain their original language.
 
@@ -157,7 +155,7 @@ To open the illustrated introduction locally:
 python -m http.server 8862 --bind 127.0.0.1
 ```
 
-Visit [the introduction](http://127.0.0.1:8862/docs/site/) for a bilingual overview of the Skill. Run `python tools/build_site_viewer.py` before opening the separate [interactive case](http://127.0.0.1:8862/docs/site/demo.html): a real frontend/backend project exposes a stale-approval bug across eight graph layers, then repeats the operation after a targeted repair. Its actual recordings use the maintained 2D/3D viewer. [Run the project](examples/exhibition-review/README.md) or read the [dialogue and evidence](docs/review/pages-case/README.md). The dialogue is scripted and the first defect deliberately seeded.
+Visit [the introduction](http://127.0.0.1:8862/docs/site/) for a bilingual overview of the Skill. Run `python tools/build_site_viewer.py` before opening the separate [interactive case](http://127.0.0.1:8862/docs/site/demo.html). Follow a file-sharing application from its first business graph to a recording that exposes revoked access still being accepted, then inspect the repair and retest. Its actual recordings use the maintained 2D/3D viewer. [Run the project](examples/file-sharing/README.md) or read the [dialogue and evidence](docs/review/file-sharing-demo/README.md). The dialogue is scripted and the first defect deliberately seeded.
 
 To read or modify the implementation, start with the [source guide](docs/source-guide.en.md). It maps the modules and follows a coding iteration, a runtime event, and a graph interaction through the code. [Readability review](docs/review/readability-20261023/README.md) records the syntax comparison and regression results for this update.
 

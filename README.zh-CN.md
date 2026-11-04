@@ -72,10 +72,10 @@ Skill 本身不是监听所有编辑器的后台程序。扫描发现变化后�
 
 ## 安装并开始
 
-本轮开发测试版使用 `feat/otel-provenance` 分支，见[测试版安装与使用](docs/releases/2026-11-02-test.md)。
+安装固定版本 **v0.11.3**：
 
 ```bash
-git clone https://github.com/li-bruce/VibeLens.git
+git clone --branch v0.11.3 --single-branch https://github.com/li-bruce/VibeLens.git
 cd VibeLens
 python tools/install_skill.py --project /path/to/your-project
 ```
@@ -90,13 +90,13 @@ $vibelens
 确认没有理解偏差后，再开始实现，并持续更新图和检查。
 ```
 
-也可以运行 `npx skills add li-bruce/VibeLens --skill vibelens`。已有旧安装可使用 [迁移命令](docs/rename-vibelens.md)，先保留完整备份，再切换到新名称；项目的运行模块和个人布局继续沿用。
+也可以让 Codex 从 [v0.11.3 的 Skill 目录](https://github.com/li-bruce/VibeLens/tree/v0.11.3/skills/vibelens)安装，或下载[发行包](https://github.com/li-bruce/VibeLens/releases/download/v0.11.3/vibelens-v0.11.3.zip)。如需跟随 `main` 持续更新，可运行 `npx skills add li-bruce/VibeLens --skill vibelens`。已有旧安装可使用 [迁移命令](docs/rename-vibelens.md)，先保留完整备份，再切换到新名称；项目的运行模块和个人布局继续沿用。
 
 你只需要回答重要业务问题、选择模式并查看图；中间文件和验证由 AI 处理。维护中的源码、注释、Skill 与默认文档使用英文；对话跟随用户语言，界面可切换中英文。原始对话与历史证据不改写。
 
 依赖与完整命令见[使用说明](docs/usage.zh-CN.md)和[英文首页](README.md)。本地产品介绍可通过 `python -m http.server 8862 --bind 127.0.0.1` 启动，然后打开[介绍页](http://127.0.0.1:8862/docs/site/?lang=zh-CN)。
 
-[独立交互演示](https://li-bruce.github.io/VibeLens/demo.html?lang=zh-CN)用真实前后端项目的录制结果，展示“确认、记录、定位、修改、复测”全过程。沿八层关系定位一次旧版本审核错误，并在原版二维、三维视窗中对照修复后的运行。首版缺陷为演示预设，对话为模拟。可[运行项目](examples/exhibition-review/README.zh-CN.md)，或查看[对话与验收材料](docs/review/pages-case/README.md)。[源码导览](docs/source-guide.zh-CN.md)说明整体模块职责。
+[独立交互演示](https://li-bruce.github.io/VibeLens/demo.html?lang=zh-CN)以文件共享应用串联“确认业务图、记录、定位、修改、复测”：用户发现共享已撤销却仍可下载，沿运行关系查看原因，再对照修复后的运行。录制使用项目的实际二维、三维视窗；首版缺陷为演示预设，对话为模拟。可[运行项目](examples/file-sharing/README.md)，或查看[对话与验收材料](docs/review/file-sharing-demo/README.md)。[源码导览](docs/source-guide.zh-CN.md)说明整体模块职责。
 
 ## 在对话中控制视图
 

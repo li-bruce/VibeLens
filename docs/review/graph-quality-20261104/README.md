@@ -109,3 +109,9 @@ The [initial release gate](final-release-gate.json) records v0.11.0's local chec
 The [v0.11.1 review](../release-v0.11.1/README.md) records the subsequent clock,
 lifecycle, source-boundary and CI repairs, with a separate frozen candidate gate.
 Remote CI, published assets and the independent dialogue retain their own results.
+
+The [v0.11.3 publication review](../release-v0.11.3/README.md#publication-and-installation)
+now links the original candidate, release main/tag and site-fix CI receipts,
+official tagged-install byte parity and fresh bilingual public-page checks.
+The independent trial's unresolved initial default-layout preservation failure
+remains separate from those passing checks.

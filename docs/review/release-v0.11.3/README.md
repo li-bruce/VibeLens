@@ -1,6 +1,6 @@
 # v0.11.3 timeline inspection patch review
 
-Status: the [local candidate gate](candidate-gate.json) and all eight candidate CI jobs passed. They cover the full host gate, package, native examples, clean export, fresh viewer checks and all three browser harness cases. The independent project passed its finite functional and isolated-view checks; its earlier shared-default preservation failure remains unresolved. Publication and tagged installation are separate checks.
+Status: the [local candidate gate](candidate-gate.json), all eight candidate CI jobs and the original main/tag CI runs passed. They cover the full host gate, package, native examples, clean export, fresh viewer checks and all three browser harness cases. The independent project passed its finite functional and isolated-view checks; its earlier shared-default preservation failure remains unresolved. Published assets and tagged installation have separate receipts below.
 
 The v0.11.2 tag remains immutable. Its candidate CI passed eight jobs; later main and tag runs exposed two separate problems:
 
@@ -42,3 +42,19 @@ The original URL query was removed by the trial's privacy filter. Its exact byte
 The design preview and application observer use the same default view file for the same project, regardless of port. An explicit conversation URL selects its own file. Source inspection found no default write in normal startup, GET or managed upgrade; the maintained write entries are preference POST handlers, with file locking and revision checks. An already-open client can automatically save after a graph or layout update. The retained preview logs have no HTTP access records, so they cannot identify the earlier writer.
 
 Follow-up work: record preference-write provenance outside the business event stream, and review the lifecycle of superseded preview services. Keep session identifiers and private view contents out of public evidence. This follow-up does not change the business/state executor or reinterpret the retained preservation failure.
+
+## Publication and installation
+
+The immutable `v0.11.3` tag points to `d14f6091eb4b84e7df0fd5fe9149841f200b0472`. Its [main CI](../graph-quality-20261104/publication/ci-main-d14f6091-final.json) and [tag CI](../graph-quality-20261104/publication/ci-tag-d14f6091-final.json) each passed all eight original jobs on attempt one. These are separate runs from the candidate checks.
+
+The [GitHub release](https://github.com/li-bruce/VibeLens/releases/tag/v0.11.3) is public. Its [metadata](../graph-quality-20261104/publication/release-v0.11.3-metadata.json), [downloaded ZIP bytes](../graph-quality-20261104/publication/release-v0.11.3-asset-bytes.json) and [official tagged-install parity](../graph-quality-20261104/trial-audit/release-v0.11.3-tag-parity.json) agree with the frozen 305-file Skill. The first release workflow encountered GitHub HTTP 500; the same run's second attempt succeeded. Its [first failure](../graph-quality-20261104/publication/release-v0.11.3-attempt-1-failed.json) remains retained.
+
+The first public website check exposed a demo initialization race. A separate [site-only repair](../graph-quality-20261104/publication/demo-startup-repair-0113/README.md) starts the embedded graph once, preserving the original failed public result. Main's website commit `312b9d17771e4ed953077e0f11da0055ffc2628d` retains the release's exact Skill tree; it does not move the tag or replace the ZIP.
+
+That website commit's [main CI](../graph-quality-20261104/publication/ci-main-312b9d17-final.json) also passed all eight jobs on attempt one, including the added six-context startup regression. No earlier checks were removed. Subsequent README and review-receipt changes leave that tested implementation unchanged.
+
+The [complete public Chrome recheck](../graph-quality-20261104/publication/public-v0.11.3-03/chrome-pages.json) passed fresh English and Chinese home/demo contexts. Both demos rendered ten nodes and seventeen relations with zero page errors, and the deployed viewer bytes matched. The preceding [network timeout](../graph-quality-20261104/publication/public-v0.11.3-02/failure.json) remains an incomplete failed attempt, separate from the first product defect and the passing recheck.
+
+The [final scope review](../graph-quality-20261104/publication/final-readonly-scope-review.json) checks source ownership and the retained independent-trial limitation. Both READMEs now select the fixed release for installation and link the current file-sharing demo. Their [entrypoint check](../graph-quality-20261104/publication/install-entry-review-0113.json) covers 59 local links; it does not substitute for executable installation or runtime checks.
+
+The [publication summary](../graph-quality-20261104/publication/public-v0.11.3-01.json) separates each commit's CI, the release and public-site checks from the unresolved trial result. The [documentation parity check](../graph-quality-20261104/publication/final-documentation-parity.json) confirms the closing evidence and README commit preserves the tested implementation.
