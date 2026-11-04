@@ -36,6 +36,30 @@ server.stderr.on("data", (value) => {
 const checks = [],
   errors = [];
 const midSpan = process.env.BO_EXECUTION_MIDSPAN === "1";
+async function startRecording() {
+  // Recording startup is asynchronous; workers must start after its boundary
+  // is acknowledged unless this fixture intentionally captures mid-span.
+  const [response] = await Promise.all([
+    page.waitForResponse(
+      (response) =>
+        response.request().method() === "POST" &&
+        new URL(response.url()).pathname === "/api/recordings/start",
+    ),
+    page.click("#record-start"),
+  ]);
+  assert.equal(response.status(), 200);
+  const acknowledgement = await response.json();
+  assert.equal(acknowledgement.status, "recording");
+  await page.waitForFunction(
+    () =>
+      document.querySelector("#record-start").getAttribute("aria-pressed") === "true" &&
+      !document.querySelector("#record-stop").disabled,
+  );
+  await writeFile(
+    path.join(out, "recording-start.json"),
+    JSON.stringify({ ...acknowledgement, midSpan }, null, 2) + "\n",
+  );
+}
 try {
   ready = await new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(Error("Worker startup timeout: " + stderr)), 20000);
@@ -62,7 +86,7 @@ try {
   await page.goto(ready.observer + "/graph?lang=en");
   await page.waitForFunction(() => window.graphDebug?.graph);
   await page.selectOption(".trace-scope", "all");
-  if (!midSpan) await page.click("#record-start");
+  if (!midSpan) await startRecording();
   await Promise.all(
     ["alice", "bob"].map(async (actor) =>
       assert.ok((await page.request.post(`${ready.application}/begin?actor=${actor}`)).ok()),
@@ -75,7 +99,7 @@ try {
         .length === 2,
   );
   if (midSpan) {
-    await page.click("#record-start");
+    await startRecording();
     await page.waitForFunction(
       () => graphDebug.timeline?.source === "recording" && graphDebug.timeline.groups === 2,
     );

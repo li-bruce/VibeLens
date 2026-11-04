@@ -1,0 +1,247 @@
+{
+  "protocol": "bo-project/v1",
+  "project_id": "fixture",
+  "selection": {
+    "mode": "drive",
+    "source": "user",
+    "answer": "Develop from the graph",
+    "locator": "simulated dialogue 1"
+  },
+  "model": {
+    "schema_version": 3,
+    "revision": "1",
+    "project_id": "fixture",
+    "intent": "intent.json",
+    "source_files": [
+      "worker.py"
+    ],
+    "nodes": [
+      {
+        "id": "advance",
+        "kind": "action",
+        "layer": "business",
+        "label": "Share file",
+        "summary": "Share the file after checking its grant",
+        "source": {
+          "path": "worker.py",
+          "symbol": "advance"
+        },
+        "capture": {
+          "in": {
+            "state": "string"
+          },
+          "out": {
+            "state": "string",
+            "error": "string"
+          }
+        },
+        "requirements": [
+          "R1"
+        ]
+      },
+      {
+        "id": "check",
+        "kind": "decision",
+        "parent": "advance",
+        "label": "Check sharing permission",
+        "summary": "Check sharing permission",
+        "source": {
+          "path": "worker.py",
+          "symbol": "advance"
+        },
+        "capture": {
+          "in": {},
+          "out": {
+            "allowed": "boolean"
+          }
+        }
+      },
+      {
+        "id": "query",
+        "kind": "function",
+        "parent": "advance",
+        "label": "Read grant",
+        "summary": "Read grant",
+        "source": {
+          "path": "worker.py",
+          "symbol": "read_grant"
+        },
+        "capture": {
+          "in": {},
+          "out": {
+            "allowed": "boolean"
+          }
+        }
+      },
+      {
+        "id": "write",
+        "kind": "function",
+        "parent": "advance",
+        "label": "Save share",
+        "summary": "Save share",
+        "source": {
+          "path": "worker.py",
+          "symbol": "write_share"
+        },
+        "capture": {
+          "in": {},
+          "out": {
+            "count": "number"
+          }
+        }
+      },
+      {
+        "id": "state-parameter",
+        "kind": "data",
+        "label": "Sharing status",
+        "summary": "The state argument of advance",
+        "semantic_role": "state_parameter",
+        "event_node": "advance",
+        "field": "state",
+        "direction": "out",
+        "represents": {
+          "path": "worker.py",
+          "symbol": "advance",
+          "parameter": "state"
+        }
+      },
+      {
+        "id": "state-pending",
+        "kind": "state",
+        "layer": "state",
+        "value": "pending",
+        "label": "pending",
+        "summary": "Actual pending state"
+      },
+      {
+        "id": "state-waiting",
+        "kind": "state",
+        "layer": "state",
+        "value": "waiting",
+        "label": "waiting",
+        "summary": "Actual waiting state"
+      },
+      {
+        "id": "state-running",
+        "kind": "state",
+        "layer": "state",
+        "value": "running",
+        "label": "running",
+        "summary": "Actual running state"
+      },
+      {
+        "id": "state-done",
+        "kind": "state",
+        "layer": "state",
+        "value": "done",
+        "label": "done",
+        "summary": "Actual done state"
+      }
+    ],
+    "edges": [
+      {
+        "id": "check-sharing",
+        "from": "advance",
+        "to": "check",
+        "type": "flow",
+        "label": "check-sharing",
+        "evidence": "worker.py explicit nested spans"
+      },
+      {
+        "id": "query-grant",
+        "from": "check",
+        "to": "query",
+        "type": "flow",
+        "label": "query-grant",
+        "evidence": "worker.py explicit nested spans"
+      },
+      {
+        "id": "write-sharing",
+        "from": "advance",
+        "to": "write",
+        "type": "flow",
+        "label": "write-sharing",
+        "evidence": "worker.py explicit nested spans"
+      },
+      {
+        "id": "current-state",
+        "from": "advance",
+        "to": "state-parameter",
+        "type": "data",
+        "label": "current-state",
+        "evidence": "worker.py explicit nested spans"
+      }
+    ],
+    "overview": [
+      {
+        "node": "advance"
+      }
+    ],
+    "scope": {
+      "unknowns": []
+    },
+    "machine": {
+      "engine": "bo.fsm",
+      "version": "1",
+      "state_type": "enum",
+      "states": [
+        "pending",
+        "waiting",
+        "running",
+        "done"
+      ],
+      "values": [
+        "pending",
+        "waiting",
+        "running",
+        "done"
+      ],
+      "initial": "pending",
+      "transitions": [
+        {
+          "source": "pending",
+          "dest": "running",
+          "trigger": "start",
+          "conditions": "available"
+        },
+        {
+          "source": "pending",
+          "dest": "waiting",
+          "trigger": "start",
+          "unless": "available"
+        },
+        {
+          "source": "waiting",
+          "dest": "running",
+          "trigger": "resume",
+          "conditions": "available"
+        },
+        {
+          "source": "running",
+          "dest": "done",
+          "trigger": "finish"
+        }
+      ],
+      "events": {
+        "start": {
+          "payload": {}
+        },
+        "resume": {
+          "payload": {}
+        },
+        "finish": {
+          "payload": {}
+        }
+      },
+      "context": {
+        "slots": {
+          "type": "integer",
+          "min": 0
+        }
+      },
+      "guards": {
+        "available": "at least one slot"
+      }
+    }
+  }
+}

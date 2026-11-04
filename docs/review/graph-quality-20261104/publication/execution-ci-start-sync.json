@@ -1,0 +1,50 @@
+{
+  "scope": "Test infrastructure and synthetic fixture only",
+  "files": [
+    "tools/test_execution_bands_browser.mjs",
+    "tools/execution_band_fixture.py"
+  ],
+  "start_boundary": "Await real recording start HTTP200/status=recording and visible active controls. Pre-span work begins afterwards; mid-span deliberately starts work first.",
+  "stale_fixture": {
+    "old_signature": "advance(actor, probe, ready, release, path, resource_lock, publication, engine, report)",
+    "old_mapping": "state-parameter represents worker.py::advance parameter=state",
+    "failure": "GraphSession.view -> api_snapshot -> representation_links raised ValueError: Missing equivalent source parameter: state-parameter -> worker.py::advance",
+    "raw_failed_retests": [
+      "execution-ci-ack-retest/",
+      "execution-ci-midspan-retest/"
+    ],
+    "repair": "Restore a real state formal parameter and pass pending from the fixture caller. Initial value, native engine transitions, capture values and all observer guards are preserved."
+  },
+  "retests": [
+    {
+      "variant": "pre-span",
+      "passed": true,
+      "checks": 6,
+      "events": 33,
+      "groups": 2,
+      "layerRows": 10,
+      "chunk_id": "e41ae7",
+      "evidence": "execution-ci-ack-fixed-retest/"
+    },
+    {
+      "variant": "intentional mid-span",
+      "passed": true,
+      "checks": 6,
+      "events": 15,
+      "groups": 2,
+      "layerRows": 10,
+      "chunk_id": "62f5bd",
+      "evidence": "execution-ci-midspan-fixed-retest/"
+    }
+  ],
+  "assertions": "All original capture-count, grouping, layer, lifecycle, hover/seek and cross-group curve assertions remain unchanged; no skips or arbitrary sleep added.",
+  "style": {
+    "prettier": true,
+    "eslint": true,
+    "black": true,
+    "ruff": true
+  },
+  "other_CI_recording_clicks": "Only lifecycle and execution-band CI fixtures trigger recording. Both now await acknowledgement. Code/database/focused browser utilities already wait active controls; a separate non-CI layered utility retains its prior bare-click pattern and was not refactored.",
+  "runtime_or_skill_changes": false
+}
+

@@ -1,0 +1,20 @@
+{
+  "run_id": 41793830049,
+  "commit": "c56fd19f87b7803932f3a979da9efcc61058c6d7",
+  "checked_at": "2026-11-04 07:43:53 UTC",
+  "job_id": 126453138551,
+  "job_name": "timeline-browser",
+  "step": "Run node tools/test_trace_lifecycle_browser.mjs",
+  "line": 144,
+  "assertion": "assert.ok(running.flows > 0)",
+  "actual": false,
+  "expected": true,
+  "artifact_id": 13303993494,
+  "artifact_url": "https://github.com/li-bruce/VibeLens/actions/runs/41793830049/artifacts/13303993494",
+  "preceding_caption_pass": {
+    "checks": 4
+  },
+  "cause_boundary": "The actual timeline reports an unfinished advance lifecycle, but the test immediately samples a flows count of zero. Requires artifact/UI inspection to distinguish paint-publication timing, genuine missing causal data, or route visibility; no product conclusion inferred from this assertion alone.",
+  "log_excerpt": "2026-11-04T07:42:22.1502101Z {\"valid\":true,\"out\":\"/home/runner/work/VibeLens/VibeLens/.validation/caption-bounds\",\"checks\":4}\n2026-11-04T07:42:22.2035062Z ##[group]Run node tools/test_trace_lifecycle_browser.mjs\n2026-11-04T07:42:22.2035540Z \u001b[36;1mnode tools/test_trace_lifecycle_browser.mjs\u001b[0m\n2026-11-04T07:42:22.2057058Z shell: /usr/bin/bash -e {0}\n2026-11-04T07:42:22.2057320Z env:\n2026-11-04T07:42:22.2057595Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.18/x64\n2026-11-04T07:42:22.2058061Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.18/x64/lib/pkgconfig\n2026-11-04T07:42:22.2058514Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.18/x64\n2026-11-04T07:42:22.2058926Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.18/x64\n2026-11-04T07:42:22.2059320Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.18/x64\n2026-11-04T07:42:22.2059717Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.18/x64/lib\n2026-11-04T07:42:22.2060103Z   BO_LIFECYCLE_EVIDENCE: .validation/lifecycle-browser\n2026-11-04T07:42:22.2060414Z ##[endgroup]\n2026-11-04T07:42:27.0337616Z AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n2026-11-04T07:42:27.0339150Z     at file:///home/runner/work/VibeLens/VibeLens/tools/test_trace_lifecycle_browser.mjs:144:24 {\n2026-11-04T07:42:27.0340987Z   actual: false,\n2026-11-04T07:42:27.0341315Z   expected: true,\n2026-11-04T07:42:27.0341674Z   operator: '==',\n2026-11-04T07:42:27.0465253Z ##[error]Process completed with exit code 1."
+}
+

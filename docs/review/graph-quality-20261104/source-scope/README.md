@@ -54,6 +54,12 @@ Actual Chrome [API replay checks](../browser-patch-scope-api.json) and the
 [source-quality gate](../source-quality-patch-scope.json) passed after integration.
 Managed-example and whole-repository acceptance are recorded separately.
 
+The [adoption fixture](../trial-audit/source-scope-adoption/README.md) also
+preserves a short scripted kickoff and 11 executed checks: ignored first-party
+modules, manual review tests, dependency/output pruning before descent, new
+top-level source, and rejected out-of-scope execution bindings. It is separate
+from the full application's real dialogue and runtime acceptance.
+
 ## Retained failures
 
 - New tests first reproduced missing pruning, foreign API discovery and missing

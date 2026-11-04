@@ -1,0 +1,78 @@
+{
+  "run_id": 41793830049,
+  "commit": "c56fd19f87b7803932f3a979da9efcc61058c6d7",
+  "job_id": 126453138551,
+  "classification": "Browser test setup and presentation synchronization; no observed product defect",
+  "failure": {
+    "assertion": "assert.ok(running.flows > 0)",
+    "line_before_repair": 144,
+    "raw_github": "lifecycle-ci-original-github/",
+    "raw_local": "lifecycle-ci-before-unmodified/",
+    "github_recording": {
+      "start_seq": 3,
+      "end_seq": 8,
+      "events": 5
+    },
+    "local_recording": {
+      "start_seq": 8,
+      "end_seq": 8,
+      "events": 0
+    },
+    "screenshot": "The UI showed Recording · 0 events while the business operation had already reached waiting."
+  },
+  "cause": "Playwright click resolved after dispatch, while the async recording-start POST and UI refresh were still pending. The pre-span test immediately called /begin and unintentionally began recording after child calls. An unfinished parent can correctly exist in the boundary context without recorded causal events. In addition, indexed lifetimes publish before the requestAnimationFrame Canvas geometry used by diagnostics.flows.",
+  "repair": {
+    "file": "tools/test_trace_lifecycle_browser.mjs",
+    "actions": [
+      "Await actual POST /api/recordings/start response (HTTP200, status=recording) and visible active controls before invoking work in the pre-span case.",
+      "Acknowledge intentional mid-span start with the same mechanism while preserving its operation-before-recording order.",
+      "Boundedly wait for actual drawn flow geometry before sampling it; retain the original flows>0 assertion. Missing links still fail by timeout."
+    ],
+    "assertions_and_thresholds": "All prior assertions and thresholds retained. No arbitrary sleep introduced.",
+    "runtime_or_skill_changes": false
+  },
+  "retests": [
+    {
+      "variant": "default",
+      "valid": true,
+      "chunk_id": "ce4013/f4f156",
+      "recording_start_seq": 1,
+      "recorded_events": 12,
+      "first_recorded_node": "advance",
+      "first_recorded_phase": "enter",
+      "evidence": "lifecycle-ci-ack-retest/"
+    },
+    {
+      "variant": "intentional mid-span",
+      "valid": true,
+      "chunk_id": "8f484a",
+      "recording_start_seq": 8,
+      "recorded_events": 5,
+      "first_recorded_node": "advance",
+      "first_recorded_phase": "read",
+      "clipped_start_assertion": "Retained and passed",
+      "evidence": "lifecycle-ci-midspan-retest/"
+    },
+    {
+      "variant": "registered lifecycle",
+      "valid": true,
+      "chunk_id": "059beb",
+      "recording_start_seq": 1,
+      "recorded_events": 12,
+      "first_recorded_node": "advance",
+      "first_recorded_phase": "enter",
+      "evidence": "lifecycle-ci-registered-retest/"
+    }
+  ],
+  "style": {
+    "prettier": true,
+    "eslint": true
+  },
+  "original_remote_artifact": {
+    "id": 13303993494,
+    "url": "https://github.com/li-bruce/VibeLens/actions/runs/41793830049/artifacts/13303993494",
+    "sha256": "8005cd615a4d0c3641f2debe377b5527716999d0ac9afd6439481c809879da82",
+    "storage": "Only focused raw lifecycle screenshot/result/service log/recording retained in publication. Whole ZIP/extraction moved to verified .validation paths."
+  }
+}
+

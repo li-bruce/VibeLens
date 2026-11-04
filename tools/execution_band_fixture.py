@@ -28,8 +28,7 @@ def write_share(db, actor):
     db.commit()
     return db.execute("select count(*) from shares").fetchone()[0]
 
-def advance(actor, probe, ready, release, path, resource_lock, publication, engine, report):
-    state = "pending"
+def advance(state, actor, probe, ready, release, path, resource_lock, publication, engine, report):
     with probe.span("advance", lambda: {"inputs": {"state": state, "actor": actor}},
                     entity=actor, attempt="share:" + actor, scope="entity") as operation:
         report(actor, state, 0, None, operation)
@@ -136,6 +135,7 @@ def serve(root):
     def operate(actor):
         try:
             results[actor] = application.advance(
+                "pending",
                 actor,
                 probe,
                 ready,

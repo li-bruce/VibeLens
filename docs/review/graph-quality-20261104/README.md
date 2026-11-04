@@ -13,8 +13,8 @@ Baseline: `7f7907d2`; protected business/state engines remain unchanged.
 | Data operations | [Runtime check](data-operations-01.json) and [observer exclusion](observer-exclusion-01.json) | Passed; queries/transactions/transformations retain their distinct purpose. |
 | Live databases | [First run](live-database-01.json), [retest](live-database-02.json) | Retest passed with the dedicated PostgreSQL, MongoDB, Redis and Neo4j fixture healthy. |
 | Managed examples | [Delivery](examples-delivery-api-focus-final-acceptance-summary.json), [archive API runtime phase](examples-team-archive-api-runtime-final-check.json) | Native generation, review, verification, acceptance and current-input checks passed. Final complete-repository gate is recorded separately. |
-| Full repository | Retained runs produced with [run_checks.py](run_checks.py) | Fourth complete gate running after the retained failures below. |
-| Fresh development dialogue | A new isolated project using the published Skill | Pending release. |
+| Full repository | [Frozen patch gate](full-verification-08-frozen.json), [candidate gate](../release-v0.11.1/candidate-gate.json) | Passed locally, including databases and clean Git export. Remote publication checks are recorded separately. |
+| Fresh development dialogue | [v1 audit](trial-audit/v1-completion-audit.md), [visible dialogue](trial-audit/dialogue-v1/dialogue.md) | GitHub-installed v0.11.0 completed the first application. The confirmed sharing-note iteration awaits the official patch upgrade. |
 
 Data structure describes databases, tables/collections and fields. Data operations
 records reads, writes, transactions and transformations, including selected
@@ -97,4 +97,7 @@ owned-source/dependency/output declaration, initial Skill guidance, retained
 scope failures and actual directory-traversal measurements. The original full
 project discovery guard and protected state engines remain in force.
 
-The [completed release gate](final-release-gate.json) records the full repository, source quality, package, document links, clean export, Skill validation, protected-core review and frozen example results. All passed. The fresh GitHub-installed dialogue follows publication and is reported separately.
+The [initial release gate](final-release-gate.json) records v0.11.0's local checks.
+The [v0.11.1 review](../release-v0.11.1/README.md) records the subsequent clock,
+lifecycle, source-boundary and CI repairs, with a separate frozen candidate gate.
+Remote CI, published assets and the independent dialogue retain their own results.

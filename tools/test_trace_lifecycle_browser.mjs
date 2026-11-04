@@ -56,6 +56,30 @@ const ready = await new Promise((resolve, reject) => {
   });
 });
 const trace = () => page.evaluate(() => graphDebug.timeline);
+async function startRecording() {
+  // A click dispatches the async handler; wait for the server and visible active
+  // state before triggering work in the pre-span case.
+  const [response] = await Promise.all([
+    page.waitForResponse(
+      (response) =>
+        response.request().method() === "POST" &&
+        new URL(response.url()).pathname === "/api/recordings/start",
+    ),
+    page.click("#record-start"),
+  ]);
+  assert.equal(response.status(), 200);
+  const acknowledgement = await response.json();
+  assert.equal(acknowledgement.status, "recording");
+  await page.waitForFunction(
+    () =>
+      document.querySelector("#record-start").getAttribute("aria-pressed") === "true" &&
+      !document.querySelector("#record-stop").disabled,
+  );
+  await writeFile(
+    path.join(out, "recording-start.json"),
+    JSON.stringify({ ...acknowledgement, midSpan }, null, 2) + "\n",
+  );
+}
 try {
   browser = await chromium.launch({
     headless: true,
@@ -115,18 +139,24 @@ try {
   checks.push(
     "live inspection retains the already-loaded static code projection and its physical node IDs",
   );
-  if (!midSpan) await page.click("#record-start");
+  if (!midSpan) await startRecording();
   await page.request.post(ready.application + "/begin");
   await page.waitForFunction(
     () =>
       graphDebug.graph.boxes.find((box) => box.id === "advance")?.activation?.phase === "waiting",
   );
-  if (midSpan) await page.click("#record-start");
+  if (midSpan) await startRecording();
   await page.waitForFunction(
     () =>
       graphDebug.timeline?.source === "recording" &&
       graphDebug.timeline.lifecycles.some((slice) => slice.node === "advance" && slice.unfinished),
   );
+  // Indexed lifetimes and the Canvas geometry publish on different frames.
+  // Require an actual drawn causal link; missing links still fail by timeout.
+  if (!midSpan)
+    await page.waitForFunction(
+      () => graphDebug.timeline?.source === "recording" && graphDebug.timeline.flows > 0,
+    );
   const running = await trace();
   if (registered) {
     assert.equal(

@@ -15,8 +15,10 @@ The independent chat installed v0.11.0 from GitHub and completed its first
 application: login, private upload, sharing, download and revocation. The
 [first-phase audit](../graph-quality-20261104/trial-audit/v1-completion-audit.md)
 records business, mapping and actual HTTP evidence separately. A second dialogue
-confirmed a private sharing-note iteration and paused implementation for the
-official v0.11.1 upgrade. That upgrade and iteration remain pending.
+confirmed a private sharing-note iteration. The coordinating test installed the
+frozen candidate directly from GitHub commit `c56fd19f` and checked all 305 files;
+the managed runtime upgrade and iteration are now in progress. Official release
+tag parity will be checked separately after publication.
 
 The first candidate CI run found one remaining test-launch assumption: the
 caption browser fixture required a local `.venv`, while GitHub provides Python
@@ -26,3 +28,21 @@ both with a local venv and without one. The
 [failure log](../graph-quality-20261104/publication/ci-browser-c508fdc7.log) and
 [focused retests](../graph-quality-20261104/publication/caption-ci-portability.json)
 are retained. This test-only repair leaves the frozen Skill archive unchanged.
+
+The next CI run reached the live lifecycle test and reproduced a recording-start
+race: a click returned before the asynchronous recording request completed.
+The pre-span fixture therefore started business work outside its own recording
+boundary. The test now waits for the actual start acknowledgment and active
+controls before work, and for painted causal links before reading geometry.
+The original flow, duration and clipping assertions remain required. Default,
+registered and deliberately mid-span Chrome retests passed; the
+[CI failure](../graph-quality-20261104/publication/ci-candidate-c56fd19f-browser-failure.json)
+is retained. No application event or lifecycle was fabricated.
+
+The concurrent-worker fixture had the same start barrier problem and a stale
+formal-parameter mapping. It replaced `advance(state, ...)` with a function
+whose `state` was local, while retaining the original parameter reference.
+Strict source validation correctly rejected it. Restoring the actual initial
+state argument makes the mapping accurate; both concurrent Chrome variants
+now pass their original two-group, layer-row, event-count and dependency-curve
+assertions. The runtime validator and native state engine were unchanged.
