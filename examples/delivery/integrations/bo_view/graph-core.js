@@ -945,9 +945,15 @@ export function layoutGraph(
           ? boTranslate("State membership")
           : boTranslate("Contains")
         : e.origin === "code-index"
-          ? boTranslate(e.code_relation === "imports" && e.label === "Imports" ? "Import" : e.label)
-          : e.origin === "concept-design" && (!e.label || e.label === e.type)
-            ? boTranslate(conceptRelations[e.type] || e.type)
+          ? boTranslate(
+              e.code_relation === "imports" && e.label === "Imports"
+                ? "Import"
+                : e.label || e.code_relation || e.type,
+            )
+          : e.origin === "concept-design"
+            ? boTranslate(
+                !e.label || e.label === e.type ? conceptRelations[e.type] || e.type : e.label,
+              )
             : e.label;
     if (configuration && e.type === "resource") {
       const state = configuration.activities?.[e.to];
@@ -982,7 +988,24 @@ export function layoutGraph(
     if (view.model.presentation?.name_mode === "source")
       label = e.event || e.code_relation || e.data_relation || e.type;
     else label = explainedName(view.model.presentation?.names?.edges?.[e.id]) || label;
-    const key = from + ">" + to + ":" + relationType(e) + ":" + (e.origin || "model");
+    // Opposite guards may share folded endpoints, but they remain distinct
+    // conditions. Preserve polarity even when aggregating display relations.
+    if (e.type === "guarded_by" && typeof e.negated === "boolean")
+      label =
+        view.model.presentation?.name_mode === "source"
+          ? e.negated
+            ? "unless"
+            : "conditions"
+          : boTranslate(e.negated ? "Requires false" : "Requires true");
+    const key =
+      from +
+      ">" +
+      to +
+      ":" +
+      relationType(e) +
+      ":" +
+      (e.origin || "model") +
+      (typeof e.negated === "boolean" ? ":" + e.negated : "");
     const member = { ...e, label, observed, current };
     if (edgeMap.has(key)) {
       const found = edgeMap.get(key);

@@ -267,6 +267,94 @@
           "field"
         ]
       }
+    },
+    "transition_effects": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "effect",
+            "edges",
+            "completion"
+          ],
+          "properties": {
+            "effect": {
+              "type": "string",
+              "minLength": 1
+            },
+            "edges": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "completion": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "node",
+                "phase",
+                "field",
+                "equals",
+                "boundary",
+                "expectation",
+                "path"
+              ],
+              "properties": {
+                "node": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "phase": {
+                  "enum": [
+                    "return",
+                    "commit",
+                    "change"
+                  ]
+                },
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "equals": {},
+                "boundary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "expectation": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "path": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                },
+                "identity_field": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

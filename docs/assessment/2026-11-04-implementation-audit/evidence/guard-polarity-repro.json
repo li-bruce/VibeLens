@@ -1,0 +1,98 @@
+{
+  "audit_commit": "ce0a1fa6",
+  "mutation": "First transition: conditions [may_manage] becomes unless [may_manage]",
+  "positive_guard_edges": [
+    {
+      "id": "transition-guard:grant:grant-share:may_manage",
+      "from": "transition:grant:grant-share",
+      "to": "guard:grant:may_manage",
+      "type": "guarded_by",
+      "label": "Requires",
+      "origin": "concept-design",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "transition-guard:grant:grant-revoke:may_manage",
+      "from": "transition:grant:grant-revoke",
+      "to": "guard:grant:may_manage",
+      "type": "guarded_by",
+      "label": "Requires",
+      "origin": "concept-design",
+      "evidence_kind": "conceptual"
+    }
+  ],
+  "negative_guard_edges": [
+    {
+      "id": "transition-guard:grant:grant-share:may_manage",
+      "from": "transition:grant:grant-share",
+      "to": "guard:grant:may_manage",
+      "type": "guarded_by",
+      "label": "Requires",
+      "origin": "concept-design",
+      "evidence_kind": "conceptual"
+    },
+    {
+      "id": "transition-guard:grant:grant-revoke:may_manage",
+      "from": "transition:grant:grant-revoke",
+      "to": "guard:grant:may_manage",
+      "type": "guarded_by",
+      "label": "Requires",
+      "origin": "concept-design",
+      "evidence_kind": "conceptual"
+    }
+  ],
+  "positive_guard_records": {
+    "transition-guard:grant:grant-share:may_manage": {
+      "kind": "relation",
+      "from": "transition:grant:grant-share",
+      "to": "guard:grant:may_manage",
+      "relation": "guarded_by",
+      "negated": false
+    },
+    "transition-guard:grant:grant-revoke:may_manage": {
+      "kind": "relation",
+      "from": "transition:grant:grant-revoke",
+      "to": "guard:grant:may_manage",
+      "relation": "guarded_by",
+      "negated": false
+    }
+  },
+  "negative_guard_records": {
+    "transition-guard:grant:grant-share:may_manage": {
+      "kind": "relation",
+      "from": "transition:grant:grant-share",
+      "to": "guard:grant:may_manage",
+      "relation": "guarded_by",
+      "negated": true
+    },
+    "transition-guard:grant:grant-revoke:may_manage": {
+      "kind": "relation",
+      "from": "transition:grant:grant-revoke",
+      "to": "guard:grant:may_manage",
+      "relation": "guarded_by",
+      "negated": false
+    }
+  },
+  "positive_transition_detail": {
+    "id": "grant-share",
+    "source": "inactive",
+    "dest": "active",
+    "trigger": "share",
+    "conditions": [
+      "may_manage"
+    ],
+    "priority": 0
+  },
+  "negative_transition_detail": {
+    "id": "grant-share",
+    "source": "inactive",
+    "dest": "active",
+    "trigger": "share",
+    "unless": [
+      "may_manage"
+    ],
+    "priority": 0
+  },
+  "display_guard_edges_identical": true,
+  "semantic_records_differ": true
+}

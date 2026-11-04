@@ -170,9 +170,10 @@ class BODesign:
             "available_cases": ["live"],
         }
 
-    def preview(self, url, nodes=(), *, max_nodes=12, view="business"):
+    def preview(self, url, nodes=(), *, max_nodes=12, view="business", locale=None):
         """Derive a bounded conversation diagram from the same Web design data."""
-        from ..graph.focus_graph import extract, markdown
+        from ..graph.focus_graph import extract
+        from .design_preview import markdown
 
         parsed = urlsplit(url)
         if (
@@ -233,35 +234,17 @@ class BODesign:
         if not anchors:
             raise ValueError("No declared nodes in the requested conceptual view: " + view)
         focused = extract(model, anchors, depth=0 if not nodes else 1, max_nodes=max_nodes)
-        # Only include the diagram and meaningful boundaries in the conversation.
-        # The accompanying focus JSON retains IDs, scope, and original relations.
-        diagram = markdown(focused).split("```mermaid", 1)[1].split("```", 1)[0]
-        title = {
-            "business": "Business network",
-            "state": "State model",
-            "rules": "Rule network",
-            "all": "Concept models",
-        }[view]
-        text = "# " + title + " draft\n\n```mermaid" + diagram + "```\n\n"
-        text += f"[Open the live graph]({url})\n\n"
-        if focused["coverage"]["crossing_or_omitted_edges"] or len(model["nodes"]) > len(
-            focused["nodes"]
-        ):
-            text += "This is a focused view. Dashed boundaries retain original relations; open Web for the complete graph.\n\n"
-        pending = [d for d in document["decisions"] if d["status"] != "resolved"]
-        if pending:
-            text += (
-                "Still to confirm:\n\n"
-                + "\n".join("- " + d["question"].replace("\n", " ") for d in pending)
-                + "\n\n"
-            )
-        text += "Confirm this understanding in the conversation, or describe a correction. Viewing the graph is not confirmation.\n"
+        # Display language and reused boundary glyphs do not alter the focus
+        # identity, its dependency records, or the user's confirmed meaning.
+        locale = locale or read_language(self.root)["conversation_locale"]
+        text = markdown(focused, document, url, view, locale)
         return {
             "markdown": text,
             "focus": focused,
             "url": url,
             "discovery_revision": model["revision"],
             "view": view,
+            "locale": locale,
         }
 
     def export_preview(self, result, name):
@@ -311,7 +294,9 @@ def main():
             print(json.dumps(set_language(design.root, a.locale, a.source), indent=2))
             return 0
         if a.action == "preview":
-            result = design.preview(a.url or "", a.nodes, max_nodes=a.max_nodes, view=a.view)
+            result = design.preview(
+                a.url or "", a.nodes, max_nodes=a.max_nodes, view=a.view, locale=a.locale
+            )
             if a.out:
                 design.export_preview(result, a.out)
             print(result["markdown"])

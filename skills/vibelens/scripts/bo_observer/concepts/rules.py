@@ -32,11 +32,18 @@ def add_rules(graph, doc, sources):
             for item in doc["policy"][group]:
                 references(item, sources, "policy " + group + " " + item["id"])
         canonical = policy_semantics(doc["policy"])
+        # Display text comes from the authored document. The canonical records
+        # deliberately exclude it so translation never changes a rule identity.
+        authored_labels = {
+            group: {item["id"]: item.get("label") for item in doc["policy"][group]}
+            for group in ("predicates", "operations")
+        }
         for pred in canonical["predicates"]:
             add(
                 cid("policy-predicate", pred["id"]),
                 "rule_predicate",
                 pred,
+                label=authored_labels["predicates"][pred["id"]],
                 aliases=[pred["id"]],
                 layer="rules",
             )
@@ -85,6 +92,7 @@ def add_rules(graph, doc, sources):
                 opid,
                 "rule_operation",
                 operation,
+                label=authored_labels["operations"][operation["id"]],
                 aliases=[operation["id"], "policy:operation:" + operation["id"]],
                 layer="rules",
                 deps=["policy:" + operation["root"]],

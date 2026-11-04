@@ -127,11 +127,20 @@ def assess_probe_health(payload, *, required=False):
                 errors.append({"invalid_probe_health": run.get("case"), "counter": name})
             elif value:
                 errors.append(
-                    {"probe_capture_error": run.get("case"), "counter": name, "value": value}
+                    {
+                        "probe_capture_error": run.get("case"),
+                        "counter": name,
+                        "value": value,
+                    }
                 )
     if required and not checked:
         errors.append("no enabled producer health was provided")
-    return {"valid": not errors, "checked_runs": checked, "required": required, "errors": errors}
+    return {
+        "valid": not errors,
+        "checked_runs": checked,
+        "required": required,
+        "errors": errors,
+    }
 
 
 def verify(root, cfg, change, *, inspect, snapshot):
@@ -151,7 +160,12 @@ def verify(root, cfg, change, *, inspect, snapshot):
     from ..code_graph.service import CodeGraph
 
     source_graph = CodeGraph(root, persist=False)
-    code_structure = {"enabled": False, "valid": True, "status": "not_enabled", "errors": []}
+    code_structure = {
+        "enabled": False,
+        "valid": True,
+        "status": "not_enabled",
+        "errors": [],
+    }
     if (root / ".stategraph/code-graph.json").is_file():
         code_structure = source_graph.check()
         mapping_errors.extend(code_structure["errors"])
@@ -257,10 +271,26 @@ def verify(root, cfg, change, *, inspect, snapshot):
                 from ..policy.evidence import runtime_errors as policy_runtime_errors
 
                 policy_errors = policy_runtime_errors(
-                    current["model"]["policy"], payload, manifest=capture(root, current["model"])
+                    current["model"]["policy"],
+                    payload,
+                    manifest=capture(root, current["model"]),
                 )
                 mapping_errors.extend(policy_errors)
-                reports["mapping"]["policy"] = {"valid": not policy_errors, "errors": policy_errors}
+                reports["mapping"]["policy"] = {
+                    "valid": not policy_errors,
+                    "errors": policy_errors,
+                }
+            if (current.get("discovery") or {}).get("schema") == "business-discovery/v2":
+                from ..concepts.runtime import runtime_errors as concept_runtime_errors
+
+                association_errors = concept_runtime_errors(
+                    current["discovery"], current["model"], payload
+                )
+                mapping_errors.extend(association_errors)
+                reports["mapping"]["concept_associations"] = {
+                    "valid": not association_errors,
+                    "errors": association_errors,
+                }
             if not cfg.get("stategraph"):
                 mapping_errors.extend(database_runtime_errors(root, payload, current["model"]))
             if payload.get("build_id") != capture(root, current["model"])["build_id"]:
@@ -299,11 +329,18 @@ def verify(root, cfg, change, *, inspect, snapshot):
             reports["mapping"]["projection_checks"] = witnesses["projection_checks"]
             if cfg.get("stategraph"):
                 try:
-                    from ...implementation_coverage import runtime_errors as feature_runtime
+                    from ...implementation_coverage import (
+                        runtime_errors as feature_runtime,
+                    )
                 except ImportError:
-                    from implementation_coverage import runtime_errors as feature_runtime
+                    from implementation_coverage import (
+                        runtime_errors as feature_runtime,
+                    )
                 coverage = feature_runtime(
-                    current["model"]["implementation"], current["model"], payload, root=root
+                    current["model"]["implementation"],
+                    current["model"],
+                    payload,
+                    root=root,
                 )
                 mapping_errors.extend(coverage["errors"])
                 reports["mapping"]["implementation"] = coverage
@@ -366,7 +403,10 @@ def verify(root, cfg, change, *, inspect, snapshot):
             mapping_errors.append("invalid runtime observations: " + str(exc))
     for i, command in enumerate(cfg.get("test_commands", [])):
         result = run_command(
-            root, command, change / "checks" / f"test-{i}.json", cfg.get("timeout_seconds", 120)
+            root,
+            command,
+            change / "checks" / f"test-{i}.json",
+            cfg.get("timeout_seconds", 120),
         )
         results.append({"argv": command, "exit_code": result["exit_code"]})
         if result["exit_code"] != 0:

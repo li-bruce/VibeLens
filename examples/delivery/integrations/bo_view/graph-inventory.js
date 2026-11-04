@@ -3,6 +3,7 @@ import { captureFields } from "./capture-fields.js";
 import { t as boTranslate } from "./i18n.js";
 import { nameNode, explainedName } from "./graph-names.js";
 import { annotateConcepts } from "./concept-observation.js";
+import { applyConceptContainment } from "./concept-containment.js";
 
 export function stateNodeId(model, value) {
   return model.nodes.find((n) => n.kind === "state" && n.value === value)?.id || "state." + value;
@@ -76,6 +77,7 @@ export function graphInventory(
   });
   for (const node of machine.nodes) all.set(node.id, node);
   rawEdges.push(...machine.edges);
+  applyConceptContainment(all, rawEdges);
   // Membership is a view reference to one canonical identity, not another call.
   for (const m of memberships) {
     const member = all.get(m.member),

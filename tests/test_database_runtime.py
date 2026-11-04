@@ -23,7 +23,11 @@ from bo_observer.workflow.observation_requirements import invocation_closure
 
 def bo_fixture():
     """Capture policy intentionally allows a few values, never arbitrary row objects."""
-    inputs = {"operation": "string", "statement": "string", "parameters": {"limit": "number"}}
+    inputs = {
+        "operation": "string",
+        "statement": "string",
+        "parameters": {"limit": "number"},
+    }
     outputs = {
         "status": "string",
         "duration_ms": "number",
@@ -62,7 +66,10 @@ def bo_fixture():
             {"id": "transaction", "action": "transaction"},
         ]
     }
-    return {"project_id": "database-test", "model": {"revision": "1", "nodes": nodes}}, config
+    return {
+        "project_id": "database-test",
+        "model": {"revision": "1", "nodes": nodes},
+    }, config
 
 
 class DatabaseRuntimeTests(unittest.TestCase):
@@ -135,7 +142,8 @@ class DatabaseRuntimeTests(unittest.TestCase):
             with self.bo_runtime.operation("query", {"limit": 1}):
                 with self.bo_engine.connect() as connection:
                     self.assertEqual(
-                        connection.exec_driver_sql("SELECT COUNT(*) FROM image").scalar(), 1
+                        connection.exec_driver_sql("SELECT COUNT(*) FROM image").scalar(),
+                        1,
                     )
             self.assertEqual(summaries, [], "An excluded observer-only extractor still ran")
             self.assertEqual(self.bo_results(), [])
@@ -185,6 +193,13 @@ class DatabaseRuntimeTests(unittest.TestCase):
         self.assertEqual(events[-1]["outputs"]["status"], "rolled_back")
         query_events = [event for event in events if event["node"] == "query"]
         self.assertTrue(all(event["outputs"].get("transaction_id") for event in query_events))
+        transactions = [event for event in events if event["node"] == "transaction"]
+        self.assertTrue(
+            all(event["outputs"]["transaction_id"] == event["call_id"] for event in transactions)
+        )
+        starts = {event["call_id"] for event in transactions if event["phase"] == "enter"}
+        self.assertEqual(len(starts), 2)
+        self.assertTrue(all(event["outputs"]["transaction_id"] in starts for event in query_events))
         self.assertEqual(query_events[1]["outputs"]["rows"], 1)
         self.assertNotIn("business refusal", json.dumps(events))
 
@@ -365,7 +380,10 @@ class DatabaseRuntimeTests(unittest.TestCase):
             result = await asyncio.gather(
                 *[
                     self.bo_runtime.execute_async(
-                        "query", lambda value=value: work(value), statement="get", entity=str(value)
+                        "query",
+                        lambda value=value: work(value),
+                        statement="get",
+                        entity=str(value),
                     )
                     for value in range(3)
                 ]
@@ -412,7 +430,10 @@ class DatabaseRuntimeTests(unittest.TestCase):
                 connection=connection,
                 statement="SELECT id FROM image",
                 language="sql",
-                summarize=lambda rows: {"rows": len(rows), "result": {"count": len(rows)}},
+                summarize=lambda rows: {
+                    "rows": len(rows),
+                    "result": {"count": len(rows)},
+                },
             )
         self.assertEqual(len(result), 1)
         with self.bo_runtime.transaction("transaction", self.bo_engine.begin()) as connection:
@@ -439,7 +460,7 @@ class DatabaseRuntimeTests(unittest.TestCase):
         for node, operation in zip(legacy, config["operations"]):
             node.update(
                 kind="function",
-                data_role="transform" if operation["action"] == "transform" else "query",
+                data_role=("transform" if operation["action"] == "transform" else "query"),
                 data_metadata={"action": operation["action"]},
             )
         registered = deepcopy(legacy)
@@ -453,7 +474,9 @@ class DatabaseRuntimeTests(unittest.TestCase):
         for key in ("legacy", "registered"):
             model = {"nodes": payload[key]}
             checked = invocation_closure(
-                {"runs": [{"mode": "on", "events": payload["events"]}]}, required=True, model=model
+                {"runs": [{"mode": "on", "events": payload["events"]}]},
+                required=True,
+                model=model,
             )
             self.assertTrue(checked["valid"], checked)
             self.assertEqual(checked["closed_calls"], 5)
@@ -492,7 +515,8 @@ class DatabaseRuntimeTests(unittest.TestCase):
                 ) as parent:
                     with self.bo_engine.connect() as connection:
                         self.assertEqual(
-                            connection.exec_driver_sql("SELECT COUNT(*) FROM image").scalar(), 1
+                            connection.exec_driver_sql("SELECT COUNT(*) FROM image").scalar(),
+                            1,
                         )
             self.assertTrue(probe.flush())
             query = next(
@@ -537,7 +561,8 @@ class DatabaseRuntimeTests(unittest.TestCase):
             self.assertEqual(entered["callback"]["parent_call_id"], entered["query"]["call_id"])
             self.assertEqual(entered["transaction"]["parent_call_id"], parent.call_id)
             self.assertEqual(
-                entered["transform"]["parent_call_id"], entered["transaction"]["call_id"]
+                entered["transform"]["parent_call_id"],
+                entered["transaction"]["call_id"],
             )
             self.assertEqual(probe.bo_current_context(), {})
             self.assertEqual(runtime.bo_errors, 0)
@@ -612,7 +637,9 @@ class DatabaseRuntimeTests(unittest.TestCase):
             original = next(event for event in payload["events"] if event["phase"] == phase)
             missing = [event for event in payload["events"] if event is not original]
             checked = invocation_closure(
-                {"runs": [{"mode": "on", "events": missing}]}, required=True, model=model
+                {"runs": [{"mode": "on", "events": missing}]},
+                required=True,
+                model=model,
             )
             self.assertFalse(checked["valid"])
             self.assertEqual(len(checked["errors"]), 1)
@@ -622,7 +649,9 @@ class DatabaseRuntimeTests(unittest.TestCase):
             ] = "other"
             self.assertFalse(
                 invocation_closure(
-                    {"runs": [{"mode": "on", "events": corrupted}]}, required=True, model=model
+                    {"runs": [{"mode": "on", "events": corrupted}]},
+                    required=True,
+                    model=model,
                 )["valid"]
             )
 
@@ -671,7 +700,11 @@ class QueryShapeTests(unittest.TestCase):
     def test_native_sql_literal_forms_are_redacted(self):
         cases = [
             ("postgres", "SELECT $$private_dollar$$ FROM image", "private_dollar"),
-            ("postgres", "SELECT $tag$private_tagged$tag$ FROM image", "private_tagged"),
+            (
+                "postgres",
+                "SELECT $tag$private_tagged$tag$ FROM image",
+                "private_tagged",
+            ),
             ("postgres", "SELECT E'private_escape\\n' FROM image", "private_escape"),
             ("postgres", "SELECT U&'private_unicode' FROM image", "private_unicode"),
             ("postgres", "SELECT X'736563726574' FROM image", "736563726574"),
@@ -698,7 +731,8 @@ class QueryShapeTests(unittest.TestCase):
 
     def test_cypher_and_invalid_queries_never_fall_back_to_raw_text(self):
         shape, targets, unknown = bo_query_shape(
-            'MATCH (n:Image) WHERE n.title="private" RETURN n LIMIT 42 // secret', "cypher"
+            'MATCH (n:Image) WHERE n.title="private" RETURN n LIMIT 42 // secret',
+            "cypher",
         )
         self.assertNotIn("private", shape)
         self.assertNotIn("secret", shape)

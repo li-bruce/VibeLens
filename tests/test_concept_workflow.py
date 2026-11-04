@@ -8,10 +8,13 @@ from contextlib import redirect_stdout
 from copy import deepcopy
 import io
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "skills/vibelens/scripts"))
@@ -124,8 +127,11 @@ class ConceptWorkflowTests(unittest.TestCase):
             self.assertEqual(self.path.read_bytes(), before)
         self.assertFalse((self.root / "discovery.md").exists())
         design.export_preview(preview, "review/business.md")
-        self.assertIn("```mermaid", (self.root / "review/business.md").read_text())
-        self.assertEqual(json.loads((self.root / "review/business.json").read_text()), preview)
+        self.assertIn("```mermaid", (self.root / "review/business.md").read_text(encoding="utf-8"))
+        self.assertEqual(
+            json.loads((self.root / "review/business.json").read_text(encoding="utf-8")),
+            preview,
+        )
 
     def test_cli_confirm_is_idempotent_and_does_not_create_sources(self):
         status, result = self.command("confirm", "--scope", "*", "--sources", "U1", "--id", "C1")
@@ -133,7 +139,8 @@ class ConceptWorkflowTests(unittest.TestCase):
         saved = self.path.read_bytes()
         self.assertEqual(self.command("check")[0], 0)
         self.assertEqual(
-            self.command("confirm", "--scope", "*", "--sources", "U1", "--id", "C1")[0], 0
+            self.command("confirm", "--scope", "*", "--sources", "U1", "--id", "C1")[0],
+            0,
         )
         self.assertEqual(saved, self.path.read_bytes())
         self.assertEqual(json.loads(saved)["sources"], self.doc["sources"])
@@ -163,7 +170,15 @@ class ConceptWorkflowTests(unittest.TestCase):
     def test_confirm_output_cannot_overwrite_contract_or_partially_confirm(self):
         before = self.path.read_bytes()
         status, result = self.command(
-            "confirm", "--scope", "*", "--sources", "U1", "--id", "C1", "--out", "discovery.json"
+            "confirm",
+            "--scope",
+            "*",
+            "--sources",
+            "U1",
+            "--id",
+            "C1",
+            "--out",
+            "discovery.json",
         )
         self.assertEqual(status, 1)
         self.assertIn("contract input", result["error"])
@@ -213,7 +228,11 @@ class ConceptWorkflowTests(unittest.TestCase):
         # A settled future question also needs no source/acceptance links yet.
         question.update(
             status="resolved",
-            resolution={"kind": "user_answer", "source_refs": ["U1"], "text": "The owner."},
+            resolution={
+                "kind": "user_answer",
+                "source_refs": ["U1"],
+                "text": "The owner.",
+            },
         )
         result = assess_dialogue(document, intent={"requirements": []})
         self.assertTrue(result["ready"], result)
@@ -237,7 +256,11 @@ class ConceptWorkflowTests(unittest.TestCase):
         for item in self.doc["decisions"]:
             item.update(
                 status="resolved",
-                resolution={"kind": "user_answer", "source_refs": ["U1"], "text": "The owner."},
+                resolution={
+                    "kind": "user_answer",
+                    "source_refs": ["U1"],
+                    "text": "The owner.",
+                },
             )
         result = assess_dialogue(self.doc, intent={"requirements": []})
         missing = {
@@ -248,7 +271,12 @@ class ConceptWorkflowTests(unittest.TestCase):
     def test_outputs_protect_configured_inputs_not_only_explicit_cli_arguments(self):
         config = {"model": "state/model.json", "code_files": ["app.py"]}
         (self.root / "sync.json").write_text(json.dumps(config))
-        for name in ("sync.json", "state/model.json", "app.py", ".stategraph/active.json"):
+        for name in (
+            "sync.json",
+            "state/model.json",
+            "app.py",
+            ".stategraph/active.json",
+        ):
             with self.subTest(name=name):
                 status, result = self.command("snapshot", "--scope", "share", "--out", name)
                 self.assertEqual(status, 1, result)
@@ -265,7 +293,15 @@ class ConceptWorkflowTests(unittest.TestCase):
             path.write_text(content)
             before = self.path.read_bytes()
             status, result = self.command(
-                "confirm", "--scope", "share", "--sources", "U1", "--id", "C1", "--out", name
+                "confirm",
+                "--scope",
+                "share",
+                "--sources",
+                "U1",
+                "--id",
+                "C1",
+                "--out",
+                name,
             )
             self.assertEqual(status, 1, result)
             self.assertEqual(path.read_text(), content)
@@ -278,7 +314,8 @@ class ConceptWorkflowTests(unittest.TestCase):
         # The normal review path is repeatable for both report formats.
         for _ in range(2):
             self.assertEqual(
-                self.command("snapshot", "--scope", "share", "--out", "review/scope.json")[0], 0
+                self.command("snapshot", "--scope", "share", "--out", "review/scope.json")[0],
+                0,
             )
             design.export_preview(preview, "review/scope.md")
 
@@ -349,7 +386,9 @@ class ConceptWorkflowTests(unittest.TestCase):
         self.assertTrue(context.view()["nodes"])
         # Keep the byte length unchanged; timestamps/size must not substitute for
         # current source content when deciding whether an event is still current.
+        before = self.path.stat()
         self.path.write_bytes(self.path.read_bytes().replace(b"before_effect", b"after__effect"))
+        os.utime(self.path, ns=(before.st_atime_ns, before.st_mtime_ns))
         self.assertIn("discovery.json", context.changed_inputs())
 
     def test_bound_context_tracks_configured_paths_not_unrelated_settings(self):
@@ -369,6 +408,49 @@ class ConceptWorkflowTests(unittest.TestCase):
         _, model, _ = bound_fixture()
         with self.assertRaisesRegex(ValueError, "contract input"):
             ConceptContext(self.root, model)
+
+    def test_unreadable_existing_configuration_is_not_treated_as_missing(self):
+        context = self.bound_context()
+        (self.root / "sync.json").write_text("{}", encoding="utf-8")
+        read = context.sources.read
+        with patch.object(
+            context.sources,
+            "read",
+            side_effect=lambda name: None if name == "sync.json" else read(name),
+        ):
+            self.assertIn("sync.json", context.changed_inputs())
+
+    def test_contract_parent_replacement_cannot_escape_with_identical_bytes(self):
+        document, model, acceptance = bound_fixture()
+        directory = self.root / "contracts"
+        directory.mkdir()
+        source = directory / "discovery.json"
+        source.write_text(json.dumps(document), encoding="utf-8")
+        (self.root / "acceptance.json").write_text(json.dumps(acceptance), encoding="utf-8")
+        (self.root / "sync.json").write_text(
+            json.dumps({"discovery": "contracts/discovery.json"}), encoding="utf-8"
+        )
+        context = ConceptContext(self.root, model)
+        self.assertEqual(context.changed_inputs(), [])
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as external:
+            (Path(external) / "discovery.json").write_bytes(source.read_bytes())
+            source.unlink()
+            directory.rmdir()  # This synthetic directory contained only source.
+            if os.name == "nt":
+                subprocess.run(
+                    ["cmd", "/c", "mklink", "/J", str(directory), external],
+                    check=True,
+                    capture_output=True,
+                )
+            else:
+                directory.symlink_to(external, target_is_directory=True)
+            try:
+                self.assertIn("contracts/discovery.json", context.changed_inputs())
+            finally:
+                if os.name == "nt":
+                    directory.rmdir()
+                else:
+                    directory.unlink()
 
     def test_legacy_session_needs_no_new_contract_file(self):
         self.path.unlink()

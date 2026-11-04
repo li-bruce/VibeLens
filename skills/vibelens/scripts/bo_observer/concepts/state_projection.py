@@ -73,6 +73,7 @@ def add_states(graph, doc, state_indexes):
                 cid("state", mid, parent) if parent else root,
                 ident,
                 "contains",
+                containment_kind="state_hierarchy",
             )
         for name, value in state["events"].items():
             add(

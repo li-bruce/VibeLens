@@ -613,6 +613,8 @@ export default {
   Guard: "转移条件",
   "Requests transition": "触发转移",
   "Guarded by": "受条件约束",
+  "Requires false": "条件不成立",
+  "Requires true": "条件成立",
   "Has effect": "产生效果",
   "Target state": "目标状态",
   "Decision result": "判定结果",

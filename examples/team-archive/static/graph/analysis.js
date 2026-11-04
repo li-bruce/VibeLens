@@ -119,7 +119,9 @@ export const presets = [
       "code-parameter",
       "code-reference",
     ],
-    edges: ["call", "data", ...dataRelations],
+    // Physical declarations and contextual observed functions use distinct
+    // relation families. Selecting both node families must retain both links.
+    edges: ["call", "data", "code-calls", "code-parameter", "code-maps", ...dataRelations],
   },
   {
     id: "permission",

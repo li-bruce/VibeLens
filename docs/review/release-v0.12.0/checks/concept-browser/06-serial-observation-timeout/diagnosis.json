@@ -1,0 +1,19 @@
+{
+  "status": "corrected-awaiting-full-replay",
+  "cause": "Each admitted event repeated physical root/path resolution for concept input freshness, before rereading the same files with the existing secure SourceFiles reader.",
+  "change": "Read logical configured paths through SourceFiles directly; keep byte freshness, ancestor attribute/reparse checks and unreadable configuration handling.",
+  "single_case": {
+    "events": 190,
+    "before_seconds": 19.78645580029115,
+    "profiled_warm_before_seconds": 10.790436699986458,
+    "after_seconds": 4.880058499984443,
+    "note": "Local diagnostic timings, not a general performance benchmark."
+  },
+  "regressions": {
+    "concept_workflow": 23,
+    "source_files": 8,
+    "status": "passed; temporary directory junction tests require execution outside this Windows sandbox"
+  },
+  "timeout_seconds": 180,
+  "timeout_changed": false
+}

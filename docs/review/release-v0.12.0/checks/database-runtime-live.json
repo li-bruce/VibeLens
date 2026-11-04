@@ -1,0 +1,2042 @@
+{
+  "status": "passed",
+  "databases": {
+    "postgresql": {
+      "status": "passed",
+      "assertions": [
+        "real ORM query",
+        "4-to-2 transform",
+        "committed update of two rows",
+        "rollback leaves four rows",
+        "duplicate-key failure",
+        "observer reflection excluded",
+        "selected values only",
+        "explicit causal dependencies"
+      ],
+      "limitations": [],
+      "probe_errors": 0,
+      "runtime_errors": 0,
+      "suppressed": 1,
+      "events": [
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 1,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:1",
+          "node": "read",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "5664c9c37f5e45959ced114c894fce9c",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "SELECT bo_runtime_f5e8f0e1f779.id, bo_runtime_f5e8f0e1f779.title, bo_runtime_f5e8f0e1f779.visible FROM bo_runtime_f5e8f0e1f779 ORDER BY bo_runtime_f5e8f0e1f779.id",
+            "parameters": {
+              "limit": 4
+            }
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.007,
+            "target_source": "parsed_sql",
+            "targets": [
+              "table:bo_runtime_f5e8f0e1f779"
+            ],
+            "unknown_targets": [],
+            "target_access": [
+              {
+                "target": "table:bo_runtime_f5e8f0e1f779",
+                "action": "read"
+              }
+            ]
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.251166+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 2,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:2",
+          "node": "read",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "5664c9c37f5e45959ced114c894fce9c",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "SELECT bo_runtime_f5e8f0e1f779.id, bo_runtime_f5e8f0e1f779.title, bo_runtime_f5e8f0e1f779.visible FROM bo_runtime_f5e8f0e1f779 ORDER BY bo_runtime_f5e8f0e1f779.id",
+            "parameters": {
+              "limit": 4
+            }
+          },
+          "outputs": {
+            "status": "executed",
+            "duration_ms": 2.508,
+            "rows": 4,
+            "rows_known": true,
+            "target_source": "parsed_sql",
+            "targets": [
+              "table:bo_runtime_f5e8f0e1f779"
+            ],
+            "unknown_targets": [],
+            "target_access": [
+              {
+                "target": "table:bo_runtime_f5e8f0e1f779",
+                "action": "read"
+              }
+            ]
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.253671+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 3,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:3",
+          "node": "transform",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "5ea8aa8e128f49ac85f23bd83a04f598",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transform",
+            "statement": "transform",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.005,
+            "target_source": "not_applicable",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [
+            {
+              "event": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:2",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.255792+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 4,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:4",
+          "node": "transform",
+          "phase": "change",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "5ea8aa8e128f49ac85f23bd83a04f598",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transform",
+            "statement": "transform",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "transformed",
+            "duration_ms": 0.117,
+            "target_source": "not_applicable",
+            "result": {
+              "count": 2
+            },
+            "before": {
+              "count": 4
+            },
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": [],
+            "input_count": 4,
+            "output_count": 2
+          },
+          "depends": [
+            {
+              "event": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:2",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.255892+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 5,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:5",
+          "node": "transaction",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "93d0490e4d214302940f4e2b368500ab",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transaction",
+            "statement": "transaction",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.002,
+            "target_source": "not_applicable",
+            "transaction_id": "93d0490e4d214302940f4e2b368500ab",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.256008+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 6,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:6",
+          "node": "write",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "0bdfcbf64cb54785bebfeda55369e698",
+          "parent_call_id": "93d0490e4d214302940f4e2b368500ab",
+          "parent_event_id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:5",
+          "inputs": {
+            "operation": "write",
+            "statement": "UPDATE bo_runtime_f5e8f0e1f779 SET title = CAST(%s AS VARCHAR) WHERE bo_runtime_f5e8f0e1f779.id IN (CAST(%s AS INT), CAST(%s AS INT))",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.003,
+            "target_source": "parsed_sql",
+            "transaction_id": "93d0490e4d214302940f4e2b368500ab",
+            "targets": [
+              "table:bo_runtime_f5e8f0e1f779"
+            ],
+            "unknown_targets": [],
+            "target_access": [
+              {
+                "target": "table:bo_runtime_f5e8f0e1f779",
+                "action": "write"
+              }
+            ]
+          },
+          "depends": [
+            {
+              "event": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:4",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.257844+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 7,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:7",
+          "node": "write",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "0bdfcbf64cb54785bebfeda55369e698",
+          "parent_call_id": "93d0490e4d214302940f4e2b368500ab",
+          "parent_event_id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:5",
+          "inputs": {
+            "operation": "write",
+            "statement": "UPDATE bo_runtime_f5e8f0e1f779 SET title = CAST(%s AS VARCHAR) WHERE bo_runtime_f5e8f0e1f779.id IN (CAST(%s AS INT), CAST(%s AS INT))",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "executed",
+            "duration_ms": 3.072,
+            "rows": 2,
+            "rows_known": true,
+            "target_source": "parsed_sql",
+            "transaction_id": "93d0490e4d214302940f4e2b368500ab",
+            "targets": [
+              "table:bo_runtime_f5e8f0e1f779"
+            ],
+            "unknown_targets": [],
+            "target_access": [
+              {
+                "target": "table:bo_runtime_f5e8f0e1f779",
+                "action": "write"
+              }
+            ]
+          },
+          "depends": [
+            {
+              "event": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:4",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.260934+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 8,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:8",
+          "node": "transaction",
+          "phase": "commit",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "93d0490e4d214302940f4e2b368500ab",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transaction",
+            "statement": "transaction",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "committed",
+            "duration_ms": 8.182,
+            "target_source": "not_applicable",
+            "transaction_id": "93d0490e4d214302940f4e2b368500ab",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": [],
+            "committed": true
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.264185+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 9,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:9",
+          "node": "transaction",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "8ed1b7bf5e8643e68a78874dba1ef515",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transaction",
+            "statement": "transaction",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.003,
+            "target_source": "not_applicable",
+            "transaction_id": "8ed1b7bf5e8643e68a78874dba1ef515",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.264313+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 10,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:10",
+          "node": "write",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "d5a4037cd10444e5a93473b2b236eb35",
+          "parent_call_id": "8ed1b7bf5e8643e68a78874dba1ef515",
+          "parent_event_id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:9",
+          "inputs": {
+            "operation": "write",
+            "statement": "INSERT INTO bo_runtime_f5e8f0e1f779 (id, title, visible) VALUES (CAST(%s AS INT), CAST(%s AS VARCHAR), CAST(%s AS BOOLEAN))",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.003,
+            "target_source": "parsed_sql",
+            "transaction_id": "8ed1b7bf5e8643e68a78874dba1ef515",
+            "targets": [
+              "table:bo_runtime_f5e8f0e1f779"
+            ],
+            "unknown_targets": [],
+            "target_access": [
+              {
+                "target": "table:bo_runtime_f5e8f0e1f779",
+                "action": "write"
+              }
+            ]
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.265808+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 11,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:11",
+          "node": "write",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "d5a4037cd10444e5a93473b2b236eb35",
+          "parent_call_id": "8ed1b7bf5e8643e68a78874dba1ef515",
+          "parent_event_id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:9",
+          "inputs": {
+            "operation": "write",
+            "statement": "INSERT INTO bo_runtime_f5e8f0e1f779 (id, title, visible) VALUES (CAST(%s AS INT), CAST(%s AS VARCHAR), CAST(%s AS BOOLEAN))",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "executed",
+            "duration_ms": 3.257,
+            "rows": 1,
+            "rows_known": true,
+            "target_source": "parsed_sql",
+            "transaction_id": "8ed1b7bf5e8643e68a78874dba1ef515",
+            "targets": [
+              "table:bo_runtime_f5e8f0e1f779"
+            ],
+            "unknown_targets": [],
+            "target_access": [
+              {
+                "target": "table:bo_runtime_f5e8f0e1f779",
+                "action": "write"
+              }
+            ]
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.269088+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 12,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:12",
+          "node": "transaction",
+          "phase": "error",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "8ed1b7bf5e8643e68a78874dba1ef515",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transaction",
+            "statement": "transaction",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "rolled_back",
+            "duration_ms": 6.592,
+            "target_source": "not_applicable",
+            "error_type": "ValueError",
+            "transaction_id": "8ed1b7bf5e8643e68a78874dba1ef515",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": [],
+            "committed": false
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.270920+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 13,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:13",
+          "node": "write",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "a6d6f46468a549a1a13ae2e3eb2b5b90",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "write",
+            "statement": "INSERT INTO bo_runtime_f5e8f0e1f779 (id, title, visible) VALUES (CAST(%s AS INT), CAST(%s AS VARCHAR), CAST(%s AS BOOLEAN))",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.003,
+            "target_source": "parsed_sql",
+            "targets": [
+              "table:bo_runtime_f5e8f0e1f779"
+            ],
+            "unknown_targets": [],
+            "target_access": [
+              {
+                "target": "table:bo_runtime_f5e8f0e1f779",
+                "action": "write"
+              }
+            ]
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.272202+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-postgresql",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "ceb468342c394c2883fb17eeeab16634",
+          "producer_id": "11219ca44b0c4c5698bfa777f0471cf7",
+          "schema_version": 3,
+          "seq": 14,
+          "id": "ceb468342c394c2883fb17eeeab16634:11219ca44b0c4c5698bfa777f0471cf7:14",
+          "node": "write",
+          "phase": "error",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "a6d6f46468a549a1a13ae2e3eb2b5b90",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "write",
+            "statement": "INSERT INTO bo_runtime_f5e8f0e1f779 (id, title, visible) VALUES (CAST(%s AS INT), CAST(%s AS VARCHAR), CAST(%s AS BOOLEAN))",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "failed",
+            "duration_ms": 2.961,
+            "rows_known": false,
+            "target_source": "parsed_sql",
+            "error_type": "IntegrityError",
+            "targets": [
+              "table:bo_runtime_f5e8f0e1f779"
+            ],
+            "unknown_targets": [],
+            "target_access": [
+              {
+                "target": "table:bo_runtime_f5e8f0e1f779",
+                "action": "write"
+              }
+            ]
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.275192+00:00"
+        }
+      ]
+    },
+    "mongodb": {
+      "status": "passed",
+      "assertions": [
+        "real PyMongo command monitoring",
+        "lazy cursor starts only during consumption",
+        "find/getMore calls",
+        "4-to-2 transform",
+        "two documents updated",
+        "duplicate-key failure",
+        "observer and exact-client exclusion"
+      ],
+      "limitations": [
+        "The local MongoDB service is standalone; multi-document transaction behavior is not tested."
+      ],
+      "probe_errors": 0,
+      "runtime_errors": 0,
+      "suppressed": 2,
+      "events": [
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 1,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:1",
+          "node": "read",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "ce37560dc8604916af10ed65c92a6c8b",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "find",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.004,
+            "target_source": "driver",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.555245+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 2,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:2",
+          "node": "read",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "ce37560dc8604916af10ed65c92a6c8b",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "find",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "executed",
+            "duration_ms": 1.128,
+            "rows_known": false,
+            "target_source": "driver",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.556364+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 3,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:3",
+          "node": "read",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "15e96994ba3a4b2aa2ca9e1ba96b6d44",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "getMore",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.003,
+            "target_source": "driver",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.556609+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 4,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:4",
+          "node": "read",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "15e96994ba3a4b2aa2ca9e1ba96b6d44",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "getMore",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "executed",
+            "duration_ms": 1.005,
+            "rows_known": false,
+            "target_source": "driver",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.557621+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 5,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:5",
+          "node": "read",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "ec070915527e47ad89151e6dbdcc0628",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "getMore",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.002,
+            "target_source": "driver",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.557930+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 6,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:6",
+          "node": "read",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "ec070915527e47ad89151e6dbdcc0628",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "getMore",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "executed",
+            "duration_ms": 1.324,
+            "rows_known": false,
+            "target_source": "driver",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.559179+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 7,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:7",
+          "node": "transform",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "390bfcd969da440288622aecf7191486",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transform",
+            "statement": "transform",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.002,
+            "target_source": "not_applicable",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [
+            {
+              "event": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:6",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.559348+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 8,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:8",
+          "node": "transform",
+          "phase": "change",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "390bfcd969da440288622aecf7191486",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transform",
+            "statement": "transform",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "transformed",
+            "duration_ms": 0.073,
+            "target_source": "not_applicable",
+            "result": {
+              "count": 2
+            },
+            "before": {
+              "count": 4
+            },
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": [],
+            "input_count": 4,
+            "output_count": 2
+          },
+          "depends": [
+            {
+              "event": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:6",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.559417+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 9,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:9",
+          "node": "write",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "7226dcd556524b5db65e8f276f3dbf10",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "write",
+            "statement": "update",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.002,
+            "target_source": "driver",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [
+            {
+              "event": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:8",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.559621+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 10,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:10",
+          "node": "write",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "7226dcd556524b5db65e8f276f3dbf10",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "write",
+            "statement": "update",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "executed",
+            "duration_ms": 1.897,
+            "rows": 2,
+            "rows_known": true,
+            "target_source": "driver",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [
+            {
+              "event": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:8",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.561539+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 11,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:11",
+          "node": "write",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "7dc35bbcf7f14791a3e6e91f6cc0135b",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "write",
+            "statement": "insert",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.003,
+            "target_source": "driver",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.561838+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-mongodb",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "7d27bf7fe89e42db9c306e2ee772fd49",
+          "producer_id": "124328e731a4442289cae2ccd7068531",
+          "schema_version": 3,
+          "seq": 12,
+          "id": "7d27bf7fe89e42db9c306e2ee772fd49:124328e731a4442289cae2ccd7068531:12",
+          "node": "write",
+          "phase": "error",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "7dc35bbcf7f14791a3e6e91f6cc0135b",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "write",
+            "statement": "insert",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "failed",
+            "duration_ms": 1.12,
+            "rows": 0,
+            "rows_known": true,
+            "target_source": "driver",
+            "error_type": "DatabaseWriteError",
+            "targets": [
+              "collection:bo_runtime_d951d1d633ac"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.562968+00:00"
+        }
+      ]
+    },
+    "redis": {
+      "status": "passed",
+      "assertions": [
+        "real Redis commands",
+        "hash read",
+        "4-to-2 transform",
+        "two fields updated",
+        "wrong-type failure",
+        "observer and exact-client exclusion"
+      ],
+      "limitations": [
+        "Redis pipelines and partial EXEC failures require a driver-specific transaction adapter; this suite does not claim rollback semantics."
+      ],
+      "probe_errors": 0,
+      "runtime_errors": 0,
+      "suppressed": 2,
+      "events": [
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-redis",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "18d4f10fe2374fd9a397ac9b6ad59234",
+          "producer_id": "e5552f2e50f3472eb307c8bb00ffe2ec",
+          "schema_version": 3,
+          "seq": 1,
+          "id": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:1",
+          "node": "read",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "8724089596dc4006ab5bade2cc475905",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "HGETALL",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.011,
+            "target_source": "provided",
+            "targets": [
+              "key_pattern:bo:runtime:*"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.764279+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-redis",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "18d4f10fe2374fd9a397ac9b6ad59234",
+          "producer_id": "e5552f2e50f3472eb307c8bb00ffe2ec",
+          "schema_version": 3,
+          "seq": 2,
+          "id": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:2",
+          "node": "read",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "8724089596dc4006ab5bade2cc475905",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "HGETALL",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "returned",
+            "duration_ms": 1.332,
+            "rows_known": false,
+            "target_source": "provided",
+            "result": {
+              "count": 4
+            },
+            "targets": [
+              "key_pattern:bo:runtime:*"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.765558+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-redis",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "18d4f10fe2374fd9a397ac9b6ad59234",
+          "producer_id": "e5552f2e50f3472eb307c8bb00ffe2ec",
+          "schema_version": 3,
+          "seq": 3,
+          "id": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:3",
+          "node": "transform",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "8cff31f60cfc42bfa19f86c7b5887d91",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transform",
+            "statement": "transform",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.003,
+            "target_source": "not_applicable",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [
+            {
+              "event": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:2",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.765701+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-redis",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "18d4f10fe2374fd9a397ac9b6ad59234",
+          "producer_id": "e5552f2e50f3472eb307c8bb00ffe2ec",
+          "schema_version": 3,
+          "seq": 4,
+          "id": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:4",
+          "node": "transform",
+          "phase": "change",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "8cff31f60cfc42bfa19f86c7b5887d91",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transform",
+            "statement": "transform",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "transformed",
+            "duration_ms": 0.068,
+            "target_source": "not_applicable",
+            "result": {
+              "count": 2
+            },
+            "before": {
+              "count": 4
+            },
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": [],
+            "input_count": 4,
+            "output_count": 2
+          },
+          "depends": [
+            {
+              "event": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:2",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.765763+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-redis",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "18d4f10fe2374fd9a397ac9b6ad59234",
+          "producer_id": "e5552f2e50f3472eb307c8bb00ffe2ec",
+          "schema_version": 3,
+          "seq": 5,
+          "id": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:5",
+          "node": "write",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "e1a1864f65604acf9592c2cfd31e310a",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "write",
+            "statement": "HSET",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.002,
+            "target_source": "provided",
+            "targets": [
+              "key_pattern:bo:runtime:*"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [
+            {
+              "event": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:4",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.765827+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-redis",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "18d4f10fe2374fd9a397ac9b6ad59234",
+          "producer_id": "e5552f2e50f3472eb307c8bb00ffe2ec",
+          "schema_version": 3,
+          "seq": 6,
+          "id": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:6",
+          "node": "write",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "e1a1864f65604acf9592c2cfd31e310a",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "write",
+            "statement": "HSET",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "returned",
+            "duration_ms": 1.081,
+            "rows_known": false,
+            "target_source": "provided",
+            "targets": [
+              "key_pattern:bo:runtime:*"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [
+            {
+              "event": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:4",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:26.766924+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-redis",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "18d4f10fe2374fd9a397ac9b6ad59234",
+          "producer_id": "e5552f2e50f3472eb307c8bb00ffe2ec",
+          "schema_version": 3,
+          "seq": 7,
+          "id": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:7",
+          "node": "read",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "b1a92a15fec64514a0820a331c59b98f",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "GET",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.003,
+            "target_source": "provided",
+            "targets": [
+              "key_pattern:bo:runtime:*"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.768568+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-redis",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "18d4f10fe2374fd9a397ac9b6ad59234",
+          "producer_id": "e5552f2e50f3472eb307c8bb00ffe2ec",
+          "schema_version": 3,
+          "seq": 8,
+          "id": "18d4f10fe2374fd9a397ac9b6ad59234:e5552f2e50f3472eb307c8bb00ffe2ec:8",
+          "node": "read",
+          "phase": "error",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "b1a92a15fec64514a0820a331c59b98f",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "GET",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "failed",
+            "duration_ms": 1.078,
+            "rows_known": false,
+            "target_source": "provided",
+            "error_type": "ResponseError",
+            "targets": [
+              "key_pattern:bo:runtime:*"
+            ],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:26.769656+00:00"
+        }
+      ]
+    },
+    "neo4j": {
+      "status": "passed",
+      "assertions": [
+        "real Bolt query and materialization",
+        "4-to-2 transform",
+        "two nodes updated",
+        "explicit commit acknowledgement",
+        "rollback leaves four nodes",
+        "Cypher syntax failure",
+        "observer and exact-session exclusion"
+      ],
+      "limitations": [],
+      "probe_errors": 0,
+      "runtime_errors": 0,
+      "suppressed": 2,
+      "events": [
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 1,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:1",
+          "node": "read",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "7033e5ab89e147b0ab92140fc5a1e71f",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "[query shape unavailable]",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.005,
+            "target_source": "provided",
+            "targets": [
+              "label:BODataRuntimeTest"
+            ],
+            "unknown_targets": [
+              "query_not_parsed"
+            ],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.048159+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 2,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:2",
+          "node": "read",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "7033e5ab89e147b0ab92140fc5a1e71f",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "[query shape unavailable]",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "returned",
+            "duration_ms": 22.181,
+            "rows": 4,
+            "rows_known": true,
+            "target_source": "provided",
+            "result": {
+              "count": 4
+            },
+            "targets": [
+              "label:BODataRuntimeTest"
+            ],
+            "unknown_targets": [
+              "query_not_parsed"
+            ],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.070339+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 3,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:3",
+          "node": "transform",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "67437ba10646422d846dc9e1396fa344",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transform",
+            "statement": "transform",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.004,
+            "target_source": "not_applicable",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [
+            {
+              "event": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:2",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:27.070476+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 4,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:4",
+          "node": "transform",
+          "phase": "change",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "67437ba10646422d846dc9e1396fa344",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transform",
+            "statement": "transform",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "transformed",
+            "duration_ms": 0.088,
+            "target_source": "not_applicable",
+            "result": {
+              "count": 2
+            },
+            "before": {
+              "count": 4
+            },
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": [],
+            "input_count": 4,
+            "output_count": 2
+          },
+          "depends": [
+            {
+              "event": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:2",
+              "type": "data"
+            }
+          ],
+          "observed_at": "2026-11-04T14:56:27.070559+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 5,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:5",
+          "node": "transaction",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "724928fab059406d9a9c8eb057d2ffbb",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transaction",
+            "statement": "transaction",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.002,
+            "target_source": "not_applicable",
+            "transaction_id": "724928fab059406d9a9c8eb057d2ffbb",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.070643+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 6,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:6",
+          "node": "write",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "50735619c22c4d34b9a2cfbb3947d908",
+          "parent_call_id": "724928fab059406d9a9c8eb057d2ffbb",
+          "parent_event_id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:5",
+          "inputs": {
+            "operation": "write",
+            "statement": "[query shape unavailable]",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.004,
+            "target_source": "provided",
+            "transaction_id": "724928fab059406d9a9c8eb057d2ffbb",
+            "targets": [
+              "label:BODataRuntimeTest"
+            ],
+            "unknown_targets": [
+              "query_not_parsed"
+            ],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.072503+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 7,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:7",
+          "node": "write",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "50735619c22c4d34b9a2cfbb3947d908",
+          "parent_call_id": "724928fab059406d9a9c8eb057d2ffbb",
+          "parent_event_id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:5",
+          "inputs": {
+            "operation": "write",
+            "statement": "[query shape unavailable]",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "returned",
+            "duration_ms": 23.849,
+            "rows": 2,
+            "rows_known": true,
+            "target_source": "provided",
+            "transaction_id": "724928fab059406d9a9c8eb057d2ffbb",
+            "targets": [
+              "label:BODataRuntimeTest"
+            ],
+            "unknown_targets": [
+              "query_not_parsed"
+            ],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.096356+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 8,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:8",
+          "node": "transaction",
+          "phase": "commit",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "724928fab059406d9a9c8eb057d2ffbb",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transaction",
+            "statement": "transaction",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "committed",
+            "duration_ms": 30.362,
+            "target_source": "not_applicable",
+            "transaction_id": "724928fab059406d9a9c8eb057d2ffbb",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": [],
+            "committed": true
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.101048+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 9,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:9",
+          "node": "transaction",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "d5ccac4e94e341c399627b71616243a0",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transaction",
+            "statement": "transaction",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.005,
+            "target_source": "not_applicable",
+            "transaction_id": "d5ccac4e94e341c399627b71616243a0",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.101235+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 10,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:10",
+          "node": "write",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "a2bf8e105cb94e36a0c1a52831be7124",
+          "parent_call_id": "d5ccac4e94e341c399627b71616243a0",
+          "parent_event_id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:9",
+          "inputs": {
+            "operation": "write",
+            "statement": "[query shape unavailable]",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.004,
+            "target_source": "provided",
+            "transaction_id": "d5ccac4e94e341c399627b71616243a0",
+            "targets": [
+              "label:BODataRuntimeTest"
+            ],
+            "unknown_targets": [
+              "query_not_parsed"
+            ],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.103382+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 11,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:11",
+          "node": "write",
+          "phase": "return",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "a2bf8e105cb94e36a0c1a52831be7124",
+          "parent_call_id": "d5ccac4e94e341c399627b71616243a0",
+          "parent_event_id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:9",
+          "inputs": {
+            "operation": "write",
+            "statement": "[query shape unavailable]",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "returned",
+            "duration_ms": 8.094,
+            "rows_known": false,
+            "target_source": "provided",
+            "transaction_id": "d5ccac4e94e341c399627b71616243a0",
+            "targets": [
+              "label:BODataRuntimeTest"
+            ],
+            "unknown_targets": [
+              "query_not_parsed"
+            ],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.111488+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 12,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:12",
+          "node": "transaction",
+          "phase": "error",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "d5ccac4e94e341c399627b71616243a0",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "transaction",
+            "statement": "transaction",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "rolled_back",
+            "duration_ms": 13.01,
+            "target_source": "not_applicable",
+            "error_type": "ValueError",
+            "transaction_id": "d5ccac4e94e341c399627b71616243a0",
+            "targets": [],
+            "unknown_targets": [],
+            "target_access": [],
+            "committed": false
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.114253+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 13,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:13",
+          "node": "read",
+          "phase": "enter",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "7c9f13c0e9484921a932146578422a41",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "[query shape unavailable]",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "started",
+            "duration_ms": 0.006,
+            "target_source": "provided",
+            "targets": [
+              "label:BODataRuntimeTest"
+            ],
+            "unknown_targets": [
+              "query_not_parsed"
+            ],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.146132+00:00"
+        },
+        {
+          "protocol": "bo-event/v1",
+          "project_id": "db-runtime-neo4j",
+          "model_revision": "1",
+          "build_id": "live-database-1",
+          "run_id": "bb6c5f91b68a420a863e1353d54e6d96",
+          "producer_id": "980d2f20d8ee47599d664dfb08a6f4f8",
+          "schema_version": 3,
+          "seq": 14,
+          "id": "bb6c5f91b68a420a863e1353d54e6d96:980d2f20d8ee47599d664dfb08a6f4f8:14",
+          "node": "read",
+          "phase": "error",
+          "entity": "application",
+          "attempt": "application",
+          "scope": "application",
+          "basis": {},
+          "call_id": "7c9f13c0e9484921a932146578422a41",
+          "parent_call_id": null,
+          "parent_event_id": null,
+          "inputs": {
+            "operation": "read",
+            "statement": "[query shape unavailable]",
+            "parameters": {}
+          },
+          "outputs": {
+            "status": "failed",
+            "duration_ms": 14.718,
+            "rows_known": false,
+            "target_source": "provided",
+            "error_type": "CypherSyntaxError",
+            "targets": [
+              "label:BODataRuntimeTest"
+            ],
+            "unknown_targets": [
+              "query_not_parsed"
+            ],
+            "target_access": []
+          },
+          "depends": [],
+          "observed_at": "2026-11-04T14:56:27.160858+00:00"
+        }
+      ]
+    }
+  }
+}

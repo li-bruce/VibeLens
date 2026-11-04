@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased — concept-first modeling
+## 0.12.0 — 2026-11-05
+
+- Reuse the secure source reader for per-event concept freshness checks, avoiding repeated project-path resolution while preserving byte and link-change detection.
 
 - Define business, state and shared rule models before implementation, with
   scoped confirmation, typed references and independent expected outcomes.
@@ -19,6 +21,11 @@
 - Split concept validation, binding, observation lookup and presentation into
   focused modules; shorten the Skill entrypoint with required task references.
 - See the [implementation and acceptance record](docs/review/concept-models-20261104/README.md).
+
+- Repair business-rule target binding, transition-effect completion requirements,
+  guard polarity, conceptual containment and function-view relationship filters.
+- Include concept reports in iteration recall and exercise the accepted conceptual
+  browser workflow with an isolated fixture.
 
 ## 0.11.3 — 2026-11-04
 

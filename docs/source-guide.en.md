@@ -12,6 +12,9 @@ semantics, and `semantics.py` records scoped confirmations and changes. `binding
 and `anchors.py` compare those declarations with native state/rule/source bindings
 and independent assertions. `projection.py` adds explicit implementation links
 to Web metadata. These modules never execute the application's transitions.
+`associations.py` checks native rule targets and transition-effect completion
+contracts. `runtime.py` checks those associations against original invocation
+IDs, causal references, selected completion values and transaction identities.
 [bo_concepts.py](../skills/vibelens/scripts/bo_concepts.py) is the public CLI;
 [concept-models.md](../skills/vibelens/references/concept-models.md) describes its workflow.
 
@@ -37,6 +40,8 @@ history to construct a view. `concept-bindings.js` qualifies those links in the
 viewer, and `concept-observation.js` projects each owner's actual interval without
 merging several calls into an invented concept lifetime. `concept-details.js`
 shows the complete typed definition on demand.
+`concept-containment.js` turns unambiguous typed containment into display regions;
+canonical relations and native ownership remain intact.
 
 The product story is separate from the runtime. [export_file_case.py](../tools/export_file_case.py) validates immutable trial recordings, sources and screenshots before producing static case data. [case-viewer.mjs](site/case-viewer.mjs) serves those exports to the unchanged canonical viewer; [case-scene-player.mjs](site/case-scene-player.mjs) selects native views and replay positions. [case-copy.mjs](site/case-copy.mjs) removes known authoring boilerplate in display-only clones while preserving archived facts. [case-companion.mjs](site/case-companion.mjs) keeps development dialogue and event-bound application screenshots separate. [export_trial_dialogue.py](../tools/export_trial_dialogue.py) exports visible dialogue and named-turn usage counters for review.
 

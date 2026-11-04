@@ -105,6 +105,8 @@ def main():
     run(ROOT, "tests/test_requirements_dialogue.py")
     run(ROOT, "tests/test_concept_models.py")
     run(ROOT, "tests/test_concept_workflow.py")
+    run(ROOT, "tests/test_concept_projection.py")
+    run(ROOT, "tests/test_design_preview.py")
     run(ROOT, "tests/test_concept_capture.py")
     run(ROOT, "tests/test_iteration_dialogue.py")
     run(ROOT, "tests/test_relation_insertion.py")

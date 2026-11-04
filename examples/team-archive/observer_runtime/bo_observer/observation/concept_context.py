@@ -58,12 +58,13 @@ class ConceptContext:
             # A changed contract location must not leave a running session reading
             # an abandoned file. Unrelated test/command settings may still change.
             try:
-                config_path = contained(self.root, "sync.json")
-                config = (
-                    json.loads(config_path.read_text(encoding="utf-8-sig"))
-                    if config_path.is_file()
-                    else {}
-                )
+                # SourceFiles rechecks current ancestors, links and bytes. Reusing
+                # this secure reader avoids resolving the entire Windows project
+                # path for every event; it does not cache contract content.
+                raw = self.sources.read("sync.json")
+                if raw is None and (self.root / "sync.json").is_file():
+                    raise ValueError("Cannot read the current concept configuration")
+                config = json.loads(raw.decode("utf-8-sig")) if raw is not None else {}
                 current = (
                     config.get("discovery", "discovery.json"),
                     config.get("acceptance", "acceptance.json"),
@@ -74,7 +75,9 @@ class ConceptContext:
                 changed.append("sync.json")
         for name, expected in self.inputs.items():
             try:
-                raw = self.sources.read(contained(self.root, name).relative_to(self.root))
+                # Keep the logical configured name. A later ancestor replacement
+                # must be checked again rather than following an old resolved alias.
+                raw = self.sources.read(name)
                 if digest(raw) != expected:
                     changed.append(name)
             except (OSError, ValueError):

@@ -59,6 +59,43 @@ Bind the confirmed scope to `model.concepts`, the existing native `model.machine
 Bindings add implementation detail without replacing the conceptual definitions.
 Pending or unsupported bindings fail the implementation gate.
 
+Rule applicability is checked against `binding.business`: each confirmed
+operation must resolve to the same native targets named by its bound policy
+operation. Reusing a correct rule definition on a different action is a mapping
+error. Runtime checks also associate the evaluation with that business invocation.
+
+Every declared transition effect requires an entry in `binding.transition_effects`,
+keyed by its canonical transition ID. Each entry names the canonical `effect`,
+the native association `edges`, and a `completion` witness:
+
+```json
+{
+  "effect": "effect:grant:store_grant",
+  "edges": ["share-writes-grant"],
+  "completion": {
+    "node": "grant_transaction",
+    "phase": "return",
+    "field": "committed",
+    "equals": true,
+    "identity_field": "transaction_id",
+    "boundary": "transaction commit",
+    "expectation": "grant-created",
+    "path": ["grant", "committed"]
+  }
+}
+```
+
+Use the exact IDs and completion boundary from the project's confirmed model.
+The association edges connect the native event operation to every bound effect
+operation; an empty list applies only when these are the same native operation.
+The witness points to a declared output field and an existing confirmed
+expectation that covers the transition/effect, with an independently asserted
+case path and expected value. A transaction effect requires its actual
+`transaction_id` and `committed: true`. Runtime evidence must link the relevant
+invocations and observe that completion for the same transaction. A generic
+function return or a source-backed unrelated function cannot replace this proof.
+Effects absent from the confirmed model require no invented transaction or node.
+
 Each fact binding identifies its captured `node`, `direction` and `field`.
 `basis_checks` point to independent acceptance cases and paths whose expected
 value contains that reader and the complete `read_basis`. The observation command

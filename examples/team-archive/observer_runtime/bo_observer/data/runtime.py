@@ -46,7 +46,7 @@ def bo_query_shape(statement, language="sql", dialect=None):
             if any(kind in Error for kind, _ in tokens):
                 return _UNKNOWN_QUERY, [], ["query_not_parsed"]
             clean = "".join(
-                " " if kind in Comment else "?" if kind in String or kind in Number else text
+                (" " if kind in Comment else "?" if kind in String or kind in Number else text)
                 for kind, text in tokens
             )
             return " ".join(clean.split())[:256], [], ["cypher_targets_not_inferred"]
@@ -89,7 +89,7 @@ def bo_query_shape(statement, language="sql", dialect=None):
             for item in tree.walk():
                 item.comments = None
             tree = tree.transform(
-                lambda item: exp.Placeholder() if isinstance(item, literal_types) else item
+                lambda item: (exp.Placeholder() if isinstance(item, literal_types) else item)
             )
             rendered.append(tree.sql(dialect=dialect, comments=False))
         return " ".join("; ".join(rendered).split())[:256], sorted(targets), []
@@ -324,7 +324,13 @@ class BODataRuntime:
             _bo_capturing.reset(token)
 
     def _begin(
-        self, scope, statement="", language="command", targets=(), dialect=None, target_source=None
+        self,
+        scope,
+        statement="",
+        language="command",
+        targets=(),
+        dialect=None,
+        target_source=None,
     ):
         try:
             # Resolve at the actual driver boundary: operation() may have been
@@ -387,6 +393,11 @@ class BODataRuntime:
                 ),
                 access,
             )
+            if operation["action"] == "transaction":
+                # A transaction owns its identity at both entry and completion.
+                # Nested queries inherit it through _bo_transaction; enclosing
+                # calls remain linked through explicit parent entry references.
+                call.transaction_id = call.call_id
             call.entry_id = self._emit(call, "enter", {"status": "started"})
             return call
         except Exception:
@@ -486,7 +497,15 @@ class BODataRuntime:
         return result
 
     def transform(
-        self, node, function, value, *, before=None, after=None, parameters=None, **context
+        self,
+        node,
+        function,
+        value,
+        *,
+        before=None,
+        after=None,
+        parameters=None,
+        **context,
     ):
         """Record selected values around a real transformation and return its original result."""
         call = (
@@ -506,7 +525,11 @@ class BODataRuntime:
                 self._emit(
                     call,
                     "error",
-                    {"status": "failed", "before": initial, "error_type": type(error).__name__},
+                    {
+                        "status": "failed",
+                        "before": initial,
+                        "error_type": type(error).__name__,
+                    },
                 )
             raise
         if call:
@@ -786,7 +809,7 @@ class BODataRuntime:
                                 "status": (
                                     "acknowledgement_failed"
                                     if concern_error
-                                    else "partial_failure" if known and rows > 0 else "failed"
+                                    else ("partial_failure" if known and rows > 0 else "failed")
                                 ),
                                 "error_type": (
                                     "DatabaseWriteConcernError"

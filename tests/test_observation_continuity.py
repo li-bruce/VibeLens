@@ -71,7 +71,8 @@ class ObservationContinuityTests(unittest.TestCase):
         events, results, health = self.events()
         self.assertEqual(health["errors"], 0)
         self.assertEqual(
-            [event["outputs"]["status"] for event in events if event["phase"] == "return"], results
+            [event["outputs"]["status"] for event in events if event["phase"] == "return"],
+            results,
         )
         report = invocation_closure(
             {"runs": [{"mode": "on", "case": "errors", "events": events}]}, required=True
@@ -301,7 +302,12 @@ class ObservationContinuityTests(unittest.TestCase):
     def test_fault_modes_do_not_become_business_failures(self):
         payload = {
             "runs": [
-                {"mode": "fault", "case": "denied", "events": [], "observations": {"status": 403}}
+                {
+                    "mode": "fault",
+                    "case": "denied",
+                    "events": [],
+                    "observations": {"status": 403},
+                }
             ]
         }
         contract = {
@@ -358,7 +364,8 @@ class ObservationContinuityTests(unittest.TestCase):
 
     def test_python_and_javascript_span_sites_have_neutral_boundaries(self):
         (self.root / "app.py").write_text(
-            'def run(probe):\n    with probe.span("request"):\n        return 1\n', encoding="utf-8"
+            'def run(probe):\n    with probe.span("request"):\n        return 1\n',
+            encoding="utf-8",
         )
         (self.root / "app.mjs").write_text(
             'export async function run(probe) { return probe.span("request", {}, async () => 1); }',
@@ -398,7 +405,10 @@ class ObservationContinuityTests(unittest.TestCase):
             "model": "project.json",
             "acceptance": "acceptance.json",
             "observations_command": ["python", "observe.py"],
-            "stategraph": {"module": "bo_stategraph/__init__.py", "development_mode": "observe"},
+            "stategraph": {
+                "module": "bo_stategraph/__init__.py",
+                "development_mode": "observe",
+            },
         }
         result = recall(self.root, cfg, current, baseline)
         self.assertEqual(result["changed_files"], ["app.py", "gone.py"])
@@ -407,6 +417,10 @@ class ObservationContinuityTests(unittest.TestCase):
         self.assertEqual(result["layers"]["implementation"]["facets"]["api"], 1)
         self.assertEqual(result["layers"]["data"]["nodes"], 1)
         self.assertEqual(result["contracts"]["acceptance"], "acceptance.json")
+        self.assertEqual(
+            result["required_checks"]["reports"],
+            ["concepts", "mapping", "state_rules", "business", "project_checks"],
+        )
         self.assertFalse((self.root / ".stategraph/source-baseline.json").exists())
         saved = json.loads(
             (self.root / ".stategraph/iteration-recall.json").read_text(encoding="utf-8")

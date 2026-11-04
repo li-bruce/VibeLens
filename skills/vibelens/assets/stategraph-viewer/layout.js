@@ -621,9 +621,9 @@ export function relationName(edge, state) {
 // Folding projects endpoints in graph-core. Keep already-visible inner endpoints:
 // an expanded cross-circle call must not turn into a new parent-to-parent call.
 /** Route relations through visible region boundaries while retaining their original endpoints. */
-export function compoundEdges(graph) {
+export function compoundEdges(graph, visibleRegions = null) {
   const tree = hierarchyOf(graph),
-    groups = new Set((graph.regions || []).map((r) => r.id)),
+    groups = visibleRegions || new Set((graph.regions || []).map((r) => r.id)),
     result = new Map();
   const chain = (id) => {
     const out = [id];
@@ -634,13 +634,22 @@ export function compoundEdges(graph) {
     return out;
   };
   for (const edge of graph.edges) {
-    if (containmentRelation(edge) && !graph.layered) continue; // The enclosure already shows containment.
     const a = chain(edge.from),
       b = chain(edge.to);
+    // Suppress a containment link only if an actual visible enclosure expresses
+    // this exact ancestry. Unmapped/ambiguous relations and hidden regions keep
+    // their links instead of silently vanishing in the ordinary 2D view.
+    if (
+      containmentRelation(edge) &&
+      !graph.layered &&
+      groups.has(edge.from) &&
+      b.includes(edge.from)
+    )
+      continue;
     const from = edge.from,
       to = edge.to,
       type = relationType(edge);
-    const sourceRegion = groups.has(from) && !b.includes(from),
+    const sourceRegion = groups.has(from) && (!b.includes(from) || containmentRelation(edge)),
       targetRegion = groups.has(to) && !a.includes(to);
     const crossing =
       !a.includes(to) &&
@@ -650,6 +659,7 @@ export function compoundEdges(graph) {
       from,
       to,
       type,
+      ...(typeof edge.negated === "boolean" ? [edge.negated] : []),
       sourceRegion,
       targetRegion,
       ["python-ast", "source-ast"].includes(edge.origin)
@@ -729,7 +739,7 @@ export function presentationGraph(graph, value) {
   }
   const hidden = new Set(filters.hiddenNodes),
     hiddenEdges = new Set(filters.hiddenEdges);
-  const edges = compoundEdges(graph)
+  const edges = compoundEdges(graph, regions)
     .map((edge) => ({
       ...edge,
       members: edge.members.filter(

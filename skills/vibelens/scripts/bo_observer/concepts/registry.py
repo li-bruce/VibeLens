@@ -79,7 +79,14 @@ class ConceptGraph:
             }
         )
 
-    def relation(self, ident, source, target, kind, *, value=None, label=None):
+    def relation(
+        self, ident, source, target, kind, *, value=None, label=None, containment_kind=None
+    ):
+        """Retain semantic edge fields in the view, with protected graph identities.
+
+        Guard polarity and transition event metadata are needed when a user
+        confirms the diagram. They must not live only in the semantic snapshot.
+        """
         if ident in self.index:
             raise ValueError("duplicate concept relation identity: " + ident)
         self.index[ident] = {"kind": "relation", "aliases": [ident]}
@@ -91,16 +98,22 @@ class ConceptGraph:
             **without_display(value or {}),
         }
         self.dependencies[ident] = [source, target]
+        caption = label or RELATION_LABELS.get(kind, kind.replace("_", " ").capitalize())
+        if not label and kind == "guarded_by" and isinstance((value or {}).get("negated"), bool):
+            caption = "Requires false" if value["negated"] else "Requires true"
         self.edges.append(
             {
+                **without_display(value or {}),
                 "id": ident,
                 "from": source,
                 "to": target,
                 "type": kind,
-                "label": label or RELATION_LABELS.get(kind, kind.replace("_", " ").capitalize()),
+                "label": caption,
                 "origin": "concept-design",
                 "evidence_kind": "conceptual",
-                **({"units": value["units"]} if value and "units" in value else {}),
+                # Renderer ancestry is derived from the already typed concepts;
+                # adding this hint does not revise a confirmed semantic record.
+                **({"containment_kind": containment_kind} if containment_kind else {}),
             }
         )
 

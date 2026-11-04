@@ -62,7 +62,13 @@ def activity_draft():
             {"id": "index", "requires": {"workers": 1}},
         ],
         "resources": [
-            {"id": "workers", "scope": "run", "capacity_field": "workers", "min": 1, "max": 2}
+            {
+                "id": "workers",
+                "scope": "run",
+                "capacity_field": "workers",
+                "min": 1,
+                "max": 2,
+            }
         ],
         "join": {
             "id": "checks",
@@ -148,7 +154,12 @@ def bound_fixture():
     model = project({"nodes": nodes, "edges": [], "machine": machine, "policy": policy})
     for name in ["actor", "owner", "recipient", "active"]:
         model["edges"].append(
-            {"id": "fact:" + name, "from": "native:context", "to": "policy:" + name, "type": "data"}
+            {
+                "id": "fact:" + name,
+                "from": "native:context",
+                "to": "policy:" + name,
+                "type": "data",
+            }
         )
     crosslinks = {
         "share-requests-event": {
@@ -216,6 +227,124 @@ def bound_fixture():
     return document, model, acceptance
 
 
+def effect_fixture():
+    """A declared effect needs both its real transaction and independent outcome.
+
+    No optional transition/effect crosslink is authored: the transition's own
+    effect list must be sufficient to create all the checking obligations.
+    """
+    document, model, acceptance = bound_fixture()
+    document["confirmations"] = []
+    state = document["state_models"][0]
+    state["effects"]["store_grant"] = {
+        "meaning": "Persist the recipient grant",
+        "completion": "The grant transaction commits",
+        "source_refs": ["U1"],
+    }
+    state["transitions"][0]["effects"] = ["store_grant"]
+    document["expectations"].append(
+        {
+            "id": "grant-stored",
+            "scope": ["effect:grant:store_grant"],
+            "given": "The owner shares with one recipient",
+            "when": "The sharing request returns",
+            "then": [{"path": ["storage", "grant_committed"], "equals": True}],
+            "source_refs": ["U1"],
+        }
+    )
+    approve(document)
+    model["nodes"].append(
+        {
+            "id": "native:store-grant",
+            "kind": "function",
+            "data_role": "transaction",
+            "source": {"path": "sharing.py", "symbol": "commit_grant"},
+            "capture": {
+                "in": {},
+                "out": {"committed": "boolean", "transaction_id": "string"},
+            },
+        }
+    )
+    model["edges"].append(
+        {
+            "id": "store-grant",
+            "from": "native:share",
+            "to": "native:store-grant",
+            "type": "flow",
+        }
+    )
+    binding = model["concepts"]
+    binding["semantic_revision"] = concepts.assess(document)["semantic_revision"]
+    binding["effects"] = {"effect:grant:store_grant": ["native:store-grant"]}
+    binding["expectations"]["grant-stored"] = ["roundtrip"]
+    binding["transition_effects"] = {
+        "transition:grant:grant-share": [
+            {
+                "effect": "effect:grant:store_grant",
+                "edges": ["store-grant"],
+                "completion": {
+                    "node": "native:store-grant",
+                    "phase": "return",
+                    "field": "committed",
+                    "equals": True,
+                    "boundary": "The grant transaction commits",
+                    "identity_field": "transaction_id",
+                    "expectation": "grant-stored",
+                    "path": ["storage", "grant_committed"],
+                },
+            }
+        ]
+    }
+    acceptance["checks"].append(
+        {
+            "id": "independent-grant-read",
+            "requirement": "sharing",
+            "case": "roundtrip",
+            "path": ["storage", "grant_committed"],
+            "equals": True,
+        }
+    )
+    return document, model, acceptance
+
+
+def effect_observations():
+    """Original event identities distinguish one transaction from another."""
+    return {
+        "runs": [
+            {
+                "case": "roundtrip",
+                "mode": "on",
+                "observations": {"storage": {"grant_committed": True}},
+                "policy_evaluations": [],
+                "events": [
+                    {
+                        "id": "share-start",
+                        "node": "native:share",
+                        "call_id": "share-1",
+                        "phase": "enter",
+                    },
+                    {
+                        "id": "transaction-start",
+                        "node": "native:store-grant",
+                        "phase": "enter",
+                        "call_id": "transaction-1",
+                        "parent_event_id": "share-start",
+                        "outputs": {"transaction_id": "tx-1"},
+                    },
+                    {
+                        "id": "transaction-end",
+                        "node": "native:store-grant",
+                        "phase": "return",
+                        "call_id": "transaction-1",
+                        "parent_event_id": "share-start",
+                        "outputs": {"transaction_id": "tx-1", "committed": True},
+                    },
+                ],
+            }
+        ]
+    }
+
+
 class ConceptDesignTests(unittest.TestCase):
     def test_activity_capacity_waiting_and_join_are_in_the_state_projection(self):
         document = activity_draft()
@@ -234,7 +363,9 @@ class ConceptDesignTests(unittest.TestCase):
         self.assertEqual(len(allocations), 2)
         self.assertTrue(all(edge["units"] == 1 for edge in allocations))
 
-    def test_activity_design_rejects_invalid_capacity_scope_members_and_completion(self):
+    def test_activity_design_rejects_invalid_capacity_scope_members_and_completion(
+        self,
+    ):
         mutations = [
             lambda execution: execution.update(schema="unknown/v1"),
             lambda execution: execution.update(within="missing"),
@@ -279,11 +410,16 @@ class ConceptDesignTests(unittest.TestCase):
         before = approve(draft())
         after = deepcopy(before)
         after["networks"][0]["nodes"][0]["label"] = "Share with colleague"
-        after["policy"]["predicates"][0]["source"] = {"path": "new.py", "symbol": "is_same"}
+        after["policy"]["predicates"][0]["source"] = {
+            "path": "new.py",
+            "symbol": "is_same",
+        }
         self.assertFalse(concepts.diff(before, after)["semantic_change"])
         self.assertTrue(concepts.assess(after, previous=before)["ready"])
 
-    def test_business_meaning_rule_operator_and_read_basis_invalidate_confirmation(self):
+    def test_business_meaning_rule_operator_and_read_basis_invalidate_confirmation(
+        self,
+    ):
         for change in [
             lambda doc: doc["networks"][0]["nodes"][0].update(meaning="Share with every employee"),
             lambda doc: doc["policy"]["nodes"][-1].update(op="any"),
@@ -304,7 +440,8 @@ class ConceptDesignTests(unittest.TestCase):
         after["policy"]["nodes"][-1]["op"] = "any"
         approve(after, identity="C2")
         self.assertIn(
-            "changed_meaning_needs_new_user_source", codes(concepts.assess(after, previous=before))
+            "changed_meaning_needs_new_user_source",
+            codes(concepts.assess(after, previous=before)),
         )
         self.assertIn("changed_meaning_needs_new_user_source", codes(concepts.assess(after)))
 
@@ -350,7 +487,10 @@ class ConceptDesignTests(unittest.TestCase):
         for item in document["policy"]["nodes"]:
             if item["op"] == "predicate":
                 arguments = item["arguments"]
-                item["arguments"] = {"label": arguments["left"], "description": arguments["right"]}
+                item["arguments"] = {
+                    "label": arguments["left"],
+                    "description": arguments["right"],
+                }
         record = concepts.snapshot(document)["records"]["policy-predicate:same_identity"]
         self.assertEqual(record["parameters"], {"label": "string", "description": "string"})
         self.assertEqual(
@@ -394,11 +534,15 @@ class ConceptDesignTests(unittest.TestCase):
         after = deepcopy(before)
         after["confirmations"][0]["scope"] = ["share"]
         self.assertIn(
-            "immutable_confirmation_changed", codes(concepts.assess(after, previous=before))
+            "immutable_confirmation_changed",
+            codes(concepts.assess(after, previous=before)),
         )
         after = deepcopy(before)
         after["sources"][0]["text"] = "Edited after approval"
-        self.assertIn("confirmation_source_changed", codes(concepts.assess(after, previous=before)))
+        self.assertIn(
+            "confirmation_source_changed",
+            codes(concepts.assess(after, previous=before)),
+        )
 
     def test_state_read_has_no_fake_event_and_state_change_requires_one(self):
         document = draft()
@@ -511,6 +655,332 @@ class ConceptBindingTests(unittest.TestCase):
         self.assertTrue(result["valid"], result)
         self.assertEqual(result["bound_state_models"], ["grant"])
 
+    def test_rule_applicability_rejects_wrong_missing_and_extra_native_targets(self):
+        for targets in [
+            ["native:share"],
+            ["native:read", "native:share"],
+            ["native:revoke"],
+        ]:
+            with self.subTest(targets=targets):
+                document, model, acceptance = bound_fixture()
+                operation = next(
+                    item for item in model["policy"]["operations"] if item["id"] == "read"
+                )
+                operation["business_nodes"] = targets
+                model = project(model)
+                self.assertIn(
+                    "rule_applicability_binding_differs",
+                    codes(self.check(document, model, acceptance)),
+                )
+
+    def test_shared_rule_keeps_all_bound_consumers(self):
+        document, model, acceptance = bound_fixture()
+        operation = next(item for item in model["policy"]["operations"] if item["id"] == "manage")
+        operation["business_nodes"] = ["native:share"]
+        model = project(model)
+        self.assertIn(
+            "rule_applicability_binding_differs",
+            codes(self.check(document, model, acceptance)),
+        )
+
+    def test_transition_effect_requires_association_even_without_display_crosslink(
+        self,
+    ):
+        document, model, acceptance = effect_fixture()
+        report = self.check(document, model, acceptance)
+        self.assertTrue(report["valid"], report)
+        del model["concepts"]["transition_effects"]
+        self.assertIn(
+            "transition_effect_bindings_differ",
+            codes(self.check(document, model, acceptance)),
+        )
+
+    def test_unrelated_effect_function_and_missing_native_event_do_not_bind(self):
+        document, model, acceptance = effect_fixture()
+        model["concepts"]["effects"]["effect:grant:store_grant"] = ["native:read"]
+        result = self.check(document, model, acceptance)
+        self.assertIn("transition_effect_native_edge_differs", codes(result))
+        self.assertIn("effect_completion_node_differs", codes(result))
+        document, model, acceptance = effect_fixture()
+        del model["concepts"]["events"]["event:grant:share"]
+        self.assertIn(
+            "transition_effect_native_association_missing",
+            codes(self.check(document, model, acceptance)),
+        )
+
+    def test_completion_must_match_confirmed_boundary_and_independent_outcome(self):
+        mutations = [
+            (
+                "effect_completion_boundary_differs",
+                lambda item: item.update(boundary="Function returns"),
+            ),
+            (
+                "effect_completion_expectation_differs",
+                lambda item: item.update(expectation="grant-roundtrip"),
+            ),
+            (
+                "transaction_completion_requires_commit_identity",
+                lambda item: item.pop("identity_field"),
+            ),
+            (
+                "effect_completion_capture_type_differs",
+                lambda item: item.update(equals="true"),
+            ),
+        ]
+        for expected, mutation in mutations:
+            with self.subTest(expected=expected):
+                document, model, acceptance = effect_fixture()
+                witness = model["concepts"]["transition_effects"]["transition:grant:grant-share"][0]
+                mutation(witness["completion"])
+                self.assertIn(expected, codes(self.check(document, model, acceptance)))
+        document, model, acceptance = effect_fixture()
+        acceptance["checks"].pop()
+        self.assertIn(
+            "effect_completion_acceptance_missing",
+            codes(self.check(document, model, acceptance)),
+        )
+
+    def test_effect_runtime_checks_actual_completion_not_a_boolean_sidecar(self):
+        from bo_observer.concepts.runtime import runtime_errors
+
+        document, model, _ = effect_fixture()
+        self.assertEqual(runtime_errors(document, model, effect_observations()), [])
+        mutations = [
+            ("invocation missing", lambda events: events.pop(1)),
+            (
+                "no transition invocation",
+                lambda events: events[1].update(parent_event_id="unknown"),
+            ),
+            ("completion missing", lambda events: events.pop()),
+            (
+                "completion identity differs",
+                lambda events: events[-1]["outputs"].update(transaction_id="tx-other"),
+            ),
+            (
+                "completion value differs",
+                lambda events: events[-1]["outputs"].update(committed=False),
+            ),
+            (
+                "no matching effect entry",
+                lambda events: events[-1].update(call_id="other-invocation"),
+            ),
+        ]
+        for message, mutation in mutations:
+            with self.subTest(message=message):
+                payload = effect_observations()
+                mutation(payload["runs"][0]["events"])
+                self.assertTrue(
+                    any(message in error for error in runtime_errors(document, model, payload))
+                )
+
+    def test_effect_runtime_case_and_transaction_identity_cannot_be_borrowed(self):
+        from bo_observer.concepts.runtime import runtime_errors
+
+        document, model, _ = effect_fixture()
+        payload = effect_observations()
+        payload["runs"][0]["mode"] = "off"
+        self.assertTrue(
+            any("case missing" in error for error in runtime_errors(document, model, payload))
+        )
+        payload = effect_observations()
+        event = payload["runs"][0]["events"][-1]
+        event["producer_id"] = "another-producer"
+        self.assertTrue(
+            any(
+                "no matching effect entry" in error
+                for error in runtime_errors(document, model, payload)
+            )
+        )
+
+    def test_shared_effect_keeps_each_transition_invocation_separate(self):
+        """One case uses the same transaction function for sharing and revocation.
+
+        The initial F2 gate produced four false errors here by checking every
+        transaction against each transition. Each invocation must instead use
+        its actual owner; the shared declaration does not merge their lifetimes.
+        """
+        from bo_observer.concepts.runtime import runtime_errors
+
+        document, model, acceptance = effect_fixture()
+        document["confirmations"] = []
+        document["state_models"][0]["transitions"][1]["effects"] = ["store_grant"]
+        approve(document)
+        model["concepts"]["semantic_revision"] = concepts.assess(document)["semantic_revision"]
+        model["edges"].append(
+            {
+                "id": "revoke-store-grant",
+                "from": "native:revoke",
+                "to": "native:store-grant",
+                "type": "flow",
+            }
+        )
+        witnesses = model["concepts"]["transition_effects"]
+        revoke = deepcopy(witnesses["transition:grant:grant-share"][0])
+        revoke["edges"] = ["revoke-store-grant"]
+        witnesses["transition:grant:grant-revoke"] = [revoke]
+        self.assertTrue(self.check(document, model, acceptance)["valid"])
+        payload = effect_observations()
+        events = payload["runs"][0]["events"]
+        revoked = deepcopy(events)
+        for event in revoked:
+            event["id"] += "-revoke"
+            event["call_id"] += "-revoke"
+            if event["node"] == "native:share":
+                event["node"] = "native:revoke"
+            if "parent_event_id" in event:
+                event["parent_event_id"] += "-revoke"
+            if "transaction_id" in event.get("outputs", {}):
+                event["outputs"]["transaction_id"] = "tx-revoke"
+        events.extend(revoked)
+        self.assertEqual(runtime_errors(document, model, payload), [])
+        # The broader owner set must not admit an unrelated/orphan transaction.
+        revoked[1]["parent_event_id"] = "unknown"
+        failures = runtime_errors(document, model, payload)
+        self.assertEqual(sum("no transition invocation" in error for error in failures), 1)
+        self.assertTrue(any("grant-revoke" in error for error in failures))
+        self.assertFalse(any("grant-share" in error for error in failures))
+
+    def test_local_call_names_remain_scoped_to_entity_and_attempt(self):
+        from bo_observer.concepts.runtime import runtime_errors
+
+        document, model, _ = effect_fixture()
+        payload = effect_observations()
+        events = payload["runs"][0]["events"]
+        for event in events:
+            event.update(entity="file-a", attempt="request-a")
+        other_request = deepcopy(events)
+        for event in other_request:
+            event["id"] += "-b"
+            event.update(entity="file-b", attempt="request-b")
+            if "parent_event_id" in event:
+                event["parent_event_id"] += "-b"
+            if "transaction_id" in event.get("outputs", {}):
+                event["outputs"]["transaction_id"] = "tx-b"
+        events.extend(other_request)
+        self.assertEqual(runtime_errors(document, model, payload), [])
+        # Moving one completion into a different attempt cannot borrow its
+        # original entry or another entity's equal local call ID.
+        other_request[-1]["attempt"] = "unknown-attempt"
+        self.assertTrue(
+            any(
+                "no matching effect entry" in error
+                for error in runtime_errors(document, model, payload)
+            )
+        )
+
+    def test_real_sqlite_commit_satisfies_registered_effect_and_independent_read(self):
+        from sqlalchemy import create_engine
+        from bo_observer.adapters.python.bo_probe import BOProbe
+        from bo_observer.data.runtime import BODataRuntime
+        from bo_observer.concepts.runtime import runtime_errors
+        from test_database_runtime import bo_fixture
+
+        document, model, acceptance = effect_fixture()
+        capture_project, config = bo_fixture()
+        transaction = next(node for node in model["nodes"] if node["id"] == "native:store-grant")
+        transaction["capture"] = capture_project["model"]["nodes"][-1]["capture"]
+        completion = model["concepts"]["transition_effects"]["transition:grant:grant-share"][0][
+            "completion"
+        ]
+        completion["phase"] = "commit"
+        model.update(revision="r1", project_id="concept-sqlite")
+        self.assertTrue(self.check(document, model, acceptance)["valid"])
+        config["operations"] = [{"id": "native:store-grant", "action": "transaction"}]
+        events = []
+        probe = BOProbe(
+            {"project_id": "concept-sqlite", "model": model},
+            "build-1",
+            sink=lambda body, kind: events.append(body),
+        )
+        runtime = BODataRuntime(probe, config)
+        engine = create_engine("sqlite://")
+        try:
+            with engine.begin() as connection:
+                connection.exec_driver_sql("CREATE TABLE grant_access (recipient TEXT)")
+            with probe.span(
+                "native:share",
+                lambda: {},
+                entity="file-1",
+                attempt="request",
+                scope="entity",
+            ):
+                with runtime.transaction("native:store-grant", engine.begin()) as connection:
+                    connection.exec_driver_sql("INSERT INTO grant_access VALUES ('Bob')")
+            self.assertTrue(probe.flush())
+            self.assertEqual(probe.bo_errors, 0)
+            with engine.connect() as connection:
+                stored = (
+                    connection.exec_driver_sql("SELECT recipient FROM grant_access").scalars().all()
+                )
+            self.assertEqual(stored, ["Bob"])
+            payload = {
+                "runs": [
+                    {
+                        "case": "roundtrip",
+                        "mode": "on",
+                        "events": events,
+                        "policy_evaluations": [],
+                        "observations": {"storage": {"grant_committed": stored == ["Bob"]}},
+                    }
+                ]
+            }
+            self.assertEqual(runtime_errors(document, model, payload), [])
+            commit = next(event for event in events if event["phase"] == "commit")
+            commit["outputs"]["transaction_id"] = "another-transaction"
+            self.assertTrue(
+                any(
+                    "completion identity differs" in error
+                    for error in runtime_errors(document, model, payload)
+                )
+            )
+        finally:
+            runtime.close()
+            probe.close()
+            engine.dispose()
+
+    def test_rule_runtime_requires_actual_business_owner_or_explicit_causal_use(self):
+        from bo_observer.concepts.runtime import runtime_errors
+
+        document, model, _ = bound_fixture()
+        root = {
+            "id": "decision",
+            "node": "policy:may_read",
+            "phase": "decision",
+            "inputs": {"bo_check": "check-1"},
+        }
+        entry = {
+            "id": "read-start",
+            "node": "native:read",
+            "phase": "enter",
+            "call_id": "read-1",
+        }
+        run = {
+            "case": "roundtrip",
+            "mode": "on",
+            "events": [entry, root],
+            "policy_evaluations": [{"operation": "read", "check_id": "check-1"}],
+        }
+        payload = {"runs": [run]}
+        self.assertTrue(
+            any(
+                "invocation target differs" in error
+                for error in runtime_errors(document, model, payload)
+            )
+        )
+        root["parent_event_id"] = "read-start"
+        self.assertEqual(runtime_errors(document, model, payload), [])
+        entry["node"] = "native:share"
+        self.assertTrue(
+            any(
+                "invocation target differs" in error
+                for error in runtime_errors(document, model, payload)
+            )
+        )
+        entry["node"] = "native:read"
+        del root["parent_event_id"]
+        entry["depends"] = [{"event": "decision", "type": "control"}]
+        self.assertEqual(runtime_errors(document, model, payload), [])
+
     def test_activity_design_binds_original_native_resources_and_join(self):
         _, model, acceptance = bound_fixture()
         document = approve(activity_draft())
@@ -544,7 +1014,12 @@ class ConceptBindingTests(unittest.TestCase):
                 }
             )
             model["edges"].append(
-                {"id": "complete:" + item["id"], "from": item["id"], "to": "checks", "type": "join"}
+                {
+                    "id": "complete:" + item["id"],
+                    "from": item["id"],
+                    "to": "checks",
+                    "type": "join",
+                }
             )
         model["nodes"] += [
             {
@@ -553,7 +1028,12 @@ class ConceptBindingTests(unittest.TestCase):
                 "parent": "native:share",
                 "execution_role": "resource",
             },
-            {"id": "checks", "kind": "join", "parent": "native:share", "execution_role": "join"},
+            {
+                "id": "checks",
+                "kind": "join",
+                "parent": "native:share",
+                "execution_role": "join",
+            },
             {
                 "id": "native:complete",
                 "kind": "decision",
@@ -580,19 +1060,22 @@ class ConceptBindingTests(unittest.TestCase):
         )
         machine["execution"]["resources"][0]["max"] = 3
         self.assertIn(
-            "state_semantics_changed_during_binding", codes(self.check(document, model, acceptance))
+            "state_semantics_changed_during_binding",
+            codes(self.check(document, model, acceptance)),
         )
 
     def test_native_transition_priority_and_condition_are_not_erased(self):
         document, model, acceptance = bound_fixture()
         model["machine"]["transitions"][0]["conditions"] = []
         self.assertIn(
-            "state_semantics_changed_during_binding", codes(self.check(document, model, acceptance))
+            "state_semantics_changed_during_binding",
+            codes(self.check(document, model, acceptance)),
         )
         document, model, acceptance = bound_fixture()
         model["machine"]["transitions"].reverse()
         self.assertIn(
-            "state_semantics_changed_during_binding", codes(self.check(document, model, acceptance))
+            "state_semantics_changed_during_binding",
+            codes(self.check(document, model, acceptance)),
         )
 
     def test_payload_and_context_names_are_preserved_during_native_binding(self):
@@ -610,7 +1093,10 @@ class ConceptBindingTests(unittest.TestCase):
                     if location == "context"
                     else model["machine"]["events"]["share"]["payload"]
                 )
-                specification = {"type": "object", "properties": {"summary": {"type": "boolean"}}}
+                specification = {
+                    "type": "object",
+                    "properties": {"summary": {"type": "boolean"}},
+                }
                 design_fields[field] = deepcopy(specification)
                 native_fields[field] = deepcopy(specification)
                 document["confirmations"] = []
@@ -636,14 +1122,16 @@ class ConceptBindingTests(unittest.TestCase):
         self.assertTrue(self.check(document, model, acceptance)["valid"])
         acceptance["checks"][0]["equals"]["label"]["description"] = 0
         self.assertIn(
-            "independent_expected_assertion_differs", codes(self.check(document, model, acceptance))
+            "independent_expected_assertion_differs",
+            codes(self.check(document, model, acceptance)),
         )
 
     def test_same_rule_ids_with_different_operator_do_not_pass(self):
         document, model, acceptance = bound_fixture()
         model["policy"]["nodes"][-1]["op"] = "any"
         self.assertIn(
-            "rule_semantics_changed_during_binding", codes(self.check(document, model, acceptance))
+            "rule_semantics_changed_during_binding",
+            codes(self.check(document, model, acceptance)),
         )
 
     def test_guard_name_alone_is_not_a_native_function_binding(self):
@@ -651,17 +1139,21 @@ class ConceptBindingTests(unittest.TestCase):
         model["machine"]["guards"]["may_manage"]["source"]["symbol"] = "always_true"
         self.assertIn("unbound_native_guard", codes(self.check(document, model, acceptance)))
 
-    def test_crosslink_requires_matching_endpoint_and_relation_not_an_existing_edge_id(self):
+    def test_crosslink_requires_matching_endpoint_and_relation_not_an_existing_edge_id(
+        self,
+    ):
         document, model, acceptance = bound_fixture()
         model["concepts"]["crosslinks"]["share-guard"] = ["policy:operation:manage:native:revoke"]
         self.assertIn(
-            "crosslink_native_edge_meaning_differs", codes(self.check(document, model, acceptance))
+            "crosslink_native_edge_meaning_differs",
+            codes(self.check(document, model, acceptance)),
         )
         document, model, acceptance = bound_fixture()
         edge = next(item for item in model["edges"] if item["id"] == "fact:actor")
         edge["type"] = "flow"
         self.assertIn(
-            "crosslink_native_edge_meaning_differs", codes(self.check(document, model, acceptance))
+            "crosslink_native_edge_meaning_differs",
+            codes(self.check(document, model, acceptance)),
         )
 
     def test_case_name_without_exact_independent_assertion_fails(self):
@@ -669,7 +1161,8 @@ class ConceptBindingTests(unittest.TestCase):
         self.assertIn("missing_independent_acceptance", codes(self.check(document, model, None)))
         acceptance["checks"][0]["equals"] = "active"
         self.assertIn(
-            "independent_expected_assertion_differs", codes(self.check(document, model, acceptance))
+            "independent_expected_assertion_differs",
+            codes(self.check(document, model, acceptance)),
         )
 
     def test_fact_capture_type_is_checked_against_the_declared_object_field(self):
@@ -683,12 +1176,14 @@ class ConceptBindingTests(unittest.TestCase):
         document, model, acceptance = bound_fixture()
         acceptance["checks"][1]["equals"]["read_basis"]["timing"] = "cached_at_login"
         self.assertIn(
-            "fact_read_basis_assertion_differs", codes(self.check(document, model, acceptance))
+            "fact_read_basis_assertion_differs",
+            codes(self.check(document, model, acceptance)),
         )
         document, model, acceptance = bound_fixture()
         acceptance["checks"][1]["equals"]["node"] = "unrelated:reader"
         self.assertIn(
-            "fact_read_basis_assertion_differs", codes(self.check(document, model, acceptance))
+            "fact_read_basis_assertion_differs",
+            codes(self.check(document, model, acceptance)),
         )
 
     def test_business_binding_cannot_point_to_a_state_or_sourceless_label(self):

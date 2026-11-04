@@ -17,6 +17,7 @@ from .semantics import snapshot_records, check_confirmations
 from .anchors import native_anchors, check_links
 from .assertions import check_record_bindings
 from .activities import activity_semantics
+from .associations import check_applicability, check_transition_effects
 
 
 def machine_semantics(value):
@@ -169,6 +170,8 @@ def check_binding(doc, model, bindings=None, *, scope=None, acceptance=None):
     check_record_bindings(active, nodes, binding, acceptance, error, business_ids)
     anchors = native_anchors(doc, model, binding, data, error)
     check_links(doc, model, binding, anchors, data, active, error)
+    check_applicability(doc, model, binding, active, error)
+    check_transition_effects(model, binding, data, active, anchors, acceptance, error)
     return {
         "valid": not errors,
         "errors": errors,

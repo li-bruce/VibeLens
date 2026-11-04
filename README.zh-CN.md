@@ -72,10 +72,10 @@ Skill 本身不是监听所有编辑器的后台程序。扫描发现变化后�
 
 ## 安装并开始
 
-安装固定版本 **v0.11.3**：
+安装固定版本 **v0.12.0**：
 
 ```bash
-git clone --branch v0.11.3 --single-branch https://github.com/li-bruce/VibeLens.git
+git clone --branch v0.12.0 --single-branch https://github.com/li-bruce/VibeLens.git
 cd VibeLens
 python tools/install_skill.py --project /path/to/your-project
 ```
@@ -90,7 +90,7 @@ $vibelens
 确认没有理解偏差后，再开始实现，并持续更新图和检查。
 ```
 
-也可以让 Codex 从 [v0.11.3 的 Skill 目录](https://github.com/li-bruce/VibeLens/tree/v0.11.3/skills/vibelens)安装，或下载[发行包](https://github.com/li-bruce/VibeLens/releases/download/v0.11.3/vibelens-v0.11.3.zip)。如需跟随 `main` 持续更新，可运行 `npx skills add li-bruce/VibeLens --skill vibelens`。已有旧安装可使用 [迁移命令](docs/rename-vibelens.md)，先保留完整备份，再切换到新名称；项目的运行模块和个人布局继续沿用。
+也可以让 Codex 从 [v0.12.0 的 Skill 目录](https://github.com/li-bruce/VibeLens/tree/v0.12.0/skills/vibelens)安装，或下载[发行包](https://github.com/li-bruce/VibeLens/releases/download/v0.12.0/vibelens-v0.12.0.zip)。如需跟随 `main` 持续更新，可运行 `npx skills add li-bruce/VibeLens --skill vibelens`。已有旧安装可使用 [迁移命令](docs/rename-vibelens.md)，先保留完整备份，再切换到新名称；项目的运行模块和个人布局继续沿用。
 
 你只需要回答重要业务问题、选择模式并查看图；中间文件和验证由 AI 处理。维护中的源码、注释、Skill 与默认文档使用英文；对话跟随用户语言，界面可切换中英文。原始对话与历史证据不改写。
 
@@ -124,6 +124,6 @@ AI 根据当前图匹配具体节点，遇到重名或多份记录时先确认�
 
 许可证：[MIT](LICENSE)。可视化使用开源 PixiJS、ELK.js，不包含 yFiles 专有代码。见[第三方声明](THIRD_PARTY_NOTICES.md)。
 
-持续更新版从 `main` 安装；本次固定版本为 `v0.11.3`。见[版本说明](docs/releases/v0.11.3.md)、[本版验收](docs/review/release-v0.11.3/README.md)和[实现评估](docs/assessment/2026-10-24/README.md)。
+持续更新版从 `main` 安装；本次固定版本为 `v0.12.0`。见[版本说明](docs/releases/v0.12.0.md)、[本版验收](docs/review/release-v0.12.0/README.md)和[实现评估](docs/assessment/2026-10-24/README.md)。
 
 节点图标采用 MIT 许可的 Tabler Icons；可独立替换的 libavoid 路由库采用 LGPL-2.1-or-later。详见第三方许可说明。

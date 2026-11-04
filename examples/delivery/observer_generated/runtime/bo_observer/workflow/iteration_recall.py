@@ -114,7 +114,11 @@ def recall(root, cfg, current, previous=None):
         "context_mapping_count": len(context_fields),
         "context_mapping_omitted": max(0, len(context_fields) - CONTEXT_MAPPING_PREVIEW),
         "requirements": [
-            {"id": item.get("id"), "text": item.get("text", "")[:180], "status": item.get("status")}
+            {
+                "id": item.get("id"),
+                "text": item.get("text", "")[:180],
+                "status": item.get("status"),
+            }
             for item in requirements[:20]
         ],
         "requirement_count": len(requirements),
@@ -126,7 +130,7 @@ def recall(root, cfg, current, previous=None):
             "probe_health": cfg.get("require_probe_health", False),
             "invocation_closure": cfg.get("require_observation_closure", False),
             "mapping_witnesses": cfg.get("require_mapping_witnesses", False),
-            "reports": ["mapping", "state_rules", "business", "project_checks"],
+            "reports": ["concepts", "mapping", "state_rules", "business", "project_checks"],
         },
         "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results.",
     }
