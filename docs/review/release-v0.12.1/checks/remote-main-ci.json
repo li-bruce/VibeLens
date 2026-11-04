@@ -1,0 +1,786 @@
+{
+  "checked_at": "2026-11-04T18:00:42.852Z",
+  "jobs": [
+    {
+      "id": 126751187680,
+      "run_id": 41880442323,
+      "run_attempt": 1,
+      "name": "source-quality (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T17:47:25Z",
+      "completed_at": "2026-11-04T17:48:29Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r tools/formatting/requirements.txt -r skills/vibelens/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm ci --prefix tools/formatting",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/check_source.py --format",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tests/test_source_quality.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_detail_panel.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_case_artifacts.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126751187896,
+      "run_id": 41880442323,
+      "run_attempt": 1,
+      "name": "test (windows-latest, 3.11)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T17:49:09Z",
+      "completed_at": "2026-11-04T18:00:32Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r examples/delivery/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r examples/file-sharing/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r skills/vibelens/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/setup_adapters.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm ci --prefix examples/multilanguage",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/check_release_export.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m unittest discover -s examples/exhibition-review -p test_domain.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/verify.py --database",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126751187906,
+      "run_id": 41880442323,
+      "run_attempt": 1,
+      "name": "timeline-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T17:48:20Z",
+      "completed_at": "2026-11-04T17:54:32Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r skills/vibelens/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm install --no-save --no-package-lock playwright@1.56.1",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npx playwright install --with-deps chromium",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install playwright==1.56.0",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m playwright install chromium",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/test_design_browser.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r docs/review/concept-models-20261104/trial/project/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/test_concept_browser.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/test_graph_quality_browser.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/test_api_observation_browser.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/build_site_viewer.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_demo_startup_browser.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_recording_timeline_browser.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_timeline_performance.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_graph_names_browser.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_caption_bounds_browser.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_trace_lifecycle_browser.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_trace_lifecycle_browser.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_trace_lifecycle_browser.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_execution_bands_browser.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_execution_bands_browser.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126751187916,
+      "run_id": 41880442323,
+      "run_attempt": 1,
+      "name": "database-live",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T17:48:31Z",
+      "completed_at": "2026-11-04T17:50:18Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r skills/vibelens/requirements.txt -r skills/vibelens/requirements-database.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm ci --prefix tools/database-native",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run docker compose -f examples/database-observer/compose.yaml up -d --wait",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/verify_databases.py --live --native",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run docker compose -f examples/database-observer/compose.yaml down",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126751187946,
+      "run_id": 41880442323,
+      "run_attempt": 1,
+      "name": "test (ubuntu-latest, 3.11)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T17:47:55Z",
+      "completed_at": "2026-11-04T17:56:15Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r examples/delivery/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r examples/file-sharing/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r skills/vibelens/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/setup_adapters.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm ci --prefix examples/multilanguage",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/check_release_export.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m unittest discover -s examples/exhibition-review -p test_domain.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/verify.py --database",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126751187968,
+      "run_id": 41880442323,
+      "run_attempt": 1,
+      "name": "test (windows-latest, 3.13)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T17:49:28Z",
+      "completed_at": "2026-11-04T18:00:35Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r examples/delivery/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r examples/file-sharing/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r skills/vibelens/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/setup_adapters.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm ci --prefix examples/multilanguage",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/check_release_export.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m unittest discover -s examples/exhibition-review -p test_domain.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/verify.py --database",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126751188025,
+      "run_id": 41880442323,
+      "run_attempt": 1,
+      "name": "source-quality (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T17:50:19Z",
+      "completed_at": "2026-11-04T17:51:30Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r tools/formatting/requirements.txt -r skills/vibelens/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm ci --prefix tools/formatting",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/check_source.py --format",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tests/test_source_quality.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_detail_panel.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node tools/test_case_artifacts.mjs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126751188248,
+      "run_id": 41880442323,
+      "run_attempt": 1,
+      "name": "test (ubuntu-latest, 3.13)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T17:50:25Z",
+      "completed_at": "2026-11-04T17:56:51Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r examples/delivery/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r examples/file-sharing/requirements.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r skills/vibelens/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/setup_adapters.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm ci --prefix examples/multilanguage",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/check_release_export.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m unittest discover -s examples/exhibition-review -p test_domain.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python tools/verify.py --database",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "source": "Authenticated GitHub GET /actions/runs/41880442323/jobs?filter=latest&per_page=100",
+  "head_sha": "3f10d9280eb55c2d08d927a95f771bd8865ee4f6",
+  "run_id": 41880442323,
+  "conclusion": "success",
+  "all_jobs_terminal": true
+}

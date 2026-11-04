@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-11-04T18:04:36.293Z",
+  "status": "publication_verified_follow_up_checks_pending",
+  "release": {
+    "version": "v0.12.1",
+    "commit": "72593b45540e8068920bc20a0ca4b743c2f1c891",
+    "url": "https://github.com/li-bruce/VibeLens/releases/tag/v0.12.1",
+    "published": true,
+    "archive_sha256": "8f2304403c91a6b6934ac9c168f06350c9115cf29b616a443f6d836bb38ea80e",
+    "actual_download_matches": true,
+    "evidence": "remote-download-and-pages.json"
+  },
+  "pages": {
+    "url": "https://liblog.vip/VibeLens/index.html",
+    "run_url": "https://github.com/li-bruce/VibeLens/actions/runs/41880442355",
+    "deployment": "success",
+    "version_link": "v0.12.1",
+    "viewer_containment_and_alias_files_match": true,
+    "evidence": "remote-pages-published.json",
+    "pre_deployment_snapshot": "remote-download-and-pages.json"
+  },
+  "published_main_ci": {
+    "head_sha": "3f10d9280eb55c2d08d927a95f771bd8865ee4f6",
+    "run_url": "https://github.com/li-bruce/VibeLens/actions/runs/41880442323",
+    "conclusion": "success",
+    "jobs_passed": 8,
+    "jobs_total": 8,
+    "evidence": "remote-main-ci.json"
+  },
+  "original_tag_ci": {
+    "run_url": "https://github.com/li-bruce/VibeLens/actions/runs/41880303713/attempts/1",
+    "attempt": 1,
+    "conclusion": "failure",
+    "jobs_passed": 7,
+    "jobs_total": 8,
+    "failed_job": 126750700052,
+    "failed_assertion": "2D orthogonal exercises actual rendered paths",
+    "diagnosis": "Test harness sampled the frame before scheduled routing/render completion. Main passed with identical product bytes. The atomic ready-frame sampling fix is test-only and was committed separately; the tag remains unchanged.",
+    "evidence": "remote-tag-attempt1.json",
+    "failure_log": "remote-tag-browser-failure.log"
+  },
+  "tag_retry": {
+    "run_url": "https://github.com/li-bruce/VibeLens/actions/runs/41880303713/attempts/2",
+    "attempt": 2,
+    "status": "in_progress",
+    "conclusion": null,
+    "browser_job": 126760239869,
+    "last_observed_step": "Run npx playwright install --with-deps chromium",
+    "other_jobs_reported_success": 7,
+    "note": "Root requested one rerun. This retry still uses the original tag test harness, not the later test-only fix. No successful retry result has been recorded."
+  },
+  "follow_up_main_ci": {
+    "head_sha": "55adc9217b1d9272cf438d2eda23bd01ea5d94d7",
+    "run_url": "https://github.com/li-bruce/VibeLens/actions/runs/41883101520",
+    "status": "in_progress",
+    "conclusion": null,
+    "note": "Includes the test-only frame-sampling correction and trial checkpoint. Product Skill, viewer and installation archive bytes remain equal to v0.12.1. This run has not been recorded as passed."
+  },
+  "independent_dialogue": {
+    "status": "waiting_for_user_approval",
+    "conclusion": null,
+    "note": "The fresh installed trial is unfinished and remains separate from repository/CI acceptance."
+  },
+  "next_step": "After the pending approval is handled, inspect the tag retry and follow-up main run terminal jobs once; retain any failures. Do not relabel pending results as passed or rewrite the tag.",
+  "monitoring": "Paused at the parent-requested handoff checkpoint; no additional retries, source edits, commits or pushes were performed by this monitoring agent."
+}

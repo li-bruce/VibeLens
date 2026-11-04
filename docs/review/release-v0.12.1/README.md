@@ -90,3 +90,25 @@ published package and receives simulated user answers authorized by the user.
 Its original multiple-model draft was rejected. The positive trial explicitly
 uses file review as its bound primary model and retains separate login and grant
 objects, rules and observations. It remains in progress.
+
+## Publication and subsequent browser-check repair
+
+The [public release](checks/remote-release.json) and installation archive are
+available. The [downloaded ZIP](checks/remote-download-and-pages.json) matches
+the frozen SHA-256 above. [Pages](checks/remote-pages-published.json) serves the
+v0.12.1 link and the same viewer source bytes.
+
+All eight jobs for main commit `3f10d928` passed, including the real database and
+browser jobs; see [the retained CI result](checks/remote-main-ci.json). The first
+tag run passed seven jobs and failed one browser assertion during an asynchronous
+reroute. The same product source passed that browser job on main. The
+[diagnosis and retest](checks/execution-routing-diagnosis.md) preserve the failed
+artifact and both normal and mid-span checks. Commit `b88b5562` fixes the test's
+frame sampling while retaining its endpoint-count and accuracy assertions.
+Published Skill, managed runtime and ZIP bytes remain unchanged.
+
+The independent user-visible conversation is separate from these repository
+checks. Its [implementation checkpoint](../release-v0.12.0/dialogue-findings/implementation-followup-20261105.md)
+contains actual responses and observations, but its final browser acceptance and
+business iteration are still pending. Do not read the passing repository checks
+as a completed fresh-conversation trial.
