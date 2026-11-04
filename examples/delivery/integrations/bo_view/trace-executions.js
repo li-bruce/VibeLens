@@ -7,6 +7,76 @@ import { packTracks } from "./trace-tracks.js";
 
 const scopeKey = (event, call = event.call_id) => JSON.stringify([callScope(event), call]);
 
+/** A sequence orders one producer stream, never neighbouring workers or runs. */
+function producerOrder(event) {
+  if (
+    !Number.isSafeInteger(event.seq) ||
+    event.seq < 0 ||
+    !["project_id", "build_id", "run_id", "producer_id"].every(
+      (key) => typeof event[key] === "string" && event[key].length,
+    )
+  )
+    return null;
+  return {
+    scope: JSON.stringify(
+      ["project_id", "build_id", "run_id", "producer_id", "stream_id"].map(
+        (key) => event[key] || "",
+      ),
+    ),
+    event: event.id,
+    seq: event.seq,
+  };
+}
+
+/** Preserve actual witnesses for clock ties without changing their timestamps. */
+function boundaryOrder(chain, items, times, ambiguous) {
+  const start = producerOrder(chain.root);
+  if (!start || ambiguous.has(start.scope)) return null;
+  let end = null;
+  for (const raw of chain.events) {
+    if (times[raw] !== chain.end) continue;
+    const candidate = producerOrder(items[raw]);
+    if (
+      candidate?.scope === start.scope &&
+      candidate.seq >= start.seq &&
+      (!end || candidate.seq > end.seq)
+    )
+      end = candidate;
+  }
+  return { scope: start.scope, start, end };
+}
+
+function orderPosition(intervals, sequence) {
+  let low = 0,
+    high = intervals.length;
+  while (low < high) {
+    const middle = (low + high) >>> 1;
+    if (intervals[middle].start.seq < sequence) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+}
+
+/** Only an entry inside a witnessed interval establishes same-clock overlap. */
+function orderedOverlap(orders, witness) {
+  if (!witness) return false;
+  const intervals = orders?.get(witness.scope) || [],
+    position = orderPosition(intervals, witness.start.seq),
+    previous = intervals[position - 1],
+    next = intervals[position];
+  return (
+    (previous && previous.end.seq > witness.start.seq) ||
+    (next && witness.end && next.start.seq > witness.start.seq && next.start.seq < witness.end.seq)
+  );
+}
+
+function retainOrder(orders, witness) {
+  if (!witness?.end || witness.end.seq <= witness.start.seq) return;
+  if (!orders.has(witness.scope)) orders.set(witness.scope, []);
+  const intervals = orders.get(witness.scope);
+  intervals.splice(orderPosition(intervals, witness.start.seq), 0, witness);
+}
+
 export function executionIndex(index) {
   const { items, axis } = index;
   const entries = new Map(),
@@ -17,6 +87,17 @@ export function executionIndex(index) {
   const originalEvents = new Map(
     [...(index.recording.context.events || []), ...items].map((event) => [event.id, event]),
   );
+  const sequenceOwners = new Map(),
+    ambiguousOrders = new Set();
+  for (const event of originalEvents.values()) {
+    const witness = producerOrder(event);
+    if (!witness) continue;
+    if (!sequenceOwners.has(witness.scope)) sequenceOwners.set(witness.scope, new Map());
+    const owners = sequenceOwners.get(witness.scope);
+    if (owners.has(witness.seq) && owners.get(witness.seq) !== witness.event)
+      ambiguousOrders.add(witness.scope);
+    owners.set(witness.seq, witness.event);
+  }
   const explicitOwner = (event) => {
     const parent = referencedParent(event, originalEvents);
     return parent && byId.get(parent.id);
@@ -131,15 +212,22 @@ export function executionIndex(index) {
       boundaryOwners.get(original).add(owner);
     }
   }
+  for (const value of chains.values())
+    value.orderWitness = boundaryOrder(value, items, axis.times, ambiguousOrders);
   const ordered = [...chains.values()].sort((a, b) => a.start - b.start || a.raw - b.raw);
   const lanes = [],
-    laneByChain = new Map();
+    laneByChain = new Map(),
+    boundaryOrders = new Map();
   for (const value of ordered) {
     // Reuse an existing band after completion. Only overlapping executions add
     // another complete set of layer rows; sequential requests do not grow axes.
     let lane = lanes.find(
       (item) =>
-        item.kind === value.kind && (item.kind === "observation" || item.end <= value.start),
+        item.kind === value.kind &&
+        (item.kind === "observation" ||
+          item.end < value.start ||
+          (item.end === value.start &&
+            !orderedOverlap(boundaryOrders.get(item.id), value.orderWitness))),
     );
     if (!lane) {
       lane = {
@@ -150,8 +238,13 @@ export function executionIndex(index) {
         chains: [],
       };
       lanes.push(lane);
+      boundaryOrders.set(lane.id, new Map());
     }
     lane.chains.push(value);
+    // Only tied boundary intervals need ordering. Older clock ranges cannot
+    // affect future lane reuse; retaining them would grow lookup cost needlessly.
+    if (value.end > lane.end) boundaryOrders.get(lane.id).clear();
+    if (value.end >= lane.end) retainOrder(boundaryOrders.get(lane.id), value.orderWitness);
     lane.end = Math.max(lane.end, value.end);
     laneByChain.set(value.id, lane.id);
   }

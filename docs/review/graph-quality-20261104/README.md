@@ -92,4 +92,9 @@ is still a proposal and is not presented as an implemented feature in this relea
 
 ## Release gate
 
+The [source-boundary follow-up](source-scope/README.md) records the explicit
+owned-source/dependency/output declaration, initial Skill guidance, retained
+scope failures and actual directory-traversal measurements. The original full
+project discovery guard and protected state engines remain in force.
+
 The [completed release gate](final-release-gate.json) records the full repository, source quality, package, document links, clean export, Skill validation, protected-core review and frozen example results. All passed. The fresh GitHub-installed dialogue follows publication and is reported separately.

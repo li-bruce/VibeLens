@@ -1,6 +1,6 @@
 {
   "schema": "bo-maintenance/v1",
-  "source_id": "a21ce3f1145385baa2fd744d96f152838d7f1b65035863c6a10b7d7d6fc3f67c",
+  "source_id": "ae2085f080ae1de3e8e9f83b681a360068c00017f4e4438c1a0ffc3fee34e8f3",
   "inventory": {
     "files": {
       "app/__init__.py": "a829ebb4042211c3a39bf40646855698375b065069bbbd2aa61daba1d8e6a51c",
@@ -196,6 +196,7 @@
       "observer_generated/runtime/bo_observer/protocol.py": "Shared tool implementation; copied-source integrity and tool tests cover it.",
       "observer_generated/runtime/bo_observer/service.py": "Shared tool implementation; copied-source integrity and tool tests cover it.",
       "observer_generated/runtime/bo_observer/session_lifecycle.py": "Shared tool implementation; copied-source integrity and tool tests cover it.",
+      "observer_generated/runtime/bo_observer/source_scope.py": "Shared tool implementation; copied-source integrity and tool tests cover it.",
       "observer_generated/runtime/bo_observer/sources.py": "Shared tool implementation; copied-source integrity and tool tests cover it.",
       "observer_generated/runtime/bo_observer/web/__init__.py": "Shared tool implementation; copied-source integrity and tool tests cover it.",
       "observer_generated/runtime/bo_observer/web/bo_design.py": "Shared tool implementation; copied-source integrity and tool tests cover it.",
@@ -344,8 +345,54 @@
       "tooling/graph_fixture.py": "Project generation and test commands; separately watched and executed."
     },
     "excluded_entrypoints": {},
-    "excluded_implementations": []
+    "excluded_implementations": [],
+    "pruned": [
+      {
+        "path": ".release",
+        "category": "artifact",
+        "reason": "Generated output or repository metadata"
+      },
+      {
+        "path": ".stategraph",
+        "category": "artifact",
+        "reason": "Generated output or repository metadata"
+      },
+      {
+        "path": "app/__pycache__",
+        "category": "artifact",
+        "reason": "Generated output or repository metadata"
+      },
+      {
+        "path": "bo_stategraph/__pycache__",
+        "category": "artifact",
+        "reason": "Generated output or repository metadata"
+      },
+      {
+        "path": "dist",
+        "category": "artifact",
+        "reason": "Generated output or repository metadata"
+      },
+      {
+        "path": "observer_generated/runtime/__pycache__",
+        "category": "artifact",
+        "reason": "Generated output or repository metadata"
+      },
+      {
+        "path": "scratch",
+        "category": "artifact",
+        "reason": "Generated local fixtures, live SQLite data and observation recordings."
+      }
+    ],
+    "owned_overrides": [],
+    "scope_inputs": {
+      ".gitignore": "54080b35ebd8cdc86c951ccd6cc38f217e3c332ff71abf566ae9b994ad76713b"
+    },
+    "scope_id": "293b648d2cb9303bd96a3f688edc77537fea48a9c491aa62b13747b1195706a1",
+    "source_roots": [
+      "."
+    ]
   },
+  "scope_changed": true,
   "changed_files": [],
   "unregistered_files": [],
   "implementation_gaps": [],
@@ -361,7 +408,7 @@
     "changed": false,
     "errors": []
   },
-  "status": "current",
+  "status": "needs_update",
   "internal_prompt": "Review the listed implementation changes. Update affected business abstractions, states, function/parameter mappings, and probes. Do not omit new entrypoints because the old graph lacks them. Match features, parameters, and runtime cases through the implementation inventory. Exclusions must not bypass business implementation. Check real relations and filter boundaries in every view, then run project acceptance. Do not ask users to maintain observation files. Ask only when new business ambiguity appears.",
   "confirmations": {
     "user": [],
@@ -1629,5 +1676,5 @@
     "bo_stategraph/workflow.py::ActivityState",
     "bo_stategraph/workflow.py::Phase"
   ],
-  "candidate_id": "e686ebc92a023fa8fc68e5bc6a34c0915f4c3b9ef2b47938ef1c6b863981593c"
+  "candidate_id": "ad604a06bc0e54cffb6b11f945177d6f7ab32161457b5a7ded3d27656c477425"
 }

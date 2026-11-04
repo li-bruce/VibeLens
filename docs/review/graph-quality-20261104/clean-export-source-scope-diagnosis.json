@@ -1,0 +1,32 @@
+{
+  "diagnosis_complete": true,
+  "scope": "Read-only current frozen input and staged Git blob comparison; no regeneration or reapproval",
+  "failed_export_revision": "272140f6e481e63c6dc6f23e67131f041d86c964",
+  "checked_tracked_example_files": 4306,
+  "current_causal_files": [
+    "examples/delivery/.gitignore",
+    "examples/team-archive/.gitignore"
+  ],
+  "accepted_local_bytes": 200,
+  "accepted_local_crlf": 6,
+  "accepted_local_sha256": "731e138f71d252767ad92014591804f5dadea4e56a811741c56d3130ce25d75d",
+  "staged_bytes": 194,
+  "staged_crlf": 0,
+  "staged_sha256": "54080b35ebd8cdc86c951ccd6cc38f217e3c332ff71abf566ae9b994ad76713b",
+  "only_crlf_to_lf": true,
+  "ignore_rules_changed": false,
+  "current_input_comparisons": [
+    {"example": "delivery", "frozen_model_files": 111, "managed_expected_hashes": 339, "watch_files": 98, "mismatches_to_staged_blobs": []},
+    {"example": "team-archive", "frozen_model_files": 42, "managed_expected_hashes": 246, "watch_files": 85, "mismatches_to_staged_blobs": []}
+  ],
+  "historical_noncausal_difference": {
+    "path": "examples/delivery/.release/stategraph/whitebox-v04/review.json",
+    "local_sha256": "d1782f18e49c5adf28956aa1608376f27b0c2e8ec7162604ddfaaa1f167ca1a8",
+    "git_head_and_index_sha256": "e97595391778c076bc74aea6ac071b9d99fa45a5d79e59ab5da0e77feda60981",
+    "current_model_or_watch_input": false,
+    "only_crlf_to_lf": true,
+    "action": "Untouched; existing Git HEAD bytes remain the historical authority"
+  },
+  "attribute_precedence": "The archive's existing watched .gitattributes sets '* text eol=lf' and overrides root-only raw .gitignore attributes.",
+  "next_phase": "After the active full gate ends, normalize both actual .gitignore files to the exact staged LF blobs and perform normal native acceptance under a new source-scope-portable record. Preserve both failed clean-export receipts and all previous frozen approvals."
+}

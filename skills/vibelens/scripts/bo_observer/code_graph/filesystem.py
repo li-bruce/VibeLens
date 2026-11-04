@@ -10,7 +10,7 @@ import stat
 from pathlib import Path
 
 from ..graph.behavior_model import digest
-from ..workflow.bo_sync import IGNORED
+from ..source_scope import compile_scope
 
 TEXT_SUFFIXES = {".json", ".toml", ".yaml", ".yml", ".html", ".css", ".sql", ".md", ".txt"}
 MAX_TEXT_BYTES = 2_000_000
@@ -23,6 +23,7 @@ def inventory(root, config, source):
     invalidation, but its contents are neither exported nor sent to the agent.
     """
     root = Path(root).resolve()
+    policy = compile_scope(root, config)
     scope = config.get("source_scope", {})
     exclusions = scope.get("exclude", {})
     entries, text_files, excluded, errors = {}, {}, {}, []
@@ -42,7 +43,8 @@ def inventory(root, config, source):
         if name in seen:
             return
         seen.add(name)
-        if any(part in IGNORED for part in Path(name).parts):
+        boundary = policy.record_prune(name)
+        if boundary:
             return
         # View preferences change while using the graph, not while coding.
         if any(
@@ -119,4 +121,5 @@ def inventory(root, config, source):
         },
         "excluded": dict(sorted(excluded.items())),
         "errors": errors,
+        **policy.report(),
     }

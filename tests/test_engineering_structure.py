@@ -163,6 +163,11 @@ class EngineeringStructureTests(unittest.TestCase):
         self.assertIn("button", self.service.source("web/main.css", graph["revision"])["source"])
 
     def test_explicit_scope_and_unresolved_alias_are_preserved(self):
+        # Keep this standalone web-only inspection's authored binding in its scope.
+        (self.root / "worker.py").replace(self.root / "web/worker.py")
+        self.project["model"]["source_files"] = ["web/worker.py"]
+        self.project["model"]["nodes"][0]["source"]["path"] = "web/worker.py"
+        (self.root / "bo_stategraph/project.json").write_text(json.dumps(self.project))
         (self.root / "sync.json").write_text(json.dumps({
             "model": "bo_stategraph/project.json", "source_scope": {"roots": ["web"]}}))
         (self.root / "web/alias.ts").write_text("import { share } from '@/share';\n")

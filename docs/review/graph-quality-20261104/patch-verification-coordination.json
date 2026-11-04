@@ -1,0 +1,22 @@
+{
+  "scope": "Why preliminary patch full gates are not final acceptance",
+  "runs": [
+    {
+      "receipt": "full-verification-05-clock.json",
+      "result": "blocked",
+      "reason": "Strict package equality rejected the version update before both managed copies had been updated"
+    },
+    {
+      "receipt": "full-verification-06-clock.json",
+      "result": "blocked",
+      "reason": "The later legacy-caption repair changed canonical graph-core.js during this run; the unchanged upgrade regression rejected its stale example copy"
+    },
+    {
+      "receipt": "full-verification-07-final.json",
+      "result": "interrupted",
+      "reason": "Coordinator stopped only this owned verification process tree before native example writes, to avoid overlapping the final archive acceptance writer; parent retained its nonzero result"
+    }
+  ],
+  "final_acceptance": "Requires a fresh entire canonical full gate after both final example freezes; none of these preliminary runs is reported as passed",
+  "checks_weakened": false
+}

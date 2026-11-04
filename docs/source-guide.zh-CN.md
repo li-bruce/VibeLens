@@ -30,6 +30,7 @@
 | [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | 参数类型、状态层次、活动状态计算和声明的严格校验。 |
 | [scripts/execution_contract.py](../skills/vibelens/scripts/execution_contract.py) | 并发活动、汇合、资源与运行配置的约束。 |
 | [scripts/bo_observer](../skills/vibelens/scripts/bo_observer/) | 共用服务、语言适配、开发检查及 Web 支持。 |
+| [source_scope.py](../skills/vibelens/scripts/bo_observer/source_scope.py) | 统一声明项目源码、依赖和产物范围，供扫描、执行映射检查和工程目录视图使用。 |
 | [assets/stategraph-viewer](../skills/vibelens/assets/stategraph-viewer/) | 项目实际使用的图页面、布局、记录和回放。 |
 | [schemas](../skills/vibelens/scripts/bo_observer/schemas/) | 各语言与服务之间使用的 JSON 协议。 |
 | [examples](../examples/) | 可运行项目、业务逻辑和验收场景。 |

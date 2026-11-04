@@ -1,0 +1,13 @@
+{
+  "valid": false,
+  "expected_guard_refusal": true,
+  "example": "team-archive",
+  "pass_label": "clock-final",
+  "candidate_id": "1dfb14e2795da50631f6b5c83c34d1e11c57db1dab86273da189217f785e93fa",
+  "baseline_sha256": "8f786ba384a5d2ddd4b005158cd6fa94871aa4244a27c1d10b370791f669c7e4",
+  "native_stages_passed": ["generate", "seal", "scan", "inspect", "verify", "accept", "check"],
+  "frozen": false,
+  "guard": "Viewer changed again before freeze: graph-core.js",
+  "cause": "The separately verified legacy data lifecycle caption fix changed the canonical viewer during this earlier native acceptance phase.",
+  "resolution": "Preserve these native results; managed-upgrade the frozen caption fix and repeat full native acceptance under clock-caption-final on the original baseline."
+}

@@ -1,6 +1,114 @@
 # Managed example integration
 
-## Final accepted candidate
+## v0.11.1 portable source-scope acceptance
+
+The clean Git export rejected the earlier source-scope approvals because both
+local `.gitignore` files used CRLF while the existing Git blobs used LF. These
+files now contain the exact existing 194-byte Git blobs; their ignore rules are
+unchanged. No framework source, hash guard, original baseline, business/state
+code or test expectation was changed for this correction.
+
+Both examples repeated the full native workflow and an additional current-input
+check after freezing. The final record is
+`graph-quality-20261104-source-scope-portable`.
+
+| Example | Final candidate | Configured project tests | Result |
+| --- | --- | --- | --- |
+| Delivery | `ad604a06bc0e54cffb6b11f945177d6f7ab32161457b5a7ded3d27656c477425` | 9 | Passed |
+| Team archive | `14bc442ec0948851214c1720927eefea7fc3c31b7679590224358e75348fd3cc` | 5 | Passed |
+
+- [Delivery portable acceptance](examples-delivery-source-scope-portable-final-acceptance-summary.json)
+- [Archive portable acceptance](examples-team-archive-source-scope-portable-final-acceptance-summary.json)
+- [Delivery post-freeze current check](examples-delivery-source-scope-portable-post-freeze-check.json)
+- [Archive post-freeze current check](examples-archive-source-scope-portable-post-freeze-check.json)
+
+Exact staged-blob comparison covers 682 current inputs, including frozen model
+files, managed runtime hashes, watched files and `.gitignore`; all match. Both
+scope-input hashes are
+`54080b35ebd8cdc86c951ccd6cc38f217e3c332ff71abf566ae9b994ad76713b`.
+The unrelated historical `whitebox-v04/review.json` was excluded from staging;
+its index blob still equals the existing Git HEAD authority.
+
+[The diagnosis](clean-export-source-scope-diagnosis.json) and
+[staged-input parity](example-source-scope-portable-staged-parity.json) preserve
+the cause and verification. Earlier accepted phases and failed clean-export
+attempts remain intact. The clean-export rerun is reported separately.
+
+## v0.11.1 source-boundary acceptance
+
+Both examples completed the full native workflow after the shared source-scope
+policy was copied through managed upgrade. The final frozen record is
+`graph-quality-20261104-source-scope`.
+
+| Example | Final candidate | Configured project tests | Result |
+| --- | --- | --- | --- |
+| Delivery | `52f7100eaf2f1109431d974d9e35eedaa843bb4f130b7c89d7e698036e5c73d9` | 9 | Passed |
+| Team archive | `7b8aa922f3b7c554bcdf6fc2241c87c65015bf5ba590dfaf342016b8c152c182` | 5 | Passed |
+
+- [Delivery source-boundary acceptance](examples-delivery-source-scope-final-acceptance-summary.json)
+- [Archive source-boundary acceptance](examples-team-archive-source-scope-final-acceptance-summary.json)
+
+The exact generated-output declarations in `source_scope.prune` are:
+
+| Example | Artifact paths |
+| --- | --- |
+| Delivery | `scratch`, reserved `review/runtime` |
+| Team archive | `scratch`, `data/recordings`, `review/runtime` |
+
+Both retain source discovery at `.`. Whole `review`, `data` and observer runtime
+directories were not added as prune roots. Existing business-classification
+exclusions remain separate from physical-source scope and continue through the
+original entrypoint/implementation checks. Declared source bindings and watched
+files retain their integrity checks. The scan reports list encountered pruned
+prefixes with their categories and reasons; recording trees are skipped before
+their contents are traversed.
+
+Normal generation, sealing, scanning, explicit review, verification, acceptance
+and current-input checks all passed. The original baseline hashes, protected
+business/state source and independent expectations remain unchanged. Freeze
+guards confirmed byte equality with canonical runtime, adapter and viewer files,
+including the new `bo_observer/source_scope.py`. Earlier freezes remain intact.
+
+The archive pre-review scan retained 21 existing implementation review items;
+the explicit review records only unchanged classes/support source under the
+existing acceptance rules. Final inspection and verification passed. No new
+business requirement, test waiver or alternate baseline was introduced.
+
+## v0.11.1 patch acceptance
+
+Both examples repeated the complete native workflow on the original baselines
+after the concurrent trace-lane and legacy data lifecycle caption corrections.
+Runtime provenance and managed manifests identify release `0.11.1`. The final
+frozen record is `graph-quality-20261104-clock-caption`.
+
+| Example | Final candidate | Configured project tests | Result |
+| --- | --- | --- | --- |
+| Delivery | `4e7321beb3e13586bdc8c6202eab5bab8fafe16d4d47abb65e1d79a5d8fe6dda` | 9 | Passed |
+| Team archive | `b493c735dcfec12d84f02e405abcb88773daefd2dbef56621237b09301459510` | 5 | Passed |
+
+- [Delivery patch acceptance](examples-delivery-clock-caption-final-acceptance-summary.json)
+- [Archive patch acceptance](examples-team-archive-clock-caption-final-acceptance-summary.json)
+
+All generation, sealing, scanning, explicit review, verification, acceptance and
+current-input checks passed. Freeze guards confirmed unchanged original
+baseline hashes and exact equality with the canonical runtime, adapter and
+viewer files. Protected business/state code and independent expectations remain
+unchanged. The review notes explicitly identify event-order witnesses for equal
+timestamps and the existing lifecycle resolver labels used by the caption fix.
+
+Earlier v0.11 records remain intact. Delivery's earlier clock-only phase passed
+and was frozen separately as `graph-quality-20261104-clock`. Archive's earlier
+clock phase passed every native stage, then its freeze guard correctly refused
+the canonical `graph-core.js` change made during that phase. The
+[clock freeze-guard record](example-clock-freeze-guard.json) preserves this
+refusal; the final candidate above was copied and fully reaccepted after the
+caption fix froze. No native stage or freeze guard was skipped.
+
+Only the managed example paths were staged by this integration task. Actual
+browser tests, whole-repository checks, clean Git export and publication are
+reported separately.
+
+## v0.11.0 accepted candidate
 
 Both examples completed the full native workflow again after the exact HTTP
 observation mapping and legacy focus-selection fixes. The final frozen record

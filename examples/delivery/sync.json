@@ -228,6 +228,18 @@
     "roots": [
       "."
     ],
+    "prune": [
+      {
+        "path": "scratch",
+        "category": "artifact",
+        "reason": "Generated local fixtures, live SQLite data and observation recordings."
+      },
+      {
+        "path": "review/runtime",
+        "category": "artifact",
+        "reason": "Reserved output for generated runtime review records; authored review helpers remain inspectable."
+      }
+    ],
     "require_symbol_classification": true,
     "exclude": {
       "review/**": "Frozen test evidence from earlier versions; not loaded by the program.",

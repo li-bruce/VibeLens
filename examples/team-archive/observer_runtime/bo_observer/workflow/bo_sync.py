@@ -10,29 +10,12 @@ from copy import deepcopy
 import fnmatch
 import hashlib
 import json
-import os
 from pathlib import Path
-import stat
 import time
 from ..model_io import read_model
 from ..development import questions
 from ..graph.source_files import SourceFiles
-
-IGNORED = {
-    ".git",
-    ".venv",
-    ".agents",
-    ".codex",
-    "node_modules",
-    "__pycache__",
-    ".stategraph",
-    ".validation",
-    ".planning",
-    ".release",
-    ".pytest_cache",
-    ".tmp",
-    "dist",
-}
+from ..source_scope import IGNORED, compile_scope, semantic_inventory, validate_executable_sources
 
 
 def infrastructure_path(name):
@@ -57,44 +40,37 @@ def infrastructure_path(name):
     )
 
 
-def source_paths(start, supported):
+def source_paths(start, supported, *, policy=None):
     """Prune global generated/cache trees before reading their descendants.
 
     Ordinary scope exclusions are deliberately not pruned: their code must still
     be inspected for hidden application implementations and entrypoints.
     """
-    if start.is_file():
-        yield start
-        return
-    for parent, directories, files in os.walk(start, followlinks=False):
-        kept = []
-        for name in directories:
-            if name in IGNORED:
-                continue
-            try:
-                info = (Path(parent) / name).lstat()
-            except OSError:
-                continue
-            junction = getattr(info, "st_reparse_tag", 0) == getattr(
-                stat, "IO_REPARSE_TAG_MOUNT_POINT", -1
-            )
-            if not stat.S_ISLNK(info.st_mode) and not junction:
-                kept.append(name)
-        directories[:] = kept
-        for name in files:
-            if supported(name):
-                path = Path(parent) / name
-                if path.is_file():
-                    yield path
+    policy = policy or compile_scope(
+        start.parent if start.is_file() else start, {"source_scope": {"roots": ["."]}}
+    )
+    yield from policy.walk_sources(start, supported)
 
 
-def source_inventory(root, cfg, *, inspection_cache=None):
+def source_inventory(root, cfg, *, inspection_cache=None, model=None, telemetry=None):
     """Enumerate the configured source scope independently of existing graph nodes.
 
     Inspect excluded code for hidden application entrypoints. A reviewed, unchanged
     runtime copy can be excluded using its managed-file fingerprint.
     """
     root = Path(root).absolute().resolve()
+    policy = compile_scope(root, cfg)
+    if model is None:
+        from ..graph.behavior_model import contained
+
+        path = contained(root, cfg.get("model", "bo_stategraph/project.json"))
+        if path.is_file():
+            model = read_model(path)
+    if telemetry is None and model is not None:
+        from ..observation.telemetry import load_registrations
+
+        telemetry = load_registrations(root, model)
+    validate_executable_sources(policy, cfg, model, telemetry)
     reader = SourceFiles(root)
     inspected = set()
     known = None
@@ -106,7 +82,7 @@ def source_inventory(root, cfg, *, inspection_cache=None):
         not isinstance(reason, str) or not reason.strip() for reason in exclusions.values()
     ):
         raise ValueError("each source exclusion needs a reason")
-    roots = scope.get("roots", ["."])
+    roots = policy.roots
     if (
         not isinstance(roots, list)
         or not roots
@@ -124,10 +100,8 @@ def source_inventory(root, cfg, *, inspection_cache=None):
             from ..sources import supported_path, scan as scan_sources
         except ImportError:
             from bo_observer.sources import supported_path, scan as scan_sources
-        for path in source_paths(start, supported_path):
+        for path in source_paths(start, supported_path, policy=policy):
             name = path.relative_to(root).as_posix()
-            if any(part in IGNORED for part in Path(name).parts):
-                continue
             if path.is_symlink():
                 raise ValueError("source symlink escapes declared project: " + name)
             raw = reader.read(name)
@@ -269,6 +243,7 @@ def source_inventory(root, cfg, *, inspection_cache=None):
         "excluded": dict(sorted(excluded.items())),
         "excluded_entrypoints": hidden_entrypoints,
         "excluded_implementations": sorted(hidden_implementations),
+        **policy.report(),
     }
 
 
@@ -299,7 +274,8 @@ def maintenance_task(root, cfg, previous=None):
         from ..code_graph.service import CodeGraph
 
         CodeGraph(root).refresh()
-    current = source_inventory(root, cfg)
+    current = source_inventory(root, cfg, model=declared)
+    scope_changed = previous is not None and previous.get("scope_id") != current["scope_id"]
     old = (previous or {}).get("files", {})
     changed = sorted(
         p for p in set(old) | set(current["files"]) if old.get(p) != current["files"].get(p)
@@ -333,11 +309,14 @@ def maintenance_task(root, cfg, previous=None):
             load_registrations(root, model)
         except (ValueError, OSError) as error:
             gaps.append("telemetry registration: " + str(error))
-    digest = hashlib.sha256(json.dumps(current, sort_keys=True).encode()).hexdigest()
+    digest = hashlib.sha256(
+        json.dumps(semantic_inventory(current), sort_keys=True).encode()
+    ).hexdigest()
     return {
         "schema": "bo-maintenance/v1",
         "source_id": digest,
         "inventory": current,
+        "scope_changed": scope_changed,
         "changed_files": changed,
         "unregistered_files": unregistered,
         "implementation_gaps": gaps,
@@ -346,6 +325,7 @@ def maintenance_task(root, cfg, previous=None):
         "status": (
             "needs_update"
             if changed
+            or scope_changed
             or unregistered
             or gaps
             or not database["valid"]

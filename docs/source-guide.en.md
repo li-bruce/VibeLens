@@ -19,6 +19,7 @@ The product story is separate from the runtime. [export_file_case.py](../tools/e
 | [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | Value types, state hierarchy, active-state calculation, and strict declaration checks. |
 | [scripts/execution_contract.py](../skills/vibelens/scripts/execution_contract.py) | Activity, join, resource, and runtime-configuration constraints. |
 | [scripts/bo_observer](../skills/vibelens/scripts/bo_observer/) | Shared services, language adapters, development checks, and Web support. |
+| [source_scope.py](../skills/vibelens/scripts/bo_observer/source_scope.py) | Shared source ownership, dependency/output boundaries and validation for scans, executable bindings and the project tree. |
 | [assets/stategraph-viewer](../skills/vibelens/assets/stategraph-viewer/) | The real project's interactive graph, layout, recording, and replay UI. |
 | [schemas](../skills/vibelens/scripts/bo_observer/schemas/) | Versioned JSON contracts used at language and service boundaries. |
 | [examples](../examples/) | Executable applications with their own business rules and acceptance contracts. |

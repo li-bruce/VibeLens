@@ -143,7 +143,10 @@ def symbols(path, source_path=None):
 
 def capture(root, model):
     from ..code_graph.endpoints import endpoints
+    from ..source_scope import compile_scope, validate_executable_sources
 
+    scope = compile_scope(root)
+    validate_executable_sources(scope, model=model)
     intent = validate(root, model)
     files, inventories, bindings = {}, {}, {}
     for name in sorted(set(model["source_files"])):
@@ -152,7 +155,7 @@ def capture(root, model):
         if len(raw) > 2_000_000:
             raise ValueError(f"source too large: {name}")
         files[name] = digest(raw)
-        if path.suffix == ".py":
+        if path.suffix == ".py" and not scope.is_pruned(name):
             inventories[name] = symbols(path, name)
     bound_paths = {n["source"]["path"] for n in model["nodes"] if n.get("source")}
     foreign = [

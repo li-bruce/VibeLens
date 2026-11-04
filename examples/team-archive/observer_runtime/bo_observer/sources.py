@@ -84,6 +84,12 @@ def scan(root, paths, previous=None):
         from behavior_model import digest, contained
         from code_structure import parse_unit, module_name
     root = Path(root).absolute().resolve()
+    from .source_scope import compile_scope
+
+    scope = compile_scope(root)
+    paths = list(paths)
+    for name in paths:
+        scope.assert_source(name, "AST input")
     units, errors, parsed, reused, pending = {}, [], [], [], []
     old = (previous or {}).get("units", {})
     # Include the Python implementation, not just the dispatcher's bytes.

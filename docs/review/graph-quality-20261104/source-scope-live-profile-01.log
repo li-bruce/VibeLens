@@ -1,0 +1,57 @@
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\docs\review\graph-quality-20261104\profile_source_scope.py", line 72, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\docs\review\graph-quality-20261104\profile_source_scope.py", line 38, in main
+    snapshot = index.api_snapshot()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\service.py", line 150, in api_snapshot
+    graph, model = self.refresh()
+                   ~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\service.py", line 71, in refresh
+    cfg, model = self.inputs()
+                 ~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\service.py", line 63, in inputs
+    parsed = model_from_value(json.loads(raw.decode("utf-8-sig")))
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\model_io.py", line 17, in model_from_value
+    return validate_project(value)["model"]
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\protocol.py", line 76, in validate_project
+    schema_check(project, "project")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\protocol.py", line 53, in schema_check
+    _validator(SCHEMAS, name).iter_errors(value),
+    ~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\protocol.py", line 33, in _validator
+    from jsonschema import Draft202012Validator
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.venv\Lib\site-packages\jsonschema\__init__.py", line 16, in <module>
+    from jsonschema.validators import (
+    ...<7 lines>...
+    )
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.venv\Lib\site-packages\jsonschema\validators.py", line 20, in <module>
+    from jsonschema_specifications import REGISTRY as SPECIFICATIONS
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.venv\Lib\site-packages\jsonschema_specifications\__init__.py", line 11, in <module>
+    REGISTRY = (_schemas() @ _EMPTY_REGISTRY).crawl()
+                ~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.venv\Lib\site-packages\referencing\_core.py", line 389, in __rmatmul__
+    for resource in new:
+                    ^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.venv\Lib\site-packages\jsonschema_specifications\_core.py", line 29, in _schemas
+    for version in files(__package__).joinpath("schemas").iterdir():
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\pathlib\_local.py", line 575, in iterdir
+    with os.scandir(root_dir) as scandir_it:
+         ~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1169, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1173, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1240, in _execute_mock_call
+    result = effect(*args, **kwargs)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\docs\review\graph-quality-20261104\profile_source_scope.py", line 33, in scandir
+    visited.add(Path(directory).absolute().relative_to(project).as_posix())
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\pathlib\_local.py", line 385, in relative_to
+    raise ValueError(f"{str(self)!r} is not in the subpath of {str(other)!r}")
+ValueError: 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Lib\\site-packages\\jsonschema_specifications\\schemas' is not in the subpath of 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\otel-provenance-dialogue-20261101-04'

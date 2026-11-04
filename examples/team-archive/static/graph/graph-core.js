@@ -273,6 +273,8 @@ export function status(node, view, events, choice, configuration = null) {
       waiting: "blocked",
       exception: "blocked",
       returned: "historical",
+      committed: "historical",
+      transformed: "historical",
       ended: "historical",
       boundary: "historical",
       unknown: "declared",
@@ -310,7 +312,7 @@ export function lines(node, view, events, choice, configuration = null) {
         boTranslate(
           life.registered
             ? lifecycleCaption(life, view.model.presentation?.name_mode === "source")
-            : names[life.phase],
+            : names[life.phase] || lifecycleCaption(life) || names.unknown,
         ) + (life.activeCount > 1 ? " · " + life.activeCount : ""),
       role: life.phase === "exception" ? "bad" : "value",
     },

@@ -1,0 +1,1111 @@
+{
+  "observed_at": "2026-11-04T06:01:02.437791+00:00",
+  "trial": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\graph-quality-dialogue-20261104-01",
+  "boundary": "Read-only per-file snapshot of an actively generated application; pending placeholders are not failed acceptance.",
+  "source": {
+    "models.py": {
+      "sha256": "c00ff0ca3eef1be5855ccfa44ea01157d22a46010a1f0e2bae03babec6ed518a",
+      "bytes": 2006,
+      "status": "authored_source",
+      "functions": [],
+      "span_nodes": [],
+      "api_declarations": [],
+      "native_drive_calls": []
+    },
+    "service.py": {
+      "sha256": "727b6031a85d39955206a91f4478e83250562a0c8764884f99ac1860a81dc5ab",
+      "bytes": 17534,
+      "status": "authored_source",
+      "functions": [
+        {
+          "symbol": "flag_enabled",
+          "line": 25,
+          "end_line": 31,
+          "parameters": [
+            "value"
+          ],
+          "docstring": "Return the supplied Boolean fact without querying mutable external state.\n\nArgs:\n    value: A fact read for this permission check."
+        },
+        {
+          "symbol": "same_identity",
+          "line": 34,
+          "end_line": 41,
+          "parameters": [
+            "left",
+            "right"
+          ],
+          "docstring": "Compare two current user identities.\n\nArgs:\n    left: The authenticated actor identity.\n    right: The file uploader identity."
+        },
+        {
+          "symbol": "file_summary",
+          "line": 44,
+          "end_line": 53,
+          "parameters": [
+            "file"
+          ],
+          "docstring": "Select non-content file information for the website.\n\nArgs:\n    file: The authorized native ORM row.\n\nReturns:\n    Metadata without file bytes or credentials."
+        },
+        {
+          "symbol": "FileService.__init__",
+          "line": 59,
+          "end_line": 73,
+          "parameters": [
+            "root",
+            "database",
+            "bo",
+            "build_id"
+          ],
+          "docstring": "Load declarations and initialize only this project's database."
+        },
+        {
+          "symbol": "FileService._configure_connection",
+          "line": 76,
+          "end_line": 78,
+          "parameters": [
+            "connection",
+            "record"
+          ],
+          "docstring": "Enable SQLite foreign keys on each actual application connection."
+        },
+        {
+          "symbol": "FileService._users",
+          "line": 80,
+          "end_line": 88,
+          "parameters": [
+            "session",
+            "identity"
+          ],
+          "docstring": "Read one current colleague or the seeded colleague list.\n\nArgs:\n    session: The application's current database session.\n    identity: Optional user identity; empty selects all colleagues."
+        },
+        {
+          "symbol": "FileService._files",
+          "line": 90,
+          "end_line": 104,
+          "parameters": [
+            "session",
+            "identity",
+            "actor_id"
+          ],
+          "docstring": "Read a file or only files currently visible to a list requester.\n\nArgs:\n    session: The application's current database session.\n    identity: Optional file identity for a direct request.\n    actor_id: Actor whose owned and received files are selected for a list."
+        },
+        {
+          "symbol": "FileService._grants",
+          "line": 106,
+          "end_line": 114,
+          "parameters": [
+            "session",
+            "file_id"
+          ],
+          "docstring": "Read grants for exactly the requested file.\n\nArgs:\n    session: The application's current database session.\n    file_id: File identity whose current grants are required."
+        },
+        {
+          "symbol": "FileService.transaction",
+          "line": 117,
+          "end_line": 121,
+          "parameters": [],
+          "docstring": "Commit native writes atomically, retaining actual rollback behavior."
+        },
+        {
+          "symbol": "FileService._save_file",
+          "line": 123,
+          "end_line": 131,
+          "parameters": [
+            "session",
+            "file"
+          ],
+          "docstring": "Flush the real file row inside its still-open transaction.\n\nArgs:\n    session: The current native write session.\n    file: Inserted or modified file row; commit occurs separately."
+        },
+        {
+          "symbol": "FileService._save_grant",
+          "line": 133,
+          "end_line": 141,
+          "parameters": [
+            "session",
+            "grant"
+          ],
+          "docstring": "Flush the selected grant inside its still-open transaction.\n\nArgs:\n    session: The current native write session.\n    grant: New or modified recipient grant; commit occurs separately."
+        },
+        {
+          "symbol": "FileService._authorize",
+          "line": 143,
+          "end_line": 164,
+          "parameters": [
+            "session",
+            "operation",
+            "actor_id",
+            "file",
+            "recipient_id"
+          ],
+          "docstring": "Evaluate current database facts exactly once for this operation.\n\nArgs:\n    session: The native read/write transaction supplying permission facts.\n    operation: Declared upload, share, revoke, view, or download action.\n    actor_id: Identity taken from the current authenticated session.\n    file: Current file row, or None before upload.\n    recipient_id: Selected existing colleague for a share operation."
+        },
+        {
+          "symbol": "FileService.authenticate",
+          "line": 166,
+          "end_line": 182,
+          "parameters": [
+            "username",
+            "password"
+          ],
+          "docstring": "Verify a seeded account without recording its password.\n\nArgs:\n    username: Claimed account identity from the login form.\n    password: Secret credential; excluded from all observations.\n\nReturns:\n    Public user information only when the credential is valid."
+        },
+        {
+          "symbol": "FileService.colleagues",
+          "line": 184,
+          "end_line": 196,
+          "parameters": [
+            "actor_id"
+          ],
+          "docstring": "List existing colleagues after confirming the current account exists.\n\nArgs:\n    actor_id: Current session principal."
+        },
+        {
+          "symbol": "FileService.list_files",
+          "line": 198,
+          "end_line": 210,
+          "parameters": [
+            "actor_id"
+          ],
+          "docstring": "Return only owned files and active received shares.\n\nArgs:\n    actor_id: Current session principal, checked for this request."
+        },
+        {
+          "symbol": "FileService.upload",
+          "line": 212,
+          "end_line": 234,
+          "parameters": [
+            "actor_id",
+            "name",
+            "content"
+          ],
+          "docstring": "Store uploaded bytes and their initial declared file state atomically.\n\nArgs:\n    actor_id: Current session principal, checked again before writing.\n    name: Browser-supplied display filename, reduced to a safe basename.\n    content: Binary payload; only its length is observed.\n\nReturns:\n    Identity of the committed file."
+        },
+        {
+          "symbol": "FileService.details",
+          "line": 236,
+          "end_line": 253,
+          "parameters": [
+            "actor_id",
+            "file_id"
+          ],
+          "docstring": "Read file metadata only after a fresh access check.\n\nArgs:\n    actor_id: Current session principal.\n    file_id: Requested file identity from the route."
+        },
+        {
+          "symbol": "FileService.download",
+          "line": 255,
+          "end_line": 271,
+          "parameters": [
+            "actor_id",
+            "file_id"
+          ],
+          "docstring": "Return original bytes after checking the current grant for this request.\n\nArgs:\n    actor_id: Current session principal.\n    file_id: Requested file identity; old links receive no cached permission."
+        },
+        {
+          "symbol": "FileService._change_grant",
+          "line": 273,
+          "end_line": 306,
+          "parameters": [
+            "session",
+            "file",
+            "actor_id",
+            "recipient_id",
+            "operation"
+          ],
+          "docstring": "Apply a permission-checked grant change and its declared file transition.\n\nArgs:\n    session: Current atomic native write session.\n    file: Current authoritative file row.\n    actor_id: Current principal permitted to manage this file.\n    recipient_id: Selected colleague whose grant changes.\n    operation: The share or revoke event."
+        },
+        {
+          "symbol": "FileService.share",
+          "line": 308,
+          "end_line": 325,
+          "parameters": [
+            "actor_id",
+            "file_id",
+            "recipient_id"
+          ],
+          "docstring": "Create or reactivate the selected colleague's grant as uploader only.\n\nArgs:\n    actor_id: Current authenticated principal.\n    file_id: File to share.\n    recipient_id: Existing colleague selected by the uploader."
+        },
+        {
+          "symbol": "FileService.revoke",
+          "line": 327,
+          "end_line": 344,
+          "parameters": [
+            "actor_id",
+            "file_id",
+            "recipient_id"
+          ],
+          "docstring": "Revoke one colleague while retaining other current recipients.\n\nArgs:\n    actor_id: Current authenticated uploader.\n    file_id: File whose grant changes.\n    recipient_id: Recipient to revoke."
+        }
+      ],
+      "span_nodes": [
+        {
+          "symbol": "FileService.authenticate",
+          "line": 177,
+          "node": "login"
+        },
+        {
+          "symbol": "FileService.colleagues",
+          "line": 191,
+          "node": "colleagues"
+        },
+        {
+          "symbol": "FileService.list_files",
+          "line": 205,
+          "node": "list"
+        },
+        {
+          "symbol": "FileService.upload",
+          "line": 224,
+          "node": "upload"
+        },
+        {
+          "symbol": "FileService.details",
+          "line": 244,
+          "node": "view"
+        },
+        {
+          "symbol": "FileService.download",
+          "line": 263,
+          "node": "download"
+        },
+        {
+          "symbol": "FileService._change_grant",
+          "line": 298,
+          "node": "transition"
+        },
+        {
+          "symbol": "FileService.share",
+          "line": 317,
+          "node": "share"
+        },
+        {
+          "symbol": "FileService.revoke",
+          "line": 336,
+          "node": "revoke"
+        }
+      ],
+      "api_declarations": [],
+      "native_drive_calls": [
+        {
+          "symbol": "FileService._change_grant",
+          "line": 299,
+          "call": "advance(self.machine, file.state, operation, context, {'allowed': report['value'], 'recipient_id': recipient_id})"
+        }
+      ]
+    },
+    "server.py": {
+      "sha256": "e076e11af673db11223e362595f7b46ff07f33fce21872f29f4a70f87f0e4da9",
+      "bytes": 8665,
+      "status": "authored_source",
+      "functions": [
+        {
+          "symbol": "create_app",
+          "line": 15,
+          "end_line": 172,
+          "parameters": [
+            "database",
+            "bo",
+            "secret"
+          ],
+          "docstring": "Create one local website and its optional observation connection.\n\nArgs:\n    database: Isolated SQLite path, defaulting to this project's local data.\n    bo: Optional native observation adapter; absence leaves execution intact.\n    secret: Optional test signing secret; development persists a random local key."
+        },
+        {
+          "symbol": "create_app.prepare_request",
+          "line": 37,
+          "end_line": 46,
+          "parameters": [],
+          "docstring": "Start the selected actual HTTP interval and validate mutation CSRF tokens."
+        },
+        {
+          "symbol": "create_app.finish_request",
+          "line": 49,
+          "end_line": 62,
+          "parameters": [
+            "response"
+          ],
+          "docstring": "Capture the actual framework response status after error handling.\n\nArgs:\n    response: Flask's real outgoing response, including rejected/error requests."
+        },
+        {
+          "symbol": "create_app.login",
+          "line": 65,
+          "end_line": 74,
+          "parameters": [],
+          "docstring": "Render sign-in or establish a session after native credential verification."
+        },
+        {
+          "symbol": "create_app.logout",
+          "line": 77,
+          "end_line": 85,
+          "parameters": [],
+          "docstring": "Clear the current signed-in session and return to sign-in."
+        },
+        {
+          "symbol": "create_app.index",
+          "line": 88,
+          "end_line": 93,
+          "parameters": [],
+          "docstring": "Show the current user's owned files and active received shares."
+        },
+        {
+          "symbol": "create_app.upload",
+          "line": 96,
+          "end_line": 103,
+          "parameters": [],
+          "docstring": "Receive a file and redirect only after the native upload transaction commits."
+        },
+        {
+          "symbol": "create_app.file_details",
+          "line": 106,
+          "end_line": 115,
+          "parameters": [
+            "file_id"
+          ],
+          "docstring": "Render metadata after rechecking the current request's file permission.\n\nArgs:\n    file_id: Stored file identity from the URL."
+        },
+        {
+          "symbol": "create_app.download",
+          "line": 118,
+          "end_line": 125,
+          "parameters": [
+            "file_id"
+          ],
+          "docstring": "Return attachment bytes only after fresh server-side authorization.\n\nArgs:\n    file_id: File identity from a current or previously opened page."
+        },
+        {
+          "symbol": "create_app.share",
+          "line": 128,
+          "end_line": 136,
+          "parameters": [
+            "file_id"
+          ],
+          "docstring": "Create the selected existing colleague's grant as uploader only.\n\nArgs:\n    file_id: File whose uploader is allowed to manage sharing."
+        },
+        {
+          "symbol": "create_app.revoke",
+          "line": 139,
+          "end_line": 147,
+          "parameters": [
+            "file_id"
+          ],
+          "docstring": "Revoke exactly the selected colleague and retain other valid grants.\n\nArgs:\n    file_id: File whose uploader is revoking a grant."
+        },
+        {
+          "symbol": "create_app.permission_error",
+          "line": 150,
+          "end_line": 154,
+          "parameters": [
+            "error"
+          ],
+          "docstring": "Render a real 401 or 403 response for the native permission rejection."
+        },
+        {
+          "symbol": "create_app.invalid_request",
+          "line": 157,
+          "end_line": 160,
+          "parameters": [
+            "error"
+          ],
+          "docstring": "Render a real 400 response for invalid file or sharing input."
+        },
+        {
+          "symbol": "create_app.missing_file",
+          "line": 163,
+          "end_line": 165,
+          "parameters": [
+            "error"
+          ],
+          "docstring": "Render a real missing-file response without exposing storage paths."
+        },
+        {
+          "symbol": "create_app.http_error",
+          "line": 168,
+          "end_line": 170,
+          "parameters": [
+            "error"
+          ],
+          "docstring": "Render framework errors while preserving their real HTTP status."
+        }
+      ],
+      "span_nodes": [
+        {
+          "symbol": "create_app",
+          "line": 80,
+          "node": "logout"
+        },
+        {
+          "symbol": "create_app.logout",
+          "line": 80,
+          "node": "logout"
+        }
+      ],
+      "api_declarations": [
+        {
+          "symbol": "create_app.login",
+          "line": 64,
+          "declaration": "app.route('/login', methods=['GET', 'POST'])",
+          "documentation": "Render sign-in or establish a session after native credential verification."
+        },
+        {
+          "symbol": "create_app.logout",
+          "line": 76,
+          "declaration": "app.post('/logout')",
+          "documentation": "Clear the current signed-in session and return to sign-in."
+        },
+        {
+          "symbol": "create_app.index",
+          "line": 87,
+          "declaration": "app.get('/')",
+          "documentation": "Show the current user's owned files and active received shares."
+        },
+        {
+          "symbol": "create_app.upload",
+          "line": 95,
+          "declaration": "app.post('/upload')",
+          "documentation": "Receive a file and redirect only after the native upload transaction commits."
+        },
+        {
+          "symbol": "create_app.file_details",
+          "line": 105,
+          "declaration": "app.get('/files/<file_id>')",
+          "documentation": "Render metadata after rechecking the current request's file permission.\n\nArgs:\n    file_id: Stored file identity from the URL."
+        },
+        {
+          "symbol": "create_app.download",
+          "line": 117,
+          "declaration": "app.get('/files/<file_id>/download')",
+          "documentation": "Return attachment bytes only after fresh server-side authorization.\n\nArgs:\n    file_id: File identity from a current or previously opened page."
+        },
+        {
+          "symbol": "create_app.share",
+          "line": 127,
+          "declaration": "app.post('/files/<file_id>/share')",
+          "documentation": "Create the selected existing colleague's grant as uploader only.\n\nArgs:\n    file_id: File whose uploader is allowed to manage sharing."
+        },
+        {
+          "symbol": "create_app.revoke",
+          "line": 138,
+          "declaration": "app.post('/files/<file_id>/revoke')",
+          "documentation": "Revoke exactly the selected colleague and retain other valid grants.\n\nArgs:\n    file_id: File whose uploader is revoking a grant."
+        }
+      ],
+      "native_drive_calls": []
+    },
+    "observe.py": {
+      "sha256": "bf058dfb9b8c36523f66bb8fc17bc0bdff8b42d089dfc6865c098758c8b0461d",
+      "bytes": 80,
+      "status": "explicit_placeholder"
+    },
+    "ports.py": {
+      "sha256": "91f437ee673ae87b3adba45761ce14bc1fb820061eb165540170f77b03bfaa96",
+      "bytes": 1518,
+      "status": "authored_source",
+      "functions": [
+        {
+          "symbol": "BOResult.result",
+          "line": 9,
+          "end_line": 10,
+          "parameters": [
+            "builder"
+          ],
+          "docstring": "Retain no values while observation is unavailable."
+        },
+        {
+          "symbol": "BOPort.span",
+          "line": 17,
+          "end_line": 19,
+          "parameters": [
+            "node",
+            "builder"
+          ],
+          "docstring": "Provide an optional operation interval with no business authority."
+        },
+        {
+          "symbol": "BOPort.query",
+          "line": 21,
+          "end_line": 23,
+          "parameters": [
+            "node",
+            "callback",
+            "statement",
+            "targets"
+          ],
+          "docstring": "Return the actual materialized native query result once."
+        },
+        {
+          "symbol": "BOPort.write",
+          "line": 25,
+          "end_line": 27,
+          "parameters": [
+            "node",
+            "callback",
+            "targets"
+          ],
+          "docstring": "Run the application's native flush once."
+        },
+        {
+          "symbol": "BOPort.transaction",
+          "line": 30,
+          "end_line": 33,
+          "parameters": [
+            "manager"
+          ],
+          "docstring": "Keep the application's original commit and rollback manager."
+        },
+        {
+          "symbol": "BOPort.transform",
+          "line": 35,
+          "end_line": 37,
+          "parameters": [
+            "callback",
+            "value"
+          ],
+          "docstring": "Return an actual metadata transformation once."
+        },
+        {
+          "symbol": "BOPort.policy",
+          "line": 39,
+          "end_line": 40,
+          "parameters": [
+            "evaluation",
+            "entity"
+          ],
+          "docstring": "Ignore an already evaluated decision without rerunning it."
+        },
+        {
+          "symbol": "BOPort.publish",
+          "line": 42,
+          "end_line": 43,
+          "parameters": [
+            "file",
+            "transition"
+          ],
+          "docstring": "Ignore a committed state notification."
+        },
+        {
+          "symbol": "BOPort.record",
+          "line": 45,
+          "end_line": 46,
+          "parameters": [
+            "node",
+            "phase",
+            "builder"
+          ],
+          "docstring": "Ignore selected observation values."
+        }
+      ],
+      "span_nodes": [],
+      "api_declarations": [],
+      "native_drive_calls": []
+    },
+    "dev.py": {
+      "sha256": "bf058dfb9b8c36523f66bb8fc17bc0bdff8b42d089dfc6865c098758c8b0461d",
+      "bytes": 80,
+      "status": "explicit_placeholder"
+    },
+    "build_model.py": {
+      "sha256": "bf058dfb9b8c36523f66bb8fc17bc0bdff8b42d089dfc6865c098758c8b0461d",
+      "bytes": 80,
+      "status": "explicit_placeholder"
+    },
+    "test_app.py": {
+      "sha256": "bf058dfb9b8c36523f66bb8fc17bc0bdff8b42d089dfc6865c098758c8b0461d",
+      "bytes": 80,
+      "status": "explicit_placeholder"
+    },
+    "integrations/bo_integration.py": {
+      "sha256": "ccedf1733755827f90af645f8f9efd97d8982f25b70005f6104c39f2426772f1",
+      "bytes": 5442,
+      "status": "authored_source",
+      "functions": [
+        {
+          "symbol": "BOIntegration.__init__",
+          "line": 24,
+          "end_line": 42,
+          "parameters": [
+            "root",
+            "mode",
+            "capacity"
+          ],
+          "docstring": "Load the canonical project and create a bounded source-checked producer."
+        },
+        {
+          "symbol": "BOIntegration.span",
+          "line": 44,
+          "end_line": 46,
+          "parameters": [
+            "node",
+            "builder"
+          ],
+          "docstring": "Delegate the actual operation interval to the bounded native producer."
+        },
+        {
+          "symbol": "BOIntegration.record",
+          "line": 48,
+          "end_line": 50,
+          "parameters": [
+            "node",
+            "phase",
+            "builder"
+          ],
+          "docstring": "Capture selected values only at their actual call site."
+        },
+        {
+          "symbol": "BOIntegration.query",
+          "line": 52,
+          "end_line": 54,
+          "parameters": [
+            "node",
+            "callback",
+            "statement",
+            "targets"
+          ],
+          "docstring": "Observe one actual SQL query and its materialized row count."
+        },
+        {
+          "symbol": "BOIntegration.write",
+          "line": 56,
+          "end_line": 58,
+          "parameters": [
+            "node",
+            "callback",
+            "targets"
+          ],
+          "docstring": "Observe a real ORM flush; its return does not claim transaction commit."
+        },
+        {
+          "symbol": "BOIntegration.transaction",
+          "line": 60,
+          "end_line": 62,
+          "parameters": [
+            "manager"
+          ],
+          "docstring": "Observe the application's real commit or rollback acknowledgement."
+        },
+        {
+          "symbol": "BOIntegration.transform",
+          "line": 64,
+          "end_line": 66,
+          "parameters": [
+            "callback",
+            "value"
+          ],
+          "docstring": "Observe selection of file metadata without collecting binary contents."
+        },
+        {
+          "symbol": "BOIntegration.policy",
+          "line": 68,
+          "end_line": 71,
+          "parameters": [
+            "evaluation",
+            "entity"
+          ],
+          "docstring": "Record the actual evaluator report and its witnessed child dependencies."
+        },
+        {
+          "symbol": "BOIntegration.publish",
+          "line": 73,
+          "end_line": 81,
+          "parameters": [
+            "file",
+            "transition"
+          ],
+          "docstring": "Publish a committed state with its real native transition witness."
+        },
+        {
+          "symbol": "BOIntegration.health",
+          "line": 83,
+          "end_line": 85,
+          "parameters": [],
+          "docstring": "Read actual producer, transport, tracing, and data-adapter counters."
+        },
+        {
+          "symbol": "BOIntegration.close",
+          "line": 87,
+          "end_line": 92,
+          "parameters": [],
+          "docstring": "Drain and close only this integration's producer and session."
+        }
+      ],
+      "span_nodes": [
+        {
+          "symbol": "BOIntegration.publish",
+          "line": 77,
+          "node": "state_commit"
+        }
+      ],
+      "api_declarations": [],
+      "native_drive_calls": []
+    },
+    "bo_stategraph/workflow.py": {
+      "sha256": "c813183fdfed1ed0a85a13d8b58786e4d056051b769ea1aefed1db5fc9380cbf",
+      "bytes": 3315,
+      "status": "authored_source",
+      "functions": [
+        {
+          "symbol": "permission_granted",
+          "line": 7,
+          "end_line": 14,
+          "parameters": [
+            "context",
+            "payload"
+          ],
+          "docstring": "Read the application's freshly evaluated permission from the event payload.\n\nArgs:\n    context: Persisted owner and active-grant count.\n    payload: Current permission result and selected recipient identity."
+        },
+        {
+          "symbol": "remaining_grants",
+          "line": 17,
+          "end_line": 24,
+          "parameters": [
+            "context",
+            "payload"
+          ],
+          "docstring": "Return whether another active grant remains after the selected operation.\n\nArgs:\n    context: Persisted owner and the transaction's new active-grant count.\n    payload: Typed event payload, unchanged by this guard."
+        },
+        {
+          "symbol": "advance",
+          "line": 27,
+          "end_line": 71,
+          "parameters": [
+            "machine",
+            "state",
+            "event",
+            "context",
+            "payload"
+          ],
+          "docstring": "Choose the first enabled declared transition without a second state cache.\n\nArgs:\n    machine: Canonical machine read from the project declaration.\n    state: Current state read inside the application's write transaction.\n    event: The requested share or revoke event.\n    context: Actual owner and post-operation active-grant count.\n    payload: Fresh permission and the selected recipient.\n\nReturns:\n    The chosen destination and only the guards actually evaluated.\n\nRaises:\n    ValueError: The declaration, inputs, or requested transition are invalid."
+        }
+      ],
+      "span_nodes": [],
+      "api_declarations": [],
+      "native_drive_calls": []
+    }
+  },
+  "declarations": {
+    "bo_stategraph/project.json": {
+      "sha256": "1dec2e8dab93f6bff49ca6da8fe60c659e31b8416479eb3ed60dbc9102f0a049",
+      "status": "present",
+      "project_id": "team-file-share-20261104-01",
+      "selection": {
+        "mode": "drive",
+        "source": "user",
+        "answer": "drive + SQLite + SQLAlchemy",
+        "locator": "Actual user answer U_SCOPE and U_FORM_CONFIRM in discovery.json"
+      },
+      "revision": "1",
+      "nodes": [
+        {
+          "id": "stored",
+          "layer": "state",
+          "kind": "state",
+          "summary": "Reserved persisted file state; behavior is not implemented."
+        },
+        {
+          "id": "design",
+          "kind": "data",
+          "summary": "Planned file record and its persisted state."
+        }
+      ],
+      "machine": {
+        "engine": "bo.fsm",
+        "version": "1",
+        "state_type": "enum",
+        "states": [
+          "stored"
+        ],
+        "values": [
+          "stored"
+        ],
+        "initial": "stored",
+        "context": {},
+        "guards": {},
+        "events": {},
+        "transitions": []
+      },
+      "policy_present": false
+    },
+    "bo_stategraph/telemetry.json": {
+      "status": "not_yet_created"
+    },
+    "bo_stategraph/runtime-version.json": {
+      "sha256": "49fa1465f2b60fa0d33aefd91f8b29c66fa3bf285dead5fd07c098034add55f3",
+      "status": "present",
+      "payload": {
+        "schema": 1,
+        "release": "0.11.0",
+        "protocols": {
+          "behavior": 3,
+          "event": 3,
+          "activity": "activity-graph/v1",
+          "export": "bo-stategraph/v1",
+          "recording": 1,
+          "runtime_frames": 1,
+          "preferences": 1,
+          "implementation": "bo-implementation/v1",
+          "project": "bo-project/v1",
+          "transport": "bo-event/v1",
+          "snapshot": "bo-snapshot/v1",
+          "source": "bo-source/v1",
+          "database_config": "bo-databases/v1",
+          "database_catalog": "bo-data-catalog/v1",
+          "database_projection": "bo-database/v1",
+          "policy": "bo-policy/v1",
+          "policy_evaluation": "bo-policy-evaluation/v1"
+        },
+        "files": {
+          "bo_stategraph/__init__.py": "56f694a30fa9e2aa6319931b24cb35c52c82ea30b8b4b6f4029df0f838e63e6e",
+          "bo_stategraph/bo_contracts.py": "4ff79ecd137f5071ffffe1a080250ee7762185c825e370dc0ef618ac258336ea",
+          "bo_stategraph/execution_contract.py": "0c966fb3549c0219c6a663ddf41c847e71ebf14216b02b725d2465e4bf0c4839",
+          "bo_stategraph/policy/__init__.py": "b60903037ae86f1a2269f09c716f543ff5e2a314713157ae3a5ee7a6558f4d27",
+          "bo_stategraph/policy/bindings.py": "9d0d0eda68f8641d0dbdce7122c1ccb88490d2f41ffc0e4acec75a9928df11d6",
+          "bo_stategraph/policy/definition.py": "cdcdb5c1963ebc10ed2080ad85ad96649a05d1c2ac322d106059a2ed4d5e294e",
+          "bo_stategraph/policy/projection.py": "266d7187905e11f455b1f4efa913250438cb9a35aa379110bf8f57072833341e",
+          "bo_stategraph/policy/runtime.py": "c6fde677ae0b68ed14660d641d72f37cf603a439b146e30430f734eeb99bcd1a",
+          "observer_runtime/architecture_guard.py": "b1966fd9fa189df104894e6cf91f1e28a12087d6d525bd5cb8db3c46af9e54b9",
+          "observer_runtime/behavior_model.py": "91bd0baa9227e19f51c8195989c0fc4eab4945fdaa752050232b30d319998470",
+          "observer_runtime/bo.py": "820cf57fbeaec91cdf25492ce809e2323febb5c7eb09489868b4b598d2815411",
+          "observer_runtime/bo_code.py": "27baf69e469d52eec5be82ee7cf6eaac55b2057f56b0d5493dc9184456795aa4",
+          "observer_runtime/bo_contracts.py": "0d1d70ac496a9d0c84f0e88394b65e72d08f0ceb6dca933bc9da19303dfeea29",
+          "observer_runtime/bo_control.py": "643b51c3a6600c739c65f0f751253be230c4e9b98c9b95fe1e244952c84eb73a",
+          "observer_runtime/bo_db.py": "89bc39d28f4622e84b175c3d444bd2e1a3469a9a77d4da30b87609804aca3b97",
+          "observer_runtime/bo_design.py": "d50b85b8db925d742551b2341ab7508843c47e401aeb28f955c188120911f8dc",
+          "observer_runtime/bo_observer/__init__.py": "13155505111c5fdb9661c500bb3367aa73b93ad49d3535d6e49164c433f1b18c",
+          "observer_runtime/bo_observer/adapters/__init__.py": "f0e25199a4ea5a129a934411fe7ff724c051c20b04f193887c7528a3b4873f61",
+          "observer_runtime/bo_observer/adapters/javascript/bo_data.mjs": "bfdf840ab81f1819a2a3b283b63c29ed4af6ce2996e53b115f538783d21193c3",
+          "observer_runtime/bo_observer/adapters/javascript/bo_otel.mjs": "5a9c49a5efec73c50a276284da49f244b315328aeb73966ec3c96ddc96da2200",
+          "observer_runtime/bo_observer/adapters/javascript/bo_runtime.mjs": "3c56c9706b94c4bd02671789b97e8085d2a57925d86045009310968920da2ba7",
+          "observer_runtime/bo_observer/adapters/javascript/package-lock.json": "920ff8a8f658a7df01e9b8cc19d68d0ada7883b94605b9aa8e70753b36adea24",
+          "observer_runtime/bo_observer/adapters/javascript/package.json": "e7fa1bb7a7d01fa547b1b2ecfcdf7492231cd2c662088407e1146d7255d02f89",
+          "observer_runtime/bo_observer/adapters/javascript/scan.mjs": "634ccfc299fc3d5b6db4fe28f6a5ba57501d984aeaa6f4a2faa89f2d13bb2cec",
+          "observer_runtime/bo_observer/adapters/python/__init__.py": "c6a3ee47a4c505a43adab164e23526237319b43eb0d157479a8cd4166774e831",
+          "observer_runtime/bo_observer/adapters/python/bo_executor.py": "56ee5f17e8d9d0820f12f4a1b922a750338c3a97887a59f227b45e8f1ee6aab6",
+          "observer_runtime/bo_observer/adapters/python/bo_otel.py": "0b1631798eb1aabd94a5702858fa9bd4cb6189f72e010c88ae9e909a4b38b494",
+          "observer_runtime/bo_observer/adapters/python/bo_probe.py": "6cddcce443f87e10bbd3cd6cfe589e9c9f73e3d24fcd622031e9091184580425",
+          "observer_runtime/bo_observer/code_graph/__init__.py": "5f69b67916f2fe8f7da0295d8f6824cb8f1626a8570ba44b1a68dee83166e6de",
+          "observer_runtime/bo_observer/code_graph/endpoints.py": "621a709eb6ecd83de18af0e844df46f5168c7126bfa9783adfcbccaa506dc535",
+          "observer_runtime/bo_observer/code_graph/file_dependencies.py": "ccc70639c9966e166d97273b6ff8d75e58159b34cdb8dcc3c1071458980b4c4b",
+          "observer_runtime/bo_observer/code_graph/filesystem.py": "fdefbc01948425e6315c20fcab0b065babf5badcec13aa390de2e6104dd87364",
+          "observer_runtime/bo_observer/code_graph/index.py": "58ba070d4f027f5cf84d1e1f63da2ad1edb60adaccbeea77038487249a26c565",
+          "observer_runtime/bo_observer/code_graph/manifests.py": "a758d671d9b31d2c1b6802b741eef9df5b5b5bec392d5a99d0bd077afa24bc08",
+          "observer_runtime/bo_observer/code_graph/observation.py": "2aa335f66055b34bd166782ca6cf1a4307748017c0df8c0e8f1b52ff69a259c4",
+          "observer_runtime/bo_observer/code_graph/query.py": "6b276c76da7663839d8785f41086b8b3449218c13b6295c0ce76fa6c3c1caf34",
+          "observer_runtime/bo_observer/code_graph/service.py": "fee0f5960ea1b8627b1b26573e05f904e738b7b3cda92db42648ed550f78736b",
+          "observer_runtime/bo_observer/code_graph/structure.py": "cb10177164a46d30a326f486d2762380004ab7ee58c01c5ce895ddf5259d6ebe",
+          "observer_runtime/bo_observer/control/__init__.py": "cfbfc613e6fde5e04ca5fe62e54c2d07a910d4e1f08ac1c55dde0031cc354db5",
+          "observer_runtime/bo_observer/control/cli.py": "614b2183f410bf25e761c79e4c7e3a9afcc6cff3bc9e291017ee55e5afd1da15",
+          "observer_runtime/bo_observer/control/scope.py": "0ca04ab060b8a6fb3c9aebed7989a5aa076311d411466c69be7d35d645c31cb0",
+          "observer_runtime/bo_observer/control/selection.py": "78277c1dfc22a0542e6b626be8d2e28818a3be296c8cb42894ee36809042e50f",
+          "observer_runtime/bo_observer/data/__init__.py": "3dc7861217be44088a3475fc158cf990ab2a339650926e71d7b6c861dd094e61",
+          "observer_runtime/bo_observer/data/acceptance.py": "4c52fda20e10a300dec02659dec576662704ae8bf8e18a880061232c1be601cc",
+          "observer_runtime/bo_observer/data/catalog.py": "584160c51ae7eae4d132d8abace12376c21c4766b291beb680725e4d6f993032",
+          "observer_runtime/bo_observer/data/contract.py": "d4086500156d88cea8b16e12d48850d2fd967a3081dfe43f24c30d6aff89683a",
+          "observer_runtime/bo_observer/data/evidence.py": "e954c6056fdafd4752e6060d8870ae5f928c914fa286ed26947847a1268b5cde",
+          "observer_runtime/bo_observer/data/guidance.py": "d9abac570dd55e366eb02cbd6e84fb936ad1a34b5fa52d13f88649ca78dda861",
+          "observer_runtime/bo_observer/data/projection.py": "7ad2c6f2eb9d226cdeed6452c1fe8b1b6350d33a7fed03108c14fa2d049711cf",
+          "observer_runtime/bo_observer/data/protocol.py": "5ad0e6e4a772bda0088447f04d5cae8ca036807d10c26e7202220fae9f0bb936",
+          "observer_runtime/bo_observer/data/runtime.py": "b96e79713f9c514c88c4c801b4b9fbc4019e699a9f0a6fc9bd612737f167b79d",
+          "observer_runtime/bo_observer/data/schema_compare.py": "124f3bfeab254d488f789bfccf26d7b7e5cac8bdf65d83bf5b3d88e86fb2d95f",
+          "observer_runtime/bo_observer/data/sync.py": "15194deb7bf0ae08313e989d67ded0e71a0b71eba426ea41d66783bcbb71dde8",
+          "observer_runtime/bo_observer/data/watcher.py": "688c5decd1aeeb8fcfe28f69a73d791f3fec2337b8411dd882048b15cb8096bd",
+          "observer_runtime/bo_observer/delivery/__init__.py": "9caf141625be091786a81a9e4def451cdfce9713ac48e42c5ea5a05024c234d8",
+          "observer_runtime/bo_observer/delivery/architecture_guard.py": "3e0b146c7284cd60e8b1b660d6d760474645a6611790d9e4521fdf781d4f91ff",
+          "observer_runtime/bo_observer/delivery/project_bundle.py": "1555a7d202b2893b9a0320c3adfa4bec86d9f167acebe548c24505c3451c01ac",
+          "observer_runtime/bo_observer/development.py": "2f5ca6a2b2d962fac476b3dc389e9363ed37dcc975851f09d728422b78cf17a6",
+          "observer_runtime/bo_observer/graph/__init__.py": "76c4a5c43cd71a23505d400f742ddd11cb95fff821171002971a186cd7921dd4",
+          "observer_runtime/bo_observer/graph/behavior_model.py": "1f162d30039d5804af9124b3b34cd03f641b64fe2c60208532062d5d5247631e",
+          "observer_runtime/bo_observer/graph/code_structure.py": "88ca735694ea4f5dc9d8f4ddebcdadf1500ec81ba7262a4f7c2f4e459d33f23c",
+          "observer_runtime/bo_observer/graph/focus_graph.py": "9b66c17c840626d9806602d8fa56aa304ae924403d6ad3cf6afc80cf55eec95c",
+          "observer_runtime/bo_observer/graph/python_routes.py": "51885dc41c5239b19d079de9467cd6d62adb7ccdab422e764dc47f91d0151341",
+          "observer_runtime/bo_observer/graph/relations/__init__.py": "f5c28813c52dab5b17d3ce4ddf41a0e2d26b774bbbc94699f4eadd1bdfb74814",
+          "observer_runtime/bo_observer/graph/relations/cli.py": "e94b5683685d65d5c42b5facddf427d71146041c2e2bf0560e3087a21948c26f",
+          "observer_runtime/bo_observer/graph/relations/contract.py": "6664a83dbe46d0aff892bd61e626271d529af8b186d08412a23a1c24b3945671",
+          "observer_runtime/bo_observer/graph/relations/index.py": "7d40bb303779b1adab226c5159f85f0579200900c14ee5611d79fb27e722c654",
+          "observer_runtime/bo_observer/graph/relations/model.py": "0d76de5439d73a20b12a8454e998c11b26a3da5d2236e8266490200f8b3dc30c",
+          "observer_runtime/bo_observer/graph/relations/paths.py": "d1646c2c17ff43dcc17596e0d0634c097867e102bf23a9d35dab84616d550f10",
+          "observer_runtime/bo_observer/graph/source_documentation.py": "1543218763d1f1c96c32ecaa3558e5fc1c33c58a5a9b15351cca6f17878b8f78",
+          "observer_runtime/bo_observer/graph/source_files.py": "c235eb86894fdf9d62be9da1c16e5ac2a736e140f213c8ea235fea4d1d64e369",
+          "observer_runtime/bo_observer/graph/statechart_contract.py": "e0d43786de88de1463837a73481733c2f7c9b0687e0349b0de8835982cf47920",
+          "observer_runtime/bo_observer/graph/worknet_contract.py": "c05575ed8286fafd7edec8976d9dd5c28e7567ef07bac2a465e7d59205b8d38c",
+          "observer_runtime/bo_observer/model_io.py": "5bba67499bcb24df59faef643d7b86a4eb749042f8ec2d8211f7c6f3f92b61d5",
+          "observer_runtime/bo_observer/observation/__init__.py": "2c26d0b146bbcc7e1dfef52862cc10c1048f36bffc8c139e74cfc07cc2b3f43f",
+          "observer_runtime/bo_observer/observation/bo_retention.py": "9a99b037c6a12da763f938e461d0d371867a63adca70ef58131a5bdc71572f32",
+          "observer_runtime/bo_observer/observation/capture_context.py": "18caf43af106618dddd7879405c8483695430b18aa946e76d7891ee380c69344",
+          "observer_runtime/bo_observer/observation/event_batch.py": "fa18d0cf77bb6e2887b4641148250cff9b9e5cdfba842ddc31cc30371d1cc4a7",
+          "observer_runtime/bo_observer/observation/lifecycle.py": "87dca150715506fc14bf6fa0ee2de17ad9c31ebb37a7cecc758c137067ab445d",
+          "observer_runtime/bo_observer/observation/native_ingress.py": "9c26cf0e87a70d3534609288b16fdb986d1c4d32947650f418a76f40db0b1a0d",
+          "observer_runtime/bo_observer/observation/observation_scope.py": "1b9be6989b264a750c955f8755b0cbde763b28d5e971510097d21666a1d67fbf",
+          "observer_runtime/bo_observer/observation/ownership.py": "b4907a18965b52467e2860cb63f12926f97df0ae8c84c655a288eaa5a2873a68",
+          "observer_runtime/bo_observer/observation/probe.py": "b8e52f8bb4a27894a1eb21144335db19f753d5c06fd8c047643217de426259a5",
+          "observer_runtime/bo_observer/observation/provenance.py": "5e65c97c40f00f7c4033c7c912dbb155f9fac6c130fe0d0f93b5ab2c9d5e0af5",
+          "observer_runtime/bo_observer/observation/recording_session.py": "057e949da7187c00e9dabe580b12a7f62f6b79fe0102c55bb21587e74b347ed1",
+          "observer_runtime/bo_observer/observation/runtime_frames.py": "1000446fe96cfe3070528a7e454a03942e20f814ebec5f172564e759a6eea16c",
+          "observer_runtime/bo_observer/observation/semantic_probe.py": "1a38a957c7f1460ff724ba3e4c31e40f091fe6346cc191217f99cb6cba360ea1",
+          "observer_runtime/bo_observer/observation/session.py": "953a5eb6a11619bc3ea7407ed398ee25181729c50eec5da15a750d4fb734e174",
+          "observer_runtime/bo_observer/observation/telemetry.py": "48a333b800607e5cf13e4c581411a47ec90de9afcf38edb0250ecd3e2d4b68bb",
+          "observer_runtime/bo_observer/policy/__init__.py": "b60903037ae86f1a2269f09c716f543ff5e2a314713157ae3a5ee7a6558f4d27",
+          "observer_runtime/bo_observer/policy/bindings.py": "9d0d0eda68f8641d0dbdce7122c1ccb88490d2f41ffc0e4acec75a9928df11d6",
+          "observer_runtime/bo_observer/policy/definition.py": "cdcdb5c1963ebc10ed2080ad85ad96649a05d1c2ac322d106059a2ed4d5e294e",
+          "observer_runtime/bo_observer/policy/evidence.py": "2b6fb20c81fa49f070f0d9b2fbb859727d8dc7e95427e9d9d4bd27ddbcce7f70",
+          "observer_runtime/bo_observer/policy/projection.py": "266d7187905e11f455b1f4efa913250438cb9a35aa379110bf8f57072833341e",
+          "observer_runtime/bo_observer/policy/recording.py": "35786ca29b1f842a05cbc47ad575054ff88f419cdd93a6cd08ae3042a2bd4c37",
+          "observer_runtime/bo_observer/policy/runtime.py": "c6fde677ae0b68ed14660d641d72f37cf603a439b146e30430f734eeb99bcd1a",
+          "observer_runtime/bo_observer/policy/sync.py": "e85d98111f5072cc93560fdcb63846d00ce267b6c3ff4c233084cd54ebc72fe3",
+          "observer_runtime/bo_observer/protocol.py": "423359c52a370b51e18896a95fb6702cd674e538525659f158e103ac39c71fbc",
+          "observer_runtime/bo_observer/schemas/database-catalog.schema.json": "18b36f3651db1183c3b54e01b597df479b87693d656be2aa25b994df16daea6e",
+          "observer_runtime/bo_observer/schemas/database-config.schema.json": "90428255dc1e0432c58c01b36cca58b4bd9b45234f58ad7fe657227eb855af9c",
+          "observer_runtime/bo_observer/schemas/event.schema.json": "db5acc365bc4fe64e9e971ed920ec841a49d80f057ee04c2b4db095d7f5d03dc",
+          "observer_runtime/bo_observer/schemas/model.schema.json": "83bb38b985ccb74b83ce6e6ece1b6181ef2febf1ed4e0efbcdb4691d7dbd6a95",
+          "observer_runtime/bo_observer/schemas/project.schema.json": "26cdc580c30d92473bc8541568ac5006d51db40dab7f65226fba964771905f34",
+          "observer_runtime/bo_observer/schemas/relations.schema.json": "983ca27a615f367bf493d99f19159953bd4b11b2277cd2b779e6fdb7c7a11302",
+          "observer_runtime/bo_observer/schemas/snapshot.schema.json": "0bd0236ca71516791aff964ddeba428387f21d878fee42eb2092c230ab4c208e",
+          "observer_runtime/bo_observer/schemas/source.schema.json": "beea2f9be4fa2f5884d92387de0403d47df1c08497a522d36e3b466fbbabafbf",
+          "observer_runtime/bo_observer/service.py": "9365ec7d803fb5e579d5624274db47c76e7368d7dcb4554ea54c17a7c64a9458",
+          "observer_runtime/bo_observer/session_lifecycle.py": "325d5d841ffc68f0a5d305d25e6498fa6c5bec1bb14a9f7aa2faa3206e566380",
+          "observer_runtime/bo_observer/sources.py": "35fe85f3c0d92b978ed08c14c156d52c1ff619702b773e111648ab7b64fa8307",
+          "observer_runtime/bo_observer/web/__init__.py": "e30010b1ba3b74b5561b63146649ccaa753c929169ceacd13fca74f2062ae84b",
+          "observer_runtime/bo_observer/web/bo_design.py": "80883b0e24ade957adcb6315ee06eede6b83da620198d237a8d58718c5150a4e",
+          "observer_runtime/bo_observer/web/bo_web.py": "3fbeb9b3bc0d45972b1aa8b372840ce4f532ea90144b8b2bb607144aaaa33b74",
+          "observer_runtime/bo_observer/web/interface_language.py": "554911517692415375171242afa3aee1d8a0895e9506cbbdfb6063bf2cf1406c",
+          "observer_runtime/bo_observer/web/view_preferences.py": "78510cff80f7d251d075e54b09ce7f71196150d7614dc1c7aa8c340982de6609",
+          "observer_runtime/bo_observer/workflow/__init__.py": "9373a867af4c7baa99e7ce242c0a2673c65bbc1b90406c655bd29a6056ff0447",
+          "observer_runtime/bo_observer/workflow/bo_sync.py": "9d5763dd9371d901e65a0276dc4465fb3052a7089736d6add84563b516af96d4",
+          "observer_runtime/bo_observer/workflow/change_sync.py": "57c5250a31595c0ab5a3187189d9e30584bde6546b6b5d0f03ece05a9b75b3dc",
+          "observer_runtime/bo_observer/workflow/implementation_coverage.py": "85fd3f57c52214070096a89ca2c4d391e989f29c4ea2f3670bc9bf5b671a4213",
+          "observer_runtime/bo_observer/workflow/iteration_recall.py": "1f9eb676201f2fc9b8e2b1d7d9ae42d456a2225fea6a10bd320b26b1ba529f86",
+          "observer_runtime/bo_observer/workflow/mapping_contract.py": "81d8d459ae0fe74e53c1ebb6055934649c42ca4f6c36972087f4a851c75744c3",
+          "observer_runtime/bo_observer/workflow/observation_requirements.py": "62c190ed76fda56957d79e38f104758174624427fe49e968b9179852c5f491f9",
+          "observer_runtime/bo_observer/workflow/requirements_dialogue.py": "4b35c6b68c929f7b36e31ca75f5ad3740377fded8dea15de68d934007384959d",
+          "observer_runtime/bo_observer/workflow/source_migration.py": "28892f2f8a5869ba25c0eb46789915636949c36cdd5b8e04dca31a3e4e1dab54",
+          "observer_runtime/bo_observer/workflow/sync_config.py": "92324df4aedeb59468ce504b82519b9ede70bddae5662d9a161560b2465d1c58",
+          "observer_runtime/bo_observer/workflow/sync_io.py": "8e48b8c71cde20bdf3dfcaec234e713f7ca382be89f1b60264d93cd89f5c8484",
+          "observer_runtime/bo_observer/workflow/sync_verify.py": "fc82357695f4ec51805c5fb711a85e22f154a075731b24230487b9844f9136d3",
+          "observer_runtime/bo_observer/workflow/whitebox_contract.py": "b95828be430019fad6253dafbc2eb94d9cc4672eaa28cd9b93738e5292bc21e1",
+          "observer_runtime/bo_policy.py": "90237349c2ac7e907f396b5d9883e817ecdd0b7005a22577b0ae13b2b5e9dc0a",
+          "observer_runtime/bo_relations.py": "e44c5b955ca8ae8f275923f7e268644f12ecbc12d890ceb34bae4ab892abe50f",
+          "observer_runtime/bo_retention.py": "e7ac153ad89b252e31f83b40a3e2280fe323036a1d18556cdc9fc19a8e0c7bbc",
+          "observer_runtime/bo_runtime.py": "950464fafb2f11b769be56d2e2c1f73f0aff141b6cdc75a4b26a6a7060ec82af",
+          "observer_runtime/bo_stategraph.py": "d704fc786b49337ca75d06b8a8ca7b1d6471af9c08c3d02d571b434f664e23b2",
+          "observer_runtime/bo_sync.py": "e9ee8bd6eaddd07b1c2d2a801dddf9106696aa20d714e739320b2deada68fc96",
+          "observer_runtime/bo_trace.py": "4146897f4a646cee203dee7c9e126cae272dfaca3bfa151e3b20df99b3df567b",
+          "observer_runtime/bo_upgrade.py": "782f55215539db1dc4b99bc3cdba7204fb5b0e3d0872451829cd33ee3eaf4e50",
+          "observer_runtime/bo_web.py": "3cd4d09816aa6f40e8fc07d2e8b82f54ea268a90ed0d37947ce0cf03bef5e484",
+          "observer_runtime/change_sync.py": "8fa4cf28abe49f34e0bb684e137addfee9f397840bca7c552d2e27628f70024c",
+          "observer_runtime/code_structure.py": "a3fc5ea54f613a6e97595e0fc51c61fb3526bb2c50eff49bf16be02b029b4530",
+          "observer_runtime/execution_contract.py": "cf8c1cce153b039883e4f95d9913420e287f2dba4849fa00647b0a05a894fb12",
+          "observer_runtime/focus_graph.py": "c78ccf249c2f1b534d8f37f53152052049d1924d3d64f7a6d02239a31980724f",
+          "observer_runtime/implementation_coverage.py": "903a70c9b48d7423a5bd08d055ebed77d948a61027914af4a42d56070cdd5a8e",
+          "observer_runtime/mapping_contract.py": "da74f5b00a82321b151849e3d18ed8ff5d69734a86ed9c3db9d94e2187911377",
+          "observer_runtime/observation_scope.py": "98609fb51a0b6339d77e351b8ac7afadad6349602261c62384fb13540601aa36",
+          "observer_runtime/probe.py": "a8841d77a18fb9394b7b606d85d30d6aa3153b4c3c67844ae1ad5e5732f0a02e",
+          "observer_runtime/project_bundle.py": "2692501b9e3e7a1fc7d56725ac2e58dfe6299146c3a1ddfebb90fd6864361d63",
+          "observer_runtime/recording_session.py": "8ffd6e6d78ca42e1513a7a970a9ffe7f9b660859aa7f996c13175a1d99429a80",
+          "observer_runtime/requirements_dialogue.py": "e9c20117d4c99fc4c65c27fd2c2d1e4b807684d557779dfd572c9fe0169793fb",
+          "observer_runtime/runtime_frames.py": "0da8400430ba848685e2c665a4965f15e168fe33afccfc030a647d8edc82a4c3",
+          "observer_runtime/semantic_probe.py": "194e1bb1938b502c6c42d9072b364d7cb49e3c4dbc77765bf07537ee0d970563",
+          "observer_runtime/source_migration.py": "c24e78c3273921fb0f8a57fdf2f4224aca60f64768751d5fa5be81002d389f23",
+          "observer_runtime/statechart_contract.py": "0c9eedec1348036f56581c27a5f258d91f173a0771fc36d35de837c4ddcdf800",
+          "observer_runtime/sync_config.py": "266be09dc5aad0759d091963b6bac7482fdf44bf13a1e8d7f5b8d07ec65a94a0",
+          "observer_runtime/sync_io.py": "773f2e90cec8d75aeefad28b96e6a97f9a3dc843342b697f31c0458efcb2abcd",
+          "observer_runtime/sync_verify.py": "e675875938570c4aa50a5ea69a44915a9dabff91020577b56f1bbd70926970e6",
+          "observer_runtime/view_preferences.py": "f8d5859b8affc7dee0ab1bf953471b6186173ac9966dde4f651e489c28f948de",
+          "observer_runtime/whitebox_contract.py": "a498340ade31c8266ff91c6fc7a51aaa797d809e3adf66515d2aa4581a57cdb2",
+          "observer_runtime/worknet_contract.py": "0970e146edac99da9bc4bdb8a96329c29bcd8775487d67c5d2e36ec1919dbbc1",
+          "static/graph/ELK-LICENSE.md": "637e81f4a1b6b4079535c499fca05e238cf7605c1ff5b76d60d7da7ce96700c9",
+          "static/graph/NODE-ICONS-LICENSE.txt": "2e8c6223d318f5b351d4295cf54897e706279012a9c872c212a60dde60279056",
+          "static/graph/PIXI-LICENSE.txt": "5ce7447bc57f7349ffc48338782fbcabe613696e00712b20d66bc58e780f9473",
+          "static/graph/ROUTING-LICENSES.txt": "e001495320db84c4a6245911536afc546eb8066b528f0a3d484a0b80ae6fe4dc",
+          "static/graph/SPATIAL-LICENSES.txt": "93a9a40516e379e537e12ffb2513fef215100cad4bd0f77efe210f641f3f6ef2",
+          "static/graph/analysis.js": "f4cc6453bced3301b0e932dd794eccc2afd6e33f4372307ae7f2b96192ab799d",
+          "static/graph/api-observation.js": "16124b4790426b580b7b6d3108fea32597c40b567e978c5283d3b078cb663133",
+          "static/graph/caption-layout.js": "2ca0661e9f93628b382cba4e6a1beede5be17e58c73ecd5e14ef2e240ff59067",
+          "static/graph/capture-fields.js": "591ebdac069ea323e7d7dcaa1a4333dbe3c68ce1e4755637490fe965ae44ae02",
+          "static/graph/change-panel.js": "37b6059e0ba22e7c97e30dd87ba11d163b80d16a252bcb3660d4cc0522b12497",
+          "static/graph/cluster-layout.js": "a721fb4fb06ba04309a31ee72caf2290a36aec2e67c327bdde12154206ea69a1",
+          "static/graph/cluster-worker.js": "30b402761c121a3d3c41a691ed088b31e4fb05adccc330bcc630c68cb8f04480",
+          "static/graph/code-layer.js": "36015bf928949b7be3d1437f8498eb9288e1a876aa7ce65729fc7aa1804b0234",
+          "static/graph/containment-geometry.js": "1313f652cace1a0a8e5911dc7b2ef0f7bcd6fba679e688dc8f948dc02b6f9494",
+          "static/graph/containment-view.js": "3ec8e3e56f9af3ddfcac895962a70c5de0b574609b23a62b032edb5a9d3e95bf",
+          "static/graph/controls.js": "eed69f504eb042af1dfff60c56cc83902100fe83f47ba7b07da4303288fbea69",
+          "static/graph/conversation-controls.js": "a3861da41b2976b7e8b07974408e45c45668b33030be0d36dc13ccedbb5faf3c",
+          "static/graph/conversation.js": "bbd287780a29bf3d20aeef7f1054ab339bb0f8dce080f54b3d928266d3b7947d",
+          "static/graph/data-layer.js": "ac575d0cbcb14b2d03de536ba1b011376a35c0352ef2f8387f7b5310f6bac9e0",
+          "static/graph/detail-panel.js": "3451652ca02a8b494785f258149d4078b229ab9677b99032f8e5a0c6e4349cff",
+          "static/graph/edge-panel.js": "f055174e8442cfd04944815766c240ed32ae58089e2a1127129c2a9943048a14",
+          "static/graph/edge-routing.js": "07156278438859b06d9e03fa1abb79045d82441cc28ab9d1a8ad3cab15e265b7",
+          "static/graph/elk-worker.min.js": "e4f5c51c6f2fd564bb64e52e81c4a85a316ef2f24f8b90e1db5eb886c765b030",
+          "static/graph/elk.bundled.js": "1222e44f953ce7746af23801e723708f8e6f436b8b377a6a5fc7552f34a307b3",
+          "static/graph/glyphs.js": "2227821e7ce2eb332ae040ade8adc1d7e575a1be0c3b2d25944e07d460c0f00b",
+          "static/graph/graph-activation.js": "d52aeee9320260959559494b17cdfa6e374d3a0960ce1f7bfb5a40d18bc2bb00",
+          "static/graph/graph-core.js": "2957b5429eceb1e7d00eeff2d4993a0b12220fb0b4ec91fa1326348c2b889679",
+          "static/graph/graph-inventory.js": "08c65b2ec3e8dac59eee645b583ca22718a42bea4992aad94111c55c9e185f60",
+          "static/graph/graph-layers.js": "bdc8e417655bc5d137db75d73a161b9e4f31abcc1dec13c5aba7d1a194bf8bcc",
+          "static/graph/graph-links.js": "3f87a0f57af32435c18d0e6a72fb32c51caab6d5f6c97490b25f7ea3fbcb4688",
+          "static/graph/graph-names.js": "faaece70ae7678083e3b340faa36bca997f18176344dbdde528bec5023dc25f8",
+          "static/graph/i18n.js": "31184abb53366bbbc1ae2082418330faca7ebf57d4f55657eeb3c55c71d9eb5f",
+          "static/graph/index.html": "b48e6f58db1926b83c866dc647e3335e92920923ea48281e9b1c61462f6505c7",
+          "static/graph/index.js.map": "8a94297657de474134470d6c7e82163d1bad2d7e72d2325ce8716355a1b74a74",
+          "static/graph/layer-ruler.js": "c0b2856a5c8e941d855c13723f442adbf03096b3d9258bba4f92606afcc72e52",
+          "static/graph/layer-style.js": "ef82f6223a29f7ad3c89d262ad4204948284481976c240e70ac4f7f6e3c1c656",
+          "static/graph/layout.js": "319afc26996eed6e1712480f21022f9114dbd21cae14c8d61f5bead90ad68c32",
+          "static/graph/libavoid.wasm": "d17aa83a84896e65b15f4453913dac00953f4f698c7c271d43c5e93ea9ac16ac",
+          "static/graph/machine-projection.js": "57a821aeed59e30cca28b3079af08768eca1c5f4281c7e1b76926e2a7dc34c34",
+          "static/graph/messages.zh-CN.js": "843d43d1f7f585c3edbb4f34eedcf5c6a45a5c3ae80719f289c3138b5cc901bc",
+          "static/graph/node-icons.js": "d78c3315bf3d769f1403e35ab31115e91337ac09691a852236f4c0f42e034b64",
+          "static/graph/node-lifecycle.js": "331ace04c2723c9c981053b43800d1d04a7f375431f858cb7cb5f49072c343c9",
+          "static/graph/pixi.min.js": "06d9ef9823e743518793083c296d801e752db128cb1f519fbabe37e1259567ea",
+          "static/graph/polling.js": "b8f451f203af824171043d715fee3b4f2e1f2973e8591cc823a9aa7fccecc152",
+          "static/graph/preferences.js": "b5ac22f74cba5353213ba8f540ac31f97760ff881eedc6984b94322d38a80a39",
+          "static/graph/proximity-layout.js": "913697baaa470b444dc4c4d969dfae1e8a8623e449eea8c1b0a2b99efe9c7d39",
+          "static/graph/recording-timeline.js": "6dff0596a84faddafad02b8aa0414a4d32a35a7ba7ad385111c0f08a6acf862f",
+          "static/graph/recording.js": "5cd65c1eb4dd3cb594bc39a6103fdba1e8bab2ae7d199ced84a25b9a06ae2ea1",
+          "static/graph/renderer.js": "eef215a468eefc20cf6542b6a708ab2569c98d68298a5918ae0e114572847053",
+          "static/graph/replay-selection.js": "a87181f48007cdd72d51d80b7f6b453e4a91bb3c697fb32b97edcb27964db629",
+          "static/graph/replay-steps.js": "87ba2a1239d273d5d9c60ca8f8dcb941053fa054fb26e86d74d8adef5acf8c1d",
+          "static/graph/route-picking.js": "6e6c601edce191bf49d0c533e39cf37876a4d3883c8c9b2b7b5d9815ef97e1bf",
+          "static/graph/route-shapes.js": "f5871242a7402d21c418cf5944c032f1c5e21451d4455d1a27c005c449a06d14",
+          "static/graph/routing-client.js": "f7c085c7791b55a7ff91bcbf987354d1b859ca27831de9cd3f64a814c5b098e1",
+          "static/graph/routing-engine.js": "aa9498ae1eb18cc5fcd0d55405dc675a41e0ca45449a1565874bfe66abed4185",
+          "static/graph/routing-geometry.js": "4bcc340b4150d33f61c21f1a4c0e87c83cc0dba8fd6148ba1394aea0a7c875bd",
+          "static/graph/routing-libavoid.vendor.js": "59d4649c41ec2212d96298842caeceaf3162aabafe3fdf529afbbe0e68e0d801",
+          "static/graph/routing-navigation.js": "69859efe852f6282d051f84d3b59d5ab9a68660b3ccf25aa545b097143738a93",
+          "static/graph/routing-scene.js": "d7949142195518ee928265af4a8374e3c7ee6e0c2a4863f3e681b7f4b3cb31cb",
+          "static/graph/routing-tools.vendor.js": "83f6ae11335138ad959c522255264f2076bc3c02c6a6f3194f4b093b5dd6f599",
+          "static/graph/routing-worker.js": "9eda4285ef3e0e3dfcf70b8c3afd9cafad8c90e03361d16b9da402486914b814",
+          "static/graph/runtime-frames.js": "bf5147ff2f5e41b96cbc42f8d5fb44fcbe450fd29a3710b761779667750200fb",
+          "static/graph/semantic-view.js": "bf615bd3f00ee171db304b7da5d34c235fae2190bbda88ff80b40f3dad848b40",
+          "static/graph/source-view.js": "bffffc64c2ee79cfc0849f2441b28a8aa54585c7f5f16d3df2c7a837c5e789ec",
+          "static/graph/spatial-force.vendor.js": "ec52c8f1fbb6da83a7e21adc0f209fd860308f3ab7d8db61432605f4de0c597c",
+          "static/graph/spatial-geometry.js": "dc04bd006b67639510aff70bcfc0780863c2c7fd399462f1a90911651494790c",
+          "static/graph/spatial-labels.js": "94f2bb6e994d72ae179d05da2975f44536ecda5873772af64f9367d56a02a20c",
+          "static/graph/spatial-layout.js": "ff1b0f6ca82f9cbfd2da61ef15df9115fff92778f423ed89931889dc79bd37df",
+          "static/graph/spatial-model.js": "f81974663f30642b3ad0250e604ce96c75ba5a16ced50c3d9db6debdceb2695e",
+          "static/graph/spatial-paths.js": "8f0455da34a17b4081b2c523151a3864ef7995ce43531db559eac21d8e43a58f",
+          "static/graph/spatial-renderer.js": "76601a7db708cddef127371aefd19e0e672b6b5cd1a4f773b9d89152771edb38",
+          "static/graph/spatial-three.vendor.js": "991c1ff57d7b5b90342bbd31e4063f46257b6ce0f21ffdf9decab63f4d558391",
+          "static/graph/spatial-worker.js": "a1b6faca7cbf871fe880eec859250465745cb4f8976de80a8947a00b364b76fb",
+          "static/graph/step-hierarchy.js": "d3bc5d32a5a39df7238fc7b9c6e00c7fd4a82975e438e2e31fe48bb7bd22067d",
+          "static/graph/timeline.css": "ee691685483bd7f92d19fc519744c8c048524d11ee8024e141e03997365b7e7b",
+          "static/graph/trace-bars.js": "de32b88d25f5bc3a1a44765e40cc969076478b37bb689ce1610f0e3022d5fd61",
+          "static/graph/trace-context.js": "71062e06f4a584efaefd7853d05cb0f6e03a0e0184ef945f836c46d17bfa0569",
+          "static/graph/trace-density.js": "cf268121d5fe434a8ca3a72d0d8fddbc5212510b9e4047b6fdf411d129c1857c",
+          "static/graph/trace-evidence.js": "76a3551a62f22b385c2fa6375e231c6344ae891f78c1d37e31f9310d0957db60",
+          "static/graph/trace-executions.js": "f20c511faa193cb29cf34e9adee4fa1a31ea094ba6faf506cbe9933121a4b332",
+          "static/graph/trace-flows.js": "6d4171092dd28575bcd5ba8e1872850a929c1570dde05a749adc6114b8d90d5a",
+          "static/graph/trace-index.js": "fa81d9d2e66d35c44385cfcbf6dfd51c855167c3129402d8138ae6011c78fe04",
+          "static/graph/trace-lifecycles.js": "44a2c1086279487d22bc0468022ef9be463003d4e973f161d5cc88407d342ec2",
+          "static/graph/trace-paint.js": "a674fd38ba3d3fef9c83157caf201f1dc2923c26b8f0f3bf9fcbea30db26273a",
+          "static/graph/trace-residencies.js": "848731de9171a2f7b8afeee586c2e26204bf0c1c10de5e26fcc42f32db0eed89",
+          "static/graph/trace-routing.js": "21392a7a8a45bf2fc994a231ba4901172d1d974d8370e69a834dcd870c4020eb",
+          "static/graph/trace-session.js": "b1d924ba20caa9d2c478df003d5256f124398fe4c1bdcfa4d9e3828bd4cd9b17",
+          "static/graph/trace-tooltip.js": "bb364cd0512b34b0384a9db1d3bc036c4ae8685be79b0643ab967053ba03eb67",
+          "static/graph/trace-tracks.js": "d24caf3ae04f83c90b7edc79d84d36b78d2b600ed47cd2050230366b33c0a449",
+          "static/graph/trace-viewport.js": "57db630fcf5b5d9dce4c672ae952655cde1cb5572b512e95ca1c1b979d08a01d",
+          "static/graph/view-lifecycle.js": "57cad7ffdc6c8f3b28cb9232d3243216a1f4b36fd1551c9c8ca26c946fe0d422",
+          "static/graph/viewer.css": "902f28f7ec3e52c41751a40b522a6441cd8e4fc747174bb41f123b565a79a890",
+          "static/graph/viewer.js": "0a19abdc55e067d1a579e76a9ded5a7e72fc3ff7088c497904f074ac753612da"
+        },
+        "retired_files": []
+      }
+    },
+    "implementation.json": {
+      "sha256": "ddcff8765f01f07d12df7c23c723034fe961cccb7ded55407ea58b3c2e8da5c6",
+      "status": "present",
+      "features": []
+    }
+  }
+}

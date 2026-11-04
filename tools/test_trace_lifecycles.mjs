@@ -16,6 +16,7 @@ import { LiveTrace } from "../skills/vibelens/assets/stategraph-viewer/trace-ses
 import { timeline } from "../skills/vibelens/assets/stategraph-viewer/recording.js";
 import {
   status,
+  lines,
   viewTypes,
   nodeType,
 } from "../skills/vibelens/assets/stategraph-viewer/graph-core.js";
@@ -260,6 +261,89 @@ assert.equal(activity[0].duration, 8);
 assert.equal(activity[0].stages.at(-1).phase, "waiting");
 assert.equal(activity[0].stages.at(-1).end, 9);
 checks.push("native activity execution and wait intervals need no fabricated function entry");
+
+for (const [role, phase, terminal, caption] of [
+  ["query", "commit", "committed", "Committed"],
+  ["transform", "change", "transformed", "Transformed"],
+]) {
+  const node = {
+    id: `legacy-${role}`,
+    kind: "function",
+    label: `Legacy ${role}`,
+    data_role: role,
+    data_metadata: { action: role === "query" ? "transaction" : "transform" },
+    capture: { in: {}, out: { status: "string" } },
+  };
+  const events = [
+    event(node.id, "enter", 1),
+    event(node.id, phase, 11, { outputs: { status: terminal } }),
+  ];
+  const originalFacts = JSON.stringify(events);
+  const legacyView = { ...view, model: { ...view.model, nodes: [node] }, events };
+  const activation = graphActivations(events, [node]).get(node.id);
+  assert.equal(activation.phase, terminal);
+  assert.equal(activation.duration, 10);
+  assert.equal(activation.termination, phase);
+  assert.equal(status(node, legacyView, events, "latest"), "historical");
+  assert.equal(lines(node, legacyView, events, "latest")[0].text, caption);
+  const recording = { ...record(events), context: legacyView, final: legacyView };
+  const trace = buildTraceIndex(recording, timeline(recording), new Map([[node.id, node]]));
+  const interval = trace.rows.get(node.id).slices[0];
+  assert.equal(interval.terminal.state, terminal);
+  assert.equal(interval.duration, 10);
+  assert.equal(JSON.stringify(events), originalFacts);
+}
+checks.push(
+  "legacy transaction and transformation captions preserve physical terminal states and durations in Graph and Timeline",
+);
+
+// Exercise every other phase the shared resolver can produce, including an
+// ambiguous invocation and an application-registered end state.
+for (const [phases, expectedPhase, caption, expectedClass] of [
+  [["enter"], "running", "Running", "active"],
+  [["enter", "read"], "running", "Running", "active"],
+  [["enter", "wait"], "waiting", "Waiting", "blocked"],
+  [["enter", "return"], "returned", "Returned", "historical"],
+  [["enter", "error"], "exception", "Exception exit", "blocked"],
+  [["enter", "decision"], "boundary", "Observed boundary", "historical"],
+  [["enter", "enter"], "unknown", "Unknown lifecycle", "declared"],
+]) {
+  const node = { ...nodes[0], layer: "execution" };
+  const observed = phases.map((phase, index) => event(node.id, phase, index + 1));
+  const current = { ...view, model: { ...view.model, nodes: [node] }, events: observed };
+  assert.equal(graphActivations(observed, [node]).get(node.id).phase, expectedPhase);
+  assert.equal(lines(node, current, observed, "latest")[0].text, caption);
+  assert.equal(status(node, current, observed, "latest"), expectedClass);
+}
+const registeredNode = {
+  ...nodes[0],
+  layer: "execution",
+  lifecycle: {
+    states: [
+      { id: "working", label: "Reviewing", kind: "active" },
+      { id: "reviewed", label: "Review recorded", kind: "ended" },
+    ],
+    bindings: [
+      { phase: "enter", state: "working", boundary: "start" },
+      { phase: "return", state: "reviewed", boundary: "end" },
+    ],
+  },
+};
+const registeredEvents = [event("share", "enter", 1), event("share", "return", 11)];
+const registeredView = {
+  ...view,
+  model: { ...view.model, nodes: [registeredNode] },
+  events: registeredEvents,
+};
+assert.equal(graphActivations(registeredEvents, [registeredNode]).get("share").phase, "ended");
+assert.equal(
+  lines(registeredNode, registeredView, registeredEvents, "latest")[0].text,
+  "Review recorded",
+);
+assert.equal(status(registeredNode, registeredView, registeredEvents, "latest"), "historical");
+checks.push(
+  "every generic, ambiguous and registered activation phase has a defined caption and display class",
+);
 
 const live = new LiveTrace(2);
 const baseline = { ...view, events: [event("share", "return", 1)] };

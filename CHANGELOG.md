@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.11.1 — 2026-11-04
+
+- Declare project-owned source, dependency and generated-artifact boundaries at
+  setup. Share them across source discovery and project-structure inspection;
+  preserve new owned-file detection and report every pruned subtree.
+- Treat Git ignore rules as versioned planning inputs while retaining explicit
+  source ownership and strict checks for mappings outside the declared scope.
+- Keep equal-clock concurrent requests in separate Timeline bands when original
+  producer-local entry/exit evidence proves overlap; preserve measured times.
+- Restore Graph captions and neutral display classes for legacy committed and
+  transformed data events, retaining actual lifecycle states and replay cursors.
+- Preserve Unicode formatter output and real failure exits on Windows legacy
+  consoles. Pin the existing browser test environment to supported Ubuntu 24.04.
+- Retain the original CI failures and patch regression evidence.
+
 ## 0.11.0 — 2026-11-04
 
 - Add optional Python/Node OpenTelemetry collection and W3C trace propagation

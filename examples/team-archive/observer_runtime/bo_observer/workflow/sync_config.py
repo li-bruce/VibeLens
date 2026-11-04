@@ -109,11 +109,15 @@ def snapshot(root, cfg, previous=None):
         - {cfg["manifest"]}
     )
     inventory = (
-        source_inventory(root, cfg)
+        source_inventory(root, cfg, model=model)
         if cfg.get("source_scope") or cfg.get("stategraph")
         else {"files": {}, "excluded": {}}
     )
-    paths = sorted(set(paths) | set(inventory["files"]))
+    paths = sorted(
+        set(paths)
+        | set(inventory["files"])
+        | {name for name, value in inventory.get("scope_inputs", {}).items() if value is not None}
+    )
     files = {}
     for name in paths:
         path = contained(root, name)

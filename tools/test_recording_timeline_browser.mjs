@@ -23,17 +23,20 @@ const errors = [],
 let browser, page;
 const snapshot = () => page.evaluate(() => graphDebug.timeline);
 const sameCursor = async () => {
-  const trace = await snapshot();
-  assert.equal(await page.locator("#replay-position").getAttribute("data-event-id"), trace.eventId);
-  assert.equal(
-    await page.locator("#recording-timeline").getAttribute("data-event-id"),
-    trace.eventId,
-  );
-  assert.equal(await page.evaluate(() => graphDebug.view.replay.index), trace.raw);
-  assert.deepEqual(
-    JSON.parse(await page.locator("#recording-timeline").getAttribute("data-graph-transfers")),
-    trace.transfers,
-  );
+  // Sample one browser turn: playback can advance between separate round trips.
+  const { trace, positionId, timelineId, graphRaw, transfers } = await page.evaluate(() => ({
+    trace: graphDebug.timeline,
+    positionId: document.querySelector("#replay-position").getAttribute("data-event-id"),
+    timelineId: document.querySelector("#recording-timeline").getAttribute("data-event-id"),
+    graphRaw: graphDebug.view.replay.index,
+    transfers: JSON.parse(
+      document.querySelector("#recording-timeline").getAttribute("data-graph-transfers"),
+    ),
+  }));
+  assert.equal(positionId, trace.eventId);
+  assert.equal(timelineId, trace.eventId);
+  assert.equal(graphRaw, trace.raw);
+  assert.deepEqual(transfers, trace.transfers);
   return trace;
 };
 try {
@@ -219,7 +222,28 @@ try {
   await sameCursor();
   assert.match(await page.locator(".trace-selected").innerText(), /\d(?:\.\d+)? (?:ms|µs|s)/);
   assert.equal((await page.locator(".trace-selected").innerText()).includes("Open call"), false);
+  const legacyData = await page.evaluate(() =>
+    ["db.transaction", "db.normalize"].map((id) => {
+      const box = graphDebug.graph.boxes.find((node) => node.id === id);
+      return {
+        id,
+        phase: box.activation.phase,
+        state: box.state,
+        caption: box.rows[0].text,
+        duration: box.activation.duration,
+      };
+    }),
+  );
+  assert.deepEqual(
+    legacyData.map(({ id, phase, state, caption }) => ({ id, phase, state, caption })),
+    [
+      { id: "db.transaction", phase: "committed", state: "historical", caption: "Committed" },
+      { id: "db.normalize", phase: "transformed", state: "historical", caption: "Transformed" },
+    ],
+  );
+  assert.ok(legacyData.every((node) => node.duration > 0));
   checks.push({ actualDataTransformHasCompletedDuration: true });
+  checks.push({ legacyDataPhysicalPhasesAndNeutralClosedStyles: legacyData });
 
   await page.selectOption(".trace-scope", "view");
   const scoped = await snapshot();

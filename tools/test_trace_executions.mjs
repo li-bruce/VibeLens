@@ -25,6 +25,7 @@ const add = (ms, user, node, phase, call, parent = null, depends = []) => {
     phase,
     call_id: call,
     parent_call_id: parent,
+    project_id: "test-project",
     build_id: "build",
     run_id: "run",
     producer_id: "worker",
@@ -200,6 +201,99 @@ assert.equal(
   2,
   "declared external notifications remain point roots without an invented duration",
 );
+
+// A producer can witness real overlap inside one millisecond. Sequence is a
+// display-order witness within that producer, not an invented elapsed duration.
+function equalClockIndex(sequence, transform = (event) => event, contextCount = 0) {
+  const witnessed = sequence.map(([actor, phase], ordinal) =>
+    transform({
+      ...events[0],
+      id: "equal-clock:" + ordinal,
+      seq: ordinal + 1,
+      entity: actor,
+      attempt: actor,
+      call_id: "equal-call:" + actor,
+      phase,
+      observed_at: at(1),
+    }),
+  );
+  const sameClock = {
+    ...record,
+    started_at: at(1),
+    ended_at: at(1),
+    events: witnessed.slice(contextCount),
+    context: { ...record.context, events: witnessed.slice(0, contextCount) },
+  };
+  const before = structuredClone(sameClock);
+  const result = buildTraceIndex(sameClock, timeline(sameClock), all);
+  assert.deepEqual(sameClock, before, "ordering never mutates recorded facts or timestamps");
+  assert.ok(result.executions.chains.every((chain) => chain.start === chain.end));
+  assert.ok(
+    [...result.rows.values()].flatMap((row) => row.slices).every((slice) => slice.duration === 0),
+  );
+  return result;
+}
+const interleaved = [
+  ["a", "enter"],
+  ["b", "enter"],
+  ["a", "return"],
+  ["b", "return"],
+];
+const sameClock = equalClockIndex(interleaved);
+assert.equal(sameClock.executions.lanes.length, 2, "ordered entry-entry-exit is real overlap");
+assert.deepEqual(
+  sameClock.executions.chains.map((chain) => [
+    chain.orderWitness.start.seq,
+    chain.orderWitness.end.seq,
+  ]),
+  [
+    [1, 3],
+    [2, 4],
+  ],
+);
+assert.equal(
+  equalClockIndex([
+    ["a", "enter"],
+    ["a", "return"],
+    ["b", "enter"],
+    ["b", "return"],
+  ]).executions.lanes.length,
+  1,
+  "ordered serial requests reuse one band despite equal timestamps",
+);
+assert.equal(
+  equalClockIndex([
+    ["a", "enter"],
+    ["b", "enter"],
+    ["b", "return"],
+    ["a", "return"],
+  ]).executions.lanes.length,
+  2,
+  "reverse completion order preserves witnessed overlap",
+);
+assert.equal(
+  equalClockIndex(interleaved, (event) => event, 2).executions.lanes.length,
+  2,
+  "original context entry IDs retain sequence evidence across recording boundaries",
+);
+for (const field of ["project_id", "build_id", "run_id", "producer_id", "stream_id"]) {
+  const separated = equalClockIndex(interleaved, (event) => ({ ...event, [field]: event.entity }));
+  assert.equal(separated.executions.lanes.length, 1, field + " never orders separate producers");
+}
+for (const field of ["seq", "producer_id", "run_id", "build_id", "project_id"]) {
+  const unknown = equalClockIndex(interleaved, (event) => ({ ...event, [field]: undefined }));
+  assert.equal(unknown.executions.lanes.length, 1, field + " missing retains time-only behavior");
+  assert.ok(unknown.executions.chains.every((chain) => chain.orderWitness === null));
+}
+for (const duplicate of [
+  (event) => ({ ...event, seq: event.entity === "b" ? event.seq - 1 : event.seq }),
+  (event) => ({ ...event, seq: event.seq === 2 ? 1 : event.seq }),
+]) {
+  const ambiguous = equalClockIndex(interleaved, duplicate);
+  assert.equal(ambiguous.executions.chains.length, 2);
+  assert.equal(ambiguous.executions.lanes.length, 1, "duplicate sequence cannot prove overlap");
+  assert.ok(ambiguous.executions.chains.every((chain) => chain.orderWitness === null));
+}
 console.log(
   JSON.stringify({
     passed: true,
@@ -209,6 +303,6 @@ console.log(
     collapsedRows: collapsed.length,
     links: flows.length,
     sharedEvent: release.id,
-    checks: 15,
+    checks: 31,
   }),
 );

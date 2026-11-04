@@ -14,6 +14,7 @@ from .query import query, representation_links
 from .filesystem import inventory as project_inventory
 from .observation import qualify
 from ..observation.telemetry import load_registrations
+from ..source_scope import semantic_inventory
 
 
 class CodeGraph:
@@ -30,7 +31,7 @@ class CodeGraph:
 
     def inputs(self):
         """Use the same independently declared source scope as iteration checks."""
-        config = self.root / "sync.json"
+        config = contained(self.root, "sync.json")
         if config.is_file():
             cfg = read(config)
         else:
@@ -69,13 +70,23 @@ class CodeGraph:
         with self.lock:
             cfg, model = self.inputs()
             telemetry = load_registrations(self.root, model)
-            inventory = source_inventory(self.root, cfg)
-            project = project_inventory(self.root, cfg, inventory)
-            # Source inventory reports hidden implementation separately from parser errors.
-            fingerprint = digest([inventory, project])
             from ..sources import adapter_identity
 
-            fingerprint = digest([fingerprint, adapter_identity(), model, telemetry])
+            adapter = adapter_identity()
+            if getattr(self, "inspection_adapter", None) != adapter:
+                self.project_inspections.clear()
+                self.inspection_adapter = adapter
+            inventory = source_inventory(
+                self.root,
+                cfg,
+                inspection_cache=self.project_inspections,
+                model=model,
+                telemetry=telemetry,
+            )
+            project = project_inventory(self.root, cfg, inventory)
+            # Source inventory reports hidden implementation separately from parser errors.
+            fingerprint = digest([semantic_inventory(inventory), semantic_inventory(project)])
+            fingerprint = digest([fingerprint, adapter, model, telemetry])
             if self.graph is None or fingerprint != self.fingerprint:
                 index = scan(self.root, inventory["files"], self.previous)
                 index["errors"] += [
@@ -93,6 +104,16 @@ class CodeGraph:
                     "files": list(inventory["files"]),
                     "excluded": inventory["excluded"],
                     "project_excluded": project["excluded"],
+                    **{
+                        key: inventory[key]
+                        for key in (
+                            "pruned",
+                            "owned_overrides",
+                            "scope_inputs",
+                            "source_roots",
+                            "scope_id",
+                        )
+                    },
                 }
                 self.fingerprint = fingerprint
                 if self.persist:
@@ -100,7 +121,14 @@ class CodeGraph:
 
                     write(self.cache, self.graph)
             representation_links(model, self.graph)
-            return self.graph, model
+            # Output directories can appear during a read (for example this
+            # service's cache). Report their presence without changing the
+            # semantic cache or mutating an earlier returned graph snapshot.
+            graph = {
+                **self.graph,
+                "scope": {**self.graph["scope"], "pruned": inventory["pruned"]},
+            }
+            return graph, model
 
     def view(self, **options):
         if options.get("projection") == "project":
@@ -244,9 +272,17 @@ class CodeGraph:
         """
         with self.lock:
             cfg, model = self.inputs()
-            inventory = source_inventory(self.root, cfg, inspection_cache=self.project_inspections)
+            from ..sources import adapter_identity
+
+            adapter = adapter_identity()
+            if getattr(self, "inspection_adapter", None) != adapter:
+                self.project_inspections.clear()
+                self.inspection_adapter = adapter
+            inventory = source_inventory(
+                self.root, cfg, inspection_cache=self.project_inspections, model=model
+            )
             project = project_inventory(self.root, cfg, inventory)
-            fingerprint = digest(project)
+            fingerprint = digest([semantic_inventory(project), inventory["scope_id"], adapter])
             cached = getattr(self, "project_cache", None)
             if cached is None or cached[0] != fingerprint:
                 empty = scan(self.root, [])
@@ -262,9 +298,23 @@ class CodeGraph:
                     "files": list(inventory["files"]),
                     "excluded": inventory["excluded"],
                     "project_excluded": project["excluded"],
+                    **{
+                        key: inventory[key]
+                        for key in (
+                            "pruned",
+                            "owned_overrides",
+                            "scope_inputs",
+                            "source_roots",
+                            "scope_id",
+                        )
+                    },
                 }
                 self.project_cache = fingerprint, graph
-            graph = self.project_cache[1]
+            cached_graph = self.project_cache[1]
+            graph = {
+                **cached_graph,
+                "scope": {**cached_graph["scope"], "pruned": inventory["pruned"]},
+            }
             # Source bindings resolve to files here; optional symbols remain absent.
             graph = {
                 **graph,
@@ -317,7 +367,13 @@ class CodeGraph:
                 "revision",
                 "errors",
             ):
-                if saved.get(key) != fresh.get(key):
+                actual = semantic_inventory(fresh[key]) if key == "scope" else fresh.get(key)
+                expected = (
+                    semantic_inventory(saved[key])
+                    if key == "scope" and isinstance(saved.get(key), dict)
+                    else saved.get(key)
+                )
+                if expected != actual:
                     errors.append("Saved code structure differs from current source: " + key)
         return {
             "enabled": enabled,

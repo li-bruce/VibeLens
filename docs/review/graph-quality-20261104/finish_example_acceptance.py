@@ -23,6 +23,9 @@ def main():
     parser.add_argument("--pass-label", default="final")
     parser.add_argument("--freeze", action="store_true")
     parser.add_argument("--frozen-label", default=CHANGE)
+    parser.add_argument(
+        "--review-note", default="", help="Describe the reviewed follow-up without replacing guards"
+    )
     args = parser.parse_args()
     assert args.pass_label.replace("-", "").isalnum(), "Use a simple evidence pass label"
     assert args.frozen_label.replace("-", "").isalnum(), "Use a simple frozen record label"
@@ -75,6 +78,7 @@ def main():
         assert process.returncode in expected_codes, log.read_text(encoding="utf-8")[-6000:]
 
     python = (sys.executable, "-B", "-X", "utf8")
+    review_note = args.review_note.strip()
     run("generate", *python, "tooling/build_graph.py" if delivery else "tooling/build_model.py")
     run(
         "seal",
@@ -84,7 +88,8 @@ def main():
         "--root",
         ".",
         "--reason",
-        "Reviewed graph-quality viewer/API/source-mapping update, complete planar labels, explicit D3 packEnclose export and exact vendor hash; business/state definitions and expectations retained.",
+        "Reviewed graph-quality viewer/API/source-mapping update, complete planar labels, explicit D3 packEnclose export and exact vendor hash; business/state definitions and expectations retained."
+        + (" " + review_note if review_note else ""),
     )
     run("scan", *python, f"{runtime}/bo_sync.py", "scan", "--root", ".")
     run(
@@ -149,6 +154,8 @@ def main():
             },
         },
     }
+    if review_note:
+        review["decisions"]["abstraction"]["reason"] += " " + review_note
     write(change / "review.json", review)
     for stage in ("inspect", "verify", "accept", "check"):
         run(stage, *python, f"{runtime}/change_sync.py", stage, "--root", ".")
