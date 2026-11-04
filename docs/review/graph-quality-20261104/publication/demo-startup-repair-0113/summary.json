@@ -1,0 +1,59 @@
+{
+  "schema": "vibelens-demo-startup-repair/v1",
+  "valid": true,
+  "verified_at": "2026-11-04T11:29:35.604801+00:00",
+  "release_commit": "d14f6091eb4b84e7df0fd5fe9149841f200b0472",
+  "scope": "Static public demonstration startup only; Skill, state engine, native examples and published tag/archive unchanged",
+  "cause": "The eager English iframe src started before the parent chose a version and locale; initial stage replaced that in-flight document, aborting case-data/v1.json and raising an uncaught fetch error.",
+  "repair": "Start the iframe at about:blank. The existing stage function owns the first localized navigation and subsequent same-version scene reuse; ready/postMessage and actual error reporting stay intact.",
+  "first_public_failure": "../public-v0.11.3-01/chrome-pages.json",
+  "exact_stack_and_aborted_request": "../public-v0.11.3-01/demo-diagnostic.json",
+  "original_public_valid": false,
+  "runs": [
+    {
+      "path": "local-chrome/result.json",
+      "valid": true,
+      "cases": 6
+    },
+    {
+      "path": "local-chrome-final/result.json",
+      "valid": true,
+      "cases": 6
+    }
+  ],
+  "requirements": [
+    "Six fresh actual Chrome contexts per run, English and Chinese each three times",
+    "Hold each real child case-data response until the parent selected foundation; no synthetic ready events or sleeps",
+    "Exactly one localized viewer document navigation across foundation/run",
+    "Real rendered nodes, relations and recorded event in both scenes",
+    "Zero pageerrors and zero failed requests; no filtered abort exceptions"
+  ],
+  "checks": {
+    "node_syntax": {
+      "exit_code": 0
+    },
+    "case_artifacts": {
+      "exit_code": 0,
+      "message": "64 original archive sources, recorded cases, causal transfers and screenshots verified"
+    },
+    "source_quality_format": {
+      "exit_code": 0,
+      "log": "source-quality.log"
+    },
+    "prettier": {
+      "exit_code": 0
+    },
+    "git_diff_check": {
+      "exit_code": 0
+    }
+  },
+  "source_hashes": {
+    "docs/site/demo.html": "ddd89f6fc08e28c66a7439191349b4b2a365c75aa3cd9c16ccc9380048e3be17",
+    "tools/test_demo_startup_browser.mjs": "0a11812e5cf395c2fa708e7a417b33d6d00bb022f264ffd8999fe4dea20bb222",
+    ".github/workflows/check.yml": "d533491eb49a027d26b4d1359a65d427a25d0bd4fae09a788220c841360fda2f"
+  },
+  "skill_tree": "2df145bcd7839014c9382029723f43bc6e0dd3c6",
+  "skill_and_examples_worktree_unchanged": true,
+  "ci_integration": "Existing timeline-browser job adds build_site_viewer.py and test_demo_startup_browser.mjs; all prior steps and assertions remain.",
+  "remote_actions_by_verifier": false
+}

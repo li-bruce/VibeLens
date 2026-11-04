@@ -88,6 +88,10 @@ jobs:
       - run: python tools/test_api_observation_browser.py
         env:
           BO_API_OBSERVATION_EVIDENCE: .validation/api-observation-browser
+      - run: python tools/build_site_viewer.py
+      - run: node tools/test_demo_startup_browser.mjs
+        env:
+          BO_DEMO_STARTUP_EVIDENCE: .validation/demo-startup-browser
       - run: node tools/test_recording_timeline_browser.mjs
         env:
           BO_TIMELINE_EVIDENCE: .validation/timeline-browser
@@ -131,3 +135,4 @@ jobs:
             .validation/caption-*
             .validation/graph-quality-browser
             .validation/api-observation-browser
+            .validation/demo-startup-browser

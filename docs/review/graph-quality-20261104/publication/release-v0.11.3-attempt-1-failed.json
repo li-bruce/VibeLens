@@ -1,0 +1,60 @@
+{
+  "schema": "vibelens-publication-failure/v1",
+  "version": "v0.11.3",
+  "target_commit": "d14f6091eb4b84e7df0fd5fe9149841f200b0472",
+  "run_id": 41819981166,
+  "run_attempt": 1,
+  "status": "completed",
+  "conclusion": "failure",
+  "html_url": "https://github.com/li-bruce/VibeLens/actions/runs/41819981166",
+  "job": [
+    {
+      "id": 126540405556,
+      "name": "publish",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "number": 1,
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 2,
+          "name": "Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 3,
+          "name": "Publish reviewed notes and frozen trial archives",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "number": 6,
+          "name": "Post Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 7,
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "failure": {
+    "step": "Publish reviewed notes and frozen trial archives",
+    "http_status": 500,
+    "endpoint": "https://api.github.com/repos/li-bruce/VibeLens/releases",
+    "exit_code": 1,
+    "log_time": "2026-11-04T11:19:58.5797497Z",
+    "description": "GitHub release creation returned HTTP 500; initial release remained unavailable (404) at verification. This is a retained failed attempt, not a passed release."
+  },
+  "remote_mutations_by_verifier": false,
+  "rerun_requested_by_verifier": false
+}
