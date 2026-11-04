@@ -36,6 +36,72 @@ server.stderr.on("data", (value) => {
 const checks = [],
   errors = [];
 const midSpan = process.env.BO_EXECUTION_MIDSPAN === "1";
+
+/** Read a completed render and its endpoints in the same browser turn.
+ * A separate wait followed by evaluate can straddle a queued reroute: its
+ * first frame clears the previous paths before the worker supplies new ones.
+ * Flush the control's scheduled frame first, then retain the exact geometry
+ * that satisfied readiness. Assertions below still reject missing/bad anchors.
+ */
+async function routedAnchors(mode, style, previousFrame) {
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
+  const handle = await page.waitForFunction(
+    ({ mode, style, previousFrame }) => {
+      const g = graphDebug,
+        spatial = mode === "3D",
+        frame = spatial ? g.spatial?.frames : g.metrics.drawCount,
+        paths = spatial ? g.spatial?.edgePorts : g.planarPorts;
+      if (
+        g.layoutBusy ||
+        document.querySelector("#edge-routing").value !== style ||
+        (spatial && g.spatial?.routing !== style) ||
+        !(frame > previousFrame) ||
+        !paths?.length
+      )
+        return false;
+      const anchors = g.presentation.edges.flatMap((edge) => {
+        const route = paths.find((path) => path.id === edge.id);
+        if (!route) return [];
+        return [
+          [edge.from, edge.sourceRegion, route.start],
+          [edge.to, edge.targetRegion, route.end],
+        ].flatMap(([id, region, port]) => {
+          if (region) return [];
+          const box = g.graph.byId.get(id),
+            position = spatial ? g.spatialPositions[id] : { x: box.x + box.w / 2, y: box.y + 31 };
+          return [
+            {
+              id,
+              error: Math.hypot(
+                port.x - position.x,
+                port.y - position.y,
+                spatial ? port.z - position.z : 0,
+              ),
+            },
+          ];
+        });
+      });
+      return {
+        mode,
+        style,
+        frame,
+        paths,
+        anchors,
+        edgeIds: g.presentation.edges.map((edge) => edge.id),
+        routing: spatial ? g.spatial.routeSolver : g.metrics.routeSolver,
+      };
+    },
+    { mode, style, previousFrame },
+  );
+  try {
+    return await handle.jsonValue();
+  } finally {
+    await handle.dispose();
+  }
+}
+
 async function startRecording() {
   // Recording startup is asynchronous; workers must start after its boundary
   // is acknowledged unless this fixture intentionally captures mid-span.
@@ -222,43 +288,12 @@ try {
         mode,
       );
       await page.selectOption("#edge-routing", style);
-      await page.waitForFunction(
-        ({ mode, style, previousFrame }) =>
-          !graphDebug.layoutBusy &&
-          (mode === "3D"
-            ? graphDebug.spatial?.routing === style &&
-              graphDebug.spatial.frames > previousFrame &&
-              graphDebug.spatial.edgePorts.length > 0
-            : graphDebug.metrics.drawCount > previousFrame && graphDebug.planarPorts.length > 0),
-        { mode, style, previousFrame },
+      const sample = await routedAnchors(mode, style, previousFrame);
+      await writeFile(
+        path.join(out, `routing-${mode.toLowerCase()}-${style}.json`),
+        JSON.stringify(sample, null, 2) + "\n",
       );
-      const anchors = await page.evaluate((mode) => {
-        const g = graphDebug,
-          paths = mode === "3D" ? g.spatial.edgePorts : g.planarPorts;
-        return g.presentation.edges.flatMap((edge) => {
-          const route = paths.find((path) => path.id === edge.id);
-          if (!route) return [];
-          return [
-            [edge.from, edge.sourceRegion, route.start],
-            [edge.to, edge.targetRegion, route.end],
-          ].flatMap(([id, region, port]) => {
-            if (region) return [];
-            const box = g.graph.byId.get(id),
-              position =
-                mode === "3D" ? g.spatialPositions[id] : { x: box.x + box.w / 2, y: box.y + 31 };
-            return [
-              {
-                id,
-                error: Math.hypot(
-                  port.x - position.x,
-                  port.y - position.y,
-                  mode === "3D" ? port.z - position.z : 0,
-                ),
-              },
-            ];
-          });
-        });
-      }, mode);
+      const { anchors } = sample;
       assert.ok(anchors.length > 0, `${mode} ${style} exercises actual rendered paths`);
       assert.ok(
         anchors.every((anchor) => anchor.error < 1e-5),
