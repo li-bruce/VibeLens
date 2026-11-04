@@ -1,6 +1,7 @@
 # Graph quality review — 2026-11-04
 
-Working branch: `fix/graph-observation-quality`.
+Initial branch: `fix/graph-observation-quality`.
+Source-boundary patch: `fix/source-scope-reserved-boundaries`.
 Baseline: `7f7907d2`; protected business/state engines remain unchanged.
 
 ## Scope and status
@@ -12,9 +13,9 @@ Baseline: `7f7907d2`; protected business/state engines remain unchanged.
 | Source proximity inside type clusters | [Layout review](layout/README.md) | Focused and real browser checks passed. |
 | Data operations | [Runtime check](data-operations-01.json) and [observer exclusion](observer-exclusion-01.json) | Passed; queries/transactions/transformations retain their distinct purpose. |
 | Live databases | [First run](live-database-01.json), [retest](live-database-02.json) | Retest passed with the dedicated PostgreSQL, MongoDB, Redis and Neo4j fixture healthy. |
-| Managed examples | [Delivery](examples-delivery-api-focus-final-acceptance-summary.json), [archive API runtime phase](examples-team-archive-api-runtime-final-check.json) | Native generation, review, verification, acceptance and current-input checks passed. Final complete-repository gate is recorded separately. |
-| Full repository | [Frozen patch gate](full-verification-08-frozen.json), [candidate gate](../release-v0.11.1/candidate-gate.json) | Passed locally, including databases and clean Git export. Remote publication checks are recorded separately. |
-| Fresh development dialogue | [v1 audit](trial-audit/v1-completion-audit.md), [visible dialogue](trial-audit/dialogue-v1/dialogue.md) | GitHub-installed v0.11.0 completed the first application. The confirmed sharing-note iteration awaits the official patch upgrade. |
+| Managed examples | [Current managed-example review](managed-examples.md), [clean export](clean-staged-export-reserved-boundaries-0112-report.json) | Both v0.11.2 native candidates passed; 682 frozen inputs match Git. |
+| Full repository | [Current host gate](full-verification-10-reserved-scope-host.json), [patch review](../release-v0.11.2/README.md) | Passed locally, including databases, strict native checks and independent observer-free packages. Remote publication checks are recorded separately. |
+| Fresh development dialogue | [Current trial review](trial-audit/README.md), [visible v1 dialogue](trial-audit/dialogue-v1/dialogue.md) | V1 and the sharing-note iteration completed. Focused controls and the next managed patch upgrade have separate current results. |
 
 Data structure describes databases, tables/collections and fields. Data operations
 records reads, writes, transactions and transformations, including selected
@@ -33,8 +34,9 @@ application or real HTTP traffic from that application. The managed examples,
 live database fixtures and backend tests have separate reports. In particular,
 [API snapshot tests](api-snapshot-native-gate-retest.json) verify source discovery,
 recording snapshots and rejection of invalid mappings, without executing Flask
-requests. The requested fresh-chat design, implementation and iteration trial
-remains a separate acceptance step.
+requests. The [fresh-chat review](trial-audit/README.md) records actual application
+development and the sharing-note iteration separately. Final focused viewer
+controls and the next managed patch upgrade have their own current status there.
 
 New projects require both source explanations (`bo_code.py docs --strict`) and
 HTTP observation coverage (`bo_code.py api-check --strict`) in each coding

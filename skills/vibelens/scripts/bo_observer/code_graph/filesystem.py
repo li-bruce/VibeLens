@@ -46,12 +46,6 @@ def inventory(root, config, source):
         boundary = policy.record_prune(name)
         if boundary:
             return
-        # View preferences change while using the graph, not while coding.
-        if any(
-            name == prefix or name.startswith(prefix + "/")
-            for prefix in ("bo_stategraph/config", "bo_stategraph/data")
-        ):
-            return
         reason = source["excluded"].get(name) or next(
             (v for pattern, v in exclusions.items() if fnmatch.fnmatchcase(name, pattern)), None
         )

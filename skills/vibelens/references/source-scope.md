@@ -64,12 +64,23 @@ The shared policy also recognizes standard dependency/cache locations. A normal
 directory named `data`, `runtime` or `review` may contain project-owned code;
 classify the actual output subtree rather than excluding its whole parent by
 name. The standard `review/runtime` evidence subtree is an output location.
+`bo_stategraph/config` and `bo_stategraph/data` are reserved observer outputs in
+the same shared policy. Preferences and recordings there stay outside source,
+API and filesystem discovery. Explicit hash-only watched inputs retain their
+integrity checks.
 
 An explicit additional source root restores only its own subtree. For example,
 `roots: [".", "third_party/local_plugins"]` includes local plugin source while
 keeping sibling installed packages outside the scan. Check its declarations and
 parameters normally. An override is a source-ownership decision, not a waiver of
 mapping or runtime evidence.
+
+If application code must live inside a reserved observer directory, add its
+narrow file or subtree as a source root, for example
+`[".", "bo_stategraph/config/local_rules"]`. This restores that code consistently
+in bindings, AST, API and the project tree while preference and recording
+siblings remain outside discovery. Prefer ordinary application source locations
+when planning a new project.
 
 Existing `exclude` patterns remain reviewed, soft exclusions. Their code is still
 inspected for hidden application implementations and entrypoints. Use classified

@@ -33,6 +33,14 @@ The six protected state/engine source files remain covered by the release gate.
 
 ## Checks and measurements
 
+The [v0.11.2 follow-up](../../release-v0.11.2/README.md) repairs a later-found
+reserved-directory inconsistency and expands the scope suite to 25 tests.
+The [focused receipt](../trial-audit/scope-reserved-assessment/fix-regressions.json)
+also records 31 code-graph, 20 API and 18 source-documentation tests. Its four
+new cases cover reserved outputs, rejected physical bindings, narrow owned-source
+overrides and preference/recording independence. The measurements below retain
+the original policy's earlier runs; they were not rewritten as new benchmarks.
+
 [The 21-test host run](../source-scope-final-regressions.json) checks pruning
 before descent, supported owned languages, new top-level source, local overrides,
 invalid declarations, links/junctions, direct scans, source/parameter/policy/

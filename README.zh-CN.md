@@ -124,6 +124,6 @@ AI 根据当前图匹配具体节点，遇到重名或多份记录时先确认�
 
 许可证：[MIT](LICENSE)。可视化使用开源 PixiJS、ELK.js，不包含 yFiles 专有代码。见[第三方声明](THIRD_PARTY_NOTICES.md)。
 
-持续更新版从 `main` 安装；本次固定版本为 `v0.11.1`。见[版本说明](docs/releases/v0.11.1.md)、[本版验收](docs/review/release-v0.11.1/README.md)和[实现评估](docs/assessment/2026-10-24/README.md)。
+持续更新版从 `main` 安装；本次固定版本为 `v0.11.2`。见[版本说明](docs/releases/v0.11.2.md)、[本版验收](docs/review/release-v0.11.2/README.md)和[实现评估](docs/assessment/2026-10-24/README.md)。
 
 节点图标采用 MIT 许可的 Tabler Icons；可独立替换的 libavoid 路由库采用 LGPL-2.1-or-later。详见第三方许可说明。

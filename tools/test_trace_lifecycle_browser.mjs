@@ -275,23 +275,62 @@ try {
     if (!midSpan) {
       // The actual SQL/check calls last microseconds. Inspect their real time
       // scale rather than inflating them to look long in the full recording.
-      const entry = state.routes.find((route) => route.type === "call");
       const check = state.lifecycles.find((slice) => slice.node === "check");
-      const factor = Math.max(
-        16,
-        (state.window.end - state.window.start) / Math.max(0.25, check.duration * 4),
-      );
       const beforeZoom = state.window.end - state.window.start;
-      const bounds = await canvas.boundingBox();
-      await page.mouse.move(bounds.x + entry.route[0].x, bounds.y + 38);
-      await page.keyboard.down("Control");
-      await page.mouse.wheel(0, -Math.log(factor) / 0.005);
-      await page.keyboard.up("Control");
+      const targetTime = (check.start + check.end) / 2;
+      const targetSpan = Math.min(beforeZoom / 16, Math.max(0.25, check.duration * 4));
+      // Route origins belong to the parent call. Zoom at the actual child time,
+      // in bounded stages so integer mouse coordinates retain sub-ms accuracy.
+      for (let attempt = 0; attempt < 8; attempt++) {
+        let current = await trace();
+        const width = current.window.end - current.window.start;
+        if (width <= targetSpan * 1.02) break;
+        // After the first zoom there is room to center a child near the recording
+        // boundary. Keep both its entry and return visible at the next scale.
+        const centeredStart = Math.max(0, targetTime - width / 2);
+        const panPixels = ((centeredStart - current.window.start) / width) * current.geometry.plot;
+        if (attempt && Math.abs(panPixels) > 1) {
+          const bounds = await canvas.boundingBox();
+          await page.mouse.move(
+            bounds.x + current.geometry.left + current.geometry.plot / 2,
+            bounds.y + 38,
+          );
+          await page.keyboard.down("Shift");
+          await page.mouse.wheel(0, panPixels);
+          await page.keyboard.up("Shift");
+          await page.waitForFunction(
+            ({ start, tolerance }) =>
+              Math.abs(graphDebug.timeline.window.start - start) <= tolerance,
+            { start: centeredStart, tolerance: width / current.geometry.plot },
+          );
+          current = await trace();
+        }
+        const factor = Math.min(16, width / targetSpan);
+        const bounds = await canvas.boundingBox();
+        const anchor =
+          current.geometry.left +
+          current.geometry.plot * ((targetTime - current.window.start) / width);
+        await page.mouse.move(bounds.x + anchor, bounds.y + 38);
+        await page.keyboard.down("Control");
+        await page.mouse.wheel(0, -Math.log(factor) / 0.005);
+        await page.keyboard.up("Control");
+        await page.waitForFunction(
+          (expected) =>
+            !graphDebug.timeline.zooming &&
+            graphDebug.timeline.window.end - graphDebug.timeline.window.start <= expected * 1.02,
+          width / factor,
+        );
+      }
       await page.waitForFunction(
-        (width) =>
+        ({ width, targetTime, raw }) =>
           !graphDebug.timeline.zooming &&
-          graphDebug.timeline.window.end - graphDebug.timeline.window.start < width / 10,
-        beforeZoom,
+          graphDebug.timeline.window.end - graphDebug.timeline.window.start < width / 10 &&
+          graphDebug.timeline.window.start <= targetTime &&
+          graphDebug.timeline.window.end >= targetTime &&
+          graphDebug.timeline.routes.some(
+            (route) => route.type === "call" && route.raw === raw && route.fromRow !== route.toRow,
+          ),
+        { width: beforeZoom, targetTime, raw: check.raw },
       );
       state = await trace();
       await page.screenshot({ path: path.join(out, "local-call-lifetimes.png") });
@@ -299,6 +338,7 @@ try {
     const route = state.routes.find(
       (route) =>
         route.type === (midSpan ? "return" : "call") &&
+        (midSpan || route.raw === state.lifecycles.find((slice) => slice.node === "check").raw) &&
         route.fromRow !== route.toRow &&
         route.route[1].y > state.geometry.top + 5,
     );

@@ -499,6 +499,177 @@ class SharedSourceScopeTests(unittest.TestCase):
             compile_scope(self.root, self.configuration(roots=[".", "owned-link"]))
         self.assertEqual((target / "old.py").read_text(encoding="utf-8"), "def old(): return 1\n")
 
+    def test_reserved_observer_outputs_are_pruned_before_source_and_tree_descent(self):
+        from bo_observer.code_graph.filesystem import inventory as project_inventory
+
+        self.project()
+        self.write("modules/local.py", "def local(): return 1\n")
+        for directory in ("bo_stategraph/config", "bo_stategraph/data"):
+            self.write(directory + "/invalid.py", "not application Python !!!\n")
+        blocked = {self.root / "bo_stategraph/config", self.root / "bo_stategraph/data"}
+        original = os.scandir
+
+        def inspect(directory):
+            current = Path(directory)
+            if any(current == path or current.is_relative_to(path) for path in blocked):
+                raise AssertionError("Reserved observer output was traversed: " + str(current))
+            return original(directory)
+
+        config = self.configuration()
+        with patch("os.scandir", side_effect=inspect):
+            sources = source_inventory(self.root, config)
+            tree = project_inventory(self.root, config, sources)
+        self.assertIn("modules/local.py", sources["files"])
+        self.assertIn("modules/local.py", tree["entries"])
+        self.assertTrue(
+            {"bo_stategraph/config", "bo_stategraph/data"}
+            <= {item["path"] for item in sources["pruned"]}
+        )
+        self.assertFalse(
+            any(
+                name.startswith(("bo_stategraph/config/", "bo_stategraph/data/"))
+                for name in sources["files"]
+            )
+        )
+        self.assertFalse(
+            any(
+                name.startswith(("bo_stategraph/config/", "bo_stategraph/data/"))
+                for name in tree["entries"]
+            )
+        )
+
+    def test_reserved_outputs_reject_direct_ast_and_physical_bindings_by_default(self):
+        from bo_observer.source_scope import compile_scope, validate_executable_sources
+        from bo_observer.sources import scan
+
+        self.project()
+        policy = compile_scope(self.root, self.configuration())
+        for name in ("bo_stategraph/config/local.py", "bo_stategraph/data/local.py"):
+            self.write(name, "def local(value): return value\n")
+            with self.subTest(path=name):
+                with self.assertRaisesRegex(ValueError, "source scope"):
+                    scan(self.root, [name])
+                with self.assertRaisesRegex(ValueError, "source scope"):
+                    validate_executable_sources(policy, cfg={"code_files": [name]})
+                for role in ("source", "represents"):
+                    with (
+                        self.subTest(role=role),
+                        self.assertRaisesRegex(ValueError, "source scope"),
+                    ):
+                        validate_executable_sources(
+                            policy,
+                            model={
+                                "nodes": [{"id": "local", role: {"path": name, "symbol": "local"}}]
+                            },
+                        )
+
+    def test_narrow_reserved_file_and_subtree_overrides_restore_api_and_file_owners(self):
+        from bo_observer.code_graph.index import identity
+        from bo_observer.code_graph.service import CodeGraph
+        from bo_observer.source_scope import compile_scope, validate_executable_sources
+        from bo_observer.sources import scan
+
+        owned = {
+            "bo_stategraph/config/local_rules/api.py": "/owned-config",
+            "bo_stategraph/data/local_api.py": "/owned-data",
+        }
+        for name, route in owned.items():
+            self.write(
+                name,
+                'from flask import Flask\napp = Flask(__name__)\n@app.get("'
+                + route
+                + '")\ndef read():\n    """Read local project rules."""\n    return []\n',
+            )
+        config = self.configuration(
+            roots=[".", "bo_stategraph/config/local_rules", "bo_stategraph/data/local_api.py"]
+        )
+        config["code_files"] = ["worker.py", *owned]
+        self.project(config)
+        policy = compile_scope(self.root, config)
+        validate_executable_sources(
+            policy,
+            cfg=config,
+            model={
+                "nodes": [
+                    {"id": name, "source": {"path": name, "symbol": "read"}} for name in owned
+                ]
+            },
+        )
+        self.assertTrue(set(owned) <= scan(self.root, owned)["units"].keys())
+        service = CodeGraph(self.root, persist=False)
+        graph, _ = service.refresh()
+        self.assertEqual(graph["errors"], [])
+        nodes = {node["id"]: node for node in graph["nodes"]}
+        for name in owned:
+            file_id = identity("file", name)
+            function = nodes[graph["symbols"][name + "::read"]]
+            self.assertEqual(function["parent"], file_id)
+            self.assertIn(file_id, nodes)
+            self.assertIn(nodes[file_id]["parent"], nodes)
+        api_before = service.api_snapshot()
+        self.assertEqual({node["api"]["path"] for node in api_before["nodes"]}, set(owned.values()))
+        project_before = service.view(projection="project", limit=5000)
+        self.assertEqual(project_before["errors"], [])
+        self.assertTrue(set(owned) <= project_before["project"]["entries"].keys())
+        self.write("bo_stategraph/config/views/local.json", '{"position": 1}')
+        self.write("bo_stategraph/data/recordings/run.json", '{"event": 1}')
+        self.write("bo_stategraph/config/unowned.py", "invalid observer artifact !!!\n")
+        self.write("bo_stategraph/data/unowned.py", "invalid observer artifact !!!\n")
+        after, _ = service.refresh()
+        project_after = service.view(projection="project", limit=5000)
+        self.assertEqual(after["revision"], graph["revision"])
+        self.assertEqual(service.api_snapshot()["revision"], api_before["revision"])
+        self.assertEqual(project_after["revision"], project_before["revision"])
+        self.assertNotIn(
+            "bo_stategraph/config/views/local.json", project_after["project"]["entries"]
+        )
+        self.assertNotIn(
+            "bo_stategraph/data/recordings/run.json", project_after["project"]["entries"]
+        )
+        for name in ("bo_stategraph/config/unowned.py", "bo_stategraph/data/unowned.py"):
+            with self.assertRaisesRegex(ValueError, "source scope"):
+                policy.assert_source(name)
+
+    def test_reserved_hash_only_watches_still_invalidate_snapshot_and_build(self):
+        from bo_observer.graph.behavior_model import capture
+        from bo_observer.workflow.sync_config import snapshot
+
+        names = ["bo_stategraph/config/settings.json", "bo_stategraph/data/native-model.json"]
+        config = self.configuration()
+        config.update(
+            {
+                "config_path": "sync.json",
+                "model": "bo_stategraph/project.json",
+                "manifest": "manifest.json",
+                "acceptance": "acceptance.json",
+                "code_files": ["worker.py"],
+                "watch_files": names,
+            }
+        )
+        project = self.project(config)
+        project["model"]["source_files"].extend(names)
+        self.write("bo_stategraph/project.json", json.dumps(project))
+        self.write("acceptance.json", '{"cases": []}')
+        for name in names:
+            self.write(name, '{"version": 1}')
+        before = capture(self.root, project["model"])
+        with patch(
+            "bo_observer.workflow.sync_config.tool_fingerprints",
+            return_value={"fixture": "reserved"},
+        ):
+            original = snapshot(self.root, config)
+            for name in names:
+                self.write(name, '{"version": 2}')
+            current = snapshot(self.root, config)
+        after = capture(self.root, project["model"])
+        self.assertNotEqual(original["id"], current["id"])
+        self.assertNotEqual(before["build_id"], after["build_id"])
+        for name in names:
+            self.assertIn(name, original["files"])
+            self.assertIn(name, before["files"])
+            self.assertNotEqual(before["files"][name], after["files"][name])
+            self.assertNotIn(name, current["source_inventory"]["files"])
+
 
 if __name__ == "__main__":
     unittest.main()

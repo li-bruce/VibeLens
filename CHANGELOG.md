@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.11.2 — 2026-11-04
+
+- Share reserved observer-output boundaries across source indexing, API mapping,
+  executable bindings and the physical project tree. Explicit owned-source
+  overrides restore the corresponding file owners and endpoints together.
+- Preserve personal-layout and recording isolation without hiding declared
+  application code or producing a missing-file-owner graph error.
+- Stabilize native Timeline acceptance at microsecond scales with staged zoom
+  around observed call times, and declare SQLite runtime artifacts in fixtures.
+
+
 ## 0.11.1 — 2026-11-04
 
 - Declare project-owned source, dependency and generated-artifact boundaries at

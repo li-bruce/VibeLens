@@ -1,5 +1,43 @@
 # Managed example integration
 
+## v0.11.2 reserved output boundary acceptance
+
+Both examples use the managed 0.11.2 runtime and viewer copies. Source discovery
+and the filesystem graph now share the reserved output boundaries for
+`bo_stategraph/config` and `bo_stategraph/data`. An explicitly owned source
+subtree can still be included. The existing literal artifact declarations,
+business/state code, probes, original baselines and every test expectation were
+retained. Watched configuration files keep their byte-integrity checks.
+
+The complete generate, seal, scan, inspect, verify, accept and check workflow
+passed. Each example then passed an additional current-input check after the
+new record was frozen as `graph-quality-20261104-reserved-boundaries-0112`.
+
+| Example | Final candidate | Configured project tests | Result |
+| --- | --- | --- | --- |
+| Delivery | `989172c07cd2004ffd06c39fce9c6d6011138c1905e0d0281d0b1a9a3a8d08ea` | 9 | Passed |
+| Team archive | `5dc99b8fb5bf534e2a15ab53fb6e4e317070fa05d9bac47681a9e84fd911f46f` | 5 | Passed |
+
+- [Delivery acceptance](examples-delivery-reserved-boundaries-0112-final-acceptance-summary.json)
+- [Archive acceptance](examples-team-archive-reserved-boundaries-0112-final-acceptance-summary.json)
+- [Delivery post-freeze check](examples-delivery-reserved-boundaries-0112-post-freeze-check.json)
+- [Archive post-freeze check](examples-archive-reserved-boundaries-0112-post-freeze-check.json)
+
+The initial stale-review refusals remain in the before-review reports. Both
+final inspections and all verification stages passed after explicit review of
+unchanged source. No baseline, source requirement or check was relaxed.
+
+The [staged-input comparison](example-reserved-boundaries-0112-staged-parity-02.json)
+checks all 682 accepted model, intent, managed-runtime, watched-file and scope
+inputs against exact Git blob bytes. The first comparison covered 680 inputs;
+the repeatable helper now also includes both root intent files. Both reports
+are retained. The [clean Git export](clean-staged-export-reserved-boundaries-0112-report.json)
+passed both unchanged native current checks from the frozen receipts; its
+[command receipt](clean-staged-export-reserved-boundaries-0112.json) records exit 0.
+Both `.gitignore` files retain the accepted 194-byte LF form; the
+historical `whitebox-v04/review.json` index blob remains equal to Git HEAD.
+Earlier frozen records and failed clean-export evidence remain intact.
+
 ## v0.11.1 portable source-scope acceptance
 
 The clean Git export rejected the earlier source-scope approvals because both

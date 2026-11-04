@@ -1,5 +1,13 @@
 # v0.11.1 patch review
 
+Published: [v0.11.1](https://github.com/li-bruce/VibeLens/releases/tag/v0.11.1),
+commit `7cc0bce908efdac25f70c6d4439a5210b235ad7c`.
+The [exact candidate's eight CI jobs](../graph-quality-20261104/publication/ci-candidate-7cc0bce9-final.json)
+all passed. [Public release and Pages verification](../graph-quality-20261104/publication/public-v0.11.1-01.json)
+checks the tag, deployed commit and frozen archive digest.
+The [official tag installation](../graph-quality-20261104/trial-audit/release-install-parity.json)
+matches all 305 candidate Skill files used for the independent iteration.
+
 The [graph-quality review](../graph-quality-20261104/README.md) retains the initial
 v0.11.0 local acceptance, publication, remote failures and subsequent repairs.
 
@@ -9,7 +17,7 @@ The [local candidate gate](candidate-gate.json) passed full repository verificat
 source quality, scope regressions, real-browser checks, both managed examples and
 an isolated Git export. The [independent audit](../graph-quality-20261104/publication/candidate-independent-audit.md)
 matches every ZIP entry and the protected cores to frozen Git content. Remote CI,
-publication and the fresh GitHub-installed observer upgrade remain separate checks.
+publication and the fresh GitHub-installed observer upgrade have separate receipts.
 
 The independent chat installed v0.11.0 from GitHub and completed its first
 application: login, private upload, sharing, download and revocation. The
@@ -18,7 +26,7 @@ records business, mapping and actual HTTP evidence separately. A second dialogue
 confirmed a private sharing-note iteration. The coordinating test installed the
 frozen candidate directly from GitHub commit `c56fd19f` and checked all 305 files;
 the managed runtime upgrade and iteration are now in progress. Official release
-tag parity will be checked separately after publication.
+tag parity subsequently passed without replacing or modifying the active copy.
 
 The first candidate CI run found one remaining test-launch assumption: the
 caption browser fixture required a local `.venv`, while GitHub provides Python

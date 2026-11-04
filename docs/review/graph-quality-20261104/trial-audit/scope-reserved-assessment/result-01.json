@@ -1,0 +1,70 @@
+{
+  "kind": "Tiny temporary source fixture; canonical static analysis only. No application imports/requests or active trial changes.",
+  "source_paths": [
+    "bo_stategraph/config/local_api.py",
+    "bo_stategraph/data/local_api.py"
+  ],
+  "samples": [
+    {
+      "case": "default",
+      "roots": [
+        "."
+      ],
+      "source_inventory_files": [
+        "bo_stategraph/config/local_api.py",
+        "bo_stategraph/data/local_api.py"
+      ],
+      "direct_AST_files": [
+        "bo_stategraph/config/local_api.py",
+        "bo_stategraph/data/local_api.py"
+      ],
+      "direct_AST_errors": [],
+      "physical_bindings": {
+        "bo_stategraph/config/local_api.py": "accepted",
+        "bo_stategraph/data/local_api.py": "accepted"
+      },
+      "views": {
+        "api": {
+          "exception": "KeyError",
+          "message": "'bo_stategraph/config/local_api.py'"
+        },
+        "project": {
+          "exception": "KeyError",
+          "message": "'bo_stategraph/config/local_api.py'"
+        }
+      }
+    },
+    {
+      "case": "explicit-owned",
+      "roots": [
+        ".",
+        "bo_stategraph/config",
+        "bo_stategraph/data"
+      ],
+      "source_inventory_files": [
+        "bo_stategraph/config/local_api.py",
+        "bo_stategraph/data/local_api.py"
+      ],
+      "direct_AST_files": [
+        "bo_stategraph/config/local_api.py",
+        "bo_stategraph/data/local_api.py"
+      ],
+      "direct_AST_errors": [],
+      "physical_bindings": {
+        "bo_stategraph/config/local_api.py": "accepted",
+        "bo_stategraph/data/local_api.py": "accepted"
+      },
+      "views": {
+        "api": {
+          "exception": "KeyError",
+          "message": "'bo_stategraph/config/local_api.py'"
+        },
+        "project": {
+          "exception": "KeyError",
+          "message": "'bo_stategraph/config/local_api.py'"
+        }
+      }
+    }
+  ],
+  "finding": "Reserved config/data Python files remain source/AST/binding eligible. Both default and explicitly owned roots encounter a full/API graph KeyError because filesystem omits their file owners. Project-only projection omits both subtrees."
+}

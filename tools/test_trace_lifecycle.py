@@ -170,6 +170,27 @@ def prepare(root, registered=False):
         json.dumps(project, indent=2), encoding="utf-8"
     )
     validate_graph(model)
+    # SQLite's runtime files are data outputs, including its transient journal.
+    # Their creation must not masquerade as a source/API graph revision.
+    (root / "sync.json").write_text(
+        json.dumps(
+            {
+                "model": "bo_stategraph/project.json",
+                "source_scope": {
+                    "roots": ["."],
+                    "prune": [
+                        {
+                            "path": "sharing.sqlite" + suffix,
+                            "category": "artifact",
+                            "reason": "Synthetic SQLite runtime storage",
+                        }
+                        for suffix in ("", "-journal", "-wal", "-shm")
+                    ],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     with closing(sqlite3.connect(root / "sharing.sqlite")) as db:
         db.execute("create table grants(actor text primary key, allowed integer not null)")
         db.execute("insert into grants values ('owner', 1)")
@@ -187,6 +208,32 @@ class LifecycleTests(unittest.TestCase):
 
     def tearDown(self):
         self.temp.cleanup()
+
+    def test_sqlite_journal_does_not_change_source_or_api_revision(self):
+        session = GraphSession(self.root)
+        try:
+            before = session.view()
+            with closing(sqlite3.connect(self.root / "sharing.sqlite")) as db:
+                db.execute("insert into shares values (?, ?)", ("file-1", "reader"))
+                self.assertTrue((self.root / "sharing.sqlite-journal").is_file())
+                during = session.view()
+                self.assertEqual(before["manifest"]["build_id"], during["manifest"]["build_id"])
+                self.assertEqual(
+                    before["api_structure"]["revision"], during["api_structure"]["revision"]
+                )
+                self.assertFalse(
+                    any(
+                        node.get("project_path", "").startswith("sharing.sqlite")
+                        for node in during["project_structure"]["nodes"]
+                    )
+                )
+                db.rollback()
+            after = session.view()
+            self.assertEqual(
+                before["api_structure"]["revision"], after["api_structure"]["revision"]
+            )
+        finally:
+            session.close()
 
     def test_nested_python_spans_and_exception_identity(self):
         events = []

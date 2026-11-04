@@ -1,0 +1,118 @@
+{
+  "scope": "Test infrastructure and synthetic fixture only; published Skill/runtime assets unchanged",
+  "sources": [
+    "tools/test_trace_lifecycle_browser.mjs",
+    "tools/test_trace_lifecycle.py"
+  ],
+  "main_failure": {
+    "run_id": 41797429992,
+    "job_id": 126464735608,
+    "commit": "7cc0bce908efdac25f70c6d4439a5210b235ad7c",
+    "assertion": "assert.ok(route)",
+    "line_before_repair": 305,
+    "raw_evidence": "lifecycle-main-registered-original/",
+    "artifact_url": "https://github.com/li-bruce/VibeLens/actions/runs/41797429992/artifacts/13305869190",
+    "artifact_sha256": "15ec05c8c18398f5fdbb69e92d7479ca9c4b5b44ab6f8cc5d13ea8b8209271b7",
+    "actual_check_interval_ms": [
+      304.891,
+      305.322
+    ],
+    "screenshot_window_ms_approx": [
+      300.2,
+      301.8
+    ]
+  },
+  "proven_zoom_cause": "The old test used the parent call route origin as the zoom pivot, then applied a single very large native zoom. Parent origin differs from child entry; integer pointer coordinates further limit precision. The intended child call was correctly outside the final viewport, so route selection had no result.",
+  "immutable_recording_reproduction": {
+    "script": "reproduce_registered_zoom.mjs",
+    "final_evidence": "lifecycle-main-zoom-reproduction-04/",
+    "old_visible_routes": 0,
+    "new_visible_routes": 5,
+    "native_zoom_stages": 3,
+    "expected_check_entry_route_present": true,
+    "writes": 0,
+    "intermediate_evidence": "lifecycle-main-zoom-reproduction-03/ shows that midpoint anchoring alone can retain the midpoint but crop the entry. Native recentering between stages preserves the entire actual interval."
+  },
+  "zoom_repair": "Derive the pivot from the real check lifetime; use at most16x native wheel zoom per stage, recompute time→pixel mapping after each settled stage, and native horizontal recentering where space permits. Require the actual check-entry call route. Keep original >10x final zoom, exact raw-event hover/click and all duration assertions.",
+  "additional_fixture_hazard": {
+    "retained_timeout": "lifecycle-main-staged-zoom-retest-1/",
+    "observed": "Recording stopped with12 events/no gaps; current final build/model/API revisions matched. No source edit or permanent binding drift was found.",
+    "causal_limit": "The failed browser's instantaneous API revision was not retained, so its exact stop-view invalidation cause is not claimed as proven.",
+    "independently_reproduced": "A real held SQLite write creates sharing.sqlite-journal. Without runtime path classification, its temporary project-file entry changes API revision while native build remains unchanged, then reverts after rollback.",
+    "before": "sqlite-journal-api-revision-before.json",
+    "after": "sqlite-journal-api-revision-after.json",
+    "repair": "Declare exact SQLite file/journal/WAL/SHM paths as artifact outputs in the synthetic fixture sync.json. Keep roots ['.'] and every source guard intact.",
+    "regression": "LifecycleTests.test_sqlite_journal_does_not_change_source_or_api_revision"
+  },
+  "focused_native_tests": {
+    "passed": 7,
+    "chunk_id": "092aad"
+  },
+  "full_chrome_retests": [
+    {
+      "variant": "registered1",
+      "evidence": "lifecycle-main-staged-zoom-retest-2/",
+      "passed": true,
+      "events": 12
+    },
+    {
+      "variant": "registered2",
+      "evidence": "lifecycle-main-staged-zoom-retest-3/",
+      "passed": true,
+      "events": 12
+    },
+    {
+      "variant": "registered3",
+      "evidence": "lifecycle-main-staged-zoom-retest-4/",
+      "passed": true,
+      "events": 12
+    },
+    {
+      "variant": "default",
+      "evidence": "lifecycle-main-storage-default-retest/",
+      "passed": true,
+      "events": 12
+    },
+    {
+      "variant": "intentional mid-span",
+      "evidence": "lifecycle-main-storage-midspan-retest/",
+      "passed": true,
+      "events": 5
+    },
+    {
+      "variant": "concurrent pre-span",
+      "evidence": "execution-main-storage-default-retest/",
+      "passed": true,
+      "events": 33,
+      "groups": 2,
+      "layerRows": 10
+    },
+    {
+      "variant": "concurrent mid-span",
+      "evidence": "execution-main-storage-midspan-retest/",
+      "passed": true,
+      "events": 15,
+      "groups": 2,
+      "layerRows": 10
+    }
+  ],
+  "style": {
+    "black": true,
+    "ruff": true,
+    "prettier": true,
+    "eslint": true
+  },
+  "unchanged_requirements": "No skips, arbitrary sleeps, inflated durations, altered recorded facts or relaxed assertions. No product or Skill source edits.",
+  "remote_status": {
+    "tag_run": 41797493971,
+    "tag_successful_jobs": 8,
+    "main_run": 41797429992,
+    "main_successful_jobs": 7,
+    "main_failed_jobs": 1,
+    "raw_receipts": [
+      "ci-tag-7cc0bce9-final.json",
+      "ci-main-7cc0bce9-final.json"
+    ]
+  }
+}
+

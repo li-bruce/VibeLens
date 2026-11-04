@@ -1,0 +1,72 @@
+{
+  "mode": "Isolated temporary fixture; canonical functions only; no app execution/requests or active trial changes.",
+  "corrects_result_01_prose": "The project-only CodeGraph view also crashes (as its recorded exception already shows); direct filesystem inventory, measured here, omits both files.",
+  "samples": [
+    {
+      "roots": [
+        "."
+      ],
+      "sources": [
+        "bo_stategraph/config/local_api.py",
+        "bo_stategraph/data/local_api.py"
+      ],
+      "direct_endpoints": [
+        {
+          "source": "bo_stategraph/config/local_api.py",
+          "route": "/owned-0",
+          "methods": [
+            "GET"
+          ]
+        },
+        {
+          "source": "bo_stategraph/data/local_api.py",
+          "route": "/owned-1",
+          "methods": [
+            "GET"
+          ]
+        }
+      ],
+      "filesystem_entries": [
+        ".",
+        "bo_stategraph",
+        "sync.json"
+      ],
+      "source_and_binding_guard_accepts_both": true,
+      "filesystem_omits_both": true
+    },
+    {
+      "roots": [
+        ".",
+        "bo_stategraph/config",
+        "bo_stategraph/data"
+      ],
+      "sources": [
+        "bo_stategraph/config/local_api.py",
+        "bo_stategraph/data/local_api.py"
+      ],
+      "direct_endpoints": [
+        {
+          "source": "bo_stategraph/config/local_api.py",
+          "route": "/owned-0",
+          "methods": [
+            "GET"
+          ]
+        },
+        {
+          "source": "bo_stategraph/data/local_api.py",
+          "route": "/owned-1",
+          "methods": [
+            "GET"
+          ]
+        }
+      ],
+      "filesystem_entries": [
+        ".",
+        "bo_stategraph",
+        "sync.json"
+      ],
+      "source_and_binding_guard_accepts_both": true,
+      "filesystem_omits_both": true
+    }
+  ]
+}

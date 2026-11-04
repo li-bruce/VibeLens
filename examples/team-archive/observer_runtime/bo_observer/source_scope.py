@@ -50,6 +50,16 @@ ARTIFACT_NAMES = {
 IGNORED = DEPENDENCY_NAMES | ARTIFACT_NAMES
 DEFAULT_PRUNES = (
     {
+        "path": "bo_stategraph/config",
+        "category": "artifact",
+        "reason": "Observer preferences and display configuration",
+    },
+    {
+        "path": "bo_stategraph/data",
+        "category": "artifact",
+        "reason": "Observer recordings and generated runtime data",
+    },
+    {
         "path": "review/runtime",
         "category": "artifact",
         "reason": "Generated runtime review records",
