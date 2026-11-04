@@ -32,3 +32,19 @@ The auditor was initially prepared without running against the active iteration.
 Later runs are retained separately as `remark-v2-independent-01` and `-02`;
 the second run's selected receipts and remaining revision flags are explained
 in `remark-v2-independent-02-notes.md`. Its existence alone implies no trial pass.
+
+## Separate observer-only measurement
+
+`--observer-receipt PATH` optionally selects an existing browser sidecar carrying
+an independent UI-only all-mode capture, producer settlement and preference-save
+ACK. It does not replace the real-operation `browser`/`replay` receipts. Existing
+default requirements are unchanged when the option is absent.
+
+```powershell
+.venv/Scripts/python.exe docs/review/graph-quality-20261104/trial-audit/audit_accepted_trial.py --phase observer-v0113 --out NEW_UNIQUE_NAME --receipt current=review/remark-v2/results/upgrade-v0113/final-check.json --receipt docs=review/remark-v2/results/upgrade-v0113/docs-strict.json --receipt api=review/remark-v2/results/upgrade-v0113/api-strict.json --receipt browser=review/remark-v2/results/upgrade-v0113/browser-operation-result.json --receipt replay=review/remark-v2/results/upgrade-v0113/replay-selection-result.json --receipt runtime=review/remark-v2/results/upgrade-v0113/final-parity.json --observer-receipt review/remark-v2/results/upgrade-v0113/browser-acceptance-receipt.json
+```
+
+[The v0.11.3 notes](observer-v0113-independent-02-notes.md) explain the retained
+first audit and the later correction separating missing raw URL identity from
+measured observer exclusion. A later scoped-control pass does not erase an
+earlier default-layout preservation failure.

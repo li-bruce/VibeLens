@@ -53,6 +53,15 @@ files were verified identical to the later official v0.11.1 tag download in
 - [Dialogue through the completed upgrade](dialogue-v2-upgrade-v0112-completed-01/dialogue.md):
   69 public messages with simulated-answer provenance and session capabilities
   removed before publication.
+- [Managed v0.11.3 finite review](remark-v2/upgrade-v0113-01/README.md): 126 business
+  assertions, fresh strict identities, actual UI-only zero-event measurement,
+  paused Timeline motion, screenshots and the unresolved first default-layout
+  preservation failure. This complete turn is not all-passed.
+- [v0.11.3 independent audit notes](observer-v0113-independent-02-notes.md):
+  both audits retained; missing raw URL identity is distinct from measured zero
+  observer business events and namespace-file/save-ACK consistency.
+- [Completed v0.11.3 dialogue](dialogue-v2-upgrade-v0113-completed-01/dialogue.md):
+  79 visible messages with simulated-user provenance and privacy normalization.
 - [State residence diagnosis](timeline-state-review.md): adjacent intervals
   reflect the same file's real successive states; no artificial duration added.
 
@@ -86,8 +95,14 @@ commit also passed [all eight remote CI jobs](../publication/ci-candidate-ad50f7
 The application's managed v0.11.2 runtime upgrade and finite native/browser checks
 are now complete. The read-only audit retains one missing measured browser
 observer-exclusion field; all current source/build/candidate identity checks
-agree. The separate v0.11.3 paused-Timeline animation fix has fresh framework
-regressions and still needs its own managed-upgrade acceptance.
+agree. The separate v0.11.3 managed upgrade and finite checks are now complete.
+The fresh independent audit matches sources, accepted build and both saved
+recordings, including a measured UI-only zero-event capture. Its first default
+preservation result remains false and the writer is unestablished. Existing 2D
+positions were retained, but one existing 3D X/Z position changed. Later scoped
+controls preserve default revision 174; that pass does not retroactively change
+the earlier failure. See the [v0.11.3 packet](remark-v2/upgrade-v0113-01/README.md)
+for the preserved timing, source hashes, separate outcomes and remaining limit.
 
 The [source-scope adoption fixture](source-scope-adoption/README.md) records the
 initial directory-planning requirements and their targeted execution tests.

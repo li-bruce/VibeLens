@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 import stat
+from urllib.parse import parse_qs, urlparse
 
 
 HERE = Path(__file__).resolve().parent
@@ -96,14 +97,20 @@ class Evidence:
                         different.append(name)
             except (OSError, ValueError):
                 unavailable.append(name)
-        return {"declared": len(expected), "different": different, "unavailable_or_private": unavailable}
+        return {
+            "declared": len(expected),
+            "different": different,
+            "unavailable_or_private": unavailable,
+        }
 
 
 def receipt_summary(value):
     value = value or {}
     checks = value.get("checks", {})
     booleans = (
-        {key: item for key, item in checks.items() if type(item) is bool} if isinstance(checks, dict) else {}
+        {key: item for key, item in checks.items() if type(item) is bool}
+        if isinstance(checks, dict)
+        else {}
     )
     return {
         "valid": value.get("valid"),
@@ -142,7 +149,9 @@ def preference_changes(old, new):
                 "entry_retained": after is not None,
                 "unchanged": before == after,
                 "old_positions": len(positions),
-                "retained_positions": sum(node in (b or {}).get("positions", {}) for node in positions),
+                "retained_positions": sum(
+                    node in (b or {}).get("positions", {}) for node in positions
+                ),
                 "changed_positions": [
                     node
                     for node, position in positions.items()
@@ -184,7 +193,11 @@ def audit(args):
         checks[name] = a == b if a is not None and b is not None else None
 
     equal("active_phase", active.get("change"), phase)
-    equal("candidate_verified_and_accepted", verification.get("candidate_id"), accepted.get("candidate_id"))
+    equal(
+        "candidate_verified_and_accepted",
+        verification.get("candidate_id"),
+        accepted.get("candidate_id"),
+    )
     verification_copy = evidence.read(
         "review/" + args.phase + "/results/finalized-verification.json", required=False
     )
@@ -218,7 +231,9 @@ def audit(args):
     )
     equal("observed_accepted_build", payload.get("build_id"), accepted.get("build_id"))
     equal("maintenance_candidate", maintenance.get("candidate_id"), accepted.get("candidate_id"))
-    checks["native_observation_command_exit_zero"] = envelope.get("exit_code") == 0 if envelope else None
+    checks["native_observation_command_exit_zero"] = (
+        envelope.get("exit_code") == 0 if envelope else None
+    )
     checks["complete_project_root_retained"] = (
         "." in cfg.get("source_scope", {}).get("roots", []) if cfg.get("stategraph") else None
     )
@@ -267,7 +282,9 @@ def audit(args):
         if summary["build_id"] is not None:
             equal(kind + "_accepted_build", summary["build_id"], accepted.get("build_id"))
         if summary["candidate_id"] is not None:
-            equal(kind + "_accepted_candidate", summary["candidate_id"], accepted.get("candidate_id"))
+            equal(
+                kind + "_accepted_candidate", summary["candidate_id"], accepted.get("candidate_id")
+            )
         if kind in {"api", "docs"}:
             equal(kind + "_source_revision", summary["revision"], code.get("revision"))
         checks[kind + "_receipt_present"] = receipts[kind] is not None
@@ -282,9 +299,13 @@ def audit(args):
                 else None
             )
         if kind == "api":
-            checks["api_complete"] = summary["api_coverage"] == "complete" if receipts[kind] else None
+            checks["api_complete"] = (
+                summary["api_coverage"] == "complete" if receipts[kind] else None
+            )
         if kind == "current":
-            checks["native_current_status"] = summary["status"] == "current" if receipts[kind] else None
+            checks["native_current_status"] = (
+                summary["status"] == "current" if receipts[kind] else None
+            )
     browser_path = Path(summaries["browser"]["path"])
     browser_recording_id = recording_id(receipts["browser"])
     if args.recording:
@@ -306,13 +327,19 @@ def audit(args):
         recording_id(receipts["replay"]),
         (replay_recording or {}).get("id"),
     )
-    equal("replay_recording_build", (replay_recording or {}).get("build_id"), accepted.get("build_id"))
+    equal(
+        "replay_recording_build", (replay_recording or {}).get("build_id"), accepted.get("build_id")
+    )
     checks["recording_no_gaps"] = not recording.get("gaps") if recording else None
     native = {
         name: {
             "status": report.get("status"),
             "error_count": len(report.get("errors", [])),
-            **({"assertions": report["assertions"]} if name == "business" and "assertions" in report else {}),
+            **(
+                {"assertions": report["assertions"]}
+                if name == "business" and "assertions" in report
+                else {}
+            ),
         }
         for name, report in verification.get("reports", {}).items()
     }
@@ -333,7 +360,11 @@ def audit(args):
             status = event.get("outputs", {}).get("status")
             if nodes.get(node, {}).get("layer") == "api" and event.get("phase") == "return":
                 api_returns.append(type(status) is int and 100 <= status <= 599)
-            if nodes.get(node, {}).get("layer") == "api" and type(status) is int and 100 <= status <= 599:
+            if (
+                nodes.get(node, {}).get("layer") == "api"
+                and type(status) is int
+                and 100 <= status <= 599
+            ):
                 inputs = event.get("inputs", {})
                 statuses[(inputs.get("method", ""), inputs.get("route", ""), status)] += 1
         health = run.get("probe_health", {})
@@ -352,30 +383,190 @@ def audit(args):
         )
     checks["no_detected_observer_runtime_events"] = not observer_events if payload else None
     checks["observed_event_builds_match"] = (
-        all(set(run["event_builds"]) <= {accepted.get("build_id")} for run in runs) if runs else None
+        all(set(run["event_builds"]) <= {accepted.get("build_id")} for run in runs)
+        if runs
+        else None
     )
-    checks["actual_api_return_statuses_present"] = bool(api_returns) and all(api_returns) if payload else None
+    checks["actual_api_return_statuses_present"] = (
+        bool(api_returns) and all(api_returns) if payload else None
+    )
     browser_checks = summaries["browser"]["boolean_checks"]
     observer_check = next(
         (
             name
-            for name in ("viewer_controls_no_business_events", "observer_queries_do_not_write_business_data")
+            for name in (
+                "viewer_controls_no_business_events",
+                "observer_queries_do_not_write_business_data",
+            )
             if name in browser_checks
         ),
         None,
     )
     checks["browser_observer_exclusion_receipt"] = browser_checks.get(observer_check)
+    if args.observer_receipt:
+        # An independent UI-only capture has a different recording identity from
+        # the real business operation. Validate both sources without merging them.
+        observer = evidence.read(args.observer_receipt) or {}
+        start = observer.get("empty_start", {})
+        before = observer.get("empty_active_before", {}).get("active", {})
+        after = observer.get("empty_active_after", {}).get("active", {})
+        stop = observer.get("empty_stop", {})
+        saved = observer.get("empty_recording", {})
+        identity = saved.get("id")
+        observer_path = (
+            "bo_stategraph/data/recordings/" + identity + ".json"
+            if isinstance(identity, str) and re.fullmatch(r"[a-zA-Z0-9_-]+", identity)
+            else None
+        )
+        actual = evidence.read(observer_path) if observer_path else None
+        actual = actual or {}
+        boundaries = [start, before, after, stop]
+        checks["observer_capture_identity"] = bool(identity) and all(
+            value.get("id") == identity for value in [*boundaries, actual]
+        )
+        checks["observer_capture_build"] = bool(accepted.get("build_id")) and all(
+            value.get("build_id") == accepted["build_id"] for value in [*boundaries, actual]
+        )
+        counts = [value.get("events") for value in [*boundaries, saved]]
+        checks["observer_active_capture_delta_zero"] = all(
+            type(value) is int and value == 0 for value in counts
+        ) and all(value.get("status") == "recording" for value in [start, before, after])
+        checks["observer_saved_capture_empty_and_complete"] = (
+            actual.get("status") == "stopped"
+            and stop.get("status") == "stopped"
+            and actual.get("events") == []
+            and actual.get("commands") == []
+            and all(value.get("gaps") == [] for value in [*boundaries, saved, actual])
+            and all(
+                value.get("capture", {}).get("mode") == "all" for value in [start, saved, actual]
+            )
+            and actual.get("capture_filtered") == 0
+        )
+        equal(
+            "observer_saved_capture_digest",
+            saved.get("raw_sha256"),
+            evidence.files.get(observer_path, {}).get("sha256"),
+        )
+        settlement = saved.get("producer_settlement", {})
+        checks["observer_capture_fully_drained"] = (
+            settlement.get("flushed") is True
+            and type(settlement.get("pending")) is int
+            and settlement["pending"] == 0
+            and all(
+                type(settlement.get(key)) is int for key in ("target", "completed", "submitted")
+            )
+            and settlement.get("target")
+            == settlement.get("completed")
+            == settlement.get("submitted")
+        )
+        ack = observer.get("empty_save_ack", {})
+        posts = observer.get("preference_posts", [])
+        graph_url = urlparse((receipts["browser"] or {}).get("graph_url", ""))
+        sessions = parse_qs(graph_url.query).get("vl_session", [])
+        request_shape = bool(posts) and all(
+            urlparse(post.get("url", "")).netloc == graph_url.netloc
+            and urlparse(post.get("url", "")).path.endswith("/preferences")
+            and post.get("status") == 200
+            for post in posts
+        )
+        checks["observer_preferences_save_acknowledged"] = (
+            request_shape
+            and ack.get("acknowledged") is True
+            and all(type(ack.get(key)) is int for key in ("submitted_revision", "server_revision"))
+            and ack.get("server_revision", -1) >= ack.get("submitted_revision", 0)
+            and any(
+                post.get("submitted_revision") == ack.get("submitted_revision")
+                and post.get("response_revision") == ack.get("server_revision")
+                for post in posts
+            )
+        )
+        tokens = [parse_qs(urlparse(post.get("url", "")).query).get("vl_session") for post in posts]
+        tokens_redacted = bool(tokens) and all(token == ["<current-session>"] for token in tokens)
+        # A placeholder cannot establish equality of the original capability bytes.
+        checks["observer_preferences_saved_in_exact_scope"] = (
+            None
+            if tokens_redacted
+            else request_shape and len(sessions) == 1 and all(token == sessions for token in tokens)
+        )
+        namespace = {}
+        if len(sessions) == 1 and re.fullmatch(r"[a-zA-Z0-9_-]+", sessions[0]):
+            path = evidence.path(
+                "bo_stategraph/config/views/conversations/" + sessions[0] + ".json"
+            )
+            raw = path.read_bytes()
+            namespace = json.loads(raw)
+            namespace_digest = digest(raw)
+            namespace_stable = digest(path.read_bytes()) == namespace_digest
+        else:
+            namespace_digest, namespace_stable = None, False
+        checks["observer_preferences_current_namespace_file"] = (
+            namespace_stable
+            and namespace.get("project_id") == (project or {}).get("project_id")
+            and type(namespace.get("revision")) is int
+            and type(ack.get("server_revision")) is int
+            and namespace["revision"] >= ack["server_revision"]
+        )
+        default_before = observer.get("empty_before", {})
+        default_after = observer.get("empty_after", {})
+        current_default_path = evidence.path("bo_stategraph/config/views/local.json")
+        current_default_raw = current_default_path.read_bytes()
+        current_default = json.loads(current_default_raw)
+        checks["observer_default_stable_during_measurement"] = default_before.get(
+            "default_sha256"
+        ) == default_after.get("default_sha256") == digest(
+            current_default_raw
+        ) and default_before.get(
+            "default_revision"
+        ) == default_after.get(
+            "default_revision"
+        ) == current_default.get(
+            "revision"
+        )
+        exclusion_requirements = (
+            "observer_capture_identity",
+            "observer_capture_build",
+            "observer_active_capture_delta_zero",
+            "observer_saved_capture_empty_and_complete",
+            "observer_saved_capture_digest",
+            "observer_capture_fully_drained",
+            "observer_preferences_save_acknowledged",
+        )
+        checks["browser_observer_exclusion_receipt"] = observer.get("checks", {}).get(
+            "viewer_controls_no_business_events"
+        ) is True and all(checks.get(key) is True for key in exclusion_requirements)
+        observer_check = "explicit observer sidecar: viewer_controls_no_business_events"
+        summaries["observer"] = {
+            "path": args.observer_receipt,
+            "sha256": evidence.files.get(args.observer_receipt, {}).get("sha256"),
+            "recording_path": observer_path,
+            "recording_id": identity,
+            "boundary_event_counts": counts,
+            "saved_event_count": len(actual.get("events", [])),
+            "pending": settlement.get("pending"),
+            "preference_post_count": len(posts),
+            "save_acknowledged": ack.get("acknowledged"),
+            "request_capabilities_redacted": tokens_redacted,
+            "namespace_path": "bo_stategraph/config/views/conversations/<current-session>.json",
+            "namespace_sha256": namespace_digest,
+            "namespace_revision": namespace.get("revision"),
+            "acknowledged_server_revision": ack.get("server_revision"),
+            "default_revision_during_measurement": current_default.get("revision"),
+            "actions": observer.get("actions", []),
+        }
     layers = {
         layer: {
             "declared": sum(node.get("layer") == layer for node in nodes.values()),
             "directly_observed": sum(
-                node.get("layer") == layer and identity in observed for identity, node in nodes.items()
+                node.get("layer") == layer and identity in observed
+                for identity, node in nodes.items()
             ),
         }
         for layer in sorted({node.get("layer", "unknown") for node in nodes.values()})
     }
     old_prefix = "review/" + args.phase + "/pre-upgrade/"
-    old_project = evidence.read(old_prefix + cfg.get("model", "bo_stategraph/project.json"), required=False)
+    old_project = evidence.read(
+        old_prefix + cfg.get("model", "bo_stategraph/project.json"), required=False
+    )
     old_cfg = evidence.read(old_prefix + "sync.json", required=False)
     old_ids = {node["id"] for node in model_of(old_project).get("nodes", [])}
     old_prefs = evidence.read(old_prefix + "bo_stategraph/config/views/local.json", required=False)
@@ -415,8 +606,12 @@ def audit(args):
             "revision": code.get("revision"),
             "nodes": len(code.get("nodes", [])),
             "edges": len(code.get("edges", [])),
-            "api_endpoints": sum(node.get("code_role") == "endpoint" for node in code.get("nodes", [])),
-            "directories": sum(node.get("code_role") == "directory" for node in code.get("nodes", [])),
+            "api_endpoints": sum(
+                node.get("code_role") == "endpoint" for node in code.get("nodes", [])
+            ),
+            "directories": sum(
+                node.get("code_role") == "directory" for node in code.get("nodes", [])
+            ),
             "files": sum(node.get("code_role") == "file" for node in code.get("nodes", [])),
         },
         "http_status_observations": [
@@ -460,9 +655,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--trial", type=Path, default=DEFAULT_TRIAL)
     parser.add_argument("--phase", required=True)
-    parser.add_argument("--out", required=True, help="New evidence basename under this audit directory")
-    parser.add_argument("--recording", help="Existing browser recording JSON, relative to the trial")
+    parser.add_argument(
+        "--out", required=True, help="New evidence basename under this audit directory"
+    )
+    parser.add_argument(
+        "--recording", help="Existing browser recording JSON, relative to the trial"
+    )
     parser.add_argument("--replay-recording", help="Existing replay recording JSON when it differs")
+    parser.add_argument(
+        "--observer-receipt",
+        help="Separate existing active UI-only recording measurement; business browser identity stays separate",
+    )
     parser.add_argument(
         "--receipt",
         action="append",
@@ -491,7 +694,9 @@ def main():
         "",
         "Native categories:",
     ]
-    lines += ["- " + name + ": " + item["status"] for name, item in report["native_categories"].items()]
+    lines += [
+        "- " + name + ": " + item["status"] for name, item in report["native_categories"].items()
+    ]
     lines += ["", "Pending or inconsistent evidence:"] + [
         "- " + item
         for item in report["pending_or_inconsistent"]
