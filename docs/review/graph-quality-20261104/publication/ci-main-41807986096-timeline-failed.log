@@ -1,0 +1,1336 @@
+﻿2026-11-04T09:30:01.6468113Z Current runner version: '2.338.2'
+2026-11-04T09:30:01.6488671Z ##[group]Runner Image Provisioner
+2026-11-04T09:30:01.6489499Z Hosted Compute Agent
+2026-11-04T09:30:01.6490024Z Version: 20261021.618
+2026-11-04T09:30:01.6490603Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-04T09:30:01.6491196Z Build Date: 2026-10-21T00:45:21Z
+2026-11-04T09:30:01.6491758Z Worker ID: {ea071afc-0872-4e75-b6de-f0c7690c1ba3}
+2026-11-04T09:30:01.6492399Z Region: centralus
+2026-11-04T09:30:01.6492845Z Cloud: Azure
+2026-11-04T09:30:01.6493669Z ##[endgroup]
+2026-11-04T09:30:01.6494872Z ##[group]Operating System
+2026-11-04T09:30:01.6495458Z Ubuntu
+2026-11-04T09:30:01.6495920Z 24.04.5
+2026-11-04T09:30:01.6496392Z LTS
+2026-11-04T09:30:01.6496802Z ##[endgroup]
+2026-11-04T09:30:01.6497266Z ##[group]Runner Image
+2026-11-04T09:30:01.6497864Z Image: ubuntu-24.04
+2026-11-04T09:30:01.6498358Z Version: 20261025.353.1
+2026-11-04T09:30:01.6499469Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-04T09:30:01.6500806Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-04T09:30:01.6501613Z ##[endgroup]
+2026-11-04T09:30:01.6502564Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T09:30:01.6504416Z Contents: read
+2026-11-04T09:30:01.6504909Z Metadata: read
+2026-11-04T09:30:01.6505334Z ##[endgroup]
+2026-11-04T09:30:01.6506955Z Secret source: Actions
+2026-11-04T09:30:01.6507734Z Cache mode: write
+2026-11-04T09:30:01.6508246Z Prepare workflow directory
+2026-11-04T09:30:01.6764121Z Prepare all required actions
+2026-11-04T09:30:01.6807067Z Getting action download info
+2026-11-04T09:30:01.9359596Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-04T09:30:02.0787852Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-04T09:30:02.1990585Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-04T09:30:02.3658160Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-04T09:30:02.6041502Z Complete job name: timeline-browser
+2026-11-04T09:30:02.6719871Z ##[group]Run actions/checkout@v4
+2026-11-04T09:30:02.6720623Z with:
+2026-11-04T09:30:02.6721026Z   repository: li-bruce/VibeLens
+2026-11-04T09:30:02.6724637Z   token: ***
+2026-11-04T09:30:02.6725090Z   ssh-strict: true
+2026-11-04T09:30:02.6725520Z   ssh-user: git
+2026-11-04T09:30:02.6725947Z   persist-credentials: true
+2026-11-04T09:30:02.6726427Z   clean: true
+2026-11-04T09:30:02.6726893Z   sparse-checkout-cone-mode: true
+2026-11-04T09:30:02.6727381Z   fetch-depth: 1
+2026-11-04T09:30:02.6727795Z   fetch-tags: false
+2026-11-04T09:30:02.6728226Z   show-progress: true
+2026-11-04T09:30:02.6728647Z   lfs: false
+2026-11-04T09:30:02.6729104Z   submodules: false
+2026-11-04T09:30:02.6729565Z   set-safe-directory: true
+2026-11-04T09:30:02.6730028Z   allow-unsafe-pr-checkout: false
+2026-11-04T09:30:02.6730740Z ##[endgroup]
+2026-11-04T09:30:02.9093494Z Syncing repository: li-bruce/VibeLens
+2026-11-04T09:30:02.9095308Z ##[group]Getting Git version info
+2026-11-04T09:30:02.9096141Z Working directory is '/home/runner/work/VibeLens/VibeLens'
+2026-11-04T09:30:02.9097120Z [command]/usr/bin/git version
+2026-11-04T09:30:02.9155686Z git version 2.56.0
+2026-11-04T09:30:02.9169135Z ##[endgroup]
+2026-11-04T09:30:02.9183172Z Temporarily overriding HOME='/home/runner/work/_temp/10528617-ecd4-4bf7-94ac-244756ae8f45' before making global git config changes
+2026-11-04T09:30:02.9185906Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T09:30:02.9187758Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/VibeLens/VibeLens
+2026-11-04T09:30:02.9223710Z Deleting the contents of '/home/runner/work/VibeLens/VibeLens'
+2026-11-04T09:30:02.9237567Z ##[group]Initializing the repository
+2026-11-04T09:30:02.9238699Z [command]/usr/bin/git init /home/runner/work/VibeLens/VibeLens
+2026-11-04T09:30:02.9329491Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T09:30:02.9331291Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T09:30:02.9332546Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T09:30:02.9333910Z hint: call:
+2026-11-04T09:30:02.9334613Z hint:
+2026-11-04T09:30:02.9335325Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T09:30:02.9336263Z hint:
+2026-11-04T09:30:02.9337316Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T09:30:02.9338549Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T09:30:02.9341283Z hint:
+2026-11-04T09:30:02.9341985Z hint: 	git branch -m <name>
+2026-11-04T09:30:02.9343020Z hint:
+2026-11-04T09:30:02.9344898Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T09:30:02.9347811Z Initialized empty Git repository in /home/runner/work/VibeLens/VibeLens/.git/
+2026-11-04T09:30:02.9357452Z [command]/usr/bin/git remote add origin https://github.com/li-bruce/VibeLens
+2026-11-04T09:30:02.9388694Z ##[endgroup]
+2026-11-04T09:30:02.9389518Z ##[group]Disabling automatic garbage collection
+2026-11-04T09:30:02.9392391Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T09:30:02.9427565Z ##[endgroup]
+2026-11-04T09:30:02.9428287Z ##[group]Setting up auth
+2026-11-04T09:30:02.9433671Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T09:30:02.9461704Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T09:30:02.9752445Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T09:30:02.9780353Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T09:30:02.9933021Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T09:30:02.9957879Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T09:30:03.0102568Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T09:30:03.0135368Z ##[endgroup]
+2026-11-04T09:30:03.0136389Z ##[group]Fetching the repository
+2026-11-04T09:30:03.0144937Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ad50f70d9298dca9d7a3e88e13851d0edc9b4563:refs/remotes/origin/main
+2026-11-04T09:30:18.7403857Z From https://github.com/li-bruce/VibeLens
+2026-11-04T09:30:18.7404826Z  * [new ref]         ad50f70d9298dca9d7a3e88e13851d0edc9b4563 -> origin/main
+2026-11-04T09:30:18.7407574Z ##[endgroup]
+2026-11-04T09:30:18.7408461Z ##[group]Determining the checkout info
+2026-11-04T09:30:18.7409755Z ##[endgroup]
+2026-11-04T09:30:18.7416256Z [command]/usr/bin/git sparse-checkout disable
+2026-11-04T09:30:18.7466025Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-04T09:30:18.7498665Z ##[group]Checking out the ref
+2026-11-04T09:30:18.7501403Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-04T09:30:19.8127202Z Updating files:  17% (3047/17529)
+2026-11-04T09:30:19.8652724Z Updating files:  18% (3156/17529)
+2026-11-04T09:30:19.9210863Z Updating files:  19% (3331/17529)
+2026-11-04T09:30:20.0201156Z Updating files:  20% (3506/17529)
+2026-11-04T09:30:20.2027271Z Updating files:  21% (3682/17529)
+2026-11-04T09:30:20.3296750Z Updating files:  22% (3857/17529)
+2026-11-04T09:30:20.3924756Z Updating files:  23% (4032/17529)
+2026-11-04T09:30:20.4076689Z Updating files:  24% (4207/17529)
+2026-11-04T09:30:20.4456425Z Updating files:  25% (4383/17529)
+2026-11-04T09:30:20.4767362Z Updating files:  26% (4558/17529)
+2026-11-04T09:30:20.4853564Z Updating files:  27% (4733/17529)
+2026-11-04T09:30:20.5181010Z Updating files:  28% (4909/17529)
+2026-11-04T09:30:20.5490094Z Updating files:  29% (5084/17529)
+2026-11-04T09:30:20.6002100Z Updating files:  30% (5259/17529)
+2026-11-04T09:30:20.6728785Z Updating files:  31% (5434/17529)
+2026-11-04T09:30:20.7178804Z Updating files:  32% (5610/17529)
+2026-11-04T09:30:20.7613020Z Updating files:  33% (5785/17529)
+2026-11-04T09:30:20.7635953Z Updating files:  34% (5960/17529)
+2026-11-04T09:30:20.8199112Z Updating files:  34% (5976/17529)
+2026-11-04T09:30:20.8742083Z Updating files:  35% (6136/17529)
+2026-11-04T09:30:20.9053704Z Updating files:  36% (6311/17529)
+2026-11-04T09:30:20.9125078Z Updating files:  37% (6486/17529)
+2026-11-04T09:30:20.9175147Z Updating files:  38% (6662/17529)
+2026-11-04T09:30:20.9231243Z Updating files:  39% (6837/17529)
+2026-11-04T09:30:20.9491861Z Updating files:  40% (7012/17529)
+2026-11-04T09:30:20.9811644Z Updating files:  41% (7187/17529)
+2026-11-04T09:30:21.0081983Z Updating files:  42% (7363/17529)
+2026-11-04T09:30:21.0756286Z Updating files:  43% (7538/17529)
+2026-11-04T09:30:21.0934960Z Updating files:  44% (7713/17529)
+2026-11-04T09:30:21.3542033Z Updating files:  45% (7889/17529)
+2026-11-04T09:30:21.4615013Z Updating files:  46% (8064/17529)
+2026-11-04T09:30:21.4659437Z Updating files:  47% (8239/17529)
+2026-11-04T09:30:21.4944285Z Updating files:  48% (8414/17529)
+2026-11-04T09:30:21.5840154Z Updating files:  49% (8590/17529)
+2026-11-04T09:30:21.6350517Z Updating files:  50% (8765/17529)
+2026-11-04T09:30:21.6610796Z Updating files:  51% (8940/17529)
+2026-11-04T09:30:21.7345124Z Updating files:  52% (9116/17529)
+2026-11-04T09:30:21.7948586Z Updating files:  53% (9291/17529)
+2026-11-04T09:30:21.8735734Z Updating files:  53% (9308/17529)
+2026-11-04T09:30:21.8864796Z Updating files:  54% (9466/17529)
+2026-11-04T09:30:21.9409194Z Updating files:  55% (9641/17529)
+2026-11-04T09:30:21.9548671Z Updating files:  56% (9817/17529)
+2026-11-04T09:30:22.0600610Z Updating files:  57% (9992/17529)
+2026-11-04T09:30:22.0764355Z Updating files:  58% (10167/17529)
+2026-11-04T09:30:22.1336701Z Updating files:  59% (10343/17529)
+2026-11-04T09:30:22.1726236Z Updating files:  60% (10518/17529)
+2026-11-04T09:30:22.2008672Z Updating files:  61% (10693/17529)
+2026-11-04T09:30:22.2426739Z Updating files:  62% (10868/17529)
+2026-11-04T09:30:22.2861492Z Updating files:  63% (11044/17529)
+2026-11-04T09:30:22.3348390Z Updating files:  64% (11219/17529)
+2026-11-04T09:30:22.3958711Z Updating files:  65% (11394/17529)
+2026-11-04T09:30:22.4252227Z Updating files:  66% (11570/17529)
+2026-11-04T09:30:22.4571410Z Updating files:  67% (11745/17529)
+2026-11-04T09:30:22.5024120Z Updating files:  68% (11920/17529)
+2026-11-04T09:30:22.5372204Z Updating files:  69% (12096/17529)
+2026-11-04T09:30:22.5594393Z Updating files:  70% (12271/17529)
+2026-11-04T09:30:22.6406764Z Updating files:  71% (12446/17529)
+2026-11-04T09:30:22.7080246Z Updating files:  72% (12621/17529)
+2026-11-04T09:30:22.7629600Z Updating files:  73% (12797/17529)
+2026-11-04T09:30:22.7804523Z Updating files:  73% (12925/17529)
+2026-11-04T09:30:22.8445110Z Updating files:  74% (12972/17529)
+2026-11-04T09:30:22.8812708Z Updating files:  75% (13147/17529)
+2026-11-04T09:30:22.9403760Z Updating files:  76% (13323/17529)
+2026-11-04T09:30:22.9777843Z Updating files:  77% (13498/17529)
+2026-11-04T09:30:23.0474425Z Updating files:  78% (13673/17529)
+2026-11-04T09:30:23.1102053Z Updating files:  79% (13848/17529)
+2026-11-04T09:30:23.1827114Z Updating files:  80% (14024/17529)
+2026-11-04T09:30:23.2359417Z Updating files:  81% (14199/17529)
+2026-11-04T09:30:23.3265960Z Updating files:  82% (14374/17529)
+2026-11-04T09:30:23.3416194Z Updating files:  83% (14550/17529)
+2026-11-04T09:30:23.3571343Z Updating files:  84% (14725/17529)
+2026-11-04T09:30:23.4060413Z Updating files:  85% (14900/17529)
+2026-11-04T09:30:23.4941973Z Updating files:  86% (15075/17529)
+2026-11-04T09:30:23.6902621Z Updating files:  87% (15251/17529)
+2026-11-04T09:30:23.7604042Z Updating files:  88% (15426/17529)
+2026-11-04T09:30:23.7664079Z Updating files:  89% (15601/17529)
+2026-11-04T09:30:23.8244579Z Updating files:  89% (15609/17529)
+2026-11-04T09:30:24.0929413Z Updating files:  90% (15777/17529)
+2026-11-04T09:30:24.4798908Z Updating files:  91% (15952/17529)
+2026-11-04T09:30:24.7727160Z Updating files:  92% (16127/17529)
+2026-11-04T09:30:24.9176747Z Updating files:  92% (16241/17529)
+2026-11-04T09:30:25.2411716Z Updating files:  93% (16302/17529)
+2026-11-04T09:30:25.2502271Z Updating files:  94% (16478/17529)
+2026-11-04T09:30:25.2880201Z Updating files:  95% (16653/17529)
+2026-11-04T09:30:25.3422182Z Updating files:  96% (16828/17529)
+2026-11-04T09:30:25.3886078Z Updating files:  97% (17004/17529)
+2026-11-04T09:30:25.3967364Z Updating files:  98% (17179/17529)
+2026-11-04T09:30:25.4040816Z Updating files:  99% (17354/17529)
+2026-11-04T09:30:25.4041615Z Updating files: 100% (17529/17529)
+2026-11-04T09:30:25.4042198Z Updating files: 100% (17529/17529), done.
+2026-11-04T09:30:25.5975542Z Switched to a new branch 'main'
+2026-11-04T09:30:25.5976203Z branch 'main' set up to track 'origin/main'.
+2026-11-04T09:30:25.6067099Z ##[endgroup]
+2026-11-04T09:30:25.6119197Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T09:30:25.6130287Z ad50f70d9298dca9d7a3e88e13851d0edc9b4563
+2026-11-04T09:30:25.8084828Z ##[group]Run actions/setup-python@v5
+2026-11-04T09:30:25.8085138Z with:
+2026-11-04T09:30:25.8085374Z   python-version: 3.13
+2026-11-04T09:30:25.8085593Z   check-latest: false
+2026-11-04T09:30:25.8087482Z   token: ***
+2026-11-04T09:30:25.8087703Z   update-environment: true
+2026-11-04T09:30:25.8087982Z   allow-prereleases: false
+2026-11-04T09:30:25.8088214Z   freethreaded: false
+2026-11-04T09:30:25.8088419Z ##[endgroup]
+2026-11-04T09:30:25.9075592Z ##[group]Installed versions
+2026-11-04T09:30:25.9185161Z (node:2116) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T09:30:25.9185919Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T09:30:25.9186438Z Successfully set up CPython (3.13.17)
+2026-11-04T09:30:25.9187082Z ##[endgroup]
+2026-11-04T09:30:25.9565719Z ##[group]Run python -m pip install -r skills/vibelens/requirements.txt
+2026-11-04T09:30:25.9566216Z [36;1mpython -m pip install -r skills/vibelens/requirements.txt[0m
+2026-11-04T09:30:25.9727711Z shell: /usr/bin/bash -e {0}
+2026-11-04T09:30:25.9728075Z env:
+2026-11-04T09:30:25.9728373Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:25.9728748Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:30:25.9729110Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:25.9729442Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:25.9729792Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:25.9730156Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:30:25.9730470Z ##[endgroup]
+2026-11-04T09:30:29.0499966Z Collecting jsonschema==4.25.1 (from -r skills/vibelens/requirements.txt (line 2))
+2026-11-04T09:30:29.1187753Z   Downloading jsonschema-4.25.1-py3-none-any.whl.metadata (7.6 kB)
+2026-11-04T09:30:29.3576212Z Collecting attrs>=22.2.0 (from jsonschema==4.25.1->-r skills/vibelens/requirements.txt (line 2))
+2026-11-04T09:30:29.3704815Z   Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+2026-11-04T09:30:29.7006151Z Collecting jsonschema-specifications>=2023.03.6 (from jsonschema==4.25.1->-r skills/vibelens/requirements.txt (line 2))
+2026-11-04T09:30:29.7134324Z   Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+2026-11-04T09:30:30.1785568Z Collecting referencing>=0.28.4 (from jsonschema==4.25.1->-r skills/vibelens/requirements.txt (line 2))
+2026-11-04T09:30:30.1912930Z   Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+2026-11-04T09:30:30.4783009Z Collecting rpds-py>=0.7.1 (from jsonschema==4.25.1->-r skills/vibelens/requirements.txt (line 2))
+2026-11-04T09:30:30.4913954Z   Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
+2026-11-04T09:30:30.5104268Z Downloading jsonschema-4.25.1-py3-none-any.whl (90 kB)
+2026-11-04T09:30:30.5422440Z Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+2026-11-04T09:30:30.5593344Z Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+2026-11-04T09:30:30.5741309Z Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+2026-11-04T09:30:30.5894929Z Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (370 kB)
+2026-11-04T09:30:30.7199913Z Installing collected packages: rpds-py, attrs, referencing, jsonschema-specifications, jsonschema
+2026-11-04T09:30:30.8301895Z 
+2026-11-04T09:30:30.8312925Z Successfully installed attrs-26.1.0 jsonschema-4.25.1 jsonschema-specifications-2025.9.1 referencing-0.37.0 rpds-py-2026.9.1
+2026-11-04T09:30:30.8318693Z 
+2026-11-04T09:30:30.8319172Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-04T09:30:30.8319618Z [notice] To update, run: pip install --upgrade pip
+2026-11-04T09:30:30.8962794Z ##[group]Run actions/setup-node@v4
+2026-11-04T09:30:30.8963259Z with:
+2026-11-04T09:30:30.8963505Z   node-version: 22
+2026-11-04T09:30:30.8963746Z   always-auth: false
+2026-11-04T09:30:30.8963985Z   check-latest: false
+2026-11-04T09:30:30.8965726Z   token: ***
+2026-11-04T09:30:30.8965990Z env:
+2026-11-04T09:30:30.8966266Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:30.8966672Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:30:30.8967074Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:30.8967440Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:30.8967794Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:30.8968194Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:30:30.8968515Z ##[endgroup]
+2026-11-04T09:30:31.0185709Z (node:2151) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T09:30:31.0186279Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T09:30:31.0192101Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-04T09:30:31.0192609Z ##[group]Environment details
+2026-11-04T09:30:34.5471809Z node: v22.23.4
+2026-11-04T09:30:34.5472194Z npm: 10.9.9
+2026-11-04T09:30:34.5472617Z yarn: 1.22.22
+2026-11-04T09:30:34.5473571Z ##[endgroup]
+2026-11-04T09:30:34.5569008Z ##[group]Run npm install --no-save --no-package-lock playwright@1.56.1
+2026-11-04T09:30:34.5569446Z [36;1mnpm install --no-save --no-package-lock playwright@1.56.1[0m
+2026-11-04T09:30:34.5586417Z shell: /usr/bin/bash -e {0}
+2026-11-04T09:30:34.5586735Z env:
+2026-11-04T09:30:34.5586997Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:34.5587408Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:30:34.5587811Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:34.5588133Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:34.5588494Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:34.5588828Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:30:34.5589133Z ##[endgroup]
+2026-11-04T09:30:37.5077410Z 
+2026-11-04T09:30:37.5083291Z added 2 packages in 3s
+2026-11-04T09:30:37.5311520Z ##[group]Run npx playwright install --with-deps chromium
+2026-11-04T09:30:37.5311876Z [36;1mnpx playwright install --with-deps chromium[0m
+2026-11-04T09:30:37.5323203Z shell: /usr/bin/bash -e {0}
+2026-11-04T09:30:37.5323531Z env:
+2026-11-04T09:30:37.5323806Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:37.5324207Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:30:37.5324715Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:37.5325054Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:37.5325400Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:30:37.5325737Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:30:37.5326072Z ##[endgroup]
+2026-11-04T09:30:38.0941605Z Installing dependencies...
+2026-11-04T09:30:38.0988577Z Switching to root user to install dependencies...
+2026-11-04T09:30:38.2294680Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-04T09:30:38.2801320Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-11-04T09:30:38.3703970Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-11-04T09:30:38.3716792Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-11-04T09:30:38.3778577Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-11-04T09:30:38.3826223Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-11-04T09:30:38.3919829Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [652 kB]
+2026-11-04T09:30:38.4064624Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [721 kB]
+2026-11-04T09:30:38.4734101Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1408 kB]
+2026-11-04T09:30:38.4804981Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [311 kB]
+2026-11-04T09:30:38.4806166Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1707 kB]
+2026-11-04T09:30:38.4853640Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [343 kB]
+2026-11-04T09:30:38.4886122Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1813 kB]
+2026-11-04T09:30:38.4932227Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [412 kB]
+2026-11-04T09:30:38.4945534Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.3 kB]
+2026-11-04T09:30:38.5394714Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1155 kB]
+2026-11-04T09:30:38.5434353Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [233 kB]
+2026-11-04T09:30:38.5448351Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1224 kB]
+2026-11-04T09:30:38.5919446Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [247 kB]
+2026-11-04T09:30:38.5932248Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1721 kB]
+2026-11-04T09:30:38.5984293Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [394 kB]
+2026-11-04T09:30:38.6004268Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [12.4 kB]
+2026-11-04T09:30:43.9532024Z Fetched 12.7 MB in 1s (11.8 MB/s)
+2026-11-04T09:30:44.7428212Z Reading package lists...
+2026-11-04T09:30:44.7668511Z Reading package lists...
+2026-11-04T09:30:44.9181775Z Building dependency tree...
+2026-11-04T09:30:44.9188757Z Reading state information...
+2026-11-04T09:30:45.0535334Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
+2026-11-04T09:30:45.0536621Z libasound2t64 set to manually installed.
+2026-11-04T09:30:45.0538051Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-11-04T09:30:45.0539280Z libatk-bridge2.0-0t64 set to manually installed.
+2026-11-04T09:30:45.0539998Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
+2026-11-04T09:30:45.0540538Z libatk1.0-0t64 set to manually installed.
+2026-11-04T09:30:45.0541070Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-11-04T09:30:45.0541548Z libatspi2.0-0t64 set to manually installed.
+2026-11-04T09:30:45.0542197Z libcairo2 is already the newest version (1.18.0-3build1).
+2026-11-04T09:30:45.0542611Z libcairo2 set to manually installed.
+2026-11-04T09:30:45.0543179Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
+2026-11-04T09:30:45.0543700Z libcups2t64 set to manually installed.
+2026-11-04T09:30:45.0544109Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
+2026-11-04T09:30:45.0544560Z libdbus-1-3 set to manually installed.
+2026-11-04T09:30:45.0544991Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
+2026-11-04T09:30:45.0545399Z libdrm2 set to manually installed.
+2026-11-04T09:30:45.0545850Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.4).
+2026-11-04T09:30:45.0546301Z libgbm1 set to manually installed.
+2026-11-04T09:30:45.0546781Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.10).
+2026-11-04T09:30:45.0547179Z libglib2.0-0t64 set to manually installed.
+2026-11-04T09:30:45.0547598Z libnspr4 is already the newest version (2:4.35-1.1build1).
+2026-11-04T09:30:45.0547989Z libnspr4 set to manually installed.
+2026-11-04T09:30:45.0548373Z libnss3 is already the newest version (2:3.98-1ubuntu0.3).
+2026-11-04T09:30:45.0549156Z libnss3 set to manually installed.
+2026-11-04T09:30:45.0549768Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
+2026-11-04T09:30:45.0550286Z libpango-1.0-0 set to manually installed.
+2026-11-04T09:30:45.0550810Z libx11-6 is already the newest version (2:1.8.7-1ubuntu0.1).
+2026-11-04T09:30:45.0551244Z libx11-6 set to manually installed.
+2026-11-04T09:30:45.0551665Z libxcb1 is already the newest version (1.15-1ubuntu2).
+2026-11-04T09:30:45.0552065Z libxcb1 set to manually installed.
+2026-11-04T09:30:45.0552470Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
+2026-11-04T09:30:45.0552887Z libxcomposite1 set to manually installed.
+2026-11-04T09:30:45.0553553Z libxdamage1 is already the newest version (1:1.1.6-1build1).
+2026-11-04T09:30:45.0554170Z libxdamage1 set to manually installed.
+2026-11-04T09:30:45.0554867Z libxext6 is already the newest version (2:1.3.4-1build2).
+2026-11-04T09:30:45.0555237Z libxext6 set to manually installed.
+2026-11-04T09:30:45.0555634Z libxfixes3 is already the newest version (1:6.0.0-2build1).
+2026-11-04T09:30:45.0556015Z libxfixes3 set to manually installed.
+2026-11-04T09:30:45.0556446Z libxkbcommon0 is already the newest version (1.6.0-1build1).
+2026-11-04T09:30:45.0556865Z libxkbcommon0 set to manually installed.
+2026-11-04T09:30:45.0557256Z libxrandr2 is already the newest version (2:1.5.2-2build1).
+2026-11-04T09:30:45.0557648Z libxrandr2 set to manually installed.
+2026-11-04T09:30:45.0558037Z xvfb is already the newest version (2:21.1.12-1ubuntu1.9).
+2026-11-04T09:30:45.0558561Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
+2026-11-04T09:30:45.0559097Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
+2026-11-04T09:30:45.0559502Z libfontconfig1 set to manually installed.
+2026-11-04T09:30:45.0559944Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.2).
+2026-11-04T09:30:45.0560352Z libfreetype6 set to manually installed.
+2026-11-04T09:30:45.0560777Z fonts-liberation is already the newest version (1:2.1.5-3).
+2026-11-04T09:30:45.0561171Z fonts-liberation set to manually installed.
+2026-11-04T09:30:45.0561601Z The following additional packages will be installed:
+2026-11-04T09:30:45.0562014Z   xfonts-encodings xfonts-utils
+2026-11-04T09:30:45.0562336Z Recommended packages:
+2026-11-04T09:30:45.0562681Z   fonts-ipafont-mincho fonts-tlwg-loma
+2026-11-04T09:30:45.0728722Z The following NEW packages will be installed:
+2026-11-04T09:30:45.0729538Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+2026-11-04T09:30:45.0735036Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+2026-11-04T09:30:45.0735660Z   xfonts-utils
+2026-11-04T09:30:45.0882611Z 0 upgraded, 9 newly installed, 0 to remove and 16 not upgraded.
+2026-11-04T09:30:45.0883308Z Need to get 21.1 MB of archives.
+2026-11-04T09:30:45.0890679Z After this operation, 79.5 MB of additional disk space will be used.
+2026-11-04T09:30:45.0891302Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-04T09:30:45.1739123Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+2026-11-04T09:30:45.5326580Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+2026-11-04T09:30:45.6348228Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+2026-11-04T09:30:45.7307415Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+2026-11-04T09:30:45.8120353Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+2026-11-04T09:30:45.9638789Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+2026-11-04T09:30:46.0762659Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+2026-11-04T09:30:46.1918269Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+2026-11-04T09:30:46.3120882Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+2026-11-04T09:30:46.6310288Z Fetched 21.1 MB in 1s (16.1 MB/s)
+2026-11-04T09:30:47.2346510Z Selecting previously unselected package fonts-ipafont-gothic.
+2026-11-04T09:30:47.2640691Z (Reading database ... 
+2026-11-04T09:30:47.2641111Z (Reading database ... 5%
+2026-11-04T09:30:47.2641420Z (Reading database ... 10%
+2026-11-04T09:30:47.2641693Z (Reading database ... 15%
+2026-11-04T09:30:47.2642009Z (Reading database ... 20%
+2026-11-04T09:30:47.2642323Z (Reading database ... 25%
+2026-11-04T09:30:47.2642608Z (Reading database ... 30%
+2026-11-04T09:30:47.2642907Z (Reading database ... 35%
+2026-11-04T09:30:47.2643378Z (Reading database ... 40%
+2026-11-04T09:30:47.2643696Z (Reading database ... 45%
+2026-11-04T09:30:47.2643981Z (Reading database ... 50%
+2026-11-04T09:30:47.3114243Z (Reading database ... 55%
+2026-11-04T09:30:47.7262069Z (Reading database ... 60%
+2026-11-04T09:30:48.0925524Z (Reading database ... 65%
+2026-11-04T09:30:48.4183981Z (Reading database ... 70%
+2026-11-04T09:30:48.7444671Z (Reading database ... 75%
+2026-11-04T09:30:49.2904076Z (Reading database ... 80%
+2026-11-04T09:30:50.0078837Z (Reading database ... 85%
+2026-11-04T09:30:50.6211677Z (Reading database ... 90%
+2026-11-04T09:30:51.2524426Z (Reading database ... 95%
+2026-11-04T09:30:51.2525108Z (Reading database ... 100%
+2026-11-04T09:30:51.2526001Z (Reading database ... 215504 files and directories currently installed.)
+2026-11-04T09:30:51.2573752Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
+2026-11-04T09:30:51.3712051Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-11-04T09:30:51.6308822Z Selecting previously unselected package fonts-freefont-ttf.
+2026-11-04T09:30:51.6415490Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+2026-11-04T09:30:51.6429635Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-11-04T09:30:51.7371709Z Selecting previously unselected package fonts-tlwg-loma-otf.
+2026-11-04T09:30:51.7477181Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+2026-11-04T09:30:51.7489546Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-11-04T09:30:51.7672463Z Selecting previously unselected package fonts-unifont.
+2026-11-04T09:30:51.7778885Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
+2026-11-04T09:30:51.7790887Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
+2026-11-04T09:30:52.0011428Z Selecting previously unselected package fonts-wqy-zenhei.
+2026-11-04T09:30:52.0116047Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+2026-11-04T09:30:52.0195797Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+2026-11-04T09:30:52.5208521Z Selecting previously unselected package xfonts-encodings.
+2026-11-04T09:30:52.5315051Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
+2026-11-04T09:30:52.5326184Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-11-04T09:30:52.5544255Z Selecting previously unselected package xfonts-utils.
+2026-11-04T09:30:52.5649131Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
+2026-11-04T09:30:52.5660745Z Unpacking xfonts-utils (1:7.7+6build3) ...
+2026-11-04T09:30:52.6108652Z Selecting previously unselected package xfonts-cyrillic.
+2026-11-04T09:30:52.6209352Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
+2026-11-04T09:30:52.6220190Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-11-04T09:30:52.6561989Z Selecting previously unselected package xfonts-scalable.
+2026-11-04T09:30:52.6660430Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+2026-11-04T09:30:52.6671660Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+2026-11-04T09:30:52.7361230Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
+2026-11-04T09:30:52.7481549Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-11-04T09:30:52.7514357Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-11-04T09:30:52.7550481Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-11-04T09:30:52.7583600Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-11-04T09:30:52.7645310Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+2026-11-04T09:30:52.7669035Z Setting up fonts-unifont (1:15.1.01-1build1) ...
+2026-11-04T09:30:52.7702754Z Setting up xfonts-utils (1:7.7+6build3) ...
+2026-11-04T09:30:52.7756189Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-11-04T09:30:52.7991950Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
+2026-11-04T09:30:52.8194658Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-11-04T09:30:52.8218623Z Not building database; man-db/auto-update is not 'true'.
+2026-11-04T09:30:52.8233494Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+2026-11-04T09:30:53.9651801Z 
+2026-11-04T09:30:53.9652688Z Running kernel seems to be up-to-date.
+2026-11-04T09:30:53.9653276Z 
+2026-11-04T09:30:53.9653471Z No services need to be restarted.
+2026-11-04T09:30:53.9653697Z 
+2026-11-04T09:30:53.9653824Z No containers need to be restarted.
+2026-11-04T09:30:53.9654017Z 
+2026-11-04T09:30:53.9654239Z No user sessions are running outdated binaries.
+2026-11-04T09:30:53.9654427Z 
+2026-11-04T09:30:53.9654711Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-04T09:30:54.6578019Z Downloading Chromium 141.0.7390.37 (playwright build v1194) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1194/chromium-linux.zip
+2026-11-04T09:30:54.8475225Z |                                                                                |   0% of 173.9 MiB
+2026-11-04T09:30:54.9719119Z |■■■■■■■■                                                                        |  10% of 173.9 MiB
+2026-11-04T09:30:55.0221612Z |■■■■■■■■■■■■■■■■                                                                |  20% of 173.9 MiB
+2026-11-04T09:30:55.0677360Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 173.9 MiB
+2026-11-04T09:30:55.0975023Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 173.9 MiB
+2026-11-04T09:30:55.1317497Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 173.9 MiB
+2026-11-04T09:30:55.1646130Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 173.9 MiB
+2026-11-04T09:30:55.1981034Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 173.9 MiB
+2026-11-04T09:30:55.2303177Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 173.9 MiB
+2026-11-04T09:30:55.2627180Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 173.9 MiB
+2026-11-04T09:30:55.2911561Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 173.9 MiB
+2026-11-04T09:30:58.4735007Z Chromium 141.0.7390.37 (playwright build v1194) downloaded to /home/runner/.cache/ms-playwright/chromium-1194
+2026-11-04T09:30:58.4737199Z Downloading FFMPEG playwright build v1011 from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+2026-11-04T09:30:58.6885008Z |                                                                                |   0% of 2.3 MiB
+2026-11-04T09:30:58.7400129Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
+2026-11-04T09:30:58.7609550Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+2026-11-04T09:30:58.7753452Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+2026-11-04T09:30:58.7839023Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+2026-11-04T09:30:58.7912663Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+2026-11-04T09:30:58.7975952Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+2026-11-04T09:30:58.8090491Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+2026-11-04T09:30:58.8622942Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+2026-11-04T09:30:58.8733264Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+2026-11-04T09:30:58.8827043Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+2026-11-04T09:30:58.9287754Z FFMPEG playwright build v1011 downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
+2026-11-04T09:30:58.9290886Z Downloading Chromium Headless Shell 141.0.7390.37 (playwright build v1194) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1194/chromium-headless-shell-linux.zip
+2026-11-04T09:30:59.1175675Z |                                                                                |   0% of 104.3 MiB
+2026-11-04T09:30:59.3389802Z |■■■■■■■■                                                                        |  10% of 104.3 MiB
+2026-11-04T09:30:59.4278059Z |■■■■■■■■■■■■■■■■                                                                |  20% of 104.3 MiB
+2026-11-04T09:30:59.5243407Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 104.3 MiB
+2026-11-04T09:30:59.6700203Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 104.3 MiB
+2026-11-04T09:30:59.7467518Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 104.3 MiB
+2026-11-04T09:30:59.8353952Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 104.3 MiB
+2026-11-04T09:30:59.9301348Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 104.3 MiB
+2026-11-04T09:31:00.0348340Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 104.3 MiB
+2026-11-04T09:31:00.1092419Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 104.3 MiB
+2026-11-04T09:31:00.2014600Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 104.3 MiB
+2026-11-04T09:31:01.8869600Z Chromium Headless Shell 141.0.7390.37 (playwright build v1194) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1194
+2026-11-04T09:31:02.0540270Z ##[group]Run python -m pip install playwright==1.56.0
+2026-11-04T09:31:02.0540694Z [36;1mpython -m pip install playwright==1.56.0[0m
+2026-11-04T09:31:02.0552153Z shell: /usr/bin/bash -e {0}
+2026-11-04T09:31:02.0552437Z env:
+2026-11-04T09:31:02.0552717Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:02.0553270Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:31:02.0553687Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:02.0554027Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:02.0554376Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:02.0554712Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:31:02.0555016Z ##[endgroup]
+2026-11-04T09:31:02.3859773Z Collecting playwright==1.56.0
+2026-11-04T09:31:02.4672298Z   Downloading playwright-1.56.0-py3-none-manylinux1_x86_64.whl.metadata (3.5 kB)
+2026-11-04T09:31:02.4977917Z Collecting pyee<14,>=13 (from playwright==1.56.0)
+2026-11-04T09:31:02.5102951Z   Downloading pyee-13.0.1-py3-none-any.whl.metadata (3.0 kB)
+2026-11-04T09:31:02.6208426Z Collecting greenlet<4.0.0,>=3.1.1 (from playwright==1.56.0)
+2026-11-04T09:31:02.6336369Z   Downloading greenlet-3.5.6-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+2026-11-04T09:31:02.6590830Z Collecting typing-extensions (from pyee<14,>=13->playwright==1.56.0)
+2026-11-04T09:31:02.6714540Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-04T09:31:02.6883276Z Downloading playwright-1.56.0-py3-none-manylinux1_x86_64.whl (46.3 MB)
+2026-11-04T09:31:03.1260670Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.3/46.3 MB 114.0 MB/s  0:00:00
+2026-11-04T09:31:03.1392263Z Downloading greenlet-3.5.6-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (623 kB)
+2026-11-04T09:31:03.1469656Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 623.8/623.8 kB 63.6 MB/s  0:00:00
+2026-11-04T09:31:03.1596345Z Downloading pyee-13.0.1-py3-none-any.whl (15 kB)
+2026-11-04T09:31:03.1742258Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-04T09:31:03.2284422Z Installing collected packages: typing-extensions, greenlet, pyee, playwright
+2026-11-04T09:31:03.9011911Z 
+2026-11-04T09:31:03.9024982Z Successfully installed greenlet-3.5.6 playwright-1.56.0 pyee-13.0.1 typing-extensions-4.16.0
+2026-11-04T09:31:03.9030608Z 
+2026-11-04T09:31:03.9031349Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-04T09:31:03.9031907Z [notice] To update, run: pip install --upgrade pip
+2026-11-04T09:31:03.9627303Z ##[group]Run python -m playwright install chromium
+2026-11-04T09:31:03.9627764Z [36;1mpython -m playwright install chromium[0m
+2026-11-04T09:31:03.9640744Z shell: /usr/bin/bash -e {0}
+2026-11-04T09:31:03.9641068Z env:
+2026-11-04T09:31:03.9641371Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:03.9641791Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:31:03.9642230Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:03.9642601Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:03.9642989Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:03.9643684Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:31:03.9644051Z ##[endgroup]
+2026-11-04T09:31:04.1915991Z ##[group]Run python tools/test_graph_quality_browser.py
+2026-11-04T09:31:04.1916401Z [36;1mpython tools/test_graph_quality_browser.py[0m
+2026-11-04T09:31:04.1927964Z shell: /usr/bin/bash -e {0}
+2026-11-04T09:31:04.1928205Z env:
+2026-11-04T09:31:04.1928511Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:04.1928919Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:31:04.1929312Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:04.1929645Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:04.1929970Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:04.1930327Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:31:04.1930689Z   BO_GRAPH_QUALITY_EVIDENCE: .validation/graph-quality-browser
+2026-11-04T09:31:04.1931002Z ##[endgroup]
+2026-11-04T09:31:18.0926686Z {
+2026-11-04T09:31:18.0927382Z   "fixture": "isolated nested file-sharing geometry",
+2026-11-04T09:31:18.0927928Z   "canonical_assets": "/home/runner/work/VibeLens/VibeLens/skills/vibelens/assets/stategraph-viewer",
+2026-11-04T09:31:18.0928434Z   "url": "http://127.0.0.1:44483/graph?lang=en",
+2026-11-04T09:31:18.0928701Z   "initial": {
+2026-11-04T09:31:18.0928975Z     "ids": [
+2026-11-04T09:31:18.0929186Z       "share",
+2026-11-04T09:31:18.0929410Z       "notify",
+2026-11-04T09:31:18.0929630Z       "store",
+2026-11-04T09:31:18.0929830Z       "database",
+2026-11-04T09:31:18.0930064Z       "files",
+2026-11-04T09:31:18.0930303Z       "file_id",
+2026-11-04T09:31:18.0930525Z       "file_name",
+2026-11-04T09:31:18.0930754Z       "shares"
+2026-11-04T09:31:18.0930954Z     ],
+2026-11-04T09:31:18.0931180Z     "regions": [
+2026-11-04T09:31:18.0931399Z       {
+2026-11-04T09:31:18.0931649Z         "id": "share",
+2026-11-04T09:31:18.0931893Z         "root": "share",
+2026-11-04T09:31:18.0932108Z         "depth": 0,
+2026-11-04T09:31:18.0932349Z         "ids": [
+2026-11-04T09:31:18.0932561Z           "share",
+2026-11-04T09:31:18.0932765Z           "store",
+2026-11-04T09:31:18.0933134Z           "database",
+2026-11-04T09:31:18.0933435Z           "files",
+2026-11-04T09:31:18.0933723Z           "file_id",
+2026-11-04T09:31:18.0934046Z           "file_name",
+2026-11-04T09:31:18.0934340Z           "shares"
+2026-11-04T09:31:18.0934579Z         ],
+2026-11-04T09:31:18.0934874Z         "self": false,
+2026-11-04T09:31:18.0935158Z         "cx": 189.08181639547942,
+2026-11-04T09:31:18.0935417Z         "cy": 39.917512391629046,
+2026-11-04T09:31:18.0935671Z         "radius": 333.87708488234307,
+2026-11-04T09:31:18.0935983Z         "x": -144.79526848686365,
+2026-11-04T09:31:18.0936257Z         "y": -293.95957249071404,
+2026-11-04T09:31:18.0936527Z         "w": 667.7541697646861,
+2026-11-04T09:31:18.0937103Z         "h": 667.7541697646861
+2026-11-04T09:31:18.0937363Z       },
+2026-11-04T09:31:18.0937572Z       {
+2026-11-04T09:31:18.0937784Z         "id": "database",
+2026-11-04T09:31:18.0938071Z         "root": "share",
+2026-11-04T09:31:18.0938303Z         "depth": 1,
+2026-11-04T09:31:18.0938539Z         "ids": [
+2026-11-04T09:31:18.0938763Z           "database",
+2026-11-04T09:31:18.0938980Z           "files",
+2026-11-04T09:31:18.0939210Z           "file_id",
+2026-11-04T09:31:18.0939457Z           "file_name",
+2026-11-04T09:31:18.0939695Z           "shares"
+2026-11-04T09:31:18.0939910Z         ],
+2026-11-04T09:31:18.0940113Z         "self": false,
+2026-11-04T09:31:18.0940357Z         "cx": 184.04438789962725,
+2026-11-04T09:31:18.0940640Z         "cy": 57.34166363748003,
+2026-11-04T09:31:18.0940914Z         "radius": 303.73936913616615,
+2026-11-04T09:31:18.0941187Z         "x": -119.6949812365389,
+2026-11-04T09:31:18.0941440Z         "y": -246.39770549868612,
+2026-11-04T09:31:18.0941701Z         "w": 607.4787382723323,
+2026-11-04T09:31:18.0941944Z         "h": 607.4787382723323
+2026-11-04T09:31:18.0942223Z       },
+2026-11-04T09:31:18.0942424Z       {
+2026-11-04T09:31:18.0942627Z         "id": "files",
+2026-11-04T09:31:18.0943020Z         "root": "share",
+2026-11-04T09:31:18.0943479Z         "depth": 2,
+2026-11-04T09:31:18.0943735Z         "ids": [
+2026-11-04T09:31:18.0944007Z           "files",
+2026-11-04T09:31:18.0944219Z           "file_id",
+2026-11-04T09:31:18.0944605Z           "file_name"
+2026-11-04T09:31:18.0944876Z         ],
+2026-11-04T09:31:18.0945113Z         "self": false,
+2026-11-04T09:31:18.0945347Z         "cx": 75,
+2026-11-04T09:31:18.0945561Z         "cy": 51.5,
+2026-11-04T09:31:18.0945809Z         "radius": 182.53862020806665,
+2026-11-04T09:31:18.0946084Z         "x": -107.53862020806665,
+2026-11-04T09:31:18.0946355Z         "y": -131.03862020806665,
+2026-11-04T09:31:18.0946609Z         "w": 365.0772404161333,
+2026-11-04T09:31:18.0946856Z         "h": 365.0772404161333
+2026-11-04T09:31:18.0947104Z       }
+2026-11-04T09:31:18.0947317Z     ],
+2026-11-04T09:31:18.0947514Z     "ports": [
+2026-11-04T09:31:18.0947772Z       {
+2026-11-04T09:31:18.0948040Z         "id": "summary:share|notify|flow|true|false|model",
+2026-11-04T09:31:18.0948590Z         "start": {
+2026-11-04T09:31:18.0948895Z           "x": 522.6668950083833,
+2026-11-04T09:31:18.0949182Z           "y": 25.956741053553294,
+2026-11-04T09:31:18.0949519Z           "level": 0
+2026-11-04T09:31:18.0949821Z         },
+2026-11-04T09:31:18.0950101Z         "end": {
+2026-11-04T09:31:18.0950383Z           "x": 665,
+2026-11-04T09:31:18.0950640Z           "y": 20,
+2026-11-04T09:31:18.0950935Z           "level": 0
+2026-11-04T09:31:18.0951200Z         },
+2026-11-04T09:31:18.0952141Z         "vertices": 25
+2026-11-04T09:31:18.0952412Z       },
+2026-11-04T09:31:18.0952640Z       {
+2026-11-04T09:31:18.0952998Z         "id": "summary:store|shares|data|false|false|model",
+2026-11-04T09:31:18.0953745Z         "start": {
+2026-11-04T09:31:18.0954102Z           "x": 245,
+2026-11-04T09:31:18.0954368Z           "y": -190,
+2026-11-04T09:31:18.0954622Z           "level": 0
+2026-11-04T09:31:18.0954904Z         },
+2026-11-04T09:31:18.0955146Z         "end": {
+2026-11-04T09:31:18.0955412Z           "x": 355,
+2026-11-04T09:31:18.0955728Z           "y": 30,
+2026-11-04T09:31:18.0955965Z           "level": 0
+2026-11-04T09:31:18.0956248Z         },
+2026-11-04T09:31:18.0956507Z         "vertices": 25
+2026-11-04T09:31:18.0956800Z       }
+2026-11-04T09:31:18.0957040Z     ],
+2026-11-04T09:31:18.0957292Z     "edges": [
+2026-11-04T09:31:18.0957557Z       {
+2026-11-04T09:31:18.0957858Z         "id": "summary:share|notify|flow|true|false|model",
+2026-11-04T09:31:18.0958254Z         "from": "share",
+2026-11-04T09:31:18.0958565Z         "to": "notify",
+2026-11-04T09:31:18.0958852Z         "members": [
+2026-11-04T09:31:18.0959191Z           "share-notify"
+2026-11-04T09:31:18.0959482Z         ]
+2026-11-04T09:31:18.0959765Z       },
+2026-11-04T09:31:18.0960225Z       {
+2026-11-04T09:31:18.0960540Z         "id": "summary:store|shares|data|false|false|model",
+2026-11-04T09:31:18.0960930Z         "from": "store",
+2026-11-04T09:31:18.0961224Z         "to": "shares",
+2026-11-04T09:31:18.0961505Z         "members": [
+2026-11-04T09:31:18.0961786Z           "store-shares"
+2026-11-04T09:31:18.0962066Z         ]
+2026-11-04T09:31:18.0962340Z       }
+2026-11-04T09:31:18.0962642Z     ]
+2026-11-04T09:31:18.0962897Z   },
+2026-11-04T09:31:18.0963335Z   "captions": [
+2026-11-04T09:31:18.0963639Z     {
+2026-11-04T09:31:18.0963919Z       "id": "share",
+2026-11-04T09:31:18.0964234Z       "layer": "execution",
+2026-11-04T09:31:18.0964584Z       "x": 630.1275634765625,
+2026-11-04T09:31:18.0964895Z       "y": 594.4268188476562,
+2026-11-04T09:31:18.0965184Z       "w": 70.03125,
+2026-11-04T09:31:18.0965482Z       "h": 33.796875
+2026-11-04T09:31:18.0965747Z     },
+2026-11-04T09:31:18.0965957Z     {
+2026-11-04T09:31:18.0966248Z       "id": "files",
+2026-11-04T09:31:18.0966534Z       "layer": "data",
+2026-11-04T09:31:18.0966857Z       "x": 751.7779541015625,
+2026-11-04T09:31:18.0967185Z       "y": 807.6314086914062,
+2026-11-04T09:31:18.0967467Z       "w": 33.359375,
+2026-11-04T09:31:18.0967799Z       "h": 33.796875
+2026-11-04T09:31:18.0968290Z     },
+2026-11-04T09:31:18.0968548Z     {
+2026-11-04T09:31:18.0968837Z       "id": "database",
+2026-11-04T09:31:18.0969116Z       "layer": "data",
+2026-11-04T09:31:18.0969433Z       "x": 783.2034912109375,
+2026-11-04T09:31:18.0969709Z       "y": 845.6314086914062,
+2026-11-04T09:31:18.0970019Z       "w": 63.8125,
+2026-11-04T09:31:18.0970235Z       "h": 33.796875
+2026-11-04T09:31:18.0970435Z     },
+2026-11-04T09:31:18.0970654Z     {
+2026-11-04T09:31:18.0970854Z       "id": "share",
+2026-11-04T09:31:18.0971123Z       "layer": "data",
+2026-11-04T09:31:18.0971342Z       "x": 780.0254516601562,
+2026-11-04T09:31:18.0971560Z       "y": 883.6314086914062,
+2026-11-04T09:31:18.0971807Z       "w": 70.03125,
+2026-11-04T09:31:18.0972023Z       "h": 33.796875
+2026-11-04T09:31:18.0972245Z     }
+2026-11-04T09:31:18.0972497Z   ],
+2026-11-04T09:31:18.0972688Z   "drag_delta": {
+2026-11-04T09:31:18.0972936Z     "x": 51.22619999431481,
+2026-11-04T09:31:18.0973897Z     "z": 113.83127915132263
+2026-11-04T09:31:18.0974164Z   },
+2026-11-04T09:31:18.0974385Z   "passed": true,
+2026-11-04T09:31:18.0974619Z   "checks": [
+2026-11-04T09:31:18.0974969Z     "2D circles fit visible children with distant saved owners unchanged",
+2026-11-04T09:31:18.0975430Z     "Nested circle captions do not overlap; exact caption drag moves only its target owner",
+2026-11-04T09:31:18.0975918Z     "Tilted 3D ring drag moves the complete branch by one delta and keeps pins",
+2026-11-04T09:31:18.0976372Z     "Layer hide/restore uses same-ID fallback glyphs and restores child positions",
+2026-11-04T09:31:18.0976826Z     "Explicit node exclusion and native restore retain the same identity",
+2026-11-04T09:31:18.0977330Z     "Saved projection visibility hides projected rings and routes to the same-ID visible glyph"
+2026-11-04T09:31:18.0977705Z   ],
+2026-11-04T09:31:18.0977933Z   "errors": []
+2026-11-04T09:31:18.0978152Z }
+2026-11-04T09:31:18.2154223Z ##[group]Run python tools/test_api_observation_browser.py
+2026-11-04T09:31:18.2154633Z [36;1mpython tools/test_api_observation_browser.py[0m
+2026-11-04T09:31:18.2167144Z shell: /usr/bin/bash -e {0}
+2026-11-04T09:31:18.2167486Z env:
+2026-11-04T09:31:18.2167788Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:18.2168179Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:31:18.2168545Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:18.2168867Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:18.2169205Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:18.2169532Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:31:18.2169877Z   BO_API_OBSERVATION_EVIDENCE: .validation/api-observation-browser
+2026-11-04T09:31:18.2170301Z ##[endgroup]
+2026-11-04T09:31:18.4649549Z Exact API observation: native intervals, values, causal rows, playback, shared-handler isolation and recorded snapshots passed
+2026-11-04T09:31:21.5824014Z {
+2026-11-04T09:31:21.5824823Z   "basis": "serialized exact HTTP observation fixture; native browser controls",
+2026-11-04T09:31:21.5825335Z   "timeline": {
+2026-11-04T09:31:21.5825676Z     "eventId": "store-enter",
+2026-11-04T09:31:21.5826004Z     "raw": 3,
+2026-11-04T09:31:21.5826310Z     "window": {
+2026-11-04T09:31:21.5826683Z       "start": 0,
+2026-11-04T09:31:21.5826970Z       "end": 131
+2026-11-04T09:31:21.5827268Z     },
+2026-11-04T09:31:21.5827542Z     "range": null,
+2026-11-04T09:31:21.5827878Z     "rows": [
+2026-11-04T09:31:21.5828162Z       {
+2026-11-04T09:31:21.5828579Z         "id": "lane:execution:business-enter:business",
+2026-11-04T09:31:21.5828982Z         "layer": "business",
+2026-11-04T09:31:21.5829354Z         "group": "lane:execution:business-enter",
+2026-11-04T09:31:21.5829842Z         "groupStart": true,
+2026-11-04T09:31:21.5830195Z         "groupKind": "invocation",
+2026-11-04T09:31:21.5830614Z         "folded": false,
+2026-11-04T09:31:21.5830923Z         "members": [
+2026-11-04T09:31:21.5831370Z           "share"
+2026-11-04T09:31:21.5831655Z         ]
+2026-11-04T09:31:21.5831917Z       },
+2026-11-04T09:31:21.5832223Z       {
+2026-11-04T09:31:21.5832554Z         "id": "lane:execution:business-enter:api",
+2026-11-04T09:31:21.5832963Z         "layer": "api",
+2026-11-04T09:31:21.5833454Z         "group": "lane:execution:business-enter",
+2026-11-04T09:31:21.5833842Z         "groupStart": false,
+2026-11-04T09:31:21.5834253Z         "groupKind": "invocation",
+2026-11-04T09:31:21.5834697Z         "folded": false,
+2026-11-04T09:31:21.5835038Z         "members": [
+2026-11-04T09:31:21.5835349Z           "endpoint:files"
+2026-11-04T09:31:21.5835652Z         ]
+2026-11-04T09:31:21.5835922Z       },
+2026-11-04T09:31:21.5836179Z       {
+2026-11-04T09:31:21.5836597Z         "id": "lane:execution:business-enter:execution",
+2026-11-04T09:31:21.5837017Z         "layer": "execution",
+2026-11-04T09:31:21.5837404Z         "group": "lane:execution:business-enter",
+2026-11-04T09:31:21.5837802Z         "groupStart": false,
+2026-11-04T09:31:21.5838152Z         "groupKind": "invocation",
+2026-11-04T09:31:21.5838547Z         "folded": false,
+2026-11-04T09:31:21.5838853Z         "members": [
+2026-11-04T09:31:21.5839139Z           "api_get",
+2026-11-04T09:31:21.5839433Z           "store",
+2026-11-04T09:31:21.5839708Z           "api_post"
+2026-11-04T09:31:21.5839989Z         ]
+2026-11-04T09:31:21.5840305Z       },
+2026-11-04T09:31:21.5840554Z       {
+2026-11-04T09:31:21.5840902Z         "id": "lane:execution:business-enter:code",
+2026-11-04T09:31:21.5841300Z         "layer": "code",
+2026-11-04T09:31:21.5841650Z         "group": "lane:execution:business-enter",
+2026-11-04T09:31:21.5842093Z         "groupStart": false,
+2026-11-04T09:31:21.5842445Z         "groupKind": "invocation",
+2026-11-04T09:31:21.5842798Z         "folded": false,
+2026-11-04T09:31:21.5843224Z         "members": [
+2026-11-04T09:31:21.5843972Z           "code:files"
+2026-11-04T09:31:21.5844285Z         ]
+2026-11-04T09:31:21.5844573Z       }
+2026-11-04T09:31:21.5844848Z     ],
+2026-11-04T09:31:21.5845140Z     "executions": [
+2026-11-04T09:31:21.5845423Z       {
+2026-11-04T09:31:21.5845768Z         "id": "execution:business-enter",
+2026-11-04T09:31:21.5846195Z         "start": 1,
+2026-11-04T09:31:21.5846530Z         "end": 121,
+2026-11-04T09:31:21.5846871Z         "root": "business-enter",
+2026-11-04T09:31:21.5847195Z         "kind": "invocation",
+2026-11-04T09:31:21.5847606Z         "lane": "lane:execution:business-enter"
+2026-11-04T09:31:21.5847965Z       }
+2026-11-04T09:31:21.5848286Z     ],
+2026-11-04T09:31:21.5848544Z     "groups": 1,
+2026-11-04T09:31:21.5848825Z     "invocationGroups": 1,
+2026-11-04T09:31:21.5849209Z     "unassignedObservations": 0,
+2026-11-04T09:31:21.5849545Z     "points": [
+2026-11-04T09:31:21.5849815Z       {
+2026-11-04T09:31:21.5850270Z         "raw": 0,
+2026-11-04T09:31:21.5850529Z         "time": 0
+2026-11-04T09:31:21.5850826Z       },
+2026-11-04T09:31:21.5851078Z       {
+2026-11-04T09:31:21.5851391Z         "raw": 1,
+2026-11-04T09:31:21.5851685Z         "time": 1
+2026-11-04T09:31:21.5851973Z       },
+2026-11-04T09:31:21.5852260Z       {
+2026-11-04T09:31:21.5852510Z         "raw": 2,
+2026-11-04T09:31:21.5852804Z         "time": 11
+2026-11-04T09:31:21.5853271Z       },
+2026-11-04T09:31:21.5853534Z       {
+2026-11-04T09:31:21.5853843Z         "raw": 3,
+2026-11-04T09:31:21.5854121Z         "time": 21
+2026-11-04T09:31:21.5854419Z       },
+2026-11-04T09:31:21.5854678Z       {
+2026-11-04T09:31:21.5854936Z         "raw": 4,
+2026-11-04T09:31:21.5855221Z         "time": 41
+2026-11-04T09:31:21.5855524Z       },
+2026-11-04T09:31:21.5855796Z       {
+2026-11-04T09:31:21.5856058Z         "raw": 5,
+2026-11-04T09:31:21.5856334Z         "time": 71
+2026-11-04T09:31:21.5856614Z       },
+2026-11-04T09:31:21.5856858Z       {
+2026-11-04T09:31:21.5857183Z         "raw": 6,
+2026-11-04T09:31:21.5857469Z         "time": 81
+2026-11-04T09:31:21.5857744Z       },
+2026-11-04T09:31:21.5858009Z       {
+2026-11-04T09:31:21.5858262Z         "raw": 7,
+2026-11-04T09:31:21.5858543Z         "time": 111
+2026-11-04T09:31:21.5858876Z       },
+2026-11-04T09:31:21.5859128Z       {
+2026-11-04T09:31:21.5859397Z         "raw": 8,
+2026-11-04T09:31:21.5859698Z         "time": 121
+2026-11-04T09:31:21.5859958Z       },
+2026-11-04T09:31:21.5860236Z       {
+2026-11-04T09:31:21.5860536Z         "raw": 9,
+2026-11-04T09:31:21.5860825Z         "time": 131
+2026-11-04T09:31:21.5861111Z       }
+2026-11-04T09:31:21.5861343Z     ],
+2026-11-04T09:31:21.5861644Z     "transfers": [],
+2026-11-04T09:31:21.5861934Z     "clock": "time",
+2026-11-04T09:31:21.5862269Z     "scroll": 0,
+2026-11-04T09:31:21.5862574Z     "painted": 20,
+2026-11-04T09:31:21.5862840Z     "flows": 6,
+2026-11-04T09:31:21.5863335Z     "source": "saved",
+2026-11-04T09:31:21.5863637Z     "depth": "all",
+2026-11-04T09:31:21.5863951Z     "layerMode": "through",
+2026-11-04T09:31:21.5864339Z     "lifecycles": [
+2026-11-04T09:31:21.5864601Z       {
+2026-11-04T09:31:21.5864890Z         "node": "share",
+2026-11-04T09:31:21.5865187Z         "start": 1,
+2026-11-04T09:31:21.5865460Z         "end": 121,
+2026-11-04T09:31:21.5865773Z         "duration": 120,
+2026-11-04T09:31:21.5866101Z         "unfinished": false,
+2026-11-04T09:31:21.5866486Z         "clippedStart": false,
+2026-11-04T09:31:21.5866930Z         "entryEventId": "business-enter",
+2026-11-04T09:31:21.5867312Z         "raw": 1,
+2026-11-04T09:31:21.5867614Z         "last": 8,
+2026-11-04T09:31:21.5867875Z         "stages": [
+2026-11-04T09:31:21.5868182Z           {
+2026-11-04T09:31:21.5868481Z             "state": "running",
+2026-11-04T09:31:21.5868896Z             "label": "Running",
+2026-11-04T09:31:21.5869212Z             "start": 1,
+2026-11-04T09:31:21.5869487Z             "end": 121,
+2026-11-04T09:31:21.5869844Z             "registered": false
+2026-11-04T09:31:21.5870173Z           }
+2026-11-04T09:31:21.5870960Z         ],
+2026-11-04T09:31:21.5871329Z         "terminal": {
+2026-11-04T09:31:21.5871789Z           "boundary": "end",
+2026-11-04T09:31:21.5872161Z           "state": "returned",
+2026-11-04T09:31:21.5872508Z           "label": "Returned",
+2026-11-04T09:31:21.5872854Z           "kind": "ended",
+2026-11-04T09:31:21.5873362Z           "registered": false,
+2026-11-04T09:31:21.5873701Z           "termination": "return"
+2026-11-04T09:31:21.5874059Z         }
+2026-11-04T09:31:21.5874319Z       },
+2026-11-04T09:31:21.5874599Z       {
+2026-11-04T09:31:21.5874882Z         "node": "api_get",
+2026-11-04T09:31:21.5875211Z         "start": 11,
+2026-11-04T09:31:21.5875532Z         "end": 71,
+2026-11-04T09:31:21.5875816Z         "duration": 60,
+2026-11-04T09:31:21.5876149Z         "unfinished": false,
+2026-11-04T09:31:21.5876509Z         "clippedStart": false,
+2026-11-04T09:31:21.5876866Z         "entryEventId": "get-enter",
+2026-11-04T09:31:21.5877259Z         "raw": 2,
+2026-11-04T09:31:21.5877676Z         "last": 5,
+2026-11-04T09:31:21.5877970Z         "stages": [
+2026-11-04T09:31:21.5878263Z           {
+2026-11-04T09:31:21.5878561Z             "state": "running",
+2026-11-04T09:31:21.5878961Z             "label": "Running",
+2026-11-04T09:31:21.5879308Z             "start": 11,
+2026-11-04T09:31:21.5879616Z             "end": 71,
+2026-11-04T09:31:21.5879947Z             "registered": false
+2026-11-04T09:31:21.5880256Z           }
+2026-11-04T09:31:21.5880526Z         ],
+2026-11-04T09:31:21.5880860Z         "terminal": {
+2026-11-04T09:31:21.5881175Z           "boundary": "end",
+2026-11-04T09:31:21.5881527Z           "state": "returned",
+2026-11-04T09:31:21.5881876Z           "label": "Returned",
+2026-11-04T09:31:21.5882213Z           "kind": "ended",
+2026-11-04T09:31:21.5882562Z           "registered": false,
+2026-11-04T09:31:21.5882946Z           "termination": "return"
+2026-11-04T09:31:21.5883440Z         }
+2026-11-04T09:31:21.5883713Z       },
+2026-11-04T09:31:21.5883992Z       {
+2026-11-04T09:31:21.5884325Z         "node": "endpoint:files",
+2026-11-04T09:31:21.5884646Z         "start": 11,
+2026-11-04T09:31:21.5885023Z         "end": 71,
+2026-11-04T09:31:21.5885310Z         "duration": 60,
+2026-11-04T09:31:21.5885640Z         "unfinished": false,
+2026-11-04T09:31:21.5886005Z         "clippedStart": false,
+2026-11-04T09:31:21.5886356Z         "entryEventId": "get-enter",
+2026-11-04T09:31:21.5886798Z         "observation_basis": {
+2026-11-04T09:31:21.5887167Z           "kind": "http-registration",
+2026-11-04T09:31:21.5887564Z           "source_node": "api_get",
+2026-11-04T09:31:21.5887937Z           "registrations": [
+2026-11-04T09:31:21.5888253Z             {
+2026-11-04T09:31:21.5888583Z               "node": "api_get",
+2026-11-04T09:31:21.5888980Z               "method": "GET",
+2026-11-04T09:31:21.5889349Z               "route": "/files",
+2026-11-04T09:31:21.5889679Z               "source": {
+2026-11-04T09:31:21.5890000Z                 "path": "web.py",
+2026-11-04T09:31:21.5890390Z                 "symbol": "files"
+2026-11-04T09:31:21.5890753Z               },
+2026-11-04T09:31:21.5891077Z               "selector": {
+2026-11-04T09:31:21.5891419Z                 "name": "GET /files"
+2026-11-04T09:31:21.5891737Z               }
+2026-11-04T09:31:21.5892043Z             }
+2026-11-04T09:31:21.5892317Z           ]
+2026-11-04T09:31:21.5892648Z         },
+2026-11-04T09:31:21.5892944Z         "source_node": "api_get",
+2026-11-04T09:31:21.5893439Z         "call_id": "get",
+2026-11-04T09:31:21.5893831Z         "parent_call_id": "business",
+2026-11-04T09:31:21.5894207Z         "parent_event_id": null,
+2026-11-04T09:31:21.5894604Z         "endEventId": "get-return",
+2026-11-04T09:31:21.5894990Z         "raw": 2,
+2026-11-04T09:31:21.5895253Z         "last": 5,
+2026-11-04T09:31:21.5895558Z         "stages": [
+2026-11-04T09:31:21.5895835Z           {
+2026-11-04T09:31:21.5896158Z             "state": "running",
+2026-11-04T09:31:21.5896541Z             "label": "Running",
+2026-11-04T09:31:21.5896845Z             "start": 11,
+2026-11-04T09:31:21.5897178Z             "end": 71,
+2026-11-04T09:31:21.5897640Z             "registered": false
+2026-11-04T09:31:21.5897984Z           }
+2026-11-04T09:31:21.5898266Z         ],
+2026-11-04T09:31:21.5898571Z         "terminal": {
+2026-11-04T09:31:21.5898919Z           "boundary": "end",
+2026-11-04T09:31:21.5899279Z           "state": "returned",
+2026-11-04T09:31:21.5899628Z           "label": "Returned",
+2026-11-04T09:31:21.5899962Z           "kind": "ended",
+2026-11-04T09:31:21.5900297Z           "registered": false,
+2026-11-04T09:31:21.5900695Z           "termination": "return"
+2026-11-04T09:31:21.5901040Z         }
+2026-11-04T09:31:21.5901299Z       },
+2026-11-04T09:31:21.5901567Z       {
+2026-11-04T09:31:21.5901869Z         "node": "endpoint:files",
+2026-11-04T09:31:21.5902242Z         "start": 81,
+2026-11-04T09:31:21.5902553Z         "end": 111,
+2026-11-04T09:31:21.5902842Z         "duration": 30,
+2026-11-04T09:31:21.5903308Z         "unfinished": false,
+2026-11-04T09:31:21.5903774Z         "clippedStart": false,
+2026-11-04T09:31:21.5904168Z         "entryEventId": "post-enter",
+2026-11-04T09:31:21.5904610Z         "observation_basis": {
+2026-11-04T09:31:21.5904980Z           "kind": "http-registration",
+2026-11-04T09:31:21.5905379Z           "source_node": "api_post",
+2026-11-04T09:31:21.5905734Z           "registrations": [
+2026-11-04T09:31:21.5906055Z             {
+2026-11-04T09:31:21.5906413Z               "node": "api_post",
+2026-11-04T09:31:21.5906761Z               "method": "POST",
+2026-11-04T09:31:21.5907118Z               "route": "/files",
+2026-11-04T09:31:21.5907443Z               "source": {
+2026-11-04T09:31:21.5907788Z                 "path": "web.py",
+2026-11-04T09:31:21.5908155Z                 "symbol": "files"
+2026-11-04T09:31:21.5908501Z               },
+2026-11-04T09:31:21.5908799Z               "selector": {
+2026-11-04T09:31:21.5909147Z                 "name": "POST /files"
+2026-11-04T09:31:21.5909513Z               }
+2026-11-04T09:31:21.5909781Z             }
+2026-11-04T09:31:21.5910029Z           ]
+2026-11-04T09:31:21.5910356Z         },
+2026-11-04T09:31:21.5910661Z         "source_node": "api_post",
+2026-11-04T09:31:21.5911044Z         "call_id": "post",
+2026-11-04T09:31:21.5911383Z         "parent_call_id": "business",
+2026-11-04T09:31:21.5911735Z         "parent_event_id": null,
+2026-11-04T09:31:21.5912162Z         "endEventId": "post-return",
+2026-11-04T09:31:21.5912492Z         "raw": 6,
+2026-11-04T09:31:21.5912801Z         "last": 7,
+2026-11-04T09:31:21.5913205Z         "stages": [
+2026-11-04T09:31:21.5913479Z           {
+2026-11-04T09:31:21.5913824Z             "state": "running",
+2026-11-04T09:31:21.5914212Z             "label": "Running",
+2026-11-04T09:31:21.5914566Z             "start": 81,
+2026-11-04T09:31:21.5914875Z             "end": 111,
+2026-11-04T09:31:21.5915184Z             "registered": false
+2026-11-04T09:31:21.5915515Z           }
+2026-11-04T09:31:21.5915770Z         ],
+2026-11-04T09:31:21.5916107Z         "terminal": {
+2026-11-04T09:31:21.5916410Z           "boundary": "end",
+2026-11-04T09:31:21.5916736Z           "state": "returned",
+2026-11-04T09:31:21.5917112Z           "label": "Returned",
+2026-11-04T09:31:21.5917434Z           "kind": "ended",
+2026-11-04T09:31:21.5917836Z           "registered": false,
+2026-11-04T09:31:21.5918182Z           "termination": "return"
+2026-11-04T09:31:21.5918487Z         }
+2026-11-04T09:31:21.5918773Z       },
+2026-11-04T09:31:21.5919030Z       {
+2026-11-04T09:31:21.5919321Z         "node": "store",
+2026-11-04T09:31:21.5919663Z         "start": 21,
+2026-11-04T09:31:21.5919942Z         "end": 41,
+2026-11-04T09:31:21.5920260Z         "duration": 20,
+2026-11-04T09:31:21.5920568Z         "unfinished": false,
+2026-11-04T09:31:21.5920936Z         "clippedStart": false,
+2026-11-04T09:31:21.5921314Z         "entryEventId": "store-enter",
+2026-11-04T09:31:21.5921676Z         "raw": 3,
+2026-11-04T09:31:21.5921982Z         "last": 4,
+2026-11-04T09:31:21.5922285Z         "stages": [
+2026-11-04T09:31:21.5922566Z           {
+2026-11-04T09:31:21.5922875Z             "state": "running",
+2026-11-04T09:31:21.5923499Z             "label": "Running",
+2026-11-04T09:31:21.5923881Z             "start": 21,
+2026-11-04T09:31:21.5924217Z             "end": 41,
+2026-11-04T09:31:21.5924541Z             "registered": false
+2026-11-04T09:31:21.5924864Z           }
+2026-11-04T09:31:21.5925119Z         ],
+2026-11-04T09:31:21.5925428Z         "terminal": {
+2026-11-04T09:31:21.5925752Z           "boundary": "end",
+2026-11-04T09:31:21.6076347Z           "state": "returned",
+2026-11-04T09:31:21.6077032Z           "label": "Returned",
+2026-11-04T09:31:21.6077311Z           "kind": "ended",
+2026-11-04T09:31:21.6077584Z           "registered": false,
+2026-11-04T09:31:21.6077872Z           "termination": "return"
+2026-11-04T09:31:21.6078135Z         }
+2026-11-04T09:31:21.6078330Z       },
+2026-11-04T09:31:21.6078518Z       {
+2026-11-04T09:31:21.6078731Z         "node": "api_post",
+2026-11-04T09:31:21.6078976Z         "start": 81,
+2026-11-04T09:31:21.6079495Z         "end": 111,
+2026-11-04T09:31:21.6079733Z         "duration": 30,
+2026-11-04T09:31:21.6079975Z         "unfinished": false,
+2026-11-04T09:31:21.6080248Z         "clippedStart": false,
+2026-11-04T09:31:21.6080541Z         "entryEventId": "post-enter",
+2026-11-04T09:31:21.6080807Z         "raw": 6,
+2026-11-04T09:31:21.6081012Z         "last": 7,
+2026-11-04T09:31:21.6081229Z         "stages": [
+2026-11-04T09:31:21.6081429Z           {
+2026-11-04T09:31:21.6081653Z             "state": "running",
+2026-11-04T09:31:21.6081927Z             "label": "Running",
+2026-11-04T09:31:21.6082169Z             "start": 81,
+2026-11-04T09:31:21.6082395Z             "end": 111,
+2026-11-04T09:31:21.6082650Z             "registered": false
+2026-11-04T09:31:21.6082886Z           }
+2026-11-04T09:31:21.6083205Z         ],
+2026-11-04T09:31:21.6083415Z         "terminal": {
+2026-11-04T09:31:21.6083647Z           "boundary": "end",
+2026-11-04T09:31:21.6083915Z           "state": "returned",
+2026-11-04T09:31:21.6084195Z           "label": "Returned",
+2026-11-04T09:31:21.6084448Z           "kind": "ended",
+2026-11-04T09:31:21.6084717Z           "registered": false,
+2026-11-04T09:31:21.6085045Z           "termination": "return"
+2026-11-04T09:31:21.6085307Z         }
+2026-11-04T09:31:21.6085494Z       }
+2026-11-04T09:31:21.6085695Z     ],
+2026-11-04T09:31:21.6085894Z     "paintMs": 0.5,
+2026-11-04T09:31:21.6086109Z     "routes": [
+2026-11-04T09:31:21.6086309Z       {
+2026-11-04T09:31:21.6086511Z         "key": "1:2:2:call",
+2026-11-04T09:31:21.6086750Z         "type": "call",
+2026-11-04T09:31:21.6086975Z         "raw": 2,
+2026-11-04T09:31:21.6087273Z         "row": "lane:execution:business-enter:api",
+2026-11-04T09:31:21.6087594Z         "fromRow": 0,
+2026-11-04T09:31:21.6087811Z         "toRow": 1,
+2026-11-04T09:31:21.6088016Z         "route": [
+2026-11-04T09:31:21.6088216Z           {
+2026-11-04T09:31:21.6088464Z             "x": 303.7251908396947,
+2026-11-04T09:31:21.6088776Z             "y": 64
+2026-11-04T09:31:21.6088975Z           },
+2026-11-04T09:31:21.6089169Z           {
+2026-11-04T09:31:21.6089397Z             "x": 293.7251908396947,
+2026-11-04T09:31:21.6089680Z             "y": 64
+2026-11-04T09:31:21.6089885Z           },
+2026-11-04T09:31:21.6090081Z           {
+2026-11-04T09:31:21.6090295Z             "x": 293.7251908396947,
+2026-11-04T09:31:21.6090536Z             "y": 92
+2026-11-04T09:31:21.6090737Z           },
+2026-11-04T09:31:21.6090915Z           {
+2026-11-04T09:31:21.6091126Z             "x": 303.7251908396947,
+2026-11-04T09:31:21.6091367Z             "y": 92
+2026-11-04T09:31:21.6091569Z           }
+2026-11-04T09:31:21.6091747Z         ]
+2026-11-04T09:31:21.6091927Z       },
+2026-11-04T09:31:21.6092108Z       {
+2026-11-04T09:31:21.6092304Z         "key": "2:3:3:call",
+2026-11-04T09:31:21.6092543Z         "type": "call",
+2026-11-04T09:31:21.6092773Z         "raw": 3,
+2026-11-04T09:31:21.6093192Z         "row": "lane:execution:business-enter:execution",
+2026-11-04T09:31:21.6093526Z         "fromRow": 1,
+2026-11-04T09:31:21.6093750Z         "toRow": 2,
+2026-11-04T09:31:21.6093958Z         "route": [
+2026-11-04T09:31:21.6094292Z           {
+2026-11-04T09:31:21.6094519Z             "x": 410.7480916030534,
+2026-11-04T09:31:21.6094768Z             "y": 92
+2026-11-04T09:31:21.6094970Z           },
+2026-11-04T09:31:21.6095164Z           {
+2026-11-04T09:31:21.6095378Z             "x": 397.7480916030534,
+2026-11-04T09:31:21.6095615Z             "y": 92
+2026-11-04T09:31:21.6095817Z           },
+2026-11-04T09:31:21.6096004Z           {
+2026-11-04T09:31:21.6096217Z             "x": 397.7480916030534,
+2026-11-04T09:31:21.6096463Z             "y": 142
+2026-11-04T09:31:21.6096702Z           },
+2026-11-04T09:31:21.6096926Z           {
+2026-11-04T09:31:21.6097151Z             "x": 410.7480916030534,
+2026-11-04T09:31:21.6097402Z             "y": 142
+2026-11-04T09:31:21.6097606Z           }
+2026-11-04T09:31:21.6097793Z         ]
+2026-11-04T09:31:21.6097972Z       },
+2026-11-04T09:31:21.6098153Z       {
+2026-11-04T09:31:21.6098375Z         "key": "4:2:4:return",
+2026-11-04T09:31:21.6098731Z         "type": "return",
+2026-11-04T09:31:21.6098963Z         "raw": 4,
+2026-11-04T09:31:21.6099243Z         "row": "lane:execution:business-enter:api",
+2026-11-04T09:31:21.6099543Z         "fromRow": 2,
+2026-11-04T09:31:21.6099758Z         "toRow": 1,
+2026-11-04T09:31:21.6099964Z         "route": [
+2026-11-04T09:31:21.6100186Z           {
+2026-11-04T09:31:21.6100417Z             "x": 624.793893129771,
+2026-11-04T09:31:21.6100686Z             "y": 142
+2026-11-04T09:31:21.6100914Z           },
+2026-11-04T09:31:21.6101135Z           {
+2026-11-04T09:31:21.6101354Z             "x": 608.793893129771,
+2026-11-04T09:31:21.6101613Z             "y": 142
+2026-11-04T09:31:21.6101819Z           },
+2026-11-04T09:31:21.6102008Z           {
+2026-11-04T09:31:21.6102228Z             "x": 608.793893129771,
+2026-11-04T09:31:21.6102473Z             "y": 92
+2026-11-04T09:31:21.6102670Z           },
+2026-11-04T09:31:21.6102864Z           {
+2026-11-04T09:31:21.6103199Z             "x": 624.793893129771,
+2026-11-04T09:31:21.6103455Z             "y": 92
+2026-11-04T09:31:21.6103656Z           }
+2026-11-04T09:31:21.6103848Z         ]
+2026-11-04T09:31:21.6104031Z       },
+2026-11-04T09:31:21.6104217Z       {
+2026-11-04T09:31:21.6104448Z         "key": "5:1:5:return",
+2026-11-04T09:31:21.6104695Z         "type": "return",
+2026-11-04T09:31:21.6104990Z         "raw": 5,
+2026-11-04T09:31:21.6105292Z         "row": "lane:execution:business-enter:business",
+2026-11-04T09:31:21.6105611Z         "fromRow": 1,
+2026-11-04T09:31:21.6105828Z         "toRow": 0,
+2026-11-04T09:31:21.6106045Z         "route": [
+2026-11-04T09:31:21.6106244Z           {
+2026-11-04T09:31:21.6106461Z             "x": 945.8625954198474,
+2026-11-04T09:31:21.6106709Z             "y": 92
+2026-11-04T09:31:21.6106909Z           },
+2026-11-04T09:31:21.6107098Z           {
+2026-11-04T09:31:21.6107326Z             "x": 935.8625954198474,
+2026-11-04T09:31:21.6107571Z             "y": 92
+2026-11-04T09:31:21.6107772Z           },
+2026-11-04T09:31:21.6107965Z           {
+2026-11-04T09:31:21.6108178Z             "x": 935.8625954198474,
+2026-11-04T09:31:21.6108423Z             "y": 64
+2026-11-04T09:31:21.6108627Z           },
+2026-11-04T09:31:21.6108811Z           {
+2026-11-04T09:31:21.6109022Z             "x": 945.8625954198474,
+2026-11-04T09:31:21.6109264Z             "y": 64
+2026-11-04T09:31:21.6109463Z           }
+2026-11-04T09:31:21.6109645Z         ]
+2026-11-04T09:31:21.6109833Z       },
+2026-11-04T09:31:21.6110011Z       {
+2026-11-04T09:31:21.6110204Z         "key": "1:6:6:call",
+2026-11-04T09:31:21.6110443Z         "type": "call",
+2026-11-04T09:31:21.6110662Z         "raw": 6,
+2026-11-04T09:31:21.6110942Z         "row": "lane:execution:business-enter:api",
+2026-11-04T09:31:21.6111245Z         "fromRow": 0,
+2026-11-04T09:31:21.6111463Z         "toRow": 1,
+2026-11-04T09:31:21.6111658Z         "route": [
+2026-11-04T09:31:21.6111848Z           {
+2026-11-04T09:31:21.6112060Z             "x": 1052.8854961832062,
+2026-11-04T09:31:21.6112309Z             "y": 64
+2026-11-04T09:31:21.6112514Z           },
+2026-11-04T09:31:21.6112713Z           {
+2026-11-04T09:31:21.6113176Z             "x": 1039.8854961832062,
+2026-11-04T09:31:21.6113449Z             "y": 64
+2026-11-04T09:31:21.6113647Z           },
+2026-11-04T09:31:21.6113830Z           {
+2026-11-04T09:31:21.6114054Z             "x": 1039.8854961832062,
+2026-11-04T09:31:21.6114298Z             "y": 92
+2026-11-04T09:31:21.6114484Z           },
+2026-11-04T09:31:21.6114657Z           {
+2026-11-04T09:31:21.6114862Z             "x": 1052.8854961832062,
+2026-11-04T09:31:21.6115102Z             "y": 92
+2026-11-04T09:31:21.6115292Z           }
+2026-11-04T09:31:21.6115477Z         ]
+2026-11-04T09:31:21.6115643Z       },
+2026-11-04T09:31:21.6115811Z       {
+2026-11-04T09:31:21.6116015Z         "key": "7:1:7:return",
+2026-11-04T09:31:21.6116258Z         "type": "return",
+2026-11-04T09:31:21.6116474Z         "raw": 7,
+2026-11-04T09:31:21.6116765Z         "row": "lane:execution:business-enter:business",
+2026-11-04T09:31:21.6117151Z         "fromRow": 1,
+2026-11-04T09:31:21.6117357Z         "toRow": 0,
+2026-11-04T09:31:21.6117554Z         "route": [
+2026-11-04T09:31:21.6117737Z           {
+2026-11-04T09:31:21.6117942Z             "x": 1373.9541984732823,
+2026-11-04T09:31:21.6118177Z             "y": 92
+2026-11-04T09:31:21.6118402Z           },
+2026-11-04T09:31:21.6118602Z           {
+2026-11-04T09:31:21.6118806Z             "x": 1357.9541984732823,
+2026-11-04T09:31:21.6119035Z             "y": 92
+2026-11-04T09:31:21.6119224Z           },
+2026-11-04T09:31:21.6119401Z           {
+2026-11-04T09:31:21.6119615Z             "x": 1357.9541984732823,
+2026-11-04T09:31:21.6119854Z             "y": 64
+2026-11-04T09:31:21.6120040Z           },
+2026-11-04T09:31:21.6120212Z           {
+2026-11-04T09:31:21.6120416Z             "x": 1373.9541984732823,
+2026-11-04T09:31:21.6120652Z             "y": 64
+2026-11-04T09:31:21.6120838Z           }
+2026-11-04T09:31:21.6121004Z         ]
+2026-11-04T09:31:21.6121172Z       }
+2026-11-04T09:31:21.6121353Z     ],
+2026-11-04T09:31:21.6121548Z     "zooming": false,
+2026-11-04T09:31:21.6121849Z     "geometry": {
+2026-11-04T09:31:21.6122144Z       "left": 186,
+2026-11-04T09:31:21.6122351Z       "plot": 1402,
+2026-11-04T09:31:21.6122549Z       "top": 50
+2026-11-04T09:31:21.6122732Z     }
+2026-11-04T09:31:21.6122905Z   },
+2026-11-04T09:31:21.6123204Z   "passed": true,
+2026-11-04T09:31:21.6123423Z   "errors": [],
+2026-11-04T09:31:21.6123628Z   "checks": [
+2026-11-04T09:31:21.6124058Z     "Recorded API view loads retained snapshot; exact GET interval activates only /files",
+2026-11-04T09:31:21.6124691Z     "POST reuses endpoint identity with its own interval and recorded HTTP 403 value",
+2026-11-04T09:31:21.6125304Z     "Overview retains original event cursor and cross-layer causal Timeline links"
+2026-11-04T09:31:21.6125707Z   ]
+2026-11-04T09:31:21.6125881Z }
+2026-11-04T09:31:21.6157933Z ##[group]Run node tools/test_recording_timeline_browser.mjs
+2026-11-04T09:31:21.6158365Z [36;1mnode tools/test_recording_timeline_browser.mjs[0m
+2026-11-04T09:31:21.6171871Z shell: /usr/bin/bash -e {0}
+2026-11-04T09:31:21.6172119Z env:
+2026-11-04T09:31:21.6172381Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:21.6172816Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:31:21.6173373Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:21.6173771Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:21.6174160Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:31:21.6174559Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:31:21.6174942Z   BO_TIMELINE_EVIDENCE: .validation/timeline-browser
+2026-11-04T09:31:21.6175239Z ##[endgroup]
+2026-11-04T09:32:09.6625262Z node:internal/modules/run_main:123
+2026-11-04T09:32:09.6625836Z     triggerUncaughtException(
+2026-11-04T09:32:09.6626098Z     ^
+2026-11-04T09:32:09.6626212Z 
+2026-11-04T09:32:09.6626418Z page.waitForSelector: Timeout 30000ms exceeded.
+2026-11-04T09:32:09.6626712Z Call log:
+2026-11-04T09:32:09.6626993Z   - waiting for locator('#recording-timeline') to be visible
+2026-11-04T09:32:09.6627961Z     - locator resolved to hidden <section hidden="" id="recording-timeline" aria-label="Execution timeline">…</section>
+2026-11-04T09:32:09.6629149Z     52 × locator resolved to hidden <section hidden="" data-raw-index="0" data-source="saved" data-event-id="start" id="recording-timeline" data-graph-transfers="[]" aria-label="Execution timeline">…</section>
+2026-11-04T09:32:09.6629723Z 
+2026-11-04T09:32:09.6629944Z     at /home/runner/work/VibeLens/VibeLens/tools/test_recording_timeline_browser.mjs:278:14 {
+2026-11-04T09:32:09.6630273Z   name: 'TimeoutError'
+2026-11-04T09:32:09.6630447Z }
+2026-11-04T09:32:09.6630520Z 
+2026-11-04T09:32:09.6630595Z Node.js v22.23.4
+2026-11-04T09:32:09.6696599Z ##[error]Process completed with exit code 1.
+2026-11-04T09:32:09.6775669Z ##[group]Run actions/upload-artifact@v4
+2026-11-04T09:32:09.6776052Z with:
+2026-11-04T09:32:09.6776230Z   name: recording-timeline-browser
+2026-11-04T09:32:09.6776446Z   include-hidden-files: true
+2026-11-04T09:32:09.6777013Z   path: .validation/timeline-*
+.validation/semantic-names-*
+.validation/lifecycle-*
+.validation/execution-*
+.validation/caption-*
+.validation/graph-quality-browser
+.validation/api-observation-browser
+
+2026-11-04T09:32:09.6777587Z   if-no-files-found: warn
+2026-11-04T09:32:09.6777773Z   compression-level: 6
+2026-11-04T09:32:09.6777946Z   overwrite: false
+2026-11-04T09:32:09.6778099Z env:
+2026-11-04T09:32:09.6778295Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:32:09.6778616Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T09:32:09.6778927Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:32:09.6779211Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:32:09.6779528Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T09:32:09.6779818Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T09:32:09.6780057Z ##[endgroup]
+2026-11-04T09:32:09.7981195Z (node:3683) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T09:32:09.7981757Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T09:32:09.8073014Z With the provided path, there will be 17 files uploaded
+2026-11-04T09:32:09.8076978Z Artifact name is valid!
+2026-11-04T09:32:09.8077381Z Root directory input is valid!
+2026-11-04T09:32:10.0970502Z Beginning upload of artifact content to blob storage
+2026-11-04T09:32:10.1654412Z (node:3683) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-04T09:32:10.5917971Z Uploaded bytes 1181899
+2026-11-04T09:32:10.6370542Z Finished uploading artifact content to blob storage!
+2026-11-04T09:32:10.6371165Z SHA256 digest of uploaded artifact zip is bbb84fcb8d59ef05920bc2e4fb144badeaba0c0948791b0a7502baa44ddc10ef
+2026-11-04T09:32:10.6372448Z Finalizing artifact upload
+2026-11-04T09:32:11.0668082Z Artifact recording-timeline-browser.zip successfully finalized. Artifact ID 13310637979
+2026-11-04T09:32:11.0668944Z Artifact recording-timeline-browser has been successfully uploaded! Final size is 1181899 bytes. Artifact ID is 13310637979
+2026-11-04T09:32:11.0675531Z Artifact download URL: https://github.com/li-bruce/VibeLens/actions/runs/41807986096/artifacts/13310637979
+2026-11-04T09:32:11.0844037Z Post job cleanup.
+2026-11-04T09:32:11.1454719Z [command]/usr/bin/git version
+2026-11-04T09:32:11.1482824Z git version 2.56.0
+2026-11-04T09:32:11.1508005Z Temporarily overriding HOME='/home/runner/work/_temp/734bc4e1-0666-4ac2-a56a-df94d6abcb13' before making global git config changes
+2026-11-04T09:32:11.1508877Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T09:32:11.1512426Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/VibeLens/VibeLens
+2026-11-04T09:32:11.1540101Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T09:32:11.1565795Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T09:32:11.1791933Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T09:32:11.1810015Z http.https://github.com/.extraheader
+2026-11-04T09:32:11.1816696Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-04T09:32:11.1846743Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T09:32:11.2032900Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T09:32:11.2058232Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T09:32:11.2362457Z Cleaning up orphan processes
+2026-11-04T09:32:11.2594590Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

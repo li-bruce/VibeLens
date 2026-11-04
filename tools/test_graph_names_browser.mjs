@@ -5,6 +5,7 @@ import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { serveRecording } from "./recording_browser_fixture.mjs";
+import { analysisPreferences, waitForPreferences } from "./browser-preferences.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const out = path.resolve(process.env.BO_NAMES_EVIDENCE || ".validation/semantic-names-browser");
@@ -34,6 +35,14 @@ try {
       camera: graphDebug.camera,
     }));
   const before = await geometry();
+  const beforeSourceNames = await page.evaluate(
+    async () => (await (await fetch("/api/preferences")).json()).revision,
+  );
+  const sourceNamesSave = waitForPreferences(
+    page,
+    (saved) => analysisPreferences(saved)?.explainedNames === false,
+    { afterRevision: beforeSourceNames },
+  );
   await toggle.click();
   assert.equal(await toggle.getAttribute("aria-checked"), "false");
   assert.equal(await node.innerText(), "SharingService.authenticate");
@@ -47,12 +56,7 @@ try {
   checks.push("Source names retain layout; both names remain searchable");
   await page.screenshot({ path: path.join(out, "source-2d.png") });
   // Project settings, including the switch, survive an actual reload.
-  await page.waitForFunction(async () => {
-    const p = await (await fetch("/api/preferences")).json();
-    return Object.entries(p.entries).some(
-      ([k, v]) => k.endsWith(":analysis") && JSON.parse(v).explainedNames === false,
-    );
-  });
+  await sourceNamesSave;
   await page.reload();
   await page.waitForFunction(() => window.graphDebug?.graph && !graphDebug.layoutBusy);
   assert.equal(await toggle.getAttribute("aria-checked"), "false");

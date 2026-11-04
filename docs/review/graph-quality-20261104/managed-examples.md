@@ -1,5 +1,41 @@
 # Managed example integration
 
+## v0.11.3 paused Timeline inspection acceptance
+
+Paused inspection now keeps the selected Timeline connector moving when the
+current Graph view has no transfer. Captured facts, event identity, cursor and
+measured lifecycle durations are unchanged. The earlier main/tag CI failures
+remain in [the original publication record](publication/public-v0.11.2-ci-final.json).
+Fresh [Chrome regression evidence](publication/timeline-inspection-0113/summary.json)
+exercises a fixed event beyond the former animation cutoff, including three
+registered-lifecycle runs with no Graph transfer.
+
+Both examples received the canonical 0.11.3 runtime and all viewer copies through
+managed upgrade. The complete generate, seal, scan, inspect, verify, accept and
+check workflow passed, followed by an additional current-input check after each
+record was frozen as `graph-quality-20261104-timeline-inspection-0113`.
+
+| Example | Final candidate | Configured project tests | Result |
+| --- | --- | --- | --- |
+| Delivery | `63c47faae4a5bd72aee48db7405d7c087b56414a4ed3a891ed1a039b822eaaa5` | 9 | Passed |
+| Team archive | `5f8bc90a603b89de9e04a995b764ebb03fcdb6d2cd349903fe309a31a48f5104` | 5 | Passed |
+
+- [Delivery acceptance](examples-delivery-timeline-inspection-0113-final-acceptance-summary.json)
+- [Archive acceptance](examples-team-archive-timeline-inspection-0113-final-acceptance-summary.json)
+- [Delivery post-freeze check](examples-delivery-timeline-inspection-0113-post-freeze-check.json)
+- [Archive post-freeze check](examples-archive-timeline-inspection-0113-post-freeze-check.json)
+
+The [exact staged-input comparison](example-timeline-inspection-0113-staged-parity.json)
+passed for all 682 current model, intent, managed-runtime, watched-file and scope
+inputs. The original business/state source, six protected core files, baseline
+hashes and all original expectations remain intact. Both `.gitignore` files keep
+their accepted 194-byte LF form. The historical review index still equals Git
+HEAD, and every earlier frozen record remains available. The
+[clean Git export](clean-staged-export-timeline-inspection-0113-report.json)
+passed both unchanged native current checks using the frozen records, with no
+regeneration or reapproval. Its [command receipt](clean-staged-export-timeline-inspection-0113.json)
+records exit 0.
+
 ## v0.11.2 reserved output boundary acceptance
 
 Both examples use the managed 0.11.2 runtime and viewer copies. Source discovery

@@ -505,7 +505,11 @@ export class RecordingTimeline {
         !document.hidden &&
         this.pulse &&
         (this.playing ||
-          (this.inspection && this.transfers.length > 0) ||
+          (this.inspection &&
+            (this.transfers.length > 0 ||
+              // Timeline call/return links remain observable when their graph
+              // edge is filtered out or has no declared physical counterpart.
+              this.geometry.hits.some((hit) => hit.kind === "flow" && hit.raw === this.raw))) ||
           started - this.pulseStarted < 1100)
       ) {
         clearTimeout(this.motionTimer);

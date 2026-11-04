@@ -56,6 +56,34 @@ const ready = await new Promise((resolve, reject) => {
   });
 });
 const trace = () => page.evaluate(() => graphDebug.timeline);
+/** Observe native frames beyond a pulse cycle while the same causal event stays selected. */
+async function witnessPausedConnector(raw, minimumMilliseconds) {
+  return page.evaluate(
+    ({ raw, minimumMilliseconds }) =>
+      new Promise((resolve, reject) => {
+        const started = performance.now();
+        let frames = 0;
+        function observe(timestamp) {
+          const current = graphDebug.timeline;
+          if (current.raw !== raw) return reject(Error("Paused connector changed its raw event"));
+          if (!current.routes.some((route) => route.raw === raw))
+            return reject(Error("Selected causal connector left the painted timeline"));
+          frames++;
+          if (timestamp - started >= minimumMilliseconds)
+            resolve({
+              elapsedMilliseconds: timestamp - started,
+              frames,
+              eventId: current.eventId,
+              raw: current.raw,
+              graphTransfers: current.transfers.length,
+            });
+          else requestAnimationFrame(observe);
+        }
+        requestAnimationFrame(observe);
+      }),
+    { raw, minimumMilliseconds },
+  );
+}
 async function startRecording() {
   // A click dispatches the async handler; wait for the server and visible active
   // state before triggering work in the pre-span case.
@@ -373,9 +401,14 @@ try {
       width: Math.max(12, Math.max(...xs) - Math.min(...xs) + 10),
       height: Math.max(12, Math.max(...ys) - Math.min(...ys) + 10),
     };
-    await page.waitForTimeout(90);
+    // Outlive the old 1.1 s graph-transfer fallback using real frames. A fast
+    // screenshot pair inside its first cycle previously missed the stopped loop.
+    const pausedWitness = await witnessPausedConnector(route.raw, 1300);
+    assert.ok(pausedWitness.frames > 1);
+    assert.equal(pausedWitness.eventId, fixedEvent);
+    if (registered) assert.equal(pausedWitness.graphTransfers, 0);
     const motionA = await page.screenshot({ path: path.join(out, "connector-motion-a.png"), clip });
-    await page.waitForTimeout(230);
+    const nextWitness = await witnessPausedConnector(route.raw, 230);
     const motionB = await page.screenshot({ path: path.join(out, "connector-motion-b.png"), clip });
     assert.notDeepEqual(
       motionA,
@@ -383,6 +416,10 @@ try {
       "the selected connector moves while its raw event stays fixed",
     );
     assert.equal((await trace()).eventId, fixedEvent);
+    await writeFile(
+      path.join(out, "paused-connector-motion.json"),
+      JSON.stringify({ pausedWitness, nextWitness, fixedEvent, clip, moving: true }, null, 2),
+    );
     await canvas.focus();
     await page.keyboard.press("End");
     await page.waitForFunction(() => graphDebug.timeline.eventId === "end");

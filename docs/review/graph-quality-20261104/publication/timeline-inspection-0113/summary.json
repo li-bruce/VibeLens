@@ -1,0 +1,128 @@
+{
+  "schema": "vibelens.timeline-inspection.acceptance/v1",
+  "created_at": "2026-11-04T09:49:02.854807+00:00",
+  "valid": true,
+  "source_hashes": {
+    "skills/vibelens/assets/stategraph-viewer/recording-timeline.js": "58eded566dc183654a689abde940b3954a0867a713354c3a05d32709d1fe9c24",
+    "tools/test_trace_lifecycle_browser.mjs": "129ad006067419f037eedf25df00976843b31f17bc8a86b6206e11e7a801abf8"
+  },
+  "source_bytes": "Current tested canonical files, LF line endings. Compare these SHA256 values with staged/exported blobs before publication.",
+  "browser": "Actual installed Google Chrome on Windows, launched through Playwright. Native Python/SQLite fixtures and unchanged motion assertions.",
+  "runs": [
+    {
+      "variant": "registered-01",
+      "exit_code": 0,
+      "passed": true,
+      "result": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/registered-01/result.json",
+      "result_sha256": "d2ea6e810f635b9a5c7b9c63cd4214cf51718a124c24c17eb85ef4582629d7b8",
+      "paused_motion": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/registered-01/paused-connector-motion.json",
+      "witness_min_ms": 1305.8999999999996,
+      "witness_frames": 157,
+      "graph_transfers": 0,
+      "raw_unchanged": true,
+      "screens_differ": true
+    },
+    {
+      "variant": "registered-02",
+      "exit_code": 0,
+      "passed": true,
+      "result": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/registered-02/result.json",
+      "result_sha256": "77e4613c9bf483a1ecbb269b299f16369eebcb6bc2007a669deeeacf74e286ad",
+      "paused_motion": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/registered-02/paused-connector-motion.json",
+      "witness_min_ms": 1306.1000001907341,
+      "witness_frames": 157,
+      "graph_transfers": 0,
+      "raw_unchanged": true,
+      "screens_differ": true
+    },
+    {
+      "variant": "registered-03",
+      "exit_code": 0,
+      "passed": true,
+      "result": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/registered-03/result.json",
+      "result_sha256": "1fd88240d01e284381c1e6d29d9a27a2b857c0942ab214bdec0a1bdb220dee3d",
+      "paused_motion": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/registered-03/paused-connector-motion.json",
+      "witness_min_ms": 1303.6000000953682,
+      "witness_frames": 157,
+      "graph_transfers": 0,
+      "raw_unchanged": true,
+      "screens_differ": true
+    },
+    {
+      "variant": "default",
+      "exit_code": 0,
+      "passed": true,
+      "result": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/default/result.json",
+      "result_sha256": "512dd488f0f88a248f41c65f86030ec64965bacefaf6c3b6d3fcae47659de025",
+      "paused_motion": null
+    },
+    {
+      "variant": "midspan",
+      "exit_code": 0,
+      "passed": true,
+      "result": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/midspan/result.json",
+      "result_sha256": "1866f94755f62f8f17d2d8ddc1f38f9963a8e6be6a06bc6c458146e49e59b3a8",
+      "paused_motion": null
+    },
+    {
+      "variant": "bands",
+      "exit_code": 0,
+      "passed": true,
+      "result": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/bands/result.json",
+      "result_sha256": "fd173e9bedf1b9b10968c8322e1ac1272f422c4e6a93a1d990d6d04d9438fa91",
+      "paused_motion": null
+    },
+    {
+      "variant": "bands-midspan",
+      "exit_code": 0,
+      "passed": true,
+      "result": "docs/review/graph-quality-20261104/publication/timeline-inspection-0113/bands-midspan/result.json",
+      "result_sha256": "23384c266e6e7e4630f661be8dd034c7afcb5687864c5865d9f09a2d0392201b",
+      "paused_motion": null
+    }
+  ],
+  "units": [
+    {
+      "command": "node tools/test_recording_timeline.mjs",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": "node tools/test_trace_lifecycles.mjs",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": "node tools/test_trace_executions.mjs",
+      "exit_code": 0,
+      "passed": true,
+      "checks": 31
+    },
+    {
+      "command": "node tools/test_trace_context.mjs",
+      "exit_code": 0,
+      "passed": true
+    }
+  ],
+  "style": {
+    "node_syntax": {
+      "passed": true,
+      "exit_code": 0,
+      "files": [
+        "skills/vibelens/assets/stategraph-viewer/recording-timeline.js",
+        "tools/test_trace_lifecycle_browser.mjs"
+      ]
+    },
+    "prettier": {
+      "passed": true,
+      "exit_code": 0,
+      "files": [
+        "skills/vibelens/assets/stategraph-viewer/recording-timeline.js",
+        "tools/test_trace_lifecycle_browser.mjs"
+      ]
+    }
+  },
+  "failure_proof": "../lifecycle-registered-motion-diagnostic-01/diagnosis.json",
+  "scope": "Continued selected Timeline causal-route animation in paused inspection, even when graph transfers are absent. No business/state rules, identities, recording bytes, layout or data capture semantics changed.",
+  "publication_boundary": "No fixture directories, complete event recordings, SQLite databases or service logs copied. Other fixture variants retain only finite check/result summaries."
+}

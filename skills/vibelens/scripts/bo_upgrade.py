@@ -18,7 +18,7 @@ except ImportError:
     from behavior_model import contained, read
     from sync_io import write
 
-RELEASE = "0.11.2"
+RELEASE = "0.11.3"
 PROTOCOLS = {
     "behavior": 3,
     "event": 3,

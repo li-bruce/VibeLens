@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.3 — 2026-11-04
+
+- Keep paused Timeline inspection animating its own visible selected causal
+  connector, including when the current Graph has no transfer edges.
+- Wait for actual saved visibility, scope and height before browser-test reloads;
+  preserve exact-event, native gesture and lifecycle assertions.
+- Carry forward the shared project-owned source boundaries and initial directory
+  planning guidance, with the original strict mapping and native state checks.
+
 ## 0.11.2 — 2026-11-04
 
 - Share reserved observer-output boundaries across source indexing, API mapping,

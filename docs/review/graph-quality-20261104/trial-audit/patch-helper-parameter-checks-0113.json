@@ -1,0 +1,55 @@
+{
+  "valid": true,
+  "checks": {
+    "accept_0.11.2": true,
+    "accept_0.11.3": true,
+    "accept_1.0.0": true,
+    "reject_invalid_versions_before_paths": true,
+    "reject_root_or_outside_move": true,
+    "exclusive_receipt_preserves_prior_bytes": true,
+    "reviewed_manifest_0113": true,
+    "active_0112_files_unchanged": true,
+    "invalid_cli_exits_before_installation": true,
+    "old_installation_receipts_unchanged": true,
+    "helpers_use_lf": true
+  },
+  "cli": [
+    {
+      "helper": "install_patch.py",
+      "arguments": [
+        "--ref",
+        "HEAD",
+        "--version",
+        "../0.11.3"
+      ],
+      "exit_code": 2
+    },
+    {
+      "helper": "install_patch.py",
+      "arguments": [
+        "--ref",
+        "HEAD",
+        "--previous",
+        "../0.11.2"
+      ],
+      "exit_code": 2
+    },
+    {
+      "helper": "verify_patch_release.py",
+      "arguments": [
+        "--version",
+        "../0.11.3"
+      ],
+      "exit_code": 2
+    }
+  ],
+  "installation_performed": false,
+  "runtime_upgrade_performed": false,
+  "scratch": ".validation/patch-helper-0113-rh_f0ghg",
+  "protected_receipt_hashes": {
+    "docs\\review\\graph-quality-20261104\\trial-audit\\release-v0.11.2-install.json": "ca4a0c6fb810d25e96459e07b4ce40adc0ba248bd244c3bb97b6476fc781bfe3",
+    "docs\\review\\graph-quality-20261104\\trial-audit\\release-v0.11.2-tag-parity.json": "ad688a07a8b82f93860f9dabc941259d30d56dbf94b0c23a29e3249251113961",
+    "VibeLensTrials\\graph-quality-dialogue-20261104-01\\review\\installation\\github-install-v0.11.2.json": "ca4a0c6fb810d25e96459e07b4ce40adc0ba248bd244c3bb97b6476fc781bfe3",
+    "VibeLensTrials\\graph-quality-dialogue-20261104-01\\review\\installation\\github-install-v0.11.2-tag.json": "ad688a07a8b82f93860f9dabc941259d30d56dbf94b0c23a29e3249251113961"
+  }
+}

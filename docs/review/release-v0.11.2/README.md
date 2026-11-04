@@ -70,3 +70,17 @@ test micro-zoom error; its original failure and the time-based staged-zoom repai
 are retained in the [browser receipt](../graph-quality-20261104/publication/lifecycle-main-staged-zoom-repair.json).
 The passing local aggregate does not replace this release's remote CI or tagged
 installation checks.
+
+## Post-publication findings
+
+The candidate's original eight-job run passed. The later main and tag runs each
+passed seven jobs and failed one browser job, at different assertions. Their
+[unchanged results](../graph-quality-20261104/publication/public-v0.11.2-ci-final.json)
+remain visible alongside the successful release and Pages deployment.
+
+The [main failure](../graph-quality-20261104/publication/main-ad50-timeline/README.md)
+is a browser-test acknowledgment race. The registered lifecycle failure exposed
+an actual paused Timeline animation defect, retained in
+[the native diagnostic](../graph-quality-20261104/publication/lifecycle-registered-motion-diagnostic-01/diagnosis.json).
+The [v0.11.3 follow-up](../release-v0.11.3/README.md) records their repairs and
+new acceptance separately. The v0.11.2 tag, ZIP and original receipts are unchanged.

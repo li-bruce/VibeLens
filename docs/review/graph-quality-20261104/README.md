@@ -2,6 +2,7 @@
 
 Initial branch: `fix/graph-observation-quality`.
 Source-boundary patch: `fix/source-scope-reserved-boundaries`.
+Timeline follow-up: `fix/timeline-inspection-settlement`.
 Baseline: `7f7907d2`; protected business/state engines remain unchanged.
 
 ## Scope and status
@@ -13,8 +14,8 @@ Baseline: `7f7907d2`; protected business/state engines remain unchanged.
 | Source proximity inside type clusters | [Layout review](layout/README.md) | Focused and real browser checks passed. |
 | Data operations | [Runtime check](data-operations-01.json) and [observer exclusion](observer-exclusion-01.json) | Passed; queries/transactions/transformations retain their distinct purpose. |
 | Live databases | [First run](live-database-01.json), [retest](live-database-02.json) | Retest passed with the dedicated PostgreSQL, MongoDB, Redis and Neo4j fixture healthy. |
-| Managed examples | [Current managed-example review](managed-examples.md), [clean export](clean-staged-export-reserved-boundaries-0112-report.json) | Both v0.11.2 native candidates passed; 682 frozen inputs match Git. |
-| Full repository | [Current host gate](full-verification-10-reserved-scope-host.json), [patch review](../release-v0.11.2/README.md) | Passed locally, including databases, strict native checks and independent observer-free packages. Remote publication checks are recorded separately. |
+| Managed examples | [Current managed-example review](managed-examples.md), [clean export](clean-staged-export-timeline-inspection-0113-report.json) | Both v0.11.3 native candidates passed; 682 frozen inputs match Git. |
+| Full repository | [Current host gate](full-verification-11-timeline-inspection-host.json), [patch review](../release-v0.11.3/README.md) | Passed locally, including databases, strict native checks and independent observer-free packages. Remote publication checks are recorded separately. |
 | Fresh development dialogue | [Current trial review](trial-audit/README.md), [visible v1 dialogue](trial-audit/dialogue-v1/dialogue.md) | V1 and the sharing-note iteration completed. Focused controls and the next managed patch upgrade have separate current results. |
 
 Data structure describes databases, tables/collections and fields. Data operations
@@ -49,6 +50,11 @@ construction still needs an adapter or explicit source binding.
 
 The dynamic-layer path projection document from the preceding research branch
 is still a proposal and is not presented as an implemented feature in this release.
+
+The [v0.11.3 review](../release-v0.11.3/README.md) follows two failures in the
+v0.11.2 post-publication browser jobs. One was a test persistence-acknowledgment
+race; the other was an actual paused Timeline animation defect. Their original
+receipts, controlled reproductions and fresh repairs remain separate.
 
 ## Failures kept for review
 

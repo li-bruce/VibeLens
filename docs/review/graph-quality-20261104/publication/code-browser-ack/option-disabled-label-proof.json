@@ -1,0 +1,36 @@
+{
+  "kind": "actual-browser-option-disabled-enclosing-label-semantics",
+  "created_at": "2026-11-04T10:29:43.547416+00:00",
+  "environment": {
+    "playwright": "1.62.1",
+    "browser": "Chrome156.0.8078.74",
+    "node_fixture": "Host cached Playwright, installed Google Chrome, page.setContent only; no app/network/admin requests."
+  },
+  "html": "<label>View<select id=\"labeled\"><option value=\"overview\">Overview</option><option value=\"code\" disabled>Code</option></select></label><select id=\"unlabeled\"><option value=\"overview\">Overview</option><option value=\"code\" disabled>Code</option></select>",
+  "results": [
+    {
+      "id": "labeled",
+      "optionProperty": true,
+      "optionAttribute": "",
+      "optionIsDisabled": false,
+      "selectIsDisabled": false,
+      "html": "<option value=\"code\" disabled=\"\">Code</option>"
+    },
+    {
+      "id": "unlabeled",
+      "optionProperty": true,
+      "optionAttribute": "",
+      "optionIsDisabled": true,
+      "selectIsDisabled": false,
+      "html": "<option value=\"code\" disabled=\"\">Code</option>"
+    }
+  ],
+  "viewer_markup": {
+    "path": "skills/vibelens/assets/stategraph-viewer/index.html",
+    "line": 39,
+    "fact": "The analysis-view select and its options are inside a label."
+  },
+  "conclusion": "The native option is disabled in both cases. The locator disabled-state operation on the labeled option resolves the enabled labeled control. Use the original option.disabled DOM property to assert the option itself; retain exact historical replay identity and all source exclusion checks.",
+  "scope": "This directly explains the host actual05 locator false/property true discrepancy. It does not claim a product replay failure or remote CI/browser-version result.",
+  "product_edits": false
+}

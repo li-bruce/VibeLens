@@ -1,0 +1,148 @@
+{
+  "valid": true,
+  "baseline_sha256": "8f786ba384a5d2ddd4b005158cd6fa94871aa4244a27c1d10b370791f669c7e4",
+  "candidate_id": "5f8bc90a603b89de9e04a995b764ebb03fcdb6d2cd349903fe309a31a48f5104",
+  "frozen_change": "graph-quality-20261104-timeline-inspection-0113",
+  "source_change": "graph-quality-20261104",
+  "canonical_runtime_current": true,
+  "checks": [
+    {
+      "stage": "generate",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tooling/build_model.py"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-team-archive-timeline-inspection-0113-final-generate.log"
+    },
+    {
+      "stage": "seal",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_runtime/architecture_guard.py",
+        "seal",
+        "--root",
+        ".",
+        "--reason",
+        "Reviewed graph-quality viewer/API/source-mapping update, complete planar labels, explicit D3 packEnclose export and exact vendor hash; business/state definitions and expectations retained. Paused Timeline inspection now continues animating its own selected visible connector even when the current Graph has no transfer. The event cursor, identities, captured facts and measured lifecycle durations are unchanged. Managed 0.11.3 viewer/runtime copies were reviewed; user business/state source, original baselines, source-scope boundaries and every original test expectation remain intact."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-team-archive-timeline-inspection-0113-final-seal.log"
+    },
+    {
+      "stage": "scan",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_runtime/bo_sync.py",
+        "scan",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-team-archive-timeline-inspection-0113-final-scan.log"
+    },
+    {
+      "stage": "inspect-before-review",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_runtime/change_sync.py",
+        "inspect",
+        "--root",
+        "."
+      ],
+      "exit_code": 1,
+      "expected_exit_code": [
+        0,
+        1
+      ],
+      "valid": true,
+      "log": "examples-team-archive-timeline-inspection-0113-final-inspect-before-review.log"
+    },
+    {
+      "stage": "inspect",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_runtime/change_sync.py",
+        "inspect",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-team-archive-timeline-inspection-0113-final-inspect.log"
+    },
+    {
+      "stage": "verify",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_runtime/change_sync.py",
+        "verify",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-team-archive-timeline-inspection-0113-final-verify.log"
+    },
+    {
+      "stage": "accept",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_runtime/change_sync.py",
+        "accept",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-team-archive-timeline-inspection-0113-final-accept.log"
+    },
+    {
+      "stage": "check",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_runtime/change_sync.py",
+        "check",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-team-archive-timeline-inspection-0113-final-check.log"
+    }
+  ]
+}

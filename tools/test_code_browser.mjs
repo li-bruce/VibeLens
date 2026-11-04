@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 import { mkdir, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { analysisPreferences, waitForPreferences } from "./browser-preferences.mjs";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const root = fileURLToPath(new URL("../", import.meta.url));
 const output = path.resolve(
@@ -155,18 +156,33 @@ try {
   await menuClick("#pin");
   await menuClick("#annotate");
   await page.fill("#node-note", "Review this file after each schema change");
-  await page.locator('#annotation-form button[type="submit"]').click();
-  await page.waitForFunction(async () =>
-    Object.entries((await (await fetch("/api/preferences")).json()).entries).some(
-      ([key, value]) => key.endsWith(":analysis") && JSON.parse(value).selected === "code",
-    ),
+  // The selected view may already be saved. Require a newer acknowledgment
+  // carrying this annotation before a reload can test durable restoration.
+  const beforeAnnotation = await api("/api/preferences");
+  const annotationSaved = waitForPreferences(
+    page,
+    (document) => {
+      const analysis = analysisPreferences(document);
+      return (
+        analysis?.selected === "code" &&
+        analysis.annotations?.[file.id]?.note === "Review this file after each schema change"
+      );
+    },
+    {
+      afterRevision: beforeAnnotation.revision,
+      description: "code view and file annotation",
+    },
   );
+  await page.locator('#annotation-form button[type="submit"]').click();
+  const annotationAcknowledgment = await annotationSaved;
   await page.reload();
-  await page.waitForSelector('#semantic [data-node-type="code-file"]', { state: "attached" });
-  await page.waitForFunction(async () =>
-    Object.entries((await (await fetch("/api/preferences")).json()).entries).some(
-      ([key, value]) => key.endsWith(":analysis") && JSON.parse(value).discussion?.active === true,
-    ),
+  await page.waitForSelector('#semantic [data-node-type="code-file"]', {
+    state: "attached",
+  });
+  const discussionAcknowledgment = await waitForPreferences(
+    page,
+    (document) => analysisPreferences(document)?.discussion?.active === true,
+    { description: "restored active discussion" },
   );
   assert.equal(await page.locator("#discussion-bar").count(), 0);
   assert.equal(
@@ -175,15 +191,30 @@ try {
     "an existing discussion must not override the saved code view",
   );
   checkpoints.discussionReloadPreservesView = true;
+  const discussionDismissed = waitForPreferences(
+    page,
+    (document) => {
+      const analysis = analysisPreferences(document);
+      return analysis?.selected === "code" && analysis.discussion?.active === false;
+    },
+    {
+      afterRevision: discussionAcknowledgment.revision,
+      description: "dismissed discussion in the code view",
+    },
+  );
   await page.locator("#viewport").focus();
   await page.keyboard.press("Escape");
-  await page.waitForFunction(async () =>
-    Object.entries((await (await fetch("/api/preferences")).json()).entries).some(
-      ([key, value]) => key.endsWith(":analysis") && JSON.parse(value).discussion?.active === false,
-    ),
-  );
+  const dismissalAcknowledgment = await discussionDismissed;
+  checkpoints.preferenceAcknowledgments = {
+    beforeAnnotation: beforeAnnotation.revision,
+    annotation: annotationAcknowledgment.revision,
+    restoredDiscussion: discussionAcknowledgment.revision,
+    dismissedDiscussion: dismissalAcknowledgment.revision,
+  };
   await page.reload();
-  await page.waitForSelector('#semantic [data-node-type="code-file"]', { state: "attached" });
+  await page.waitForSelector('#semantic [data-node-type="code-file"]', {
+    state: "attached",
+  });
   assert.equal(await page.inputValue("#analysis-view"), "code");
   assert.equal(await page.locator('#semantic [data-discussion="true"]').count(), 0);
   checkpoints.dismissedDiscussionSurvivesReload = true;
@@ -312,10 +343,115 @@ try {
   await page.selectOption("#analysis-view", "code");
   await page.waitForSelector('#semantic [data-node-type="code-file"]', { state: "attached" });
   const savedRecording = await page.locator("#record-list option").nth(1).getAttribute("value");
+  const recordedContext = (await api("/api/recordings/" + savedRecording)).context;
+  const replayReadiness = () =>
+    page.evaluate(() => ({
+      historical: graphDebug.view.historical,
+      recording: graphDebug.view.replay?.id || null,
+      analysis: document.getElementById("analysis-view").value,
+      codeDisabled: document.querySelector('#analysis-view option[value="code"]').disabled,
+      layoutBusy: graphDebug.layoutBusy,
+      connection: document.getElementById("connection").textContent,
+      sourceOptions: [...document.getElementById("analysis-view").options].map((option) => ({
+        value: option.value,
+        disabled: option.disabled,
+        selected: option.selected,
+      })),
+      sourceContext: {
+        codeStructure: graphDebug.view.code_structure || null,
+        projectRevision: graphDebug.view.project_structure?.revision || null,
+        modelRevision: graphDebug.view.model.revision,
+      },
+    }));
+  checkpoints.recordedReadinessBefore = await replayReadiness();
   await page.selectOption("#record-list", savedRecording);
-  await page.waitForFunction(() => !document.getElementById("replay").hidden);
+  // The source menu updates before its asynchronous graph projection. Inspect
+  // the completed recorded overview. Its captured engineering tree legitimately
+  // reuses file glyphs; the current-source AST is the part excluded from replay.
+  await page.waitForFunction(
+    (id) =>
+      graphDebug.view.historical === true &&
+      graphDebug.view.replay?.id === id &&
+      !document.getElementById("replay").hidden &&
+      document.getElementById("analysis-view").value === "overview" &&
+      !graphDebug.layoutBusy &&
+      ![...graphDebug.graph.all.values()].some((node) =>
+        ["function", "parameter", "class"].includes(node.code_role),
+      ) &&
+      document.querySelector("#semantic [data-node-id]"),
+    savedRecording,
+  );
+  checkpoints.recordedReadinessAfter = await replayReadiness();
   assert.equal(await page.inputValue("#analysis-view"), "overview");
-  assert.equal(await page.locator('#semantic [data-node-type="code-file"]').count(), 0);
+  checkpoints.recordedCodeOption = await page
+    .locator('#analysis-view option[value="code"]')
+    .evaluate((option) => ({ disabled: option.disabled, html: option.outerHTML }));
+  assert.equal(checkpoints.recordedCodeOption.disabled, true);
+  const recordedProjection = await page.evaluate(() => {
+    const graph = graphDebug.graph;
+    const visible = new Set(
+      [...document.querySelectorAll("#semantic [data-node-id]")].map((node) => node.dataset.nodeId),
+    );
+    return {
+      files: [...graph.all.values()].filter((node) =>
+        ["file", "directory"].includes(node.code_role),
+      ),
+      visibleFiles: [...graph.all.values()].filter(
+        (node) => visible.has(node.id) && ["file", "directory"].includes(node.code_role),
+      ),
+      astNodes: [...graph.all.values()].filter((node) =>
+        ["function", "parameter", "class"].includes(node.code_role),
+      ),
+      astCalls: graph.rawEdges.filter((edge) => edge.code_relation === "calls"),
+      projectRelations: graph.edges.flatMap((edge) =>
+        (edge.members || [edge]).filter((member) =>
+          [member.from, member.to].some((id) =>
+            ["file", "directory"].includes(graph.all.get(id)?.code_role),
+          ),
+        ),
+      ),
+    };
+  });
+  checkpoints.recordedProjection = recordedProjection;
+  assert.equal(recordedProjection.astNodes.length, 0, "replay must not merge the current AST");
+  assert.equal(recordedProjection.astCalls.length, 0, "replay must not merge current AST calls");
+  const nodeIdentity = (node) => ({
+    id: node.id,
+    layer: node.layer,
+    role: node.code_role,
+    parent: node.parent || null,
+    // JSON snapshots have no undefined properties; the renderer may add an
+    // optional end_line with that value while normalizing a source reference.
+    source: node.source ? JSON.parse(JSON.stringify(node.source)) : null,
+  });
+  const edgeIdentity = (edge) => ({
+    id: edge.id,
+    from: edge.from,
+    to: edge.to,
+    type: edge.type || null,
+    relation: edge.code_relation || null,
+    origin: edge.origin || null,
+  });
+  const capturedFiles = recordedContext.project_structure.nodes.filter((node) =>
+    ["file", "directory"].includes(node.code_role),
+  );
+  assert.deepEqual(
+    recordedProjection.files.map(nodeIdentity).sort((a, b) => a.id.localeCompare(b.id)),
+    capturedFiles.map(nodeIdentity).sort((a, b) => a.id.localeCompare(b.id)),
+    "the complete engineering inventory belongs to this recording's exact snapshot",
+  );
+  const capturedNodes = new Map(capturedFiles.map((node) => [node.id, node]));
+  for (const node of recordedProjection.visibleFiles)
+    assert.deepEqual(nodeIdentity(node), nodeIdentity(capturedNodes.get(node.id)));
+  const capturedEdges = new Map(
+    recordedContext.project_structure.edges.map((edge) => [edge.id, edge]),
+  );
+  // Folding projects a link onto visible ancestors; its members keep the exact
+  // captured endpoints. Check every displayed member, rather than its label.
+  for (const edge of recordedProjection.projectRelations) {
+    assert.ok(capturedEdges.has(edge.id), "a displayed engineering relation must be captured");
+    assert.deepEqual(edgeIdentity(edge), edgeIdentity(capturedEdges.get(edge.id)));
+  }
   assert.ok(await page.locator("#semantic [data-node-id]").count());
   await shot("07-recorded-overview");
   await page.click("#replay-live");
@@ -391,6 +527,15 @@ try {
     "PASS: lazy/focused/full code views, relationships, source, live edits/errors/deletion, persistence, exclusion, real recording and bilingual reload.",
   );
 } catch (error) {
+  checkpoints.replayReadinessOnFailure = await page
+    ?.evaluate(() => ({
+      historical: graphDebug.view?.historical,
+      recording: graphDebug.view?.replay?.id || null,
+      analysis: document.getElementById("analysis-view")?.value,
+      codeDisabled: document.querySelector('#analysis-view option[value="code"]')?.disabled,
+      layoutBusy: graphDebug.layoutBusy,
+    }))
+    .catch(() => null);
   checkpoints.pendingRequests = [...pendingRequests];
   checkpoints.url = page?.url();
   checkpoints.document = await page

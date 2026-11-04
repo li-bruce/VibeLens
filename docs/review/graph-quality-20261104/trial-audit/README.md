@@ -31,24 +31,63 @@ files were verified identical to the later official v0.11.1 tag download in
   file hashes. Raw event payloads, databases and credentials are omitted.
 - [Visual review](remark-v2/accepted-c56-01/visual-review.md): observed strengths,
   crowded views and remaining focused-capture needs; no general usability pass.
+- [Source archive inspection](remark-v2/package-members-review.md): the existing
+  c56-era app archive includes observer display configuration and detailed
+  runtime diagnostics, so it was not copied into the review materials.
 - [Dialogue through the active control turn](dialogue-v2-controls-in-progress-01/dialogue.md):
   public conversation only. The final control outcome was still pending at
   export; all simulated answers remain identified as such.
+- [Completed controls](remark-v2/controls-current-01/README.md): focused 2D,
+  genuinely tilted 3D and zoomed Timeline captures, nine true browser checks,
+  and the retained default-preference provenance issue.
+- [Completed control dialogue](dialogue-v2-controls-completed-01/dialogue.md):
+  59 public messages and the final outcome, with simulated user provenance.
+  Its [redaction receipt](dialogue-v2-controls-completed-01/capability-redaction.json)
+  records removal of the temporary session URL capability.
+- [Scoped preference isolation](preference-isolation-0112/result.json): nine true
+  checks from real native viewer controls, with every preference request scoped
+  to the original conversation and all 73 protected files unchanged.
+- [Managed v0.11.2 upgrade](remark-v2/upgrade-v0112-01/README.md): fresh native,
+  negative, source-scope and browser results, independent file hashes, and the
+  one explicit missing browser-exclusion metric.
+- [Dialogue through the completed upgrade](dialogue-v2-upgrade-v0112-completed-01/dialogue.md):
+  69 public messages with simulated-answer provenance and session capabilities
+  removed before publication.
 - [State residence diagnosis](timeline-state-review.md): adjacent intervals
   reflect the same file's real successive states; no artificial duration added.
 
 ## Current follow-up
 
-The conversation-control turn is still active. Custom views and recording
-filters are being exercised through `/vibelens`; it reproduced rejection of a
-same-build recording after manifest line endings changed the graph revision.
-The rejection and its evidence remain preserved. The trial is refreshing strict
-receipts and preparing a new recording before completing focused Timeline checks.
+The conversation-control turn is complete. Custom
+views and recording filters were exercised through `/vibelens`. The earlier rejection of a
+same-build recording after manifest line endings changed the graph revision is
+preserved. Fresh strict checks and a new 110-event, zero-gap recording now match
+the current graph; 30 events from Alice's share and Bob's later read were selected.
+The final local presentation receipt passes all nine checks with no browser
+exceptions. A native canvas drag proves a camera angle 59.45 degrees from
+vertical. The earlier [camera failure](remark-v2/controls-camera-first-failure.json)
+is retained alongside its original top-view screenshot.
+
+The original aggregate preservation check remains false: the default local
+display configuration changed at 16 decoded leaf paths. Read-only comparison
+confirms all other 51 protected files, both master recordings, all 41 main and
+26 business planar positions, and existing spatial horizontal coordinates and
+pins are unchanged. The earlier unscoped display-write provenance remains
+unattributed. A separate real-browser isolation test subsequently passed all
+nine checks: native private-view controls wrote only the scoped preference file,
+and all 73 protected files, including the default display file and recordings,
+stayed byte-identical. This does not identify the actor behind the earlier change
+or relabel that original preservation failure as a pass.
 This follow-up is separate from the earlier 28-check browser run.
 
-Fresh final receipts after those controls and the planned managed **v0.11.2**
-upgrade are pending. Nothing in this index claims that upgrade or its native,
-browser and recording acceptance has completed.
+The [v0.11.2 GitHub installation](release-v0.11.2-install.json) now verifies all
+305 downloaded Skill files and retains the previous installation. Its source
+commit also passed [all eight remote CI jobs](../publication/ci-candidate-ad50f70d-final.json).
+The application's managed v0.11.2 runtime upgrade and finite native/browser checks
+are now complete. The read-only audit retains one missing measured browser
+observer-exclusion field; all current source/build/candidate identity checks
+agree. The separate v0.11.3 paused-Timeline animation fix has fresh framework
+regressions and still needs its own managed-upgrade acceptance.
 
 The [source-scope adoption fixture](source-scope-adoption/README.md) records the
 initial directory-planning requirements and their targeted execution tests.

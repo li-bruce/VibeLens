@@ -1,0 +1,65 @@
+{
+  "passed": false,
+  "checks": [
+    {
+      "dock": "historical snapshot has no live capture; saved replay opens its timeline",
+      "realEvents": 63
+    },
+    {
+      "mode": "2D",
+      "scrub": true,
+      "keyboard": true,
+      "exactState": "in_progress",
+      "graphCursorAndTransfers": true,
+      "actualAnimatedEdges": []
+    },
+    {
+      "mode": "3D",
+      "scrub": true,
+      "keyboard": true,
+      "exactState": "in_progress",
+      "graphCursorAndTransfers": true,
+      "actualAnimatedEdges": []
+    },
+    {
+      "ctrlWheelZoom": true,
+      "overviewDrag": true,
+      "shiftRangeUsesExistingLoop": true
+    },
+    {
+      "skippedStepsShareReplayPlan": true
+    },
+    {
+      "playback": true,
+      "pauseRepeatsSameEvent": true
+    },
+    {
+      "nonemptyDataTransferAnimation": [
+        "summary:db:repair:store|db.read|reads|false|false|model"
+      ]
+    },
+    {
+      "actualDataTransformHasCompletedDuration": true
+    },
+    {
+      "legacyDataPhysicalPhasesAndNeutralClosedStyles": [
+        {
+          "id": "db.transaction",
+          "phase": "committed",
+          "state": "historical",
+          "caption": "Committed",
+          "duration": 17.2509765625
+        },
+        {
+          "id": "db.normalize",
+          "phase": "transformed",
+          "state": "historical",
+          "caption": "Transformed",
+          "duration": 0.09912109375
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "error": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#recording-timeline') to be visible\n    - locator resolved to hidden <section hidden=\"\" id=\"recording-timeline\" aria-label=\"Execution timeline\">…</section>\n    52 × locator resolved to hidden <section hidden=\"\" data-raw-index=\"0\" data-source=\"saved\" data-event-id=\"start\" id=\"recording-timeline\" data-graph-transfers=\"[]\" aria-label=\"Execution timeline\">…</section>\n\n    at /home/runner/work/VibeLens/VibeLens/tools/test_recording_timeline_browser.mjs:278:14"
+}

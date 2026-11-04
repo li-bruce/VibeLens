@@ -1,0 +1,33 @@
+{
+  "schema": "vibelens.browser-preference-ack/v1",
+  "valid": true,
+  "source_hashes": {
+    "tools/browser-preferences.mjs": "ae907293a14ef632b9c4a2204a4a7f7098ea8b40d457804f123879aa945474b9",
+    "tools/test_graph_names_browser.mjs": "6442bbe435fe26b055aa23d69b0cf37feb6ff8ab867cbf394ed7446335fdcbaa",
+    "tools/test_viewer_controls.mjs": "a1cfe7dfb3cf94db6cf2da2317053533ff1cb8c35c49555e424e2946699a78c4"
+  },
+  "cases": {
+    "names": {
+      "command": "names-command.json",
+      "result": "names/result.json",
+      "valid": true
+    },
+    "viewer": {
+      "command": "viewer-retest-command.json",
+      "result": "viewer-retest/result.json",
+      "valid": true
+    },
+    "helper": {
+      "result": "helper-checks.json",
+      "valid": true,
+      "checks": 5
+    }
+  },
+  "retained_failure": {
+    "command": "viewer-command.json",
+    "result": "viewer/result.json",
+    "server_log": "viewer/server.log",
+    "reason": "Windows WinError10013 rejected reserved test port52972 before any browser started. Same fixture passed on18878."
+  },
+  "scope": "Test-only acknowledgment repair. No product changes, skipped assertions, added delays or timeout increases."
+}

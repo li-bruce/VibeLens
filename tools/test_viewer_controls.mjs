@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { analysisPreferences, waitForPreferences } from "./browser-preferences.mjs";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const root = fileURLToPath(new URL("../", import.meta.url));
 const output = path.resolve(process.env.BO_BROWSER_EVIDENCE || ".validation/viewer-controls");
@@ -202,13 +203,22 @@ try {
     "conversation focus has no separate UI bar",
   );
   await page.locator("#viewport").focus();
+  const beforeDismissal = await page.evaluate(
+    async () => (await (await fetch("/api/preferences")).json()).revision,
+  );
+  const dismissedSave = waitForPreferences(
+    page,
+    (saved) => {
+      const discussion = analysisPreferences(saved)?.discussion;
+      return (
+        discussion?.active === false && discussion.revision === scope.revision + String(scope.stale)
+      );
+    },
+    { afterRevision: beforeDismissal },
+  );
   await page.keyboard.press("Escape");
   await page.waitForFunction(() => !document.querySelector('#semantic [data-discussion="true"]'));
-  await page.waitForFunction(async () =>
-    Object.entries((await (await fetch("/api/preferences")).json()).entries).some(
-      ([key, value]) => key.endsWith(":analysis") && JSON.parse(value).discussion?.active === false,
-    ),
-  );
+  await dismissedSave;
   await page.reload();
   await page.waitForSelector('#semantic [data-node-id="publish"]', { state: "attached" });
   await page.waitForTimeout(2200);

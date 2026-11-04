@@ -22,6 +22,26 @@ const errors = [],
   checks = [];
 let browser, page;
 const snapshot = () => page.evaluate(() => graphDebug.timeline);
+/** A reload must follow the server's acknowledgment of this exact timeline setting. */
+const timelineSave = (expected, afterRevision = -1) =>
+  page
+    .waitForResponse(async (response) => {
+      if (
+        new URL(response.url()).pathname !== "/api/preferences" ||
+        response.request().method() !== "POST" ||
+        response.status() !== 200
+      )
+        return false;
+      const saved = await response.json();
+      const raw = Object.entries(saved.entries).find(([key]) => key.endsWith(":analysis"))?.[1];
+      const settings = raw && JSON.parse(raw).timeline;
+      return (
+        saved.revision > afterRevision &&
+        settings &&
+        Object.entries(expected).every(([key, value]) => settings[key] === value)
+      );
+    })
+    .then((response) => response.json());
 const sameCursor = async () => {
   // Sample one browser turn: playback can advance between separate round trips.
   const { trace, positionId, timelineId, graphRaw, transfers } = await page.evaluate(() => ({
@@ -262,22 +282,30 @@ try {
     (await page.locator("#recording-timeline").evaluate((element) => element.clientHeight)) >
       originalHeight,
   );
+  const timelineHeight = Number(await resize.getAttribute("aria-valuenow"));
+  const closedSave = timelineSave({ scope: "all", height: timelineHeight, visible: false });
   await page.click(".trace-close");
   assert.equal(await page.locator("#recording-timeline").isVisible(), false);
+  const closedAcknowledgment = await closedSave;
+  const reopenedSave = timelineSave(
+    { scope: "all", height: timelineHeight, visible: true },
+    closedAcknowledgment.revision,
+  );
   await page.click("#replay-timeline");
   assert.equal(await page.locator("#recording-timeline").isVisible(), true);
-  await page.waitForFunction(async () => {
-    const saved = await (await fetch("/api/preferences")).json();
-    return Object.entries(saved.entries).some(
-      ([key, body]) => key.endsWith(":analysis") && JSON.parse(body).timeline?.scope === "all",
-    );
-  });
+  const reopenedAcknowledgment = await reopenedSave;
+  assert.ok(reopenedAcknowledgment.revision > closedAcknowledgment.revision);
   await page.reload();
   await page.waitForFunction(() => window.graphDebug?.graph);
   await page.selectOption("#record-list", fixture.recording.id);
   await page.waitForSelector("#recording-timeline", { state: "visible" });
   assert.equal(await page.locator(".trace-scope").inputValue(), "all");
-  checks.push({ scopedRows: scoped.rows.length, persistedScopeHeightAndVisibility: true });
+  assert.equal(Number(await resize.getAttribute("aria-valuenow")), timelineHeight);
+  checks.push({
+    scopedRows: scoped.rows.length,
+    persistedScopeHeightAndVisibility: true,
+    acknowledgedRevision: reopenedAcknowledgment.revision,
+  });
 
   await page.goto(fixture.url + "?lang=zh-CN");
   await page.waitForFunction(() => window.graphDebug?.graph);
