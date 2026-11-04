@@ -1,0 +1,882 @@
+{
+  "stage": "implementation-01 corrected evidence; pre-browser; not final acceptance",
+  "audited_at": "2026-11-04T17:51:04.785905+00:00",
+  "trial": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\VibeLensTrials\\release-v0.12.0-dialogue",
+  "build_id": "925d2a0c26fb4d19a41f147799da57157daa028fee1547bb23ed46929b6ec1c5",
+  "build_matches_manifest": true,
+  "manifest_source_mismatches": [],
+  "sha256": {
+    "app.py": "819935ad8500aa11b10a5b2bfbc991cf776229d38569d43779c0c0de696f0d44",
+    "service.py": "f218bfa6e8adfd9fbe7dcd6d2a6d5364097d7d9609b6fb3b839720f6a1bf8953",
+    "bo_integration.py": "3ee2fef8af185141797c825ed6fdbb4844ea95172d021f666c93eb6ae5d10095",
+    "build_model.py": "c2155647b13be442cdfc5c76f627733cae2fe8f42dd2304a9f5ba921668a09dd",
+    "tests/scenarios.py": "207829b9d465e74f3d3d426c81ec8dbc5fafa12ff29a1c44e7c25a0eec04c154",
+    "tests/observe.py": "8f6add47175b65fb573097fc87c25e882cc3d397b80c086a637d78182586d0a1",
+    "bo_stategraph/project.json": "605c1a472ac20d4ccaa84e1f0df63fdd0b730c3e505eea89d6fa74d1a25d005a",
+    "discovery.json": "f5e2faeac543865f579a6d860c37406a6fd468505f6c1ddf7016a71bdaaa7b38",
+    "manifest.json": "49ce5ce5d7f50db3a85e0fcbd558028feb0c167d5a9ebdd71e421ca6c55b6c97",
+    "sync.json": "9ae526a1f31d806154151d9b89285995f28a1381a57a4d6bc962d1e7432da2f5",
+    "implementation.json": "4e52b2ac11676b05a99e249aa74d1486851b9a62ba5b5ff39fc09f062e51bd45",
+    "observer_runtime/bo_observer/concepts/runtime.py": "ca4d9fb89c699a1c85d8efb792da82feaa88d2f71adc57ec1140343fde4401f8",
+    "observer_runtime/bo_observer/workflow/observation_requirements.py": "8fa81ce17a2769ffe5643ac5d585393bd03d42881bd54d8cd99b38c2326c0ae8",
+    "review/implementation-01/observations-corrected.json": "086946c3c8f030be745fe731f5bb39a1de13bc7a8a261b92744a053b8d8eff47",
+    "review/implementation-01/verify-initial.json": "de0a7f818982411984fcac214f3b368f1a082d27ebe98c89b476706295065148",
+    "review/implementation-01/api-corrected.json": "a6ad664baf247d9781b854345af7bfe02bb51d2de100f2a9ae46a8dae567694d",
+    "review/implementation-01/database-check.json": "f1a0a1222bc67981434ac6f4b161f2036c0a7b46317cce67b97a0eeb57538426",
+    "review/implementation-01/docs-corrected.json": "25b26992706984eca9a3ff46e4659d7e5314b2ee5caac51f77bded417cf9e93f"
+  },
+  "concept_runtime_errors": [],
+  "invocation_closure": {
+    "valid": true,
+    "closed_calls": 558,
+    "legacy_events": 0,
+    "errors": []
+  },
+  "closure_count_note": "The effect-expectation case intentionally references full-workflow events again; closed_calls is not a distinct invocation count.",
+  "unique_events": 755,
+  "node_phase_counts": {
+    "api:framework_error/enter": 1,
+    "api:framework_error/return": 1,
+    "deny_old_link/decision": 2,
+    "notify/read": 1,
+    "permission/decision": 23,
+    "retain_review_record/commit": 3,
+    "retain_review_record/enter": 3
+  },
+  "semantic_checks": [
+    {
+      "label": "stylesheet-is-not-framework-error",
+      "status_code": 200,
+      "absent": [
+        "api:framework_error"
+      ],
+      "required": null,
+      "events": [],
+      "observed_nodes": [],
+      "valid": true,
+      "matching_events": [],
+      "forbidden_events": []
+    },
+    {
+      "label": "empty-uploader-dashboard-is-not-recipient-notification",
+      "status_code": 200,
+      "absent": [
+        "notify"
+      ],
+      "required": null,
+      "events": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:67",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:68",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:69",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:70",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:71",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:72",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:73",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:74",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:75",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:76",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:77",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:78",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:79",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:80"
+      ],
+      "observed_nodes": [
+        "api:dashboard",
+        "dashboard",
+        "db:dashboard"
+      ],
+      "valid": true,
+      "matching_events": [],
+      "forbidden_events": []
+    },
+    {
+      "label": "unapproved-share-is-not-revoked-download",
+      "status_code": 403,
+      "absent": [
+        "deny_old_link"
+      ],
+      "required": null,
+      "events": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:117",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:118",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:119",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:120",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:121",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:122",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:123",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:124",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:125",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:126",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:127",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:128",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:129",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:130",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:131",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:132",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:133",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:134",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:135",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:136",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:137",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:138",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:139",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:140",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:141"
+      ],
+      "observed_nodes": [
+        "api:share",
+        "db:approved_value",
+        "db:share",
+        "db:transaction",
+        "permission",
+        "policy:authenticated",
+        "policy:file_approved",
+        "policy:may_share",
+        "read_facts",
+        "share",
+        "transaction"
+      ],
+      "valid": true,
+      "matching_events": [],
+      "forbidden_events": []
+    },
+    {
+      "label": "self-approve-is-not-revoked-download",
+      "status_code": 403,
+      "absent": [
+        "deny_old_link"
+      ],
+      "required": null,
+      "events": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:223",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:224",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:225",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:226",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:227",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:228",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:229",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:230",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:231",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:232",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:233",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:234",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:235",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:236",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:237",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:238",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:239",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:240",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:241",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:242",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:243",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:244",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:245",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:246",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:247",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:248"
+      ],
+      "observed_nodes": [
+        "api:approve",
+        "approve",
+        "db:approve",
+        "db:approved_value",
+        "db:transaction",
+        "permission",
+        "policy:actor_id",
+        "policy:authenticated",
+        "policy:is_reviewer",
+        "policy:may_approve",
+        "policy:review_target_allowed",
+        "policy:share_actor_allowed",
+        "policy:uploader_id",
+        "read_facts",
+        "same_identity",
+        "transaction"
+      ],
+      "valid": true,
+      "matching_events": [],
+      "forbidden_events": []
+    },
+    {
+      "label": "self-reject-is-not-revoked-download",
+      "status_code": 403,
+      "absent": [
+        "deny_old_link"
+      ],
+      "required": null,
+      "events": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:249",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:250",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:251",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:252",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:253",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:254",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:255",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:256",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:257",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:258",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:259",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:260",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:261",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:262",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:263",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:264",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:265",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:266",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:267",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:268",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:269",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:270",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:271",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:272",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:273",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:274"
+      ],
+      "observed_nodes": [
+        "api:reject",
+        "db:approved_value",
+        "db:reject",
+        "db:transaction",
+        "permission",
+        "policy:actor_id",
+        "policy:authenticated",
+        "policy:is_reviewer",
+        "policy:may_approve",
+        "policy:review_target_allowed",
+        "policy:share_actor_allowed",
+        "policy:uploader_id",
+        "read_facts",
+        "reject",
+        "same_identity",
+        "transaction"
+      ],
+      "valid": true,
+      "matching_events": [],
+      "forbidden_events": []
+    },
+    {
+      "label": "actual-recipient-message",
+      "status_code": 200,
+      "absent": [],
+      "required": {
+        "node": "notify",
+        "values": {
+          "actor_id": "recipient",
+          "recipient_id": "recipient",
+          "share_id": "7cae6d4387c74fd5ad12056c2b944210",
+          "file_id": "d5ce93c4a55f45c49e267498a8d6a79d"
+        }
+      },
+      "events": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:399",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:400",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:401",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:402",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:403",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:404",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:405",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:406",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:407",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:408",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:409",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:410",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:411",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:412",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:413"
+      ],
+      "observed_nodes": [
+        "api:dashboard_data",
+        "dashboard",
+        "db:dashboard",
+        "notify"
+      ],
+      "valid": true,
+      "matching_events": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:411"
+      ],
+      "forbidden_events": []
+    },
+    {
+      "label": "wrong-account-is-not-revoked-grant",
+      "status_code": 403,
+      "absent": [
+        "deny_old_link"
+      ],
+      "required": null,
+      "events": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:437",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:438",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:439",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:440",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:441",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:442",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:443",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:444",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:445",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:446",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:447",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:448",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:449",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:450",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:451",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:452",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:453",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:454",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:455",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:456",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:457",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:458",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:459"
+      ],
+      "observed_nodes": [
+        "api:download",
+        "db:approved_value",
+        "db:download",
+        "download",
+        "permission",
+        "policy:actor_id",
+        "policy:authenticated",
+        "policy:may_download",
+        "policy:recipient_eligible",
+        "policy:recipient_id",
+        "policy:share_active",
+        "read_facts",
+        "same_identity"
+      ],
+      "valid": true,
+      "matching_events": [],
+      "forbidden_events": []
+    },
+    {
+      "label": "actual-revoked-grant-request",
+      "status_code": 403,
+      "absent": [],
+      "required": {
+        "node": "deny_old_link",
+        "values": {
+          "file_id": "d5ce93c4a55f45c49e267498a8d6a79d",
+          "share_id": "7cae6d4387c74fd5ad12056c2b944210",
+          "actor_id": "recipient",
+          "recipient_id": "recipient",
+          "active": false,
+          "reason": "revoked_grant"
+        }
+      },
+      "events": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:546",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:547",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:548",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:549",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:550",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:551",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:552",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:553",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:554",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:555",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:556",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:557",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:558",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:559",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:560",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:561",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:562",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:563",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:564",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:565"
+      ],
+      "observed_nodes": [
+        "api:download",
+        "db:approved_value",
+        "db:download",
+        "deny_old_link",
+        "download",
+        "permission",
+        "policy:authenticated",
+        "policy:may_download",
+        "policy:share_active",
+        "read_facts"
+      ],
+      "valid": true,
+      "matching_events": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:563"
+      ],
+      "forbidden_events": []
+    },
+    {
+      "label": "review-entry-commit-completion",
+      "review_id": "952dd0d1f5c94d2d81848b7ce366acf8",
+      "transaction_id": "0274c95262f2481a9752add851450cfb",
+      "event_ids": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:165",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:172",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:174"
+      ],
+      "valid": true,
+      "sequence": [
+        165,
+        172,
+        174
+      ]
+    },
+    {
+      "label": "review-entry-commit-completion",
+      "review_id": "89dc227458844038a281f9195a298b11",
+      "transaction_id": "df48f5639c9a49ba90b80d187dc5d0d5",
+      "event_ids": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:320",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:327",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:329"
+      ],
+      "valid": true,
+      "sequence": [
+        320,
+        327,
+        329
+      ]
+    },
+    {
+      "label": "review-entry-commit-completion",
+      "review_id": "f8cda252da704faca5a90c9b03e665f7",
+      "transaction_id": "e92aef0e766d46ddb3900d0cc6535e6e",
+      "event_ids": [
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:611",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:618",
+        "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:620"
+      ],
+      "valid": true,
+      "sequence": [
+        611,
+        618,
+        620
+      ]
+    }
+  ],
+  "framework_events": [
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "release-v0.12.0-dialogue",
+      "model_revision": "implementation-01",
+      "build_id": "925d2a0c26fb4d19a41f147799da57157daa028fee1547bb23ed46929b6ec1c5",
+      "run_id": "6b883a5ad13849ceb7a5b664d0194003",
+      "producer_id": "af2637b40fe54100803f2d3fea99e938",
+      "schema_version": 3,
+      "seq": 734,
+      "id": "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:734",
+      "node": "api:framework_error",
+      "phase": "enter",
+      "entity": "a1e41e5d5f9d4b81b4977ccf18c8e2c3",
+      "attempt": "a1e41e5d5f9d4b81b4977ccf18c8e2c3",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "97100428286c41f291c2a17b0380fb1b",
+      "parent_call_id": null,
+      "parent_event_id": null,
+      "inputs": {
+        "method": "GET",
+        "path": "/missing-route",
+        "request_id": "a1e41e5d5f9d4b81b4977ccf18c8e2c3"
+      },
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-11-04T17:36:26.332386+00:00",
+      "lifecycle": "span",
+      "trace": {
+        "trace_id": "bbc61681dcf8f54129a73b1af78ab2fc",
+        "span_id": "b8f0b21e01e970b8",
+        "trace_flags": 3,
+        "parent_span_id": null,
+        "tracestate": "",
+        "links": []
+      }
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "release-v0.12.0-dialogue",
+      "model_revision": "implementation-01",
+      "build_id": "925d2a0c26fb4d19a41f147799da57157daa028fee1547bb23ed46929b6ec1c5",
+      "run_id": "6b883a5ad13849ceb7a5b664d0194003",
+      "producer_id": "af2637b40fe54100803f2d3fea99e938",
+      "schema_version": 3,
+      "seq": 735,
+      "id": "6b883a5ad13849ceb7a5b664d0194003:af2637b40fe54100803f2d3fea99e938:735",
+      "node": "api:framework_error",
+      "phase": "return",
+      "entity": "a1e41e5d5f9d4b81b4977ccf18c8e2c3",
+      "attempt": "a1e41e5d5f9d4b81b4977ccf18c8e2c3",
+      "scope": "entity",
+      "basis": {},
+      "call_id": "97100428286c41f291c2a17b0380fb1b",
+      "parent_call_id": null,
+      "parent_event_id": null,
+      "inputs": {},
+      "outputs": {
+        "status_code": 404,
+        "streamed": false,
+        "error": "404 NOT FOUND"
+      },
+      "depends": [],
+      "observed_at": "2026-11-04T17:36:26.332556+00:00",
+      "lifecycle": "span",
+      "trace": {
+        "trace_id": "bbc61681dcf8f54129a73b1af78ab2fc",
+        "span_id": "b8f0b21e01e970b8",
+        "trace_flags": 3,
+        "parent_span_id": null,
+        "tracestate": "",
+        "links": []
+      }
+    }
+  ],
+  "mode_summaries": [
+    {
+      "mode": "on",
+      "events": 755,
+      "outcomes": {
+        "unapproved-cannot-share": {
+          "allowed": false
+        },
+        "reupload-keeps-rejected-history": {
+          "new_file_id_differs": true,
+          "old_review_unchanged": true,
+          "old_file_status": "rejected",
+          "new_file_status": "pending_review"
+        },
+        "reviewer-cannot-approve-own-file": {
+          "allowed": false,
+          "review_status": "pending_review"
+        },
+        "reviewer-cannot-reject-own-file": {
+          "allowed": false,
+          "review_status": "pending_review"
+        },
+        "review-decision-record-committed": {
+          "review_record_committed": true,
+          "review_record_matches_file": true
+        },
+        "reviewer-role-does-not-grant-sharing": {
+          "allowed": false
+        },
+        "share-notifies-recipient": {
+          "recipient_can_see_message": true
+        },
+        "share-does-not-change-review-state": {
+          "review_status": "approved",
+          "sharing_active": true
+        },
+        "other-account-cannot-use-link": {
+          "allowed": false
+        },
+        "non-uploader-cannot-revoke": {
+          "allowed": false
+        },
+        "one-recipient-per-file": {
+          "recipient_count_for_file": 1
+        },
+        "revoke-does-not-change-review-state": {
+          "review_status": "approved",
+          "sharing_active": false
+        },
+        "old-link-denied-after-revocation": {
+          "download_started": false
+        },
+        "started-transfer-can-finish": {
+          "started_transfer_completed": true,
+          "new_request_allowed": false
+        }
+      },
+      "probe_health": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "6b883a5ad13849ceb7a5b664d0194003",
+        "producer_id": "af2637b40fe54100803f2d3fea99e938",
+        "enqueued": 755,
+        "pending": 0,
+        "queue_submitted": 771,
+        "queue_completed": 771,
+        "flush_target": 771,
+        "errors": 0,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": null,
+        "tracing": {
+          "backend": "opentelemetry",
+          "open_spans": 0,
+          "automatic_open": 0,
+          "automatic_errors": 0,
+          "ignored": 0,
+          "external_build_contexts": 0
+        },
+        "integration_errors": 0,
+        "database_errors": 0
+      },
+      "fact_reads": 23,
+      "receipts": 27
+    },
+    {
+      "mode": "off",
+      "events": 0,
+      "outcomes": {
+        "unapproved-cannot-share": {
+          "allowed": false
+        },
+        "reupload-keeps-rejected-history": {
+          "new_file_id_differs": true,
+          "old_review_unchanged": true,
+          "old_file_status": "rejected",
+          "new_file_status": "pending_review"
+        },
+        "reviewer-cannot-approve-own-file": {
+          "allowed": false,
+          "review_status": "pending_review"
+        },
+        "reviewer-cannot-reject-own-file": {
+          "allowed": false,
+          "review_status": "pending_review"
+        },
+        "review-decision-record-committed": {
+          "review_record_committed": true,
+          "review_record_matches_file": true
+        },
+        "reviewer-role-does-not-grant-sharing": {
+          "allowed": false
+        },
+        "share-notifies-recipient": {
+          "recipient_can_see_message": true
+        },
+        "share-does-not-change-review-state": {
+          "review_status": "approved",
+          "sharing_active": true
+        },
+        "other-account-cannot-use-link": {
+          "allowed": false
+        },
+        "non-uploader-cannot-revoke": {
+          "allowed": false
+        },
+        "one-recipient-per-file": {
+          "recipient_count_for_file": 1
+        },
+        "revoke-does-not-change-review-state": {
+          "review_status": "approved",
+          "sharing_active": false
+        },
+        "old-link-denied-after-revocation": {
+          "download_started": false
+        },
+        "started-transfer-can-finish": {
+          "started_transfer_completed": true,
+          "new_request_allowed": false
+        }
+      },
+      "probe_health": {
+        "enabled": false,
+        "errors": 0,
+        "dropped": 0,
+        "pending": 0
+      },
+      "fact_reads": 23,
+      "receipts": 27
+    },
+    {
+      "mode": "fault",
+      "events": 0,
+      "outcomes": {
+        "unapproved-cannot-share": {
+          "allowed": false
+        },
+        "reupload-keeps-rejected-history": {
+          "new_file_id_differs": true,
+          "old_review_unchanged": true,
+          "old_file_status": "rejected",
+          "new_file_status": "pending_review"
+        },
+        "reviewer-cannot-approve-own-file": {
+          "allowed": false,
+          "review_status": "pending_review"
+        },
+        "reviewer-cannot-reject-own-file": {
+          "allowed": false,
+          "review_status": "pending_review"
+        },
+        "review-decision-record-committed": {
+          "review_record_committed": true,
+          "review_record_matches_file": true
+        },
+        "reviewer-role-does-not-grant-sharing": {
+          "allowed": false
+        },
+        "share-notifies-recipient": {
+          "recipient_can_see_message": true
+        },
+        "share-does-not-change-review-state": {
+          "review_status": "approved",
+          "sharing_active": true
+        },
+        "other-account-cannot-use-link": {
+          "allowed": false
+        },
+        "non-uploader-cannot-revoke": {
+          "allowed": false
+        },
+        "one-recipient-per-file": {
+          "recipient_count_for_file": 1
+        },
+        "revoke-does-not-change-review-state": {
+          "review_status": "approved",
+          "sharing_active": false
+        },
+        "old-link-denied-after-revocation": {
+          "download_started": false
+        },
+        "started-transfer-can-finish": {
+          "started_transfer_completed": true,
+          "new_request_allowed": false
+        }
+      },
+      "probe_health": {
+        "enabled": true,
+        "boundary_context": true,
+        "run_id": "66f4da69de424cedb3c0f469929fbdc0",
+        "producer_id": "5f3c236e349541fe90fabffb32f49323",
+        "enqueued": 755,
+        "pending": 0,
+        "queue_submitted": 771,
+        "queue_completed": 771,
+        "flush_target": 771,
+        "errors": 771,
+        "dropped": 0,
+        "filtered": 0,
+        "last_error": {
+          "stage": "transport",
+          "type": "OSError"
+        },
+        "tracing": {
+          "backend": "opentelemetry",
+          "open_spans": 0,
+          "automatic_open": 0,
+          "automatic_errors": 0,
+          "ignored": 0,
+          "external_build_contexts": 0
+        },
+        "integration_errors": 0,
+        "database_errors": 0
+      },
+      "fact_reads": 23,
+      "receipts": 27
+    }
+  ],
+  "retained_checks": {
+    "api-corrected.json": {
+      "configured": true,
+      "valid": true,
+      "status": "passed",
+      "issues": [],
+      "errors": [],
+      "coverage": "complete",
+      "strict": true,
+      "observed_routes": [
+        "code:endpoint:68eefc8180261d29ff27bedd",
+        "code:endpoint:fd016e4f7a0796925825b681",
+        "code:endpoint:26aeef75a3565c1cbd3273c1",
+        "code:endpoint:614561381711e2f737cf075b",
+        "code:endpoint:f0960717b86f56631eb6ec71",
+        "code:endpoint:9d4ced69361111e44570f936",
+        "code:endpoint:cfbc0a38f49ba11bd0356060",
+        "code:endpoint:db8727929088cd3e9d4ebf51",
+        "code:endpoint:6526431c1a75944526df9ed5",
+        "code:endpoint:d4b8047ef181ff5a0dc1ed6e",
+        "code:endpoint:eeac761459e6208e1ec62861",
+        "code:endpoint:179a8ee56fbc7816ec075ec4"
+      ],
+      "unobserved_routes": [],
+      "incomplete_methods": [],
+      "missing_routes": [],
+      "revision": "701d1d8de968ee19fd341a6b237bb9a98676e6a9905704a77c154f32a55ad51c"
+    },
+    "database-check.json": {
+      "configured": true,
+      "valid": true,
+      "errors": [],
+      "changed": false,
+      "source_id": "5427f34595e95e8ee192257e27eea71f3b127cba35b5eda4832550d29f622a8d",
+      "catalog_id": "ff3d0eec42797b6c9a989c789ae17f82c58eef42a8b0df195c492211105a9f61",
+      "stores": [
+        {
+          "id": "native",
+          "coverage": "complete",
+          "limitations": [
+            "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+          ]
+        }
+      ]
+    },
+    "docs-corrected.json": {
+      "schema": "bo-source-documentation/v1",
+      "scope": "mapped-and-api",
+      "checked_symbols": [
+        "app.py::create_app",
+        "app.py::create_app.after_request",
+        "app.py::create_app.approve",
+        "app.py::create_app.before_request",
+        "app.py::create_app.business_error",
+        "app.py::create_app.dashboard",
+        "app.py::create_app.dashboard_data",
+        "app.py::create_app.download",
+        "app.py::create_app.download.chunks",
+        "app.py::create_app.framework_error",
+        "app.py::create_app.health",
+        "app.py::create_app.login",
+        "app.py::create_app.login_page",
+        "app.py::create_app.logout",
+        "app.py::create_app.payload",
+        "app.py::create_app.reject",
+        "app.py::create_app.respond",
+        "app.py::create_app.revoke",
+        "app.py::create_app.share",
+        "app.py::create_app.upload",
+        "app.py::main",
+        "bo_stategraph/query.py::machine_snapshot",
+        "bo_stategraph/query.py::read_authority",
+        "bo_stategraph/workflow.py::ReviewDriver.may_approve",
+        "bo_stategraph/workflow.py::ReviewDriver.may_reject",
+        "bo_stategraph/workflow.py::ReviewDriver.may_upload",
+        "bo_stategraph/workflow.py::ReviewDriver.step",
+        "build_model.py::declarations",
+        "build_model.py::declarations.visit",
+        "build_model.py::main",
+        "build_model.py::main.anchor",
+        "build_model.py::main.edge",
+        "build_model.py::main.node",
+        "build_model.py::write",
+        "models.py::FileRecord.approved",
+        "models.py::create_store",
+        "models.py::create_store.set_pragmas",
+        "models.py::utc_now",
+        "policy_functions.py::same_identity",
+        "service.py::FileService.approve",
+        "service.py::FileService.approved_value",
+        "service.py::FileService.current_actor",
+        "service.py::FileService.dashboard",
+        "service.py::FileService.download",
+        "service.py::FileService.journal",
+        "service.py::FileService.login",
+        "service.py::FileService.logout",
+        "service.py::FileService.permission",
+        "service.py::FileService.read_facts",
+        "service.py::FileService.received_messages",
+        "service.py::FileService.reject",
+        "service.py::FileService.review",
+        "service.py::FileService.revoke",
+        "service.py::FileService.share",
+        "service.py::FileService.transaction",
+        "service.py::FileService.transition",
+        "service.py::FileService.upload"
+      ],
+      "missing": [],
+      "errors": [],
+      "valid": true,
+      "revision": "701d1d8de968ee19fd341a6b237bb9a98676e6a9905704a77c154f32a55ad51c"
+    }
+  },
+  "latest_full_verify_still_precedes_correction": true
+}

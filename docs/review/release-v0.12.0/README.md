@@ -117,5 +117,13 @@ Release and Pages publication succeeded. For both main and tag, seven of eight
 GitHub check jobs passed. The browser job stopped before browser execution because
 its environment omitted the existing telemetry test requirements. The original
 [failure summary](checks/github-tag-browser-failure-summary.json) is preserved.
-Corrections are prepared in a follow-up branch; the v0.12.0 tag and ZIP remain
-unchanged.
+Corrections are published in [v0.12.1](../release-v0.12.1/README.md); the v0.12.0
+tag and ZIP remain unchanged.
+
+The [second public dialogue checkpoint](dialogue-findings/conversation-checkpoint-02/dialogue.md)
+contains the design answers, confirmation, implementation discussion and public
+patch-upgrade request. The [implementation follow-up](dialogue-findings/implementation-followup-20261105.md)
+independently checks four corrected observation findings against saved real HTTP,
+SQLite and event evidence. Its 755 unique events pass the applicable conceptual
+ownership and invocation-closure checks. Full project acceptance, browser checks
+and the next business iteration remain pending; this is a stage report.
