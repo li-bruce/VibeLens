@@ -4,6 +4,11 @@
 import { locale } from "./i18n.js";
 const originals = new WeakMap();
 
+/** Inspect declaration semantics before this module's display-only overlays. */
+export function declaredEdges(model) {
+  return (originals.get(model) || model).edges;
+}
+
 export function explainedName(value) {
   if (typeof value === "string") return value.trim();
   return value?.[locale()] || value?.en || "";

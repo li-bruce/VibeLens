@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 from urllib.parse import urlsplit
 from .interface_language import read_language, set_language
+from ..graph.relation_identity import relation_index
 
 try:
     from ...behavior_model import contained
@@ -87,7 +88,7 @@ class BODesign:
         identities = self._identities(doc)
         graph = self.view()["model"]
         graph_nodes = {item["id"] for item in graph["nodes"]}
-        graph_edges = {item["id"]: item for item in graph["edges"]}
+        graph_edges = relation_index(graph["edges"])
         if decision:
             item = next((d for d in doc["decisions"] if d["id"] == decision), None)
             if item is None:
@@ -193,7 +194,7 @@ class BODesign:
         if nodes and document.get("schema") == "business-discovery/v2":
             from ..concepts import resolve
 
-            edges = {edge["id"]: edge for edge in model["edges"]}
+            edges = relation_index(model["edges"])
             resolved = []
             for reference in nodes:
                 ident = resolve(document, reference)

@@ -16,6 +16,7 @@ import { cleanReplaySelection, selectedReplayPlan, nextReplayIndex } from "./rep
 import { SemanticView } from "./semantic-view.js";
 import { prepareSpatialHierarchy, planarSeeds } from "./spatial-model.js";
 import { fitVisibleHierarchy } from "./containment-view.js";
+import { hasRelationId } from "./edge-identities.js";
 import {
   layers,
   cleanLayers,
@@ -1170,7 +1171,7 @@ function hitAt(e) {
 // Pointer and keyboard users share the same selection and action handlers.
 function openSelectionMenu(x, y, target = $("viewport")) {
   const box = graph?.byId.get(selected);
-  const edge = renderedEdges.find((item) => item.id === selectedEdge);
+  const edge = renderedEdges.find((item) => hasRelationId(item, selectedEdge));
   if (!box && !edge) return;
   updateActions();
   const title = box
@@ -1184,7 +1185,8 @@ $("viewport").addEventListener("contextmenu", (event) => {
   if (event.target !== app.canvas && !node && !semanticEdge) return;
   const hit = event.target === app.canvas ? hitAt(event) : null;
   const id = node?.dataset.nodeId || hit?.id || hit?.region || hit?.expand;
-  const edge = hit?.edge || renderedEdges.find((item) => item.id === semanticEdge?.dataset.edgeId);
+  const edge =
+    hit?.edge || renderedEdges.find((item) => hasRelationId(item, semanticEdge?.dataset.edgeId));
   if (!id && !edge) return;
   event.preventDefault();
   contextMenu.close();
@@ -1206,14 +1208,14 @@ for (const [id, endpoint] of [
   ["edge-to", "to"],
 ])
   $(id).onclick = () => {
-    const edge = renderedEdges.find((item) => item.id === selectedEdge);
+    const edge = renderedEdges.find((item) => hasRelationId(item, selectedEdge));
     if (edge) {
       revealResult(edge[endpoint]);
       focusSelection();
     }
   };
 $("edge-hide").onclick = () => {
-  const edge = renderedEdges.find((item) => item.id === selectedEdge);
+  const edge = renderedEdges.find((item) => hasRelationId(item, selectedEdge));
   if (!edge) return;
   for (const member of edge.members)
     if (!preferences.filters.hiddenEdges.includes(member.id))
@@ -1467,7 +1469,7 @@ function updateHiddenElements() {
       const row = document.createElement("div"),
         button = document.createElement("button");
       const node = graph.all.get(id),
-        edge = graph.rawEdges.find((item) => item.id === id);
+        edge = graph.rawEdges.find((item) => hasRelationId(item, id));
       const label =
         kind === "hiddenNodes"
           ? node
@@ -1849,7 +1851,9 @@ async function poll() {
       return;
     }
     view = withCodeGraph(next, codeSlice);
-    $("project-title").textContent = view.model.presentation.subject || boTranslate("Application");
+    // Source-free drafts have a project identity but no runtime presentation settings.
+    $("project-title").textContent =
+      view.model.presentation?.subject || view.model.project_id || boTranslate("Application");
     document.title = "VibeLens · " + $("project-title").textContent;
     const baseKey = projectLayoutKey(next, storage);
     loadAnalysis(baseKey);

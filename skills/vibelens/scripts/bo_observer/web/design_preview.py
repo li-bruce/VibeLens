@@ -1,8 +1,8 @@
 """Compact, localized conversation diagrams without changing concept identities.
 
-The focus artifact retains one record per original relation. This renderer reuses
-one external glyph per node ID, so a shared rule appears once even when several
-actions depend on it. Captions never establish identity or merge relations.
+The focus artifact retains original relation identities, including source
+assertions represented by one display edge. This renderer reuses one external
+glyph per node ID. Captions never establish identity or merge relations.
 """
 
 import html

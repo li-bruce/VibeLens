@@ -37,6 +37,7 @@ class ConceptGraph:
     def __init__(self):
         self.nodes, self.edges = [], []
         self.records, self.dependencies, self.index = {}, {}, {}
+        self._effect_associations = {}
 
     def add(
         self,
@@ -80,7 +81,16 @@ class ConceptGraph:
         )
 
     def relation(
-        self, ident, source, target, kind, *, value=None, label=None, containment_kind=None
+        self,
+        ident,
+        source,
+        target,
+        kind,
+        *,
+        value=None,
+        label=None,
+        containment_kind=None,
+        source_refs=(),
     ):
         """Retain semantic edge fields in the view, with protected graph identities.
 
@@ -101,21 +111,34 @@ class ConceptGraph:
         caption = label or RELATION_LABELS.get(kind, kind.replace("_", " ").capitalize())
         if not label and kind == "guarded_by" and isinstance((value or {}).get("negated"), bool):
             caption = "Requires false" if value["negated"] else "Requires true"
-        self.edges.append(
-            {
-                **without_display(value or {}),
-                "id": ident,
-                "from": source,
-                "to": target,
-                "type": kind,
-                "label": caption,
-                "origin": "concept-design",
-                "evidence_kind": "conceptual",
-                # Renderer ancestry is derived from the already typed concepts;
-                # adding this hint does not revise a confirmed semantic record.
-                **({"containment_kind": containment_kind} if containment_kind else {}),
-            }
-        )
+        edge = {
+            **without_display(value or {}),
+            "id": ident,
+            "from": source,
+            "to": target,
+            "type": kind,
+            "label": caption,
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            # Renderer ancestry is derived from the already typed concepts;
+            # adding this hint does not revise a confirmed semantic record.
+            **({"containment_kind": containment_kind} if containment_kind else {}),
+            **({"source_refs": list(source_refs)} if source_refs else {}),
+        }
+        # A declared effect and its argument-free crosslink assert the same
+        # association. The semantic records above remain independent obligations;
+        # the display edge carries both original identities and their provenance.
+        # No other relation pair, or relation with extra semantics, is consolidated.
+        pair = (source, target)
+        plain_effect = not value and not containment_kind
+        if kind == "has_effect" and plain_effect:
+            self._effect_associations[pair] = edge
+        elif kind == "transition_has_effect" and plain_effect:
+            original = self._effect_associations.get(pair)
+            if original is not None:
+                original.setdefault("equivalent_relations", []).append(edge)
+                return
+        self.edges.append(edge)
 
     def resolve(self, reference):
         """Resolve exact IDs first; aliases must have exactly one candidate."""

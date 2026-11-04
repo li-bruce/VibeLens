@@ -7,6 +7,7 @@ exact source ownership can lead to an observed node.
 """
 
 from ..concepts.common import canonical_id
+from .relation_identity import relation_index
 
 
 def display_graph(view):
@@ -34,6 +35,9 @@ def display_graph(view):
             result.update((item["id"], item) for item in items)
     if any(edge["from"] not in nodes or edge["to"] not in nodes for edge in edges.values()):
         raise ValueError("Graph contains an unknown relation endpoint")
+    # A control/capture inventory must not silently resolve one original edge ID
+    # to two associations after concept and native inventories have been joined.
+    relation_index(edges.values())
     return {**model, "nodes": list(nodes.values()), "edges": list(edges.values())}
 
 

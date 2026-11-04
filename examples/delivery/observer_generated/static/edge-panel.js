@@ -2,6 +2,7 @@
 import { relationName, displayName, edgePorts } from "./layout.js";
 import { dataRelationEvidence } from "./data-layer.js";
 import { t as boTranslate } from "./i18n.js";
+import { hasRelationId, originalRelations } from "./edge-identities.js";
 
 /** Runtime and static evidence remain distinct in the same relation list. */
 function relationEvidence(member) {
@@ -30,7 +31,7 @@ export function renderEdgeDetail({
 }) {
   const $ = element;
   const panel = $("edge-details"),
-    edge = edges.find((e) => e.id === selected);
+    edge = edges.find((e) => hasRelationId(e, selected));
   if (!edge) {
     panel.hidden = true;
     return false;
@@ -38,7 +39,7 @@ export function renderEdgeDetail({
   $("edge-title").textContent = boTranslate(
     "{0} \u00B7 {1} relations",
     relationName(edge, preferences),
-    edge.members.length,
+    originalRelations(edge).length,
   );
   if (edge.derived && edge.search_complete === false)
     $("edge-title").textContent += " · " + boTranslate("Path search incomplete");
@@ -55,11 +56,17 @@ export function renderEdgeDetail({
         item.append(button);
         return item;
       }),
-    ...edge.members.map((member) => {
+    ...originalRelations(edge).map((member) => {
       const item = document.createElement("li"),
         a = graph.all.get(member.from),
         b = graph.all.get(member.to);
       item.textContent = `${a ? displayName(a, preferences) : member.from} → ${b ? displayName(b, preferences) : member.to}：${relationName(member, preferences)}（${relationEvidence(member)}）`;
+      if (edge.members.some((entry) => entry.equivalent_relations?.length)) {
+        const identity = document.createElement("code");
+        identity.textContent = member.id;
+        item.append(" ", identity);
+        item.title = JSON.stringify(member.source_refs || []);
+      }
       if (member.witness) {
         const path = document.createElement("div");
         path.textContent = member.witness.nodes

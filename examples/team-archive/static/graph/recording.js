@@ -1,5 +1,6 @@
 import { t as boTranslate } from "./i18n.js";
 import { observedDataTransfer } from "./data-layer.js";
+import { originalRelations } from "./edge-identities.js";
 // Read-only replay. This module has no business-command endpoint.
 import { applyRuntimeFrame } from "./runtime-frames.js";
 import { parentEvent, spanLinkEvents } from "./trace-evidence.js";
@@ -157,7 +158,7 @@ export function transferEdges(event, events, edges, all, configuration = null) {
       (edge) =>
         !edge.derived &&
         edge.type !== "shared" &&
-        edge.members?.some((member) => {
+        originalRelations(edge).some((member) => {
           if (member.mapping_role === "equivalent") return false;
           if (member.mapping_role === "http-observation")
             return (

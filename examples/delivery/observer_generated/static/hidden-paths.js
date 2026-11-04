@@ -5,6 +5,7 @@
 import { relationType } from "./graph-core.js";
 import { t } from "./i18n.js";
 import { conceptRelationTypes } from "./concept-relations.js";
+import { relationExcluded, relationTypeAllowed } from "./edge-identities.js";
 
 const supported = new Set([
   "call",
@@ -113,9 +114,9 @@ export function projectHiddenPaths(
       to = canonical(edge.to);
     if (
       edge.derived ||
-      excludedEdges.has(edge.id) ||
+      relationExcluded(edge, excludedEdges) ||
       !supported.has(type) ||
-      (allowedTypes && !allowedTypes.has(type)) ||
+      (allowedTypes && !relationTypeAllowed(edge, allowedTypes, relationType)) ||
       !allowed(from) ||
       !allowed(to) ||
       from === to

@@ -82,7 +82,10 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: python -m pip install playwright==1.56.0
       - run: python -m playwright install chromium
-      - run: python -m pip install -r docs/review/concept-models-20261104/trial/project/requirements.txt -r skills/vibelens/requirements-database.txt
+      - run: python tools/test_design_browser.py
+        env:
+          BO_DESIGN_BROWSER_EVIDENCE: .validation/design-browser
+      - run: python -m pip install -r docs/review/concept-models-20261104/trial/project/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt
       - run: python tools/test_concept_browser.py
         env:
           BO_CONCEPT_EVIDENCE: .validation/concept-browser
@@ -141,3 +144,4 @@ jobs:
             .validation/api-observation-browser
             .validation/demo-startup-browser
             .validation/concept-browser
+            .validation/design-browser

@@ -1,0 +1,21 @@
+{
+  "sha": "0c7a1ff2316c0e09ddf38e909ed8876ceceb584b",
+  "run_id": 41865071806,
+  "job_id": 126697119266,
+  "artifact_id": 13342645196,
+  "artifact_sha256": "7b25f5f1bfa8fe7ea2822ff6b9121d1f112ce44045dfeb9da67e5ffe56459e9a",
+  "original_file": "concept-browser/run-21b7ec13fb8e/project/review/acceptance/checks/observations.json",
+  "runtime_observation": {
+    "argv": [
+      "{python}",
+      "-B",
+      "-X",
+      "utf8",
+      "tests/gate_run.py"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/runner/work/VibeLens/VibeLens/.validation/concept-browser/run-21b7ec13fb8e/project/tests/gate_run.py\", line 24, in <module>\n    from bo_integration import BOIntegration\n  File \"/home/runner/work/VibeLens/VibeLens/.validation/concept-browser/run-21b7ec13fb8e/project/bo_integration.py\", line 17, in <module>\n    from bo_observer.adapters.python.bo_otel import BOOpenTelemetry\n  File \"/home/runner/work/VibeLens/VibeLens/skills/vibelens/scripts/bo_observer/adapters/python/bo_otel.py\", line 17, in <module>\n    from opentelemetry.instrumentation.utils import suppress_instrumentation\nModuleNotFoundError: No module named 'opentelemetry.instrumentation'\n"
+  },
+  "diagnosis": "Browser job does not install the instrumentation dependency imported by the OTel adapter; fixture fails before browser launch. Full matrix installs requirements-telemetry-test.txt."
+}

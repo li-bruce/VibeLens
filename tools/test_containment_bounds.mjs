@@ -23,6 +23,7 @@ import { fitVisibleHierarchy } from "../skills/vibelens/assets/stategraph-viewer
 import {
   emptyFilters,
   presentationGraph,
+  refreshHierarchy,
 } from "../skills/vibelens/assets/stategraph-viewer/layout.js";
 import { layerSlice } from "../skills/vibelens/assets/stategraph-viewer/graph-layers.js";
 
@@ -372,6 +373,66 @@ assert.ok(
 );
 assert.equal(restored.presentation.glyphs.has("business"), false);
 assert.equal(focusGraph.regions.length, 1, "The complete graph's region inventory is preserved");
+
+// A layer slice shares node coordinates but caches its old scalar extents. After
+// Arrange, Fit must frame the current visible bodies rather than that snapshot.
+refreshHierarchy(focusGraph);
+const cacheOptions = { cacheKey: "fit-regression" };
+const cachedSlice = layerSlice(focusGraph, { visible: ["business"] }, cacheOptions);
+const oldBounds = { minX: cachedSlice.minX, minY: cachedSlice.minY };
+for (const box of focusBoxes) {
+  box.x += 5000;
+  box.y -= 3000;
+}
+refreshHierarchy(focusGraph);
+const movedSlice = layerSlice(focusGraph, { visible: ["business"] }, cacheOptions);
+assert.equal(movedSlice, cachedSlice, "Layout keeps the cached topological projection");
+assert.equal(movedSlice.minX, oldBounds.minX, "Cached extents reproduce the stale snapshot");
+const refitted = fitVisibleHierarchy(movedSlice, presentationGraph(movedSlice, emptyFilters()));
+for (const box of refitted.graph.boxes.filter((box) => refitted.presentation.glyphs.has(box.id))) {
+  assert.ok(box.x >= refitted.graph.minX, "Fit includes the arranged glyph's left edge");
+  assert.ok(box.y >= refitted.graph.minY, "Fit includes the arranged glyph's top edge");
+  assert.ok(
+    box.x + box.w <= refitted.graph.minX + refitted.graph.width,
+    "Fit includes the arranged glyph's right edge",
+  );
+  assert.ok(
+    box.y + box.h <= refitted.graph.minY + refitted.graph.height,
+    "Fit includes the arranged glyph's bottom edge",
+  );
+}
+assert.equal(cachedSlice.minX, oldBounds.minX, "Refitting does not overwrite the cached view");
+
+// An expanded owner is a region, not a second invisible body at its saved
+// anchor. A filtered-out neighbor must likewise not consume camera space.
+focusGraph.byId.get("business").x = -900000;
+focusGraph.byId.get("business").y = -900000;
+focusGraph.byId.get("next").x = 900000;
+const visibleFilters = { ...emptyFilters(), hiddenNodes: ["next"] };
+const visibleBefore = JSON.stringify(focusGraph.boxes);
+const regionFit = fitVisibleHierarchy(focusGraph, presentationGraph(focusGraph, visibleFilters));
+const region = regionFit.graph.regions.find((item) => item.id === "business");
+assert.ok(region, "The expanded visible child retains its parent region");
+assert.equal(regionFit.graph.minX, region.x - 55);
+assert.equal(regionFit.graph.minY, region.y - 55);
+assert.ok(Math.abs(regionFit.graph.width - region.w - 110) < 1e-8);
+assert.ok(Math.abs(regionFit.graph.height - region.h - 110) < 1e-8);
+assert.equal(JSON.stringify(focusGraph.boxes), visibleBefore, "Fit never moves saved anchors");
+
+const emptyView = fitVisibleHierarchy(
+  focusGraph,
+  presentationGraph(focusGraph, {
+    ...emptyFilters(),
+    hiddenNodes: focusNodes.map((node) => node.id),
+  }),
+);
+assert.equal(emptyView.presentation.glyphs.size + emptyView.presentation.regions.size, 0);
+assert.ok(
+  [emptyView.graph.minX, emptyView.graph.minY, emptyView.graph.width, emptyView.graph.height].every(
+    Number.isFinite,
+  ),
+  "Empty views retain finite camera bounds",
+);
 
 // Dense regions need bounded interactive work and must contain every body.
 const dense = Array.from({ length: 10000 }, (_, i) =>

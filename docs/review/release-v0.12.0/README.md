@@ -96,3 +96,26 @@ Boolean policy results. Existing native engine limits still apply. Maintenance
 requires the coding agent or host to invoke the prescribed workflow. Independent
 finite cases check implementation and observed behavior; they do not establish
 all possible executions or natural-language understanding.
+
+## Post-publication dialogue trial
+
+The separate chat in [trial-session.json](trial-session.json) installs the published
+ZIP and builds a new team file-sharing application. Its demand-side replies are
+AI simulations authorized by the user. The trial is still in progress.
+
+The first design rounds exposed a source-free viewer crash and stale camera
+bounds after layout. Reproductions and browser retests are retained under
+[draft-viewer](dialogue-findings/draft-viewer/README.md). The trial also reproduced
+the existing one-bound-state-model limit; its original three-model draft and
+rejection are retained under
+[multiple-state-models](dialogue-findings/multiple-state-models/README.md).
+The positive trial explicitly narrows formal drive binding to file review while
+preserving separate login and grant objects, rules and observations. This is a
+revised trial scope, not a successful three-model binding test.
+
+Release and Pages publication succeeded. For both main and tag, seven of eight
+GitHub check jobs passed. The browser job stopped before browser execution because
+its environment omitted the existing telemetry test requirements. The original
+[failure summary](checks/github-tag-browser-failure-summary.json) is preserved.
+Corrections are prepared in a follow-up branch; the v0.12.0 tag and ZIP remain
+unchanged.

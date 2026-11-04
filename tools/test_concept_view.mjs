@@ -29,7 +29,19 @@ import {
   recordingMatches,
 } from "../skills/vibelens/assets/stategraph-viewer/view-lifecycle.js";
 import { buildTraceIndex } from "../skills/vibelens/assets/stategraph-viewer/trace-index.js";
-import { frame, timeline } from "../skills/vibelens/assets/stategraph-viewer/recording.js";
+import {
+  frame,
+  timeline,
+  transferEdges,
+} from "../skills/vibelens/assets/stategraph-viewer/recording.js";
+import {
+  hasRelationId,
+  originalRelations,
+  relationIds,
+  validateEquivalentRelations,
+} from "../skills/vibelens/assets/stategraph-viewer/edge-identities.js";
+import { renderEdgeDetail } from "../skills/vibelens/assets/stategraph-viewer/edge-panel.js";
+import { namedView } from "../skills/vibelens/assets/stategraph-viewer/graph-names.js";
 
 const concept = (id, layer, conceptKind, kind) => ({
   id,
@@ -202,7 +214,12 @@ assert.equal(
 );
 
 /** Exercise the same inventory, filter and enclosure path used by both renderers. */
-function displayFixture(fixtureNodes, fixtureEdges, preset, { layered = false, regions } = {}) {
+function displayFixture(
+  fixtureNodes,
+  fixtureEdges,
+  preset,
+  { layered = false, regions, hiddenEdges = [] } = {},
+) {
   const fixture = {
     ...view,
     concept_structure: undefined,
@@ -218,6 +235,7 @@ function displayFixture(fixtureNodes, fixtureEdges, preset, { layered = false, r
     "latest",
     "latest",
     {
+      hiddenEdges,
       match: (all, events, status, relations) =>
         matchingNodes(all, fixture, events, profile, status, relations),
     },
@@ -372,6 +390,182 @@ assert.equal(
   false,
   "Preset repair still respects an explicit user relation filter",
 );
+// A proven duplicate effect assertion draws once. Its two original identities
+// still select/hide/inspect the same association without rewriting saved views.
+const effectNodes = [
+  concept("transition:share", "state", "transition", "action"),
+  concept("effect:save", "state", "effect", "effect"),
+];
+const explicitEffect = {
+  ...edge("explicit-effect", "transition:share", "effect:save", "transition_has_effect"),
+  source_refs: ["answer:effect"],
+};
+const effect = {
+  ...edge("generated-effect", "transition:share", "effect:save", "has_effect"),
+  source_refs: ["state:declaration"],
+  equivalent_relations: [explicitEffect],
+};
+const effectSnapshot = JSON.stringify(effect);
+const effectView = {
+  model: {
+    nodes: effectNodes,
+    edges: [effect],
+    machine: { values: [], transitions: [] },
+    presentation: { names: { edges: { [effect.id]: "Save the grant" } } },
+  },
+  events: [],
+};
+let namedEffect = effectView;
+for (const explained of [true, false, true]) {
+  namedEffect = namedView(namedEffect, explained);
+  const inventory = graphInventory(namedEffect);
+  assert.equal(inventory.rawEdges.length, 1);
+  assert.ok(hasRelationId(inventory.rawEdges[0], explicitEffect.id));
+  assert.equal(inventory.rawEdges[0].label, explained ? "Save the grant" : "has_effect");
+}
+assert.throws(
+  () =>
+    graphInventory(
+      namedView({
+        ...effectView,
+        model: { ...effectView.model, edges: [{ ...effect, argument: "different" }] },
+      }),
+    ),
+  "Naming overlays must not conceal an invalid semantic assertion",
+);
+for (const layered of [false, true]) {
+  const { graph: effectGraph, shown } = displayFixture(effectNodes, [effect], "states", {
+    layered,
+  });
+  assert.equal(shown.edges.length, 1, "Equivalent effect declarations draw one relation");
+  const drawn = shown.edges[0];
+  assert.equal(drawn.members.length, 1, "Equivalent assertions do not inflate the display count");
+  for (const id of [effect.id, explicitEffect.id]) {
+    assert.ok(hasRelationId(drawn, id));
+    assert.ok(drawn.edgeIds.has(id), "2D and 3D focus resolve the original edge identity");
+    const filters = { ...profileFor("states"), hiddenEdges: [id] };
+    const saved = JSON.stringify(filters);
+    assert.equal(presentationGraph(effectGraph, filters).edges.length, 0);
+    assert.equal(
+      displayFixture(effectNodes, [effect], "states", { hiddenEdges: [id] }).shown.edges.length,
+      0,
+      "Saved original identity also hides the edge during initial layout",
+    );
+    assert.equal(JSON.stringify(filters), saved, "Hidden IDs are retained without migration");
+  }
+  for (const type of ["has_effect", "transition_has_effect"])
+    assert.equal(
+      presentationGraph(effectGraph, { ...profileFor("states"), edges: [type] }).edges.length,
+      1,
+    );
+  assert.equal(
+    presentationGraph(effectGraph, { ...profileFor("states"), edges: ["guarded_by"] }).edges.length,
+    0,
+  );
+  const spatial = spatialModel(effectGraph, shown);
+  assert.equal(spatial.edges.length, 1);
+  assert.ok(hasRelationId(spatial.edges[0], explicitEffect.id));
+  assert.equal(originalRelations(drawn)[1].source_refs[0], "answer:effect");
+  assert.equal(drawn.observed, false, "Equivalence is not runtime evidence");
+
+  const actualEvents = [
+    { id: "entry", node: effect.from, phase: "read", depends: [] },
+    {
+      id: "result",
+      node: effect.to,
+      phase: "read",
+      depends: [{ event: "entry", type: "transition_has_effect" }],
+    },
+  ];
+  const beforeEvents = JSON.stringify(actualEvents);
+  assert.deepEqual(transferEdges(actualEvents[1], actualEvents, shown.edges, effectGraph.all), [
+    drawn.id,
+  ]);
+  assert.deepEqual(
+    transferEdges({ ...actualEvents[1], depends: [] }, actualEvents, shown.edges, effectGraph.all),
+    [],
+  );
+  assert.equal(
+    JSON.stringify(actualEvents),
+    beforeEvents,
+    "Original recorded IDs and dependency types remain untouched",
+  );
+}
+assert.equal(JSON.stringify(effect), effectSnapshot, "Projection does not rewrite declarations");
+assert.throws(() => validateEquivalentRelations([{ ...effect, argument: "different" }]));
+for (const change of [
+  { to: "other" },
+  { type: "call" },
+  { argument: "different" },
+  { id: effect.id },
+])
+  assert.throws(() =>
+    validateEquivalentRelations([
+      { ...effect, equivalent_relations: [{ ...explicitEffect, ...change }] },
+    ]),
+  );
+assert.throws(() => validateEquivalentRelations([effect, { ...explicitEffect }]));
+assert.throws(() => validateEquivalentRelations([effect, { ...effect, id: "second-owner" }]));
+const distinct = displayFixture(
+  effectNodes,
+  [
+    { ...effect, equivalent_relations: undefined },
+    { ...explicitEffect, argument: "independent-obligation" },
+  ],
+  "states",
+);
+assert.equal(
+  distinct.shown.edges.length,
+  2,
+  "Endpoint similarity never merges unproven assertions",
+);
+
+// Detail selection accepts a retained original ID and exposes each original's
+// own source references. This small DOM stand-in tests handlers, not rendering.
+const previousDocument = globalThis.document;
+const element = () => ({
+  children: [],
+  style: {},
+  offsetWidth: 220,
+  offsetHeight: 150,
+  append(...items) {
+    this.children.push(...items);
+  },
+  replaceChildren(...items) {
+    this.children = items;
+  },
+});
+const elements = new Map(
+  ["edge-details", "edge-title", "edge-members"].map((id) => [id, element()]),
+);
+try {
+  globalThis.document = { createElement: element };
+  const { graph: effectGraph, shown } = displayFixture(effectNodes, [effect], "states");
+  const hidden = [];
+  assert.equal(
+    renderEdgeDetail({
+      graph: effectGraph,
+      edges: shown.edges,
+      selected: explicitEffect.id,
+      choices: [],
+      preferences: {},
+      screen: { width: 1200, height: 900 },
+      scale: 1,
+      pan: { x: 0, y: 0 },
+      onHide: (id) => hidden.push(id),
+      element: (id) => elements.get(id),
+    }),
+    true,
+  );
+  const rows = elements.get("edge-members").children;
+  assert.equal(rows.length, 2);
+  assert.equal(rows[1].title, JSON.stringify(explicitEffect.source_refs));
+  rows[1].children.at(-1).onclick();
+  assert.deepEqual(hidden, [explicitEffect.id]);
+  assert.ok(relationIds(shown.edges[0]).includes(explicitEffect.id));
+} finally {
+  globalThis.document = previousDocument;
+}
 console.log(
   "PASS: peer design views, guard polarity, typed containment in 2D/3D, complete function relations, source binding, indirect witnesses, revision isolation and no fabricated lifecycle.",
 );

@@ -8,6 +8,8 @@ import html
 import json
 from pathlib import Path
 
+from .relation_identity import matches_relation, relation_index
+
 try:
     from ...behavior_model import read, contained, digest
 except ImportError:
@@ -53,6 +55,7 @@ def extract(
         e["from"] not in nodes or e["to"] not in nodes for e in edges
     ):
         raise ValueError("invalid edge identities/endpoints")
+    relation_index(edges)
     anchors = sorted(set(anchors))
     if not anchors or set(anchors) - nodes.keys():
         raise ValueError("unknown or missing focus node")
@@ -69,7 +72,7 @@ def extract(
         if level >= depth:
             continue
         for edge in sorted(adjacent[node], key=lambda e: (e["type"] not in CRITICAL, e["id"])):
-            if relations is not None and edge["type"] not in relations:
+            if not matches_relation(edge, relations):
                 continue
             other = edge["to"] if edge["from"] == node else edge["from"]
             if other in selected:
@@ -83,9 +86,7 @@ def extract(
         (
             e
             for e in edges
-            if e["from"] in selected
-            and e["to"] in selected
-            and (relations is None or e["type"] in relations)
+            if e["from"] in selected and e["to"] in selected and matches_relation(e, relations)
         ),
         key=lambda e: (e["type"] not in CRITICAL, e["id"]),
     )
@@ -116,7 +117,7 @@ def extract(
                 ],
                 "reason": (
                     "relation_filter"
-                    if relations is not None and edge["type"] not in relations
+                    if not matches_relation(edge, relations)
                     else "edge_budget" if not outside else "outside_focus"
                 ),
                 "meaning": "Original relation continues outside this view; no inferred shortcut.",

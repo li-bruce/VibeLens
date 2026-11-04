@@ -1,0 +1,1277 @@
+{
+  "schema": "business-discovery/v2",
+  "project_id": "release-v0.12.0-dialogue",
+  "layout_id": "release-v0.12.0-dialogue",
+  "title": "资料共享 · 待确认草案",
+  "goal": "Build a simple team file-sharing site with login, upload, reviewer approval, in-site sharing messages, downloads, and revocation that blocks new downloads through old links.",
+  "sources": [
+    {
+      "id": "U0",
+      "kind": "user",
+      "text": "$vibelens 我想给小团队做一个简单的资料共享网站。同事登录后上传文件，审核员确认后才能分享，收到分享的人在站内看到消息并能下载。撤销共享后，旧链接也不能再发起下载。界面简单一点。先把流程理清楚，不清楚的地方问我。",
+      "locator": "review/00-original-request.md; actual initial delegated trial request"
+    },
+    {
+      "id": "I_DRAFT",
+      "kind": "inference",
+      "text": "Source-free draft only. Object IDs and state decomposition are modeling proposals. Actor authority, recipient identity, review rejection, account provisioning, storage, and development mode remain unresolved. Boolean authorization inputs are unknown draft facts, not permission grants. No runtime, implementation, or semantic confirmation is claimed.",
+      "locator": "Assistant initial preparation, 2026-11-05 Asia/Shanghai"
+    },
+    {
+      "id": "P_SKILL",
+      "kind": "project_rule",
+      "text": "Use the verified project-local VibeLens v0.12.0 Skill; ask for drive/observe and storage choices; show the graph and await scoped confirmation before implementation.",
+      "locator": "vendor/vibelens/SKILL.md, section 1; explicitly invoked by U0"
+    },
+    {
+      "id": "U_COORD_01",
+      "kind": "user",
+      "text": "试用协调说明：已收到设计草案 Web 的 subject 报错，主会话正在独立修复框架。请保留安装包原样和最小复现，这一项暂记失败；你可以先把当前流程图和需要我决定的问题发出来，继续需求澄清，不必等待 Web 修复。",
+      "locator": "review/01-coordination-message.md; actual coordination instruction, not semantic confirmation"
+    },
+    {
+      "id": "A01_D_AUTHORITY",
+      "kind": "assistant",
+      "text": "审核通过后，由谁选择接收人并发起共享？谁可以撤销共享？",
+      "locator": "review/round-01/questions.md; initial final response, question 1"
+    },
+    {
+      "id": "A01_D_RECIPIENTS",
+      "kind": "assistant",
+      "text": "共享只允许指定的站内账号下载，还是任何拿到链接的已登录同事都能下载？",
+      "locator": "review/round-01/questions.md; initial final response, question 2"
+    },
+    {
+      "id": "A01_D_MODE",
+      "kind": "assistant",
+      "text": "项目采用哪种方式：drive（由状态声明驱动流程），还是 observe（业务代码自行运行，图负责观察）？两者都会维护图和监测。",
+      "locator": "review/round-01/questions.md; initial final response, question 3"
+    }
+  ],
+  "networks": [
+    {
+      "id": "file-sharing",
+      "title": "资料共享流程（待确认）",
+      "actors": [
+        "同事",
+        "审核员",
+        "接收人",
+        "共享与撤销操作者（待确认）"
+      ],
+      "trigger": "A colleague signs in and uploads a file",
+      "outcome": "Approved files can be shared; recipients receive messages and can download; revocation blocks subsequent downloads through old links.",
+      "nodes": [
+        {
+          "id": "login",
+          "label": "同事登录",
+          "kind": "action",
+          "meaning": "Authenticate a colleague before upload; account provisioning is not yet specified.",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        },
+        {
+          "id": "upload",
+          "label": "上传文件",
+          "kind": "action",
+          "meaning": "A signed-in colleague uploads a file awaiting review.",
+          "source_refs": [
+            "U0"
+          ]
+        },
+        {
+          "id": "approve",
+          "label": "审核员确认",
+          "kind": "action",
+          "meaning": "A reviewer approves the uploaded file before it can be shared. Self-review and a negative review outcome remain unresolved.",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        },
+        {
+          "id": "share",
+          "label": "发起共享（操作者待确认）",
+          "kind": "action",
+          "meaning": "Share an approved file with recipients; authority and recipient scope are unresolved.",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        },
+        {
+          "id": "notify",
+          "label": "接收人看到站内消息",
+          "kind": "effect",
+          "meaning": "A recipient can see a site message about the share.",
+          "source_refs": [
+            "U0"
+          ]
+        },
+        {
+          "id": "download",
+          "label": "接收人下载",
+          "kind": "action",
+          "meaning": "A recipient can initiate a download only while that share remains effective. Exact recipient eligibility is unresolved.",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        },
+        {
+          "id": "revoke",
+          "label": "撤销共享（操作者待确认）",
+          "kind": "action",
+          "meaning": "Revoke sharing so existing links cannot initiate later downloads. Revoker authority and grant granularity remain unresolved.",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        },
+        {
+          "id": "deny_old_link",
+          "label": "旧链接的新下载被拒绝",
+          "kind": "effect",
+          "meaning": "After revocation, a new download initiated through an existing link is denied. No claim is made about recalling already downloaded content or interrupting an in-progress response.",
+          "source_refs": [
+            "U0"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "login-upload",
+          "from": "login",
+          "to": "upload",
+          "label": "登录后",
+          "relation": "flow",
+          "source_refs": [
+            "U0"
+          ]
+        },
+        {
+          "id": "upload-approve",
+          "from": "upload",
+          "to": "approve",
+          "label": "等待审核",
+          "relation": "flow",
+          "source_refs": [
+            "U0"
+          ]
+        },
+        {
+          "id": "approve-share",
+          "from": "approve",
+          "to": "share",
+          "label": "审核通过后",
+          "relation": "guard",
+          "source_refs": [
+            "U0"
+          ]
+        },
+        {
+          "id": "share-notify",
+          "from": "share",
+          "to": "notify",
+          "label": "通知接收人",
+          "relation": "flow",
+          "source_refs": [
+            "U0"
+          ]
+        },
+        {
+          "id": "notify-download",
+          "from": "notify",
+          "to": "download",
+          "label": "共享仍有效时",
+          "relation": "flow",
+          "source_refs": [
+            "U0"
+          ],
+          "decision_refs": [
+            "D_RECIPIENTS"
+          ]
+        },
+        {
+          "id": "share-revoke",
+          "from": "share",
+          "to": "revoke",
+          "label": "共享后可撤销",
+          "relation": "flow",
+          "source_refs": [
+            "U0"
+          ],
+          "decision_refs": [
+            "D_AUTHORITY"
+          ]
+        },
+        {
+          "id": "revoke-deny",
+          "from": "revoke",
+          "to": "deny_old_link",
+          "label": "旧链接再次请求时",
+          "relation": "flow",
+          "source_refs": [
+            "U0"
+          ]
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D_AUTHORITY",
+      "topic": "authority",
+      "question": "审核通过后，由谁选择接收人并发起共享？谁可以撤销共享？",
+      "why": "The request names a reviewer but does not assign sharing or revocation authority.",
+      "affects": [
+        "share",
+        "revoke"
+      ],
+      "blocking": true,
+      "status": "open",
+      "priority": 1,
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ],
+      "asked_in": [
+        "A01_D_AUTHORITY"
+      ]
+    },
+    {
+      "id": "D_RECIPIENTS",
+      "topic": "authority",
+      "question": "共享只允许指定的站内账号下载，还是任何拿到链接的已登录同事都能下载？",
+      "why": "Recipient identity determines notification delivery and download authorization.",
+      "affects": [
+        "share",
+        "notify",
+        "download"
+      ],
+      "blocking": true,
+      "status": "open",
+      "priority": 1,
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ],
+      "asked_in": [
+        "A01_D_RECIPIENTS"
+      ]
+    },
+    {
+      "id": "D_MODE",
+      "topic": "other",
+      "question": "项目采用哪种方式：drive（由状态声明驱动流程），还是 observe（业务代码自行运行，图负责观察）？两者都会维护图和监测。",
+      "why": "VibeLens requires an explicit development-mode choice before behavior implementation.",
+      "affects": [
+        "upload",
+        "approve",
+        "share",
+        "download",
+        "revoke"
+      ],
+      "blocking": true,
+      "status": "open",
+      "priority": 1,
+      "source_refs": [
+        "P_SKILL"
+      ],
+      "asked_in": [
+        "A01_D_MODE"
+      ]
+    },
+    {
+      "id": "D_REVIEW",
+      "topic": "authority",
+      "question": "审核员能否审核自己上传的文件？未通过的文件如何处理？",
+      "why": "Review eligibility and the negative outcome are not specified by the initial request.",
+      "affects": [
+        "approve",
+        "upload"
+      ],
+      "blocking": true,
+      "status": "open",
+      "priority": 2,
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ],
+      "asked_in": []
+    },
+    {
+      "id": "D_STORAGE",
+      "topic": "other",
+      "question": "本轮先在本机试用，还是直接作为多人共用服务？本机试用可用 SQLite + SQLAlchemy；多人共用服务可选 PostgreSQL。你希望采用哪种？",
+      "why": "The database guide requires a recorded storage choice appropriate to the deployment.",
+      "affects": [
+        "upload",
+        "share",
+        "notify"
+      ],
+      "blocking": true,
+      "status": "open",
+      "priority": 2,
+      "source_refs": [
+        "P_SKILL"
+      ],
+      "asked_in": []
+    }
+  ],
+  "objects": [
+    {
+      "id": "session",
+      "label": "登录会话",
+      "identity": {
+        "session_id": "string"
+      },
+      "fields": {
+        "authenticated": "boolean",
+        "is_reviewer": "boolean"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "file",
+      "label": "文件",
+      "identity": {
+        "file_id": "string"
+      },
+      "fields": {
+        "approved": "boolean"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "sharing",
+      "label": "共享记录（范围待确认）",
+      "identity": {
+        "share_id": "string"
+      },
+      "fields": {
+        "file_id": "string",
+        "active": "boolean"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "request",
+      "label": "本次操作的权限事实",
+      "identity": {
+        "request_id": "string"
+      },
+      "fields": {
+        "share_actor_allowed": "boolean",
+        "revoke_actor_allowed": "boolean",
+        "recipient_eligible": "boolean"
+      },
+      "source_refs": [
+        "I_DRAFT"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "authenticated",
+      "object": "session",
+      "field": "authenticated",
+      "type": "boolean",
+      "label": "当前已登录",
+      "read_basis": {
+        "timing": "before protected operation",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "is_reviewer",
+      "object": "session",
+      "field": "is_reviewer",
+      "type": "boolean",
+      "label": "当前操作者是审核员",
+      "read_basis": {
+        "timing": "before review approval",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "file_approved",
+      "object": "file",
+      "field": "approved",
+      "type": "boolean",
+      "label": "文件已审核通过",
+      "read_basis": {
+        "timing": "before sharing",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "share_active",
+      "object": "sharing",
+      "field": "active",
+      "type": "boolean",
+      "label": "共享当前有效",
+      "read_basis": {
+        "timing": "before initiating each download, including an old link",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "share_actor_allowed",
+      "object": "request",
+      "field": "share_actor_allowed",
+      "type": "boolean",
+      "label": "允许发起共享（待确认）",
+      "read_basis": {
+        "timing": "before sharing; authority rule pending D_AUTHORITY",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "revoke_actor_allowed",
+      "object": "request",
+      "field": "revoke_actor_allowed",
+      "type": "boolean",
+      "label": "允许撤销（待确认）",
+      "read_basis": {
+        "timing": "before revocation; authority rule pending D_AUTHORITY",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "recipient_eligible",
+      "object": "request",
+      "field": "recipient_eligible",
+      "type": "boolean",
+      "label": "接收人资格（待确认）",
+      "read_basis": {
+        "timing": "before download; recipient rule pending D_RECIPIENTS",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    }
+  ],
+  "state_models": [
+    {
+      "id": "session",
+      "label": "登录状态（草案）",
+      "subject": {
+        "object": "session",
+        "identity": [
+          "session_id"
+        ]
+      },
+      "states": [
+        "anonymous",
+        "authenticated"
+      ],
+      "initial": "anonymous",
+      "events": {
+        "sign_in": {
+          "payload": {}
+        }
+      },
+      "context": {},
+      "guards": {
+        "credentials_verified": {
+          "meaning": "Credentials are verified by the application; account provisioning remains to be decided.",
+          "source_refs": [
+            "I_DRAFT"
+          ]
+        }
+      },
+      "effects": {},
+      "transitions": [
+        {
+          "id": "sign-in",
+          "source": "anonymous",
+          "dest": "authenticated",
+          "trigger": "sign_in",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ],
+          "conditions": [
+            "credentials_verified"
+          ]
+        }
+      ],
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "file_review",
+      "label": "文件审核状态（驳回路径待确认）",
+      "subject": {
+        "object": "file",
+        "identity": [
+          "file_id"
+        ]
+      },
+      "states": [
+        "awaiting_upload",
+        "pending_review",
+        "approved"
+      ],
+      "initial": "awaiting_upload",
+      "events": {
+        "upload": {
+          "payload": {}
+        },
+        "approve": {
+          "payload": {}
+        }
+      },
+      "context": {},
+      "guards": {
+        "may_upload": {
+          "decision": "policy:operation:upload",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        },
+        "may_approve": {
+          "decision": "policy:operation:approve",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        }
+      },
+      "effects": {},
+      "transitions": [
+        {
+          "id": "file-uploaded",
+          "source": "awaiting_upload",
+          "dest": "pending_review",
+          "trigger": "upload",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ],
+          "conditions": [
+            "may_upload"
+          ]
+        },
+        {
+          "id": "file-approved",
+          "source": "pending_review",
+          "dest": "approved",
+          "trigger": "approve",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ],
+          "conditions": [
+            "may_approve"
+          ]
+        }
+      ],
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "sharing",
+      "label": "共享状态（草案）",
+      "subject": {
+        "object": "sharing",
+        "identity": [
+          "share_id"
+        ]
+      },
+      "states": [
+        "not_shared",
+        "active",
+        "revoked"
+      ],
+      "initial": "not_shared",
+      "events": {
+        "share": {
+          "payload": {}
+        },
+        "revoke": {
+          "payload": {}
+        }
+      },
+      "context": {},
+      "guards": {
+        "may_share": {
+          "decision": "policy:operation:share",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        },
+        "may_revoke": {
+          "decision": "policy:operation:revoke",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        }
+      },
+      "effects": {
+        "notify_recipient": {
+          "label": "生成站内消息",
+          "meaning": "Make a sharing message available to the intended recipient; recipient scope is pending D_RECIPIENTS.",
+          "completion": "The sharing message is persisted and visible to its intended recipient.",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "id": "share-created",
+          "source": "not_shared",
+          "dest": "active",
+          "trigger": "share",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ],
+          "conditions": [
+            "may_share"
+          ],
+          "effects": [
+            "notify_recipient"
+          ]
+        },
+        {
+          "id": "share-revoked",
+          "source": "active",
+          "dest": "revoked",
+          "trigger": "revoke",
+          "source_refs": [
+            "U0",
+            "I_DRAFT"
+          ],
+          "conditions": [
+            "may_revoke"
+          ]
+        }
+      ],
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    }
+  ],
+  "policy": {
+    "schema": "bo-policy/v1",
+    "revision": "draft-01",
+    "stage": "draft",
+    "inputs": {
+      "authenticated": "boolean",
+      "is_reviewer": "boolean",
+      "file_approved": "boolean",
+      "share_active": "boolean",
+      "share_actor_allowed": "boolean",
+      "revoke_actor_allowed": "boolean",
+      "recipient_eligible": "boolean"
+    },
+    "predicates": [],
+    "nodes": [
+      {
+        "id": "authenticated",
+        "op": "input",
+        "name": "authenticated",
+        "label": "当前已登录",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "is_reviewer",
+        "op": "input",
+        "name": "is_reviewer",
+        "label": "当前操作者是审核员",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "file_approved",
+        "op": "input",
+        "name": "file_approved",
+        "label": "文件已审核通过",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "share_active",
+        "op": "input",
+        "name": "share_active",
+        "label": "共享当前有效",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "share_actor_allowed",
+        "op": "input",
+        "name": "share_actor_allowed",
+        "label": "允许发起共享（待确认）",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "revoke_actor_allowed",
+        "op": "input",
+        "name": "revoke_actor_allowed",
+        "label": "允许撤销（待确认）",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "recipient_eligible",
+        "op": "input",
+        "name": "recipient_eligible",
+        "label": "接收人资格（待确认）",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "may_approve",
+        "op": "all",
+        "inputs": [
+          "authenticated",
+          "is_reviewer"
+        ],
+        "label": "允许审核通过（草案）",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "may_share",
+        "op": "all",
+        "inputs": [
+          "authenticated",
+          "file_approved",
+          "share_actor_allowed"
+        ],
+        "label": "允许共享（权限待确认）",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "may_download",
+        "op": "all",
+        "inputs": [
+          "authenticated",
+          "share_active",
+          "recipient_eligible"
+        ],
+        "label": "允许新下载（接收人待确认）",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "may_revoke",
+        "op": "all",
+        "inputs": [
+          "authenticated",
+          "revoke_actor_allowed"
+        ],
+        "label": "允许撤销（权限待确认）",
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      }
+    ],
+    "operations": [
+      {
+        "id": "upload",
+        "root": "authenticated",
+        "label": "允许上传",
+        "business_nodes": [
+          "upload"
+        ],
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "approve",
+        "root": "may_approve",
+        "label": "允许审核通过（草案）",
+        "business_nodes": [
+          "approve"
+        ],
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "share",
+        "root": "may_share",
+        "label": "允许共享（权限待确认）",
+        "business_nodes": [
+          "share"
+        ],
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "download",
+        "root": "may_download",
+        "label": "允许新下载（接收人待确认）",
+        "business_nodes": [
+          "download"
+        ],
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      },
+      {
+        "id": "revoke",
+        "root": "may_revoke",
+        "label": "允许撤销（权限待确认）",
+        "business_nodes": [
+          "revoke"
+        ],
+        "source_refs": [
+          "U0",
+          "I_DRAFT"
+        ]
+      }
+    ]
+  },
+  "crosslinks": [
+    {
+      "id": "login-requests-event",
+      "from": "login",
+      "to": "event:session:sign_in",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "upload-requests-event",
+      "from": "upload",
+      "to": "event:file_review:upload",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "approve-requests-event",
+      "from": "approve",
+      "to": "event:file_review:approve",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "share-requests-event",
+      "from": "share",
+      "to": "event:sharing:share",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "revoke-requests-event",
+      "from": "revoke",
+      "to": "event:sharing:revoke",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "file-uploaded-guard",
+      "from": "transition:file_review:file-uploaded",
+      "to": "policy:operation:upload",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "file-approved-guard",
+      "from": "transition:file_review:file-approved",
+      "to": "policy:operation:approve",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "share-created-guard",
+      "from": "transition:sharing:share-created",
+      "to": "policy:operation:share",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "share-revoked-guard",
+      "from": "transition:sharing:share-revoked",
+      "to": "policy:operation:revoke",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "authenticated-read",
+      "from": "policy:authenticated",
+      "to": "fact:authenticated",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "is_reviewer-read",
+      "from": "policy:is_reviewer",
+      "to": "fact:is_reviewer",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "file_approved-read",
+      "from": "policy:file_approved",
+      "to": "fact:file_approved",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "share_active-read",
+      "from": "policy:share_active",
+      "to": "fact:share_active",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "share_actor_allowed-read",
+      "from": "policy:share_actor_allowed",
+      "to": "fact:share_actor_allowed",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "revoke_actor_allowed-read",
+      "from": "policy:revoke_actor_allowed",
+      "to": "fact:revoke_actor_allowed",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "recipient_eligible-read",
+      "from": "policy:recipient_eligible",
+      "to": "fact:recipient_eligible",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "id": "share-notification-effect",
+      "from": "transition:sharing:share-created",
+      "to": "effect:sharing:notify_recipient",
+      "relation": "transition_has_effect",
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    }
+  ],
+  "applicability": [
+    {
+      "operation": "login",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "session"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "none",
+        "reason": "Sign-in verifies credentials; no sharing or review authorization applies to sign-in itself."
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "operation": "upload",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "file_review"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "upload"
+        ]
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "operation": "approve",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "file_review"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "approve"
+        ]
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "operation": "share",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "sharing"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "share"
+        ]
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "operation": "download",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "sharing"
+        ],
+        "mode": "read"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "download"
+        ]
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    },
+    {
+      "operation": "revoke",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "sharing"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "revoke"
+        ]
+      },
+      "source_refs": [
+        "U0",
+        "I_DRAFT"
+      ]
+    }
+  ],
+  "expectations": [
+    {
+      "id": "unapproved-cannot-share",
+      "scope": [
+        "share",
+        "state-model:file_review"
+      ],
+      "given": {
+        "file_approved": false
+      },
+      "when": {
+        "operation": "share"
+      },
+      "then": [
+        {
+          "path": [
+            "allowed"
+          ],
+          "equals": false
+        }
+      ],
+      "source_refs": [
+        "U0"
+      ]
+    },
+    {
+      "id": "share-notifies-recipient",
+      "scope": [
+        "share",
+        "notify",
+        "effect:sharing:notify_recipient"
+      ],
+      "given": {
+        "share_created": true
+      },
+      "when": {
+        "operation": "read_site_messages"
+      },
+      "then": [
+        {
+          "path": [
+            "recipient_can_see_message"
+          ],
+          "equals": true
+        }
+      ],
+      "source_refs": [
+        "U0"
+      ]
+    },
+    {
+      "id": "old-link-denied-after-revocation",
+      "scope": [
+        "revoke",
+        "download",
+        "deny_old_link"
+      ],
+      "given": {
+        "share_revoked": true,
+        "link": "issued_before_revocation"
+      },
+      "when": {
+        "operation": "initiate_new_download"
+      },
+      "then": [
+        {
+          "path": [
+            "download_started"
+          ],
+          "equals": false
+        }
+      ],
+      "source_refs": [
+        "U0"
+      ]
+    }
+  ],
+  "confirmations": [],
+  "changes": []
+}

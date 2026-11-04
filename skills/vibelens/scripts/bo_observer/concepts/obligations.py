@@ -49,6 +49,7 @@ def add_crosslinks(graph, doc, sources):
             link["relation"],
             value={"argument": link["argument"]} if "argument" in link else {},
             label=link.get("label"),
+            source_refs=link["source_refs"],
         )
     return crosslinks
 

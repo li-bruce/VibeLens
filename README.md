@@ -87,10 +87,10 @@ Viewing, reporting, polling, layout, and recording controls do not create busine
 
 ## Install and use
 
-Install the **complete** Skill folder from the fixed **v0.12.0** release:
+Install the **complete** Skill folder from the fixed **v0.12.1** release:
 
 ```bash
-git clone --branch v0.12.0 --single-branch https://github.com/li-bruce/VibeLens.git
+git clone --branch v0.12.1 --single-branch https://github.com/li-bruce/VibeLens.git
 cd VibeLens
 python tools/install_skill.py --project /path/to/your-project
 ```
@@ -113,7 +113,7 @@ For rolling updates from `main`, install with the Skills CLI:
 npx skills add li-bruce/VibeLens --skill vibelens
 ```
 
-You can also ask Codex's Skill installer to install from [the v0.12.0 Skill directory](https://github.com/li-bruce/VibeLens/tree/v0.12.0/skills/vibelens), or download the [release ZIP](https://github.com/li-bruce/VibeLens/releases/download/v0.12.0/vibelens-v0.12.0.zip). Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.12.0.md), [release validation](docs/review/release-v0.12.0/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
+You can also ask Codex's Skill installer to install from [the v0.12.1 Skill directory](https://github.com/li-bruce/VibeLens/tree/v0.12.1/skills/vibelens), or download the [release ZIP](https://github.com/li-bruce/VibeLens/releases/download/v0.12.1/vibelens-v0.12.1.zip). Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.12.1.md), [release validation](docs/review/release-v0.12.1/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
 
 English is the maintained source/documentation language. Conversation follows the user; the viewer offers English/Chinese and saves the preference in the project. Original answers and historical evidence retain their original language.
 

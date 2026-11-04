@@ -17,6 +17,7 @@ import { SPATIAL_GLYPH_RADIUS } from "./containment-geometry.js";
 import { regionLabelAnchor, stackRegionCaptions } from "./spatial-labels.js";
 import { relationStyle, relationName, displayName, annotationFor } from "./layout.js";
 import { t } from "./i18n.js";
+import { relationIds } from "./edge-identities.js";
 
 const vector = (p) => new T.Vector3(p.x, p.y, p.z);
 const cameraDirections = {
@@ -711,7 +712,7 @@ export class SpatialRenderer {
   edgeColor(edge) {
     const { selected, focusContext } = this.input;
     const color = new T.Color(relationStyle(edge).color);
-    const related = edge.members?.some((member) => focusContext.edges.has(member.id));
+    const related = relationIds(edge).some((id) => focusContext.edges.has(id));
     const dim =
       focusContext.active &&
       !focusContext.edges.has(edge.id) &&

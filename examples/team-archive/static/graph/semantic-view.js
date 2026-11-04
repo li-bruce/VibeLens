@@ -10,6 +10,7 @@ import {
 } from "./layout.js";
 import { glyphAppearance } from "./glyphs.js";
 import { t } from "./i18n.js";
+import { relationIds } from "./edge-identities.js";
 
 /** Accessible graph controls share the same identities and handlers as WebGL.
  * Indexes make geometry updates linear; unchanged attributes cause no DOM writes.
@@ -73,6 +74,7 @@ export class SemanticView {
       );
       this.data(el, {
         edgeId: edge.id,
+        originalRelationIds: JSON.stringify(relationIds(edge)),
         from: edge.from,
         to: edge.to,
         relationType: edge.type,

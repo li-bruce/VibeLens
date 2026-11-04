@@ -155,6 +155,7 @@ def add_states(graph, doc, state_indexes):
                     ident,
                     cid("effect", mid, name),
                     "has_effect",
+                    source_refs=transition.get("source_refs", []),
                 )
             if transition["dest"] is not None:
                 relation(

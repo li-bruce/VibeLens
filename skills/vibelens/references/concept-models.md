@@ -26,10 +26,12 @@ entry/return interval. Keep those meanings and identities distinct.
 3. Ask about meaning-changing gaps. For example, “Does withdrawing this share stop
    the next download?” is relevant when withdrawal is requested. A generic list
    of expiry, approvals and notifications would expand the request.
-4. Show the affected graph in the conversation and link the verified Web URL.
+4. Check the implementation capabilities below before asking to confirm the
+   implementation scope. Keep business agreement separate from framework support.
+5. Show the affected graph in the conversation and link the verified Web URL.
    Use separate business/state/rule previews when needed. Identify any omitted
    boundary; a partial preview cannot confirm invisible assumptions.
-5. Record agreement for the exact semantic scope using the actual answer source.
+6. Record agreement for the exact semantic scope using the actual answer source.
    A previous answer or direct instruction can already provide that agreement.
    Keep unresolved questions open. Users answer in chat; Web remains a viewer.
 
@@ -38,6 +40,28 @@ The additional objects, facts, state models, applicability, expectations and
 crosslinks are maintained by the coding agent. Node labels are display text;
 business `meaning` and structured model fields carry the confirmed semantics.
 Do not rewrite that meaning to match a coding error.
+
+## Check implementation capabilities
+
+Compare the dependency-expanded scope with the installed native binding and
+executor before implementation confirmation. The current binding supports one
+state model through `primary_state_model` and `model.machine`; a draft can contain
+several independent object state models, but binding more than one in the same
+scope fails with `unsupported_multiple_bound_state_models`. An engine adapter
+alone does not remove that binding limit. Also check required hierarchy,
+concurrency and effect semantics against the selected executor.
+
+Preserve the unsupported draft, exact checker input and complete rejection report
+under `review/`. Explain the unavailable capability before coding. Continue with
+a tested canonical extension or an explicitly agreed scope revision. Keep each
+object's identity; silently dropping a model, merging unrelated lifecycles,
+excluding required dependencies or weakening checks is not a scope revision.
+
+A revised scope may use one formal state model and independently identified facts,
+rules and real observations for other objects. Record the user's agreement and
+the retained monitoring requirements. Those facts do not establish complete
+transition, guard or effect binding for the other objects. Keep that coverage
+boundary visible in delivery results and preserve the earlier draft as evidence.
 
 ## Validate, confirm, then bind
 

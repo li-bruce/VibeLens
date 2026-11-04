@@ -7,6 +7,7 @@ import { layerOf } from "./graph-layers.js";
 import { conceptRelations, conceptRelationTypes } from "./concept-relations.js";
 import { enclosingCircle, planarBodyCircle, REGION_PADDING } from "./containment-geometry.js";
 import { proximityOrder, proximityNeighbors } from "./proximity-layout.js";
+import { relationIds, relationExcluded, relationTypeAllowed } from "./edge-identities.js";
 export const layoutKey = (model, projectId) =>
   "business-observer.layout.v2:" +
   (projectId ||
@@ -687,7 +688,7 @@ export function compoundEdges(graph, visibleRegions = null) {
       });
     const summary = result.get(key);
     summary.members.push(...members);
-    summary.edgeIds.add(edge.id);
+    for (const id of relationIds(edge)) summary.edgeIds.add(id);
     for (const label of edge.labels || [edge.label]) if (label) summary.labels.add(label);
     summary.observed ||= members.some((member) => member.observed);
     summary.current ||= members.some((member) => member.observed && member.current);
@@ -744,13 +745,17 @@ export function presentationGraph(graph, value) {
       ...edge,
       members: edge.members.filter(
         (member) =>
-          !hiddenEdges.has(member.id) &&
+          !relationExcluded(member, hiddenEdges) &&
           !hiddenByNode(member.from, graph.all, hidden) &&
           !hiddenByNode(member.to, graph.all, hidden),
       ),
     }))
     .filter((edge) => edge.members.length)
-    .filter((e) => filters.edges.includes(relationStyles[e.type] ? e.type : "other"))
+    .filter((e) =>
+      relationTypeAllowed(e, filters.edges, (member) =>
+        relationStyles[relationType(member)] ? relationType(member) : "other",
+      ),
+    )
     .flatMap((e) => {
       const edge = {
         ...e,
@@ -780,11 +785,11 @@ export function elementCoverage(graph, presentation) {
   const foldedEdges = graph.rawEdges.filter(
     (e) =>
       !drawn.has(e.id) &&
-      !presentation.filters.hiddenEdges.includes(e.id) &&
+      !relationExcluded(e, presentation.filters.hiddenEdges) &&
       owners.has(e.from) &&
       owners.has(e.to) &&
       (containmentRelation(e) || (owners.get(e.from) === owners.get(e.to) && e.from !== e.to)) &&
-      (containmentRelation(e) || presentation.filters.edges.includes(relationType(e))),
+      (containmentRelation(e) || relationTypeAllowed(e, presentation.filters.edges, relationType)),
   );
   return {
     nodes: graph.all.size,

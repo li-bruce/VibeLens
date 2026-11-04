@@ -5,6 +5,7 @@ import { dataRoles, dataRelations, migrateDataFilters } from "./data-layer.js";
 import { codeTypes, codeRelations, migrateCodeFilters } from "./code-layer.js";
 import { layerOf } from "./graph-layers.js";
 import { conceptRelationTypes } from "./concept-relations.js";
+import { relationTypeAllowed } from "./edge-identities.js";
 const types = [
   "business",
   "function",
@@ -317,7 +318,7 @@ export function matchingNodes(all, view, events, profile, statusOf, relations = 
   const seeds = new Set(selected),
     context = new Set();
   for (const e of raw) {
-    if (!profile.edges.includes(relationType(e)) || e.type === "contains") continue;
+    if (!relationTypeAllowed(e, profile.edges, relationType) || e.type === "contains") continue;
     for (const [from, to] of [
       [e.from, e.to],
       [e.to, e.from],

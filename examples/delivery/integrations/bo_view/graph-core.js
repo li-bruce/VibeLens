@@ -4,6 +4,7 @@ import { activationFor } from "./graph-activation.js";
 import { lifecycleCaption } from "./node-lifecycle.js";
 import { activeMachineStates } from "./machine-projection.js";
 import { graphInventory } from "./graph-inventory.js";
+import { originalRelations, relationExcluded } from "./edge-identities.js";
 import { conceptRelations, conceptRelationTypes } from "./concept-relations.js";
 export { stateNodeId } from "./graph-inventory.js";
 import { capturedValue } from "./capture-fields.js";
@@ -912,7 +913,11 @@ export function layoutGraph(
   }
   const edgeMap = new Map();
   for (const e of rawEdges) {
-    if (!eligibleIds.has(e.from) || !eligibleIds.has(e.to) || options.hiddenEdges?.includes(e.id))
+    if (
+      !eligibleIds.has(e.from) ||
+      !eligibleIds.has(e.to) ||
+      relationExcluded(e, options.hiddenEdges)
+    )
       continue;
     const from = visible(e.from),
       to = visible(e.to);
@@ -934,7 +939,8 @@ export function layoutGraph(
             (x.depends || []).some(
               (d) =>
                 ids.has(d.event) &&
-                (d.type === e.type || (e.type === "flow" && d.type === "control")),
+                (originalRelations(e).some((original) => d.type === original.type) ||
+                  (e.type === "flow" && d.type === "control")),
             ),
           );
     if (["reads", "writes"].includes(e.data_relation))

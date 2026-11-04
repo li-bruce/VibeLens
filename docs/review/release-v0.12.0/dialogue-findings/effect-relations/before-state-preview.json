@@ -1,0 +1,1045 @@
+{
+  "markdown": "# 状态网\n\n```mermaid\nflowchart LR\n  n0[\"保存本次审核记录\"]\n  n1[\"approve\"]\n  n2[\"驳回\"]\n  n3[\"upload\"]\n  n4[\"may_approve\"]\n  n5[\"may_reject\"]\n  n6[\"may_upload\"]\n  n7[\"文件审核（唯一声明驱动状态机）\"]\n  n8[\"approved\"]\n  n9[\"awaiting_upload\"]\n  n10[\"pending_review\"]\n  n11[\"rejected\"]\n  n12[\"file-approved\"]\n  n13[\"file-rejected\"]\n  n14[\"file-uploaded\"]\n  n1 -->|\"触发\"| n12\n  n2 -->|\"触发\"| n13\n  n3 -->|\"触发\"| n14\n  n12 -->|\"执行\"| n0\n  n13 -->|\"执行\"| n0\n  n7 -->|\"包含\"| n8\n  n7 -->|\"包含\"| n9\n  n7 -->|\"包含\"| n10\n  n7 -->|\"包含\"| n11\n  n7 -->|\"效果\"| n0\n  n7 -->|\"事件\"| n1\n  n7 -->|\"事件\"| n2\n  n7 -->|\"事件\"| n3\n  n7 -->|\"条件\"| n4\n  n7 -->|\"条件\"| n5\n  n7 -->|\"条件\"| n6\n  n10 -->|\"approve\"| n8\n  n10 -->|\"reject\"| n11\n  n9 -->|\"upload\"| n10\n  n12 -->|\"执行\"| n0\n  n13 -->|\"执行\"| n0\n  n12 -->|\"条件成立\"| n4\n  n13 -->|\"条件成立\"| n5\n  n14 -->|\"条件成立\"| n6\n  n12 -->|\"进入\"| n8\n  n13 -->|\"进入\"| n11\n  n14 -->|\"进入\"| n10\n  b0[\"审核通过 · 关联\"]\n  b0 -.->|\"触发\"| n1\n  b1[\"允许审核通过 · 关联\"]\n  n12 -.->|\"条件成立\"| b1\n  b2[\"允许审核驳回 · 关联\"]\n  n13 -.->|\"条件成立\"| b2\n  b3[\"允许上传 · 关联\"]\n  n14 -.->|\"条件成立\"| b3\n  n4 -.->|\"判断\"| b1\n  n5 -.->|\"判断\"| b2\n  n6 -.->|\"判断\"| b3\n  b0 -.->|\"改变状态\"| n7\n  b4[\"审核驳回并保留记录 · 关联\"]\n  b4 -.->|\"改变状态\"| n7\n  b5[\"上传者共享给一位同事 · 关联\"]\n  b5 -.->|\"读取状态\"| n7\n  b6[\"上传新文件 · 关联\"]\n  b6 -.->|\"改变状态\"| n7\n  b4 -.->|\"触发\"| n2\n  b7[\"文件 · 关联\"]\n  n7 -.->|\"所属对象\"| b7\n  b6 -.->|\"触发\"| n3\n```\n\n[打开动态图](http://127.0.0.1:8896/graph)\n\n虚线连接当前范围外的关联内容，完整关系可在网页中查看。\n\n待确认：\n\n- 请确认这版业务流程、文件审核状态、共享规则和读写边界；确认后再开始本轮限定范围的实现。\n\n请在对话中确认这份理解，或说明需要调整的地方。\n",
+  "focus": {
+    "schema_version": 1,
+    "base": {
+      "project_id": "release-v0.12.0-dialogue",
+      "model_revision": "ae13e3017610cec7b41a3edd2040c36d1cb453190c399eb347febeaa09560d1f",
+      "model_hash": "328663ba15d4669dc03b07c148dcf7f24ad2814e02f86fef1d07f20b97861574",
+      "build_id": null
+    },
+    "selection": {
+      "nodes": [
+        "effect:file_review:retain_review_record",
+        "event:file_review:approve",
+        "event:file_review:reject",
+        "event:file_review:upload",
+        "guard:file_review:may_approve",
+        "guard:file_review:may_reject",
+        "guard:file_review:may_upload",
+        "state-model:file_review",
+        "state:file_review:approved",
+        "state:file_review:awaiting_upload",
+        "state:file_review:pending_review",
+        "state:file_review:rejected",
+        "transition:file_review:file-approved",
+        "transition:file_review:file-rejected",
+        "transition:file_review:file-uploaded"
+      ],
+      "depth": 0,
+      "max_nodes": 120,
+      "max_edges": 48,
+      "relations": null,
+      "run_id": null
+    },
+    "nodes": [
+      {
+        "id": "effect:file_review:retain_review_record",
+        "kind": "data",
+        "label": "保存本次审核记录",
+        "summary": "保存本次审核记录",
+        "layer": "state",
+        "concept_kind": "logical_effect",
+        "concept_definition": {
+          "meaning": "Persist reviewer identity and the approve/reject decision for the current file. A later re-upload creates a different file and leaves this record unchanged.",
+          "completion": "The review-state change and its review record are committed for the same file identity."
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "event:file_review:approve",
+        "kind": "data",
+        "label": "approve",
+        "summary": "approve",
+        "layer": "state",
+        "concept_kind": "event",
+        "concept_definition": {
+          "payload": {}
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "event:file_review:reject",
+        "kind": "data",
+        "label": "驳回",
+        "summary": "驳回",
+        "layer": "state",
+        "concept_kind": "event",
+        "concept_definition": {
+          "payload": {}
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "event:file_review:upload",
+        "kind": "data",
+        "label": "upload",
+        "summary": "upload",
+        "layer": "state",
+        "concept_kind": "event",
+        "concept_definition": {
+          "payload": {}
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "guard:file_review:may_approve",
+        "kind": "decision",
+        "label": "may_approve",
+        "summary": "may_approve",
+        "layer": "state",
+        "concept_kind": "guard",
+        "concept_definition": {
+          "decision": "policy:operation:approve"
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "guard:file_review:may_reject",
+        "kind": "decision",
+        "label": "may_reject",
+        "summary": "may_reject",
+        "layer": "state",
+        "concept_kind": "guard",
+        "concept_definition": {
+          "decision": "policy:operation:reject"
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "guard:file_review:may_upload",
+        "kind": "decision",
+        "label": "may_upload",
+        "summary": "may_upload",
+        "layer": "state",
+        "concept_kind": "guard",
+        "concept_definition": {
+          "decision": "policy:operation:upload"
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "state-model:file_review",
+        "kind": "state",
+        "label": "文件审核（唯一声明驱动状态机）",
+        "summary": "文件审核（唯一声明驱动状态机）",
+        "layer": "state",
+        "concept_kind": "state_model",
+        "concept_definition": {
+          "id": "file_review",
+          "subject": {
+            "object": "file",
+            "identity": [
+              "file_id"
+            ]
+          },
+          "initial": "awaiting_upload",
+          "context": {},
+          "members": {
+            "states": [
+              "awaiting_upload",
+              "pending_review",
+              "approved",
+              "rejected"
+            ],
+            "events": [
+              "upload",
+              "approve",
+              "reject"
+            ],
+            "guards": [
+              "may_upload",
+              "may_approve",
+              "may_reject"
+            ],
+            "effects": [
+              "retain_review_record"
+            ],
+            "transitions": [
+              "file-uploaded",
+              "file-approved",
+              "file-rejected"
+            ]
+          }
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "state:file_review:approved",
+        "kind": "state",
+        "label": "approved",
+        "summary": "approved",
+        "layer": "state",
+        "concept_kind": "state",
+        "concept_definition": {
+          "name": "approved"
+        },
+        "origin": "concept-design",
+        "capture": {},
+        "value": "approved"
+      },
+      {
+        "id": "state:file_review:awaiting_upload",
+        "kind": "state",
+        "label": "awaiting_upload",
+        "summary": "awaiting_upload",
+        "layer": "state",
+        "concept_kind": "state",
+        "concept_definition": {
+          "name": "awaiting_upload"
+        },
+        "origin": "concept-design",
+        "capture": {},
+        "value": "awaiting_upload"
+      },
+      {
+        "id": "state:file_review:pending_review",
+        "kind": "state",
+        "label": "pending_review",
+        "summary": "pending_review",
+        "layer": "state",
+        "concept_kind": "state",
+        "concept_definition": {
+          "name": "pending_review"
+        },
+        "origin": "concept-design",
+        "capture": {},
+        "value": "pending_review"
+      },
+      {
+        "id": "state:file_review:rejected",
+        "kind": "state",
+        "label": "rejected",
+        "summary": "rejected",
+        "layer": "state",
+        "concept_kind": "state",
+        "concept_definition": {
+          "name": "rejected"
+        },
+        "origin": "concept-design",
+        "capture": {},
+        "value": "rejected"
+      },
+      {
+        "id": "transition:file_review:file-approved",
+        "kind": "action",
+        "label": "file-approved",
+        "summary": "file-approved",
+        "layer": "state",
+        "concept_kind": "transition",
+        "concept_definition": {
+          "id": "file-approved",
+          "source": "pending_review",
+          "dest": "approved",
+          "trigger": "approve",
+          "conditions": [
+            "may_approve"
+          ],
+          "effects": [
+            "retain_review_record"
+          ],
+          "priority": 1
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "transition:file_review:file-rejected",
+        "kind": "action",
+        "label": "file-rejected",
+        "summary": "file-rejected",
+        "layer": "state",
+        "concept_kind": "transition",
+        "concept_definition": {
+          "id": "file-rejected",
+          "source": "pending_review",
+          "dest": "rejected",
+          "trigger": "reject",
+          "conditions": [
+            "may_reject"
+          ],
+          "effects": [
+            "retain_review_record"
+          ],
+          "priority": 2
+        },
+        "origin": "concept-design",
+        "capture": {}
+      },
+      {
+        "id": "transition:file_review:file-uploaded",
+        "kind": "action",
+        "label": "file-uploaded",
+        "summary": "file-uploaded",
+        "layer": "state",
+        "concept_kind": "transition",
+        "concept_definition": {
+          "id": "file-uploaded",
+          "source": "awaiting_upload",
+          "dest": "pending_review",
+          "trigger": "upload",
+          "conditions": [
+            "may_upload"
+          ],
+          "priority": 0
+        },
+        "origin": "concept-design",
+        "capture": {}
+      }
+    ],
+    "edges": [
+      {
+        "id": "event-trigger:file_review:file-approved",
+        "from": "event:file_review:approve",
+        "to": "transition:file_review:file-approved",
+        "type": "requests_transition",
+        "label": "Triggers",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "event-trigger:file_review:file-rejected",
+        "from": "event:file_review:reject",
+        "to": "transition:file_review:file-rejected",
+        "type": "requests_transition",
+        "label": "Triggers",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "event-trigger:file_review:file-uploaded",
+        "from": "event:file_review:upload",
+        "to": "transition:file_review:file-uploaded",
+        "type": "requests_transition",
+        "label": "Triggers",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "file-approved-review-record",
+        "from": "transition:file_review:file-approved",
+        "to": "effect:file_review:retain_review_record",
+        "type": "transition_has_effect",
+        "label": "Runs",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "file-rejected-review-record",
+        "from": "transition:file_review:file-rejected",
+        "to": "effect:file_review:retain_review_record",
+        "type": "transition_has_effect",
+        "label": "Runs",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "state-contains:file_review:approved",
+        "from": "state-model:file_review",
+        "to": "state:file_review:approved",
+        "type": "contains",
+        "label": "Contains",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "containment_kind": "state_hierarchy"
+      },
+      {
+        "id": "state-contains:file_review:awaiting_upload",
+        "from": "state-model:file_review",
+        "to": "state:file_review:awaiting_upload",
+        "type": "contains",
+        "label": "Contains",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "containment_kind": "state_hierarchy"
+      },
+      {
+        "id": "state-contains:file_review:pending_review",
+        "from": "state-model:file_review",
+        "to": "state:file_review:pending_review",
+        "type": "contains",
+        "label": "Contains",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "containment_kind": "state_hierarchy"
+      },
+      {
+        "id": "state-contains:file_review:rejected",
+        "from": "state-model:file_review",
+        "to": "state:file_review:rejected",
+        "type": "contains",
+        "label": "Contains",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "containment_kind": "state_hierarchy"
+      },
+      {
+        "id": "state-effect:file_review:retain_review_record",
+        "from": "state-model:file_review",
+        "to": "effect:file_review:retain_review_record",
+        "type": "declares_effect",
+        "label": "Effect",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "state-event:file_review:approve",
+        "from": "state-model:file_review",
+        "to": "event:file_review:approve",
+        "type": "declares_event",
+        "label": "Event",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "state-event:file_review:reject",
+        "from": "state-model:file_review",
+        "to": "event:file_review:reject",
+        "type": "declares_event",
+        "label": "Event",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "state-event:file_review:upload",
+        "from": "state-model:file_review",
+        "to": "event:file_review:upload",
+        "type": "declares_event",
+        "label": "Event",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "state-guard:file_review:may_approve",
+        "from": "state-model:file_review",
+        "to": "guard:file_review:may_approve",
+        "type": "declares_guard",
+        "label": "Condition",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "state-guard:file_review:may_reject",
+        "from": "state-model:file_review",
+        "to": "guard:file_review:may_reject",
+        "type": "declares_guard",
+        "label": "Condition",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "state-guard:file_review:may_upload",
+        "from": "state-model:file_review",
+        "to": "guard:file_review:may_upload",
+        "type": "declares_guard",
+        "label": "Condition",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "transition": "transition:file_review:file-approved",
+        "trigger": "approve",
+        "conditions": [
+          "may_approve"
+        ],
+        "unless": [],
+        "id": "state-transition:file_review:file-approved:pending_review",
+        "from": "state:file_review:pending_review",
+        "to": "state:file_review:approved",
+        "type": "transition",
+        "label": "approve",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "transition": "transition:file_review:file-rejected",
+        "trigger": "reject",
+        "conditions": [
+          "may_reject"
+        ],
+        "unless": [],
+        "id": "state-transition:file_review:file-rejected:pending_review",
+        "from": "state:file_review:pending_review",
+        "to": "state:file_review:rejected",
+        "type": "transition",
+        "label": "reject",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "transition": "transition:file_review:file-uploaded",
+        "trigger": "upload",
+        "conditions": [
+          "may_upload"
+        ],
+        "unless": [],
+        "id": "state-transition:file_review:file-uploaded:awaiting_upload",
+        "from": "state:file_review:awaiting_upload",
+        "to": "state:file_review:pending_review",
+        "type": "transition",
+        "label": "upload",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "transition-effect:file_review:file-approved:retain_review_record",
+        "from": "transition:file_review:file-approved",
+        "to": "effect:file_review:retain_review_record",
+        "type": "has_effect",
+        "label": "Runs",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "transition-effect:file_review:file-rejected:retain_review_record",
+        "from": "transition:file_review:file-rejected",
+        "to": "effect:file_review:retain_review_record",
+        "type": "has_effect",
+        "label": "Runs",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "negated": false,
+        "id": "transition-guard:file_review:file-approved:may_approve",
+        "from": "transition:file_review:file-approved",
+        "to": "guard:file_review:may_approve",
+        "type": "guarded_by",
+        "label": "Requires true",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "negated": false,
+        "id": "transition-guard:file_review:file-rejected:may_reject",
+        "from": "transition:file_review:file-rejected",
+        "to": "guard:file_review:may_reject",
+        "type": "guarded_by",
+        "label": "Requires true",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "negated": false,
+        "id": "transition-guard:file_review:file-uploaded:may_upload",
+        "from": "transition:file_review:file-uploaded",
+        "to": "guard:file_review:may_upload",
+        "type": "guarded_by",
+        "label": "Requires true",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "transition-target:file_review:file-approved",
+        "from": "transition:file_review:file-approved",
+        "to": "state:file_review:approved",
+        "type": "declares_target",
+        "label": "Enters",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "transition-target:file_review:file-rejected",
+        "from": "transition:file_review:file-rejected",
+        "to": "state:file_review:rejected",
+        "type": "declares_target",
+        "label": "Enters",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      },
+      {
+        "id": "transition-target:file_review:file-uploaded",
+        "from": "transition:file_review:file-uploaded",
+        "to": "state:file_review:pending_review",
+        "type": "declares_target",
+        "label": "Enters",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual"
+      }
+    ],
+    "boundaries": [
+      {
+        "id": "view:boundary:6d87266e79a9933a",
+        "edge_id": "approve-requests-event",
+        "from": "approve",
+        "to": "event:file_review:approve",
+        "type": "action_requests_event",
+        "label": "Triggers",
+        "relation": {
+          "id": "approve-requests-event",
+          "from": "approve",
+          "to": "event:file_review:approve",
+          "type": "action_requests_event",
+          "label": "Triggers",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "approve",
+            "label": "审核通过",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:27bf28cd4d1dc8a8",
+        "edge_id": "file-approved-guard",
+        "from": "transition:file_review:file-approved",
+        "to": "policy-operation:approve",
+        "type": "transition_guarded_by",
+        "label": "Requires",
+        "relation": {
+          "id": "file-approved-guard",
+          "from": "transition:file_review:file-approved",
+          "to": "policy-operation:approve",
+          "type": "transition_guarded_by",
+          "label": "Requires",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy-operation:approve",
+            "label": "允许审核通过",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:140a83aed793af3f",
+        "edge_id": "file-rejected-guard",
+        "from": "transition:file_review:file-rejected",
+        "to": "policy-operation:reject",
+        "type": "transition_guarded_by",
+        "label": "Requires",
+        "relation": {
+          "id": "file-rejected-guard",
+          "from": "transition:file_review:file-rejected",
+          "to": "policy-operation:reject",
+          "type": "transition_guarded_by",
+          "label": "Requires",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy-operation:reject",
+            "label": "允许审核驳回",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:adb81d8d8cedb53c",
+        "edge_id": "file-uploaded-guard",
+        "from": "transition:file_review:file-uploaded",
+        "to": "policy-operation:upload",
+        "type": "transition_guarded_by",
+        "label": "Requires",
+        "relation": {
+          "id": "file-uploaded-guard",
+          "from": "transition:file_review:file-uploaded",
+          "to": "policy-operation:upload",
+          "type": "transition_guarded_by",
+          "label": "Requires",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy-operation:upload",
+            "label": "允许上传",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:ef193ba46bdf8185",
+        "edge_id": "guard-decision:guard%3Afile_review%3Amay_approve",
+        "from": "guard:file_review:may_approve",
+        "to": "policy-operation:approve",
+        "type": "guard_resolves_decision",
+        "label": "Evaluates",
+        "relation": {
+          "id": "guard-decision:guard%3Afile_review%3Amay_approve",
+          "from": "guard:file_review:may_approve",
+          "to": "policy-operation:approve",
+          "type": "guard_resolves_decision",
+          "label": "Evaluates",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy-operation:approve",
+            "label": "允许审核通过",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:3d7217d994356e63",
+        "edge_id": "guard-decision:guard%3Afile_review%3Amay_reject",
+        "from": "guard:file_review:may_reject",
+        "to": "policy-operation:reject",
+        "type": "guard_resolves_decision",
+        "label": "Evaluates",
+        "relation": {
+          "id": "guard-decision:guard%3Afile_review%3Amay_reject",
+          "from": "guard:file_review:may_reject",
+          "to": "policy-operation:reject",
+          "type": "guard_resolves_decision",
+          "label": "Evaluates",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy-operation:reject",
+            "label": "允许审核驳回",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:d796ffd701122694",
+        "edge_id": "guard-decision:guard%3Afile_review%3Amay_upload",
+        "from": "guard:file_review:may_upload",
+        "to": "policy-operation:upload",
+        "type": "guard_resolves_decision",
+        "label": "Evaluates",
+        "relation": {
+          "id": "guard-decision:guard%3Afile_review%3Amay_upload",
+          "from": "guard:file_review:may_upload",
+          "to": "policy-operation:upload",
+          "type": "guard_resolves_decision",
+          "label": "Evaluates",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "policy-operation:upload",
+            "label": "允许上传",
+            "kind": "decision"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:b94cae53e8540430",
+        "edge_id": "operation-state:approve:file_review",
+        "from": "approve",
+        "to": "state-model:file_review",
+        "type": "changes_state",
+        "label": "Changes state",
+        "relation": {
+          "id": "operation-state:approve:file_review",
+          "from": "approve",
+          "to": "state-model:file_review",
+          "type": "changes_state",
+          "label": "Changes state",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "approve",
+            "label": "审核通过",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:363470fbaf4eb81b",
+        "edge_id": "operation-state:reject:file_review",
+        "from": "reject",
+        "to": "state-model:file_review",
+        "type": "changes_state",
+        "label": "Changes state",
+        "relation": {
+          "id": "operation-state:reject:file_review",
+          "from": "reject",
+          "to": "state-model:file_review",
+          "type": "changes_state",
+          "label": "Changes state",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "reject",
+            "label": "审核驳回并保留记录",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:84e0fb51197cf4aa",
+        "edge_id": "operation-state:share:file_review",
+        "from": "share",
+        "to": "state-model:file_review",
+        "type": "reads_state",
+        "label": "Reads state",
+        "relation": {
+          "id": "operation-state:share:file_review",
+          "from": "share",
+          "to": "state-model:file_review",
+          "type": "reads_state",
+          "label": "Reads state",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "share",
+            "label": "上传者共享给一位同事",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:3008cc8bc30f2eae",
+        "edge_id": "operation-state:upload:file_review",
+        "from": "upload",
+        "to": "state-model:file_review",
+        "type": "changes_state",
+        "label": "Changes state",
+        "relation": {
+          "id": "operation-state:upload:file_review",
+          "from": "upload",
+          "to": "state-model:file_review",
+          "type": "changes_state",
+          "label": "Changes state",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "upload",
+            "label": "上传新文件",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:49fd5de61ead8ced",
+        "edge_id": "reject-requests-event",
+        "from": "reject",
+        "to": "event:file_review:reject",
+        "type": "action_requests_event",
+        "label": "Triggers",
+        "relation": {
+          "id": "reject-requests-event",
+          "from": "reject",
+          "to": "event:file_review:reject",
+          "type": "action_requests_event",
+          "label": "Triggers",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "reject",
+            "label": "审核驳回并保留记录",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:4377c48e7bbd1f40",
+        "edge_id": "state-subject:file_review",
+        "from": "state-model:file_review",
+        "to": "object:file",
+        "type": "state_subject",
+        "label": "State of",
+        "relation": {
+          "id": "state-subject:file_review",
+          "from": "state-model:file_review",
+          "to": "object:file",
+          "type": "state_subject",
+          "label": "State of",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "object:file",
+            "label": "文件",
+            "kind": "data"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      },
+      {
+        "id": "view:boundary:0a52355bf9d234dd",
+        "edge_id": "upload-requests-event",
+        "from": "upload",
+        "to": "event:file_review:upload",
+        "type": "action_requests_event",
+        "label": "Triggers",
+        "relation": {
+          "id": "upload-requests-event",
+          "from": "upload",
+          "to": "event:file_review:upload",
+          "type": "action_requests_event",
+          "label": "Triggers",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual"
+        },
+        "outside": [
+          {
+            "id": "upload",
+            "label": "上传新文件",
+            "kind": "action"
+          }
+        ],
+        "reason": "outside_focus",
+        "meaning": "Original relation continues outside this view; no inferred shortcut."
+      }
+    ],
+    "mapping": {
+      "effect:file_review:retain_review_record": {
+        "nodes": [
+          "effect:file_review:retain_review_record"
+        ],
+        "source": null
+      },
+      "event:file_review:approve": {
+        "nodes": [
+          "event:file_review:approve"
+        ],
+        "source": null
+      },
+      "event:file_review:reject": {
+        "nodes": [
+          "event:file_review:reject"
+        ],
+        "source": null
+      },
+      "event:file_review:upload": {
+        "nodes": [
+          "event:file_review:upload"
+        ],
+        "source": null
+      },
+      "guard:file_review:may_approve": {
+        "nodes": [
+          "guard:file_review:may_approve"
+        ],
+        "source": null
+      },
+      "guard:file_review:may_reject": {
+        "nodes": [
+          "guard:file_review:may_reject"
+        ],
+        "source": null
+      },
+      "guard:file_review:may_upload": {
+        "nodes": [
+          "guard:file_review:may_upload"
+        ],
+        "source": null
+      },
+      "state-model:file_review": {
+        "nodes": [
+          "state-model:file_review"
+        ],
+        "source": null
+      },
+      "state:file_review:approved": {
+        "nodes": [
+          "state:file_review:approved"
+        ],
+        "source": null
+      },
+      "state:file_review:awaiting_upload": {
+        "nodes": [
+          "state:file_review:awaiting_upload"
+        ],
+        "source": null
+      },
+      "state:file_review:pending_review": {
+        "nodes": [
+          "state:file_review:pending_review"
+        ],
+        "source": null
+      },
+      "state:file_review:rejected": {
+        "nodes": [
+          "state:file_review:rejected"
+        ],
+        "source": null
+      },
+      "transition:file_review:file-approved": {
+        "nodes": [
+          "transition:file_review:file-approved"
+        ],
+        "source": null
+      },
+      "transition:file_review:file-rejected": {
+        "nodes": [
+          "transition:file_review:file-rejected"
+        ],
+        "source": null
+      },
+      "transition:file_review:file-uploaded": {
+        "nodes": [
+          "transition:file_review:file-uploaded"
+        ],
+        "source": null
+      }
+    },
+    "events": [],
+    "coverage": {
+      "selected_nodes": 15,
+      "total_nodes": 60,
+      "crossing_or_omitted_edges": 14,
+      "reported_boundaries": 14,
+      "limits_hit": [],
+      "source_unknowns": [],
+      "evidence_gaps": [],
+      "runtime_evidence": "not_selected",
+      "complete": false
+    },
+    "questions": [],
+    "focus_id": "focus:5912568ffdd6a8b1c3f5"
+  },
+  "url": "http://127.0.0.1:8896/graph",
+  "discovery_revision": "ae13e3017610cec7b41a3edd2040c36d1cb453190c399eb347febeaa09560d1f",
+  "view": "state",
+  "locale": "zh-CN"
+}

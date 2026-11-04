@@ -1,0 +1,70 @@
+{
+  "stage": "after_fix",
+  "semantic_revision": "ac92ea0a077d01da012c4c5f29feba2bf772d1ffa906b2345b8623bb809afb3e",
+  "semantic_revision_unchanged": true,
+  "original_assertion_ids": [
+    "file-approved-review-record",
+    "file-rejected-review-record",
+    "transition-effect:file_review:file-approved:retain_review_record",
+    "transition-effect:file_review:file-rejected:retain_review_record"
+  ],
+  "canonical_effect_edges": [
+    {
+      "id": "transition-effect:file_review:file-approved:retain_review_record",
+      "from": "transition:file_review:file-approved",
+      "to": "effect:file_review:retain_review_record",
+      "type": "has_effect",
+      "label": "Runs",
+      "origin": "concept-design",
+      "evidence_kind": "conceptual",
+      "source_refs": [
+        "U_SIM_01",
+        "U_SIM_02"
+      ],
+      "equivalent_relations": [
+        {
+          "id": "file-approved-review-record",
+          "from": "transition:file_review:file-approved",
+          "to": "effect:file_review:retain_review_record",
+          "type": "transition_has_effect",
+          "label": "Runs",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual",
+          "source_refs": [
+            "U_SIM_02"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transition-effect:file_review:file-rejected:retain_review_record",
+      "from": "transition:file_review:file-rejected",
+      "to": "effect:file_review:retain_review_record",
+      "type": "has_effect",
+      "label": "Runs",
+      "origin": "concept-design",
+      "evidence_kind": "conceptual",
+      "source_refs": [
+        "U_SIM_01",
+        "U_SIM_02"
+      ],
+      "equivalent_relations": [
+        {
+          "id": "file-rejected-review-record",
+          "from": "transition:file_review:file-rejected",
+          "to": "effect:file_review:retain_review_record",
+          "type": "transition_has_effect",
+          "label": "Runs",
+          "origin": "concept-design",
+          "evidence_kind": "conceptual",
+          "source_refs": [
+            "U_SIM_02"
+          ]
+        }
+      ]
+    }
+  ],
+  "all_original_records_and_dependencies_retained": true,
+  "source_files_sha256_unchanged": true,
+  "runtime_exercised": false
+}

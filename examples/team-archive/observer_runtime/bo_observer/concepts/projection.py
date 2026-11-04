@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 
+from ..graph.relation_identity import relation_ids
 from .anchors import native_anchors
 from .binding import check_binding
 from .common import canonical_id
@@ -28,7 +29,7 @@ def bind_projection(doc, model, bindings=None, *, acceptance=None, scope=None):
     graph["edges"] = [
         edge
         for edge in graph["edges"]
-        if edge["id"] in selected
+        if selected.intersection(relation_ids(edge))
         and edge["from"] in selected_nodes
         and edge["to"] in selected_nodes
     ]

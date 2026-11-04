@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.12.1 — 2026-11-05
+
+- Open source-free design graphs using their project identity, including drafts
+  that have no runtime presentation settings.
+- Recalculate camera bounds from visible nodes and expanded regions after layout.
+- Render equivalent declared transition-effect associations once while retaining
+  their original identities, source assertions, bindings and saved selections.
+- Exercise actual and shipped design drafts in the browser, including viewport
+  containment, empty runtime facts and unchanged source inputs.
+- Explain native state binding capabilities before design confirmation. The
+  existing single-model binding limit remains explicit.
+- Install the existing telemetry test requirements in the browser CI job.
+- Retain the original failures and subsequent checks in the
+  [patch review](docs/review/release-v0.12.1/README.md). The independent dialogue
+  trial remains in progress.
+
 ## 0.12.0 — 2026-11-05
 
 - Reuse the secure source reader for per-event concept freshness checks, avoiding repeated project-path resolution while preserving byte and link-change detection.

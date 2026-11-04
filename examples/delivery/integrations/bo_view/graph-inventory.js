@@ -1,9 +1,10 @@
 import { machineProjection } from "./machine-projection.js";
 import { captureFields } from "./capture-fields.js";
 import { t as boTranslate } from "./i18n.js";
-import { nameNode, explainedName } from "./graph-names.js";
+import { nameNode, explainedName, declaredEdges } from "./graph-names.js";
 import { annotateConcepts } from "./concept-observation.js";
 import { applyConceptContainment } from "./concept-containment.js";
+import { validateEquivalentRelations } from "./edge-identities.js";
 
 export function stateNodeId(model, value) {
   return model.nodes.find((n) => n.kind === "state" && n.value === value)?.id || "state." + value;
@@ -62,6 +63,15 @@ export function graphInventory(
         [...(view.concept_structure?.edges || []), ...view.model.edges].map((e) => [e.id, e]),
       ).values(),
     ];
+  // Naming overlays add UI fields; validate the untouched assertions instead.
+  validateEquivalentRelations([
+    ...new Map(
+      [...(view.concept_structure?.edges || []), ...declaredEdges(view.model)].map((e) => [
+        e.id,
+        e,
+      ]),
+    ).values(),
+  ]);
   for (const original of [...all.values()]) {
     const n = nameNode(original, view.model, view.manifest?.bindings);
     all.set(n.id, n);
