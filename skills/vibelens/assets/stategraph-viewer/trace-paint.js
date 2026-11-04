@@ -2,7 +2,7 @@ import { rowMetrics, trackOf, trackPitch } from "./trace-tracks.js";
 /** Canvas-only timeline presentation. Geometry and hit targets share one transform. */
 import { t } from "./i18n.js";
 import { displayName } from "./layout.js";
-import { layers } from "./graph-layers.js";
+import { layers, canonicalLayer } from "./graph-layers.js";
 import { visibleSlices } from "./trace-viewport.js";
 import { visibleFlows } from "./trace-flows.js";
 import { marksInWindow } from "./trace-index.js";
@@ -14,7 +14,7 @@ export const traceGeometry = { overview: 26, ruler: 24, row: 28 };
 export const traceColor = (layer) =>
   "#" +
   layers
-    .find((item) => item.id === layer)
+    .find((item) => item.id === canonicalLayer(layer))
     .color.toString(16)
     .padStart(6, "0");
 
@@ -147,7 +147,12 @@ export function paintTrace(canvas, state) {
       ctx.fillRect(left, y, plot, metrics.heights[i]);
     }
     const visibleDurations = visibleSlices(row, window.start, window.end);
-    const detail = durationDetail(visibleDurations, { x, left, right: left + plot, raw });
+    const detail = durationDetail(visibleDurations, {
+      x,
+      left,
+      right: left + plot,
+      raw,
+    });
     for (const bin of detail.bins) {
       ctx.globalAlpha = Math.min(0.9, 0.35 + Math.log1p(bin.count) * 0.15);
       ctx.fillStyle = color;
@@ -319,7 +324,10 @@ export function paintTrace(canvas, state) {
     const crossGroup = rows[flow.fromRow].group !== rows[flow.toRow].group;
     const route = crossGroup
       ? groupCurve(fx, fy, tx, ty, { left: left + 4, right: left + plot - 4 })
-      : routeFlow(fx, fy, tx, ty, flowCount, { left: left + 4, right: left + plot - 4 });
+      : routeFlow(fx, fy, tx, ty, flowCount, {
+          left: left + 4,
+          right: left + plot - 4,
+        });
     roundedRoute(ctx, route);
     ctx.stroke();
     ctx.setLineDash([]);
@@ -351,7 +359,14 @@ export function paintTrace(canvas, state) {
       ctx.fill();
       ctx.shadowBlur = 0;
     }
-    hits.push({ kind: "flow", key: keyId, flow, route, raw: flow.at, row: rows[flow.toRow].id });
+    hits.push({
+      kind: "flow",
+      key: keyId,
+      flow,
+      route,
+      raw: flow.at,
+      row: rows[flow.toRow].id,
+    });
     flowCount++;
   }
   ctx.globalAlpha = 1;
@@ -437,5 +452,13 @@ export function paintTrace(canvas, state) {
     ctx.fillStyle = "#71808e";
     ctx.fillText(t("No recorded events in this view"), left + 20, top + 30);
   }
-  return { hits, left, plot, top, drawn, flows: flowCount, points: points.length };
+  return {
+    hits,
+    left,
+    plot,
+    top,
+    drawn,
+    flows: flowCount,
+    points: points.length,
+  };
 }

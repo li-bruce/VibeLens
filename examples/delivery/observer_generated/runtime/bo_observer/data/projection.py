@@ -4,7 +4,7 @@ from copy import deepcopy
 from urllib.parse import quote
 
 from .contract import MANAGED, CONFIG_PATH, CATALOG_PATH, capture_spec
-from .protocol import operation_target_actions
+from .protocol import operation_target_actions, operation_role
 from .schema_compare import structure_differences
 from ..observation.lifecycle import data_lifecycle
 
@@ -48,6 +48,8 @@ def project_model(model, config, bundle):
             # AST hash; refreshing database metadata must not erase its output.
             if "code_evidence" in previous:
                 value["code_evidence"] = deepcopy(previous["code_evidence"])
+            if "declaration_id" in previous:
+                value["declaration_id"] = previous["declaration_id"]
         result["nodes"].append(value)
         nodes[value["id"]] = value
 
@@ -273,7 +275,8 @@ def project_model(model, config, bundle):
                 "summary": operation["action"] + " · " + operation["store"],
                 "source": operation["source"],
                 "parent": operation["parent"],
-                "data_role": "transform" if operation["action"] == "transform" else "query",
+                "data_role": operation_role(operation["action"]),
+                "representation_role": "observation-operation",
                 "data_store": operation["store"],
                 "data_origin": "declaration",
                 "data_coverage": "partial",

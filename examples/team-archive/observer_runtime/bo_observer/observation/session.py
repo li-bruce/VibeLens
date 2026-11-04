@@ -15,6 +15,7 @@ from ..protocol import validate_project, validate_event, validate_snapshot
 from ..graph.source_files import SourceFiles
 from .event_batch import BOSessionSink
 from .capture_context import call_key, invocation_boundary, minimal_boundary
+from .concept_context import ConceptContext
 
 OPEN_CONTEXT_LIMIT = 10000
 
@@ -47,6 +48,7 @@ class GraphSession:
         self.bo_project_content_hash = None
         self.bo_sink = BOSessionSink(self)
         self.model = self.project["model"]
+        self.bo_concept_context = ConceptContext(self.root, self.model)
         self.bo_nodes = {node["id"]: node for node in self.model["nodes"]}
         self.manifest = capture(self.root, self.model)
         self.graph = BOStateGraph(
@@ -84,7 +86,7 @@ class GraphSession:
             self.sources(),
             event_source=self.history,
             context_provider=self.view,
-            version_provider=self.control_context,
+            version_provider=self.recording_version_context,
         )
 
     def bo_bind_capture(self, *, scope_setter, flush_capture, health):
@@ -131,6 +133,9 @@ class GraphSession:
                 self.bo_project_content_hash = content_hash
         except (OSError, ValueError):
             status.update(status="stale", project_changed=True)
+        changed_concepts = self.bo_concept_context.changed_inputs()
+        if changed_concepts:
+            status.update(status="stale", concept_inputs_changed=changed_concepts)
         return status
 
     def event(self, event):
@@ -338,15 +343,29 @@ class GraphSession:
         model["machine"].setdefault("labels", {s: s for s in model["machine"]["values"]})
         return model
 
-    def control_context(self):
-        """Read graph/build identity without loading event history or runtime frames."""
+    def recording_version_context(self):
+        """Read the pinned graph identity without scanning source or runtime history.
+
+        Recording catalog reads need version metadata only. Keep this frequent
+        path separate from control inspection, which also needs physical source
+        and API inventories to resolve a user's selection.
+        """
         with self.lock:
             return {
                 "stage": "runtime",
                 "layout_id": self.project["project_id"],
                 "model": self._view_model(),
                 "manifest": deepcopy(self.manifest),
+                "concept_structure": self.bo_concept_context.view(),
             }
+
+    def control_context(self):
+        """Expose the same static identities as Web without transferring runtime history."""
+        return {
+            **self.recording_version_context(),
+            "project_structure": self.web.code_graph.view(projection="project", limit=5000),
+            "api_structure": self.web.bo_api_graph.api_snapshot(),
+        }
 
     def recording_view(self):
         """Read runtime evidence through native view overrides without rescanning files.
@@ -412,6 +431,9 @@ class GraphSession:
                 "model": model,
                 "project_structure": project_structure,
                 "api_structure": api_structure,
+                "concept_structure": (
+                    self.bo_concept_context.view() if self.bo_project_context.get() else None
+                ),
                 "manifest": deepcopy(self.manifest),
                 "binding_status": self.binding(),
                 "events": [],

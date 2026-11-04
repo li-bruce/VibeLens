@@ -1,5 +1,17 @@
 # Reviewed release records
 
+The current record is `concept-models-20261104-recording-context`. It follows the
+accepted `concept-models-20261104` source-graph migration. Both changes used the
+normal begin, seal, inspect, explicit review, verify, accept and check commands.
+The original business source, executable state definitions, capture contracts and
+independent business expectations are preserved. The graph now includes canonical
+source declarations; recording list/detail version checks remain lightweight.
+See `../review/concept-models-20261104/README.md` for failed attempts and retests.
+
+## Previous records
+
+# Reviewed release records
+
 The current record is `graph-quality-20261104-timeline-inspection-0113`. The reviewed viewer fits visible
 contents and full planar labels, preserves filtered owner identities, and uses the
 existing pinned D3 enclosing-circle implementation. Source mapping and API metadata

@@ -8,7 +8,8 @@ from pathlib import PurePosixPath, PureWindowsPath
 from urllib.parse import quote
 
 MANAGED = "bo-database/v1"
-ROLES = {"store", "dataset", "column", "query", "transform"}
+OPERATION_ROLES = frozenset({"query", "write", "transaction", "transform"})
+ROLES = {"store", "dataset", "column", *OPERATION_ROLES}
 ORIGINS = {"database", "declaration"}
 COVERAGE = {"complete", "partial", "sampled"}
 RESOURCE_KINDS = {"table", "collection", "key_pattern", "label", "relationship"}
@@ -28,6 +29,16 @@ TARGET_SOURCES = {
     "unresolved",
     "not_applicable",
 }
+
+
+def operation_role(action):
+    """Name the native operation precisely; a transaction is not a query return."""
+    return {
+        "read": "query",
+        "write": "write",
+        "transaction": "transaction",
+        "transform": "transform",
+    }[action]
 
 
 def _require(condition, message):
@@ -199,8 +210,12 @@ def _operation(node, model):
     metadata = node["data_metadata"]
     _object(metadata, {"action", "targets"}, {"target_actions"}, "operation metadata")
     _enum(metadata["action"], {"read", "write", "transaction", "transform"}, "operation action")
+    # Older stored graphs used query as an umbrella for reads, writes and
+    # transactions. They remain readable, but new projections emit precise roles.
     _require(
-        (node["data_role"] == "transform") == (metadata["action"] == "transform"),
+        node["data_role"] == operation_role(metadata["action"])
+        or node["data_role"] == "query"
+        and metadata["action"] in {"write", "transaction"},
         "operation role and action differ",
     )
     _strings(metadata["targets"], "operation targets")
@@ -261,7 +276,7 @@ def _node(node, model, stores):
     role = node.get("data_role")
     _enum(role, ROLES, "node data_role")
     _require(
-        node.get("kind") == ("function" if role in {"query", "transform"} else "data"),
+        node.get("kind") == ("function" if role in OPERATION_ROLES else "data"),
         "node kind does not match data_role",
     )
     for key in ("id", "label", "summary", "data_store"):
@@ -271,7 +286,7 @@ def _node(node, model, stores):
     _enum(node.get("data_coverage"), COVERAGE, "node coverage")
     metadata = node.get("data_metadata")
     _require(isinstance(metadata, dict), "data_metadata needs an object")
-    if role in {"query", "transform"}:
+    if role in OPERATION_ROLES:
         _operation(node, model)
         return
     _text(node.get("data_key"), "resource key")
@@ -373,7 +388,7 @@ def validate_data_projection(model):
                 node["data_key"] == parent["data_key"] + "." + node["data_metadata"]["name"],
                 "column key differs from its parent",
             )
-        if node.get("managed_by") == MANAGED and role not in {"query", "transform"}:
+        if node.get("managed_by") == MANAGED and role not in OPERATION_ROLES:
             key = parent["data_key"] if role == "column" else node["data_key"]
             expected = "db:" + quote(store, safe="") + ":" + quote(key, safe="")
             if role == "column":
@@ -381,7 +396,7 @@ def validate_data_projection(model):
             _require(
                 node["id"] == expected, "managed resource identity differs from its native key"
             )
-        if role in {"query", "transform"}:
+        if role in OPERATION_ROLES:
             for target in node["data_metadata"]["targets"]:
                 _require((store, target) in datasets, "operation target is absent from its store")
     for edge in data_edges:
@@ -400,12 +415,12 @@ def validate_data_projection(model):
         _require(edge.get("type") == "data", "data_relation needs a data edge")
         source_role, target_role = start.get("data_role"), end.get("data_role")
         if relation == "transforms":
-            _require(target_role in {"query", "transform"}, "transforms must end at an operation")
+            _require(target_role in OPERATION_ROLES, "transforms must end at an operation")
         elif relation in {"reads", "writes"}:
             dataset, operation = (start, end) if relation == "reads" else (end, start)
             _require(
                 dataset.get("data_role") == "dataset"
-                and operation.get("data_role") == "query"
+                and operation.get("data_role") in {"query", "write"}
                 and operation_target_actions(operation["data_metadata"]).get(dataset["data_key"])
                 in ({"read", "read_write"} if relation == "reads" else {"write", "read_write"}),
                 "read/write edge endpoints disagree with the action",

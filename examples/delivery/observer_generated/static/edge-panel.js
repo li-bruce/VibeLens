@@ -5,6 +5,7 @@ import { t as boTranslate } from "./i18n.js";
 
 /** Runtime and static evidence remain distinct in the same relation list. */
 function relationEvidence(member) {
+  if (member.derived) return boTranslate("Structural path; execution is not inferred");
   const dataEvidence = dataRelationEvidence(member);
   if (dataEvidence) return dataEvidence;
   if (["python-ast", "source-ast"].includes(member.origin)) return boTranslate("Static call");
@@ -23,6 +24,7 @@ export function renderEdgeDetail({
   scale,
   pan,
   onChoose,
+  onReveal,
   onHide,
   element = (id) => document.getElementById(id),
 }) {
@@ -38,6 +40,8 @@ export function renderEdgeDetail({
     relationName(edge, preferences),
     edge.members.length,
   );
+  if (edge.derived && edge.search_complete === false)
+    $("edge-title").textContent += " · " + boTranslate("Path search incomplete");
   $("edge-members").replaceChildren(
     ...choices
       .filter((choice) => choice.id !== edge.id)
@@ -56,10 +60,20 @@ export function renderEdgeDetail({
         a = graph.all.get(member.from),
         b = graph.all.get(member.to);
       item.textContent = `${a ? displayName(a, preferences) : member.from} → ${b ? displayName(b, preferences) : member.to}：${relationName(member, preferences)}（${relationEvidence(member)}）`;
+      if (member.witness) {
+        const path = document.createElement("div");
+        path.textContent = member.witness.nodes
+          .map((id) => (graph.all.has(id) ? displayName(graph.all.get(id), preferences) : id))
+          .join(" → ");
+        const reveal = document.createElement("button");
+        reveal.textContent = boTranslate("Reveal path");
+        reveal.onclick = () => onReveal?.(member.witness);
+        item.append(path, reveal);
+      }
       const hide = document.createElement("button");
       hide.textContent = boTranslate("Hide relation");
       hide.onclick = () => {
-        onHide(member.id);
+        onHide(member.derived ? edge.id : member.id);
       };
       item.append(hide);
       return item;

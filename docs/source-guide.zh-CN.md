@@ -8,6 +8,21 @@
 
 ## 先找到对应目录
 
+概念建模从 [concepts/](../skills/vibelens/scripts/bo_observer/concepts/) 开始。
+`model.py` 组合业务、状态和规则定义，`state.py` 校验状态语义，`semantics.py`
+保存确认范围和变更。`binding.py` 与 `anchors.py` 核对原生状态、规则、源码绑定和独立测试断言，
+`projection.py` 为页面生成明确的实现关联。这些模块不执行用户程序的状态转换。
+命令入口为 [bo_concepts.py](../skills/vibelens/scripts/bo_concepts.py)，操作说明见
+[概念模型](../skills/vibelens/references/concept-models.md)。
+
+主视图为业务、状态、规则、实现和数据。API、文件、声明、观测函数和数据访问是实现层的不同筛选维度。
+Python 的 `graph/classification.py` 与前端 `graph-classification.js` 通过一致性测试共用分类；
+无法分类的节点保留诊断信息。`graph/source_identity.py` 让多个源码引用指向同一个声明，
+采集节点和调用实例仍保留各自身份。`hidden-paths.js` 只为当前视图计算有类型的间接路径。
+
+`observation/concept_context.py` 在绑定会话启动时校验并固定概念上下文，检测声明文件和路径变化；
+录制保留自己的上下文。`workflow/concept_review.py` 在下一次编码前恢复已确认含义、依赖和待处理项。
+
 规则部分从 [policy/definition.py](../skills/vibelens/scripts/bo_observer/policy/definition.py) 开始。`projection.py` 将共享条件和源码映射接入整体图；`runtime.py` 是可选的 Python 执行器，`bindings.py` 核对实际加载函数与当前源码。`evidence.py` 校验真实求值路径及原始图事件，`sync.py` 接入现有开发同步流程。操作说明见[共享规则网](../skills/vibelens/references/shared-policy.md)，可运行内容见[示例](../examples/policy-network/)。
 
 图标与右键菜单的键盘操作位于 `assets/stategraph-viewer/controls.js`。
@@ -181,7 +196,7 @@ HTTP 等待测试通过现有检查钩子暂停真实任务，观察到“运行
 
 ## 图层和录制的读取边界
 
-- `layer-style.js` 统一九层顺序与颜色；二维图标、三维对象和区域共用颜色，形状表示节点类型。
+- `graph-classification.js` 统一业务、状态、规则、实现、数据五类视图；API、工程结构、函数和数据操作保留为实现视图的筛选项。`layer-style.js` 统一顺序和颜色，形状表示节点类型。未分类内容单独显示，便于发现映射遗漏。
 - `layout.js` 用 ELK 排列层与类型分组，`cluster-layout.js` 和 worker 用 D3 排列组内完整子树；两种视图共用初始平面坐标。
 - `trace-tracks.js` 在同一层行内错开并发区间；`step-hierarchy.js` 按真实父调用缩进记录条目，并显示层颜色。
 - `code_graph/service.py` 单独维护文件与导入关系，完整符号分析仍按需加载。开始录制时保存文件树，旧记录使用当时保存的树。

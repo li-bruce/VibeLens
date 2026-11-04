@@ -21,11 +21,15 @@ assert.ok(
   "Only transaction operations can declare commit outcomes",
 );
 const status = fields.nodes[0];
-assert.equal(layerOf(owner), "operations");
-assert.equal(layerOf(status), "operations");
-assert.equal(layerOf({ kind: "function" }), "execution");
-assert.equal(layerOf({ code_role: "parameter" }), "code");
-const view = { manifest: { bindings: { save: { path: "gallery.py", line: 2, end_line: 3 } } } };
+assert.equal(layerOf(owner), "implementation");
+assert.equal(layerOf(status), "implementation");
+assert.equal(layerOf({ kind: "function" }), "implementation");
+assert.equal(layerOf({ code_role: "parameter" }), "implementation");
+const view = {
+  manifest: {
+    bindings: { save: { path: "gallery.py", line: 2, end_line: 3 } },
+  },
+};
 const all = new Map([
   [owner.id, owner],
   [status.id, status],

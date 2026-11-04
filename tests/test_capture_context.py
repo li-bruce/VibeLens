@@ -90,7 +90,23 @@ class CaptureContextTests(unittest.TestCase):
         self.assertEqual(context["model"], full["model"])
         self.assertEqual(context["manifest"], full["manifest"])
         self.assertEqual(context["layout_id"], full["layout_id"])
-        self.assertEqual(set(context), {"schema", "stage", "model", "manifest", "layout_id"})
+        self.assertEqual(
+            set(context),
+            {
+                "schema",
+                "stage",
+                "model",
+                "manifest",
+                "layout_id",
+                "concept_structure",
+                "api_structure",
+                "project_structure",
+            },
+        )
+        # Static identities are required for conceptual and source-region controls;
+        # runtime history and instance queries must still never be assembled here.
+        for name in ("concept_structure", "api_structure", "project_structure"):
+            self.assertEqual(context[name], full[name])
         self.assertTrue(self.session.web.is_observer_request("/api/vibelens/control/context"))
         context["model"]["nodes"][0]["label"] = "Local display copy"
         self.assertNotEqual(self.session.model["nodes"][0]["label"], "Local display copy")

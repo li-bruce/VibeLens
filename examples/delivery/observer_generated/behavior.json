@@ -22,10 +22,15 @@
     "integrations/bo_view/api-observation.js",
     "integrations/bo_view/caption-layout.js",
     "integrations/bo_view/capture-fields.js",
+    "integrations/bo_view/capture-scope.js",
     "integrations/bo_view/change-panel.js",
     "integrations/bo_view/cluster-layout.js",
     "integrations/bo_view/cluster-worker.js",
     "integrations/bo_view/code-layer.js",
+    "integrations/bo_view/concept-bindings.js",
+    "integrations/bo_view/concept-details.js",
+    "integrations/bo_view/concept-observation.js",
+    "integrations/bo_view/concept-relations.js",
     "integrations/bo_view/containment-geometry.js",
     "integrations/bo_view/containment-view.js",
     "integrations/bo_view/controls.js",
@@ -39,11 +44,13 @@
     "integrations/bo_view/elk.bundled.js",
     "integrations/bo_view/glyphs.js",
     "integrations/bo_view/graph-activation.js",
+    "integrations/bo_view/graph-classification.js",
     "integrations/bo_view/graph-core.js",
     "integrations/bo_view/graph-inventory.js",
     "integrations/bo_view/graph-layers.js",
     "integrations/bo_view/graph-links.js",
     "integrations/bo_view/graph-names.js",
+    "integrations/bo_view/hidden-paths.js",
     "integrations/bo_view/i18n.js",
     "integrations/bo_view/index.html",
     "integrations/bo_view/layer-ruler.js",
@@ -137,7 +144,8 @@
       },
       "semantic_roles": [
         "business"
-      ]
+      ],
+      "declaration_id": "code:symbol:48c1d6066edac990e4f8ab2b"
     },
     {
       "id": "flow.permission",
@@ -160,7 +168,8 @@
       },
       "semantic_roles": [
         "business"
-      ]
+      ],
+      "declaration_id": "code:symbol:709c40b6bf07d33c9e7e9146"
     },
     {
       "id": "flow.checks",
@@ -190,7 +199,8 @@
       },
       "semantic_roles": [
         "business"
-      ]
+      ],
+      "declaration_id": "code:symbol:c0c03567b1f67183b997dae3"
     },
     {
       "id": "flow.commit",
@@ -213,7 +223,8 @@
       },
       "semantic_roles": [
         "business"
-      ]
+      ],
+      "declaration_id": "code:symbol:ceee617d8226d24d70665fff"
     },
     {
       "id": "flow.wait",
@@ -236,7 +247,8 @@
       },
       "semantic_roles": [
         "business"
-      ]
+      ],
+      "declaration_id": "code:symbol:8309bc19b47c503565d33b69"
     },
     {
       "id": "read",
@@ -262,7 +274,8 @@
         "symbol": "app/service.py::Delivery.prepare",
         "ast_hash": "a246bd46fc2892140069d1dd72f4e2743c47bdb5a222e8752ca748802209a521",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:48c1d6066edac990e4f8ab2b"
     },
     {
       "id": "execute",
@@ -285,7 +298,8 @@
         "symbol": "app/service.py::Delivery.execute",
         "ast_hash": "ac6f47ca7b8a27e09d351107ae87d87cd5b5dd4aab7390024c5cc79fa10ec4f6",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:05ebceff589d5036dd4230a4"
     },
     {
       "id": "authorize",
@@ -318,7 +332,8 @@
         "symbol": "app/service.py::authorized",
         "ast_hash": "ace34d36610de711e2e55635430bc7d046bcce695653533d63d5bfa04d3bdcbe",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:709c40b6bf07d33c9e7e9146"
     },
     {
       "id": "grant",
@@ -360,7 +375,8 @@
         "symbol": "app/service.py::eligible_grant",
         "ast_hash": "b6ab9c0eac7a9583af1d793d78da685ff09d8d56934232e011794f36d1547e27",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:2452a9ab9af1ca37b1b67fa4"
     },
     {
       "id": "workers",
@@ -378,7 +394,8 @@
       },
       "parent": "flow.checks",
       "execution_role": "resource",
-      "analysis_level": "advanced"
+      "analysis_level": "advanced",
+      "declaration_id": "code:symbol:26b24a35a9a35985252a342f"
     },
     {
       "id": "checksum",
@@ -405,7 +422,8 @@
         "symbol": "app/checks.py::checksum",
         "ast_hash": "0db7844048b44cf26d3fef68e2ca06031988cea67496cadf12afe9eebd0f6a53",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:cfaaa229a81e953ec88282c5"
     },
     {
       "id": "privacy",
@@ -432,7 +450,8 @@
         "symbol": "app/checks.py::privacy_check",
         "ast_hash": "3d46dc489ea89566c24915c121af8400e48202422149692bc0439465e8670793",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:b1dea71935cbec1e79f25625"
     },
     {
       "id": "join",
@@ -461,7 +480,8 @@
         "symbol": "bo_stategraph/workflow.py::ActivityExecution.join",
         "ast_hash": "93dd0d0bb116026f61136cd41860209664eec41da9f7140432007a05c3f3430e",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:473bdfbe1d013100a32fa34b"
     },
     {
       "id": "execution.init",
@@ -482,7 +502,8 @@
         "symbol": "bo_stategraph/workflow.py::ActivityExecution.__init__",
         "ast_hash": "986d950a98ab31de0df9f3e8eb591806fe3e71f034c7919f9c7e9c2ee5ede6de",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:253f1b922a77edd16bafc079"
     },
     {
       "id": "execution.finish",
@@ -503,7 +524,8 @@
         "symbol": "bo_stategraph/workflow.py::ActivityExecution.finish",
         "ast_hash": "746ed5e535ba35c91c9324f2a152ca698c5015243c81521889b54f80b4b796ac",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:2a550c3bf3c08f778d5e6824"
     },
     {
       "id": "execution.invariant",
@@ -524,7 +546,8 @@
         "symbol": "bo_stategraph/workflow.py::ActivityExecution.invariant",
         "ast_hash": "f5b864d070e72fd9f2ce01d7d9fb430c7d4698c15c8cf09b370fbf363666cfbc",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:b66875543cbcb46a8d787ae5"
     },
     {
       "id": "execution.snapshot",
@@ -545,7 +568,8 @@
         "symbol": "bo_stategraph/workflow.py::ActivityExecution.snapshot",
         "ast_hash": "2374e0bb677c29fa8a8dfded574d3d22759f1d6d3f6d5a325e09168bd2aa8d25",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:afa84fe7c68b7d4dd4973874"
     },
     {
       "id": "execution.progress",
@@ -566,7 +590,8 @@
         "symbol": "app/service.py::Delivery.execution_progress",
         "ast_hash": "777d3a1a00daaa552ace58e938b4cb25f8697b4c9a95272f1d381c2cafdae820",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:b9ebba618541406caee6b87c"
     },
     {
       "id": "execution.abort",
@@ -587,7 +612,8 @@
         "symbol": "bo_stategraph/workflow.py::ActivityExecution.abort",
         "ast_hash": "dce1668f6f300a550ee070efea50c446fbcf4486eb6313d97682d8ba453469cd",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:9ed0e5cfa88925c558ecc4d8"
     },
     {
       "id": "execution.lookup",
@@ -608,7 +634,8 @@
         "symbol": "app/store.py::Store.execution",
         "ast_hash": "0e2e11dc198b531ea5ebdf68a384988b8345582f35ef7e5a7b58d617b12e39c3",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:9dbbe1279418a9c50ee4c2ac"
     },
     {
       "id": "execution.save",
@@ -629,7 +656,8 @@
         "symbol": "app/store.py::Store.put_execution",
         "ast_hash": "c600181d0c9647d4b320ce6d4fcf1106997260cea8589d7c13b68b8f6692bcad",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:5f1883661df9833b3088c8d9"
     },
     {
       "id": "execution.update",
@@ -650,7 +678,8 @@
         "symbol": "app/store.py::Store.update_execution",
         "ast_hash": "43cd6ad907a4a408528edff3d9f2a75973a44c3e6727d1787c1e86e15a272c12",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:c9bd57b6d33738de568609a4"
     },
     {
       "id": "execution.all",
@@ -671,7 +700,8 @@
         "symbol": "app/store.py::Store.snapshot",
         "ast_hash": "c343a95d367952111fc9242f79ee9315a78325d5141de1c9e2f6917ea63e9afb",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:c56a8586aaafbc98be1811de"
     },
     {
       "id": "recheck",
@@ -700,7 +730,8 @@
         "symbol": "app/service.py::Delivery.commit",
         "ast_hash": "a2a60b92cb4098e280c262eddf9291df6946945d239ecc989e6c088919944585",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:ceee617d8226d24d70665fff"
     },
     {
       "id": "commit",
@@ -724,7 +755,8 @@
         "symbol": "app/service.py::Delivery.commit",
         "ast_hash": "a2a60b92cb4098e280c262eddf9291df6946945d239ecc989e6c088919944585",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:ceee617d8226d24d70665fff"
     },
     {
       "id": "effect.storage",
@@ -746,7 +778,8 @@
         "symbol": "app/store.py::Store.artifact",
         "ast_hash": "1d74d4ddb585342272fef8c2138384b3c7a947fc6250ba1928606b4fcffec59a",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:92ae8cbbf8b219b9688a971b"
     },
     {
       "id": "job.storage",
@@ -768,7 +801,8 @@
         "symbol": "app/store.py::Store.put",
         "ast_hash": "e61ecc44c4878ed3e2af256185ea2a26ae767384ed04d83548caf18fc6543e35",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:99b11d94f588eaf6525372a0"
     },
     {
       "id": "execution.record",
@@ -790,7 +824,8 @@
         "symbol": "bo_stategraph/workflow.py::execution_record",
         "ast_hash": "f6cf271ec66ceef2c48a7e8dbd8f9a30a2acd652547affccd7292f432d23f5da",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:cd34b6ea35773197ca0c694d"
     },
     {
       "id": "execution.advance",
@@ -812,7 +847,8 @@
         "symbol": "bo_stategraph/workflow.py::advance_record",
         "ast_hash": "0370c52b1a075e7847b8b8d47a7767ee06a780487248783c174dfc776f1d9d10",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:25b93257c6eff371285d59a7"
     },
     {
       "id": "execution.recover",
@@ -834,7 +870,8 @@
         "symbol": "bo_stategraph/workflow.py::recover_records",
         "ast_hash": "3665df18879eb71baf7c8efac65b8d8cbd47f2e6b82cf4c68b3fee4302eb8c91",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:cd20aa272c56f2d2d7f63b67"
     },
     {
       "id": "transition.storage",
@@ -856,7 +893,8 @@
         "symbol": "app/store.py::Store.record_transition",
         "ast_hash": "d6edf3ef91bb13701c2f88c6dbff2ee802b50b42facbe6ee38fa340594b70f6a",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:1568b14a85f8f3a3d75b056f"
     },
     {
       "id": "wait",
@@ -879,7 +917,8 @@
         "symbol": "app/service.py::Delivery.prepare",
         "ast_hash": "a246bd46fc2892140069d1dd72f4e2743c47bdb5a222e8752ca748802209a521",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:48c1d6066edac990e4f8ab2b"
     },
     {
       "id": "change",
@@ -916,7 +955,8 @@
         "symbol": "app/service.py::Delivery.command",
         "ast_hash": "aafdf6abea112d32b0b691dcb06ce53f9249b8cd01f3ebc5bb14609070757e16",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:8309bc19b47c503565d33b69"
     },
     {
       "id": "state.draft",
@@ -933,7 +973,8 @@
         "out": {}
       },
       "parent": "flow.input",
-      "value": "draft"
+      "value": "draft",
+      "declaration_id": "code:symbol:281c5669376c412f27da6234"
     },
     {
       "id": "state.waiting",
@@ -950,7 +991,8 @@
         "out": {}
       },
       "parent": "flow.wait",
-      "value": "waiting"
+      "value": "waiting",
+      "declaration_id": "code:symbol:281c5669376c412f27da6234"
     },
     {
       "id": "state.checking",
@@ -967,7 +1009,8 @@
         "out": {}
       },
       "parent": "flow.checks",
-      "value": "checking"
+      "value": "checking",
+      "declaration_id": "code:symbol:281c5669376c412f27da6234"
     },
     {
       "id": "state.ready",
@@ -984,7 +1027,8 @@
         "out": {}
       },
       "parent": "flow.commit",
-      "value": "ready"
+      "value": "ready",
+      "declaration_id": "code:symbol:281c5669376c412f27da6234"
     },
     {
       "id": "state.failed",
@@ -1001,7 +1045,8 @@
         "out": {}
       },
       "parent": "flow.wait",
-      "value": "failed"
+      "value": "failed",
+      "declaration_id": "code:symbol:281c5669376c412f27da6234"
     },
     {
       "id": "state.cancelled",
@@ -1018,7 +1063,8 @@
         "out": {}
       },
       "parent": "flow.wait",
-      "value": "cancelled"
+      "value": "cancelled",
+      "declaration_id": "code:symbol:281c5669376c412f27da6234"
     },
     {
       "id": "state.completed",
@@ -1035,7 +1081,8 @@
         "out": {}
       },
       "parent": "flow.commit",
-      "value": "completed"
+      "value": "completed",
+      "declaration_id": "code:symbol:281c5669376c412f27da6234"
     },
     {
       "id": "code.849866902721a913",
@@ -1111,7 +1158,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:cd34b6ea35773197ca0c694d",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.8c566caec0ef95e9",
@@ -1157,7 +1207,10 @@
         ],
         "returns": "bool",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.9ab020fa53084121",
@@ -1213,7 +1266,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.9798528e4c59a114",
@@ -1269,7 +1325,10 @@
         ],
         "returns": "bool",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:dd751ba329e62ff486e51068",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.1bba09184421903e",
@@ -1315,7 +1374,10 @@
         ],
         "returns": "bool",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.abc699d67116f986",
@@ -1371,7 +1433,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.52990f65c6aa2534",
@@ -1427,7 +1492,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.0fc7de430e9f9b0b",
@@ -1473,7 +1541,10 @@
         ],
         "returns": "dict",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:ceee617d8226d24d70665fff",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.8bf1a3eb12254bfb",
@@ -1509,7 +1580,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:87a42d10cc738af4e63b6739",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.40b4483bb7508823",
@@ -1575,7 +1649,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:fabb159888dc89c5110ecae4",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.137c932e9a5276a2",
@@ -1611,7 +1688,10 @@
         ],
         "returns": "dict",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:b05a19e2db180e25384f0189",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.a583b3ad67e50561",
@@ -1687,7 +1767,10 @@
         ],
         "returns": "str",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:281c5669376c412f27da6234",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.6a061f2f8e811623",
@@ -1763,7 +1846,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:cd34b6ea35773197ca0c694d",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.a91cf5631a56d8f8",
@@ -1809,7 +1895,10 @@
         ],
         "returns": "bool",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "code.816d7d5bedb84c56",
@@ -1865,7 +1954,10 @@
         ],
         "returns": "bool",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:dd751ba329e62ff486e51068",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "implementation.67debc23aa53bdfd",
@@ -1901,7 +1993,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:67debc23aa53bdfdfdccd8a4",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "implementation.c78d258971bb4df3",
@@ -1977,7 +2072,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:c78d258971bb4df38e138ab2",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "implementation.20dee38b2e999421",
@@ -2023,7 +2121,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:20dee38b2e9994210306f743",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "implementation.086e367baf5fc37e",
@@ -2089,7 +2190,10 @@
         ],
         "returns": "dict",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:086e367baf5fc37e3a976f62",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "implementation.34624dec8bdd924f",
@@ -2135,7 +2239,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:34624dec8bdd924f7b408934",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "implementation.fd2acbad51962152",
@@ -2171,7 +2278,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:fd2acbad51962152e1f08e69",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "implementation.ed67c47d295f5b54",
@@ -2207,7 +2317,10 @@
         ],
         "returns": null,
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:ed67c47d295f5b54321a28ae",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "implementation.336a43a51c24b432",
@@ -2232,7 +2345,10 @@
         "parameters": [],
         "returns": "dict",
         "origin": "source-ast"
-      }
+      },
+      "declaration_id": "code:symbol:336a43a51c24b432111ee9c6",
+      "code_role": "reference",
+      "representation_role": "source-reference"
     },
     {
       "id": "implementation.d8b7a3081a2bb767",
@@ -2257,7 +2373,1876 @@
         "parameters": [],
         "returns": null,
         "origin": "source-ast"
+      },
+      "declaration_id": "code:symbol:d8b7a3081a2bb767efb2dd29",
+      "code_role": "reference",
+      "representation_role": "source-reference"
+    },
+    {
+      "id": "code:file:1ec9a39a9b39735016047941",
+      "label": "checks.py",
+      "kind": "data",
+      "layer": "project",
+      "code_role": "file",
+      "origin": "source-ast",
+      "summary": "app/checks.py",
+      "project_path": "app/checks.py",
+      "project_kind": "file",
+      "parent": "code:directory:4e5ef144c51cd25230c144c3",
+      "project_metrics": {
+        "imports": 0,
+        "imported_by": 0
+      },
+      "capture": {
+        "in": {},
+        "out": {}
       }
+    },
+    {
+      "id": "code:file:9cf5099e90c020cb5033cc7e",
+      "label": "service.py",
+      "kind": "data",
+      "layer": "project",
+      "code_role": "file",
+      "origin": "source-ast",
+      "summary": "app/service.py",
+      "project_path": "app/service.py",
+      "project_kind": "file",
+      "parent": "code:directory:4e5ef144c51cd25230c144c3",
+      "project_metrics": {
+        "imports": 0,
+        "imported_by": 0
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      }
+    },
+    {
+      "id": "code:file:76ca9d3cc93b603809926829",
+      "label": "store.py",
+      "kind": "data",
+      "layer": "project",
+      "code_role": "file",
+      "origin": "source-ast",
+      "summary": "app/store.py",
+      "project_path": "app/store.py",
+      "project_kind": "file",
+      "parent": "code:directory:4e5ef144c51cd25230c144c3",
+      "project_metrics": {
+        "imports": 0,
+        "imported_by": 0
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      }
+    },
+    {
+      "id": "code:file:7f2c127dcf9d733ffee2ef48",
+      "label": "workflow.py",
+      "kind": "data",
+      "layer": "project",
+      "code_role": "file",
+      "origin": "source-ast",
+      "summary": "bo_stategraph/workflow.py",
+      "project_path": "bo_stategraph/workflow.py",
+      "project_kind": "file",
+      "parent": "code:directory:b826df814ec6b3ac3a73a15c",
+      "project_metrics": {
+        "imports": 0,
+        "imported_by": 0
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      }
+    },
+    {
+      "id": "code:file:7c0228306710be2229913308",
+      "label": "main.py",
+      "kind": "data",
+      "layer": "project",
+      "code_role": "file",
+      "origin": "source-ast",
+      "summary": "main.py",
+      "project_path": "main.py",
+      "project_kind": "file",
+      "parent": "code:directory:7299b59de0b5dad3b622afc3",
+      "project_metrics": {
+        "imports": 0,
+        "imported_by": 0
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      }
+    },
+    {
+      "id": "code:directory:7299b59de0b5dad3b622afc3",
+      "label": "Project",
+      "kind": "data",
+      "code_role": "directory",
+      "origin": "source-ast",
+      "layer": "project",
+      "project_path": ".",
+      "project_kind": "directory",
+      "summary": "Project",
+      "project_metrics": {
+        "files": 5
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      }
+    },
+    {
+      "id": "code:directory:4e5ef144c51cd25230c144c3",
+      "label": "app",
+      "kind": "data",
+      "code_role": "directory",
+      "origin": "source-ast",
+      "layer": "project",
+      "project_path": "app",
+      "project_kind": "directory",
+      "summary": "app",
+      "parent": "code:directory:7299b59de0b5dad3b622afc3",
+      "project_metrics": {
+        "files": 3
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      }
+    },
+    {
+      "id": "code:directory:b826df814ec6b3ac3a73a15c",
+      "label": "bo_stategraph",
+      "kind": "data",
+      "code_role": "directory",
+      "origin": "source-ast",
+      "layer": "project",
+      "project_path": "bo_stategraph",
+      "project_kind": "directory",
+      "summary": "bo_stategraph",
+      "parent": "code:directory:7299b59de0b5dad3b622afc3",
+      "project_metrics": {
+        "files": 1
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      }
+    },
+    {
+      "id": "code:symbol:cfaaa229a81e953ec88282c5",
+      "label": "checksum",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "content: str",
+      "source": {
+        "path": "app/checks.py",
+        "symbol": "checksum"
+      },
+      "parent": "code:file:1ec9a39a9b39735016047941",
+      "code_symbol": "app/checks.py::checksum",
+      "declaration_id": "code:symbol:cfaaa229a81e953ec88282c5",
+      "representation_role": "declaration",
+      "code_signature": "content: str",
+      "code_returns": "str",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/checks.py",
+          "symbol": "checksum",
+          "line": 7,
+          "end_line": 7,
+          "file_sha256": "6eaf39d7323ba58135ca1077d0b27d8de313c8cacf9c2d7aeb72ea7741d128bd"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:b1dea71935cbec1e79f25625",
+      "label": "privacy_check",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "content: str",
+      "source": {
+        "path": "app/checks.py",
+        "symbol": "privacy_check"
+      },
+      "parent": "code:file:1ec9a39a9b39735016047941",
+      "code_symbol": "app/checks.py::privacy_check",
+      "declaration_id": "code:symbol:b1dea71935cbec1e79f25625",
+      "representation_role": "declaration",
+      "code_signature": "content: str",
+      "code_returns": "bool",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/checks.py",
+          "symbol": "privacy_check",
+          "line": 11,
+          "end_line": 11,
+          "file_sha256": "6eaf39d7323ba58135ca1077d0b27d8de313c8cacf9c2d7aeb72ea7741d128bd"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:c0c03567b1f67183b997dae3",
+      "label": "run_checks",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "content: str, *, capacity: int=2, execution=None, progress=None, task_hook=None",
+      "source": {
+        "path": "app/checks.py",
+        "symbol": "run_checks"
+      },
+      "parent": "code:file:1ec9a39a9b39735016047941",
+      "code_symbol": "app/checks.py::run_checks",
+      "declaration_id": "code:symbol:c0c03567b1f67183b997dae3",
+      "representation_role": "declaration",
+      "code_signature": "content: str, *, capacity: int=2, execution=None, progress=None, task_hook=None",
+      "code_returns": "dict",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/checks.py",
+          "symbol": "run_checks",
+          "line": 15,
+          "end_line": 15,
+          "file_sha256": "6eaf39d7323ba58135ca1077d0b27d8de313c8cacf9c2d7aeb72ea7741d128bd"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:67debc23aa53bdfdfdccd8a4",
+      "label": "run_checks.work",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "activity",
+      "source": {
+        "path": "app/checks.py",
+        "symbol": "run_checks.work"
+      },
+      "parent": "code:symbol:c0c03567b1f67183b997dae3",
+      "code_symbol": "app/checks.py::run_checks.work",
+      "declaration_id": "code:symbol:67debc23aa53bdfdfdccd8a4",
+      "representation_role": "declaration",
+      "code_signature": "activity",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/checks.py",
+          "symbol": "run_checks.work",
+          "line": 21,
+          "end_line": 21,
+          "file_sha256": "6eaf39d7323ba58135ca1077d0b27d8de313c8cacf9c2d7aeb72ea7741d128bd"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "label": "Delivery",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "class",
+      "origin": "source-ast",
+      "summary": "Delivery",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Delivery"
+      },
+      "parent": "code:file:9cf5099e90c020cb5033cc7e",
+      "code_symbol": "app/service.py::Delivery",
+      "declaration_id": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "representation_role": "declaration",
+      "code_signature": "Delivery",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "Delivery",
+          "line": 53,
+          "end_line": 53,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "lexical-owner"
+    },
+    {
+      "id": "code:symbol:c78d258971bb4df38e138ab2",
+      "label": "Delivery.__init__",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, store: Store, events: Events | None=None, checker=run_checks, *, execution_version=None",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Delivery.__init__"
+      },
+      "parent": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "code_symbol": "app/service.py::Delivery.__init__",
+      "declaration_id": "code:symbol:c78d258971bb4df38e138ab2",
+      "representation_role": "declaration",
+      "code_signature": "self, store: Store, events: Events | None=None, checker=run_checks, *, execution_version=None",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "Delivery.__init__",
+          "line": 54,
+          "end_line": 54,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:8309bc19b47c503565d33b69",
+      "label": "Delivery.command",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, action: str, **values",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Delivery.command"
+      },
+      "parent": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "code_symbol": "app/service.py::Delivery.command",
+      "declaration_id": "code:symbol:8309bc19b47c503565d33b69",
+      "representation_role": "declaration",
+      "code_signature": "self, action: str, **values",
+      "code_returns": "dict",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "Delivery.command",
+          "line": 61,
+          "end_line": 61,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:ceee617d8226d24d70665fff",
+      "label": "Delivery.commit",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, expected_version: int | None=None",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Delivery.commit"
+      },
+      "parent": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "code_symbol": "app/service.py::Delivery.commit",
+      "declaration_id": "code:symbol:ceee617d8226d24d70665fff",
+      "representation_role": "declaration",
+      "code_signature": "self, expected_version: int | None=None",
+      "code_returns": "dict",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "Delivery.commit",
+          "line": 177,
+          "end_line": 177,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:05ebceff589d5036dd4230a4",
+      "label": "Delivery.execute",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, expected_version: int | None=None",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Delivery.execute"
+      },
+      "parent": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "code_symbol": "app/service.py::Delivery.execute",
+      "declaration_id": "code:symbol:05ebceff589d5036dd4230a4",
+      "representation_role": "declaration",
+      "code_signature": "self, expected_version: int | None=None",
+      "code_returns": "dict",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "Delivery.execute",
+          "line": 196,
+          "end_line": 196,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:b9ebba618541406caee6b87c",
+      "label": "Delivery.execution_progress",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, job: dict, event: str, state: dict",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Delivery.execution_progress"
+      },
+      "parent": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "code_symbol": "app/service.py::Delivery.execution_progress",
+      "declaration_id": "code:symbol:b9ebba618541406caee6b87c",
+      "representation_role": "declaration",
+      "code_signature": "self, job: dict, event: str, state: dict",
+      "code_returns": "None",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "Delivery.execution_progress",
+          "line": 161,
+          "end_line": 161,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "label": "Delivery.prepare",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, expected_version: int | None=None",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Delivery.prepare"
+      },
+      "parent": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "code_symbol": "app/service.py::Delivery.prepare",
+      "declaration_id": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "representation_role": "declaration",
+      "code_signature": "self, expected_version: int | None=None",
+      "code_returns": "dict",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "Delivery.prepare",
+          "line": 105,
+          "end_line": 105,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "label": "Delivery.transition",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, job: dict, event: str",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "Delivery.transition"
+      },
+      "parent": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "code_symbol": "app/service.py::Delivery.transition",
+      "declaration_id": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "representation_role": "declaration",
+      "code_signature": "self, job: dict, event: str",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "Delivery.transition",
+          "line": 58,
+          "end_line": 58,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "label": "authorized",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "job: dict, events=None",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "authorized"
+      },
+      "parent": "code:file:9cf5099e90c020cb5033cc7e",
+      "code_symbol": "app/service.py::authorized",
+      "declaration_id": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "representation_role": "declaration",
+      "code_signature": "job: dict, events=None",
+      "code_returns": "bool",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "authorized",
+          "line": 30,
+          "end_line": 30,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:2452a9ab9af1ca37b1b67fa4",
+      "label": "eligible_grant",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "grant: dict, job: dict, events=None, parent_call_id=None",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "eligible_grant"
+      },
+      "parent": "code:file:9cf5099e90c020cb5033cc7e",
+      "code_symbol": "app/service.py::eligible_grant",
+      "declaration_id": "code:symbol:2452a9ab9af1ca37b1b67fa4",
+      "representation_role": "declaration",
+      "code_signature": "grant: dict, job: dict, events=None, parent_call_id=None",
+      "code_returns": "bool",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "eligible_grant",
+          "line": 9,
+          "end_line": 9,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:20dee38b2e9994210306f743",
+      "label": "eligible_grant.remember",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "name, value",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "eligible_grant.remember"
+      },
+      "parent": "code:symbol:2452a9ab9af1ca37b1b67fa4",
+      "code_symbol": "app/service.py::eligible_grant.remember",
+      "declaration_id": "code:symbol:20dee38b2e9994210306f743",
+      "representation_role": "declaration",
+      "code_signature": "name, value",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "eligible_grant.remember",
+          "line": 11,
+          "end_line": 11,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:086e367baf5fc37e3a976f62",
+      "label": "observation",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "job: dict, inputs=None, outputs=None, uses=()",
+      "source": {
+        "path": "app/service.py",
+        "symbol": "observation"
+      },
+      "parent": "code:file:9cf5099e90c020cb5033cc7e",
+      "code_symbol": "app/service.py::observation",
+      "declaration_id": "code:symbol:086e367baf5fc37e3a976f62",
+      "representation_role": "declaration",
+      "code_signature": "job: dict, inputs=None, outputs=None, uses=()",
+      "code_returns": "dict",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/service.py",
+          "symbol": "observation",
+          "line": 48,
+          "end_line": 48,
+          "file_sha256": "0141ec2b3f045e4376361b80ee9c352f60a7507c676df010a447729340e4c885"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:d7f225d89661998fc71fb72d",
+      "label": "Store",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "class",
+      "origin": "source-ast",
+      "summary": "Store",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store"
+      },
+      "parent": "code:file:76ca9d3cc93b603809926829",
+      "code_symbol": "app/store.py::Store",
+      "declaration_id": "code:symbol:d7f225d89661998fc71fb72d",
+      "representation_role": "declaration",
+      "code_signature": "Store",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store",
+          "line": 9,
+          "end_line": 9,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "lexical-owner"
+    },
+    {
+      "id": "code:symbol:34624dec8bdd924f7b408934",
+      "label": "Store.__init__",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, path: str=':memory:'",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.__init__"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.__init__",
+      "declaration_id": "code:symbol:34624dec8bdd924f7b408934",
+      "representation_role": "declaration",
+      "code_signature": "self, path: str=':memory:'",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.__init__",
+          "line": 10,
+          "end_line": 10,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:92ae8cbbf8b219b9688a971b",
+      "label": "Store.artifact",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, version: int, checksum: str",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.artifact"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.artifact",
+      "declaration_id": "code:symbol:92ae8cbbf8b219b9688a971b",
+      "representation_role": "declaration",
+      "code_signature": "self, version: int, checksum: str",
+      "code_returns": "None",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.artifact",
+          "line": 67,
+          "end_line": 67,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:fd2acbad51962152e1f08e69",
+      "label": "Store.close",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.close"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.close",
+      "declaration_id": "code:symbol:fd2acbad51962152e1f08e69",
+      "representation_role": "declaration",
+      "code_signature": "self",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.close",
+          "line": 80,
+          "end_line": 80,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:9dbbe1279418a9c50ee4c2ac",
+      "label": "Store.execution",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, attempt: str",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.execution"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.execution",
+      "declaration_id": "code:symbol:9dbbe1279418a9c50ee4c2ac",
+      "representation_role": "declaration",
+      "code_signature": "self, attempt: str",
+      "code_returns": "dict | None",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.execution",
+          "line": 53,
+          "end_line": 53,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:b05a19e2db180e25384f0189",
+      "label": "Store.get",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.get"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.get",
+      "declaration_id": "code:symbol:b05a19e2db180e25384f0189",
+      "representation_role": "declaration",
+      "code_signature": "self",
+      "code_returns": "dict",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.get",
+          "line": 47,
+          "end_line": 47,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:99b11d94f588eaf6525372a0",
+      "label": "Store.put",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, job: dict",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.put"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.put",
+      "declaration_id": "code:symbol:99b11d94f588eaf6525372a0",
+      "representation_role": "declaration",
+      "code_signature": "self, job: dict",
+      "code_returns": "None",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.put",
+          "line": 50,
+          "end_line": 50,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:5f1883661df9833b3088c8d9",
+      "label": "Store.put_execution",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, value: dict",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.put_execution"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.put_execution",
+      "declaration_id": "code:symbol:5f1883661df9833b3088c8d9",
+      "representation_role": "declaration",
+      "code_signature": "self, value: dict",
+      "code_returns": "None",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.put_execution",
+          "line": 57,
+          "end_line": 57,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:1568b14a85f8f3a3d75b056f",
+      "label": "Store.record_transition",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, event, source, target, attempt, param_version",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.record_transition"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.record_transition",
+      "declaration_id": "code:symbol:1568b14a85f8f3a3d75b056f",
+      "representation_role": "declaration",
+      "code_signature": "self, event, source, target, attempt, param_version",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.record_transition",
+          "line": 70,
+          "end_line": 70,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:c56a8586aaafbc98be1811de",
+      "label": "Store.snapshot",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.snapshot"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.snapshot",
+      "declaration_id": "code:symbol:c56a8586aaafbc98be1811de",
+      "representation_role": "declaration",
+      "code_signature": "self",
+      "code_returns": "dict",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.snapshot",
+          "line": 74,
+          "end_line": 74,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:ed67c47d295f5b54321a28ae",
+      "label": "Store.transaction",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.transaction"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.transaction",
+      "declaration_id": "code:symbol:ed67c47d295f5b54321a28ae",
+      "representation_role": "declaration",
+      "code_signature": "self",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.transaction",
+          "line": 37,
+          "end_line": 37,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:c9bd57b6d33738de568609a4",
+      "label": "Store.update_execution",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, attempt: str, **changes",
+      "source": {
+        "path": "app/store.py",
+        "symbol": "Store.update_execution"
+      },
+      "parent": "code:symbol:d7f225d89661998fc71fb72d",
+      "code_symbol": "app/store.py::Store.update_execution",
+      "declaration_id": "code:symbol:c9bd57b6d33738de568609a4",
+      "representation_role": "declaration",
+      "code_signature": "self, attempt: str, **changes",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "app/store.py",
+          "symbol": "Store.update_execution",
+          "line": 63,
+          "end_line": 63,
+          "file_sha256": "cddf3b8a1ca0ce279bdda20861ca6b8c62a21e66f5f0220a8acb219129524823"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:9393a8995d74f37788164a8a",
+      "label": "ActivityExecution",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "class",
+      "origin": "source-ast",
+      "summary": "ActivityExecution",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution"
+      },
+      "parent": "code:file:7f2c127dcf9d733ffee2ef48",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution",
+      "declaration_id": "code:symbol:9393a8995d74f37788164a8a",
+      "representation_role": "declaration",
+      "code_signature": "ActivityExecution",
+      "code_returns": null,
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Internal state of one run.",
+        "description": "Internal state of one run. Activity IDs are scoped by attempt and version.",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution",
+          "line": 104,
+          "end_line": 104,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "lexical-owner"
+    },
+    {
+      "id": "code:symbol:253f1b922a77edd16bafc079",
+      "label": "ActivityExecution.__init__",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, capacity: int=2, *, attempt='direct', param_version=1, progress=None",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.__init__"
+      },
+      "parent": "code:symbol:9393a8995d74f37788164a8a",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution.__init__",
+      "declaration_id": "code:symbol:253f1b922a77edd16bafc079",
+      "representation_role": "declaration",
+      "code_signature": "self, capacity: int=2, *, attempt='direct', param_version=1, progress=None",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution.__init__",
+          "line": 105,
+          "end_line": 105,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:9ed0e5cfa88925c558ecc4d8",
+      "label": "ActivityExecution.abort",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.abort"
+      },
+      "parent": "code:symbol:9393a8995d74f37788164a8a",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution.abort",
+      "declaration_id": "code:symbol:9ed0e5cfa88925c558ecc4d8",
+      "representation_role": "declaration",
+      "code_signature": "self",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution.abort",
+          "line": 175,
+          "end_line": 175,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:87a42d10cc738af4e63b6739",
+      "label": "ActivityExecution.body",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.body"
+      },
+      "parent": "code:symbol:9393a8995d74f37788164a8a",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution.body",
+      "declaration_id": "code:symbol:87a42d10cc738af4e63b6739",
+      "representation_role": "declaration",
+      "code_signature": "self",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution.body",
+          "line": 117,
+          "end_line": 117,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:2a550c3bf3c08f778d5e6824",
+      "label": "ActivityExecution.finish",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, activity, passed: bool, *, error=False",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.finish"
+      },
+      "parent": "code:symbol:9393a8995d74f37788164a8a",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution.finish",
+      "declaration_id": "code:symbol:2a550c3bf3c08f778d5e6824",
+      "representation_role": "declaration",
+      "code_signature": "self, activity, passed: bool, *, error=False",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution.finish",
+          "line": 156,
+          "end_line": 156,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:b66875543cbcb46a8d787ae5",
+      "label": "ActivityExecution.invariant",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.invariant"
+      },
+      "parent": "code:symbol:9393a8995d74f37788164a8a",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution.invariant",
+      "declaration_id": "code:symbol:b66875543cbcb46a8d787ae5",
+      "representation_role": "declaration",
+      "code_signature": "self",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution.invariant",
+          "line": 133,
+          "end_line": 133,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:473bdfbe1d013100a32fa34b",
+      "label": "ActivityExecution.join",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.join"
+      },
+      "parent": "code:symbol:9393a8995d74f37788164a8a",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution.join",
+      "declaration_id": "code:symbol:473bdfbe1d013100a32fa34b",
+      "representation_role": "declaration",
+      "code_signature": "self",
+      "code_returns": "bool",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution.join",
+          "line": 167,
+          "end_line": 167,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:fabb159888dc89c5110ecae4",
+      "label": "ActivityExecution.record",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, event, activity, before",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.record"
+      },
+      "parent": "code:symbol:9393a8995d74f37788164a8a",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution.record",
+      "declaration_id": "code:symbol:fabb159888dc89c5110ecae4",
+      "representation_role": "declaration",
+      "code_signature": "self, event, activity, before",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution.record",
+          "line": 126,
+          "end_line": 126,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:afa84fe7c68b7d4dd4973874",
+      "label": "ActivityExecution.snapshot",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.snapshot"
+      },
+      "parent": "code:symbol:9393a8995d74f37788164a8a",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution.snapshot",
+      "declaration_id": "code:symbol:afa84fe7c68b7d4dd4973874",
+      "representation_role": "declaration",
+      "code_signature": "self",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution.snapshot",
+          "line": 121,
+          "end_line": 121,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:26b24a35a9a35985252a342f",
+      "label": "ActivityExecution.start",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "self, activity",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.start"
+      },
+      "parent": "code:symbol:9393a8995d74f37788164a8a",
+      "code_symbol": "bo_stategraph/workflow.py::ActivityExecution.start",
+      "declaration_id": "code:symbol:26b24a35a9a35985252a342f",
+      "representation_role": "declaration",
+      "code_signature": "self, activity",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "ActivityExecution.start",
+          "line": 142,
+          "end_line": 142,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:281c5669376c412f27da6234",
+      "label": "advance",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "state: str, event: str, execution=None, *, attempt=None, param_version=None",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance"
+      },
+      "parent": "code:file:7f2c127dcf9d733ffee2ef48",
+      "code_symbol": "bo_stategraph/workflow.py::advance",
+      "declaration_id": "code:symbol:281c5669376c412f27da6234",
+      "representation_role": "declaration",
+      "code_signature": "state: str, event: str, execution=None, *, attempt=None, param_version=None",
+      "code_returns": "str",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "advance",
+          "line": 55,
+          "end_line": 55,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:25b93257c6eff371285d59a7",
+      "label": "advance_record",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "job, event, store",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance_record"
+      },
+      "parent": "code:file:7f2c127dcf9d733ffee2ef48",
+      "code_symbol": "bo_stategraph/workflow.py::advance_record",
+      "declaration_id": "code:symbol:25b93257c6eff371285d59a7",
+      "representation_role": "declaration",
+      "code_signature": "job, event, store",
+      "code_returns": null,
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Advance within the caller's transaction; storage owns the SQL operation.",
+        "description": "Advance within the caller's transaction; storage owns the SQL operation.",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "advance_record",
+          "line": 78,
+          "end_line": 78,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:dd751ba329e62ff486e51068",
+      "label": "completed",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "execution: dict | None, attempt: str | None, param_version: int | None",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "completed"
+      },
+      "parent": "code:file:7f2c127dcf9d733ffee2ef48",
+      "code_symbol": "bo_stategraph/workflow.py::completed",
+      "declaration_id": "code:symbol:dd751ba329e62ff486e51068",
+      "representation_role": "declaration",
+      "code_signature": "execution: dict | None, attempt: str | None, param_version: int | None",
+      "code_returns": "bool",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "completed",
+          "line": 46,
+          "end_line": 46,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:336a43a51c24b432111ee9c6",
+      "label": "definition",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "definition",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "definition"
+      },
+      "parent": "code:file:7f2c127dcf9d733ffee2ef48",
+      "code_symbol": "bo_stategraph/workflow.py::definition",
+      "declaration_id": "code:symbol:336a43a51c24b432111ee9c6",
+      "representation_role": "declaration",
+      "code_signature": "",
+      "code_returns": "dict",
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "definition",
+          "line": 65,
+          "end_line": 65,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:cd34b6ea35773197ca0c694d",
+      "label": "execution_record",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "state, *, phase, clock, build_id=None, disposition='current'",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "execution_record"
+      },
+      "parent": "code:file:7f2c127dcf9d733ffee2ef48",
+      "code_symbol": "bo_stategraph/workflow.py::execution_record",
+      "declaration_id": "code:symbol:cd34b6ea35773197ca0c694d",
+      "representation_role": "declaration",
+      "code_signature": "state, *, phase, clock, build_id=None, disposition='current'",
+      "code_returns": null,
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Persist the whole actual run, including a run waiting before any worker starts.",
+        "description": "Persist the whole actual run, including a run waiting before any worker starts.",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "execution_record",
+          "line": 70,
+          "end_line": 70,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:cd20aa272c56f2d2d7f63b67",
+      "label": "recover_records",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "job, records",
+      "source": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "recover_records"
+      },
+      "parent": "code:file:7f2c127dcf9d733ffee2ef48",
+      "code_symbol": "bo_stategraph/workflow.py::recover_records",
+      "declaration_id": "code:symbol:cd20aa272c56f2d2d7f63b67",
+      "representation_role": "declaration",
+      "code_signature": "job, records",
+      "code_returns": null,
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Preserve the last worker facts, but mark them unavailable after process loss.",
+        "description": "Preserve the last worker facts, but mark them unavailable after process loss.",
+        "parameters": {},
+        "source": {
+          "path": "bo_stategraph/workflow.py",
+          "symbol": "recover_records",
+          "line": 91,
+          "end_line": 91,
+          "file_sha256": "1b6029f7876b2d1b3e93ef1c4aee90713065bd1e7769f4df232c72a4c0777ab1"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
+    },
+    {
+      "id": "code:symbol:d8b7a3081a2bb767efb2dd29",
+      "label": "main",
+      "kind": "function",
+      "layer": "code",
+      "code_role": "function",
+      "origin": "source-ast",
+      "summary": "main",
+      "source": {
+        "path": "main.py",
+        "symbol": "main"
+      },
+      "parent": "code:file:7c0228306710be2229913308",
+      "code_symbol": "main.py::main",
+      "declaration_id": "code:symbol:d8b7a3081a2bb767efb2dd29",
+      "representation_role": "declaration",
+      "code_signature": "",
+      "code_returns": null,
+      "documentation": {
+        "status": "missing",
+        "format": "python-docstring",
+        "summary": "",
+        "description": "",
+        "parameters": {},
+        "source": {
+          "path": "main.py",
+          "symbol": "main",
+          "line": 9,
+          "end_line": 9,
+          "file_sha256": "3c840ec469108183cb8c9bdd4482ebde8e89c70a1f2f0887ff0b6d0de39307cb"
+        }
+      },
+      "capture": {
+        "in": {},
+        "out": {}
+      },
+      "declaration_scope": "mapped"
     }
   ],
   "edges": [
@@ -4269,6 +6254,2221 @@
           "before"
         ],
         "keywords": {}
+      }
+    },
+    {
+      "id": "code:edge:105ddc1cedbb381000a3e3a3",
+      "from": "code:directory:4e5ef144c51cd25230c144c3",
+      "to": "code:file:1ec9a39a9b39735016047941",
+      "type": "data",
+      "code_relation": "contains",
+      "label": "Contains",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:e4e4904eb8fb72cea9430b87",
+      "from": "code:directory:4e5ef144c51cd25230c144c3",
+      "to": "code:file:9cf5099e90c020cb5033cc7e",
+      "type": "data",
+      "code_relation": "contains",
+      "label": "Contains",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:ef3dfd274b09a04ff6b9047d",
+      "from": "code:directory:4e5ef144c51cd25230c144c3",
+      "to": "code:file:76ca9d3cc93b603809926829",
+      "type": "data",
+      "code_relation": "contains",
+      "label": "Contains",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:e15a7e210d5bf42e8e0aed11",
+      "from": "code:directory:b826df814ec6b3ac3a73a15c",
+      "to": "code:file:7f2c127dcf9d733ffee2ef48",
+      "type": "data",
+      "code_relation": "contains",
+      "label": "Contains",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:ca9b147ce97fd54f08acb84b",
+      "from": "code:directory:7299b59de0b5dad3b622afc3",
+      "to": "code:file:7c0228306710be2229913308",
+      "type": "data",
+      "code_relation": "contains",
+      "label": "Contains",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:706b78dddb4aab03e19c9440",
+      "from": "code:directory:7299b59de0b5dad3b622afc3",
+      "to": "code:directory:4e5ef144c51cd25230c144c3",
+      "type": "data",
+      "code_relation": "contains",
+      "label": "Contains",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:b4265d7953a8a0a4d94bceb3",
+      "from": "code:directory:7299b59de0b5dad3b622afc3",
+      "to": "code:directory:b826df814ec6b3ac3a73a15c",
+      "type": "data",
+      "code_relation": "contains",
+      "label": "Contains",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:2c086a66219b4791ac2ab041",
+      "from": "code:file:1ec9a39a9b39735016047941",
+      "to": "code:symbol:cfaaa229a81e953ec88282c5",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:01450ba47acd1fc12f286a37",
+      "from": "code:file:1ec9a39a9b39735016047941",
+      "to": "code:symbol:b1dea71935cbec1e79f25625",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:9127c9ffc712f344e64fd423",
+      "from": "code:file:1ec9a39a9b39735016047941",
+      "to": "code:symbol:c0c03567b1f67183b997dae3",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:7bfa34ce6d7bc05687f99c4f",
+      "from": "code:symbol:c0c03567b1f67183b997dae3",
+      "to": "code:symbol:67debc23aa53bdfdfdccd8a4",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:ba012e38c10aa18fb1fa4720",
+      "from": "code:file:9cf5099e90c020cb5033cc7e",
+      "to": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:38289eb59862123d32a687a7",
+      "from": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "to": "code:symbol:c78d258971bb4df38e138ab2",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:8a189a280b63e0d56bf579cb",
+      "from": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "to": "code:symbol:8309bc19b47c503565d33b69",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:0e311dc71c24cae4f21b71d6",
+      "from": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "to": "code:symbol:ceee617d8226d24d70665fff",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:6981eb55a01c7da538dbddc7",
+      "from": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "to": "code:symbol:05ebceff589d5036dd4230a4",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:f14895f6f76dbdfccba77e82",
+      "from": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "to": "code:symbol:b9ebba618541406caee6b87c",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:46133ac8191780a36bde4531",
+      "from": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "to": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:91d92a8ffc88a02f73c2093d",
+      "from": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:6f10d4b03faa0c9142a4abac",
+      "from": "code:file:9cf5099e90c020cb5033cc7e",
+      "to": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:c26e3b86bed7fbdf51a23e5c",
+      "from": "code:file:9cf5099e90c020cb5033cc7e",
+      "to": "code:symbol:2452a9ab9af1ca37b1b67fa4",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:4ccccd412fb507878b04122f",
+      "from": "code:symbol:2452a9ab9af1ca37b1b67fa4",
+      "to": "code:symbol:20dee38b2e9994210306f743",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:a2b2b4dc161bcc14c79d5e98",
+      "from": "code:file:9cf5099e90c020cb5033cc7e",
+      "to": "code:symbol:086e367baf5fc37e3a976f62",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:e7123750fe46fa0518538b66",
+      "from": "code:file:76ca9d3cc93b603809926829",
+      "to": "code:symbol:d7f225d89661998fc71fb72d",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:1e9c87061cfc15d480c2415c",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:34624dec8bdd924f7b408934",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:0b0e6c89f8e0aae13c4376bc",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:92ae8cbbf8b219b9688a971b",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:1bf86cb9471a657da4f9a95e",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:fd2acbad51962152e1f08e69",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:898a29560235207635addb41",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:9dbbe1279418a9c50ee4c2ac",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:56f2f8dbe5fc5b4449c8e2e4",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:b05a19e2db180e25384f0189",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:f820eaf55a33f0839a01f10e",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:99b11d94f588eaf6525372a0",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:6f32b3d60220ba6cf3381f92",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:5f1883661df9833b3088c8d9",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:aa5cecc6aacb9ec12a6acca8",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:1568b14a85f8f3a3d75b056f",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:13dd65f2aa1bd619709d22a4",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:c56a8586aaafbc98be1811de",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:3b5a1493c003da576129d36b",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:ed67c47d295f5b54321a28ae",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:78e491262020ffcd54cba90c",
+      "from": "code:symbol:d7f225d89661998fc71fb72d",
+      "to": "code:symbol:c9bd57b6d33738de568609a4",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:b56ccd173fae1948139e35fd",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:9393a8995d74f37788164a8a",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:7f8aa7c8467f6f990784cf4e",
+      "from": "code:symbol:9393a8995d74f37788164a8a",
+      "to": "code:symbol:253f1b922a77edd16bafc079",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:642db99b3e59524a7e84e9f0",
+      "from": "code:symbol:9393a8995d74f37788164a8a",
+      "to": "code:symbol:9ed0e5cfa88925c558ecc4d8",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:3a47584ef2598c73601e0f31",
+      "from": "code:symbol:9393a8995d74f37788164a8a",
+      "to": "code:symbol:87a42d10cc738af4e63b6739",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:a6ff046e51f7c16a19bcd2f8",
+      "from": "code:symbol:9393a8995d74f37788164a8a",
+      "to": "code:symbol:2a550c3bf3c08f778d5e6824",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:100debaabc92228a095404f7",
+      "from": "code:symbol:9393a8995d74f37788164a8a",
+      "to": "code:symbol:b66875543cbcb46a8d787ae5",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:5e13bf98e974f2a98d8a60c1",
+      "from": "code:symbol:9393a8995d74f37788164a8a",
+      "to": "code:symbol:473bdfbe1d013100a32fa34b",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:9d3872782d2f21fcd8c6e998",
+      "from": "code:symbol:9393a8995d74f37788164a8a",
+      "to": "code:symbol:fabb159888dc89c5110ecae4",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:20e05a126c037ae6af08ba04",
+      "from": "code:symbol:9393a8995d74f37788164a8a",
+      "to": "code:symbol:afa84fe7c68b7d4dd4973874",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:518b7a5b1c3fab489fd16fc2",
+      "from": "code:symbol:9393a8995d74f37788164a8a",
+      "to": "code:symbol:26b24a35a9a35985252a342f",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:0f345dc347b82d0f70c844ac",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:28b71e5980164bdd2e42a3b7",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:25b93257c6eff371285d59a7",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:8f0f958dece3576fd363d8f2",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:dd751ba329e62ff486e51068",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:627f66a0bdbc318b1d86582a",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:336a43a51c24b432111ee9c6",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:b182abd32d8ae32c7dcf7707",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:cd34b6ea35773197ca0c694d",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:61beb6a9df23297f51f1f555",
+      "from": "code:file:7f2c127dcf9d733ffee2ef48",
+      "to": "code:symbol:cd20aa272c56f2d2d7f63b67",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:4f7dcc66ff4d8224724c121e",
+      "from": "code:file:7c0228306710be2229913308",
+      "to": "code:symbol:d8b7a3081a2bb767efb2dd29",
+      "type": "data",
+      "code_relation": "defines",
+      "label": "Defines",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven"
+    },
+    {
+      "id": "code:edge:899fb75a74644ceb4fb556fe",
+      "from": "code:symbol:c0c03567b1f67183b997dae3",
+      "to": "code:symbol:9393a8995d74f37788164a8a",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "ActivityExecution",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 16,
+        "column": 27,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:ecdbe7f18d64e5f541fee933",
+      "from": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "to": "code:symbol:2452a9ab9af1ca37b1b67fa4",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "eligible_grant",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 37,
+        "column": 15,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:b7b850bfd70bd444c53e8c24",
+      "from": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "to": "code:symbol:25b93257c6eff371285d59a7",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "advance_record",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 59,
+        "column": 8,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:d58a147b63bf737763276719",
+      "from": "code:symbol:8309bc19b47c503565d33b69",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 70,
+        "column": 16,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:a6aa58230742c0cccb3fd998",
+      "from": "code:symbol:8309bc19b47c503565d33b69",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 95,
+        "column": 16,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:96339c9cad932fa452252588",
+      "from": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "to": "code:symbol:9393a8995d74f37788164a8a",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "ActivityExecution",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 112,
+        "column": 24,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:a2b1966dbe0be250a777aae2",
+      "from": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "to": "code:symbol:cd34b6ea35773197ca0c694d",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "execution_record",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 114,
+        "column": 37,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:44190db58a721293dbcb56b2",
+      "from": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "to": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "authorized",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 116,
+        "column": 20,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:379dea5d3d8642332f1d29ba",
+      "from": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 118,
+        "column": 16,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:79083f4f83eb944bd1c51fa8",
+      "from": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 121,
+        "column": 12,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:ec24c23e1f6f65fe8e4c5980",
+      "from": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "to": "code:symbol:dd751ba329e62ff486e51068",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "completed",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 128,
+        "column": 19,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:10d07f6797848e9bee5945d9",
+      "from": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 136,
+        "column": 20,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:31fad5acd71e54569f4b77a4",
+      "from": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 152,
+        "column": 16,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:713c541157a40ed138395a67",
+      "from": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 154,
+        "column": 16,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:f63debfa91cebbff436229be",
+      "from": "code:symbol:b9ebba618541406caee6b87c",
+      "to": "code:symbol:cd34b6ea35773197ca0c694d",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "execution_record",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 165,
+        "column": 37,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:02248f0dcc294425af8cadc4",
+      "from": "code:symbol:ceee617d8226d24d70665fff",
+      "to": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "authorized",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 182,
+        "column": 20,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:5cde4a666ed8743043eff699",
+      "from": "code:symbol:ceee617d8226d24d70665fff",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 186,
+        "column": 16,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:7ca6c4f1b0d2ae74b7c7c2a0",
+      "from": "code:symbol:ceee617d8226d24d70665fff",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 190,
+        "column": 12,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:1bc2b440c0df6c6bc15f6e69",
+      "from": "code:symbol:05ebceff589d5036dd4230a4",
+      "to": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.prepare",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 199,
+        "column": 8,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:bdc889a9525e4adef7fde3c8",
+      "from": "code:symbol:05ebceff589d5036dd4230a4",
+      "to": "code:symbol:ceee617d8226d24d70665fff",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.commit",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 200,
+        "column": 15,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:260e5683cc3c46fefab28571",
+      "from": "code:symbol:34624dec8bdd924f7b408934",
+      "to": "code:symbol:ed67c47d295f5b54321a28ae",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transaction",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 24,
+        "column": 17,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:e8207db27255a1e3c1ca7c73",
+      "from": "code:symbol:34624dec8bdd924f7b408934",
+      "to": "code:symbol:99b11d94f588eaf6525372a0",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.put",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 25,
+        "column": 16,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:e57bff7ebdc20b806f9368ee",
+      "from": "code:symbol:34624dec8bdd924f7b408934",
+      "to": "code:symbol:ed67c47d295f5b54321a28ae",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.transaction",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 30,
+        "column": 17,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:d860370277c417f75f9bc2c3",
+      "from": "code:symbol:34624dec8bdd924f7b408934",
+      "to": "code:symbol:b05a19e2db180e25384f0189",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.get",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 31,
+        "column": 20,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:2466602c23a4ec66e8d9d897",
+      "from": "code:symbol:34624dec8bdd924f7b408934",
+      "to": "code:symbol:cd20aa272c56f2d2d7f63b67",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "recover_records",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 33,
+        "column": 30,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:0c400673678d2b71f3fec557",
+      "from": "code:symbol:34624dec8bdd924f7b408934",
+      "to": "code:symbol:5f1883661df9833b3088c8d9",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.put_execution",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 33,
+        "column": 61,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:a5c09cbb372f00db3c9d87d4",
+      "from": "code:symbol:34624dec8bdd924f7b408934",
+      "to": "code:symbol:99b11d94f588eaf6525372a0",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.put",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 34,
+        "column": 16,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:859878e0a8b43252d4a99388",
+      "from": "code:symbol:5f1883661df9833b3088c8d9",
+      "to": "code:symbol:9dbbe1279418a9c50ee4c2ac",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.execution",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 58,
+        "column": 19,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:813bfb5654b53ff988153c0d",
+      "from": "code:symbol:c9bd57b6d33738de568609a4",
+      "to": "code:symbol:9dbbe1279418a9c50ee4c2ac",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.execution",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 64,
+        "column": 14,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:e8559bcc216e42dcd8bd3641",
+      "from": "code:symbol:c9bd57b6d33738de568609a4",
+      "to": "code:symbol:5f1883661df9833b3088c8d9",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.put_execution",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 65,
+        "column": 17,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:3dcb5c33468bf3c52d75fd9a",
+      "from": "code:symbol:c56a8586aaafbc98be1811de",
+      "to": "code:symbol:b05a19e2db180e25384f0189",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.get",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 76,
+        "column": 22,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:f5ef7fdc4ae89af65508ba89",
+      "from": "code:symbol:281c5669376c412f27da6234",
+      "to": "code:symbol:336a43a51c24b432111ee9c6",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "definition",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 56,
+        "column": 32,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:c59bd803eb612129850534f9",
+      "from": "code:symbol:25b93257c6eff371285d59a7",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "advance",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 80,
+        "column": 19,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:fdd570188608f5754d60d6d1",
+      "from": "code:symbol:afa84fe7c68b7d4dd4973874",
+      "to": "code:symbol:87a42d10cc738af4e63b6739",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.body",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 124,
+        "column": 22,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:11df51a1b7669a8f37ffffdf",
+      "from": "code:symbol:fabb159888dc89c5110ecae4",
+      "to": "code:symbol:b66875543cbcb46a8d787ae5",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.invariant",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 127,
+        "column": 8,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:9eea6f6fb23c2da1849fcd20",
+      "from": "code:symbol:fabb159888dc89c5110ecae4",
+      "to": "code:symbol:87a42d10cc738af4e63b6739",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.body",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 128,
+        "column": 107,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:02a105d338dc7eeabedfc0b8",
+      "from": "code:symbol:fabb159888dc89c5110ecae4",
+      "to": "code:symbol:afa84fe7c68b7d4dd4973874",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.snapshot",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 130,
+        "column": 45,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:1218b57a1a3e7d446c63329d",
+      "from": "code:symbol:26b24a35a9a35985252a342f",
+      "to": "code:symbol:87a42d10cc738af4e63b6739",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.body",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 149,
+        "column": 27,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:84330f371ad0af6a6caa7bcb",
+      "from": "code:symbol:26b24a35a9a35985252a342f",
+      "to": "code:symbol:fabb159888dc89c5110ecae4",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.record",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 149,
+        "column": 87,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:11ec300c82764bf4e25419aa",
+      "from": "code:symbol:26b24a35a9a35985252a342f",
+      "to": "code:symbol:87a42d10cc738af4e63b6739",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.body",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 151,
+        "column": 19,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:e385a167b860bb6a2220938b",
+      "from": "code:symbol:26b24a35a9a35985252a342f",
+      "to": "code:symbol:fabb159888dc89c5110ecae4",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.record",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 154,
+        "column": 60,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:64816515155369a0b332894a",
+      "from": "code:symbol:2a550c3bf3c08f778d5e6824",
+      "to": "code:symbol:87a42d10cc738af4e63b6739",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.body",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 160,
+        "column": 19,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:c6433fa641c59ba961687af7",
+      "from": "code:symbol:2a550c3bf3c08f778d5e6824",
+      "to": "code:symbol:fabb159888dc89c5110ecae4",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.record",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 165,
+        "column": 12,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:76e5add19b2ca810f73430a4",
+      "from": "code:symbol:473bdfbe1d013100a32fa34b",
+      "to": "code:symbol:87a42d10cc738af4e63b6739",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.body",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 170,
+        "column": 19,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:cb1d78559d3b9bb5451c9f52",
+      "from": "code:symbol:473bdfbe1d013100a32fa34b",
+      "to": "code:symbol:fabb159888dc89c5110ecae4",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.record",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 172,
+        "column": 63,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:280c9a02469f236aedfc4aa4",
+      "from": "code:symbol:9ed0e5cfa88925c558ecc4d8",
+      "to": "code:symbol:87a42d10cc738af4e63b6739",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.body",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 178,
+        "column": 19,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:ec1d916477ad37872c0a8e8e",
+      "from": "code:symbol:9ed0e5cfa88925c558ecc4d8",
+      "to": "code:symbol:fabb159888dc89c5110ecae4",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "self.record",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 181,
+        "column": 39,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:c93d6875cf6dddb258cc442b",
+      "from": "code:symbol:d8b7a3081a2bb767efb2dd29",
+      "to": "code:symbol:d7f225d89661998fc71fb72d",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "Store",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 10,
+        "column": 12,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:edge:83608d8550926ea82170b5f2",
+      "from": "code:symbol:d8b7a3081a2bb767efb2dd29",
+      "to": "code:symbol:2e051e1db4a99d0174b6e7eb",
+      "type": "data",
+      "code_relation": "calls",
+      "label": "Delivery",
+      "origin": "source-ast",
+      "evidence": "Source declaration and static syntax reference; execution unproven",
+      "source_evidence": {
+        "line": 11,
+        "column": 10,
+        "evidence": "python syntax reference; execution unproven"
+      }
+    },
+    {
+      "id": "code:binding:c31a3c2d91eebae4557e0a57",
+      "from": "flow.input",
+      "to": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.prepare"
+      }
+    },
+    {
+      "id": "code:binding:f8b57c459d6d52e02296b056",
+      "from": "flow.permission",
+      "to": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "authorized"
+      }
+    },
+    {
+      "id": "code:binding:6bba705b9a5ec2166422cb51",
+      "from": "flow.checks",
+      "to": "code:symbol:c0c03567b1f67183b997dae3",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/checks.py",
+        "symbol": "run_checks"
+      }
+    },
+    {
+      "id": "code:binding:336064050b0565f76ef7e8e8",
+      "from": "flow.commit",
+      "to": "code:symbol:ceee617d8226d24d70665fff",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.commit"
+      }
+    },
+    {
+      "id": "code:binding:f02b9753819a2a9104bf7035",
+      "from": "flow.wait",
+      "to": "code:symbol:8309bc19b47c503565d33b69",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.command"
+      }
+    },
+    {
+      "id": "code:binding:7bd238587e6537308ea267ee",
+      "from": "read",
+      "to": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.prepare"
+      }
+    },
+    {
+      "id": "code:binding:70f7b29617599072ab8a8ebd",
+      "from": "execute",
+      "to": "code:symbol:05ebceff589d5036dd4230a4",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.execute"
+      }
+    },
+    {
+      "id": "code:binding:63b204dfaad6be4b93de7eb1",
+      "from": "authorize",
+      "to": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "authorized"
+      }
+    },
+    {
+      "id": "code:binding:e3081cd0f79e0c318b78b482",
+      "from": "grant",
+      "to": "code:symbol:2452a9ab9af1ca37b1b67fa4",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "eligible_grant"
+      }
+    },
+    {
+      "id": "code:binding:92e15f8d19367ec550cbd3b7",
+      "from": "workers",
+      "to": "code:symbol:26b24a35a9a35985252a342f",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.start"
+      }
+    },
+    {
+      "id": "code:binding:7a4c4274b1f9e48de760fed8",
+      "from": "checksum",
+      "to": "code:symbol:cfaaa229a81e953ec88282c5",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/checks.py",
+        "symbol": "checksum"
+      }
+    },
+    {
+      "id": "code:binding:637d90bf1030718cdcf7cb0a",
+      "from": "privacy",
+      "to": "code:symbol:b1dea71935cbec1e79f25625",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/checks.py",
+        "symbol": "privacy_check"
+      }
+    },
+    {
+      "id": "code:binding:a82f9bc3c1dbcae62d03e39f",
+      "from": "join",
+      "to": "code:symbol:473bdfbe1d013100a32fa34b",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.join"
+      }
+    },
+    {
+      "id": "code:binding:c85b1731a4558f095c6e6621",
+      "from": "execution.init",
+      "to": "code:symbol:253f1b922a77edd16bafc079",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.__init__"
+      }
+    },
+    {
+      "id": "code:binding:245afb767661cce22f8d6dd8",
+      "from": "execution.finish",
+      "to": "code:symbol:2a550c3bf3c08f778d5e6824",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.finish"
+      }
+    },
+    {
+      "id": "code:binding:71b2c37384badb4043b45b60",
+      "from": "execution.invariant",
+      "to": "code:symbol:b66875543cbcb46a8d787ae5",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.invariant"
+      }
+    },
+    {
+      "id": "code:binding:30e5c60e704c0c9bfbd68e8f",
+      "from": "execution.snapshot",
+      "to": "code:symbol:afa84fe7c68b7d4dd4973874",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.snapshot"
+      }
+    },
+    {
+      "id": "code:binding:d938abf18693beca2e200aaa",
+      "from": "execution.progress",
+      "to": "code:symbol:b9ebba618541406caee6b87c",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.execution_progress"
+      }
+    },
+    {
+      "id": "code:binding:367329e22a7346807ea832db",
+      "from": "execution.abort",
+      "to": "code:symbol:9ed0e5cfa88925c558ecc4d8",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.abort"
+      }
+    },
+    {
+      "id": "code:binding:3e87b0329cdf617847a632f3",
+      "from": "execution.lookup",
+      "to": "code:symbol:9dbbe1279418a9c50ee4c2ac",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.execution"
+      }
+    },
+    {
+      "id": "code:binding:29086c538968571da6b33ffa",
+      "from": "execution.save",
+      "to": "code:symbol:5f1883661df9833b3088c8d9",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.put_execution"
+      }
+    },
+    {
+      "id": "code:binding:e4a52208edceda1fce155d83",
+      "from": "execution.update",
+      "to": "code:symbol:c9bd57b6d33738de568609a4",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.update_execution"
+      }
+    },
+    {
+      "id": "code:binding:0f31f0e202f8438f2fd3df82",
+      "from": "execution.all",
+      "to": "code:symbol:c56a8586aaafbc98be1811de",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.snapshot"
+      }
+    },
+    {
+      "id": "code:binding:733249445250769773d37a97",
+      "from": "recheck",
+      "to": "code:symbol:ceee617d8226d24d70665fff",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.commit"
+      }
+    },
+    {
+      "id": "code:binding:b460b1877f5b959db530867b",
+      "from": "commit",
+      "to": "code:symbol:ceee617d8226d24d70665fff",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.commit"
+      }
+    },
+    {
+      "id": "code:binding:69aa6499fbbd095cbdf51f05",
+      "from": "effect.storage",
+      "to": "code:symbol:92ae8cbbf8b219b9688a971b",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.artifact"
+      }
+    },
+    {
+      "id": "code:binding:47fde352e05a2cb8d8b47e66",
+      "from": "job.storage",
+      "to": "code:symbol:99b11d94f588eaf6525372a0",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.put"
+      }
+    },
+    {
+      "id": "code:binding:96d43ad90106b16f76e84023",
+      "from": "execution.record",
+      "to": "code:symbol:cd34b6ea35773197ca0c694d",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "execution_record"
+      }
+    },
+    {
+      "id": "code:binding:a00d8d6fa19bcb85a0554e86",
+      "from": "execution.advance",
+      "to": "code:symbol:25b93257c6eff371285d59a7",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance_record"
+      }
+    },
+    {
+      "id": "code:binding:cc24c4ce6a9df7458951ab58",
+      "from": "execution.recover",
+      "to": "code:symbol:cd20aa272c56f2d2d7f63b67",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "recover_records"
+      }
+    },
+    {
+      "id": "code:binding:56f45499d354854b7d18709e",
+      "from": "transition.storage",
+      "to": "code:symbol:1568b14a85f8f3a3d75b056f",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.record_transition"
+      }
+    },
+    {
+      "id": "code:binding:509d53eb66a6699f74414d64",
+      "from": "wait",
+      "to": "code:symbol:48c1d6066edac990e4f8ab2b",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.prepare"
+      }
+    },
+    {
+      "id": "code:binding:e0d3fac4ee9afb0f17833c8e",
+      "from": "change",
+      "to": "code:symbol:8309bc19b47c503565d33b69",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.command"
+      }
+    },
+    {
+      "id": "code:binding:41e11228c4370b24f8074fb7",
+      "from": "state.draft",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance"
+      }
+    },
+    {
+      "id": "code:binding:4791bebeb08eedf2b9a46add",
+      "from": "state.waiting",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance"
+      }
+    },
+    {
+      "id": "code:binding:e6012432f606d21924d72069",
+      "from": "state.checking",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance"
+      }
+    },
+    {
+      "id": "code:binding:903f8ba968f942a4567a310a",
+      "from": "state.ready",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance"
+      }
+    },
+    {
+      "id": "code:binding:2327e09240fe479fe6b2ee06",
+      "from": "state.failed",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance"
+      }
+    },
+    {
+      "id": "code:binding:eb538680f654970b5d081de9",
+      "from": "state.cancelled",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance"
+      }
+    },
+    {
+      "id": "code:binding:92b18436f450bd486fda8a4b",
+      "from": "state.completed",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-binding",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance"
+      }
+    },
+    {
+      "id": "code:binding:08b52dd1590140e2d2063d7e",
+      "from": "code.849866902721a913",
+      "to": "code:symbol:cd34b6ea35773197ca0c694d",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "execution_record"
+      }
+    },
+    {
+      "id": "code:binding:72e9e662400cfc3b060e6ab6",
+      "from": "code.8c566caec0ef95e9",
+      "to": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "authorized"
+      }
+    },
+    {
+      "id": "code:binding:6ae4290321118c5086235212",
+      "from": "code.9ab020fa53084121",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.transition"
+      }
+    },
+    {
+      "id": "code:binding:a8ecca77e88de145db433df8",
+      "from": "code.9798528e4c59a114",
+      "to": "code:symbol:dd751ba329e62ff486e51068",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "completed"
+      }
+    },
+    {
+      "id": "code:binding:bed06fef105bc65251e9f683",
+      "from": "code.1bba09184421903e",
+      "to": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "authorized"
+      }
+    },
+    {
+      "id": "code:binding:6184056c0938647a1a9451c5",
+      "from": "code.abc699d67116f986",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.transition"
+      }
+    },
+    {
+      "id": "code:binding:931d0643d2f7dbec86fe5f6c",
+      "from": "code.52990f65c6aa2534",
+      "to": "code:symbol:66a324bf86eda9e0131b4f1c",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.transition"
+      }
+    },
+    {
+      "id": "code:binding:979445aa707a2963d3f31d1c",
+      "from": "code.0fc7de430e9f9b0b",
+      "to": "code:symbol:ceee617d8226d24d70665fff",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.commit"
+      }
+    },
+    {
+      "id": "code:binding:f3047845e7825381585b0815",
+      "from": "code.8bf1a3eb12254bfb",
+      "to": "code:symbol:87a42d10cc738af4e63b6739",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.body"
+      }
+    },
+    {
+      "id": "code:binding:ad6775ca28e29136fea7e98c",
+      "from": "code.40b4483bb7508823",
+      "to": "code:symbol:fabb159888dc89c5110ecae4",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "ActivityExecution.record"
+      }
+    },
+    {
+      "id": "code:binding:ce82b8c39de8de9e3def392d",
+      "from": "code.137c932e9a5276a2",
+      "to": "code:symbol:b05a19e2db180e25384f0189",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.get"
+      }
+    },
+    {
+      "id": "code:binding:d0cdd21ff51e8e016d93c550",
+      "from": "code.a583b3ad67e50561",
+      "to": "code:symbol:281c5669376c412f27da6234",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "advance"
+      }
+    },
+    {
+      "id": "code:binding:6b0ecc6b45966bff97c0e23b",
+      "from": "code.6a061f2f8e811623",
+      "to": "code:symbol:cd34b6ea35773197ca0c694d",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "execution_record"
+      }
+    },
+    {
+      "id": "code:binding:1ea9085b3af2221dd1b1c034",
+      "from": "code.a91cf5631a56d8f8",
+      "to": "code:symbol:709c40b6bf07d33c9e7e9146",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "authorized"
+      }
+    },
+    {
+      "id": "code:binding:78bd2165fa4c39d4e734d4c6",
+      "from": "code.816d7d5bedb84c56",
+      "to": "code:symbol:dd751ba329e62ff486e51068",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "completed"
+      }
+    },
+    {
+      "id": "code:binding:a146df76628a36ad19dac719",
+      "from": "implementation.67debc23aa53bdfd",
+      "to": "code:symbol:67debc23aa53bdfdfdccd8a4",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/checks.py",
+        "symbol": "run_checks.work"
+      }
+    },
+    {
+      "id": "code:binding:acdbef668646f1480dd8800d",
+      "from": "implementation.c78d258971bb4df3",
+      "to": "code:symbol:c78d258971bb4df38e138ab2",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "Delivery.__init__"
+      }
+    },
+    {
+      "id": "code:binding:9adb3ea6bb4d097911496b1d",
+      "from": "implementation.20dee38b2e999421",
+      "to": "code:symbol:20dee38b2e9994210306f743",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "eligible_grant.remember"
+      }
+    },
+    {
+      "id": "code:binding:ade8bb6268bea1e3a5025cac",
+      "from": "implementation.086e367baf5fc37e",
+      "to": "code:symbol:086e367baf5fc37e3a976f62",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/service.py",
+        "symbol": "observation"
+      }
+    },
+    {
+      "id": "code:binding:8988865698cbc74b3e2847bc",
+      "from": "implementation.34624dec8bdd924f",
+      "to": "code:symbol:34624dec8bdd924f7b408934",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.__init__"
+      }
+    },
+    {
+      "id": "code:binding:2c90958330e9cd6b2808c99c",
+      "from": "implementation.fd2acbad51962152",
+      "to": "code:symbol:fd2acbad51962152e1f08e69",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.close"
+      }
+    },
+    {
+      "id": "code:binding:406335bc17d87bc285fcd1ee",
+      "from": "implementation.ed67c47d295f5b54",
+      "to": "code:symbol:ed67c47d295f5b54321a28ae",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "app/store.py",
+        "symbol": "Store.transaction"
+      }
+    },
+    {
+      "id": "code:binding:1ecea449cd2d40979e3d3a44",
+      "from": "implementation.336a43a51c24b432",
+      "to": "code:symbol:336a43a51c24b432111ee9c6",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "bo_stategraph/workflow.py",
+        "symbol": "definition"
+      }
+    },
+    {
+      "id": "code:binding:151f6c2a5754e3c74ead3cf8",
+      "from": "implementation.d8b7a3081a2bb767",
+      "to": "code:symbol:d8b7a3081a2bb767efb2dd29",
+      "type": "data",
+      "code_relation": "maps",
+      "mapping_role": "source-reference",
+      "label": "Source binding",
+      "origin": "source-ast",
+      "evidence": "Exact source declaration binding; not an observed call",
+      "source_binding": {
+        "path": "main.py",
+        "symbol": "main"
       }
     }
   ],

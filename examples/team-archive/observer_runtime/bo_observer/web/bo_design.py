@@ -82,20 +82,33 @@ class BODesign:
         }
 
     def focus(self, nodes, label="", decision=None):
+        """Resolve discussion IDs through the complete design graph, including edges."""
         doc = self.document()
         identities = self._identities(doc)
+        graph = self.view()["model"]
+        graph_nodes = {item["id"] for item in graph["nodes"]}
+        graph_edges = {item["id"]: item for item in graph["edges"]}
         if decision:
             item = next((d for d in doc["decisions"] if d["id"] == decision), None)
             if item is None:
                 raise ValueError("Discovery question not found")
-            affected = list(item["affects"])
-            for net in doc["networks"]:
-                for edge in net["edges"]:
-                    if edge["id"] in affected:
-                        affected.extend([edge["from"], edge["to"]])
-            nodes = [n for n in affected if n in identities]
-        ids = sorted({mid for node in nodes for mid in identities.get(node, [node])})
-        known = {mid for values in identities.values() for mid in values}
+            nodes = item["affects"]
+        resolved = set()
+        for reference in nodes:
+            if doc.get("schema") == "business-discovery/v2":
+                from ..concepts import resolve
+
+                references = [resolve(doc, reference)]
+            else:
+                references = identities.get(reference, [reference])
+            for reference in references:
+                if reference in graph_edges:
+                    edge = graph_edges[reference]
+                    resolved.update((edge["from"], edge["to"]))
+                else:
+                    resolved.add(reference)
+        ids = sorted(resolved)
+        known = graph_nodes | {mid for values in identities.values() for mid in values}
         cfg = read(self.root / "sync.json") if (self.root / "sync.json").exists() else {}
         if cfg.get("model"):
             from ..model_io import read_model
@@ -123,83 +136,25 @@ class BODesign:
     def view(self):
         """A declaration-only projection using reserved implementation node IDs."""
         doc = self.document()
-        raw = [n for net in doc["networks"] for n in net["nodes"]]
-        identities = {key: values[0] for key, values in self._identities(doc).items()}
-        if len(set(identities.values())) != len(identities):
-            raise ValueError(
-                "Design nodes require unique primary IDs; represent shared relations with edges"
-            )
-        nodes = []
-        for n in raw:
-            kind = {"action": "action", "condition": "decision", "event": "data"}.get(
-                n["kind"], n["kind"]
-            )
-            parent = identities.get(n.get("parent"))
-            if n.get("parent") and parent is None:
-                raise ValueError("Design node parent not found: " + n["id"])
-            nodes.append(
-                {
-                    "id": identities[n["id"]],
-                    "label": n["label"],
-                    "kind": kind,
-                    "layer": (
-                        "business" if kind == "action" else "state" if kind == "state" else "design"
-                    ),
-                    "summary": n.get("summary", ""),
-                    "origin": "design",
-                    "capture": {},
-                    **({"parent": parent} if parent else {}),
-                }
-            )
-        # Reject containment cycles rather than hiding them as an empty graph.
-        parents = {n["id"]: n.get("parent") for n in nodes}
-        for ident in parents:
-            seen = set()
-            while ident is not None:
-                if ident in seen:
-                    raise ValueError("Cycle in design node hierarchy")
-                seen.add(ident)
-                ident = parents.get(ident)
-        edges = [
-            {
-                "id": e["id"],
-                "from": identities[e["from"]],
-                "to": identities[e["to"]],
-                "type": {"event": "flow", "retry": "flow", "cancel": "flow"}.get(
-                    e["relation"], e["relation"]
-                ),
-                "label": e["label"],
-                "origin": "design",
-            }
-            for net in doc["networks"]
-            for e in net["edges"]
-        ]
         project = (
-            read(self.root / "intent.json").get("project_id")
-            if (self.root / "intent.json").exists()
-            else None
+            (
+                read(self.root / "intent.json").get("project_id")
+                if (self.root / "intent.json").exists()
+                else None
+            )
+            or doc.get("project_id")
+            or self.root.name
         )
-        project = project or doc.get("project_id") or self.root.name
-        machine = {"values": [], "labels": {}, "transitions": []}
-        model = {
-            "project_id": project,
-            "nodes": nodes,
-            "edges": edges,
-            "machine": machine,
-            "graph_roots": [n["id"] for n in nodes if not n.get("parent")],
-            "presentation": {"subject": doc.get("title", "Project design")},
-        }
-        from ..graph.relations.model import discovery as construct_relations
+        if doc.get("schema") == "business-discovery/v2":
+            from ..concepts import assemble
 
-        registered = construct_relations(doc, identities)
-        if registered is not None:
-            model["edges"] = registered["edges"]
-            model["relation_registry"] = registered["relation_registry"]
-        if doc.get("policy"):
-            from ..policy.projection import project as project_policy
+            model = assemble(doc)
+            model["project_id"] = project
+        else:
+            from .design_legacy import legacy_model
 
-            model["policy"] = doc["policy"]
-            model = project_policy(model, bound=False)
+            identities = {key: values[0] for key, values in self._identities(doc).items()}
+            model = legacy_model(doc, identities, project)
         return {
             "stage": "design",
             "layout_id": doc.get("layout_id", project),
@@ -215,7 +170,7 @@ class BODesign:
             "available_cases": ["live"],
         }
 
-    def preview(self, url, nodes=(), *, max_nodes=12):
+    def preview(self, url, nodes=(), *, max_nodes=12, view="business"):
         """Derive a bounded conversation diagram from the same Web design data."""
         from ..graph.focus_graph import extract, markdown
 
@@ -229,20 +184,71 @@ class BODesign:
             raise ValueError("preview requires an HTTP graph URL without credentials")
         if any(c in url for c in '\r\n<>"()\\'):
             raise ValueError("unsafe graph URL")
-        view = self.view()
-        model = {**view["model"], "revision": view["manifest"]["build_id"]}
-        anchors = list(nodes) or model["graph_roots"][:max_nodes]
+        envelope = self.view()
+        document = self.document()
+        model = {**envelope["model"], "revision": envelope["manifest"]["build_id"]}
+        if view not in {"business", "state", "rules", "all"}:
+            raise ValueError("Unknown conceptual view")
+        if nodes and document.get("schema") == "business-discovery/v2":
+            from ..concepts import resolve
+
+            edges = {edge["id"]: edge for edge in model["edges"]}
+            resolved = []
+            for reference in nodes:
+                ident = resolve(document, reference)
+                # A question may concern a transition or a cross-model edge.
+                # Preserve both endpoints instead of treating the edge as a node.
+                edge = edges.get(ident)
+                resolved.extend((edge["from"], edge["to"]) if edge else [ident])
+            nodes = list(dict.fromkeys(resolved))
+        candidate_nodes = [
+            item
+            for item in model["nodes"]
+            if view == "all"
+            or item.get("layer") == view
+            or (view == "rules" and item.get("policy_role"))
+        ]
+        # Put decisions and transitions before their lower-level input detail in
+        # a bounded conversation preview. Otherwise a rule view can omit the very
+        # operation result that the user is being asked to confirm.
+        priority = {
+            "rule_operation": 0,
+            "transition": 0,
+            "state": 1,
+            "state_model": 1,
+            "rule_expression": 1,
+            "event": 2,
+            "guard": 2,
+            "fact": 3,
+            "rule_predicate": 4,
+        }
+        if view in {"state", "rules"}:
+            candidate_nodes.sort(key=lambda item: priority.get(item.get("concept_kind"), 5))
+        candidates = [item["id"] for item in candidate_nodes]
+        # The original format mixes conditions and states into its business
+        # network. Preserve that complete overview until the project migrates.
+        if view == "business" and document.get("schema") == "business-discovery/v1":
+            candidates = model["graph_roots"]
+        anchors = list(nodes) or candidates[:max_nodes]
+        if not anchors:
+            raise ValueError("No declared nodes in the requested conceptual view: " + view)
         focused = extract(model, anchors, depth=0 if not nodes else 1, max_nodes=max_nodes)
         # Only include the diagram and meaningful boundaries in the conversation.
         # The accompanying focus JSON retains IDs, scope, and original relations.
         diagram = markdown(focused).split("```mermaid", 1)[1].split("```", 1)[0]
-        text = "# Business network draft\n\n```mermaid" + diagram + "```\n\n"
+        title = {
+            "business": "Business network",
+            "state": "State model",
+            "rules": "Rule network",
+            "all": "Concept models",
+        }[view]
+        text = "# " + title + " draft\n\n```mermaid" + diagram + "```\n\n"
         text += f"[Open the live graph]({url})\n\n"
         if focused["coverage"]["crossing_or_omitted_edges"] or len(model["nodes"]) > len(
             focused["nodes"]
         ):
             text += "This is a focused view. Dashed boundaries retain original relations; open Web for the complete graph.\n\n"
-        pending = [d for d in self.document()["decisions"] if d["status"] != "resolved"]
+        pending = [d for d in document["decisions"] if d["status"] != "resolved"]
         if pending:
             text += (
                 "Still to confirm:\n\n"
@@ -255,7 +261,31 @@ class BODesign:
             "focus": focused,
             "url": url,
             "discovery_revision": model["revision"],
+            "view": view,
         }
+
+    def export_preview(self, result, name):
+        """Preflight both preview artifacts before writing either of them.
+
+        A Markdown preview has a companion JSON artifact. Checking only the
+        requested Markdown path could overwrite discovery.json through that
+        companion, destroying the very declaration being reviewed.
+        """
+        target = contained(self.root, name)
+        companion = target.with_suffix(".json")
+        from ..workflow.artifact_paths import guard_outputs
+
+        guard_outputs(
+            self.root,
+            [target.relative_to(self.root), companion.relative_to(self.root)],
+            inputs=[self.path],
+            suffixes=(".md", ".markdown", ".json"),
+        )
+        if target.suffix.lower() not in {".md", ".markdown"}:
+            raise ValueError("Preview output must use a Markdown extension")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(result["markdown"], encoding="utf-8")
+        write(companion, result)
 
 
 def main():
@@ -270,6 +300,7 @@ def main():
     p.add_argument("--source", help="Conversation message or explicit language preference")
     p.add_argument("--url", help="Actual graph URL, checked by the calling developer")
     p.add_argument("--max-nodes", type=int, default=12)
+    p.add_argument("--view", choices=["business", "state", "rules", "all"], default="business")
     p.add_argument(
         "--out", help="Project-relative Markdown output; also writes matching focus JSON"
     )
@@ -280,12 +311,9 @@ def main():
             print(json.dumps(set_language(design.root, a.locale, a.source), indent=2))
             return 0
         if a.action == "preview":
-            result = design.preview(a.url or "", a.nodes, max_nodes=a.max_nodes)
+            result = design.preview(a.url or "", a.nodes, max_nodes=a.max_nodes, view=a.view)
             if a.out:
-                target = contained(design.root, a.out)
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_text(result["markdown"], encoding="utf-8")
-                write(target.with_suffix(".json"), result)
+                design.export_preview(result, a.out)
             print(result["markdown"])
             return 0
         result = (

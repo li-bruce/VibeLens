@@ -16,6 +16,8 @@ const names = {
   dataset: "table",
   column: "table-column",
   query: "database-search",
+  write: "database-edit",
+  transaction: "arrows-exchange",
   transform: "transform",
   "code-endpoint": "api",
   "code-file": "file-code",
@@ -24,6 +26,8 @@ const names = {
   "code-function": "code",
   "code-parameter": "brackets",
   "code-unresolved": "question-mark",
+  "code-reference": "link",
+  unknown: "question-mark",
 };
 const nodes = JSON.parse(
   await readFile(new URL("node_modules/@tabler/icons/tabler-nodes-outline.json", import.meta.url)),
@@ -63,7 +67,7 @@ await writeFile(
   new URL("node-icons.js", root),
   "// Generated from @tabler/icons 3.49.0 (MIT). Run tools/routing/build-icons.mjs.\nexport const nodeIcons = " +
     JSON.stringify(paths) +
-    ";\nexport const iconFor = (type) => nodeIcons[type] || nodeIcons.function;\n",
+    ";\nexport const iconFor = (type) => nodeIcons[type] || nodeIcons.unknown;\n",
 );
 await writeFile(
   new URL("NODE-ICONS-LICENSE.txt", root),

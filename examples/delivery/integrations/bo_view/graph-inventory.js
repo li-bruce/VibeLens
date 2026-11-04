@@ -2,9 +2,47 @@ import { machineProjection } from "./machine-projection.js";
 import { captureFields } from "./capture-fields.js";
 import { t as boTranslate } from "./i18n.js";
 import { nameNode, explainedName } from "./graph-names.js";
+import { annotateConcepts } from "./concept-observation.js";
 
 export function stateNodeId(model, value) {
   return model.nodes.find((n) => n.kind === "state" && n.value === value)?.id || "state." + value;
+}
+
+/** Canonical ancestry for controls; display projections may detach containers. */
+const declarationCache = new WeakMap();
+export function declarationNodes(view) {
+  const prior = declarationCache.get(view),
+    signature = [
+      view.model.nodes,
+      view.concept_structure?.nodes,
+      view.concept_structure?.edges,
+      view.concept_structure?.revision,
+      view.concept_structure?.stage,
+    ];
+  if (prior && signature.every((value, index) => prior.signature[index] === value))
+    return prior.nodes;
+  const declared = new Map((view.concept_structure?.nodes || []).map((node) => [node.id, node]));
+  for (const native of view.model.nodes) {
+    const concept = declared.get(native.id);
+    // A shared identity keeps native capture/state authority while retaining
+    // inspectable semantic metadata. Never replace source, kind or lifecycle.
+    declared.set(
+      native.id,
+      concept?.concept_definition
+        ? {
+            concept_kind: concept.concept_kind,
+            concept_definition: concept.concept_definition,
+            ...native,
+            // The confirmed conceptual name is a display overlay. Native
+            // source, capture registration and lifecycle still own this ID.
+            concept_label: concept.label,
+          }
+        : native,
+    );
+  }
+  const nodes = annotateConcepts(view, [...declared.values()]);
+  declarationCache.set(view, { signature, nodes });
+  return nodes;
 }
 /** Assemble every semantic layer before filtering, folding or rendering.
  * Both 2D and 3D use these exact IDs and original edge endpoints. Runtime facts
@@ -14,9 +52,16 @@ export function graphInventory(
   view,
   { attempt, choice = "latest", step = "latest", memberships = [] } = {},
 ) {
-  const all = new Map(view.model.nodes.map((n) => [n.id, n])),
-    rawEdges = [...view.model.edges];
-  for (const original of view.model.nodes) {
+  // A bound concept projection carries the same design identities into runtime.
+  // Actual model nodes win a collision; the overlay is never an executor or a
+  // reason to borrow a physical function's lifetime.
+  const all = new Map(declarationNodes(view).map((node) => [node.id, node])),
+    rawEdges = [
+      ...new Map(
+        [...(view.concept_structure?.edges || []), ...view.model.edges].map((e) => [e.id, e]),
+      ).values(),
+    ];
+  for (const original of [...all.values()]) {
     const n = nameNode(original, view.model, view.manifest?.bindings);
     all.set(n.id, n);
     if (n.kind === "state") continue;

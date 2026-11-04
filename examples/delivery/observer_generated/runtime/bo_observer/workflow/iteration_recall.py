@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from collections import Counter
+
 from .observation_requirements import observation_plan
+from .concept_review import concept_recall
 from ..graph.behavior_model import contained, read
 from .sync_io import write
 
@@ -69,6 +72,7 @@ def recall(root, cfg, current, previous=None):
             )
             if cfg.get(key)
         },
+        "concepts": concept_recall(current.get("discovery"), (previous or {}).get("discovery")),
         "observation_module": cfg.get("stategraph", {}).get("module"),
         "observation_sources": [
             sid
@@ -79,6 +83,7 @@ def recall(root, cfg, current, previous=None):
         "layers": {
             layer: {
                 "nodes": len(group["nodes"]),
+                "facets": dict(Counter(node["facet"] for node in group["nodes"] if node["facet"])),
                 "scan": group["scan"],
                 "observe": group["observe"],
                 "affected_nodes": [

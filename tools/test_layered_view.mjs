@@ -28,9 +28,9 @@ import {
 } from "../skills/vibelens/assets/stategraph-viewer/layout.js";
 
 assert.equal(layerOf({ kind: "wait" }), "state");
-assert.equal(layerOf({ kind: "function", layer: "api" }), "api");
-assert.equal(layerOf({ kind: "function", execution_role: "join" }), "rules");
-assert.equal(layerOf({ kind: "function", execution_role: "resource" }), "rules");
+assert.equal(layerOf({ kind: "function", layer: "api" }), "implementation");
+assert.equal(layerOf({ kind: "function", execution_role: "join" }), "state");
+assert.equal(layerOf({ kind: "function", execution_role: "resource" }), "state");
 const owner = {
   id: "tx",
   label: "Publish transaction",
@@ -130,8 +130,11 @@ assert.notEqual(positions.fn.y, positions.publish.y);
 assert.notEqual(positions.fn.z, positions.publish.z);
 assert.ok(Object.values(positions).every((p) => [p.x, p.y, p.z].every(Number.isFinite)));
 const volumes = containmentVolumes(model, positions, 260);
-assert.ok(volumes.some((v) => v.id === "publish" && v.layer === "execution" && v.projection));
-const saved = { ...positions, fn: { ...positions.fn, x: 712, z: 231, pinned: true } };
+assert.ok(volumes.some((v) => v.id === "publish" && v.layer === "implementation" && v.projection));
+const saved = {
+  ...positions,
+  fn: { ...positions.fn, x: 712, z: 231, pinned: true },
+};
 assert.equal(solveSpatial({ ...model, positions: saved, gap: 260, arrange: true }).fn.x, 712);
 assert.equal(solveSpatial({ ...model, positions: saved, gap: 260 }).fn.z, 231);
 const merged = mergeGraph(

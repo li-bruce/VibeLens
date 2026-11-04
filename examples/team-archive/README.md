@@ -38,3 +38,10 @@ Follow [AGENTS.md](AGENTS.md). The AI maintains intermediate synchronization art
 Original accepted intent, discovery answers, and historical recordings retain their original language. Current common viewer controls support English and Chinese.
 
 This is a local development example without production authentication or worker crash recovery. Finite scenarios do not prove every interleaving or human usability.
+
+The [concept-model migration record](review/concept-models-20261104/README.md)
+documents the source-graph rebuild and renewed release checks. Install the locked
+source adapter with `python tools/setup_adapters.py` from the repository root.
+Repository launch and verification commands share that installation. Generation
+requires successful analysis of every configured source file, including the
+frontend; a parser error leaves the previous complete graph available.

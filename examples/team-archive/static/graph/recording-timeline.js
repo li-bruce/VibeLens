@@ -4,7 +4,7 @@ import { eventLabel } from "./recording.js";
 import { buildTraceIndex, traceRows, tracePoints } from "./trace-index.js";
 import { boundWindow, zoomWindow, panWindow, nearestEvent } from "./trace-viewport.js";
 import { paintTrace, traceGeometry, timeLabel } from "./trace-paint.js";
-import { layers } from "./graph-layers.js";
+import { layers, canonicalLayer } from "./graph-layers.js";
 import { iconButton } from "./controls.js";
 import { boDisplayValue } from "./replay-steps.js";
 import { traceHit } from "./trace-routing.js";
@@ -19,7 +19,9 @@ export function cleanTimeline(value) {
     height: Number.isFinite(value?.height) ? Math.max(180, Math.min(500, value.height)) : 340,
     scope: value?.scope === "all" ? "all" : "view",
     follow: value?.follow !== false,
-    depth: layers.some((layer) => layer.id === value?.depth) ? value.depth : "all",
+    depth: layers.some((layer) => layer.id === canonicalLayer(value?.depth))
+      ? canonicalLayer(value.depth)
+      : "all",
     layerMode: value?.layerMode === "single" ? "single" : "through",
     collapsed: Array.isArray(value?.collapsed)
       ? value.collapsed
@@ -151,7 +153,9 @@ export class RecordingTimeline {
       this.hover = null;
       this.schedule();
     });
-    this.listen(this.canvas, "wheel", (event) => this.wheel(event), { passive: false });
+    this.listen(this.canvas, "wheel", (event) => this.wheel(event), {
+      passive: false,
+    });
     this.listen(this.canvas, "keydown", (event) => this.key(event));
     this.listen(find("resize"), "pointerdown", (event) => {
       find("resize").setPointerCapture(event.pointerId);
@@ -175,7 +179,9 @@ export class RecordingTimeline {
     this.listen(find("resize"), "keydown", (event) => {
       if (!["ArrowUp", "ArrowDown"].includes(event.key)) return;
       event.preventDefault();
-      this.configure({ height: this.settings.height + (event.key === "ArrowUp" ? 20 : -20) });
+      this.configure({
+        height: this.settings.height + (event.key === "ArrowUp" ? 20 : -20),
+      });
     });
     this.observer = new ResizeObserver(() => {
       this.clampScroll();
@@ -185,7 +191,10 @@ export class RecordingTimeline {
   }
 
   listen(target, name, handler, options = {}) {
-    target.addEventListener(name, handler, { ...options, signal: this.abort.signal });
+    target.addEventListener(name, handler, {
+      ...options,
+      signal: this.abort.signal,
+    });
   }
 
   /** Rebuild only on recording/topology/scope changes, never on each graph animation tick. */
@@ -577,7 +586,10 @@ export class RecordingTimeline {
           nearestEvent(
             this.rows
               .find((row) => row.id === hit.row)
-              .marks.map((mark) => ({ ...mark, time: this.index.axis.times[mark.raw] }))
+              .marks.map((mark) => ({
+                ...mark,
+                time: this.index.axis.times[mark.raw],
+              }))
               .filter((mark) => this.allowed.has(mark.raw)),
             this.index.axis.times[this.raw],
           )?.raw,
@@ -630,7 +642,13 @@ export class RecordingTimeline {
             : hit.raw;
         this.requestSeek(nearest, event.detail === 2);
         this.drag = { kind: "seek" };
-      } else this.drag = { kind: "pan", p, window: { ...this.window }, scroll: this.scroll };
+      } else
+        this.drag = {
+          kind: "pan",
+          p,
+          window: { ...this.window },
+          scroll: this.scroll,
+        };
     }
   }
 
@@ -753,7 +771,12 @@ export class RecordingTimeline {
   }
   animateWindow(target) {
     if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) this.window = target;
-    else this.zoomMotion = { from: { ...this.window }, to: target, started: performance.now() };
+    else
+      this.zoomMotion = {
+        from: { ...this.window },
+        to: target,
+        started: performance.now(),
+      };
     this.schedule();
   }
   fit() {

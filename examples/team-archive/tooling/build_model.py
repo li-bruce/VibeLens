@@ -211,7 +211,12 @@ def build() -> dict:
     model['edges'] += [{'id':'ui-validation','from':'ui.validate','to':'ui.command','type':'guard','label':"Submit positive integers only",'evidence':'submitLimit'},
                        {'id':'ui-dirty','from':'ui.dirty','to':'ui.command','type':'data','label':"Submit page input",'evidence':'DOM handlers'}]
     model['source_files'].extend(['tooling/frontend_nodes.json','integrations/bo_client.mjs'])
-    model=enrich(model,scan(ROOT,cfg["code_files"]),depth=cfg.get("slice_depth",1))
+    # Preserve the last complete graph if a parser or configured source fails.
+    # In particular, an unavailable JS adapter must not erase frontend mappings.
+    structure = scan(ROOT, cfg["code_files"])
+    if structure["errors"]:
+        raise ValueError("Source analysis failed: " + json.dumps(structure["errors"]))
+    model=enrich(model,structure,depth=cfg.get("slice_depth",1))
     # Publish a complete graph beside the previous file before replacing it.
     # Existing readers keep their old snapshot without blocking Windows truncation.
     write(ROOT/"behavior.json", model)

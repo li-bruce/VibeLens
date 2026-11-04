@@ -16,7 +16,7 @@ import { clusterUnits } from "../skills/vibelens/assets/stategraph-viewer/cluste
 assert.deepEqual(
   [...layerHeights({ visible: ["business", "state", "code"], gap: 180 })],
   [
-    ["code", 0],
+    ["implementation", 0],
     ["state", 180],
     ["business", 360],
   ],
@@ -52,7 +52,17 @@ const obstructed = await routeScene(
   {
     ...scene,
     style: "straight",
-    obstacles: [{ id: "middle", key: "m", kind: "glyph", x: 100, y: 45, level: 130, r: 30 }],
+    obstacles: [
+      {
+        id: "middle",
+        key: "m",
+        kind: "glyph",
+        x: 100,
+        y: 45,
+        level: 130,
+        r: 30,
+      },
+    ],
   },
   null,
 );

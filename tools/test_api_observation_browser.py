@@ -18,7 +18,9 @@ import test_graph_quality_browser as fixture
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = Path(
-    os.environ.get("BO_API_OBSERVATION_EVIDENCE", ROOT / ".validation/api-observation-browser")
+    os.environ.get(
+        "BO_API_OBSERVATION_EVIDENCE", ROOT / ".validation/api-observation-browser"
+    )
 ).resolve()
 
 
@@ -29,7 +31,10 @@ def main():
         raise FileExistsError("Choose a fresh BO_API_OBSERVATION_EVIDENCE directory")
     environment = {**os.environ, "BO_API_RECORDING": str(OUT / "native-recording.json")}
     subprocess.run(
-        ["node", "tools/test_api_observation.mjs"], cwd=ROOT, env=environment, check=True
+        ["node", "tools/test_api_observation.mjs"],
+        cwd=ROOT,
+        env=environment,
+        check=True,
     )
     saved = json.loads((OUT / "native-recording.json").read_text(encoding="utf-8"))
     base = deepcopy(fixture.recording)
@@ -68,7 +73,10 @@ def main():
             route = urlparse(self.path).path
             if route == "/api/recordings":
                 return self.json(
-                    {"active": None, "recordings": [{**base, "events": len(base["events"])}]}
+                    {
+                        "active": None,
+                        "recordings": [{**base, "events": len(base["events"])}],
+                    }
                 )
             if route == "/api/recordings/" + base["id"]:
                 return self.json(base)
@@ -77,7 +85,9 @@ def main():
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     errors, checks = [], []
-    result = {"basis": "serialized exact HTTP observation fixture; native browser controls"}
+    result = {
+        "basis": "serialized exact HTTP observation fixture; native browser controls"
+    }
     with sync_playwright() as p:
         default_chrome = Path("C:/Program Files/Google/Chrome/Application/chrome.exe")
         browser = p.chromium.launch(
@@ -93,7 +103,9 @@ def main():
                 f"http://127.0.0.1:{server.server_port}/graph?lang=en",
                 wait_until="domcontentloaded",
             )
-            page.wait_for_function("() => window.graphDebug?.graph && !graphDebug.layoutBusy")
+            page.wait_for_function(
+                "() => window.graphDebug?.graph && !graphDebug.layoutBusy"
+            )
             assert page.evaluate(
                 "graphDebug.graph.all.has('endpoint:files')"
             ), "API snapshot must load without enabling optional code structure"
@@ -101,7 +113,7 @@ def main():
             page.wait_for_function("() => graphDebug.timeline?.source === 'saved'")
             page.select_option("#analysis-view", "api")
             page.wait_for_function(
-                "() => !graphDebug.layoutBusy && graphDebug.timeline?.rows.some(r=>r.layer==='api')"
+                "() => !graphDebug.layoutBusy && graphDebug.timeline?.rows.some(r=>r.layer==='implementation' && r.members.includes('endpoint:files'))"
             )
             page.select_option("#replay-grain", "events")
             page.select_option("#replay-events", "2")
@@ -127,38 +139,62 @@ def main():
             )
             page.select_option("#replay-events", "6")
             page.wait_for_function("() => graphDebug.timeline.eventId === 'post-enter'")
-            assert page.evaluate("graphDebug.graph.byId.get('endpoint:files').state") == "active"
+            assert (
+                page.evaluate("graphDebug.graph.byId.get('endpoint:files').state")
+                == "active"
+            )
             page.select_option("#replay-events", "7")
-            page.wait_for_function("() => graphDebug.timeline.eventId === 'post-return'")
+            page.wait_for_function(
+                "() => graphDebug.timeline.eventId === 'post-return'"
+            )
             rows = page.evaluate("graphDebug.graph.byId.get('endpoint:files').rows")
             assert any(row["text"] == "status: 403" for row in rows), rows
             assert (
-                page.evaluate("graphDebug.graph.byId.get('endpoint:archive').state") == "declared"
+                page.evaluate("graphDebug.graph.byId.get('endpoint:archive').state")
+                == "declared"
             )
             page.screenshot(path=str(OUT / "02-post-return-values.png"))
             checks.append(
                 "POST reuses endpoint identity with its own interval and recorded HTTP 403 value"
             )
             page.select_option("#analysis-view", "overview")
+            # Cross-concern replay is an explicit detailed view. The normal
+            # overview intentionally hides implementation internals.
+            page.click("#show-all")
+            page.click("#expand")
             page.wait_for_function("() => !graphDebug.layoutBusy")
             page.select_option("#replay-events", "3")
-            page.wait_for_function("() => graphDebug.timeline.eventId === 'store-enter'")
+            page.wait_for_function(
+                "() => graphDebug.timeline.eventId === 'store-enter'"
+            )
             trace = page.evaluate("graphDebug.timeline")
             assert trace["flows"] > 0, trace
-            assert any(row["layer"] == "api" for row in trace["rows"])
             assert any(
-                trace["rows"][route["fromRow"]]["layer"] == "api"
-                and trace["rows"][route["toRow"]]["layer"] == "execution"
+                row["layer"] == "implementation" and "endpoint:files" in row["members"]
+                for row in trace["rows"]
+            )
+            assert any(
+                trace["rows"][route["fromRow"]]["layer"] == "implementation"
+                and trace["rows"][route["toRow"]]["layer"] == "implementation"
+                and route["key"] == "2:3:3:call"
                 for route in trace["routes"]
             ), trace
             assert any(
-                trace["rows"][route["toRow"]]["layer"] == "api" and route["type"] == "return"
+                trace["rows"][route["toRow"]]["layer"] == "implementation"
+                and route["key"] == "4:2:4:return"
+                and route["type"] == "return"
+                for route in trace["routes"]
+            ), trace
+            assert any(
+                trace["rows"][route["fromRow"]]["layer"] == "business"
+                and trace["rows"][route["toRow"]]["layer"] == "implementation"
+                and route["key"] == "1:2:2:call"
                 for route in trace["routes"]
             ), trace
             page.screenshot(path=str(OUT / "03-cross-layer-causality.png"))
             result["timeline"] = trace
             checks.append(
-                "Overview retains original event cursor and cross-layer causal Timeline links"
+                "Overview retains the original cursor, business-to-API links and horizontal API-to-operation links"
             )
             assert not errors, errors
             result["passed"] = True
@@ -171,7 +207,9 @@ def main():
             raise
         finally:
             result.update(errors=errors, checks=checks)
-            (OUT / "results.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+            (OUT / "results.json").write_text(
+                json.dumps(result, indent=2), encoding="utf-8"
+            )
             browser.close()
             server.shutdown()
     print(json.dumps(result, indent=2))

@@ -38,7 +38,9 @@ The user or another Skill may refine business rules and hand them back. Record d
 
 ## Minimum checkable record
 
-Maintain `discovery.json`. Record supplied behavior and necessary understanding checks. `decisions` may be empty when nothing is unresolved. Scripts validate records and references; they do not discover every missing business rule. See the [example](../assets/discovery.example.json).
+Maintain `discovery.json` using `business-discovery/v2`. Record supplied behavior and necessary understanding checks. `decisions` may be empty when nothing is unresolved. Scripts validate records and references; they do not discover every missing business rule. Start from the [concept example](../assets/discovery.concepts.example.json) and follow [concept confirmation and binding](concept-models.md).
+
+Business actions, object states and shared rules are peer design inputs. Record each action's state applicability (`read`, `change` or an explicit reason for no state semantics) and rule applicability. State subjects, typed events, transitions, guards, effects, fact-read timing and crosslinks are maintained before implementing the affected scope. Preserve the structured meaning in `meaning`; a display label is not a complete specification. Independent expectations retain the user's stated outcomes.
 
 - `sources`: `id`, `kind` (`user/project_rule/inference/assistant`), original `text`, and `locator`. Label simulated replies as test evidence, not human feedback.
 - `networks`: `id`, `title`, `actors`, `trigger`, `outcome`, `nodes`, `edges`. Nodes have `id/label/kind/source_refs`; edges have `id/from/to/relation/label/source_refs` and optional `decision_refs`. Loops are supported. Shared meaning may reuse sources across networks; node identities remain unique.
@@ -46,6 +48,7 @@ Maintain `discovery.json`. Record supplied behavior and necessary understanding 
 - Status is `open/resolved/assumed/deferred`. Only `resolved` resolves a blocking ambiguity. `resolution` contains `kind` (`user_answer/existing_rule/delegated_choice`), `text`, and `source_refs`; delegated choices also need `rationale`. Use `note` for assumptions and deferred scope. Do not hide a blocking question by marking it nonblocking.
 - After implementation, `model_nodes` references original graph IDs. External unimplemented nodes need `outside_reason`. Important decisions link `requirements/model_nodes/checks` to real requirements, graph nodes, and acceptance items.
 - Changed decisions require `changes` entries with `id/decision/previous/source_refs/reason`; `previous` is the complete old decision. Compare using `--previous` or change checks; never silently erase an answer.
+- Version 2 also records `objects`, `facts`, `state_models`, `policy`, `applicability`, `crosslinks`, `expectations` and immutable scoped `confirmations`. Keep original answer evidence with each snapshot. Version 1 remains readable under its existing checks; migration requires confirmation of newly represented meaning.
 
 ```text
 python SKILL/scripts/requirements_dialogue.py validate --file discovery.json

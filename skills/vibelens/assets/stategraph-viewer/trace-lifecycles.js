@@ -4,6 +4,7 @@
 import { callKey, callScope, referencedParent } from "./trace-evidence.js";
 import { lifecycleTransition, lifecycleBoundary } from "./node-lifecycle.js";
 import { projectAPIIntervals } from "./api-observation.js";
+import { projectConceptIntervals } from "./concept-observation.js";
 
 export function traceLifecycles(items, all, { projections = true, registeredOnly = false } = {}) {
   const opened = new Map(),
@@ -177,6 +178,7 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
       );
     }
   if (projections) slices.push(...projectAPIIntervals(slices, all.values()));
+  if (projections) slices.push(...projectConceptIntervals(slices, all.values()));
   return { slices, links };
 }
 

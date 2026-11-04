@@ -195,6 +195,18 @@ def verify(root, cfg, change, *, inspect, snapshot):
             "scope": "Authored business and whitebox expectations; this does not prove all user intent",
         },
     }
+    # Concept agreement is a declaration gate, separate from actual execution.
+    # Preserve its own result even when runtime verification cannot start.
+    concept_report = changes.get("discovery", {}).get("concepts")
+    if concept_report is not None:
+        reports["concepts"] = {
+            "status": "passed" if concept_report["ready"] else "failed",
+            "errors": concept_report["errors"],
+            "blocked": concept_report.get("blocked", []),
+            "semantic_revision": concept_report.get("semantic_revision"),
+            "binding": concept_report.get("binding"),
+            "scope": "Recorded semantic confirmation and actual declaration bindings",
+        }
     if mapping_errors:
         reports["mapping"]["status"] = "failed"
         receipt = {
@@ -362,7 +374,9 @@ def verify(root, cfg, change, *, inspect, snapshot):
     after = snapshot(root, cfg, current)
     if after["id"] != current["id"]:
         mapping_errors.append("candidate changed while checks were running")
-    for report in reports.values():
+    for name, report in reports.items():
+        if name == "concepts":
+            continue  # Already evaluated against the immutable change baseline.
         report["status"] = (
             "failed" if report["errors"] else "passed" if validation_complete else "not_run"
         )

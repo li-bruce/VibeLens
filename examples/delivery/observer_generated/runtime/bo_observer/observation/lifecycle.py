@@ -76,7 +76,7 @@ def lifecycle_transition(node, event):
     phase = event.get("phase")
     action = node.get("data_metadata", {}).get("action")
     old_data_exit = (
-        node.get("data_role") == "query"
+        node.get("data_role") in {"query", "transaction"}
         and action == "transaction"
         and phase == "commit"
         and event.get("outputs", {}).get("status") == "committed"

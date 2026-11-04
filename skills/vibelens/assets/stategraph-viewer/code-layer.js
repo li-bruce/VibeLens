@@ -8,6 +8,7 @@ export const codeTypes = [
   "code-function",
   "code-parameter",
   "code-unresolved",
+  "code-reference",
 ];
 export const codeRelations = [
   "code-contains",
@@ -37,8 +38,15 @@ export function codeSummary(slice, translate) {
 }
 
 export function migrateCodeFilters(value) {
-  if (!value || value.codeTypes === 3) return value;
-  const next = { ...value, codeTypes: 3 };
+  if (!value || value.codeTypes === 4) return value;
+  const next = { ...value, codeTypes: 4 };
+  for (const key of ["nodes", "regions"])
+    if (
+      ["code-file", "code-class", "code-function", "code-parameter", "code-unresolved"].every(
+        (type) => value[key]?.includes(type),
+      )
+    )
+      next[key] = [...new Set([...value[key], "code-reference"])];
   // Upgrade prior all-code selections once. Preserve deliberate narrow/empty filters.
   if (value.codeTypes === 1) {
     for (const key of ["nodes", "regions"])
@@ -98,7 +106,10 @@ export function withCodeGraph(view, slice) {
     view = {
       ...view,
       model: mergeGraph(view.model, project),
-      manifest: { ...view.manifest, bindings: { ...view.manifest.bindings, ...project.bindings } },
+      manifest: {
+        ...view.manifest,
+        bindings: { ...view.manifest.bindings, ...project.bindings },
+      },
     };
   }
   if (!slice) return view;

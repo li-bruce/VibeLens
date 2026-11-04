@@ -5,6 +5,8 @@ from copy import deepcopy
 import re
 
 from ..graph.behavior_model import digest
+from ..graph.observation_scope import capture_owners, display_graph
+from ..data.protocol import OPERATION_ROLES
 
 NODE_TYPES = {
     "business",
@@ -19,6 +21,8 @@ NODE_TYPES = {
     "dataset",
     "column",
     "query",
+    "write",
+    "transaction",
     "transform",
     "code-file",
     "code-directory",
@@ -27,6 +31,7 @@ NODE_TYPES = {
     "code-parameter",
     "code-unresolved",
     "code-endpoint",
+    "code-reference",
 }
 RELATIONS = {
     "call",
@@ -95,7 +100,7 @@ def resolve(nodes, query):
 
 
 def relation_type(edge):
-    if edge.get("origin") == "code-index" and edge.get("code_relation"):
+    if edge.get("origin") in {"code-index", "source-ast"} and edge.get("code_relation"):
         return "code-" + edge["code_relation"]
     if edge.get("type") == "data" and edge.get("data_relation") in RELATIONS:
         return edge["data_relation"]
@@ -109,7 +114,7 @@ def view_types(node):
     if node.get("code_role"):
         return {"code-" + node["code_role"]}
     data_role = node.get("data_role")
-    if data_role in {"store", "dataset", "column", "query", "transform"}:
+    if data_role in {"store", "dataset", "column"} | OPERATION_ROLES:
         return {data_role}
     kind, role = node.get("kind"), node.get("execution_role")
     if node.get("layer") == "business":
@@ -214,7 +219,7 @@ def build_plan(view, spec, recording=None):
         raise ValueError("Unknown or empty node/relation type selection")
     if "loop" in spec and type(spec["loop"]) is not bool:
         raise ValueError("loop must be boolean")
-    model = view["model"]
+    model = display_graph(view)
     nodes = {node["id"]: node for node in model["nodes"]}
     if len(nodes) != len(model["nodes"]):
         raise ValueError("Duplicate graph identities")
@@ -321,7 +326,8 @@ def build_plan(view, spec, recording=None):
             != base["model_revision"]
         ):
             raise ValueError("Recording belongs to a different model/build")
-        events = [event for event in recording["events"] if event.get("node") in selected]
+        observed = set(capture_owners(view, selected, strict=False))
+        events = [event for event in recording["events"] if event.get("node") in observed]
         if not events:
             raise ValueError("This recording contains no observed events on the selected path")
         if any(
@@ -455,8 +461,9 @@ def validate_evidence(plan, view, recording=None):
     """Recheck queued control evidence against the actual currently served graph."""
     validate_plan(plan)
     base = plan["base"]
+    model = display_graph(view)
     if (
-        digest(view["model"]) != base["model_hash"]
+        digest(model) != base["model_hash"]
         or view.get("manifest", {}).get("build_id") != base["build_id"]
         or (
             view.get("layout_id")
@@ -468,19 +475,17 @@ def validate_evidence(plan, view, recording=None):
         raise ValueError(
             "The graph changed after this control was prepared; resolve the request again"
         )
-    nodes = {node["id"] for node in view["model"]["nodes"]}
+    nodes = {node["id"] for node in model["nodes"]}
     selected = set(plan["node_ids"])
     expected_edges = [
         edge["id"]
-        for edge in view["model"]["edges"]
+        for edge in model["edges"]
         if edge["from"] in selected
         and edge["to"] in selected
         and relation_type(edge) in plan["filters"]["edges"]
     ]
     expected_boundaries = [
-        edge
-        for edge in view["model"]["edges"]
-        if (edge["from"] in selected) != (edge["to"] in selected)
+        edge for edge in model["edges"] if (edge["from"] in selected) != (edge["to"] in selected)
     ][:300]
     if (
         not selected <= nodes
@@ -489,13 +494,11 @@ def validate_evidence(plan, view, recording=None):
     ):
         raise ValueError("The selection must retain original nodes and declared relations")
     requested_types = set(plan["filters"]["nodes"])
-    eligible = {node["id"] for node in view["model"]["nodes"] if view_types(node) & requested_types}
+    eligible = {node["id"] for node in model["nodes"] if view_types(node) & requested_types}
     context = set(plan.get("context_node_ids", []))
     if context != selected - eligible:
         raise ValueError("The selection contains unmarked context outside its node type filter")
-    check_path_context(
-        context, view["model"]["edges"], selected, eligible, plan["filters"]["edges"]
-    )
+    check_path_context(context, model["edges"], selected, eligible, plan["filters"]["edges"])
     if plan["action"] == "replay" and (
         not recording
         or recording.get("id") != plan["recording"]["id"]
@@ -506,7 +509,8 @@ def validate_evidence(plan, view, recording=None):
             "The selected recording changed; keep the original facts and prepare a new filter"
         )
     if plan["action"] == "replay":
-        expected = [event["id"] for event in recording["events"] if event.get("node") in selected]
+        observed = set(capture_owners(view, selected, strict=False))
+        expected = [event["id"] for event in recording["events"] if event.get("node") in observed]
         if (
             recording.get("status") == "recording"
             or plan["recording"]["event_ids"] != expected

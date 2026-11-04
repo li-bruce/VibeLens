@@ -1,4 +1,4 @@
-"""Check a business-network draft and select unanswered questions.
+"""Check the recorded dialogue and select unanswered questions.
 
 This validates authored records and their links. It does not interpret natural
 language, discover every ambiguity, or authenticate a claimed user quotation.
@@ -87,7 +87,7 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
             "questions": [],
             "awaiting_answers": [],
         }
-    if doc.get("schema") != "business-discovery/v1":
+    if doc.get("schema") not in {"business-discovery/v1", "business-discovery/v2"}:
         error("unknown_schema", "discovery")
     if not text(doc.get("goal")):
         error("missing_goal", "discovery")
@@ -104,13 +104,19 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
             ]:
                 if set(item["source_refs"]) - set(sources):
                     error("policy_source_missing", item["id"])
-            if model is not None:
+            # Version 2 compares only the active semantic dependency closure in
+            # check_binding. Legacy records still require their entire policy.
+            if model is not None and doc.get("schema") == "business-discovery/v1":
                 if not model.get("policy"):
                     error("policy_model_missing", "confirmed rule network")
                 else:
                     mapped = validate_policy(model["policy"])
                     if set(policy["operations"]) - set(mapped["operations"]):
                         error("policy_operation_missing", "confirmed operation")
+                    from ..concepts import policy_semantics
+
+                    if policy_semantics(doc["policy"]) != policy_semantics(model["policy"]):
+                        error("policy_semantics_changed", "draft and bound rule network")
         except (ValueError, KeyError, TypeError) as exc:
             error("invalid_policy", str(exc))
     for sid, source in sources.items():
@@ -168,6 +174,29 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
             refs(edge.get("source_refs"), ident)
             edges[ident] = edge
     known = set(nodes) | set(edges)
+    # Questions can concern a shared predicate or a state transition before any
+    # implementation exists. Resolve these against the same design inventory
+    # used by Web/preview, rather than only the business network's node list.
+    concepts = None
+    if doc.get("schema") == "business-discovery/v2":
+        from ..concepts import assess as assess_concepts
+
+        concepts = assess_concepts(doc, previous=previous, model=model, acceptance=acceptance)
+        errors.extend(concepts["errors"])
+        warnings.extend(concepts.get("warnings", []))
+        known.update(concepts.get("index", {}))
+        graph = concepts.get("graph") or {}
+        known.update(item["id"] for item in graph.get("nodes", []))
+        known.update(item["id"] for item in graph.get("edges", []))
+    elif doc.get("policy") and not errors:
+        from ..policy.projection import project as project_policy
+
+        projected = project_policy(
+            {"nodes": list(nodes.values()), "edges": [], "policy": doc["policy"]},
+            bound=False,
+        )
+        known.update(item["id"] for item in projected["nodes"])
+        known.update(item["id"] for item in projected["edges"])
     for ident, edge in edges.items():
         if edge.get("from") not in nodes or edge.get("to") not in nodes:
             error("unknown_edge_endpoint", ident)
@@ -247,9 +276,10 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
             "ready": False,
             "errors": errors,
             "warnings": warnings,
-            "blocked": [],
+            "blocked": concepts.get("blocked", []) if concepts is not None else [],
             "questions": [],
             "awaiting_answers": [],
+            **({"concepts": concepts} if concepts is not None else {}),
         }
 
     # Cycles in business behavior are valid; cycles between questions cannot be scheduled.
@@ -273,6 +303,26 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
     done = set()
     for did in decisions:
         walk(did, set(), done)
+    # Validate every record and its history, but schedule implementation work
+    # only for this confirmed increment. A future feature can remain a draft.
+    # Questions needed to answer an active question remain in scope as well.
+    active_decisions = set(decisions)
+    if concepts is not None:
+        from ..concepts.semantics import resolve_index
+
+        coverage = set(concepts.get("coverage_scope", []))
+        active_decisions = {
+            did
+            for did, decision in decisions.items()
+            if any(resolve_index(concepts["index"], ref) in coverage for ref in decision["affects"])
+        }
+        pending_dependencies = list(active_decisions)
+        while pending_dependencies:
+            did = pending_dependencies.pop()
+            for dependency in decisions[did].get("depends_on", []):
+                if dependency not in active_decisions:
+                    active_decisions.add(dependency)
+                    pending_dependencies.append(dependency)
     for eid, e in edges.items():
         refs_to_decisions = e.get("decision_refs", [])
         if not isinstance(refs_to_decisions, list) or any(
@@ -322,6 +372,10 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
     if model is not None:
         model_ids = {n["id"] for n in model["nodes"]}
         for nid, n in nodes.items():
+            # Version 2 resolves conceptual IDs through its checked binding
+            # contract; a second legacy model_nodes list would drift independently.
+            if concepts is not None:
+                continue
             links = n.get("model_nodes", [])
             if not isinstance(links, list) or any(
                 not isinstance(x, str) or x not in model_ids for x in links
@@ -342,7 +396,11 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
         }
         mids = {n["id"] for n in (model or {}).get("nodes", [])}
         for did, d in decisions.items():
-            if not d.get("blocking") or d.get("status") != "resolved":
+            if (
+                did not in active_decisions
+                or not d.get("blocking")
+                or d.get("status") != "resolved"
+            ):
                 continue
             links = d.get("links", {})
             for name, artifact, ids in [
@@ -366,12 +424,17 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
                     ):
                         error("test_for_different_requirement", did + "." + cid)
     blocked = [
-        d["id"] for d in decisions.values() if d.get("blocking") and d.get("status") != "resolved"
+        d["id"]
+        for d in decisions.values()
+        if d["id"] in active_decisions and d.get("blocking") and d.get("status") != "resolved"
     ]
+    if concepts is not None:
+        blocked.extend(concepts.get("blocked", []))
     ready = [
         d
         for d in decisions.values()
-        if d.get("status") == "open"
+        if d["id"] in active_decisions
+        and d.get("status") == "open"
         and not d.get("asked_in")
         and all(
             decisions.get(x, {}).get("status") == "resolved"
@@ -385,6 +448,13 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
         if errors
         else sorted(ready, key=lambda d: (not d["blocking"], d.get("priority", 2), d["id"]))
     )
+    if doc.get("schema") == "business-discovery/v1":
+        warnings.append(
+            {
+                "code": "legacy_concept_contract",
+                "item": "Existing dialogue checks apply; independent state/rule semantic confirmation is not established.",
+            }
+        )
     return {
         "valid": not errors,
         "ready": not errors and not blocked,
@@ -393,8 +463,11 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
         "blocked": blocked,
         "questions": ready[:3],
         "awaiting_answers": [
-            d["id"] for d in decisions.values() if d.get("status") == "open" and d.get("asked_in")
+            d["id"]
+            for d in decisions.values()
+            if d["id"] in active_decisions and d.get("status") == "open" and d.get("asked_in")
         ],
+        **({"concepts": concepts} if concepts is not None else {}),
     }
 
 
@@ -417,6 +490,9 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("action", choices=["validate", "questions", "check"])
     p.add_argument("--file", required=True)
+    p.add_argument(
+        "--full-report", action="store_true", help="Include the conceptual graph and full index"
+    )
     for name in ("intent", "model", "acceptance", "previous"):
         p.add_argument("--" + name)
     args = p.parse_args()
@@ -443,7 +519,13 @@ def main():
             result["errors"].append(
                 {"code": "unanswered_business_questions", "item": ",".join(result["blocked"])}
             )
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    from .concept_review import compact_report
+
+    print(
+        json.dumps(
+            result if args.full_report else compact_report(result), ensure_ascii=False, indent=2
+        )
+    )
     raise SystemExit(0 if result["valid"] and (args.action != "check" or result["ready"]) else 1)
 
 

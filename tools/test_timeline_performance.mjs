@@ -26,7 +26,7 @@ const nodes = [
  {id:'function',label:'share_file',kind:'function'},
  {id:'query',label:'Read grants',kind:'function',data_role:'query'},
  {id:'file',label:'access.py',kind:'function',code_role:'file'},
- {id:'symbol',label:'Access.can_share',kind:'function',code_role:'method'},
+ {id:'symbol',label:'Access.can_share',kind:'function',code_role:'function'},
  {id:'data',label:'grants',kind:'data',data_role:'dataset'}];
 const at = ms => new Date(Date.UTC(2026,9,30) + ms).toISOString();
 const events = Array.from({length:20000},(_,i)=>({id:'event:'+i,seq:i+1,phase:i%2?'return':'enter',
@@ -112,8 +112,16 @@ try {
   };
   measured = report;
   assert.ok(perf.seeks.length >= 20, "pointer drag produces many real seeks");
-  assert.equal(report.semanticLayers, 9, "all nine graph layers participate in the load fixture");
-  assert.equal(report.visibleRows, 9, "20k sequential events reuse exactly nine layer rows");
+  assert.equal(report.semanticLayers, 5, "all five graph concerns participate in the load fixture");
+  assert.equal(
+    report.visibleRows,
+    5,
+    "20k sequential events reuse five concern rows across nine node roles",
+  );
+  assert.deepEqual(
+    [...new Set(perf.state.rows.map((row) => row.layer))].sort(),
+    ["business", "state", "rules", "implementation", "data"].sort(),
+  );
   assert.ok(report.initialMs < 2500);
   assert.ok(report.seekP95Ms < 100, "20k timeline seek/render p95 under 100 ms on this host");
   assert.ok(report.drawP95Ms < 60);

@@ -22,14 +22,14 @@ try:
     from ...requirements_dialogue import read
     from ...sync_io import write
     from ...view_preferences import Preferences, PreferenceConflict, file_lock
-    from ...observation_scope import WEB_APIS, observer_route
+    from ...observation_scope import observer_route
 except ImportError:
     from bo_design import BODesign
     from behavior_model import contained
     from requirements_dialogue import read
     from sync_io import write
     from view_preferences import Preferences, PreferenceConflict, file_lock
-    from observation_scope import WEB_APIS, observer_route
+    from observation_scope import observer_route
 
 
 ASSETS = Path(__file__).resolve().parents[3] / "assets/stategraph-viewer"
@@ -85,8 +85,10 @@ class BOWeb:
     def control_context(self):
         """Return graph/build evidence without transferring unrelated runtime history.
 
-        Standard sessions expose a model-only query. Existing custom integrations
-        keep their view callback; only the fields needed by controls are exported.
+        Standard sessions expose a static-only query. Existing custom integrations
+        keep their view callback. Bound concepts and source/API inventories must
+        survive this boundary, so conversation controls select the same graph as
+        the page without receiving events, parameter values or runtime frames.
         """
         if not self.control_view:
             raise ValueError("This observer integration has not connected its control view")
@@ -98,7 +100,16 @@ class BOWeb:
             **deepcopy(
                 {
                     key: view[key]
-                    for key in ("stage", "layout_id", "model", "manifest")
+                    for key in (
+                        "stage",
+                        "layout_id",
+                        "model",
+                        "manifest",
+                        "concept_structure",
+                        "project_structure",
+                        "api_structure",
+                        "code_structure",
+                    )
                     if key in view
                 }
             ),

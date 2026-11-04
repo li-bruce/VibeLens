@@ -1,6 +1,10 @@
 /** Native JavaScript capture filtering never evaluates excluded data builders. */
 import assert from "node:assert/strict";
 import { BOProbe } from "../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs";
+import {
+  captureRoots,
+  conceptBindingId,
+} from "../skills/vibelens/assets/stategraph-viewer/capture-scope.js";
 
 const received = [];
 const project = {
@@ -101,4 +105,70 @@ assert.equal(busy.bo_health().errors, 0);
 
 console.log(
   "PASS: actual JavaScript owner filtering, safe empty captures, exact sequences and restored full capture.",
+);
+
+// A concept and its capture owner have different identities. Presentation maps
+// can locate an owner but must never rename a real event or invent a call.
+const concept = { id: "share", kind: "action", layer: "business", origin: "concept-design" };
+const native = { id: "native:share", kind: "function" };
+const binding = {
+  id: conceptBindingId(concept.id, native.id),
+  from: concept.id,
+  to: native.id,
+  type: "maps",
+  code_relation: "maps",
+  mapping_role: "implements",
+  origin: "concept-binding",
+  evidence_kind: "binding",
+  observed: false,
+};
+const captureView = {
+  model: { nodes: [native], edges: [], machine: { execution: { parent: native.id } } },
+  concept_structure: {
+    schema: "bo-concept-projection/v1",
+    stage: "bound",
+    nodes: [concept],
+    edges: [binding],
+  },
+};
+const untouched = JSON.stringify(captureView);
+assert.deepEqual(captureRoots(captureView, concept), [native.id]);
+assert.deepEqual(captureRoots(captureView, { id: "ref", referenceOf: concept.id }), [native.id]);
+assert.deepEqual(captureRoots(captureView, native), [native.id]);
+for (const changed of [
+  { id: "unverified-binding" },
+  { type: "flow" },
+  { code_relation: "calls" },
+  { mapping_role: "summary" },
+  { origin: "concept-design" },
+  { evidence_kind: "conceptual" },
+  { observed: true },
+  { from: native.id, to: concept.id },
+  { to: "absent" },
+]) {
+  const invalid = structuredClone(captureView);
+  invalid.concept_structure.edges = [{ ...binding, ...changed }];
+  assert.deepEqual(captureRoots(invalid, concept), [], JSON.stringify(changed));
+}
+const draft = structuredClone(captureView);
+draft.concept_structure.stage = "draft";
+assert.deepEqual(captureRoots(draft, concept), []);
+assert.deepEqual(
+  captureRoots(captureView, { id: "unbound", origin: "concept-design", kind: "state" }),
+  [],
+);
+assert.equal(JSON.stringify(captureView), untouched);
+const captured = [];
+const scoped = new BOProbe({
+  project: { project_id: "concept-scope", model: captureView.model },
+  buildId: "build",
+  sink: (event) => captured.push(event),
+});
+scoped.bo_set_scope(captureRoots(captureView, concept));
+scoped.record(native.id, "enter", () => ({}));
+await scoped.flush();
+assert.equal(captured[0].node, native.id);
+assert.equal(captured.length, 1);
+console.log(
+  "PASS: bound concepts resolve exact native capture owners without rewriting event identities.",
 );

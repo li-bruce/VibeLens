@@ -17,14 +17,31 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = Path(
-    os.environ.get("BO_GRAPH_QUALITY_EVIDENCE", ROOT / ".validation/graph-quality-browser")
+    os.environ.get(
+        "BO_GRAPH_QUALITY_EVIDENCE", ROOT / ".validation/graph-quality-browser"
+    )
 ).resolve()
 ASSETS = ROOT / "skills/vibelens/assets/stategraph-viewer"
 KEY = "business-observer.layout.v2:graph-quality-browser"
-LAYERS = ["business", "state", "rules", "api", "execution", "project", "code", "operations", "data"]
+LAYERS = [
+    "business",
+    "state",
+    "rules",
+    "api",
+    "execution",
+    "project",
+    "code",
+    "operations",
+    "data",
+]
 NODES = [
     {"id": "share", "kind": "function", "layer": "business", "label": "Share a file"},
-    {"id": "notify", "kind": "function", "layer": "business", "label": "Notify recipient"},
+    {
+        "id": "notify",
+        "kind": "function",
+        "layer": "business",
+        "label": "Notify recipient",
+    },
     {
         "id": "store",
         "parent": "share",
@@ -75,7 +92,13 @@ NODES = [
     },
 ]
 EDGES = [
-    {"id": "share-notify", "from": "share", "to": "notify", "type": "flow", "label": "Notify"},
+    {
+        "id": "share-notify",
+        "from": "share",
+        "to": "notify",
+        "type": "flow",
+        "label": "Notify",
+    },
     {
         "id": "store-shares",
         "from": "store",
@@ -114,7 +137,13 @@ layout = {
 analysis = {
     "selected": "overview",
     "advanced": True,
-    "layers": {"schema": 2, "enabled": False, "visible": LAYERS, "gap": 260, "projections": True},
+    "layers": {
+        "schema": 2,
+        "enabled": False,
+        "visible": LAYERS,
+        "gap": 260,
+        "projections": True,
+    },
     "layerVisibility": {"overview": LAYERS},
     "routing": "curve",
 }
@@ -126,9 +155,10 @@ preferences = {
     "conflicts": [],
 }
 recording = json.loads(
-    (ROOT / "docs/review/recording-timeline/real-project-completion/v2-recording.json").read_text(
-        encoding="utf-8"
-    )
+    (
+        ROOT
+        / "docs/review/recording-timeline/real-project-completion/v2-recording.json"
+    ).read_text(encoding="utf-8")
 )
 view = {**recording["context"], **recording["final"], "events": []}
 view["model"] = {
@@ -138,7 +168,13 @@ view["model"] = {
     "edges": EDGES,
     "source_files": [],
     "presentation": {},
-    "machine": {"values": [], "states": [], "events": {}, "transitions": [], "labels": {}},
+    "machine": {
+        "values": [],
+        "states": [],
+        "events": {},
+        "transitions": [],
+        "labels": {},
+    },
 }
 view["machine"] = {"journal": [], "configurations": [], "current": None}
 view["manifest"] = {**view["manifest"], "bindings": {}}
@@ -166,13 +202,16 @@ class Handler(BaseHTTPRequestHandler):
             return self.json({"active": None, "recordings": []})
         if route.startswith("/api/"):
             return self.json({"error": "Not provided by isolated UI fixture"}, 404)
-        target = ASSETS / ("index.html" if route in {"/", "/graph"} else unquote(route).lstrip("/"))
+        target = ASSETS / (
+            "index.html" if route in {"/", "/graph"} else unquote(route).lstrip("/")
+        )
         if not target.resolve().is_relative_to(ASSETS) or not target.is_file():
             return self.json({"error": "Unknown asset"}, 404)
         body = target.read_bytes()
         self.send_response(200)
         self.send_header(
-            "Content-Type", mimetypes.guess_type(target)[0] or "application/octet-stream"
+            "Content-Type",
+            mimetypes.guess_type(target)[0] or "application/octet-stream",
         )
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
@@ -218,7 +257,9 @@ def main():
             or (str(default_chrome) if default_chrome.is_file() else None),
             args=["--enable-unsafe-swiftshader"],
         )
-        page = browser.new_page(viewport={"width": 1600, "height": 1100}, device_scale_factor=1)
+        page = browser.new_page(
+            viewport={"width": 1600, "height": 1100}, device_scale_factor=1
+        )
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on(
             "console",
@@ -232,7 +273,8 @@ def main():
 
         def ready():
             page.wait_for_function(
-                "() => window.graphDebug?.graph && !graphDebug.layoutBusy", timeout=45000
+                "() => window.graphDebug?.graph && !graphDebug.layoutBusy",
+                timeout=45000,
             )
             page.wait_for_timeout(180)
 
@@ -261,7 +303,9 @@ def main():
             )
             assert any(port["id"] == route_id for port in before["ports"])
             page.screenshot(path=str(OUT / "01-tight-planar.png"))
-            checks.append("2D circles fit visible children with distant saved owners unchanged")
+            checks.append(
+                "2D circles fit visible children with distant saved owners unchanged"
+            )
             page.click("#layered-toggle")
             ready()
             page.click("#fit")
@@ -311,7 +355,10 @@ def main():
                 assert abs(moved[name]["z"] - first["positions"][name]["z"] - dz) < 1e-6
             assert moved["file_id"]["pinned"]
             for name in ["share", "notify", "store"]:
-                assert moved[name] == first["positions"][name], ("Unrelated branch moved", name)
+                assert moved[name] == first["positions"][name], (
+                    "Unrelated branch moved",
+                    name,
+                )
             captions = page.locator(".spatial-label.region-label:visible").evaluate_all(
                 """elements => elements.map(e => {
                 const box=e.getBoundingClientRect();
@@ -326,7 +373,9 @@ def main():
                         or caption["y"] + caption["h"] <= other["y"]
                         or other["y"] + other["h"] <= caption["y"]
                     ), ("Caption overlap", caption, other)
-            label = page.locator('[data-spatial-region="database"][data-region-layer="data"]')
+            label = page.locator(
+                '[data-spatial-region="database"][data-region-layer="data"]'
+            )
             label.hover()
             caption = label.bounding_box()
             hit = page.evaluate(
@@ -338,7 +387,8 @@ def main():
             )
             assert hit == "database", ("Caption intercepted by another owner", hit)
             page.mouse.move(
-                caption["x"] + caption["width"] / 2, caption["y"] + caption["height"] / 2
+                caption["x"] + caption["width"] / 2,
+                caption["y"] + caption["height"] / 2,
             )
             page.mouse.down()
             page.mouse.move(
@@ -350,7 +400,10 @@ def main():
             ready()
             after_caption = page.evaluate("graphDebug.spatialPositions")
             for name in ["share", "notify", "store"]:
-                assert after_caption[name] == moved[name], ("Caption drag moved wrong owner", name)
+                assert after_caption[name] == moved[name], (
+                    "Caption drag moved wrong owner",
+                    name,
+                )
             assert abs(after_caption["database"]["x"] - moved["database"]["x"]) > 1
             moved = after_caption
             result["captions"] = captions
@@ -363,16 +416,27 @@ def main():
                 "Tilted 3D ring drag moves the complete branch by one delta and keeps pins"
             )
             layer("data")
-            layer("execution")
+            # The legacy execution facet shares the implementation plane.
+            assert (
+                page.evaluate(
+                    "async () => { const {implementationFacet} = await import('/graph-classification.js'); return implementationFacet(graphDebug.graph.all.get('store')); }"
+                )
+                == "execution"
+            )
+            layer("implementation")
             assert page.evaluate("graphDebug.presentation.glyphs.has('share')")
             assert not page.evaluate("graphDebug.presentation.regions.has('share')")
             assert page.locator('[data-spatial-label="share"]').count() == 1
             page.screenshot(path=str(OUT / "04-hidden-children-fallback.png"))
             layer("data")
-            layer("execution")
+            layer("implementation")
             restored = page.evaluate("graphDebug.spatialPositions")
             for name in ["database", "files", "shares", "file_id", "file_name"]:
-                assert restored[name] == moved[name], (name, restored[name], moved[name])
+                assert restored[name] == moved[name], (
+                    name,
+                    restored[name],
+                    moved[name],
+                )
             checks.append(
                 "Layer hide/restore uses same-ID fallback glyphs and restores child positions"
             )
@@ -382,12 +446,14 @@ def main():
             ready()
             assert not page.evaluate("graphDebug.presentation.glyphs.has('shares')")
             page.click("#filter-toggle")
-            page.locator("#hidden-elements > div").filter(has_text="Shares").get_by_role(
-                "button", name="Show again"
-            ).click()
+            page.locator("#hidden-elements > div").filter(
+                has_text="Shares"
+            ).get_by_role("button", name="Show again").click()
             ready()
             assert page.evaluate("graphDebug.presentation.glyphs.has('shares')")
-            checks.append("Explicit node exclusion and native restore retain the same identity")
+            checks.append(
+                "Explicit node exclusion and native restore retain the same identity"
+            )
             page.wait_for_timeout(600)
             page.goto("about:blank")
             time.sleep(0.2)
@@ -405,9 +471,14 @@ def main():
             route_id = page.evaluate(
                 "graphDebug.presentation.edges.find(e => e.id === 'share-notify' || e.members?.some(m=>m.id==='share-notify')).id"
             )
-            route = next(port for port in after["spatial"]["edgePorts"] if port["id"] == route_id)
+            route = next(
+                port for port in after["spatial"]["edgePorts"] if port["id"] == route_id
+            )
             point = after["positions"]["share"]
-            assert all(abs(route["start"][axis] - point[axis]) < 1e-6 for axis in ["x", "y", "z"])
+            assert all(
+                abs(route["start"][axis] - point[axis]) < 1e-6
+                for axis in ["x", "y", "z"]
+            )
             page.screenshot(path=str(OUT / "05-projections-hidden.png"))
             checks.append(
                 "Saved projection visibility hides projected rings and routes to the same-ID visible glyph"
@@ -423,11 +494,15 @@ def main():
             raise
         finally:
             result.update(checks=checks, errors=errors)
-            (OUT / "results.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+            (OUT / "results.json").write_text(
+                json.dumps(result, indent=2), encoding="utf-8"
+            )
             (OUT / "preferences.json").write_text(
                 json.dumps(preferences, indent=2), encoding="utf-8"
             )
-            (OUT / "requests.json").write_text(json.dumps(requests, indent=2), encoding="utf-8")
+            (OUT / "requests.json").write_text(
+                json.dumps(requests, indent=2), encoding="utf-8"
+            )
             browser.close()
             server.shutdown()
     print(json.dumps(result, indent=2))

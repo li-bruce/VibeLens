@@ -99,7 +99,10 @@ async function isolateLayer(id) {
   }, id);
 }
 async function shot(name) {
-  await page.screenshot({ path: path.join(output, name + ".png"), fullPage: true });
+  await page.screenshot({
+    path: path.join(output, name + ".png"),
+    fullPage: true,
+  });
 }
 try {
   let ready = false;
@@ -123,17 +126,26 @@ try {
   await page.goto(base + "/graph?lang=en");
   await page.waitForFunction(() => window.graphDebug?.graph?.boxes.length > 0);
   await page.waitForTimeout(400);
+  await layerHeader(true);
   await expand("publish");
   await expand("transaction");
   checks.quietCapture = await page.evaluate(() => {
     const g = graphDebug.graph;
     return {
-      shown: g.boxes.filter((b) => b.node.event_node === "transaction").map((b) => b.node.field),
+      shown: g.boxes
+        .filter(
+          (b) => b.node.event_node === "transaction" && graphDebug.presentation.glyphs.has(b.id),
+        )
+        .map((b) => b.node.field),
       all: [...g.all.values()].filter((n) => n.event_node === "transaction").length,
     };
   });
   assert.ok(checks.quietCapture.all > 10);
-  assert.deepEqual(checks.quietCapture.shown.sort(), ["committed", "status"]);
+  assert.deepEqual(checks.quietCapture.shown, [], "Captured fields are owner details by default");
+  await page.click("#fields-toggle");
+  await page.waitForSelector('#semantic [data-node-id="field:transaction:out:status"]', {
+    state: "attached",
+  });
   await pick("field:transaction:out:status");
   await page.click("#selection-menu");
   await page.click("#source");
@@ -274,13 +286,17 @@ try {
   const tick = await page.locator("#layer-controls canvas").boundingBox();
   await page.mouse.move(tick.x + 75, tick.y + 40 + stateIndex * 34 + 17);
   await page.mouse.down();
-  await page.mouse.move(tick.x + 75, tick.y + 40 + (stateIndex - 1) * 34 + 17, { steps: 5 });
+  await page.mouse.move(tick.x + 75, tick.y + 40 + (stateIndex - 1) * 34 + 17, {
+    steps: 5,
+  });
   await page.mouse.up();
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.order), movedOrder);
   const customLayers = await page.evaluate(() => graphDebug.layers);
   await page.waitForTimeout(350);
   await page.reload();
-  await page.waitForFunction(() => graphDebug?.spatial?.perspective && !graphDebug.layoutBusy);
+  await page.waitForFunction(
+    () => window.graphDebug?.spatial?.perspective && !graphDebug.layoutBusy,
+  );
   assert.deepEqual(
     await page.evaluate(() => graphDebug.layers),
     customLayers,
@@ -357,17 +373,17 @@ try {
   await page.mouse.up();
   await page.waitForTimeout(350);
   assert.notDeepEqual(await page.evaluate(() => graphDebug.spatial.camera.position), camera);
-  await isolateLayer("operations");
+  await isolateLayer("implementation");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.deepEqual(
     await page.evaluate(() => graphDebug.spatial.layerPlanes),
-    [{ ...renderedPlanes.find((p) => p.id === "operations"), y: 0 }],
+    [{ ...renderedPlanes.find((p) => p.id === "implementation"), y: 0 }],
     "A layer mask compacts the remaining plane to zero",
   );
   assert.ok(
     await page.evaluate(() =>
       [...document.querySelectorAll("#semantic [data-node-id]")].every(
-        (e) => e.dataset.plane === "operations",
+        (e) => e.dataset.plane === "implementation",
       ),
     ),
   );
@@ -417,28 +433,32 @@ try {
     "3D dragging must preserve 2D layout",
   );
   await page.reload();
-  await page.waitForFunction(() => graphDebug?.spatial?.perspective && !graphDebug.layoutBusy);
+  await page.waitForFunction(
+    () => window.graphDebug?.spatial?.perspective && !graphDebug.layoutBusy,
+  );
   assert.equal(await page.locator("#layered-toggle").innerText(), "3D");
   const restored = await page.evaluate(() => graphDebug.spatialPositions.load);
   assert.ok(Math.abs(restored.x - after.positions.load.x) < 0.001);
   assert.ok(Math.abs(restored.z - after.positions.load.z) < 0.001);
   checks.roundTrip = true;
-  await isolateLayer("operations");
+  await isolateLayer("implementation");
   await layerAction("state", true);
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
-    "operations",
+    "implementation",
     "state",
   ]);
   await page.reload();
-  await page.waitForFunction(() => graphDebug?.spatial?.perspective && !graphDebug.layoutBusy);
+  await page.waitForFunction(
+    () => window.graphDebug?.spatial?.perspective && !graphDebug.layoutBusy,
+  );
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
-    "operations",
+    "implementation",
     "state",
   ]);
   await page.click("#layered-toggle");
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
-    "operations",
+    "implementation",
     "state",
   ]);
   assert.equal(await page.locator("#legend-panel").getAttribute("data-mode"), "2D");
@@ -549,7 +569,7 @@ try {
   assert.equal(await page.locator("#layered-toggle").innerText(), "3D");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(200);
-  await isolateLayer("operations");
+  await isolateLayer("implementation");
   await page.waitForTimeout(200);
   assert.ok(
     await page

@@ -4,8 +4,64 @@ The project checker, standalone module and exports use these same rules.
 Runtime violations are diagnostics; callers must preserve the actual facts.
 """
 
+import hashlib
 import math
 import json
+
+
+def source_declaration_id(source):
+    """Identify an exact source declaration using portable JSON and SHA-256.
+
+    This contract belongs to the standalone model module. The observer and AST
+    adapters reuse it; loading an enriched model never imports those adapters.
+    """
+    key = source["path"] + "::" + source["symbol"]
+    raw = json.dumps(key, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return "code:symbol:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
+
+
+def validate_source_references(model):
+    """Reject forged or dangling physical references without merging observation nodes.
+
+    Legacy graphs without this metadata retain their established validation. A
+    registered reference must resolve to one exact declaration in this graph;
+    sharing source never makes two business operations or runtime calls equal.
+    """
+    nodes = {node["id"]: node for node in model.get("nodes", [])}
+    for node in nodes.values():
+        target = node.get("declaration_id")
+        role = node.get("representation_role")
+        if target is None and role not in {"declaration", "source-reference"}:
+            continue
+        source = node.get("source")
+        if (
+            not isinstance(source, dict)
+            or not all(
+                isinstance(source.get(key), str) and source[key] for key in ("path", "symbol")
+            )
+            or target != source_declaration_id(source)
+        ):
+            raise ValueError("source declaration identity differs: " + node["id"])
+        declared = nodes.get(target)
+        if (
+            not declared
+            or declared.get("representation_role") != "declaration"
+            or declared.get("code_role") not in {"function", "class"}
+            or declared.get("source") != source
+            or declared.get("declaration_id") != target
+        ):
+            raise ValueError("missing exact source declaration: " + node["id"])
+        if role == "declaration" and node["id"] != target:
+            raise ValueError("physical declaration has a second identity: " + node["id"])
+        if role == "declaration" and node.get("declaration_scope", "mapped") not in {
+            "mapped",
+            "lexical-owner",
+        }:
+            raise ValueError("unsupported source declaration scope: " + node["id"])
+        if role == "source-reference" and (
+            node["id"] == target or node.get("code_role") != "reference"
+        ):
+            raise ValueError("source context must be a distinct reference: " + node["id"])
 
 
 def value_errors(value, spec, name):
@@ -495,6 +551,7 @@ def validate_graph(model):
     nodes = {n["id"]: n for n in model.get("nodes", [])}
     if not nodes or len(nodes) != len(model["nodes"]):
         raise ValueError("invalid node identities")
+    validate_source_references(model)
     for node in nodes.values():
         if "observation_root" in node and type(node["observation_root"]) is not bool:
             raise ValueError("observation_root must be Boolean")

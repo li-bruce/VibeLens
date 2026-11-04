@@ -6,7 +6,7 @@ Users discuss, confirm, and revise in Codex or another development tool. Web pro
 
 Create `discovery.json` using [intent confirmation](requirements-dialogue.md). Uncertain rules stay open with user/inference/project-rule sources. Run `requirements_dialogue.py validate`; `check` still rejects unresolved blocking questions. Opening a graph is not a reason to mark a question resolved.
 
-Design nodes use stable IDs. `model_nodes` may reference existing or reserved implementation IDs: the first is the primary design projection ID; others support discussion focus. `parent` references the same design; missing parents/cycles fail. State/resource nodes retain their types. This stage has no runtime instances or actual values: do not fabricate events or load a sketch as a valid executable machine.
+Version 2 design nodes use stable conceptual IDs across business, state and rule views. Explicit crosslinks connect their different meanings. `model.concepts` later binds these IDs to actual source, state, guard and effect nodes. Use `bo_design.py preview --view business|state|rules|all` for each relevant model. This stage has no runtime instances or actual values: do not fabricate events or load a sketch as a valid executable machine. Legacy version 1 retains its primary `model_nodes` projection until migrated.
 
 Set project_id, a short title, and stable layout_id; the runtime service must reuse layout_id. Carry primary IDs into the implementation graph. Do not silently merge multiple nodes under one ID; use shared relations for multiple membership. Layout and notes live in `bo_stategraph/config/views/local.json`.
 
@@ -31,7 +31,7 @@ Reuse assets through `BOWeb(root, assets=project_graph_assets)`:
 - Mark graph links in application HTML with `data-bo-entry`; process with `entry_html`. Business state/operation endpoints remain independent and work with Web disabled.
 - Before generic HTTP capture, call `is_observer_request(path)` and skip graph pages/assets/APIs. Do not map unknown requests to a fake developer-graph business event. See [observer exclusion](observer-exclusion.md).
 
-Keep integration in `integrations/`, not imported by business methods. Replace sketch data with the actual runtime view, retaining IDs and adding source/parameter/state/event bindings. AI may keep updating discussion focus during execution. Verify stable IDs, layout identity, and unmapped nodes; opening a page does not prove mapping. Core/engine/declaration/parameter validation stays strict and the full gate reports mapping, state rules, business, and project checks.
+Keep integration in `integrations/`, not imported by business methods. Bind confirmed concepts to the actual runtime view, retaining conceptual and source IDs independently. Runtime `concept_structure` carries validated conceptual metadata and explicit implementation links. A recording pins that metadata to its build; current edits cannot rewrite historical meaning. Direct events keep their actual node and invocation IDs. AI may keep updating discussion focus during execution. Verify stable IDs, layout identity, and unmapped nodes; opening a page does not prove mapping. Core/engine/declaration/parameter validation stays strict and the full gate reports concepts, mapping, state rules, business, and project checks.
 
 ## Control Web at delivery
 

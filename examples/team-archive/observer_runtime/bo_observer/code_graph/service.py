@@ -186,6 +186,7 @@ class CodeGraph:
                     for key, value in graph.get("endpoint_aliases", {}).items()
                     if value in selected
                 },
+                "endpoint_migrations": deepcopy(graph.get("endpoint_migrations", [])),
                 "observation_issues": deepcopy(graph.get("observation_issues", [])),
                 "errors": deepcopy(graph["errors"]),
                 "scope": graph["scope"],
@@ -360,6 +361,7 @@ class CodeGraph:
                 "symbols",
                 "endpoint_aliases",
                 "endpoint_registrations",
+                "endpoint_migrations",
                 "observation_issues",
                 "files",
                 "project",

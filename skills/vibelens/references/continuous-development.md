@@ -33,7 +33,7 @@ The normal validation command propagates synchronization failures for everyone c
 
 ## Before implementation
 
-1. Derive the business chain from supplied requirements into `intent.json`, `discovery.json`, and a candidate graph. Follow [dialogue rules](requirements-dialogue.md). Keep user-owned ambiguity pending; proceed with ordinary technical choices.
+1. Derive the business, state and rule models from supplied requirements into `intent.json`, version 2 `discovery.json`, and a candidate graph. Follow [dialogue rules](requirements-dialogue.md) and [scoped concept confirmation](concept-models.md). Keep user-owned ambiguity pending; proceed with ordinary technical choices.
 2. Define types, states, events, relation rules, and success effects. Reuse actual declarations in existing projects. In new projects agree a minimal execution interface and scenarios; the entire model need not be finished before coding starts.
 3. Save independent expectations in `acceptance.json`. Define `whitebox.json`: each key rule's node, function, parameters, and required runtime values/relations.
 4. Run `whitebox_contract.py plan`. Its result is `planned`, not a passed application test.
@@ -65,7 +65,7 @@ Reuse the observer Web entrypoints for graph assets where possible. Custom Pytho
 
 Observation output must contain a real run's `stategraph_export` from public `BOStateGraph.bo_export`. Check its model, build, and instance projection. A same-named custom class, alternative JSON, or merely present module file does not establish integration. Reuse shared viewer assets; supply application data through the same-origin service. Project extensions must not replace the public protocol.
 
-Keep four result categories: `mapping`, `state_rules`, `business`, `project_checks`. Business rules come from independent expectations. Architecture/UI checks are not automatically business failures. Missing evidence and unexecuted checks stay failed or `not_run`. A faithfully displayed bug can pass mapping and fail business rules. Connect `check` to project tests or CI; prompts alone cannot enforce edits, and an unconnected gate must be disclosed.
+Keep the original result categories: `mapping`, `state_rules`, `business`, `project_checks`. Version 2 also reports `concepts` for confirmation and declaration binding. Business outcomes come from independent expectations. Architecture/UI checks are not automatically business failures. Missing evidence and unexecuted checks stay failed or `not_run`. A faithfully displayed bug can pass mapping and fail business rules. Connect `check` to project tests or CI; prompts alone cannot enforce edits, and an unconnected gate must be disclosed.
 
 ## White-box contract
 

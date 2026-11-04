@@ -112,7 +112,12 @@ def build():
     by_id['change']['capture']['in']={'action':'string','values':{k:t for k,t in [
         ('id','string'),('project','string'),('actor','string'),('version','number'),('expires','number'),
         ('role','string'),('clock','number'),('capacity','number'),('content_length','number')]}}
-    model=enrich(model,scan(ROOT,cfg['code_files']),depth=1)
+    # Do not publish a partial graph when a configured parser or source fails.
+    # The previous complete declaration remains available for diagnosis.
+    structure = scan(ROOT, cfg['code_files'])
+    if structure['errors']:
+        raise ValueError('Source analysis failed: ' + json.dumps(structure['errors']))
+    model=enrich(model,structure,depth=1)
     # Publish complete files atomically; active Windows readers retain their snapshot.
     write(ROOT/'observer_generated/behavior.json', model)
     for source in (ROOT/'integrations/bo_view').glob('*'):

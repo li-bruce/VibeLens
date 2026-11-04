@@ -2,6 +2,7 @@
  * Names, shared handlers and arbitrary source-map paths never establish runtime
  * ownership. This overlay retains native event/call/parent IDs and raw ordinals.
  */
+import { conceptRuntimeIds } from "./concept-observation.js";
 export function apiObservationSources(node) {
   if (node?.code_role !== "endpoint" || node.observation_projection !== true) return [];
   return (Array.isArray(node.observation_sources) ? node.observation_sources : []).filter(
@@ -26,7 +27,9 @@ export function apiObservationIds(node) {
 /** Include a physical node's own events and only its explicitly bound API events. */
 export function observesNode(node, id) {
   return (
-    id === (node.referenceOf || node.event_node || node.id) || apiObservationIds(node).includes(id)
+    id === (node.referenceOf || node.event_node || node.id) ||
+    apiObservationIds(node).includes(id) ||
+    conceptRuntimeIds(node).includes(id)
   );
 }
 

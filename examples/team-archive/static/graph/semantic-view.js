@@ -1,5 +1,5 @@
-import { nodeTypes } from "./graph-core.js";
 import { layerOf } from "./graph-layers.js";
+import { layerColor } from "./graph-layers.js";
 import {
   displayName,
   annotationFor,
@@ -42,7 +42,7 @@ export class SemanticView {
             ? "self"
             : "circle"
           : "node",
-        color: "#" + nodeTypes[box.type].color.toString(16).padStart(6, "0"),
+        color: "#" + layerColor(box.node).toString(16).padStart(6, "0"),
         core: !!annotationFor(preferences, box.node.referenceOf || box.id).core,
         referenceOf: box.node.referenceOf || "",
         runState: box.state,
@@ -117,7 +117,7 @@ export class SemanticView {
       const box = graph.byId.get(id);
       if (!box) continue;
       const p = point(box),
-        appearance = glyphAppearance(nodeTypes[box.type].color, {
+        appearance = glyphAppearance(layerColor(box.node), {
           core: annotationFor(preferences, box.node.referenceOf || id).core,
           selected: selected === id,
           related: focusContext.nodes.has(id),

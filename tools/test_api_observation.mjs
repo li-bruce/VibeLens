@@ -67,13 +67,37 @@ const endpoint = {
     source: { path: "web.py", symbol: "files" },
   },
   nativeNodes = [
-    { id: "share", label: "Share file", kind: "function", layer: "business", basis_fields: [] },
-    { id: "api_get", label: "HTTP GET", kind: "function", layer: "execution", basis_fields: [] },
-    { id: "api_post", label: "HTTP POST", kind: "function", layer: "execution", basis_fields: [] },
+    {
+      id: "share",
+      label: "Share file",
+      kind: "function",
+      layer: "business",
+      basis_fields: [],
+    },
+    {
+      id: "api_get",
+      label: "HTTP GET",
+      kind: "function",
+      layer: "execution",
+      basis_fields: [],
+    },
+    {
+      id: "api_post",
+      label: "HTTP POST",
+      kind: "function",
+      layer: "execution",
+      basis_fields: [],
+    },
     { id: "store", label: "Save file", kind: "function", basis_fields: [] },
   ],
   edges = [
-    { id: "map", from: "api_get", to: handler.id, type: "data", code_relation: "maps" },
+    {
+      id: "map",
+      from: "api_get",
+      to: handler.id,
+      type: "data",
+      code_relation: "maps",
+    },
     ...[endpoint, archive].map((node) => ({
       id: `handles:${node.id}`,
       from: node.id,
@@ -128,15 +152,22 @@ const event = (id, node, phase, time, call, parent = null, values = {}) => ({
 });
 const events = [
   event("business-enter", "share", "enter", 0, "business"),
-  event("get-enter", "api_get", "enter", 10, "get", "business", { method: "GET", path: "/files" }),
+  event("get-enter", "api_get", "enter", 10, "get", "business", {
+    method: "GET",
+    path: "/files",
+  }),
   event("store-enter", "store", "enter", 20, "store", "get"),
   event("store-return", "store", "return", 40, "store", "get", { count: 3 }),
-  event("get-return", "api_get", "return", 70, "get", "business", { status: 200 }),
+  event("get-return", "api_get", "return", 70, "get", "business", {
+    status: 200,
+  }),
   event("post-enter", "api_post", "enter", 80, "post", "business", {
     method: "POST",
     path: "/files",
   }),
-  event("post-return", "api_post", "return", 110, "post", "business", { status: 403 }),
+  event("post-return", "api_post", "return", 110, "post", "business", {
+    status: 403,
+  }),
   event("business-return", "share", "return", 120, "business"),
 ];
 const recording = {
@@ -169,7 +200,12 @@ const legacyModel = {
   nodes: [...view.model.nodes, legacyEndpoint],
   edges: [
     ...view.model.edges,
-    { id: "legacy-handles", from: legacyEndpoint.id, to: handler.id, code_relation: "handles" },
+    {
+      id: "legacy-handles",
+      from: legacyEndpoint.id,
+      to: handler.id,
+      code_relation: "handles",
+    },
   ],
 };
 assert.deepEqual(
@@ -205,7 +241,9 @@ assert.equal(nodeEvents(archive, events).length, 0);
 assert.equal(callValues(endpoint, events).outputs.status, 403);
 const mixedIds = [
   event("get-input", "api_get", "enter", 1, "reused", null, { getOnly: true }),
-  event("post-output", "api_post", "return", 2, "reused", null, { status: 201 }),
+  event("post-output", "api_post", "return", 2, "reused", null, {
+    status: 201,
+  }),
 ];
 assert.equal(
   callValues(endpoint, mixedIds).inputs.getOnly,
@@ -238,8 +276,14 @@ const concurrent = [
   event("post-active", "api_post", "enter", 2, "shared-call-id"),
 ];
 assert.equal(graphActivations(concurrent, view.model.nodes).get(endpoint.id).activeCount, 2);
-const oldAPI = { ...initial, api_structure: { ...initial.api_structure, revision: "api-1" } },
-  newAPI = { ...initial, api_structure: { ...initial.api_structure, revision: "api-2" } };
+const oldAPI = {
+    ...initial,
+    api_structure: { ...initial.api_structure, revision: "api-1" },
+  },
+  newAPI = {
+    ...initial,
+    api_structure: { ...initial.api_structure, revision: "api-2" },
+  };
 assert.notEqual(graphVersion(oldAPI), graphVersion(newAPI));
 assert.notEqual(renderRevision(oldAPI), renderRevision(newAPI));
 assert(!recordingMatches({ context: oldAPI }, newAPI));
@@ -247,7 +291,10 @@ assert.equal(
   graphVersion(oldAPI),
   graphVersion({ ...oldAPI, preferences: { hiddenNodes: ["api_get"] } }),
 );
-const legacy = { ...initial, manifest: { ...initial.manifest, model_hash: "legacy-model" } };
+const legacy = {
+  ...initial,
+  manifest: { ...initial.manifest, model_hash: "legacy-model" },
+};
 delete legacy.api_structure;
 assert.equal(
   graphVersion(legacy),
@@ -267,20 +314,33 @@ assert(!index.rows.has(archive.id));
 assert.equal(index.rows.get(handler.id)?.slices.length || 0, 0);
 assert(apiRow.slices.every((slice) => slice.observation_basis.kind === "http-registration"));
 const shown = new Set(["share", endpoint.id, "store"]),
-  rows = traceRows(index, { visible: shown, order: ["business", "api", "execution"] }),
+  rows = traceRows(index, {
+    visible: shown,
+    order: ["business", "api", "execution"],
+  }),
   flows = visibleFlows(index, rows, { start: 0, end: index.axis.total });
 assert(
-  flows.some((flow) => rows[flow.fromRow].layer === "business" && rows[flow.toRow].layer === "api"),
+  flows.some(
+    (flow) =>
+      rows[flow.fromRow].layer === "business" &&
+      rows[flow.toRow].layer === "implementation" &&
+      flow.toNode === endpoint.id,
+  ),
 );
 assert(
   flows.some(
-    (flow) => rows[flow.fromRow].layer === "api" && rows[flow.toRow].layer === "execution",
+    (flow) =>
+      flow.fromNode === endpoint.id &&
+      (flow.toNode || items[flow.to]?.node) === "store" &&
+      rows[flow.fromRow].layer === "implementation" &&
+      rows[flow.toRow].layer === "implementation",
   ),
+  "API-to-operation causality stays visible horizontally in the shared implementation plane",
 );
-assert(flows.some((flow) => flow.type === "return" && rows[flow.toRow].layer === "api"));
+assert(flows.some((flow) => flow.type === "return" && flow.toNode === endpoint.id));
 assert(
   flows
-    .filter((flow) => rows[flow.toRow].layer === "api")
+    .filter((flow) => flow.toNode === endpoint.id)
     .every((flow) => flow.toNode === endpoint.id && flow.toObservedNode),
   "Projected causal endpoints retain both display identity for subtracks and native observed subject",
 );
@@ -298,7 +358,11 @@ const parallelEvents = [
     event("parallel-post-end", "api_post", "return", 12, "parallel-post", "parallel-parent"),
     event("parallel-business-end", "share", "return", 15, "parallel-parent"),
   ],
-  parallelRecording = { ...recording, id: "parallel-api", events: parallelEvents },
+  parallelRecording = {
+    ...recording,
+    id: "parallel-api",
+    events: parallelEvents,
+  },
   parallelItems = timeline(parallelRecording),
   parallelIndex = buildTraceIndex(parallelRecording, parallelItems, all, edges),
   parallelRows = traceRows(parallelIndex, {
@@ -310,14 +374,23 @@ const parallelEvents = [
     end: parallelIndex.axis.total,
   }),
   invocationTracks = parallelFlows
-    .filter((flow) => flow.type === "call" && parallelRows[flow.toRow].layer === "api")
+    .filter(
+      (flow) =>
+        flow.type === "call" &&
+        flow.toNode === endpoint.id &&
+        parallelRows[flow.toRow].layer === "implementation",
+    )
     .map((flow) => trackOf(parallelRows[flow.toRow], flow.toNode, flow.to));
 assert.equal(
   new Set(invocationTracks).size,
   2,
   "Concurrent HTTP calls connect to their own API subtracks",
 );
-const observedEdge = { id: "visible-observation", type: "data", members: [edges.at(-1)] };
+const observedEdge = {
+  id: "visible-observation",
+  type: "data",
+  members: [edges.at(-1)],
+};
 assert.deepEqual(transferEdges(items[2], items, [observedEdge], all), ["visible-observation"]);
 const replay = withCodeGraph(frame(recording, 2, items), null);
 assert.equal(

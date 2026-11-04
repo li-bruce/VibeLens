@@ -139,7 +139,10 @@ export function transferEdges(event, events, edges, all, configuration = null) {
   if (!event || event.kind === "command" || !event.node) return [];
   const actualDependencies = [
     ...(event.depends || []),
-    ...spanLinkEvents(event, events).map((link) => ({ event: link.event.id, type: link.type })),
+    ...spanLinkEvents(event, events).map((link) => ({
+      event: link.event.id,
+      type: link.type,
+    })),
   ];
   const dependencies = new Set(actualDependencies.map((d) => d.event));
   const prior = events.filter((e) => dependencies.has(e.id));
@@ -152,6 +155,7 @@ export function transferEdges(event, events, edges, all, configuration = null) {
   return edges
     .filter(
       (edge) =>
+        !edge.derived &&
         edge.type !== "shared" &&
         edge.members?.some((member) => {
           if (member.mapping_role === "equivalent") return false;

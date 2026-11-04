@@ -1,12 +1,15 @@
 import { typeColor } from "./layer-style.js";
+import { visualType as nodeType } from "./graph-classification.js";
 import { activationFor } from "./graph-activation.js";
 import { lifecycleCaption } from "./node-lifecycle.js";
 import { activeMachineStates } from "./machine-projection.js";
 import { graphInventory } from "./graph-inventory.js";
+import { conceptRelations, conceptRelationTypes } from "./concept-relations.js";
 export { stateNodeId } from "./graph-inventory.js";
 import { capturedValue } from "./capture-fields.js";
 import { explainedName } from "./graph-names.js";
 import { apiObservationIds, observesNode } from "./api-observation.js";
+import { conceptActivityIds, conceptRuntimeIds, conceptFrameOwner } from "./concept-observation.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   dataRoles,
@@ -189,7 +192,7 @@ export function parameterSummary(view, _configuration = null, step = "latest") {
     .join(" · ");
 }
 function staleBasis(node, view, last) {
-  const ownerId = apiObservationIds(node).includes(last.node)
+  const ownerId = [...apiObservationIds(node), ...conceptRuntimeIds(node)].includes(last.node)
     ? last.node
     : node.event_node || node.id;
   const owner = view.model.nodes.find((n) => n.id === ownerId) || node;
@@ -199,6 +202,14 @@ function staleBasis(node, view, last) {
 export function status(node, view, events, choice, configuration = null) {
   if (node.code_role && !activationFor(node, view, events)) return "declared";
   if (view.stage === "design") return "declared";
+  if (node.origin === "concept-design") {
+    const sources = conceptActivityIds(node);
+    if (!sources.length) return "declared";
+    const nativeFrame = conceptFrameOwner(node, view);
+    if (nativeFrame) return status(nativeFrame, view, events, choice, configuration);
+    if (node.concept_observation?.kind === "activity")
+      return events.some((event) => sources.includes(event.node)) ? "historical" : "declared";
+  }
   if (node.referenceOf) node = { ...node, id: node.referenceOf };
   const ongoing = activationFor(node, view, events);
   if (ongoing?.explicit && ["running", "waiting"].includes(ongoing.phase)) {
@@ -211,7 +222,7 @@ export function status(node, view, events, choice, configuration = null) {
       return "historical";
     return ongoing.phase === "waiting" ? "blocked" : "active";
   }
-  if (["query", "transform"].includes(node.data_role)) {
+  if (["query", "write", "transaction", "transform"].includes(node.data_role)) {
     const last = nodeEvents(node, events).at(-1);
     const state = dataStatusClass(last?.outputs?.status);
     if (state) return state;
@@ -229,9 +240,12 @@ export function status(node, view, events, choice, configuration = null) {
   }
   if (node.execution_role === "join")
     return (
-      { waiting: "blocked", enabled: "active", passed: "ok", rejected: "blocked" }[
-        configuration?.join?.state
-      ] || "declared"
+      {
+        waiting: "blocked",
+        enabled: "active",
+        passed: "ok",
+        rejected: "blocked",
+      }[configuration?.join?.state] || "declared"
     );
   if (node.id === view.model.machine.execution?.parent && configuration)
     return Object.values(configuration.activities || {}).includes("running")
@@ -286,7 +300,7 @@ export function status(node, view, events, choice, configuration = null) {
     last.outputs.safe === false
   )
     return "blocked";
-  if (node.policy_node && !node.field) {
+  if ((node.policy_node || node.capture_owner_policy) && !node.field) {
     if (last.outputs.status === "error" || last.outputs.value === false) return "blocked";
     if (last.outputs.status === "unknown" || last.outputs.value === null) return "declared";
   }
@@ -294,9 +308,20 @@ export function status(node, view, events, choice, configuration = null) {
   return last.phase === "enter" ? "active" : "ok";
 }
 export function lines(node, view, events, choice, configuration = null) {
-  const content = baseLines(node, view, events, choice, configuration);
+  const content = baseLines(
+    conceptFrameOwner(node, view) || node,
+    view,
+    events,
+    choice,
+    configuration,
+  );
   const life = activationFor(node, view, events);
-  if (!life) return content;
+  const bound = conceptActivityIds(node),
+    observed = events.findLast((event) => bound.includes(event.node));
+  const bindingNote = observed
+    ? [{ text: boTranslate("Bound observation: {0}", observed.node), role: "value" }]
+    : [];
+  if (!life) return [...bindingNote, ...content];
   const names = {
     running: "Running",
     waiting: "Waiting",
@@ -307,6 +332,7 @@ export function lines(node, view, events, choice, configuration = null) {
     unknown: "Unknown lifecycle",
   };
   return [
+    ...bindingNote,
     {
       text:
         boTranslate(
@@ -342,10 +368,16 @@ function baseLines(node, view, events, choice, configuration = null) {
     return [
       ...Object.entries(values.inputs)
         .slice(0, 3)
-        .map(([key, value]) => ({ text: `${key}: ${compact(value)}`, role: "value" })),
+        .map(([key, value]) => ({
+          text: `${key}: ${compact(value)}`,
+          role: "value",
+        })),
       ...Object.entries(values.outputs)
         .slice(0, 3)
-        .map(([key, value]) => ({ text: `${key}: ${compact(value)}`, role: "value" })),
+        .map(([key, value]) => ({
+          text: `${key}: ${compact(value)}`,
+          role: "value",
+        })),
     ];
   }
   if (node.code_role)
@@ -392,7 +424,12 @@ function baseLines(node, view, events, choice, configuration = null) {
     ];
   }
   const last = nodeEvents(node, events).at(-1),
-    result = [{ text: node.signature || node.source?.symbol || node.summary, role: "symbol" }];
+    result = [
+      {
+        text: node.signature || node.source?.symbol || node.summary,
+        role: "symbol",
+      },
+    ];
   if (node.execution_role === "resource") {
     const r = resourceOf(node, view, configuration);
     if (!r) {
@@ -411,7 +448,10 @@ function baseLines(node, view, events, choice, configuration = null) {
   }
   if (node.execution_role) {
     if (!configuration) {
-      result.push({ text: boTranslate("No internal state recorded for this run"), role: "muted" });
+      result.push({
+        text: boTranslate("No internal state recorded for this run"),
+        role: "muted",
+      });
       return result;
     }
     if (node.execution_role === "activity") {
@@ -501,15 +541,19 @@ function baseLines(node, view, events, choice, configuration = null) {
             text: boTranslate("Available capacity: {0} / {1}", r.available, r.capacity),
             role: "value",
           });
-      } else result.push({ text: boTranslate("Checks have not started"), role: "muted" });
+      } else
+        result.push({
+          text: boTranslate("Checks have not started"),
+          role: "muted",
+        });
     } else {
       const names = {
-        "allowed": boTranslate("Allowed"),
-        "version_ok": boTranslate("Parameter version remains valid"),
-        "param_version": boTranslate("Parameter version"),
-        "length": boTranslate("Text length"),
-        "version": boTranslate("Committed version"),
-        "reason": boTranslate("Reason execution cannot continue"),
+        allowed: boTranslate("Allowed"),
+        version_ok: boTranslate("Parameter version remains valid"),
+        param_version: boTranslate("Parameter version"),
+        length: boTranslate("Text length"),
+        version: boTranslate("Committed version"),
+        reason: boTranslate("Reason execution cannot continue"),
       };
       const reasons = {
         no_current_authorization: boTranslate("No valid authorization"),
@@ -550,7 +594,10 @@ function baseLines(node, view, events, choice, configuration = null) {
     }
   }
   if (!last && !node.execution_role)
-    result.push({ text: boTranslate("No call recorded; expand to inspect source"), role: "muted" });
+    result.push({
+      text: boTranslate("No call recorded; expand to inspect source"),
+      role: "muted",
+    });
   return result;
 }
 export function wrapText(text, width = 47) {
@@ -582,8 +629,16 @@ export const nodeTypes = {
     glyph: "API",
     color: typeColor("code-endpoint"),
   },
-  "code-file": { label: boTranslate("Source file"), glyph: "F", color: typeColor("code-file") },
-  "code-class": { label: boTranslate("Class"), glyph: "C", color: typeColor("code-class") },
+  "code-file": {
+    label: boTranslate("Source file"),
+    glyph: "F",
+    color: typeColor("code-file"),
+  },
+  "code-class": {
+    label: boTranslate("Class"),
+    glyph: "C",
+    color: typeColor("code-class"),
+  },
   "code-function": {
     label: boTranslate("Code function"),
     glyph: "ƒ",
@@ -599,39 +654,81 @@ export const nodeTypes = {
     glyph: "?",
     color: typeColor("code-unresolved"),
   },
-  business: { label: boTranslate("Business"), glyph: "B", color: typeColor("business") },
-  function: { label: boTranslate("Function"), glyph: "ƒ", color: typeColor("function") },
+  "code-reference": {
+    label: boTranslate("Source reference"),
+    glyph: "↗",
+    color: typeColor("code-reference"),
+  },
+  unknown: {
+    label: boTranslate("Unclassified"),
+    glyph: "?",
+    color: typeColor("unknown"),
+  },
+  business: {
+    label: boTranslate("Business"),
+    glyph: "B",
+    color: typeColor("business"),
+  },
+  function: {
+    label: boTranslate("Function"),
+    glyph: "ƒ",
+    color: typeColor("function"),
+  },
   state: { label: boTranslate("State"), glyph: "S", color: typeColor("state") },
-  decision: { label: boTranslate("Decision"), glyph: "?", color: typeColor("decision") },
-  resource: { label: boTranslate("Resource"), glyph: "R", color: typeColor("resource") },
+  decision: {
+    label: boTranslate("Decision"),
+    glyph: "?",
+    color: typeColor("decision"),
+  },
+  resource: {
+    label: boTranslate("Resource"),
+    glyph: "R",
+    color: typeColor("resource"),
+  },
   data: { label: boTranslate("Value"), glyph: "x", color: typeColor("data") },
-  effect: { label: boTranslate("Effect"), glyph: "✓", color: typeColor("effect") },
+  effect: {
+    label: boTranslate("Effect"),
+    glyph: "✓",
+    color: typeColor("effect"),
+  },
   wait: { label: boTranslate("Wait"), glyph: "…", color: typeColor("wait") },
-  store: { label: boTranslate("Database"), glyph: "DB", color: typeColor("store") },
-  dataset: { label: boTranslate("Table or collection"), glyph: "T", color: typeColor("dataset") },
-  column: { label: boTranslate("Data field"), glyph: ":", color: typeColor("column") },
-  query: { label: boTranslate("Database operation"), glyph: "Q", color: typeColor("query") },
-  transform: { label: boTranslate("Data processing"), glyph: "Δ", color: typeColor("transform") },
+  store: {
+    label: boTranslate("Database"),
+    glyph: "DB",
+    color: typeColor("store"),
+  },
+  dataset: {
+    label: boTranslate("Table or collection"),
+    glyph: "T",
+    color: typeColor("dataset"),
+  },
+  column: {
+    label: boTranslate("Data field"),
+    glyph: ":",
+    color: typeColor("column"),
+  },
+  query: {
+    label: boTranslate("Database operation"),
+    glyph: "Q",
+    color: typeColor("query"),
+  },
+  write: {
+    label: boTranslate("Database write"),
+    glyph: "W",
+    color: typeColor("write"),
+  },
+  transaction: {
+    label: boTranslate("Transaction"),
+    glyph: "TX",
+    color: typeColor("transaction"),
+  },
+  transform: {
+    label: boTranslate("Data processing"),
+    glyph: "Δ",
+    color: typeColor("transform"),
+  },
 };
-export function nodeType(n) {
-  if (n.code_role) return "code-" + n.code_role;
-  if (dataRoles.includes(n.data_role)) return n.data_role;
-  return n.layer === "business"
-    ? "business"
-    : n.kind === "state"
-      ? "state"
-      : n.kind === "resource" || n.execution_role === "resource"
-        ? "resource"
-        : n.kind === "decision" || n.execution_role === "join"
-          ? "decision"
-          : n.kind === "data"
-            ? "data"
-            : n.kind === "effect"
-              ? "effect"
-              : n.kind === "wait"
-                ? "wait"
-                : "function";
-}
+export { nodeType };
 // A business action can also implement a function. View membership is not its
 // visual type; selecting a view must not erase that function's values or calls.
 export function viewTypes(n) {
@@ -647,12 +744,14 @@ export function viewTypes(n) {
   ];
 }
 export function relationType(e) {
+  if (conceptRelationTypes.includes(e.type)) return e.type;
   if (e.origin === "code-index" && e.code_relation) return "code-" + e.code_relation;
   if (e.type === "data" && dataRelations.includes(e.data_relation)) return e.data_relation;
   if (dataRelations.includes(e.type)) return e.type;
   return ["python-ast", "source-ast"].includes(e.origin) && e.type === "flow"
     ? "call"
     : [
+          "indirect",
           "call",
           "flow",
           "transition",
@@ -734,7 +833,10 @@ export function layoutGraph(
         seen.add(parent);
         parent = all.get(parent)?.parent;
       }
-      all.set(id, { ...node, parent: parent && matched.has(parent) ? parent : undefined });
+      all.set(id, {
+        ...node,
+        parent: parent && matched.has(parent) ? parent : undefined,
+      });
     }
   }
   for (const n of all.values())
@@ -789,7 +891,12 @@ export function layoutGraph(
         x: 80 + (i % 5) * 230,
         y: 70 + Math.floor(i / 5) * 180,
         w: 190,
-        h: type === "state" ? 105 : ["query", "transform"].includes(type) ? 172 : 135,
+        h:
+          type === "state"
+            ? 105
+            : ["query", "write", "transaction", "transform"].includes(type)
+              ? 172
+              : 135,
       };
     });
   const byId = new Map(boxes.map((b) => [b.id, b]));
@@ -839,7 +946,9 @@ export function layoutGraph(
           : boTranslate("Contains")
         : e.origin === "code-index"
           ? boTranslate(e.code_relation === "imports" && e.label === "Imports" ? "Import" : e.label)
-          : e.label;
+          : e.origin === "concept-design" && (!e.label || e.label === e.type)
+            ? boTranslate(conceptRelations[e.type] || e.type)
+            : e.label;
     if (configuration && e.type === "resource") {
       const state = configuration.activities?.[e.to];
       observed = !!state && state !== "pending";

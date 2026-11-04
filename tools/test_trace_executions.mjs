@@ -62,12 +62,19 @@ const record = {
   ended_at: at(22),
   status: "stopped",
   events,
-  context: { events: [], model: { nodes, edges: [], machine: {} }, machine: {} },
+  context: {
+    events: [],
+    model: { nodes, edges: [], machine: {} },
+    machine: {},
+  },
   final: { machine: {} },
   commands: [],
 };
 const index = buildTraceIndex(record, timeline(record), all);
-const options = { scope: "all", order: ["business", "rules", "execution"] };
+const options = {
+  scope: "all",
+  order: ["business", "rules", "implementation"],
+};
 const rows = traceRows(index, options);
 assert.equal(index.executions.chains.length, 3);
 assert.equal(index.executions.lanes.length, 2);
@@ -93,9 +100,11 @@ assert.equal(collapsed[0].layer, "business");
 assert.equal(collapsed[0].folded, true);
 assert.equal(traceRows(index, { ...options, collapseAll: true }).length, 2);
 assert.deepEqual(
-  traceRows(index, { ...options, order: ["rules", "business", "execution"], depth: "rules" }).map(
-    (row) => row.layer,
-  ),
+  traceRows(index, {
+    ...options,
+    order: ["rules", "business", "implementation"],
+    depth: "rules",
+  }).map((row) => row.layer),
   ["business", "rules", "business", "rules"],
   "business is the first fold handle even after graph-plane reordering",
 );
@@ -118,7 +127,11 @@ const curve = groupCurve(100, 40, 160, 170, { left: 0, right: 600 });
 assert.deepEqual(curve[0], { x: 100, y: 40 });
 assert.deepEqual(curve.at(-1), { x: 160, y: 170 });
 assert.ok(curve[10].x > 160, "cross-band bridge has a visible smooth bend");
-const single = traceRows(index, { ...options, depth: "rules", layerMode: "single" });
+const single = traceRows(index, {
+  ...options,
+  depth: "rules",
+  layerMode: "single",
+});
 assert.equal(single.length, 2);
 assert.ok(single.every((row) => row.layer === "rules"));
 assert.equal(index.items.length, events.length + 2, "row folding does not remove evidence");
@@ -156,7 +169,12 @@ assert.equal(
 // Legacy facts with missing ownership retain point markers in an explicit
 // unassigned lane. The active request and matching entity do not invent a parent.
 const unknownEvents = [
-  { ...events[0], id: "unknown-start", observed_at: at(1), parent_event_id: null },
+  {
+    ...events[0],
+    id: "unknown-start",
+    observed_at: at(1),
+    parent_event_id: null,
+  },
   {
     ...events[1],
     id: "unknown-point-a",
@@ -177,7 +195,13 @@ const unknownEvents = [
     lifecycle: undefined,
     observed_at: at(8),
   },
-  { ...events[0], id: "unknown-end", phase: "return", observed_at: at(9), parent_event_id: null },
+  {
+    ...events[0],
+    id: "unknown-end",
+    phase: "return",
+    observed_at: at(9),
+    parent_event_id: null,
+  },
 ];
 const unknownRecord = {
   ...record,
@@ -192,7 +216,10 @@ assert.equal(unknownFacts.length, 2);
 assert.ok(unknownFacts.every((chain) => chain.start === chain.end));
 assert.ok(traceRows(unknownIndex, options).some((row) => row.groupKind === "observation"));
 const externalNodes = new Map(all);
-externalNodes.set("permission", { ...all.get("permission"), observation_root: true });
+externalNodes.set("permission", {
+  ...all.get("permission"),
+  observation_root: true,
+});
 const externalIndex = buildTraceIndex(unknownRecord, timeline(unknownRecord), externalNodes);
 assert.ok(externalIndex.executions.lanes.every((lane) => lane.kind === "invocation"));
 assert.equal(externalIndex.executions.chains.length, 3);
@@ -277,16 +304,25 @@ assert.equal(
   "original context entry IDs retain sequence evidence across recording boundaries",
 );
 for (const field of ["project_id", "build_id", "run_id", "producer_id", "stream_id"]) {
-  const separated = equalClockIndex(interleaved, (event) => ({ ...event, [field]: event.entity }));
+  const separated = equalClockIndex(interleaved, (event) => ({
+    ...event,
+    [field]: event.entity,
+  }));
   assert.equal(separated.executions.lanes.length, 1, field + " never orders separate producers");
 }
 for (const field of ["seq", "producer_id", "run_id", "build_id", "project_id"]) {
-  const unknown = equalClockIndex(interleaved, (event) => ({ ...event, [field]: undefined }));
+  const unknown = equalClockIndex(interleaved, (event) => ({
+    ...event,
+    [field]: undefined,
+  }));
   assert.equal(unknown.executions.lanes.length, 1, field + " missing retains time-only behavior");
   assert.ok(unknown.executions.chains.every((chain) => chain.orderWitness === null));
 }
 for (const duplicate of [
-  (event) => ({ ...event, seq: event.entity === "b" ? event.seq - 1 : event.seq }),
+  (event) => ({
+    ...event,
+    seq: event.entity === "b" ? event.seq - 1 : event.seq,
+  }),
   (event) => ({ ...event, seq: event.seq === 2 ? 1 : event.seq }),
 ]) {
   const ambiguous = equalClockIndex(interleaved, duplicate);

@@ -21,9 +21,9 @@ assert.deepEqual(
   defaultLayerOrder,
 );
 assert.equal(new Set(layers.map((layer) => layer.color)).size, layers.length);
-assert.equal(defaultLayerOrder.indexOf("data"), defaultLayerOrder.indexOf("operations") + 1);
+assert.equal(defaultLayerOrder.at(-1), "data", "The stored structure remains the lowest concern");
 for (const layer of layers) assert.equal(layer.color, layerPalette[layer.id]);
-assert.equal(layerColor({ kind: "function", layer: "api" }), layerPalette.api);
+assert.equal(layerColor({ kind: "function", layer: "api" }), layerPalette.implementation);
 
 const intervals = packTracks([
   { node: "pending", scope: "file:1", start: 0, end: 40 },
@@ -67,7 +67,7 @@ assert.deepEqual(
   [...hierarchy.values()].map((entry) => entry.depth),
   [0, 1, 2, 1, 0, 1],
 );
-assert.equal(hierarchy.get(1).color, "#" + layerPalette.api.toString(16));
+assert.equal(hierarchy.get(1).color, "#" + layerPalette.implementation.toString(16));
 const foreign = stepHierarchy(
   [event("foreign", "api", "enter", "other", "root", { producer_id: "q" })],
   all,
@@ -78,7 +78,10 @@ assert.ok(configurationScopeMatches({ attempt: "job:1" }, "attempt:job:1"));
 assert.equal(configurationScopeMatches({ attempt: "application" }, "instance:r:file:1"), false);
 assert.ok(configurationScopeMatches({ snapshot_instance: "r:file:1" }, "instance:r:file:1"));
 const at = (ms) => new Date(Date.UTC(2026, 10, 2) + ms).toISOString();
-const entry = { ...event("clipped-enter", "flow", "enter", "clipped"), observed_at: at(5) };
+const entry = {
+  ...event("clipped-enter", "flow", "enter", "clipped"),
+  observed_at: at(5),
+};
 const completion = {
   ...event("clipped-exit", "flow", "return", "clipped"),
   observed_at: at(8),
@@ -116,13 +119,21 @@ assert.ok(
 const stateNodes = new Map(
   ["pending", "approved", "revoked"].map((value) => [value, { id: value, kind: "state", value }]),
 );
-const cfg = (id, phase) => ({ snapshot_instance: id, attempt: "application", phase });
+const cfg = (id, phase) => ({
+  snapshot_instance: id,
+  attempt: "application",
+  phase,
+});
 const transitions = [
   cfg("r:file:1", "pending"),
   cfg("r:share:1", "revoked"),
   cfg("r:file:1", "approved"),
 ];
-const steps = transitions.map((_, i) => ({ id: "s" + i, run_id: "r", revision: i }));
+const steps = transitions.map((_, i) => ({
+  id: "s" + i,
+  run_id: "r",
+  revision: i,
+}));
 const recording = {
   build_id: "b",
   context: { model: {}, machine: { configurations: [] } },
@@ -159,7 +170,13 @@ const original = {
       { id: "file", kind: "function", code_role: "file", parent: "dir" },
     ],
     edges: [
-      { id: "contains", from: "dir", to: "file", type: "contains", code_relation: "contains" },
+      {
+        id: "contains",
+        from: "dir",
+        to: "file",
+        type: "contains",
+        code_relation: "contains",
+      },
     ],
     bindings: {},
   },
@@ -174,5 +191,5 @@ assert.equal(
   "Repeated refreshes preserve unique IDs",
 );
 console.log(
-  "PASS: nine distinct layer colors/order, parallel residency tracks, instance identity, call nesting and file-only replay projection.",
+  "PASS: concern colors/order, parallel residency tracks, instance identity, call nesting and file-only replay projection.",
 );

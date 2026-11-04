@@ -4,7 +4,7 @@ import { t } from "./i18n.js";
 export function captureFields(owner) {
   const nodes = [],
     edges = [];
-  const database = ["query", "transform"].includes(owner.data_role);
+  const database = ["query", "write", "transaction", "transform"].includes(owner.data_role);
   const primary = new Set(["parameters", "before", "result", "status", "committed"]);
   function add(direction, field, spec, path = [], parent = owner.id, advanced = false) {
     const id =
@@ -72,6 +72,19 @@ export function capturedValue(node, values) {
   return { present: true, value };
 }
 
+/** Selected event fields remain inspectable even when their glyphs are hidden. */
+export function captureDetailRows(owner, values) {
+  return Object.entries(owner.capture || {}).flatMap(([direction, fields]) =>
+    Object.entries(fields).map(([field, type]) => {
+      const record = values[direction === "in" ? "inputs" : "outputs"] || {};
+      const present = Object.hasOwn(record, field);
+      return {
+        text: `${direction === "in" ? t("Input") : t("Output")} ${field}: ${typeof type === "string" ? type : JSON.stringify(type)} = ${present ? JSON.stringify(record[field]) : t("Not recorded")}`,
+      };
+    }),
+  );
+}
+
 /** Describe provenance from stored facts; do not invent business explanations. */
 export function nodeExplanation(node, all) {
   if (node.field) {
@@ -108,7 +121,7 @@ export function nodeExplanation(node, all) {
       ),
     );
   if (node.machine_state) result.push(t("Executable state: {0}", node.value));
-  if (["query", "transform"].includes(node.data_role))
+  if (["query", "write", "transaction", "transform"].includes(node.data_role))
     result.push(t("Data operation · {0}", node.data_metadata?.action || node.data_role));
   if (node.summary && node.summary !== node.documentation?.summary) result.push(node.summary);
   if (node.code_role) result.push(t("Static source declaration"));

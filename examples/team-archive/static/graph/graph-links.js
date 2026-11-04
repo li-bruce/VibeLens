@@ -26,6 +26,7 @@ export function runtimeOwners(model, id) {
     seen.add(key);
     const node = nodes.get(key);
     if (!node) continue;
+    if (node.code_role === "reference" && node.declaration_id) pending.push(node.declaration_id);
     if (node.code_role === "endpoint" && Array.isArray(node.observation_sources)) {
       for (const owner of apiObservationIds(node)) result.add(owner);
       continue;

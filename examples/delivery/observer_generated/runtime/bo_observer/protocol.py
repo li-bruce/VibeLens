@@ -5,6 +5,7 @@ from copy import deepcopy
 from functools import lru_cache
 import json
 from pathlib import Path
+from .data.protocol import OPERATION_ROLES
 
 SCHEMAS = Path(__file__).parent / "schemas"
 
@@ -122,13 +123,13 @@ def validate_event(event, project, build_id):
     node = next((n for n in project["model"]["nodes"] if n["id"] == event["node"]), None)
     if node is None:
         raise ValueError("unknown event node")
-    if node.get("data_role") in {"query", "transform"} and "target_source" in event["outputs"]:
+    if node.get("data_role") in OPERATION_ROLES and "target_source" in event["outputs"]:
         from .data.protocol import TARGET_SOURCES
 
         provenance = event["outputs"]["target_source"]
         if not isinstance(provenance, str) or provenance not in TARGET_SOURCES:
             raise ValueError("invalid database target_source provenance")
-    if node.get("data_role") in {"query", "transform"}:
+    if node.get("data_role") in OPERATION_ROLES:
         from .data.protocol import validate_target_access
 
         validate_target_access(event["outputs"])

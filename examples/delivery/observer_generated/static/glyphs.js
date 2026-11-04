@@ -7,6 +7,8 @@ export const meanings = {
   "code-file": boTranslate("Indexed source file"),
   "code-class": boTranslate("Declared class and its methods"),
   "code-function": boTranslate("Function found in source"),
+  "code-reference": boTranslate("Reference to a source declaration"),
+  unknown: boTranslate("Unclassified node"),
   "code-parameter": boTranslate("Declared parameter and type"),
   "code-unresolved": boTranslate("External or dynamically resolved reference"),
   business: boTranslate("Business operation"),
@@ -21,6 +23,8 @@ export const meanings = {
   dataset: boTranslate("Table, collection, key pattern, or graph label"),
   column: boTranslate("Field type and constraints"),
   query: boTranslate("Recorded database command or query"),
+  write: boTranslate("Recorded database write"),
+  transaction: boTranslate("Database transaction boundary"),
   transform: boTranslate("Application processing of data"),
 };
 function mix(a, b, amount) {

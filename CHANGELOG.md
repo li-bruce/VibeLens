@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased — concept-first modeling
+
+- Define business, state and shared rule models before implementation, with
+  scoped confirmation, typed references and independent expected outcomes.
+- Check bound state, rule, source and capture semantics on every iteration;
+  preserve prior answers and expose changes to shared dependencies.
+- Group navigation into business, state, rules, implementation and data views.
+  API entries, project structure, functions and data access remain selectable
+  facets with their original source and runtime identities.
+- Connect confirmed concepts to custom views, focused capture and native-call
+  evidence in Graph and Timeline. Keep each observed invocation separate.
+- Retain canonical source declarations, exact API registrations, typed data
+  operations, saved-view migration and bounded hidden-path witnesses.
+- Keep source-reference validation inside the standalone state module; omit
+  focused snapshots whose source event was filtered, while preserving real
+  producer errors and strict evidence validation.
+- Split concept validation, binding, observation lookup and presentation into
+  focused modules; shorten the Skill entrypoint with required task references.
+- See the [implementation and acceptance record](docs/review/concept-models-20261104/README.md).
+
 ## 0.11.3 — 2026-11-04
 
 - Keep paused Timeline inspection animating its own visible selected causal

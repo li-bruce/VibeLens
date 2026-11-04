@@ -1,82 +1,54 @@
-/** Semantic layers are shared by renderers, filters and the spatial layout worker. */
-import { nodeType } from "./graph-core.js";
+/** Shared concern planes. Source granularity and capture selection are facets. */
 import { layerPalette } from "./layer-style.js";
+import { classifyNode, canonicalLayer, implementationFacets } from "./graph-classification.js";
+import { projectHiddenPaths } from "./hidden-paths.js";
+export {
+  canonicalLayer,
+  implementationFacet,
+  implementationFacets,
+} from "./graph-classification.js";
 export const layers = [
-  { id: "business", label: "Business", color: 0x208b73 },
-  { id: "state", label: "States", color: 0x8c57ad },
-  { id: "rules", label: "Rules", color: 0xaf731c },
-  { id: "api", label: "API", color: 0x986345 },
-  { id: "execution", label: "Functions and values", color: 0x477b9c },
-  { id: "project", label: "Project structure", color: 0x997c4f },
-  { id: "code", label: "Code symbols", color: 0x8172a3 },
-  { id: "operations", label: "Data operations", color: 0x3b839c },
-  { id: "data", label: "Data structure", color: 0x638b98 },
-];
-for (const layer of layers) layer.color = layerPalette[layer.id];
-
-// Earlier releases stored the default order as an ordinary preference. Recognize
-// those exact defaults so an upgrade can improve them without sorting custom views.
-const legacyOrder = [
-  "api",
-  "business",
-  "state",
-  "rules",
-  "operations",
-  "execution",
-  "data",
-  "project",
-  "code",
-];
-const sameOrder = (a, b) => a.length === b.length && a.every((id, index) => id === b[index]);
-const previousDefault = [
-  "business",
-  "state",
-  "rules",
-  "api",
-  "execution",
-  "operations",
-  "project",
-  "code",
-  "data",
-];
+  { id: "business", label: "Business" },
+  { id: "state", label: "States" },
+  { id: "rules", label: "Rules" },
+  { id: "implementation", label: "Implementation" },
+  { id: "unknown", label: "Unclassified" },
+  { id: "data", label: "Data structure" },
+].map((layer) => ({ ...layer, color: layerPalette[layer.id] }));
+export const layerOf = (node) => classifyNode(node).layer;
 export const layerColor = (node) => layerPalette[layerOf(node)];
+const ids = layers.map((layer) => layer.id);
+const mapped = (values) =>
+  [...new Set(values.map(canonicalLayer))].filter((id) => ids.includes(id));
+const sliceCache = new WeakMap();
+const oldDefaults = [
+  ["business", "state", "rules", "api", "execution", "project", "code", "operations", "data"],
+  ["business", "state", "rules", "api", "execution", "operations", "project", "code", "data"],
+  ["api", "business", "state", "rules", "operations", "execution", "data", "project", "code"],
+  ["api", "business", "state", "rules", "operations", "execution", "data", "code"],
+];
 
-/** Classify facts by their declared role, never by an AI-generated display name. */
-export function layerOf(node) {
-  const type = nodeType(node);
-  if (["query", "transform"].includes(node.data_role || node.capture_owner_role))
-    return "operations";
-  if (node.api_role === "capture" || node.capture_owner_api_role === "capture") return "execution";
-  if (node.layer === "api" || node.code_role === "endpoint") return "api";
-  if (["directory", "file"].includes(node.code_role) || node.reference_scope === "project")
-    return "project";
-  if (node.code_role || ["python-ast", "source-ast"].includes(node.origin)) return "code";
-  if (type === "business") return "business";
-  if (node.semantic_role === "state_parameter") return "state";
-  if (["state", "wait"].includes(type)) return "state";
-  if (["decision", "resource"].includes(type)) return "rules";
-  if (["store", "dataset", "column"].includes(type)) return "data";
-  return "execution";
-}
-
+/** Preserve custom order, facet exclusions, coordinates and identities on upgrade. */
 export function cleanLayers(value) {
-  const only = layers.some((layer) => layer.id === value?.only) ? value.only : "all";
-  const ids = layers.map((layer) => layer.id);
-  const priorOrder = Array.isArray(value?.order) ? [...value.order] : [];
+  const oldVisible = Array.isArray(value?.visible) ? value.visible : null;
+  const legacyFacetSelection = oldVisible?.some((id) => implementationFacets.includes(id));
+  const facets = legacyFacetSelection
+    ? implementationFacets.filter((id) => oldVisible.includes(id))
+    : Array.isArray(value?.facets)
+      ? implementationFacets.filter((id) => value.facets.includes(id))
+      : implementationFacets.includes(value?.only)
+        ? [value.only]
+        : [...implementationFacets];
+  const only = ids.includes(canonicalLayer(value?.only)) ? canonicalLayer(value.only) : "all";
+  const priorOrder = Array.isArray(value?.order) ? mapped(value.order) : [];
+  const same = (a, b) => a.length === b.length && a.every((id, i) => id === b[i]);
   const defaultOrder =
     value?.orderMode === "default" ||
     (value?.orderMode !== "custom" &&
-      (!priorOrder.length ||
-        [ids, previousDefault, legacyOrder, legacyOrder.filter((id) => id !== "project")].some(
-          (order) => sameOrder(priorOrder, order),
-        )));
-  if (value?.schema !== 2 && !priorOrder.includes("project") && priorOrder.includes("code"))
-    priorOrder.splice(priorOrder.indexOf("code"), 0, "project");
-  const order = defaultOrder
-    ? ids
-    : [...new Set([...priorOrder, ...ids])].filter((id) => ids.includes(id));
+      (!value?.order?.length || [ids, ...oldDefaults].some((order) => same(value.order, order))));
+  const order = defaultOrder ? [...ids] : [...new Set([...priorOrder, ...ids])];
   return {
-    schema: 2,
+    schema: 3,
     enabled: value?.enabled === true,
     drawer: value?.drawer === true,
     compact: value?.compact === true,
@@ -85,73 +57,108 @@ export function cleanLayers(value) {
     order,
     orderMode: defaultOrder ? "default" : "custom",
     only,
-    visible: Array.isArray(value?.visible)
-      ? layers
-          .filter(
-            (layer) =>
-              value.visible.includes(layer.id) ||
-              (layer.id === "project" &&
-                value.schema !== 2 &&
-                layers
-                  .filter((item) => item.id !== "project")
-                  .every((item) => value.visible.includes(item.id))),
-          )
-          .map((layer) => layer.id)
-      : layers.filter((layer) => only === "all" || only === layer.id).map((layer) => layer.id),
+    visible: oldVisible ? mapped(oldVisible) : ids.filter((id) => only === "all" || only === id),
+    facets,
     projections: value?.projections !== false,
   };
 }
 
-/** Keep visibility per analysis view; order, spacing and renderer remain shared. */
+/** Encode narrow legacy facets in per-view lists without changing old view IDs. */
+export function savedLayerVisibility(value) {
+  const config = cleanLayers(value);
+  return config.visible.includes("implementation") &&
+    config.facets.length < implementationFacets.length
+    ? [...config.visible.filter((id) => id !== "implementation"), ...config.facets]
+    : [...config.visible];
+}
 export function cleanLayerVisibility(value, legacy) {
   const result = Object.create(null);
   if (value && typeof value === "object" && !Array.isArray(value))
     for (const [id, visible] of Object.entries(value).slice(0, 40))
       if (/^[a-z][a-z0-9-]{0,79}$/.test(id) && Array.isArray(visible))
-        // Per-view lists already use the current schema, including explicit omissions.
-        result[id] = cleanLayers({ schema: 2, visible }).visible;
-  // Earlier releases applied one visibility filter to every preset. Preserve it
-  // in the overview rather than allowing it to empty unrelated focused views.
-  if (!Object.hasOwn(result, "overview")) result.overview = cleanLayers(legacy).visible;
+        result[id] = savedLayerVisibility({ visible });
+  if (!Object.hasOwn(result, "overview"))
+    result.overview = legacy ? savedLayerVisibility(legacy) : ["business", "state", "rules"];
   return result;
 }
-
 export function visibilityForView(settings, id) {
   const visible = settings.layerVisibility?.[id];
-  return Array.isArray(visible)
-    ? [...visible]
-    : id === "overview"
-      ? cleanLayers(settings.layers).visible
-      : layers.map((layer) => layer.id);
+  const presets = {
+    overview: ["business", "state", "rules"],
+    business: ["business"],
+    states: ["state"],
+    rules: ["rules"],
+    permission: ["business", "state", "rules"],
+    implementation: ["implementation"],
+    functions: ["implementation"],
+    code: ["implementation"],
+    api: ["implementation"],
+    project: ["implementation"],
+    database: ["data"],
+    "data-access": ["implementation", "data"],
+    "data-operations": ["implementation", "data"],
+  };
+  return Array.isArray(visible) ? [...visible] : presets[id] || [...ids];
 }
-
-/** Visible, populated planes occupy consecutive slots in the chosen order. */
+/** Only occupied, visible concerns reserve a plane. */
 export function layerHeights(settings, scope = layers) {
   const config = cleanLayers(settings),
     result = new Map();
-  config.order = config.order.filter(
+  const order = config.order.filter(
     (id) => config.visible.includes(id) && scope.some((layer) => layer.id === id),
   );
-  let height = 0;
-  for (let i = config.order.length - 1; i >= 0; i--) {
-    const id = config.order[i];
-    if (i < config.order.length - 1) height += config.gap;
-    result.set(id, height);
-  }
+  for (let i = order.length - 1; i >= 0; i--)
+    result.set(order[i], (order.length - 1 - i) * config.gap);
   return result;
 }
 
-/** A layer filter keeps endpoints together; it never manufactures a direct relation. */
-export function layerSlice(graph, settings) {
-  const visible = cleanLayers(settings).visible;
-  if (visible.length === layers.length) return graph;
-  const boxes = graph.boxes.filter((box) => visible.includes(layerOf(box.node)));
-  const ids = new Set(boxes.map((box) => box.id));
-  return {
+/** Abstract hidden planes, retaining original facts and inspectable typed paths. */
+export function layerSlice(graph, settings, exclusions = {}) {
+  const config = cleanLayers(settings);
+  const key = JSON.stringify([
+    config.visible,
+    config.facets,
+    config.projections,
+    exclusions.cacheKey,
+  ]);
+  const cached = sliceCache.get(graph);
+  if (cached?.key === key) return cached.value;
+  const accepts = (node) =>
+    config.visible.includes(layerOf(node)) &&
+    (layerOf(node) !== "implementation" || config.facets.includes(classifyNode(node).facet));
+  const boxes = graph.boxes.filter((box) => accepts(box.node));
+  if (
+    boxes.length === graph.boxes.length &&
+    (!graph.all || ![...graph.all.values()].some((node) => !accepts(node)))
+  )
+    return graph;
+  const visibleIds = new Set(boxes.map((box) => box.id));
+  const projection = !config.projections
+    ? {
+        edges: [],
+        search_complete: true,
+        witnesses_complete: true,
+        disabled: true,
+      }
+    : graph.all && graph.rawEdges
+      ? projectHiddenPaths(graph, { visibleIds, accepts, ...exclusions })
+      : {
+          edges: [],
+          search_complete: false,
+          witnesses_complete: false,
+          unavailable: "Full inventory unavailable",
+        };
+  const value = {
     ...graph,
     boxes,
     byId: new Map(boxes.map((box) => [box.id, box])),
-    regions: (graph.regions || []).filter((region) => ids.has(region.id)),
-    edges: graph.edges.filter((edge) => ids.has(edge.from) && ids.has(edge.to)),
+    regions: (graph.regions || []).filter((region) => visibleIds.has(region.id)),
+    edges: [
+      ...graph.edges.filter((edge) => visibleIds.has(edge.from) && visibleIds.has(edge.to)),
+      ...projection.edges,
+    ],
+    projection,
   };
+  if (exclusions.cacheKey !== undefined) sliceCache.set(graph, { key, value });
+  return value;
 }

@@ -408,6 +408,12 @@ def inspect(root, cfg, change):
         changes["errors"].append(
             "configured discovery was removed; preserve its questions and decisions"
         )
+    if (base.get("discovery") or {}).get("schema") == "business-discovery/v2" and (
+        current.get("discovery") or {}
+    ).get("schema") != "business-discovery/v2":
+        changes["errors"].append(
+            "confirmed concept contract was downgraded; preserve its semantic checks and history"
+        )
     if base.get("whitebox") and not current.get("whitebox"):
         changes["errors"].append("configured whitebox contract was removed")
     if cfg.get("discovery"):

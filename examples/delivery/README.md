@@ -47,3 +47,9 @@ python tools/verify.py
 The graph is read-only. Use the control page for actual business commands. Restart marks unfinished persisted runs as interrupted; it does not revive lost worker threads. Historical acceptance snapshots remain original evidence.
 
 See [usage](../../docs/usage.en.md) for the required change/verification workflow.
+
+The [concept-model migration record](review/concept-models-20261104/README.md) follows
+this example from its previous accepted release through source-graph rebuilding
+and independent checks. Source declarations now connect the existing business
+and state nodes to their exact functions. The example retains its original
+business requirements and executable machine.

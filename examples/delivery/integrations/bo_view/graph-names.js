@@ -52,6 +52,10 @@ export function nameNode(node, model, bindings = {}) {
         ? explainedName(model.presentation?.names?.states?.[node.value])
         : "") ||
       explainedName(model.presentation?.names?.nodes?.[node.referenceOf || node.id]) ||
+      node.concept_label ||
+      // A source comment explains an implementation. It cannot rename a
+      // confirmed business action or a peer conceptual definition.
+      (node.layer === "business" || node.origin === "concept-design" ? authored : "") ||
       (node.api?.registration_ids?.length > 1 ? "" : documentation?.summary) ||
       ((binding?.api_role || node.api_role) === "capture" ? source : "") ||
       authored ||

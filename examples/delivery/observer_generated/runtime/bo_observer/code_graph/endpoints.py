@@ -49,6 +49,9 @@ def registration_identity(api):
     """Identify a literal registration independently of its handler declarations."""
     import json
 
+    if api.get("registration_id"):
+        return api["registration_id"]
+
     source = api.get("source", {})
     return json.dumps(
         [
@@ -60,6 +63,77 @@ def registration_identity(api):
         ],
         sort_keys=True,
     )
+
+
+def assign_endpoint_identities(specifications, identity):
+    """Qualify colliding legacy endpoint IDs by their actual source registration.
+
+    Existing handler/method/path IDs survive when unambiguous. Receiver and
+    lexical owner distinguish independent registrations; line offsets only order
+    otherwise identical repeated statements and never enter the identity hash.
+    One old ID splitting into several registrations is explicit migration
+    metadata, never an arbitrary alias to the first endpoint or preference edit.
+    """
+    import json
+
+    physical = {}
+    for item in specifications:
+        api = item["route"]
+        source = api.get("source", {})
+        exact = registration_identity(api)
+        stable = [
+            source.get("path", item["source"]["path"]),
+            source.get("symbol", item["source"]["symbol"]),
+            api.get("receiver"),
+            api.get("framework"),
+            api["path"],
+            api["methods"],
+            api["declaration"],
+        ]
+        physical.setdefault(
+            exact,
+            {"stable": stable, "source": source, "sort": json.dumps(stable, sort_keys=True)},
+        )
+    counts = defaultdict(int)
+    registration_ids = {}
+    for exact, item in sorted(
+        physical.items(),
+        key=lambda row: (
+            row[1]["sort"],
+            row[1]["source"].get("line", 0),
+            row[1]["source"].get("column", 0),
+        ),
+    ):
+        occurrence = counts[item["sort"]]
+        counts[item["sort"]] += 1
+        registration_ids[exact] = identity("registration", [item["stable"], occurrence])
+    registrations = defaultdict(set)
+    for item in specifications:
+        legacy = identity("endpoint", item["legacy_key"])
+        item["legacy_id"] = legacy
+        item["registration_id"] = registration_ids[registration_identity(item["route"])]
+        registrations[legacy].add(item["registration_id"])
+    replacements = defaultdict(set)
+    for item in specifications:
+        legacy = item["legacy_id"]
+        item["id"] = (
+            legacy
+            if len(registrations[legacy]) == 1
+            else identity("endpoint", [item["legacy_key"], item["registration_id"]])
+        )
+        item["route"] = {**item["route"], "registration_id": item["registration_id"]}
+        if item["id"] != legacy:
+            replacements[legacy].add(item["id"])
+    migrations = [
+        {
+            "legacy_id": legacy,
+            "targets": sorted(targets),
+            "reason": "independent_source_registrations",
+            "resolution": "requires_selection",
+        }
+        for legacy, targets in sorted(replacements.items())
+    ]
+    return specifications, migrations
 
 
 def combine_handler_registrations(nodes, edges, bindings):

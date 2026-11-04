@@ -594,6 +594,9 @@ export class BOProbe {
     { event = null, guards = null, payload = null, configuration = null } = {},
   ) {
     if (!this.bo_enabled) return false;
+    // A filtered or failed record has no evidence to attach. Preserve existing
+    // health failures and let the collector validate every non-null identity.
+    if (evidenceId == null) return false;
     if (this.bo_internal) {
       this.bo_suppressed++;
       return false;

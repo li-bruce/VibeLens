@@ -1,0 +1,121 @@
+{
+  "checks": [
+    {
+      "case": "revoke-denies-old-link",
+      "path": [
+        "status"
+      ],
+      "equals": 403,
+      "id": "check-1",
+      "requirement": "R1"
+    },
+    {
+      "case": "owner-only",
+      "path": [
+        "status"
+      ],
+      "equals": 403,
+      "id": "check-2",
+      "requirement": "R1"
+    },
+    {
+      "case": "allowed-download",
+      "path": [
+        "status"
+      ],
+      "equals": 200,
+      "id": "check-3",
+      "requirement": "R1"
+    },
+    {
+      "case": "other-recipient-retained",
+      "path": [
+        "carol_status"
+      ],
+      "equals": 200,
+      "id": "check-4",
+      "requirement": "R1"
+    },
+    {
+      "case": "other-recipient-retained",
+      "path": [
+        "bob_status"
+      ],
+      "equals": 403,
+      "id": "check-5",
+      "requirement": "R1"
+    },
+    {
+      "case": "revoke-denies-old-link",
+      "path": [
+        "reads",
+        "actor-id"
+      ],
+      "equals": {
+        "node": "facts",
+        "direction": "out",
+        "field": "actor",
+        "read_basis": {
+          "timing": "before_effect",
+          "scope": "current_request"
+        }
+      },
+      "id": "check-6",
+      "requirement": "R1"
+    },
+    {
+      "case": "revoke-denies-old-link",
+      "path": [
+        "reads",
+        "owner-id"
+      ],
+      "equals": {
+        "node": "facts",
+        "direction": "out",
+        "field": "owner",
+        "read_basis": {
+          "timing": "before_effect",
+          "scope": "current_request"
+        }
+      },
+      "id": "check-7",
+      "requirement": "R1"
+    },
+    {
+      "case": "revoke-denies-old-link",
+      "path": [
+        "reads",
+        "recipient-id"
+      ],
+      "equals": {
+        "node": "facts",
+        "direction": "out",
+        "field": "recipient",
+        "read_basis": {
+          "timing": "before_effect",
+          "scope": "current_request"
+        }
+      },
+      "id": "check-8",
+      "requirement": "R1"
+    },
+    {
+      "case": "revoke-denies-old-link",
+      "path": [
+        "reads",
+        "active-grant"
+      ],
+      "equals": {
+        "node": "facts",
+        "direction": "out",
+        "field": "active",
+        "read_basis": {
+          "timing": "before_effect",
+          "scope": "current_request"
+        }
+      },
+      "id": "check-9",
+      "requirement": "R1"
+    }
+  ]
+}

@@ -403,7 +403,8 @@ class ObservationContinuityTests(unittest.TestCase):
         result = recall(self.root, cfg, current, baseline)
         self.assertEqual(result["changed_files"], ["app.py", "gone.py"])
         self.assertEqual(result["layers"]["business"]["affected_nodes"], ["request"])
-        self.assertEqual(result["layers"]["api"]["nodes"], 1)
+        self.assertEqual(result["layers"]["implementation"]["nodes"], 1)
+        self.assertEqual(result["layers"]["implementation"]["facets"]["api"], 1)
         self.assertEqual(result["layers"]["data"]["nodes"], 1)
         self.assertEqual(result["contracts"]["acceptance"], "acceptance.json")
         self.assertFalse((self.root / ".stategraph/source-baseline.json").exists())
@@ -481,10 +482,17 @@ class ObservationContinuityTests(unittest.TestCase):
             {"code_role": "file"},
             {"code_role": "function"},
             {"data_role": "query"},
+            {"data_role": "write"},
+            {"data_role": "transaction"},
+            {"data_role": "transform"},
             {"data_role": "dataset"},
             {"kind": "function"},
             {"semantic_role": "state_parameter"},
             {"data_role": "store", "layer": "business"},
+            {"kind": "resource", "origin": "policy-definition"},
+            {"kind": "resource", "execution_role": "resource"},
+            {"kind": "data", "capture_owner_role": "transaction"},
+            {"kind": "unregistered-node-type"},
         ]
         module = (ROOT / "skills/vibelens/assets/stategraph-viewer/graph-layers.js").as_uri()
         script = f"import {{layerOf}} from {json.dumps(module)}; console.log(JSON.stringify({json.dumps(nodes)}.map(layerOf)));"
@@ -495,7 +503,9 @@ class ObservationContinuityTests(unittest.TestCase):
             check=True,
         )
         self.assertEqual([layer_of(node) for node in nodes], json.loads(result.stdout))
-        self.assertEqual(layer_of({"kind": "function", "layer": "api"}), "api")
+        self.assertEqual(layer_of({"kind": "function", "layer": "api"}), "implementation")
+        self.assertEqual(layer_of({"execution_role": "join"}), "state")
+        self.assertEqual(layer_of({"kind": "unregistered-node-type"}), "unknown")
 
 
 if __name__ == "__main__":

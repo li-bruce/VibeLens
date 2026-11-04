@@ -1,6 +1,7 @@
 /** Conversation focus must resolve containment from the canonical model. */
 import assert from "node:assert/strict";
 import * as control from "../skills/vibelens/assets/stategraph-viewer/conversation-controls.js";
+import { declarationNodes } from "../skills/vibelens/assets/stategraph-viewer/graph-inventory.js";
 
 const canonical = [
   { id: "rules", kind: "decision" },
@@ -28,6 +29,33 @@ assert.equal(projection.nodes.get("read").parent, "rules");
 assert.equal(projection.nodes.get("read").filter_context, true);
 assert.deepEqual([...displayed], before, "The current display projection must remain unchanged");
 assert.equal(canonical[1].parent, "rules");
+
+const conceptNodes = [
+  { id: "business-model", kind: "action", layer: "business", origin: "concept-design" },
+  {
+    id: "concept:share",
+    parent: "business-model",
+    kind: "action",
+    layer: "business",
+    origin: "concept-design",
+  },
+];
+const physical = { id: "native:share", kind: "function" };
+const conceptView = { model: { nodes: [physical] }, concept_structure: { nodes: conceptNodes } };
+const detached = new Map([["concept:share", { ...conceptNodes[1], parent: undefined }]]);
+const conceptPlan = { node_ids: ["concept:share"], filters: { nodes: ["business"] } };
+const customConcept = control.controlProjection(
+  detached,
+  conceptPlan,
+  declarationNodes(conceptView),
+);
+assert.deepEqual([...customConcept.keep].sort(), ["business-model", "concept:share"]);
+assert.deepEqual(customConcept.expanded, ["business-model"]);
+assert.equal(customConcept.nodes.get("concept:share").parent, "business-model");
+assert.ok(
+  !customConcept.keep.has("native:share"),
+  "A concept selection does not fabricate a runtime selection",
+);
 
 const nested = [
   { id: "outer", kind: "action", layer: "business" },

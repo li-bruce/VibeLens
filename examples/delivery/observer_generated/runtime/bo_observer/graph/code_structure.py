@@ -515,7 +515,9 @@ def enrich(authored, index, depth=1):
         "depth": depth,
         "limits": index["limits"],
     }
-    return model
+    from .source_identity import attach_declarations
+
+    return attach_declarations(model, index)
 
 
 def main():

@@ -5,6 +5,24 @@ from copy import deepcopy
 from .index import identity
 
 
+def source_binding(node, target):
+    """Keep context references explicit when optional source views add detail."""
+    return {
+        "id": identity("binding", [node["id"], target]),
+        "from": node["id"],
+        "to": target,
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": (
+            "source-reference"
+            if node.get("representation_role") == "source-reference"
+            else "source-binding"
+        ),
+        "label": "Source binding",
+        "origin": "code-index",
+    }
+
+
 def representation_links(model, graph):
     """Resolve independent semantic nodes to one exact AST parameter identity.
 
@@ -62,17 +80,8 @@ def anchors(model, graph, focus):
         sid = graph["symbols"].get(source.get("path", "") + "::" + source.get("symbol", ""))
         if sid:
             selected.add(sid)
-            links.append(
-                {
-                    "id": identity("binding", [key, sid]),
-                    "from": key,
-                    "to": sid,
-                    "type": "data",
-                    "code_relation": "maps",
-                    "label": "Source binding",
-                    "origin": "code-index",
-                }
-            )
+            if key != sid:
+                links.append(source_binding(authored[key], sid))
     return selected, links
 
 
@@ -198,18 +207,8 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
             )
             if sid not in nodes:
                 sid = None
-            if sid:
-                links.append(
-                    {
-                        "id": identity("binding", [item["id"], sid]),
-                        "from": item["id"],
-                        "to": sid,
-                        "type": "data",
-                        "code_relation": "maps",
-                        "label": "Source binding",
-                        "origin": "code-index",
-                    }
-                )
+            if sid and item["id"] != sid:
+                links.append(source_binding(item, sid))
     ordered = sorted(
         wanted,
         key=lambda k: (
@@ -271,6 +270,7 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
             if current in result
         },
         "observation_issues": deepcopy(graph.get("observation_issues", [])),
+        "endpoint_migrations": deepcopy(graph.get("endpoint_migrations", [])),
         "focus": focus,
         "projection": projection,
         "project": project_summary,

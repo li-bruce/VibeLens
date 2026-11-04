@@ -9,54 +9,25 @@ from __future__ import annotations
 import ast
 from collections import defaultdict
 
+from ..graph.classification import classify, layer_of
+
 LAYER_CHECKS = {
     "business": ("feature entrypoints and effects", "actual invocation and selected result"),
-    "state": ("state declaration and value bindings", "actual state changes and residence"),
+    "state": (
+        "state declarations, identities, resources and waits",
+        "actual transitions, residence and activity evidence",
+    ),
     "rules": (
         "predicate sources, arguments and shared dependencies",
         "evaluated/skipped conditions and actual enclosing invocation",
     ),
-    "api": ("registered routes and handlers", "request boundary and actual response"),
-    "execution": (
-        "functions, parameters and explicit probes",
-        "call boundaries, selected values and actual nested parent identities",
-    ),
-    "operations": (
-        "model exporters and data-access bindings",
-        "query, transform, transaction and enclosing native call identity",
-    ),
-    "project": ("directories, files, imports and dependencies", "source projection only"),
-    "code": (
-        "symbols, lexical owners, calls and source maps",
-        "explicitly mapped runtime evidence",
+    "implementation": (
+        "routes, source hierarchy, declarations, parameters and data-access bindings",
+        "actual calls, responses, selected values and native transaction boundaries; unobserved declarations remain static",
     ),
     "data": ("ORM/ODM/schema metadata and relationships", "operation-linked structural projection"),
+    "unknown": ("unclassified declarations requiring a mapping review", "no inferred evidence"),
 }
-
-
-def layer_of(node):
-    """Mirror the viewer's declared-role classification, without interpreting labels."""
-    if (node.get("data_role") or node.get("capture_owner_role")) in {"query", "transform"}:
-        return "operations"
-    role = node.get("code_role")
-    if node.get("layer") == "api" or role == "endpoint":
-        return "api"
-    if role in {"file", "directory"} or node.get("reference_scope") == "project":
-        return "project"
-    if role or node.get("origin") in {"python-ast", "source-ast"}:
-        return "code"
-    if node.get("data_role") in {"store", "dataset", "column"}:
-        return "data"
-    if node.get("layer") == "business":
-        return "business"
-    if node.get("semantic_role") == "state_parameter" or node.get("kind") in {"state", "wait"}:
-        return "state"
-    if node.get("kind") in {"decision", "resource"} or node.get("execution_role") in {
-        "resource",
-        "join",
-    }:
-        return "rules"
-    return "execution"
 
 
 def observation_plan(model, index):
@@ -72,6 +43,7 @@ def observation_plan(model, index):
         grouped[layer_of(node)].append(
             {
                 "node": node["id"],
+                "facet": classify(node)["facet"],
                 "source": node.get("source"),
                 "fields": node.get("capture", {}),
                 "lifecycle": node.get("lifecycle"),

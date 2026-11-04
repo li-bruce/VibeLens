@@ -206,7 +206,10 @@ class BOProbe:
             timeout,
             sink,
         )
-        self.bo_run, self.bo_producer = run_id or uuid.uuid4().hex, producer_id or uuid.uuid4().hex
+        self.bo_run, self.bo_producer = (
+            run_id or uuid.uuid4().hex,
+            producer_id or uuid.uuid4().hex,
+        )
         self.bo_enabled = enabled
         self.bo_tracing = None
         self.bo_seq = self.bo_errors = self.bo_dropped = self.bo_suppressed = 0
@@ -407,7 +410,11 @@ class BOProbe:
                     "scope": scope,
                     "basis": bo_selected(
                         basis or {},
-                        {"param_version": "number", "epoch": "number", "clock": "number"},
+                        {
+                            "param_version": "number",
+                            "epoch": "number",
+                            "clock": "number",
+                        },
                     ),
                     "call_id": call_id or eid,
                     "parent_call_id": parent_call_id,
@@ -449,12 +456,21 @@ class BOProbe:
             self.bo_last_error = {
                 "stage": "capture",
                 "type": type(error).__name__,
-                "node": node[:160] if isinstance(node, str) and node in self.bo_nodes else None,
+                "node": (node[:160] if isinstance(node, str) and node in self.bo_nodes else None),
                 "phase": (
                     phase
                     if isinstance(phase, str)
                     and phase
-                    in {"enter", "return", "read", "decision", "wait", "commit", "change", "error"}
+                    in {
+                        "enter",
+                        "return",
+                        "read",
+                        "decision",
+                        "wait",
+                        "commit",
+                        "change",
+                        "error",
+                    }
                     else None
                 ),
             }
@@ -481,8 +497,16 @@ class BOProbe:
         payload=None,
         configuration=None,
     ):
-        """Queue a state snapshot associated with an already identified business event."""
+        """Queue a snapshot only when its source event was captured.
+
+        ``record`` returns None for deliberately filtered events and capture
+        failures. Neither supplies evidence for a snapshot. Existing capture
+        errors remain in health; an omitted event is never replaced or invented.
+        Non-null evidence still passes through the collector's strict validator.
+        """
         if not self.bo_enabled or self.bo_closed.is_set():
+            return False
+        if evidence_id is None:
             return False
         if _bo_internal.get() or bo_is_internal():
             self.bo_suppressed += 1

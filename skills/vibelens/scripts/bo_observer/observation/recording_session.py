@@ -14,6 +14,7 @@ import threading
 import time
 import uuid
 from .capture_context import context_candidates, retain_scope
+from ..graph.observation_scope import capture_owners
 
 try:
     from ...runtime_frames import merge_frames
@@ -78,6 +79,8 @@ def checkpoint(view, *, context=False):
             value["project_structure"] = deepcopy(view["project_structure"])
         if view.get("api_structure"):
             value["api_structure"] = deepcopy(view["api_structure"])
+        if view.get("concept_structure"):
+            value["concept_structure"] = deepcopy(view["concept_structure"])
         value.update(
             model=deepcopy(view["model"]),
             manifest=deepcopy(view["manifest"]),
@@ -239,7 +242,7 @@ class Recordings:
                     self._capture_open = False
                 self.bo_restore_capture()
 
-    def bo_capture_plan(self, model, requested=None):
+    def bo_capture_plan(self, model, requested=None, *, view=None):
         """Resolve selected regions to descendants and the parents needed to explain them."""
         requested = requested or {"mode": "all"}
         if not isinstance(requested, dict) or requested.get("mode") not in ("all", "focused"):
@@ -254,9 +257,12 @@ class Recordings:
             not isinstance(roots, list)
             or not roots
             or len(roots) > 2000
-            or any(not isinstance(n, str) or n not in nodes for n in roots)
+            or any(not isinstance(n, str) for n in roots)
         ):
             raise ValueError("Select a valid node or region")
+        # Display concepts are selectable, but only their verified native owners
+        # enter the capture filter. No conceptual path becomes runtime authority.
+        roots = capture_owners(view or {"model": model}, roots)
         selected = set(roots)
         while True:
             children = {n["id"] for n in nodes.values() if n.get("parent") in selected}
@@ -331,7 +337,7 @@ class Recordings:
             or health.get("producer", {}).get("boundary_context") is True
         ):
             self.bo_boundary_context = True
-        plan = self.bo_capture_plan(view["model"], scope)
+        plan = self.bo_capture_plan(view["model"], scope, view=view)
         if self.bo_scope_setter:
             self.bo_scope_setter(plan.get("value_nodes", plan["nodes"]))
             try:
@@ -346,6 +352,8 @@ class Recordings:
                     latest["project_structure"] = view["project_structure"]
                 if view.get("api_structure"):
                     latest["api_structure"] = view["api_structure"]
+                if view.get("concept_structure"):
+                    latest["concept_structure"] = view["concept_structure"]
                 view = latest
             except Exception:
                 self.bo_restore_capture()

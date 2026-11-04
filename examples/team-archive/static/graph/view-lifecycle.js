@@ -35,6 +35,7 @@ export function graphVersion(view) {
     view.manifest.build_id,
     view.manifest.model_hash || canonical(view.model),
     ...(view.api_structure ? [view.api_structure.revision] : []),
+    ...(view.concept_structure ? [view.concept_structure.revision] : []),
   ]);
 }
 

@@ -3,6 +3,8 @@ import { t as boTranslate } from "./i18n.js";
 import { viewTypes, relationType, stateNodeId } from "./graph-core.js";
 import { dataRoles, dataRelations, migrateDataFilters } from "./data-layer.js";
 import { codeTypes, codeRelations, migrateCodeFilters } from "./code-layer.js";
+import { layerOf } from "./graph-layers.js";
+import { conceptRelationTypes } from "./concept-relations.js";
 const types = [
   "business",
   "function",
@@ -12,10 +14,12 @@ const types = [
   "data",
   "effect",
   "wait",
+  "unknown",
   ...dataRoles,
   ...codeTypes,
 ];
 const edges = [
+  "indirect",
   "call",
   "flow",
   "transition",
@@ -28,54 +32,98 @@ const edges = [
   "contains",
   ...dataRelations,
   ...codeRelations,
+  ...conceptRelationTypes,
 ];
 export const presets = [
   {
     id: "overview",
-    label: boTranslate("Layered overview"),
+    label: boTranslate("Behavior"),
+    group: "Behavior",
     hierarchical: true,
     nodes: types,
     edges,
   },
   {
     id: "business",
+    group: "Behavior",
     label: boTranslate("Business flow"),
     nodes: ["business"],
     edges: ["flow", "guard", "data", "join"],
   },
   {
     id: "project",
+    group: "Implementation",
     label: boTranslate("Project structure"),
     hierarchical: true,
     nodes: ["code-directory", "code-file", "code-unresolved"],
     edges: ["code-contains", "code-imports", "code-exports", "code-links", "code-dependency"],
-    codeTypes: 3,
+    codeTypes: 4,
   },
   {
     id: "code",
+    group: "Implementation",
     label: boTranslate("Code structure"),
     hierarchical: true,
     nodes: codeTypes,
     edges: codeRelations,
-    codeTypes: 3,
+    codeTypes: 4,
   },
   {
     id: "api",
+    group: "Implementation",
     label: boTranslate("API entries"),
     hierarchical: true,
     nodes: ["code-endpoint", "code-function", "code-parameter", "code-file"],
     edges: ["code-handles", "code-calls", "code-parameter", "code-maps"],
-    codeTypes: 3,
+    codeTypes: 4,
   },
-  { id: "states", label: boTranslate("State machine"), nodes: ["state"], edges: ["transition"] },
+  {
+    id: "states",
+    group: "Behavior",
+    label: boTranslate("State machine"),
+    nodes: types,
+    edges,
+    scope: "state",
+  },
+  {
+    id: "rules",
+    group: "Behavior",
+    label: boTranslate("Rule network"),
+    nodes: types,
+    edges,
+    scope: "rules",
+  },
+  {
+    id: "implementation",
+    group: "Implementation",
+    label: boTranslate("Implementation"),
+    hierarchical: true,
+    nodes: types,
+    edges,
+    scope: "implementation",
+  },
   {
     id: "functions",
+    group: "Implementation",
     label: boTranslate("Functions and parameters"),
-    nodes: ["function", "decision", "data", "query", "transform"],
+    fields: "all",
+    nodes: [
+      "function",
+      "decision",
+      "data",
+      "query",
+      "write",
+      "transaction",
+      "transform",
+      "code-function",
+      "code-parameter",
+      "code-reference",
+    ],
     edges: ["call", "data", ...dataRelations],
   },
   {
     id: "permission",
+    group: "Behavior",
     label: boTranslate("Authorization"),
     nodes: ["business", "decision", "function", "data", "wait"],
     edges: ["guard", "data", "call", "flow"],
@@ -83,6 +131,7 @@ export const presets = [
   },
   {
     id: "resources",
+    group: "Behavior",
     label: boTranslate("Concurrency and resources"),
     nodes: ["function", "resource", "decision", "state", "wait", "data"],
     edges: ["resource", "join", "transition", "data"],
@@ -90,24 +139,46 @@ export const presets = [
   },
   {
     id: "data",
+    group: "Data",
     label: boTranslate("Data dependencies"),
+    fields: "all",
     nodes: ["function", "decision", "data", "effect", ...dataRoles],
     edges: ["data", "guard", "call", ...dataRelations],
   },
   {
     id: "database",
+    group: "Data",
     label: boTranslate("Database structure"),
     nodes: ["store", "dataset", "column"],
     edges: ["references", "maps"],
   },
   {
     id: "data-operations",
+    group: "Data",
     label: boTranslate("Queries and data processing"),
-    nodes: ["query", "transform"],
+    nodes: ["query", "write", "transaction", "transform"],
     edges: ["call", "data", "reads", "writes", "transforms", "maps"],
   },
   {
+    id: "data-access",
+    group: "Data",
+    label: boTranslate("Data access"),
+    nodes: types,
+    edges: [
+      "call",
+      "data",
+      "reads",
+      "writes",
+      "transforms",
+      "maps",
+      "code-maps",
+      "code-calls",
+      "indirect",
+    ],
+  },
+  {
     id: "runtime",
+    group: "Analysis",
     label: boTranslate("Observed execution"),
     nodes: types,
     edges,
@@ -115,6 +186,7 @@ export const presets = [
   },
   {
     id: "blocked",
+    group: "Analysis",
     label: boTranslate("Waiting and failures"),
     nodes: types,
     edges,
@@ -122,6 +194,7 @@ export const presets = [
   },
   {
     id: "shared",
+    group: "Analysis",
     label: boTranslate("Shared membership"),
     nodes: types,
     edges: ["shared"],
@@ -130,20 +203,32 @@ export const presets = [
 ];
 export function cleanProfile(value) {
   value = migrateCodeFilters(migrateDataFilters(value));
+  if (value?.conceptTypes !== 1 && value?.edges?.includes("other"))
+    value = { ...value, edges: [...value.edges, ...conceptRelationTypes] };
   const strings = (values, allowed) =>
     Array.isArray(values)
       ? [...new Set(values.filter((x) => allowed.includes(x)))]
       : allowed.slice();
   return {
-    dataTypes: 1,
-    codeTypes: 3,
+    dataTypes: 2,
+    conceptTypes: 1,
+    codeTypes: 4,
     nodes: strings(value?.nodes, types),
     edges: strings(value?.edges, edges),
     regions: strings(value?.regions, types),
     depth: Number.isInteger(value?.depth) ? value.depth : "all",
-    scope: ["all", "permission", "execution", "observed", "blocked", "shared"].includes(
-      value?.scope,
-    )
+    fields: value?.fields === "all" ? "all" : "selected",
+    scope: [
+      "all",
+      "permission",
+      "execution",
+      "observed",
+      "blocked",
+      "shared",
+      "rules",
+      "state",
+      "implementation",
+    ].includes(value?.scope)
       ? value.scope
       : "all",
     query: typeof value?.query === "string" ? value.query.trim().slice(0, 100) : "",
@@ -154,8 +239,8 @@ export function profileFor(id, custom = []) {
   const preset = presets.find((p) => p.id === id);
   return cleanProfile(
     preset
-      ? { ...preset, dataTypes: 1, codeTypes: 3 }
-      : custom.find((p) => p.id === id) || { ...presets[0], dataTypes: 1 },
+      ? { ...preset, dataTypes: 2, codeTypes: 4 }
+      : custom.find((p) => p.id === id) || { ...presets[0], dataTypes: 2 },
   );
 }
 export function matchingNodes(all, view, events, profile, statusOf, relations = view.model.edges) {
@@ -189,6 +274,8 @@ export function matchingNodes(all, view, events, profile, statusOf, relations = 
   for (const n of all.values()) {
     const canonical = n.referenceOf || n.id;
     let inScope = profile.scope === "all";
+    if (["rules", "state", "implementation"].includes(profile.scope))
+      inScope = layerOf(n) === profile.scope;
     if (["permission", "execution"].includes(profile.scope))
       inScope =
         scopeNodes.has(canonical) || scopeNodes.has(n.event_node) || scopeNodes.has(n.parent);

@@ -22,10 +22,16 @@ import {
   layerSlice,
   cleanLayerVisibility,
   visibilityForView,
+  savedLayerVisibility,
+  implementationFacets,
+  layerOf,
+  implementationFacet,
 } from "./graph-layers.js";
 import { spatialLegend } from "./spatial-geometry.js";
 import { SpatialRenderer } from "./spatial-renderer.js";
-import { runtimeOwners } from "./graph-links.js";
+import { captureRoots } from "./capture-scope.js";
+import { conceptActivityIds } from "./concept-observation.js";
+import { declarationNodes } from "./graph-inventory.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   locale,
@@ -182,6 +188,8 @@ const detailPanel = createDetailPanel({
     preferences,
     selected,
     mode: detailMode,
+    choice,
+    step,
     version,
     recording: recording?.transient && recording.id.startsWith("live:") ? null : recording,
     scale,
@@ -435,7 +443,10 @@ $("layer-gap").oninput = () => {
   schedule();
   saveSoon();
 };
-$("layers-all").onclick = () => changeLayers(layers.map((layer) => layer.id));
+$("layers-all").onclick = () => {
+  analysisSettings.layers.facets = [...implementationFacets];
+  changeLayers(layers.map((layer) => layer.id));
+};
 $("edge-routing").onchange = (event) => {
   analysisSettings.routing = cleanRoute(event.target.value);
   updateSpatial();
@@ -494,7 +505,15 @@ function updateLegendMode() {
   }
 }
 function updatePresentation() {
-  displayGraph = layerSlice(graph, cleanLayers(analysisSettings?.layers));
+  const filters = cleanFilters(preferences.filters);
+  displayGraph = layerSlice(graph, cleanLayers(analysisSettings?.layers), {
+    hiddenNodes: filters.hiddenNodes,
+    hiddenEdges: filters.hiddenEdges,
+    edgeTypes: filters.edges,
+    nodeAllowed: (node) =>
+      filterNode(node, graph.all, filters) || filterNode(node, graph.all, filters, true),
+    cacheKey: JSON.stringify(filters),
+  });
   presentation = presentationGraph(displayGraph, preferences.filters);
   // Refit from this view's visible bodies. The complete layout and its saved
   // anchors remain available when the user restores a hidden node or layer.
@@ -674,6 +693,8 @@ function project() {
     include: (n) =>
       n.filter_context ||
       analysisSettings?.advanced ||
+      (["implementation", "code", "project", "api", "functions"].includes(analysisId) &&
+        !!n.code_role) ||
       (!["python-ast", "source-ast"].includes(n.origin) && n.analysis_level !== "advanced") ||
       annotationFor(preferences, n.id).core,
     memberships: sharedMemberships(view.model),
@@ -972,6 +993,9 @@ function updateActions() {
   $("annotate").disabled = !b;
   $("hide-node").disabled = !b;
   $("details").disabled = !b;
+  $("details").textContent = boTranslate(
+    b?.node.concept_definition ? "Definition" : "Parameter values",
+  );
   $("source").disabled = !binding;
   $("selection-menu").hidden = !b && !selectedEdge;
   $("selection").textContent = b
@@ -1027,6 +1051,21 @@ function updateEdgeDetail() {
     scale,
     pan,
     onChoose: showEdge,
+    onReveal: (witness) => {
+      const config = cleanLayers(analysisSettings.layers);
+      const nodes = witness.nodes.map((id) => graph.all.get(id)).filter(Boolean);
+      analysisSettings.layers = cleanLayers({
+        ...config,
+        visible: [...new Set([...config.visible, ...nodes.map(layerOf)])],
+        facets: [...new Set([...config.facets, ...nodes.map(implementationFacet)])],
+      });
+      for (const node of nodes)
+        for (const id of ancestorsToReveal(graph.all, node.id)) expanded.add(id);
+      analysisSettings.advanced = true;
+      updateLayerControls();
+      project();
+      save();
+    },
     onHide: (id) => {
       preferences.filters.hiddenEdges.push(id);
       applyFilters();
@@ -1371,6 +1410,7 @@ function filteredSearch(query) {
     .slice(0, 30);
 }
 function updateFilters() {
+  $("fields-toggle").setAttribute("aria-pressed", String(preferences?.filters.fields === "all"));
   $("filter-toggle").disabled = false;
   const filters = (preferences.filters = cleanFilters(preferences.filters));
   for (const input of $("filter-panel").querySelectorAll("input[data-filter]"))
@@ -1462,9 +1502,14 @@ $("show-all").onclick = () => {
     ...analysisSettings.layers,
     only: "all",
     visible: layers.map((layer) => layer.id),
+    facets: [...implementationFacets],
   });
   updateLayerControls();
   updateAnalysisOptions();
+  applyFilters();
+};
+$("fields-toggle").onclick = () => {
+  preferences.filters.fields = preferences.filters.fields === "all" ? "selected" : "all";
   applyFilters();
 };
 function applyFilters() {
@@ -1567,6 +1612,10 @@ function showSearch() {
 }
 function revealResult(id) {
   if (!graph?.all.has(id)) return;
+  if (graph.all.get(id).field) {
+    preferences.filters.promotedFields ||= [];
+    preferences.filters.promotedFields.push(id);
+  }
   if (
     ["python-ast", "source-ast"].includes(graph.all.get(id).origin) ||
     graph.all.get(id).analysis_level === "advanced"
@@ -1708,7 +1757,8 @@ async function poll() {
     const codeEnabled =
       !recording &&
       next.stage !== "design" &&
-      (["project", "code", "api"].includes(analysisId) || !!analysisSettings.codeFocus);
+      (["project", "code", "api", "implementation"].includes(analysisId) ||
+        !!analysisSettings.codeFocus);
     let codeSlice = null;
     let sourceNeedsLayout = false;
     try {
@@ -1717,7 +1767,7 @@ async function poll() {
         ? codeLayer.slice
         : await codeLayer.load({
             enabled: codeEnabled,
-            focus: ["project", "code", "api"].includes(analysisId)
+            focus: ["project", "code", "api", "implementation"].includes(analysisId)
               ? null
               : analysisSettings.codeFocus,
             limit: codeLimit,
@@ -2002,7 +2052,11 @@ function loadAnalysis(baseKey) {
       analysisSettings.selected = saved.selected;
   }
   analysisId = analysisSettings.selected;
-  analysisSettings.layers.visible = visibilityForView(analysisSettings, analysisId);
+  analysisSettings.layers = cleanLayers({
+    ...analysisSettings.layers,
+    visible: visibilityForView(analysisSettings, analysisId),
+    facets: [...implementationFacets],
+  });
   updateLayerControls();
   analysisOverride = analysisSettings.overrides[analysisId] || null;
   updateAnalysisOptions();
@@ -2033,7 +2087,7 @@ async function applyConversationControl(plan, session) {
     analysisSettings.custom.length >= 20
   )
     throw Error("Delete an unused custom view before creating another");
-  const projection = controlProjection(graph.all, plan, view.model.nodes),
+  const projection = controlProjection(graph.all, plan, declarationNodes(view)),
     { nodes: available, keep } = projection;
   const original = structuredClone(preferences);
   original.filters = cleanFilters({
@@ -2096,7 +2150,7 @@ async function applyConversationControl(plan, session) {
 function saveAnalysis() {
   if (!analysisKey || !analysisSettings) return;
   analysisSettings.selected = analysisId;
-  analysisSettings.layerVisibility[analysisId] = [...cleanLayers(analysisSettings.layers).visible];
+  analysisSettings.layerVisibility[analysisId] = savedLayerVisibility(analysisSettings.layers);
   analysisSettings.annotations = preferences?.annotations || analysisSettings.annotations;
   if (analysisOverride) analysisSettings.overrides[analysisId] = analysisOverride;
   else delete analysisSettings.overrides[analysisId];
@@ -2105,16 +2159,22 @@ function saveAnalysis() {
   } catch {}
 }
 function updateAnalysisOptions() {
-  $("analysis-view").replaceChildren(
-    ...[...presets, ...analysisSettings.custom].map((p) => {
-      const option = new Option(p.label, p.id);
-      // The lazy source index is current-source evidence, not a recorded frame.
-      option.disabled = recordedSourceUnavailable(p.id);
-      if (option.disabled)
-        option.title = boTranslate("Return to live view to browse code structure");
-      return option;
-    }),
-  );
+  const groups = new Map();
+  for (const p of [...presets, ...analysisSettings.custom]) {
+    const group = p.group || "Custom";
+    if (!groups.has(group)) {
+      const element = document.createElement("optgroup");
+      element.label = boTranslate(group);
+      groups.set(group, element);
+    }
+    const option = new Option(p.label, p.id);
+    // The lazy source index is current-source evidence, not a recorded frame.
+    option.disabled = recordedSourceUnavailable(p.id);
+    if (option.disabled) option.title = boTranslate("Return to live view to browse code structure");
+    groups.get(group).append(option);
+  }
+  $("analysis-view").replaceChildren(...groups.values());
+  $("fields-toggle").setAttribute("aria-pressed", String(preferences?.filters.fields === "all"));
   $("analysis-details").setAttribute("aria-pressed", String(analysisSettings.advanced));
   $("analysis-view").value = analysisId;
   $("delete-view").hidden = !analysisId.startsWith("custom-");
@@ -2134,7 +2194,11 @@ function changeAnalysis(id) {
   save();
   clearTimeout(saveTimer);
   analysisId = id;
-  analysisSettings.layers.visible = visibilityForView(analysisSettings, id);
+  analysisSettings.layers = cleanLayers({
+    ...analysisSettings.layers,
+    visible: visibilityForView(analysisSettings, id),
+    facets: [...implementationFacets],
+  });
   codeLayer.clear();
   if (["resources", "permission"].includes(id)) analysisSettings.advanced = true;
   analysisOverride = analysisSettings.overrides[id] || null;
@@ -2462,20 +2526,9 @@ function boCaptureScope() {
   if ($("capture-mode").value === "all") return { mode: "all" };
   const box = graph?.byId.get(selected);
   if (!box) throw Error(boTranslate("Select a node or region to record"));
-  if (box.node.code_role) {
-    const roots = runtimeOwners(view.model, box.id);
-    if (!roots.length) throw Error(boTranslate("This node has no capture binding"));
-    return { mode: "focused", roots };
-  }
-  const id = box.node.referenceOf || box.node.event_node || box.id,
-    known = new Set(view.model.nodes.map((n) => n.id));
-  const root = known.has(id)
-    ? id
-    : box.type === "state"
-      ? view.model.machine.execution?.parent
-      : null;
-  if (!root) throw Error(boTranslate("This node has no capture binding"));
-  return { mode: "focused", roots: [root] };
+  const roots = captureRoots(view, box.node);
+  if (!roots.length) throw Error(boTranslate("This node has no capture binding"));
+  return { mode: "focused", roots };
 }
 function stopAnimation() {
   cancelAnimationFrame(animationFrame);
@@ -2541,7 +2594,8 @@ function animateEvent(event) {
     const node = graph.boxes.find(
       (b) =>
         (boDetail?.rows.some((r) => r.owner === b.id) ||
-          (b.node.referenceOf || b.node.event_node || b.id) === event.node) &&
+          (b.node.referenceOf || b.node.event_node || b.id) === event.node ||
+          conceptActivityIds(b.node).includes(event.node)) &&
         (presentation.glyphs.has(b.id) || presentation.regions.has(b.id)),
     );
     if (node) {

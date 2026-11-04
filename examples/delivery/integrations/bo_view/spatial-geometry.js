@@ -15,12 +15,16 @@ export const objectNames = {
   dataset: "table-grid",
   column: "field-stack",
   query: "query-lens",
+  write: "write-gate",
+  transaction: "transaction-frame",
+  unknown: "unclassified-marker",
   transform: "data-funnel",
   "code-endpoint": "connected-plugs",
   "code-file": "source-document",
   "code-directory": "file-folder",
   "code-class": "class-cabinet",
   "code-function": "function-chip",
+  "code-reference": "source-link",
   "code-parameter": "parameter-dial",
   "code-unresolved": "broken-link",
 };
@@ -59,6 +63,21 @@ export function nodeGeometry(type, dense = false) {
     parts.push(g);
   };
   switch (type) {
+    case "unknown":
+      add(new T.OctahedronGeometry(0.8, dense ? 0 : 1));
+      break;
+    case "transaction":
+      for (const z of [-0.55, 0.55]) {
+        box(1.6, 0.16, 0.16, 0, 0, z);
+        box(0.16, 0.16, 1.1, z, 0, 0);
+      }
+      cylinder(0.38, 0.45);
+      break;
+    case "write":
+      cylinder(0.7, 0.6);
+      rod([-0.8, 0.5, 0], [0.8, 0.5, 0], 0.12);
+      rod([0.4, 0.5, -0.3], [0.8, 0.5, 0], 0.12);
+      break;
     case "store":
       for (const y of [-0.6, 0, 0.6]) cylinder(0.82, 0.45, 0, y);
       break;

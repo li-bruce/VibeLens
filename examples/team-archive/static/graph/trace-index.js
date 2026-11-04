@@ -1,6 +1,6 @@
 /** Immutable execution index. Static projections locate facts and never become calls. */
 import { boFacts } from "./replay-steps.js";
-import { layerOf, layers } from "./graph-layers.js";
+import { layerOf, layers, canonicalLayer } from "./graph-layers.js";
 import { traceTime, configurationScopeMatches } from "./trace-evidence.js";
 import { contextualLifecycles } from "./trace-context.js";
 import { stateResidencies, activityResidencies } from "./trace-residencies.js";
@@ -8,6 +8,7 @@ import { indexFlows } from "./trace-flows.js";
 import { lowerBound } from "./trace-viewport.js";
 import { executionIndex, executionRows } from "./trace-executions.js";
 import { apiObservationIds } from "./api-observation.js";
+import { conceptActivityIds } from "./concept-observation.js";
 
 const canonical = (node) => node.referenceOf || node.event_node || node.id;
 
@@ -81,7 +82,7 @@ function projections(all, edges) {
         ? [node.id, ...apiObservationIds(node)]
         : node.code_role
           ? [...new Set([node.id, ...owners(node.id)])]
-          : [canonical(node)];
+          : [canonical(node), ...conceptActivityIds(node)];
     for (const id of origin) {
       if (!aliases.has(id)) aliases.set(id, []);
       aliases.get(id).push(node);
@@ -104,7 +105,13 @@ export function buildTraceIndex(
     eventRows = new Map();
   const add = (node, raw, projected, change = null, contextEvent = null) => {
     if (!rows.has(node.id))
-      rows.set(node.id, { id: node.id, node, layer: layerOf(node), marks: [], slices: [] });
+      rows.set(node.id, {
+        id: node.id,
+        node,
+        layer: layerOf(node),
+        marks: [],
+        slices: [],
+      });
     const row = rows.get(node.id);
     const previous = row.marks.at(-1);
     if (
@@ -128,6 +135,9 @@ export function buildTraceIndex(
   };
   const put = (id, raw, change = null) => {
     for (const node of aliases.get(id) || []) {
+      // A fact binding locates its actual reader. It does not relabel every
+      // parameter returned by that reader as this one conceptual fact.
+      if (change && node.concept_observation?.kind === "activity") continue;
       // A captured parameter belongs to its declared direction/field only.
       if (node.field && node.event_node) {
         const values = node.direction === "in" ? items[raw].inputs : items[raw].outputs;
@@ -135,7 +145,7 @@ export function buildTraceIndex(
         if (change && (change.field !== node.field || change.direction !== node.direction))
           continue;
       }
-      add(node, raw, !!node.code_role && node.id !== id, change);
+      add(node, raw, (!!node.code_role || !!node.concept_observation) && node.id !== id, change);
     }
   };
   const states = [...all.values()].filter((node) => node.kind === "state");
@@ -157,7 +167,13 @@ export function buildTraceIndex(
       const declaredSubject = node.id === slice.node && !!node.lifecycle;
       if ((node.field || canonical(node) !== slice.node) && !declaredSubject) continue;
       if (!rows.has(node.id))
-        rows.set(node.id, { id: node.id, node, layer: layerOf(node), marks: [], slices: [] });
+        rows.set(node.id, {
+          id: node.id,
+          node,
+          layer: layerOf(node),
+          marks: [],
+          slices: [],
+        });
       const start = axis.dates[slice.raw],
         end = axis.dates[slice.last];
       rows.get(node.id)?.slices.push({
@@ -245,6 +261,8 @@ export function traceRows(
     layerMode = "through",
   } = {},
 ) {
+  order = [...new Set(order.map(canonicalLayer))];
+  depth = canonicalLayer(depth);
   if (order.includes("business")) order = ["business", ...order.filter((id) => id !== "business")];
   const boundary = order.indexOf(depth);
   const included = new Set(

@@ -2,19 +2,21 @@ import { t } from "./i18n.js";
 
 // Database facts share the graph and event stream. These helpers only present
 // supplied evidence; they never run a query or infer a missing relationship.
-export const dataRoles = ["store", "dataset", "column", "query", "transform"];
+export { dataRoles } from "./graph-classification.js";
 export const dataRelations = ["reads", "writes", "references", "maps", "transforms"];
 /** Upgrade old broad filters once; subsequent role exclusions remain explicit. */
 export function migrateDataFilters(value) {
-  if (!value || value.dataTypes === 1) return value;
-  const next = { ...value, dataTypes: 1 };
+  if (!value || value.dataTypes === 2) return value;
+  const next = { ...value, dataTypes: 2 };
   for (const key of ["nodes", "regions"])
     if (Array.isArray(value[key]))
       next[key] = [
         ...new Set([
           ...value[key],
           ...(value[key].includes("data") ? ["store", "dataset", "column"] : []),
-          ...(value[key].includes("function") ? ["query", "transform"] : []),
+          ...(value[key].includes("function")
+            ? ["query", "write", "transaction", "transform"]
+            : []),
         ]),
       ];
   if (Array.isArray(value.edges) && value.edges.includes("data"))
@@ -66,7 +68,7 @@ export function dataStatusClass(status) {
 export function dataLines(node, inputs = {}, outputs = {}, recorded = false, details = false) {
   const meta = node.data_metadata || {},
     rows = [];
-  if (["query", "transform"].includes(node.data_role)) {
+  if (["query", "write", "transaction", "transform"].includes(node.data_role)) {
     if (recorded) {
       const outcome = [statusLabel(outputs.status) || t("Started")];
       if (present(outputs.duration_ms)) outcome.push(`${outputs.duration_ms} ms`);
@@ -110,20 +112,28 @@ export function dataLines(node, inputs = {}, outputs = {}, recorded = false, det
           role: "value",
         });
       if (present(inputs.parameters))
-        rows.push({ text: t("Parameters: {0}", value(inputs.parameters)), role: "value" });
+        rows.push({
+          text: t("Parameters: {0}", value(inputs.parameters)),
+          role: "value",
+        });
       if (outputs.error_type) rows.push({ text: outputs.error_type, role: "bad" });
       if (outputs.unknown_targets?.length)
         rows.push({
           text: t("Unresolved targets: {0}", outputs.unknown_targets.join(", ")),
           role: "muted",
         });
-    } else rows.push({ text: node.summary || t("No query recorded"), role: "muted" });
+    } else
+      rows.push({
+        text: node.summary || t("No query recorded"),
+        role: "muted",
+      });
     if (node.source?.symbol) rows.push({ text: node.source.symbol, role: "symbol" });
     return rows;
   }
-  const origin = { database: t("Actual structure"), declaration: t("Declared structure") }[
-    node.data_origin
-  ];
+  const origin = {
+    database: t("Actual structure"),
+    declaration: t("Declared structure"),
+  }[node.data_origin];
   const coverage = {
     complete: t("Complete scope"),
     partial: t("Partial scope"),
@@ -154,7 +164,10 @@ export function dataLines(node, inputs = {}, outputs = {}, recorded = false, det
           : "value",
     });
   if (details && (origin || coverage))
-    rows.push({ text: [origin, coverage].filter(Boolean).join(" · "), role: "muted" });
+    rows.push({
+      text: [origin, coverage].filter(Boolean).join(" · "),
+      role: "muted",
+    });
   for (const constraint of details ? meta.constraints || [] : [])
     rows.push({
       text: [

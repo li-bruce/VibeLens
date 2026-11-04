@@ -1,160 +1,83 @@
-/** Product explanations use the same layer IDs as the native graph. */
+/** Product explanations share the native graph concern IDs and colors. */
 export const layerContent = [
   {
-    id: "business",
-    color: 0x18866b,
-    type: "business",
-    group: ["Intent", "意图"],
-    name: ["Business flow", "业务流程"],
-    question: ["What should the application do?", "这个应用要完成什么？"],
-    body: [
-      "The actions and paths you confirm in conversation become the starting graph.",
-      "把对话中确认的操作与流转关系，变成开发的起点。",
+    "id": "business",
+    "color": 1607275,
+    "type": "business",
+    "group": ["Intent", "意图"],
+    "name": ["Business flow", "业务流程"],
+    "question": ["What should people be able to do?", "用户要完成什么？"],
+    "body": [
+      "Confirm actions and alternative paths in conversation, then follow them into the implementation.",
+      "在对话中确认操作与分支，再沿着业务链查看对应实现。",
     ],
-    examples: [
+    "examples": [
       ["Upload", "Share", "Download"],
       ["上传", "共享", "下载"],
     ],
   },
   {
-    id: "state",
-    color: 0x9658b5,
-    type: "state",
-    group: ["Model", "模型"],
-    name: ["States", "状态"],
-    question: ["What can change, and when?", "状态何时发生变化？"],
-    body: [
-      "States, transitions, waiting and parallel activity connect the declared behavior to its actual execution.",
-      "查看状态、转换、等待与并行过程，对照程序实际执行的路径。",
+    "id": "state",
+    "color": 9853109,
+    "type": "state",
+    "group": ["Model", "模型"],
+    "name": ["State model", "状态模型"],
+    "question": ["What can change, and under which conditions?", "状态如何变化，需要什么条件？"],
+    "body": [
+      "Define states, events and transitions before coding. Compare the declared path with each actual change.",
+      "开发前明确状态、事件与转换条件，运行时对照实际变化。",
     ],
-    examples: [
-      ["Private", "Shared", "Private"],
-      ["私有", "已共享", "私有"],
-    ],
-  },
-  {
-    id: "rules",
-    color: 0xbb7a13,
-    type: "decision",
-    group: ["Model", "模型"],
-    name: ["Rules", "规则"],
-    question: ["Which condition decided the result?", "什么条件决定了结果？"],
-    body: [
-      "Shared conditions form a rule network. Follow a decision to its inputs and the function that checked them.",
-      "共用条件组成规则网，从判定结果追到输入事实和执行检查的函数。",
-    ],
-    examples: [
-      ["Signed in", "Owner", "Recipient"],
-      ["已登录", "所有者", "接收者"],
+    "examples": [
+      ["Private", "Shared", "Revoked"],
+      ["私有", "已共享", "已撤销"],
     ],
   },
   {
-    id: "api",
-    color: 0xc15463,
-    type: "code-endpoint",
-    group: ["Implementation", "实现"],
-    name: ["API", "API 接口"],
-    question: ["Where did the request enter?", "请求从哪里进入程序？"],
-    body: [
-      "Routes and handlers connect a request to the business operation and its implementation.",
-      "路由和处理函数，把一次请求连接到业务操作与对应实现。",
+    "id": "rules",
+    "color": 12286483,
+    "type": "decision",
+    "group": ["Model", "模型"],
+    "name": ["Rule network", "规则网"],
+    "question": ["Which facts determine this decision?", "哪些事实决定这次判定？"],
+    "body": [
+      "Reuse conditions across operations. Inspect their inputs, combinations and actual results.",
+      "多个操作共用条件，查看条件的输入、组合和实际判定结果。",
     ],
-    examples: [
-      ["POST /files", "POST /share", "GET /download"],
-      ["POST /files", "POST /share", "GET /download"],
-    ],
-  },
-  {
-    id: "execution",
-    color: 0x327db9,
-    type: "function",
-    group: ["Implementation", "实现"],
-    name: ["Functions & values", "核心函数与值"],
-    question: ["Which values did the function use?", "函数使用了哪些值？"],
-    body: [
-      "Key functions, parameters and observed values show how an operation reached its result.",
-      "关键函数、参数与运行值，让一次操作的内部处理过程清晰可见。",
-    ],
-    examples: [
-      ["share()", "file_id", "recipient_id"],
-      ["share()", "file_id", "recipient_id"],
+    "examples": [
+      ["Signed in", "Owner", "Active grant"],
+      ["已登录", "所有者", "有效授权"],
     ],
   },
   {
-    id: "operations",
-    color: 0x008f98,
-    type: "query",
-    group: ["Implementation", "实现"],
-    name: ["Data operations", "数据处理"],
-    question: ["What was read, changed or committed?", "读取、处理和写入了什么？"],
-    body: [
-      "Queries, transformations and transactions reveal the data path and its recorded results.",
-      "沿着查询、转换与事务，核对数据流转和记录中的实际结果。",
+    "id": "implementation",
+    "color": 3308985,
+    "type": "code-function",
+    "group": ["Implementation", "实现"],
+    "name": ["Implementation", "程序实现"],
+    "question": ["Which code handles this operation?", "哪些代码完成这次操作？"],
+    "body": [
+      "Move through API entries, files, functions and selected values. Open local calls and data access when needed.",
+      "从接口、文件深入函数与关键值，按需展开局部调用和数据访问。",
     ],
-    examples: [
-      ["Read grants", "Update access", "Commit"],
-      ["读取授权", "更新权限", "提交事务"],
-    ],
-  },
-  {
-    id: "project",
-    color: 0x8f7047,
-    type: "code-directory",
-    group: ["Structure", "结构"],
-    name: ["Project structure", "工程结构"],
-    question: ["Where does each responsibility live?", "功能分布在哪些文件中？"],
-    body: [
-      "Scanned directories, files and imports reveal module boundaries, dependencies and cycles.",
-      "自动扫描目录、文件和导入关系，查看模块分工、依赖与循环。",
-    ],
-    examples: [
-      ["app/", "service.py", "storage.py"],
-      ["app/", "service.py", "storage.py"],
+    "examples": [
+      ["POST /share", "service.py", "share()"],
+      ["POST /share", "service.py", "share()"],
     ],
   },
   {
-    id: "code",
-    color: 0x6566bd,
-    type: "code-function",
-    group: ["Structure", "结构"],
-    name: ["Code symbols", "代码功能"],
-    question: ["Which code implements this part?", "这部分由哪些代码实现？"],
-    body: [
-      "Static declarations, calls and parameters complete the path to the source file. Open local detail as needed.",
-      "继续下钻到静态声明、调用与参数，按需展开局部代码并查看源码。",
+    "id": "data",
+    "color": 7444028,
+    "type": "store",
+    "group": ["Structure", "结构"],
+    "name": ["Data structure", "数据结构"],
+    "question": ["How is stored data connected?", "存储的数据如何关联？"],
+    "body": [
+      "Explore tables, collections and fields, connected to the operations that read or change them.",
+      "查看表、集合、字段及其关联，连接到实际读写它们的操作。",
     ],
-    examples: [
-      ["SharingService", "share()", "parameters"],
-      ["SharingService", "share()", "参数"],
-    ],
-  },
-  {
-    id: "data",
-    color: 0x71963c,
-    type: "store",
-    group: ["Structure", "结构"],
-    name: ["Data structure", "数据结构"],
-    question: ["How is the data connected?", "数据之间如何关联？"],
-    body: [
-      "Tables, collections, fields and relationships connect storage structure to the code that uses it.",
-      "表、集合、字段与关联关系，连接到使用它们的查询和函数。",
-    ],
-    examples: [
+    "examples": [
       ["users", "files", "shares"],
       ["users", "files", "shares"],
     ],
   },
 ];
-
-const order = [
-  "business",
-  "state",
-  "rules",
-  "api",
-  "execution",
-  "project",
-  "code",
-  "operations",
-  "data",
-];
-layerContent.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));

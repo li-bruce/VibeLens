@@ -49,7 +49,13 @@ assert.deepEqual(callValues({id:'fn'},legacy),{inputs:{length:3},outputs:{passed
 
 const state=emptyLayout();placeIncremental(graph,state);
 const collapsedSearch=layoutGraph(view,new Set());
-assert.deepEqual(collapsedSearch.boxes.map(b=>b.id),view.model.graph_roots,'overview contains only explicitly declared top-level nodes');
+// The overview retains the business roots and the separately scanned project root.
+// Source declarations stay folded beneath that root until the developer opens it.
+const projectRoots=view.model.nodes.filter(n=>n.layer==='project'&&n.project_path==='.'&&!n.parent);
+assert.equal(projectRoots.length,1,'the scanned source tree has one project root');
+assert.deepEqual(collapsedSearch.boxes.filter(b=>b.node.layer!=='project').map(b=>b.id),view.model.graph_roots,'business roots retain their exact declared order');
+assert.deepEqual(collapsedSearch.boxes.filter(b=>b.node.layer==='project').map(b=>b.id),projectRoots.map(n=>n.id),'the collapsed project tree exposes its root only');
+assert.ok(collapsedSearch.boxes.every(b=>!b.node.parent),'folded descendants cannot leak into the overview');
 assert.ok(collapsedSearch.all.has('state.checking'),'folding does not remove state data');
 setAnnotation(state,'checksum',{label:"Check file content",note:"Content check before archiving"});
 assert.equal(searchNodes(collapsedSearch.all,state,"before archiving")[0].node.id,'checksum');
@@ -233,7 +239,7 @@ for(const id of ['checksum','field:checksum:out:checksum']){
 const sampleNodes=[
   {id:'a'},{id:'b'},{id:'f',parent:'a'},{id:'x',parent:'f'},
   {id:'g',parent:'a'},{id:'y',parent:'b'}
-];
+].map(node=>({...node,kind:'function'}));
 const sampleBoxes=sampleNodes.map((node,i)=>({id:node.id,node,x:[0,2200,0,0,800,2200][i],y:[0,0,-600,-900,0,400][i],w:140,h:100}));
 const sampleEdges=[
   {id:'outside-one',from:'x',to:'y',type:'guard',label:"Permission",observed:true,current:true},
@@ -277,7 +283,7 @@ console.log(JSON.stringify({valid:true,coverage:'unified nodes and edges, real E
 // Every expandable type uses its own circle identity; containment alone does not
 // create a self glyph. A real relation to a hidden descendant still requires it.
 // Data roles refine existing protocol kinds rather than introduce new kinds.
-const dataRoleKinds={store:'data',dataset:'data',column:'data',query:'function',transform:'function'};
+const dataRoleKinds={store:'data',dataset:'data',column:'data',query:'function',write:'function',transaction:'function',transform:'function'};
 for(const type of Object.keys(nodeTypes)){
   const codeRole=type.startsWith('code-')?type.slice(5):null;
   const parent={id:'owner',kind:codeRole?(['file','parameter','unresolved'].includes(codeRole)?'data':'function'):dataRoleKinds[type]||type,...(codeRole?{code_role:codeRole}:{}),...(dataRoleKinds[type]?{data_role:type}:{}),...(type==='business'?{layer:'business'}:{}),...(type==='resource'?{execution_role:'resource'}:{})};

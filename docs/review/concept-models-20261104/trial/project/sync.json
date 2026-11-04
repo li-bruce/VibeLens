@@ -1,0 +1,92 @@
+{
+  "model": "bo_stategraph/project.json",
+  "discovery": "discovery.json",
+  "intent": "intent.json",
+  "acceptance": "acceptance.json",
+  "source_scope": {
+    "roots": [
+      "."
+    ],
+    "prune": [
+      {
+        "path": "var",
+        "category": "artifact",
+        "reason": "Uploaded contents and local SQLite storage"
+      },
+      {
+        "path": "review/runtime",
+        "category": "artifact",
+        "reason": "Generated acceptance evidence"
+      }
+    ],
+    "require_symbol_classification": true,
+    "exclude": {
+      "review/**": "Frozen dialogue, source snapshots and test evidence",
+      "bo_build.py": "Graph registration generation; watched and checked",
+      "tests/**": "Independent scenario runners and regression assertions; watched and executed",
+      "bo_checks.py": "Independent static and failure injection checks, watched and executed"
+    }
+  },
+  "manifest": "bo_stategraph/manifest.json",
+  "code_files": [
+    "app.py",
+    "service.py",
+    "bo_integration.py",
+    "bo_projection.py"
+  ],
+  "watch_files": [
+    "index.html",
+    "bo_build.py",
+    "tests/acceptance_run.py",
+    "tests/gate_run.py",
+    "mapping.json",
+    "bo_checks.py"
+  ],
+  "observations_command": [
+    "{python}",
+    "-B",
+    "-X",
+    "utf8",
+    "tests/gate_run.py"
+  ],
+  "test_commands": [
+    [
+      "{python}",
+      "-B",
+      "-X",
+      "utf8",
+      "bo_checks.py"
+    ]
+  ],
+  "probe_modes": [
+    "on",
+    "off",
+    "fault"
+  ],
+  "require_probe_health": true,
+  "require_observation_closure": true,
+  "require_mapping_witnesses": true,
+  "mapping_contract": "mapping.json",
+  "timeout_seconds": 180,
+  "stategraph": {
+    "module": "bo_projection.py",
+    "development_mode": "observe",
+    "execution_mode": "observe",
+    "decision_source": "user",
+    "decision": "保留我自己的代码组织，只用图观察。"
+  },
+  "required_probes": [
+    {
+      "symbol": "app.py::create_app.download",
+      "node": "http.download",
+      "phase": "return"
+    }
+  ],
+  "required_runtime_probes": [
+    {
+      "case": "roundtrip",
+      "node": "http.download",
+      "phase": "return"
+    }
+  ]
+}

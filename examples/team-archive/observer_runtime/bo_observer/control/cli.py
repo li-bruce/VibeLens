@@ -6,8 +6,9 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 
-from .scope import ControlScope, user_command, read
+from .scope import ControlScope, read
 from .selection import build_plan, model_revision, ClarificationRequired
+from ..graph.observation_scope import display_graph
 
 
 def local_url(value):
@@ -134,6 +135,7 @@ def main(argv=None):
                 if project_id != active["project_id"]:
                     raise ValueError("Snapshot belongs to another project")
                 if args.command == "inspect":
+                    graph = display_graph(view)
                     result = {
                         "project_id": project_id,
                         "model_revision": model_revision(view),
@@ -150,9 +152,9 @@ def main(argv=None):
                                 )
                                 if key in node
                             }
-                            for node in view["model"]["nodes"]
+                            for node in graph["nodes"]
                         ],
-                        "edges": view["model"]["edges"],
+                        "edges": graph["edges"],
                         "recordings": (
                             get(base, "/api/recordings")
                             if base and view.get("stage") != "design"

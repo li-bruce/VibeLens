@@ -86,6 +86,15 @@ def report(index, model, *, all_symbols=False):
     symbols = index["symbols"]
     selected, parameters = set(), {}
     for node in model.get("nodes", []):
+        # Optional lexical context is not a new authored mapping obligation.
+        # Explicit mappings to this same symbol below still include it, and
+        # all_symbols independently selects every authored declaration.
+        if (
+            node.get("origin") == "source-ast"
+            and node.get("representation_role") == "declaration"
+            and node.get("declaration_scope") == "lexical-owner"
+        ):
+            continue
         for role in ("source", "represents"):
             source = node.get(role)
             if not source or not source.get("path") or not source.get("symbol"):

@@ -1,0 +1,1272 @@
+{
+  "root": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\gate-20261104-220419-110478\\program",
+  "steps": [
+    {
+      "name": "Record unresolved questions at the start",
+      "passed": true,
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "status": "editing",
+        "baseline_id": "bb28b07120f036d565326b27f8ae2e33a6692793a21b2c53d944118cb757aa73",
+        "change": ".stategraph/clarify-1",
+        "recall": {
+          "schema": "bo-iteration-recall/v1",
+          "candidate_id": "bb28b07120f036d565326b27f8ae2e33a6692793a21b2c53d944118cb757aa73",
+          "mode": "drive",
+          "active_change": {
+            "change": ".stategraph/clarify-1"
+          },
+          "request": "Clarify submission roles before checking the original program.",
+          "changed_files": [],
+          "source_errors": [],
+          "verification": "not_run",
+          "unregistered_files": [],
+          "unclassified_functions": [],
+          "contracts": {
+            "model": "observer_generated/behavior.json",
+            "acceptance": "acceptance.json",
+            "whitebox": "whitebox.json",
+            "mapping_contract": "mapping.json",
+            "discovery": "discovery.json"
+          },
+          "concepts": {
+            "status": "legacy",
+            "ready": false,
+            "schema": "business-discovery/v1",
+            "action": "Migrate the affected scope before claiming three-model confirmation."
+          },
+          "observation_module": "bo_stategraph/__init__.py",
+          "observation_sources": [
+            "app/ports.py::BOEvents.__init__",
+            "app/ports.py::BOEvents.bo_emit"
+          ],
+          "naming": {
+            "wiring": "bo_",
+            "adapters": "BO"
+          },
+          "layers": {
+            "business": {
+              "nodes": 5,
+              "facets": {},
+              "scan": "feature entrypoints and effects",
+              "observe": "actual invocation and selected result",
+              "affected_nodes": []
+            },
+            "state": {
+              "nodes": 10,
+              "facets": {},
+              "scan": "state declarations, identities, resources and waits",
+              "observe": "actual transitions, residence and activity evidence",
+              "affected_nodes": []
+            },
+            "rules": {
+              "nodes": 3,
+              "facets": {},
+              "scan": "predicate sources, arguments and shared dependencies",
+              "observe": "evaluated/skipped conditions and actual enclosing invocation",
+              "affected_nodes": []
+            },
+            "implementation": {
+              "nodes": 99,
+              "facets": {
+                "execution": 22,
+                "code": 69,
+                "project": 8
+              },
+              "scan": "routes, source hierarchy, declarations, parameters and data-access bindings",
+              "observe": "actual calls, responses, selected values and native transaction boundaries; unobserved declarations remain static",
+              "affected_nodes": []
+            },
+            "data": {
+              "nodes": 0,
+              "facets": {},
+              "scan": "ORM/ODM/schema metadata and relationships",
+              "observe": "operation-linked structural projection",
+              "affected_nodes": []
+            },
+            "unknown": {
+              "nodes": 0,
+              "facets": {},
+              "scan": "unclassified declarations requiring a mapping review",
+              "observe": "no inferred evidence",
+              "affected_nodes": []
+            }
+          },
+          "plan": ".stategraph/observation-plan.json",
+          "telemetry": {
+            "backend": "native",
+            "registration_file": null,
+            "nodes": [],
+            "preserve": [
+              "state declaration and native executor",
+              "source mappings and selected fields",
+              "trace propagation across async/job boundaries",
+              "observer exclusion and probe health",
+              "native principal/object facts and protected context comparisons"
+            ]
+          },
+          "context_mapping": [],
+          "context_mapping_count": 0,
+          "context_mapping_omitted": 0,
+          "requirements": [
+            {
+              "id": "R1",
+              "text": "typed input and versioned edits",
+              "status": "assumption"
+            },
+            {
+              "id": "R2",
+              "text": "engineer AND ANY eligible grant; substitute authorization",
+              "status": "assumption"
+            },
+            {
+              "id": "R3",
+              "text": "lifecycle, wait, retry and cancellation",
+              "status": "assumption"
+            },
+            {
+              "id": "R4",
+              "text": "checksum and fresh commit authorization",
+              "status": "assumption"
+            },
+            {
+              "id": "R5",
+              "text": "one committed artifact per version",
+              "status": "assumption"
+            },
+            {
+              "id": "R6",
+              "text": "observer isolation and equal business effects",
+              "status": "assumption"
+            },
+            {
+              "id": "R7",
+              "text": "Concurrent checks share per-run capacity, wait for slots, return slots and require all results; reject synthetic SECRET: marker.",
+              "status": "assumption"
+            },
+            {
+              "id": "R8",
+              "text": "All declared activity instances are queryable by run and version; stale runs cannot overwrite or commit new runs; historical views retain the selected state.",
+              "status": "assumption"
+            }
+          ],
+          "requirement_count": 8,
+          "intent": "intent.json",
+          "test_commands": [
+            [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tests/test_business.py"
+            ],
+            [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "observer_generated/runtime/architecture_guard.py",
+              "check",
+              "--root",
+              "."
+            ],
+            [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tests/test_execution.py"
+            ],
+            [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tooling/graph_fixture.py"
+            ],
+            [
+              "node",
+              "tests/test_graph_projection.mjs"
+            ],
+            [
+              "node",
+              "tests/test_graph_layout.mjs"
+            ],
+            [
+              "{python}",
+              "-X",
+              "utf8",
+              "-B",
+              "tests/test_recording.py"
+            ],
+            [
+              "node",
+              "tests/test_recorded_views.mjs"
+            ],
+            [
+              "{python}",
+              "-X",
+              "utf8",
+              "-B",
+              "tests/test_stategraph_module.py"
+            ]
+          ],
+          "observations_command": [
+            "{python}",
+            "-B",
+            "-X",
+            "utf8",
+            "tests/observe.py"
+          ],
+          "required_checks": {
+            "source_first_inventory": true,
+            "probe_health": false,
+            "invocation_closure": false,
+            "mapping_witnesses": true,
+            "reports": [
+              "mapping",
+              "state_rules",
+              "business",
+              "project_checks"
+            ]
+          },
+          "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results."
+        }
+      }
+    },
+    {
+      "name": "Unanswered critical questions block delivery",
+      "passed": true,
+      "exit_code": 1,
+      "result": {
+        "valid": false,
+        "errors": [
+          {
+            "unanswered_business_questions": [
+              "D1"
+            ]
+          }
+        ],
+        "reports": {
+          "mapping": {
+            "status": "failed",
+            "errors": [
+              {
+                "unanswered_business_questions": [
+                  "D1"
+                ]
+              }
+            ],
+            "database": {
+              "configured": false,
+              "valid": true,
+              "errors": [],
+              "changed": false
+            },
+            "code_structure": {
+              "enabled": false,
+              "valid": true,
+              "status": "not_enabled",
+              "errors": []
+            },
+            "api_observation": {
+              "configured": false,
+              "valid": true,
+              "status": "not_applicable",
+              "issues": [],
+              "errors": [],
+              "coverage": "not_applicable",
+              "strict": false,
+              "observed_routes": [],
+              "unobserved_routes": [],
+              "incomplete_methods": [],
+              "missing_routes": [],
+              "revision": "ddc2a29bfe3a28e8c5932547d619cf279ea44c1dc38ccd4ec254818c85410080"
+            },
+            "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses"
+          },
+          "state_rules": {
+            "status": "not_run",
+            "errors": []
+          },
+          "project_checks": {
+            "status": "not_run",
+            "errors": [],
+            "scope": "Configured project tests, architecture and viewer checks"
+          },
+          "business": {
+            "status": "not_run",
+            "errors": [],
+            "assertions": {},
+            "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+          }
+        },
+        "candidate_id": "bb28b07120f036d565326b27f8ae2e33a6692793a21b2c53d944118cb757aa73"
+      }
+    },
+    {
+      "name": "Answer is bound to the graph and permission counterexample; checks passed",
+      "passed": true,
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "errors": [],
+        "candidate_id": "819945ff2276f79960ce753d15a793383c78935568a425d94c827e7b98321e8d",
+        "reports": {
+          "mapping": {
+            "status": "passed",
+            "errors": [],
+            "database": {
+              "configured": false,
+              "valid": true,
+              "errors": [],
+              "changed": false
+            },
+            "code_structure": {
+              "enabled": false,
+              "valid": true,
+              "status": "not_enabled",
+              "errors": []
+            },
+            "api_observation": {
+              "configured": false,
+              "valid": true,
+              "status": "not_applicable",
+              "issues": [],
+              "errors": [],
+              "coverage": "not_applicable",
+              "strict": false,
+              "observed_routes": [],
+              "unobserved_routes": [],
+              "incomplete_methods": [],
+              "missing_routes": [],
+              "revision": "2242b5cdc6943062954783d5e131f2cd254f83f7a8a3162c3a16a121e150716b"
+            },
+            "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+            "producer_health": {
+              "valid": true,
+              "checked_runs": 0,
+              "required": false,
+              "errors": []
+            },
+            "invocation_closure": {
+              "valid": true,
+              "closed_calls": 0,
+              "legacy_events": 147,
+              "errors": []
+            },
+            "layers": {
+              "business": {
+                "declared_nodes": 5,
+                "direct_observations": [
+                  "flow.checks"
+                ],
+                "required_cases": 1,
+                "boundary_observations": [],
+                "basis": "actual invocation and selected result"
+              },
+              "state": {
+                "declared_nodes": 10,
+                "direct_observations": [
+                  "join",
+                  "wait"
+                ],
+                "required_cases": 2,
+                "boundary_observations": [],
+                "basis": "actual transitions, residence and activity evidence"
+              },
+              "rules": {
+                "declared_nodes": 3,
+                "direct_observations": [
+                  "authorize",
+                  "grant",
+                  "recheck"
+                ],
+                "required_cases": 3,
+                "boundary_observations": [],
+                "basis": "evaluated/skipped conditions and actual enclosing invocation"
+              },
+              "implementation": {
+                "declared_nodes": 99,
+                "direct_observations": [
+                  "change",
+                  "checksum",
+                  "commit",
+                  "execute",
+                  "privacy",
+                  "read"
+                ],
+                "required_cases": 8,
+                "boundary_observations": [],
+                "basis": "actual calls, responses, selected values and native transaction boundaries; unobserved declarations remain static"
+              },
+              "data": {
+                "declared_nodes": 0,
+                "direct_observations": [],
+                "required_cases": 0,
+                "boundary_observations": [],
+                "basis": "operation-linked structural projection"
+              },
+              "unknown": {
+                "declared_nodes": 0,
+                "direct_observations": [],
+                "required_cases": 0,
+                "boundary_observations": [],
+                "basis": "no inferred evidence"
+              }
+            },
+            "stategraph_export": "checked",
+            "witnesses": 201,
+            "projection_checks": 303,
+            "implementation": {
+              "errors": [],
+              "events_checked": 19,
+              "features": 10
+            }
+          },
+          "state_rules": {
+            "status": "passed",
+            "errors": []
+          },
+          "project_checks": {
+            "status": "passed",
+            "errors": [],
+            "scope": "Configured project tests, architecture and viewer checks"
+          },
+          "business": {
+            "status": "passed",
+            "errors": [],
+            "assertions": {
+              "required": 96,
+              "executed": 96
+            },
+            "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+          }
+        },
+        "review_hash": "b96a9df65aca29bc17127971bdb429248f21e0ce988097b209d8213e826ad358",
+        "observations_hash": "f3817dc23e185f2c9a193709de93336b8698be83cf834df3c4aed7985545ba1b",
+        "tests": [
+          {
+            "argv": [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tests/test_business.py"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "observer_generated/runtime/architecture_guard.py",
+              "check",
+              "--root",
+              "."
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tests/test_execution.py"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tooling/graph_fixture.py"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "node",
+              "tests/test_graph_projection.mjs"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "node",
+              "tests/test_graph_layout.mjs"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-X",
+              "utf8",
+              "-B",
+              "tests/test_recording.py"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "node",
+              "tests/test_recorded_views.mjs"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-X",
+              "utf8",
+              "-B",
+              "tests/test_stategraph_module.py"
+            ],
+            "exit_code": 0
+          }
+        ],
+        "checked_at": "2026-11-04T14:05:02.241100+00:00",
+        "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+      }
+    },
+    {
+      "name": "Accept the same answer and implementation",
+      "passed": true,
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "status": "current",
+        "errors": [],
+        "candidate_id": "819945ff2276f79960ce753d15a793383c78935568a425d94c827e7b98321e8d"
+      }
+    },
+    {
+      "name": "Current answer matches acceptance",
+      "passed": true,
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "status": "current",
+        "errors": [],
+        "candidate_id": "819945ff2276f79960ce753d15a793383c78935568a425d94c827e7b98321e8d"
+      }
+    },
+    {
+      "name": "A changed answer invalidates old acceptance",
+      "passed": true,
+      "exit_code": 1,
+      "result": {
+        "valid": false,
+        "status": "needs_sync",
+        "errors": [
+          "review belongs to an older candidate",
+          "verification is failed or stale",
+          "change is not accepted for current inputs"
+        ],
+        "candidate_id": "37f35e7c674f7f8851bb1887632a12102f944f8537cddcc69c2f68d2a48aabfa"
+      }
+    },
+    {
+      "name": "Begin the next requirement change",
+      "passed": true,
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "status": "editing",
+        "baseline_id": "819945ff2276f79960ce753d15a793383c78935568a425d94c827e7b98321e8d",
+        "change": ".stategraph/clarify-2",
+        "recall": {
+          "schema": "bo-iteration-recall/v1",
+          "candidate_id": "819945ff2276f79960ce753d15a793383c78935568a425d94c827e7b98321e8d",
+          "mode": "drive",
+          "active_change": {
+            "change": ".stategraph/clarify-2"
+          },
+          "request": "Test the history of a confirmed role change; retain original behavior in the end.",
+          "changed_files": [],
+          "source_errors": [],
+          "verification": "not_run",
+          "unregistered_files": [],
+          "unclassified_functions": [],
+          "contracts": {
+            "model": "observer_generated/behavior.json",
+            "acceptance": "acceptance.json",
+            "whitebox": "whitebox.json",
+            "mapping_contract": "mapping.json",
+            "discovery": "discovery.json"
+          },
+          "concepts": {
+            "status": "legacy",
+            "ready": false,
+            "schema": "business-discovery/v1",
+            "action": "Migrate the affected scope before claiming three-model confirmation."
+          },
+          "observation_module": "bo_stategraph/__init__.py",
+          "observation_sources": [
+            "app/ports.py::BOEvents.__init__",
+            "app/ports.py::BOEvents.bo_emit"
+          ],
+          "naming": {
+            "wiring": "bo_",
+            "adapters": "BO"
+          },
+          "layers": {
+            "business": {
+              "nodes": 5,
+              "facets": {},
+              "scan": "feature entrypoints and effects",
+              "observe": "actual invocation and selected result",
+              "affected_nodes": []
+            },
+            "state": {
+              "nodes": 10,
+              "facets": {},
+              "scan": "state declarations, identities, resources and waits",
+              "observe": "actual transitions, residence and activity evidence",
+              "affected_nodes": []
+            },
+            "rules": {
+              "nodes": 3,
+              "facets": {},
+              "scan": "predicate sources, arguments and shared dependencies",
+              "observe": "evaluated/skipped conditions and actual enclosing invocation",
+              "affected_nodes": []
+            },
+            "implementation": {
+              "nodes": 99,
+              "facets": {
+                "execution": 22,
+                "code": 69,
+                "project": 8
+              },
+              "scan": "routes, source hierarchy, declarations, parameters and data-access bindings",
+              "observe": "actual calls, responses, selected values and native transaction boundaries; unobserved declarations remain static",
+              "affected_nodes": []
+            },
+            "data": {
+              "nodes": 0,
+              "facets": {},
+              "scan": "ORM/ODM/schema metadata and relationships",
+              "observe": "operation-linked structural projection",
+              "affected_nodes": []
+            },
+            "unknown": {
+              "nodes": 0,
+              "facets": {},
+              "scan": "unclassified declarations requiring a mapping review",
+              "observe": "no inferred evidence",
+              "affected_nodes": []
+            }
+          },
+          "plan": ".stategraph/observation-plan.json",
+          "telemetry": {
+            "backend": "native",
+            "registration_file": null,
+            "nodes": [],
+            "preserve": [
+              "state declaration and native executor",
+              "source mappings and selected fields",
+              "trace propagation across async/job boundaries",
+              "observer exclusion and probe health",
+              "native principal/object facts and protected context comparisons"
+            ]
+          },
+          "context_mapping": [],
+          "context_mapping_count": 0,
+          "context_mapping_omitted": 0,
+          "requirements": [
+            {
+              "id": "R1",
+              "text": "typed input and versioned edits",
+              "status": "assumption"
+            },
+            {
+              "id": "R2",
+              "text": "engineer AND ANY eligible grant; substitute authorization",
+              "status": "assumption"
+            },
+            {
+              "id": "R3",
+              "text": "lifecycle, wait, retry and cancellation",
+              "status": "assumption"
+            },
+            {
+              "id": "R4",
+              "text": "checksum and fresh commit authorization",
+              "status": "assumption"
+            },
+            {
+              "id": "R5",
+              "text": "one committed artifact per version",
+              "status": "assumption"
+            },
+            {
+              "id": "R6",
+              "text": "observer isolation and equal business effects",
+              "status": "assumption"
+            },
+            {
+              "id": "R7",
+              "text": "Concurrent checks share per-run capacity, wait for slots, return slots and require all results; reject synthetic SECRET: marker.",
+              "status": "assumption"
+            },
+            {
+              "id": "R8",
+              "text": "All declared activity instances are queryable by run and version; stale runs cannot overwrite or commit new runs; historical views retain the selected state.",
+              "status": "assumption"
+            }
+          ],
+          "requirement_count": 8,
+          "intent": "intent.json",
+          "test_commands": [
+            [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tests/test_business.py"
+            ],
+            [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "observer_generated/runtime/architecture_guard.py",
+              "check",
+              "--root",
+              "."
+            ],
+            [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tests/test_execution.py"
+            ],
+            [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tooling/graph_fixture.py"
+            ],
+            [
+              "node",
+              "tests/test_graph_projection.mjs"
+            ],
+            [
+              "node",
+              "tests/test_graph_layout.mjs"
+            ],
+            [
+              "{python}",
+              "-X",
+              "utf8",
+              "-B",
+              "tests/test_recording.py"
+            ],
+            [
+              "node",
+              "tests/test_recorded_views.mjs"
+            ],
+            [
+              "{python}",
+              "-X",
+              "utf8",
+              "-B",
+              "tests/test_stategraph_module.py"
+            ]
+          ],
+          "observations_command": [
+            "{python}",
+            "-B",
+            "-X",
+            "utf8",
+            "tests/observe.py"
+          ],
+          "required_checks": {
+            "source_first_inventory": true,
+            "probe_health": false,
+            "invocation_closure": false,
+            "mapping_witnesses": true,
+            "reports": [
+              "mapping",
+              "state_rules",
+              "business",
+              "project_checks"
+            ]
+          },
+          "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results."
+        }
+      }
+    },
+    {
+      "name": "Deleting a confirmed question cannot hide the original decision",
+      "passed": true,
+      "exit_code": 1,
+      "result": {
+        "valid": false,
+        "errors": [
+          {
+            "discovery": {
+              "code": "decision_changed_without_history",
+              "item": "D1"
+            }
+          }
+        ],
+        "reports": {
+          "mapping": {
+            "status": "failed",
+            "errors": [
+              {
+                "discovery": {
+                  "code": "decision_changed_without_history",
+                  "item": "D1"
+                }
+              }
+            ],
+            "database": {
+              "configured": false,
+              "valid": true,
+              "errors": [],
+              "changed": false
+            },
+            "code_structure": {
+              "enabled": false,
+              "valid": true,
+              "status": "not_enabled",
+              "errors": []
+            },
+            "api_observation": {
+              "configured": false,
+              "valid": true,
+              "status": "not_applicable",
+              "issues": [],
+              "errors": [],
+              "coverage": "not_applicable",
+              "strict": false,
+              "observed_routes": [],
+              "unobserved_routes": [],
+              "incomplete_methods": [],
+              "missing_routes": [],
+              "revision": "5204da335a2621ae14a78b63a0deb105c425e4fe3fc7c8ad31dc20dcc7c4dcc7"
+            },
+            "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses"
+          },
+          "state_rules": {
+            "status": "not_run",
+            "errors": []
+          },
+          "project_checks": {
+            "status": "not_run",
+            "errors": [],
+            "scope": "Configured project tests, architecture and viewer checks"
+          },
+          "business": {
+            "status": "not_run",
+            "errors": [],
+            "assertions": {},
+            "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+          }
+        },
+        "candidate_id": "99d1502fa3e74b18105ca3f35f74808aa145e503561cc33f0a339384fb61274e"
+      }
+    },
+    {
+      "name": "Empty records cannot bypass an established clarification gate",
+      "passed": true,
+      "exit_code": 1,
+      "result": {
+        "valid": false,
+        "errors": [
+          {
+            "discovery": {
+              "code": "expected_object",
+              "item": "discovery"
+            }
+          }
+        ],
+        "reports": {
+          "mapping": {
+            "status": "failed",
+            "errors": [
+              {
+                "discovery": {
+                  "code": "expected_object",
+                  "item": "discovery"
+                }
+              }
+            ],
+            "database": {
+              "configured": false,
+              "valid": true,
+              "errors": [],
+              "changed": false
+            },
+            "code_structure": {
+              "enabled": false,
+              "valid": true,
+              "status": "not_enabled",
+              "errors": []
+            },
+            "api_observation": {
+              "configured": false,
+              "valid": true,
+              "status": "not_applicable",
+              "issues": [],
+              "errors": [],
+              "coverage": "not_applicable",
+              "strict": false,
+              "observed_routes": [],
+              "unobserved_routes": [],
+              "incomplete_methods": [],
+              "missing_routes": [],
+              "revision": "517c7822cffcd7740a9486458e70dce3ab9f706a4f4be229a0bcd0fcb4c90a2b"
+            },
+            "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses"
+          },
+          "state_rules": {
+            "status": "not_run",
+            "errors": []
+          },
+          "project_checks": {
+            "status": "not_run",
+            "errors": [],
+            "scope": "Configured project tests, architecture and viewer checks"
+          },
+          "business": {
+            "status": "not_run",
+            "errors": [],
+            "assertions": {},
+            "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+          }
+        },
+        "candidate_id": "35ade453ad1043d6c88b9b3d4d3258c5c7678ac56aa54ca57f8f05d71a88883d"
+      }
+    },
+    {
+      "name": "Removing configuration cannot silently disable clarification checks",
+      "passed": true,
+      "exit_code": 1,
+      "result": {
+        "valid": false,
+        "errors": [
+          "configured discovery was removed; preserve its questions and decisions"
+        ],
+        "reports": {
+          "mapping": {
+            "status": "failed",
+            "errors": [
+              "configured discovery was removed; preserve its questions and decisions"
+            ],
+            "database": {
+              "configured": false,
+              "valid": true,
+              "errors": [],
+              "changed": false
+            },
+            "code_structure": {
+              "enabled": false,
+              "valid": true,
+              "status": "not_enabled",
+              "errors": []
+            },
+            "api_observation": {
+              "configured": false,
+              "valid": true,
+              "status": "not_applicable",
+              "issues": [],
+              "errors": [],
+              "coverage": "not_applicable",
+              "strict": false,
+              "observed_routes": [],
+              "unobserved_routes": [],
+              "incomplete_methods": [],
+              "missing_routes": [],
+              "revision": "648b459c9c4c36db6b7c00132daf06efd075feb0777bed6fec839e4122bf523d"
+            },
+            "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses"
+          },
+          "state_rules": {
+            "status": "not_run",
+            "errors": []
+          },
+          "project_checks": {
+            "status": "not_run",
+            "errors": [],
+            "scope": "Configured project tests, architecture and viewer checks"
+          },
+          "business": {
+            "status": "not_run",
+            "errors": [],
+            "assertions": {},
+            "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+          }
+        },
+        "candidate_id": "41d8ebc67f294336a3395369e7c09882fba7a7b353f7435e1adce45c67ceb9f4"
+      }
+    },
+    {
+      "name": "Restore the original rule and verify actual execution",
+      "passed": true,
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "errors": [],
+        "candidate_id": "819945ff2276f79960ce753d15a793383c78935568a425d94c827e7b98321e8d",
+        "reports": {
+          "mapping": {
+            "status": "passed",
+            "errors": [],
+            "database": {
+              "configured": false,
+              "valid": true,
+              "errors": [],
+              "changed": false
+            },
+            "code_structure": {
+              "enabled": false,
+              "valid": true,
+              "status": "not_enabled",
+              "errors": []
+            },
+            "api_observation": {
+              "configured": false,
+              "valid": true,
+              "status": "not_applicable",
+              "issues": [],
+              "errors": [],
+              "coverage": "not_applicable",
+              "strict": false,
+              "observed_routes": [],
+              "unobserved_routes": [],
+              "incomplete_methods": [],
+              "missing_routes": [],
+              "revision": "ed13f33801ba91a3c22811d3e858af8ac7efe6d0330c683ba6b9b9d1323538c4"
+            },
+            "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+            "producer_health": {
+              "valid": true,
+              "checked_runs": 0,
+              "required": false,
+              "errors": []
+            },
+            "invocation_closure": {
+              "valid": true,
+              "closed_calls": 0,
+              "legacy_events": 147,
+              "errors": []
+            },
+            "layers": {
+              "business": {
+                "declared_nodes": 5,
+                "direct_observations": [
+                  "flow.checks"
+                ],
+                "required_cases": 1,
+                "boundary_observations": [],
+                "basis": "actual invocation and selected result"
+              },
+              "state": {
+                "declared_nodes": 10,
+                "direct_observations": [
+                  "join",
+                  "wait"
+                ],
+                "required_cases": 2,
+                "boundary_observations": [],
+                "basis": "actual transitions, residence and activity evidence"
+              },
+              "rules": {
+                "declared_nodes": 3,
+                "direct_observations": [
+                  "authorize",
+                  "grant",
+                  "recheck"
+                ],
+                "required_cases": 3,
+                "boundary_observations": [],
+                "basis": "evaluated/skipped conditions and actual enclosing invocation"
+              },
+              "implementation": {
+                "declared_nodes": 99,
+                "direct_observations": [
+                  "change",
+                  "checksum",
+                  "commit",
+                  "execute",
+                  "privacy",
+                  "read"
+                ],
+                "required_cases": 8,
+                "boundary_observations": [],
+                "basis": "actual calls, responses, selected values and native transaction boundaries; unobserved declarations remain static"
+              },
+              "data": {
+                "declared_nodes": 0,
+                "direct_observations": [],
+                "required_cases": 0,
+                "boundary_observations": [],
+                "basis": "operation-linked structural projection"
+              },
+              "unknown": {
+                "declared_nodes": 0,
+                "direct_observations": [],
+                "required_cases": 0,
+                "boundary_observations": [],
+                "basis": "no inferred evidence"
+              }
+            },
+            "stategraph_export": "checked",
+            "witnesses": 201,
+            "projection_checks": 303,
+            "implementation": {
+              "errors": [],
+              "events_checked": 19,
+              "features": 10
+            }
+          },
+          "state_rules": {
+            "status": "passed",
+            "errors": []
+          },
+          "project_checks": {
+            "status": "passed",
+            "errors": [],
+            "scope": "Configured project tests, architecture and viewer checks"
+          },
+          "business": {
+            "status": "passed",
+            "errors": [],
+            "assertions": {
+              "required": 96,
+              "executed": 96
+            },
+            "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+          }
+        },
+        "review_hash": "b96a9df65aca29bc17127971bdb429248f21e0ce988097b209d8213e826ad358",
+        "observations_hash": "725efca63cad597bffdc3d86f48bf0b3c83ea4c800fa238a55632d62df2087b2",
+        "tests": [
+          {
+            "argv": [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tests/test_business.py"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "observer_generated/runtime/architecture_guard.py",
+              "check",
+              "--root",
+              "."
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tests/test_execution.py"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-B",
+              "-X",
+              "utf8",
+              "tooling/graph_fixture.py"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "node",
+              "tests/test_graph_projection.mjs"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "node",
+              "tests/test_graph_layout.mjs"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-X",
+              "utf8",
+              "-B",
+              "tests/test_recording.py"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "node",
+              "tests/test_recorded_views.mjs"
+            ],
+            "exit_code": 0
+          },
+          {
+            "argv": [
+              "{python}",
+              "-X",
+              "utf8",
+              "-B",
+              "tests/test_stategraph_module.py"
+            ],
+            "exit_code": 0
+          }
+        ],
+        "checked_at": "2026-11-04T14:06:29.192718+00:00",
+        "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+      }
+    },
+    {
+      "name": "Accept the restored record",
+      "passed": true,
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "status": "current",
+        "errors": [],
+        "candidate_id": "819945ff2276f79960ce753d15a793383c78935568a425d94c827e7b98321e8d"
+      }
+    },
+    {
+      "name": "Final check",
+      "passed": true,
+      "exit_code": 0,
+      "result": {
+        "valid": true,
+        "status": "current",
+        "errors": [],
+        "candidate_id": "819945ff2276f79960ce753d15a793383c78935568a425d94c827e7b98321e8d"
+      }
+    }
+  ],
+  "passed": true,
+  "steps_count": 13
+}

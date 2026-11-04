@@ -4,6 +4,7 @@ import { dataTransferLabel } from "./data-layer.js";
 import { runtimeFrame, runtimeChanges, rememberRuntimeMachine } from "./runtime-frames.js";
 import { phaseLabel, stateLabels } from "./graph-core.js";
 import { apiObservationIds, observesNode } from "./api-observation.js";
+import { conceptActivityIds } from "./concept-observation.js";
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const cached = new WeakMap();
 const boFieldKey = (event, direction, field) =>
@@ -19,6 +20,7 @@ const boFieldKey = (event, direction, field) =>
 function boVisibleChange(change, owner, all) {
   if (owner.type !== "business") return true;
   if (change.node === (owner.node.referenceOf || owner.node.event_node || owner.id)) return true;
+  if (observesNode(owner.node, change.node)) return true;
   if (["state", "resource", "business"].includes(change.kind)) return true;
   const source = all.get(change.node);
   return (
@@ -212,6 +214,7 @@ export function boOwners(all, visible) {
     for (const key of new Set([
       b.node.referenceOf || b.node.event_node || b.id,
       ...apiObservationIds(b.node),
+      ...conceptActivityIds(b.node),
     ])) {
       if (!shown.has(key)) shown.set(key, []);
       shown.get(key).push(b);

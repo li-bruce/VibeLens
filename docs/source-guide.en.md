@@ -6,6 +6,38 @@ Read this guide when you want to change the Skill, inspect a recorded value, or 
 
 ## Repository map
 
+Concept-first work starts in [concepts/](../skills/vibelens/scripts/bo_observer/concepts/).
+`model.py` assembles source-free peer models, `state.py` validates their state
+semantics, and `semantics.py` records scoped confirmations and changes. `binding.py`
+and `anchors.py` compare those declarations with native state/rule/source bindings
+and independent assertions. `projection.py` adds explicit implementation links
+to Web metadata. These modules never execute the application's transitions.
+[bo_concepts.py](../skills/vibelens/scripts/bo_concepts.py) is the public CLI;
+[concept-models.md](../skills/vibelens/references/concept-models.md) describes its workflow.
+
+The main views are business, state, rules, implementation and data. API entries,
+files, declarations, observed functions and data access are implementation facets.
+[classification.py](../skills/vibelens/scripts/bo_observer/graph/classification.py)
+and `graph-classification.js` share this vocabulary, with parity tests. Unknown
+types remain diagnostic entries. Source references point to one canonical
+declaration through `graph/source_identity.py`; capture/invocation IDs remain
+independent. `hidden-paths.js` computes bounded, typed paths for the current view
+without inserting them into the stored model or runtime evidence.
+
+[observation/concept_context.py](../skills/vibelens/scripts/bo_observer/observation/concept_context.py)
+validates and pins conceptual metadata when a bound session starts. Changes to
+its input bytes or configured paths mark the session stale. Recording checkpoints
+retain their own conceptual context. `workflow/concept_review.py` restores the
+confirmation, dependencies and pending work before the next coding batch.
+
+[graph/observation_scope.py](../skills/vibelens/scripts/bo_observer/graph/observation_scope.py)
+resolves displayed concepts and declarations to their verified capture owners.
+The control API carries the same static inventory; it does not send runtime
+history to construct a view. `concept-bindings.js` qualifies those links in the
+viewer, and `concept-observation.js` projects each owner's actual interval without
+merging several calls into an invented concept lifetime. `concept-details.js`
+shows the complete typed definition on demand.
+
 The product story is separate from the runtime. [export_file_case.py](../tools/export_file_case.py) validates immutable trial recordings, sources and screenshots before producing static case data. [case-viewer.mjs](site/case-viewer.mjs) serves those exports to the unchanged canonical viewer; [case-scene-player.mjs](site/case-scene-player.mjs) selects native views and replay positions. [case-copy.mjs](site/case-copy.mjs) removes known authoring boilerplate in display-only clones while preserving archived facts. [case-companion.mjs](site/case-companion.mjs) keeps development dialogue and event-bound application screenshots separate. [export_trial_dialogue.py](../tools/export_trial_dialogue.py) exports visible dialogue and named-turn usage counters for review.
 
 | Location | What to read or change here |

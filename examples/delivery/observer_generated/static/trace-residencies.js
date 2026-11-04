@@ -1,9 +1,13 @@
 /** State occupancy is not a function call. Its interval follows witnessed state changes. */
 import { activeMachineStates } from "./machine-projection.js";
 import { runtimeFrame, runtimeConfigurations } from "./runtime-frames.js";
+import { conceptActivityIds } from "./concept-observation.js";
 export function stateResidencies(recording, items, changes, nodes, axis) {
   const states = [...nodes.values()].filter(
-    (node) => node.kind === "state" && node.value !== undefined,
+    (node) =>
+      node.kind === "state" &&
+      node.value !== undefined &&
+      (node.origin !== "concept-design" || conceptActivityIds(node).length),
   );
   const opened = new Map(),
     slices = [],

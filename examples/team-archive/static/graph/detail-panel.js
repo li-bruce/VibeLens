@@ -3,18 +3,20 @@
  * graph, recording and application state remain owned by their existing modules.
  */
 import { renderSource } from "./source-view.js";
-import { nodeExplanation } from "./capture-fields.js";
+import { nodeExplanation, captureDetailRows } from "./capture-fields.js";
 import { dataLines } from "./data-layer.js";
 import { annotationFor, displayName } from "./layout.js";
-import { sourceBinding } from "./graph-core.js";
+import { sourceBinding, callValues, selectedEvents } from "./graph-core.js";
 import { t as boTranslate } from "./i18n.js";
+import { conceptDefinitionElement } from "./concept-details.js";
 
 export function createDetailPanel({ read, point, element = (id) => document.getElementById(id) }) {
   const $ = element,
-    sources = new Map();
+    sources = new Map(),
+    openDefinitions = new Set();
   /** Render the currently selected node, respecting field/source provenance. */
   function update() {
-    const { view, graph, preferences, selected, mode: detailMode } = read();
+    const { view, graph, preferences, selected, choice, step, mode: detailMode } = read();
     const b = graph?.byId.get(selected);
     if (!b || !detailMode) {
       $("node-details").hidden = true;
@@ -33,9 +35,11 @@ export function createDetailPanel({ read, point, element = (id) => document.getE
         ? [{ text: boTranslate("Node: ") + b.id }]
         : [
             ...nodeExplanation(b.node, graph.all).map((text) => ({ text })),
-            ...(b.node.data_role && !["query", "transform"].includes(b.node.data_role)
+            ...(b.node.data_role &&
+            !["query", "write", "transaction", "transform"].includes(b.node.data_role)
               ? dataLines(b.node, {}, {}, false, true)
               : b.rows),
+            ...captureDetailRows(b.node, callValues(b.node, selectedEvents(view, choice, step))),
           ]),
       ...(!editing && annotation.note ? [{ text: boTranslate("Note: ") + annotation.note }] : []),
     ];
@@ -46,6 +50,13 @@ export function createDetailPanel({ read, point, element = (id) => document.getE
         return p;
       }),
     );
+    if (!editing) {
+      const definition = conceptDefinitionElement(b.node, {
+        open: openDefinitions.has(b.id),
+        onToggle: (open) => (open ? openDefinitions.add(b.id) : openDefinitions.delete(b.id)),
+      });
+      if (definition) $("detail-rows").append(definition);
+    }
     const binding = sourceBinding(view, graph.all, selected),
       source = detailMode === "source" && binding;
     $("source-code").hidden = !source;

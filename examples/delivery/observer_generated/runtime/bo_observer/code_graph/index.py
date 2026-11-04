@@ -6,18 +6,14 @@ dispatch, or data flow from a syntactic call.
 
 from pathlib import PurePosixPath
 from copy import deepcopy
-from .endpoints import endpoints, combine_handler_registrations
+from .endpoints import endpoints, combine_handler_registrations, assign_endpoint_identities
 from .structure import attach_tree, analyze
 from .manifests import dependencies
 from ..sources import SOURCE_SUFFIXES
 from ..graph.code_structure import module_name
 from ..graph.behavior_model import digest
+from ..graph.source_identity import identity
 from ..observation.observation_scope import observer_route
-
-
-def identity(role, value):
-    """Keep identity independent of line numbers, labels and source revisions."""
-    return "code:" + role + ":" + digest(value)[:24]
 
 
 def import_target(path, reference, units, modules=None):
@@ -113,6 +109,7 @@ def build(index, project=None, root=None):
                     {**evidence, "reason": "External or unresolved initializer"}
                 )
     nodes, edges, bindings, endpoint_registrations = {}, [], {}, []
+    endpoint_specifications = []
     units, symbols = index["units"], index["symbols"]
     symbol_ids = {key: identity("symbol", key) for key in symbols}
     if project is None:
@@ -189,6 +186,8 @@ def build(index, project=None, root=None):
             symbol.get("signature", ""),
         )
         value["code_symbol"] = key
+        value["declaration_id"] = value["id"]
+        value["representation_role"] = "declaration"
         value["code_signature"] = symbol.get("signature", "")
         value["code_returns"] = symbol.get("returns")
         documentation = deepcopy(symbol.get("documentation"))
@@ -198,23 +197,15 @@ def build(index, project=None, root=None):
             bindings[value["id"]]["documentation"] = documentation
         edge(parent, value["id"], "defines", "Defines")
         for route in endpoints(symbol):
-            endpoint_id = identity("endpoint", [key, route["path"], route["methods"]])
-            endpoint = node(
-                endpoint_id,
-                " ".join(route["methods"] + [route["path"]]),
-                "endpoint",
-                source,
-                summary=route["declaration"],
+            endpoint_specifications.append(
+                {
+                    "legacy_key": [key, route["path"], route["methods"]],
+                    "source": source,
+                    "route": deepcopy(route),
+                    "handler_key": key,
+                    "handler": value["id"],
+                }
             )
-            endpoint["api"] = route
-            endpoint["api_role"] = "endpoint"
-            endpoint_registrations.append(
-                {"endpoint": endpoint_id, "handler": key, "route": deepcopy(route)}
-            )
-            if documentation:
-                endpoint["documentation"] = documentation
-                bindings[endpoint_id]["documentation"] = documentation
-            edge(endpoint_id, value["id"], "handles", "Handled by", route["declaration"])
         for parameter in symbol.get("parameters", []):
             pid = identity("parameter", [key, parameter["name"]])
             parameter_node = node(
@@ -228,6 +219,7 @@ def build(index, project=None, root=None):
                 value["id"],
                 parameter.get("annotation") or "Type unspecified",
             )
+            parameter_node["source_parameter"] = parameter["name"]
             parameter_documentation = (
                 (documentation or {}).get("parameters", {}).get(parameter["name"])
             )
@@ -251,43 +243,53 @@ def build(index, project=None, root=None):
             target_key = handler_key(path, reference, units, symbols)
             handler = symbol_ids.get(target_key)
             owner_key = path + "::" + route["source"]["symbol"]
-            identifier = identity(
-                "endpoint",
-                [
-                    target_key if handler else owner_key + "::" + route["handler_expression"],
-                    route["path"],
-                    route["methods"],
-                ],
-            )
-            endpoint = node(
-                identifier,
-                " ".join(route["methods"] + [route["path"]]),
-                "endpoint",
-                route["source"],
-                summary=route["declaration"],
-            )
-            endpoint["api"] = {**route, "handler_resolved": bool(handler)}
-            endpoint["api_role"] = "endpoint"
-            endpoint_registrations.append(
+            endpoint_specifications.append(
                 {
-                    "endpoint": identifier,
-                    "handler": target_key if handler else None,
-                    "route": deepcopy(route),
+                    "legacy_key": [
+                        target_key if handler else owner_key + "::" + route["handler_expression"],
+                        route["path"],
+                        route["methods"],
+                    ],
+                    "source": route["source"],
+                    "route": {**route, "handler_resolved": bool(handler)},
+                    "handler_key": target_key if handler else None,
+                    "handler": handler,
+                    "owner": symbol_ids.get(owner_key),
                 }
             )
-            if handler and nodes[handler].get("documentation"):
-                endpoint["documentation"] = deepcopy(nodes[handler]["documentation"])
-                bindings[identifier]["documentation"] = endpoint["documentation"]
-            if owner_key in symbol_ids:
-                edge(
-                    symbol_ids[owner_key],
-                    identifier,
-                    "registers",
-                    "Registers",
-                    route["declaration"],
-                )
-            if handler:
-                edge(identifier, handler, "handles", "Handled by", route["declaration"])
+
+    planned, endpoint_migrations = assign_endpoint_identities(endpoint_specifications, identity)
+    for item in planned:
+        identifier, route, handler = item["id"], item["route"], item["handler"]
+        endpoint = node(
+            identifier,
+            " ".join(route["methods"] + [route["path"]]),
+            "endpoint",
+            item["source"],
+            summary=route["declaration"],
+        )
+        endpoint["api"] = route
+        endpoint["api_role"] = "endpoint"
+        endpoint_registrations.append(
+            {
+                "endpoint": identifier,
+                "handler": item["handler_key"],
+                "route": deepcopy(route),
+            }
+        )
+        if handler and nodes[handler].get("documentation"):
+            endpoint["documentation"] = deepcopy(nodes[handler]["documentation"])
+            bindings[identifier]["documentation"] = endpoint["documentation"]
+        if item.get("owner"):
+            edge(
+                item["owner"],
+                identifier,
+                "registers",
+                "Registers",
+                route["declaration"],
+            )
+        if handler:
+            edge(identifier, handler, "handles", "Handled by", route["declaration"])
 
     for path, unit in sorted(units.items()):
         references = unit.get("file_references", [])
@@ -366,6 +368,10 @@ def build(index, project=None, root=None):
     if root is not None:
         index["errors"] += dependencies(root, project, nodes, edge, identity)
     endpoint_aliases = combine_handler_registrations(nodes, edges, bindings)
+    for migration in endpoint_migrations:
+        migration["targets"] = sorted(
+            {endpoint_aliases.get(target, target) for target in migration["targets"]}
+        )
     for registration in endpoint_registrations:
         registration["endpoint"] = endpoint_aliases.get(
             registration["endpoint"], registration["endpoint"]
@@ -383,6 +389,7 @@ def build(index, project=None, root=None):
         "project": {"entries": project["entries"], **analysis},
         "symbols": symbol_ids,
         "endpoint_aliases": endpoint_aliases,
+        "endpoint_migrations": endpoint_migrations,
         "endpoint_registrations": endpoint_registrations,
         "errors": index["errors"],
         "limits": index["limits"],

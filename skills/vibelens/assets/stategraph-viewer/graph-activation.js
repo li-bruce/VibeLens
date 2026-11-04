@@ -1,6 +1,7 @@
 /** Persistent activation states, as distinct from a brief edge-transfer animation. */
 import { traceLifecycles } from "./trace-lifecycles.js";
 import { traceTime } from "./trace-evidence.js";
+import { declarationNodes } from "./graph-inventory.js";
 
 const cache = new WeakMap();
 export function graphActivations(events, nodes) {
@@ -52,6 +53,7 @@ export function graphActivations(events, nodes) {
       start: start.id,
       end: slice.unfinished ? null : last.id,
       duration:
+        slice.observation_basis?.kind !== "concept-binding" &&
         !slice.unfinished &&
         !slice.ambiguous &&
         beginning !== null &&
@@ -70,7 +72,7 @@ export function activationFor(node, view, events) {
   if (((node.field || node.kind === "state") && !node.lifecycle) || !view.model || !events.length)
     return null;
   return (
-    graphActivations(events, view.model.nodes).get(
+    graphActivations(events, declarationNodes(view)).get(
       node.lifecycle ? node.id : node.referenceOf || node.event_node || node.id,
     ) || null
   );

@@ -69,6 +69,9 @@ def elements(policy, base_nodes, *, bound=True):
                     n
                     for n in base_nodes
                     if n.get("kind") == "function" and n.get("source") == pred["source"]
+                    # Optional source detail must not silently replace the rule's
+                    # selected implementation anchor when projectors run again.
+                    and n.get("origin") not in {"source-ast", "code-index"}
                 ]
                 if anchor:
                     if anchor not in known or known[anchor].get("source") != pred["source"]:

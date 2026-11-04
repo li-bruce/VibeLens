@@ -64,6 +64,9 @@ export function traceDescription(hit, index, all, preferences, timeLabel) {
     title: name(slice?.node || row?.id || event.node),
     lines: [
       [t(label), duration].filter(Boolean).join(" · "),
+      slice?.observation_basis?.kind === "concept-binding"
+        ? t("Bound call: {0}", name(slice.source_node))
+        : "",
       hit.contextEvent ? t("Before recording") : "",
       event.context_only ? t("Execution boundary") : "",
       event.exception?.type ? `${t("Exception")}: ${event.exception.type}` : "",

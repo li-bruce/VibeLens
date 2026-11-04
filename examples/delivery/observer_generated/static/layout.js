@@ -4,6 +4,7 @@ import { graphBounds, nodeTypes, viewTypes, relationType } from "./graph-core.js
 import { dataRelations, migrateDataFilters } from "./data-layer.js";
 import { codeRelations, migrateCodeFilters } from "./code-layer.js";
 import { layerOf } from "./graph-layers.js";
+import { conceptRelations, conceptRelationTypes } from "./concept-relations.js";
 import { enclosingCircle, planarBodyCircle, REGION_PADDING } from "./containment-geometry.js";
 import { proximityOrder, proximityNeighbors } from "./proximity-layout.js";
 export const layoutKey = (model, projectId) =>
@@ -16,10 +17,12 @@ export const layoutKey = (model, projectId) =>
 export function emptyFilters() {
   return {
     containmentTypes: 1,
-    dataTypes: 1,
-    codeTypes: 3,
+    conceptTypes: 1,
+    dataTypes: 2,
+    codeTypes: 4,
     nodes: Object.keys(nodeTypes),
     edges: [
+      "indirect",
       "call",
       "flow",
       "transition",
@@ -32,9 +35,12 @@ export function emptyFilters() {
       "contains",
       ...dataRelations,
       ...codeRelations,
+      ...conceptRelationTypes,
     ],
     regions: Object.keys(nodeTypes),
     depth: "all",
+    fields: "all",
+    promotedFields: [],
     hiddenNodes: [],
     hiddenEdges: [],
   };
@@ -43,7 +49,15 @@ export function cleanFilters(value) {
   value = migrateCodeFilters(migrateDataFilters(value));
   if (value && value.containmentTypes !== 1 && value.edges?.includes("other"))
     value = { ...value, edges: [...value.edges, "contains"] };
+  // Older views grouped these exact relations under Other. Retain that choice
+  // while still respecting a user's deliberately narrow relation selection.
+  if (value && value.conceptTypes !== 1 && value.edges?.includes("other"))
+    value = { ...value, edges: [...value.edges, ...conceptRelationTypes] };
   const clean = emptyFilters();
+  clean.fields = value?.fields === "all" ? "all" : "selected";
+  clean.promotedFields = Array.isArray(value?.promotedFields)
+    ? [...new Set(value.promotedFields.filter((id) => typeof id === "string"))]
+    : [];
   for (const kind of ["nodes", "edges", "regions"])
     if (Array.isArray(value?.[kind]))
       clean[kind] = [...new Set(value[kind].filter((type) => clean[kind].includes(type)))];
@@ -64,7 +78,7 @@ export function emptyLayout() {
     algorithm: "cluster",
     annotations: Object.create(null),
     focus: null,
-    filters: emptyFilters(),
+    filters: { ...emptyFilters(), fields: "selected" },
   };
 }
 /** Carry saved positions and annotations across explicitly declared node ID changes. */
@@ -218,7 +232,12 @@ export function readLayout(storage, key) {
     if (value.spatial && typeof value.spatial === "object") {
       for (const [id, p] of Object.entries(value.spatial.positions || {}))
         if ([p?.x, p?.y, p?.z].every(coordinate))
-          clean.spatial.positions[id] = { x: p.x, y: p.y, z: p.z, pinned: p.pinned === true };
+          clean.spatial.positions[id] = {
+            x: p.x,
+            y: p.y,
+            z: p.z,
+            pinned: p.pinned === true,
+          };
       const camera = value.spatial.camera;
       if (
         camera?.position?.length === 3 &&
@@ -400,29 +419,101 @@ export function refreshHierarchy(graph) {
 }
 export { relationType };
 export const relationStyles = {
-  "code-contains": { label: boTranslate("Contains"), color: 0x997c4f, dash: [2, 5], arrow: "none" },
-  "code-exports": { label: boTranslate("Re-exports"), color: 0x8172a3, dash: [], arrow: "open" },
-  "code-links": { label: boTranslate("File link"), color: 0x997c4f, dash: [3, 4], arrow: "open" },
+  ...Object.fromEntries(
+    Object.entries(conceptRelations).map(([type, label]) => [
+      type,
+      {
+        label: boTranslate(label),
+        color: 0x7d7894,
+        dash: [4, 4],
+        arrow: "open",
+      },
+    ]),
+  ),
+  indirect: {
+    label: boTranslate("Indirect path"),
+    color: 0x778693,
+    dash: [2, 4, 8, 4],
+    arrow: "open",
+  },
+  "code-contains": {
+    label: boTranslate("Contains"),
+    color: 0x997c4f,
+    dash: [2, 5],
+    arrow: "none",
+  },
+  "code-exports": {
+    label: boTranslate("Re-exports"),
+    color: 0x8172a3,
+    dash: [],
+    arrow: "open",
+  },
+  "code-links": {
+    label: boTranslate("File link"),
+    color: 0x997c4f,
+    dash: [3, 4],
+    arrow: "open",
+  },
   "code-dependency": {
     label: boTranslate("Package dependency"),
     color: 0x8172a3,
     dash: [],
     arrow: "open",
   },
-  "code-handles": { label: boTranslate("Handled by"), color: 0x986345, dash: [], arrow: "open" },
-  "code-defines": { label: boTranslate("Defines"), color: 0x83929e, dash: [2, 5], arrow: "none" },
-  "code-calls": { label: boTranslate("Static call"), color: 0x2476ad, dash: [], arrow: "open" },
-  "code-imports": { label: boTranslate("Import"), color: 0x8172a3, dash: [], arrow: "open" },
-  "code-inherits": { label: boTranslate("Inheritance"), color: 0x975b86, dash: [], arrow: "open" },
-  "code-parameter": { label: boTranslate("Parameter"), color: 0x627f9c, dash: [], arrow: "open" },
+  "code-handles": {
+    label: boTranslate("Handled by"),
+    color: 0x986345,
+    dash: [],
+    arrow: "open",
+  },
+  "code-defines": {
+    label: boTranslate("Defines"),
+    color: 0x83929e,
+    dash: [2, 5],
+    arrow: "none",
+  },
+  "code-calls": {
+    label: boTranslate("Static call"),
+    color: 0x2476ad,
+    dash: [],
+    arrow: "open",
+  },
+  "code-imports": {
+    label: boTranslate("Import"),
+    color: 0x8172a3,
+    dash: [],
+    arrow: "open",
+  },
+  "code-inherits": {
+    label: boTranslate("Inheritance"),
+    color: 0x975b86,
+    dash: [],
+    arrow: "open",
+  },
+  "code-parameter": {
+    label: boTranslate("Parameter"),
+    color: 0x627f9c,
+    dash: [],
+    arrow: "open",
+  },
   "code-maps": {
     label: boTranslate("Source binding"),
     color: 0x638b98,
     dash: [2, 4],
     arrow: "open",
   },
-  call: { label: boTranslate("Call"), color: 0x2476ad, dash: [], arrow: "open" },
-  flow: { label: boTranslate("Flow"), color: 0x4e647b, dash: [6, 4], arrow: "filled" },
+  call: {
+    label: boTranslate("Call"),
+    color: 0x2476ad,
+    dash: [],
+    arrow: "open",
+  },
+  flow: {
+    label: boTranslate("Flow"),
+    color: 0x4e647b,
+    dash: [6, 4],
+    arrow: "filled",
+  },
   transition: {
     label: boTranslate("State transition"),
     color: 0x8c57ad,
@@ -435,21 +526,81 @@ export const relationStyles = {
     dash: [3, 5],
     arrow: "diamond",
   },
-  data: { label: boTranslate("Value transfer"), color: 0x207e7d, dash: [], arrow: "open" },
-  reads: { label: boTranslate("Read"), color: 0x316da4, dash: [], arrow: "open" },
-  writes: { label: boTranslate("Write"), color: 0xb16b36, dash: [], arrow: "filled" },
-  references: { label: boTranslate("Reference"), color: 0x716a9c, dash: [3, 4], arrow: "open" },
-  maps: { label: boTranslate("Mapping"), color: 0x677a88, dash: [8, 3, 2, 3], arrow: "diamond" },
-  transforms: { label: boTranslate("Transform"), color: 0x887130, dash: [], arrow: "filled" },
-  resource: { label: boTranslate("Resource"), color: 0x7c7b2d, dash: [10, 3, 2, 3], arrow: "open" },
-  join: { label: boTranslate("Join"), color: 0xa36045, dash: [6, 4], arrow: "bar" },
-  shared: { label: boTranslate("Shared reference"), color: 0x68759e, dash: [2, 6], arrow: "none" },
-  contains: { label: boTranslate("Contains"), color: 0x83929e, dash: [2, 5], arrow: "none" },
-  other: { label: boTranslate("Relation"), color: 0x677a88, dash: [4, 4], arrow: "open" },
+  data: {
+    label: boTranslate("Value transfer"),
+    color: 0x207e7d,
+    dash: [],
+    arrow: "open",
+  },
+  reads: {
+    label: boTranslate("Read"),
+    color: 0x316da4,
+    dash: [],
+    arrow: "open",
+  },
+  writes: {
+    label: boTranslate("Write"),
+    color: 0xb16b36,
+    dash: [],
+    arrow: "filled",
+  },
+  references: {
+    label: boTranslate("Reference"),
+    color: 0x716a9c,
+    dash: [3, 4],
+    arrow: "open",
+  },
+  maps: {
+    label: boTranslate("Mapping"),
+    color: 0x677a88,
+    dash: [8, 3, 2, 3],
+    arrow: "diamond",
+  },
+  transforms: {
+    label: boTranslate("Transform"),
+    color: 0x887130,
+    dash: [],
+    arrow: "filled",
+  },
+  resource: {
+    label: boTranslate("Resource"),
+    color: 0x7c7b2d,
+    dash: [10, 3, 2, 3],
+    arrow: "open",
+  },
+  join: {
+    label: boTranslate("Join"),
+    color: 0xa36045,
+    dash: [6, 4],
+    arrow: "bar",
+  },
+  shared: {
+    label: boTranslate("Shared reference"),
+    color: 0x68759e,
+    dash: [2, 6],
+    arrow: "none",
+  },
+  contains: {
+    label: boTranslate("Contains"),
+    color: 0x83929e,
+    dash: [2, 5],
+    arrow: "none",
+  },
+  other: {
+    label: boTranslate("Relation"),
+    color: 0x677a88,
+    dash: [4, 4],
+    arrow: "open",
+  },
 };
 /** Stroke describes relation meaning; a runtime marker separately shows observation. */
 export function relationStyle(edge) {
   const members = edge.members || [edge];
+  if (members.length && members.every((member) => member.evidence_kind === "conceptual"))
+    return {
+      ...(relationStyles[relationType(edge)] || relationStyles.other),
+      dash: [4, 4],
+    };
   if (members.length && members.every((m) => m.origin === "capture-field"))
     return {
       ...relationStyles.data,
@@ -535,6 +686,14 @@ export function compoundEdges(graph) {
 }
 export function filterNode(node, all, filters, asRegion = false) {
   if (hiddenByNode(node.id, all, new Set(filters.hiddenNodes || []))) return false;
+  if (
+    node.field &&
+    filters.fields !== "all" &&
+    !filters.promotedFields?.includes(node.id) &&
+    node.semantic_role !== "state_parameter" &&
+    node.presentation_role !== "key-value"
+  )
+    return false;
   if (node.filter_context && !asRegion) return true;
   return (
     ((node.filter_context && !asRegion) ||
@@ -641,6 +800,7 @@ export function renderRevision(view, selection = []) {
     view.manifest.build_id,
     view.manifest.model_hash || view.model,
     ...(view.api_structure ? [view.api_structure.revision] : []),
+    ...(view.concept_structure ? [view.concept_structure.revision] : []),
     view.binding_status,
     view.busy,
     view.events.length,
@@ -776,7 +936,13 @@ export async function calculateLayout(elk, graph, state, algorithm = "layered") 
       "elk.stress.desiredEdgeLength": "240",
       "elk.stress.iterationLimit": "250",
     },
-    children: graph.boxes.map((b) => ({ id: b.id, width: b.w, height: b.h, x: b.x, y: b.y })),
+    children: graph.boxes.map((b) => ({
+      id: b.id,
+      width: b.w,
+      height: b.h,
+      x: b.x,
+      y: b.y,
+    })),
     edges: graph.edges
       .filter((e) => graph.byId.has(e.from) && graph.byId.has(e.to))
       .map((e, i) => ({ id: "e" + i, sources: [e.from], targets: [e.to] })),
@@ -819,7 +985,11 @@ export function applyLayout(graph, state, positions) {
     if (parent) {
       const old = state.positions[parent],
         next = positions[parent];
-      state.positions[id] = { ...p, x: p.x + next.x - old.x, y: p.y + next.y - old.y };
+      state.positions[id] = {
+        ...p,
+        x: p.x + next.x - old.x,
+        y: p.y + next.y - old.y,
+      };
     }
   }
   for (const [id, p] of Object.entries(positions)) state.positions[id] = { ...p };
@@ -933,7 +1103,11 @@ function circleTemplates(graph) {
       );
     }
     const enclosure = self
-      ? { x: 0, y: 0, radius: Math.max(...occupied.map((c) => Math.hypot(c.x, c.y) + c.radius)) }
+      ? {
+          x: 0,
+          y: 0,
+          radius: Math.max(...occupied.map((c) => Math.hypot(c.x, c.y) + c.radius)),
+        }
       : encloseCircles(occupied);
     const result = {
       id,
@@ -963,7 +1137,12 @@ async function clusteredLayout(elk, graph, state) {
   for (const e of graph.edges) {
     const a = owner(e.from),
       b = owner(e.to);
-    if (a !== b) links.set(a + ">" + b, { id: "group:" + a + ">" + b, sources: [a], targets: [b] });
+    if (a !== b)
+      links.set(a + ">" + b, {
+        id: "group:" + a + ">" + b,
+        sources: [a],
+        targets: [b],
+      });
   }
   const units = roots.map((c) => {
     const pinned = c.items.find((item) => state.positions[item.id]?.pinned);
@@ -981,7 +1160,10 @@ async function clusteredLayout(elk, graph, state) {
         : null,
     };
   });
-  const unitEdges = [...links.values()].map((e) => ({ from: e.sources[0], to: e.targets[0] }));
+  const unitEdges = [...links.values()].map((e) => ({
+    from: e.sources[0],
+    to: e.targets[0],
+  }));
   const solver = await import("./cluster-layout.js");
   const groups = solver.clusterGroups(units);
   const groupByUnit = new Map(
@@ -1064,7 +1246,10 @@ async function clusteredLayout(elk, graph, state) {
     if (!coordinate(p?.x) || !coordinate(p?.y)) throw Error("Invalid group position");
     const anchor = c.items.find((item) => state.positions[item.id]?.pinned);
     const origin = anchor
-      ? { x: state.positions[anchor.id].x - anchor.x, y: state.positions[anchor.id].y - anchor.y }
+      ? {
+          x: state.positions[anchor.id].x - anchor.x,
+          y: state.positions[anchor.id].y - anchor.y,
+        }
       : { x: p.x + c.radius - c.cx, y: p.y + c.radius - c.cy };
     const boxes = c.items.map((item) => ({
       ...graph.byId.get(item.id),
@@ -1090,7 +1275,11 @@ async function clusteredLayout(elk, graph, state) {
       ? { x: 0, y: 0 }
       : placeCircle(
           radius,
-          occupied.map((p) => ({ x: p.x - center.x, y: p.y - center.y, radius: p.radius })),
+          occupied.map((p) => ({
+            x: p.x - center.x,
+            y: p.y - center.y,
+            radius: p.radius,
+          })),
         );
     let dx = move.x,
       dy = move.y;
@@ -1130,7 +1319,11 @@ async function clusteredLayout(elk, graph, state) {
       bounds: { ...bounds, x: bounds.x + dx, y: bounds.y + dy },
     });
     for (const b of boxes)
-      result[b.id] = { x: b.x + dx, y: b.y + dy, pinned: !!state.positions[b.id]?.pinned };
+      result[b.id] = {
+        x: b.x + dx,
+        y: b.y + dy,
+        pinned: !!state.positions[b.id]?.pinned,
+      };
   }
   return result;
 }
@@ -1228,7 +1421,12 @@ export class GraphGesture {
     if (Math.hypot(dx, dy) > 4) a.moved = true;
     if (!a.moved) return null;
     return a.node
-      ? { kind: "node", id: a.node.id, x: a.node.x + dx / a.scale, y: a.node.y + dy / a.scale }
+      ? {
+          kind: "node",
+          id: a.node.id,
+          x: a.node.x + dx / a.scale,
+          y: a.node.y + dy / a.scale,
+        }
       : { kind: "pan", x: a.pan.x + dx, y: a.pan.y + dy };
   }
   end(pointerId) {
