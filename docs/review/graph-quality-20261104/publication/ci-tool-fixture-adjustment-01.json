@@ -1,0 +1,14 @@
+{
+  "scope": "Initial new legacy-console test fixture; not the product failure",
+  "initial_command": ".venv/Scripts/python.exe -B -X utf8 tests/test_source_quality.py",
+  "initial_result": "failed: the sandbox-global TemporaryDirectory was inaccessible to the child process",
+  "retained_diagnostic": "PermissionError: [Errno 13] Permission denied while writing source-report.json under sandbox AC/Temp",
+  "repair": "Use the established repository-local .validation temporary-directory pattern",
+  "final_evidence": "../ci-tool-portability-regression-01.json",
+  "assertions_retained": [
+    "cp1252 strict console",
+    "ASCII strict console",
+    "successful formatter Unicode output",
+    "nonzero underlying tool exit and JSON report"
+  ]
+}

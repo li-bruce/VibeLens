@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import os
 import tempfile
 from pathlib import Path
 import subprocess
@@ -16,16 +17,59 @@ sys.path.insert(0, str(ROOT / "skills/vibelens/scripts"))
 
 
 class SourceQualityTests(unittest.TestCase):
+    def test_legacy_console_preserves_unicode_output_and_failing_tool_exit(self):
+        """Formatter Unicode must not crash the CLI or hide an actual lint failure."""
+        script = """
+import runpy
+import subprocess
+import sys
+sys.path.insert(0, 'tools')
+import source_scope
+source_scope.owned_sources = lambda: {'python': [], 'javascript': [], 'presentation': []}
+failure = int(sys.argv[1])
+report = sys.argv[2]
+def tool(command, **kwargs):
+    code = failure if command[0] == 'node' else 0
+    return subprocess.CompletedProcess(command, code, 'All done! \\u2728 \\U0001f370\\n', '')
+subprocess.run = tool
+sys.argv = ['tools/check_source.py', '--format', '--out', report]
+runpy.run_path('tools/check_source.py', run_name='__main__')
+"""
+        (ROOT / ".validation").mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
+            for encoding in ("cp1252:strict", "ascii:strict"):
+                for failure in (0, 23):
+                    with self.subTest(encoding=encoding, tool_exit=failure):
+                        report_path = Path(folder) / "source-report.json"
+                        environment = os.environ.copy()
+                        environment["PYTHONUTF8"] = "0"
+                        environment["PYTHONIOENCODING"] = encoding
+                        result = subprocess.run(
+                            [sys.executable, "-c", script, str(failure), str(report_path)],
+                            capture_output=True,
+                            cwd=ROOT,
+                            env=environment,
+                        )
+                        self.assertEqual(result.returncode, 1 if failure else 0, result.stderr)
+                        self.assertIn("All done! \u2728 \U0001f370", result.stdout.decode("utf-8"))
+                        report = json.loads(report_path.read_text(encoding="utf-8"))
+                        self.assertEqual(report["valid"], failure == 0)
+                        self.assertEqual(
+                            [check["exit_code"] for check in report["checks"]], [0, failure, 0]
+                        )
+                        self.assertTrue(
+                            all(
+                                "\u2728 \U0001f370" in check["output"] for check in report["checks"]
+                            )
+                        )
+
     def test_vendor_and_generated_code_are_outside_owned_scope(self):
         groups = owned_sources()
         names = groups["python"] + groups["javascript"] + groups["presentation"]
         self.assertGreater(len(groups["python"]), 90)
         self.assertIn("skills/vibelens/assets/stategraph-viewer/detail-panel.js", names)
         self.assertFalse(
-            any(
-                ".vendor." in n or "/node_modules/" in n or "/.release/" in n
-                for n in names
-            )
+            any(".vendor." in n or "/node_modules/" in n or "/.release/" in n for n in names)
         )
         self.assertFalse(any(n.endswith("node-icons.js") for n in names))
 
@@ -82,13 +126,7 @@ class SourceQualityTests(unittest.TestCase):
             source.write_text("value = 1\n", encoding="utf-8")
             manifest = root / "bo_stategraph/sources.json"
             manifest.write_text(
-                json.dumps(
-                    {
-                        "files": {
-                            "app.py": hashlib.sha256(source.read_bytes()).hexdigest()
-                        }
-                    }
-                ),
+                json.dumps({"files": {"app.py": hashlib.sha256(source.read_bytes()).hexdigest()}}),
                 encoding="utf-8",
             )
             verify_mode_bindings(root)

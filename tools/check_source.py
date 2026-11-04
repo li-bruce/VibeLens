@@ -15,6 +15,12 @@ from source_scope import ROOT, owned_sources
 
 def check_source(*, formatting=False, out=None):
     """Run pinned lint tools and return nonzero if any source or dependency fails."""
+    # Windows CI may expose a legacy code page even though formatter output is
+    # UTF-8. Preserve that output instead of failing while printing Black's emoji.
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            reconfigure(encoding="utf-8", errors="backslashreplace")
     groups = owned_sources()
     for name in groups["python"]:
         ast.parse((ROOT / name).read_text(encoding="utf-8-sig"), filename=name)

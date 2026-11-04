@@ -1,0 +1,356 @@
+2026-11-04T05:33:08.2142109Z Current runner version: '2.338.2'
+2026-11-04T05:33:08.2162075Z ##[group]Runner Image Provisioner
+2026-11-04T05:33:08.2162865Z Hosted Compute Agent
+2026-11-04T05:33:08.2163352Z Version: 20261021.618
+2026-11-04T05:33:08.2164231Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-04T05:33:08.2165023Z Build Date: 2026-10-21T00:45:21Z
+2026-11-04T05:33:08.2165589Z Worker ID: {2a36fb71-0d7f-475d-a07e-0f372978582b}
+2026-11-04T05:33:08.2166224Z Region: westus
+2026-11-04T05:33:08.2166676Z Cloud: Azure
+2026-11-04T05:33:08.2167107Z ##[endgroup]
+2026-11-04T05:33:08.2168261Z ##[group]Operating System
+2026-11-04T05:33:08.2168791Z Ubuntu
+2026-11-04T05:33:08.2169263Z 26.04.1
+2026-11-04T05:33:08.2169702Z LTS
+2026-11-04T05:33:08.2170150Z ##[endgroup]
+2026-11-04T05:33:08.2170696Z ##[group]Runner Image
+2026-11-04T05:33:08.2171192Z Image: ubuntu-26.04
+2026-11-04T05:33:08.2171704Z Version: 20261025.179.1
+2026-11-04T05:33:08.2172746Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261025.179/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-04T05:33:08.2174033Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261025.179
+2026-11-04T05:33:08.2174998Z ##[endgroup]
+2026-11-04T05:33:08.2175915Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T05:33:08.2177431Z Contents: read
+2026-11-04T05:33:08.2177976Z Metadata: read
+2026-11-04T05:33:08.2178477Z ##[endgroup]
+2026-11-04T05:33:08.2180087Z Secret source: Actions
+2026-11-04T05:33:08.2180922Z Cache mode: write
+2026-11-04T05:33:08.2181472Z Prepare workflow directory
+2026-11-04T05:33:08.2433452Z Prepare all required actions
+2026-11-04T05:33:08.2471594Z Getting action download info
+2026-11-04T05:33:08.5773604Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-04T05:33:08.6799372Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-04T05:33:08.7556850Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-04T05:33:08.8419971Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-04T05:33:09.0416569Z Complete job name: timeline-browser
+2026-11-04T05:33:09.1128251Z ##[group]Run actions/checkout@v4
+2026-11-04T05:33:09.1128906Z with:
+2026-11-04T05:33:09.1129265Z   repository: li-bruce/VibeLens
+2026-11-04T05:33:09.1132536Z   token: ***
+2026-11-04T05:33:09.1132880Z   ssh-strict: true
+2026-11-04T05:33:09.1133227Z   ssh-user: git
+2026-11-04T05:33:09.1133586Z   persist-credentials: true
+2026-11-04T05:33:09.1133965Z   clean: true
+2026-11-04T05:33:09.1134322Z   sparse-checkout-cone-mode: true
+2026-11-04T05:33:09.1134882Z   fetch-depth: 1
+2026-11-04T05:33:09.1135227Z   fetch-tags: false
+2026-11-04T05:33:09.1135584Z   show-progress: true
+2026-11-04T05:33:09.1135937Z   lfs: false
+2026-11-04T05:33:09.1136266Z   submodules: false
+2026-11-04T05:33:09.1136621Z   set-safe-directory: true
+2026-11-04T05:33:09.1137022Z   allow-unsafe-pr-checkout: false
+2026-11-04T05:33:09.1137602Z ##[endgroup]
+2026-11-04T05:33:09.3505302Z Syncing repository: li-bruce/VibeLens
+2026-11-04T05:33:09.3507326Z ##[group]Getting Git version info
+2026-11-04T05:33:09.3508259Z Working directory is '/home/runner/work/VibeLens/VibeLens'
+2026-11-04T05:33:09.3509455Z [command]/usr/bin/git version
+2026-11-04T05:33:09.3510091Z git version 2.56.0
+2026-11-04T05:33:09.3512005Z ##[endgroup]
+2026-11-04T05:33:09.3516820Z Temporarily overriding HOME='/home/runner/work/_temp/138537a3-6f51-419f-94bf-a9524ac632dc' before making global git config changes
+2026-11-04T05:33:09.3518538Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T05:33:09.3519924Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/VibeLens/VibeLens
+2026-11-04T05:33:09.3545692Z Deleting the contents of '/home/runner/work/VibeLens/VibeLens'
+2026-11-04T05:33:09.3546901Z ##[group]Initializing the repository
+2026-11-04T05:33:09.3547466Z [command]/usr/bin/git init /home/runner/work/VibeLens/VibeLens
+2026-11-04T05:33:09.3646702Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T05:33:09.3648347Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T05:33:09.3649762Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T05:33:09.3650935Z hint: call:
+2026-11-04T05:33:09.3651581Z hint:
+2026-11-04T05:33:09.3652294Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T05:33:09.3653135Z hint:
+2026-11-04T05:33:09.3653927Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T05:33:09.3655284Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T05:33:09.3656361Z hint:
+2026-11-04T05:33:09.3656955Z hint: 	git branch -m <name>
+2026-11-04T05:33:09.3657636Z hint:
+2026-11-04T05:33:09.3658488Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T05:33:09.3659935Z Initialized empty Git repository in /home/runner/work/VibeLens/VibeLens/.git/
+2026-11-04T05:33:09.3675998Z [command]/usr/bin/git remote add origin https://github.com/li-bruce/VibeLens
+2026-11-04T05:33:09.3711909Z ##[endgroup]
+2026-11-04T05:33:09.3712883Z ##[group]Disabling automatic garbage collection
+2026-11-04T05:33:09.3715697Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T05:33:09.3745042Z ##[endgroup]
+2026-11-04T05:33:09.3745914Z ##[group]Setting up auth
+2026-11-04T05:33:09.3750009Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T05:33:09.3777649Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T05:33:09.4180773Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T05:33:09.4210474Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T05:33:09.4441842Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T05:33:09.4470474Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T05:33:09.4699689Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T05:33:09.4733727Z ##[endgroup]
+2026-11-04T05:33:09.4734448Z ##[group]Fetching the repository
+2026-11-04T05:33:09.4741137Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +092514751e3caeec8f25675bfaea40f74fe15860:refs/tags/v0.11.0
+2026-11-04T05:33:26.8231758Z From https://github.com/li-bruce/VibeLens
+2026-11-04T05:33:26.8232350Z  * [new ref]         092514751e3caeec8f25675bfaea40f74fe15860 -> v0.11.0
+2026-11-04T05:33:26.8236375Z ##[endgroup]
+2026-11-04T05:33:26.8236954Z ##[group]Determining the checkout info
+2026-11-04T05:33:26.8238342Z ##[endgroup]
+2026-11-04T05:33:26.8243382Z [command]/usr/bin/git sparse-checkout disable
+2026-11-04T05:33:26.8288460Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-04T05:33:26.8317129Z ##[group]Checking out the ref
+2026-11-04T05:33:26.8317567Z [command]/usr/bin/git checkout --progress --force refs/tags/v0.11.0
+2026-11-04T05:33:27.8639053Z Updating files:  19% (3235/16628)
+2026-11-04T05:33:27.9176255Z Updating files:  20% (3326/16628)
+2026-11-04T05:33:28.0022190Z Updating files:  21% (3492/16628)
+2026-11-04T05:33:28.1685493Z Updating files:  22% (3659/16628)
+2026-11-04T05:33:28.2405080Z Updating files:  23% (3825/16628)
+2026-11-04T05:33:28.3342275Z Updating files:  24% (3991/16628)
+2026-11-04T05:33:28.3473821Z Updating files:  25% (4157/16628)
+2026-11-04T05:33:28.3835444Z Updating files:  26% (4324/16628)
+2026-11-04T05:33:28.4096574Z Updating files:  27% (4490/16628)
+2026-11-04T05:33:28.4169535Z Updating files:  28% (4656/16628)
+2026-11-04T05:33:28.4418789Z Updating files:  29% (4823/16628)
+2026-11-04T05:33:28.4687128Z Updating files:  30% (4989/16628)
+2026-11-04T05:33:28.5020073Z Updating files:  31% (5155/16628)
+2026-11-04T05:33:28.5516583Z Updating files:  32% (5321/16628)
+2026-11-04T05:33:28.6098640Z Updating files:  33% (5488/16628)
+2026-11-04T05:33:28.6557006Z Updating files:  34% (5654/16628)
+2026-11-04T05:33:28.6890293Z Updating files:  35% (5820/16628)
+2026-11-04T05:33:28.7402898Z Updating files:  36% (5987/16628)
+2026-11-04T05:33:28.7878442Z Updating files:  37% (6153/16628)
+2026-11-04T05:33:28.8125681Z Updating files:  38% (6319/16628)
+2026-11-04T05:33:28.8220934Z Updating files:  39% (6485/16628)
+2026-11-04T05:33:28.8385810Z Updating files:  40% (6652/16628)
+2026-11-04T05:33:28.8596578Z Updating files:  41% (6818/16628)
+2026-11-04T05:33:28.8757972Z Updating files:  41% (6819/16628)
+2026-11-04T05:33:28.8972466Z Updating files:  42% (6984/16628)
+2026-11-04T05:33:29.0672321Z Updating files:  43% (7151/16628)
+2026-11-04T05:33:29.1441124Z Updating files:  44% (7317/16628)
+2026-11-04T05:33:29.1497776Z Updating files:  45% (7483/16628)
+2026-11-04T05:33:29.1725540Z Updating files:  46% (7649/16628)
+2026-11-04T05:33:29.2277649Z Updating files:  47% (7816/16628)
+2026-11-04T05:33:29.2813536Z Updating files:  48% (7982/16628)
+2026-11-04T05:33:29.3058337Z Updating files:  49% (8148/16628)
+2026-11-04T05:33:29.3350668Z Updating files:  50% (8314/16628)
+2026-11-04T05:33:29.4708994Z Updating files:  51% (8481/16628)
+2026-11-04T05:33:29.4941570Z Updating files:  52% (8647/16628)
+2026-11-04T05:33:29.5169947Z Updating files:  53% (8813/16628)
+2026-11-04T05:33:29.5595057Z Updating files:  54% (8980/16628)
+2026-11-04T05:33:29.5828210Z Updating files:  55% (9146/16628)
+2026-11-04T05:33:29.6604213Z Updating files:  56% (9312/16628)
+2026-11-04T05:33:29.6946303Z Updating files:  57% (9478/16628)
+2026-11-04T05:33:29.7384676Z Updating files:  58% (9645/16628)
+2026-11-04T05:33:29.7656075Z Updating files:  59% (9811/16628)
+2026-11-04T05:33:29.8012097Z Updating files:  60% (9977/16628)
+2026-11-04T05:33:29.8374509Z Updating files:  61% (10144/16628)
+2026-11-04T05:33:29.8451305Z Updating files:  62% (10310/16628)
+2026-11-04T05:33:29.8676867Z Updating files:  62% (10375/16628)
+2026-11-04T05:33:29.9150787Z Updating files:  63% (10476/16628)
+2026-11-04T05:33:29.9679187Z Updating files:  64% (10642/16628)
+2026-11-04T05:33:29.9934677Z Updating files:  65% (10809/16628)
+2026-11-04T05:33:30.0249881Z Updating files:  66% (10975/16628)
+2026-11-04T05:33:30.0660235Z Updating files:  67% (11141/16628)
+2026-11-04T05:33:30.0986470Z Updating files:  68% (11308/16628)
+2026-11-04T05:33:30.1193491Z Updating files:  69% (11474/16628)
+2026-11-04T05:33:30.1556721Z Updating files:  70% (11640/16628)
+2026-11-04T05:33:30.2324960Z Updating files:  71% (11806/16628)
+2026-11-04T05:33:30.2971982Z Updating files:  72% (11973/16628)
+2026-11-04T05:33:30.3584124Z Updating files:  73% (12139/16628)
+2026-11-04T05:33:30.3928956Z Updating files:  74% (12305/16628)
+2026-11-04T05:33:30.4439680Z Updating files:  75% (12471/16628)
+2026-11-04T05:33:30.4683939Z Updating files:  76% (12638/16628)
+2026-11-04T05:33:30.5377416Z Updating files:  77% (12804/16628)
+2026-11-04T05:33:30.5970195Z Updating files:  78% (12970/16628)
+2026-11-04T05:33:30.6514155Z Updating files:  79% (13137/16628)
+2026-11-04T05:33:30.6915363Z Updating files:  80% (13303/16628)
+2026-11-04T05:33:30.7775233Z Updating files:  81% (13469/16628)
+2026-11-04T05:33:30.8135592Z Updating files:  82% (13635/16628)
+2026-11-04T05:33:30.8249215Z Updating files:  83% (13802/16628)
+2026-11-04T05:33:30.8413609Z Updating files:  84% (13968/16628)
+2026-11-04T05:33:30.8481831Z Updating files:  85% (14134/16628)
+2026-11-04T05:33:30.9153927Z Updating files:  85% (14144/16628)
+2026-11-04T05:33:30.9894295Z Updating files:  86% (14301/16628)
+2026-11-04T05:33:31.0621616Z Updating files:  87% (14467/16628)
+2026-11-04T05:33:31.1192731Z Updating files:  88% (14633/16628)
+2026-11-04T05:33:31.2033864Z Updating files:  89% (14799/16628)
+2026-11-04T05:33:31.2933016Z Updating files:  90% (14966/16628)
+2026-11-04T05:33:31.7646906Z Updating files:  91% (15132/16628)
+2026-11-04T05:33:31.8521014Z Updating files:  92% (15298/16628)
+2026-11-04T05:33:32.1503003Z Updating files:  92% (15330/16628)
+2026-11-04T05:33:32.3092073Z Updating files:  93% (15465/16628)
+2026-11-04T05:33:32.3387904Z Updating files:  94% (15631/16628)
+2026-11-04T05:33:32.3825795Z Updating files:  95% (15797/16628)
+2026-11-04T05:33:32.4253440Z Updating files:  96% (15963/16628)
+2026-11-04T05:33:32.4707444Z Updating files:  97% (16130/16628)
+2026-11-04T05:33:32.4805061Z Updating files:  98% (16296/16628)
+2026-11-04T05:33:32.4895707Z Updating files:  99% (16462/16628)
+2026-11-04T05:33:32.4896078Z Updating files: 100% (16628/16628)
+2026-11-04T05:33:32.4896431Z Updating files: 100% (16628/16628), done.
+2026-11-04T05:33:32.5778552Z Note: switching to 'refs/tags/v0.11.0'.
+2026-11-04T05:33:32.5778939Z 
+2026-11-04T05:33:32.5779309Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-04T05:33:32.5779803Z changes and commit them, and you can discard any commits you make in this
+2026-11-04T05:33:32.5780298Z state without impacting any branches by switching back to a branch.
+2026-11-04T05:33:32.5780630Z 
+2026-11-04T05:33:32.5780884Z If you want to create a new branch to retain commits you create, you may
+2026-11-04T05:33:32.5781343Z do so (now or later) by using -c with the switch command. Example:
+2026-11-04T05:33:32.5781640Z 
+2026-11-04T05:33:32.5781839Z   git switch -c <new-branch-name>
+2026-11-04T05:33:32.5782083Z 
+2026-11-04T05:33:32.5782263Z Or undo this operation with:
+2026-11-04T05:33:32.5782496Z 
+2026-11-04T05:33:32.5782667Z   git switch -
+2026-11-04T05:33:32.5782872Z 
+2026-11-04T05:33:32.5783145Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-04T05:33:32.5783479Z 
+2026-11-04T05:33:32.5783814Z HEAD is now at 0925147 release: publish VibeLens v0.11.0 graph and API observation fixes
+2026-11-04T05:33:32.5949162Z ##[endgroup]
+2026-11-04T05:33:32.6256340Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T05:33:32.6280530Z 092514751e3caeec8f25675bfaea40f74fe15860
+2026-11-04T05:33:32.7241601Z ##[group]Run actions/setup-python@v5
+2026-11-04T05:33:32.7241836Z with:
+2026-11-04T05:33:32.7242006Z   python-version: 3.13
+2026-11-04T05:33:32.7242199Z   check-latest: false
+2026-11-04T05:33:32.7244251Z   token: ***
+2026-11-04T05:33:32.7244430Z   update-environment: true
+2026-11-04T05:33:32.7244626Z   allow-prereleases: false
+2026-11-04T05:33:32.7244963Z   freethreaded: false
+2026-11-04T05:33:32.7245135Z ##[endgroup]
+2026-11-04T05:33:33.0364064Z ##[group]Installed versions
+2026-11-04T05:33:33.0466431Z (node:2190) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T05:33:33.0467289Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T05:33:33.0467797Z Successfully set up CPython (3.13.17)
+2026-11-04T05:33:33.0468432Z ##[endgroup]
+2026-11-04T05:33:33.0838437Z ##[group]Run python -m pip install -r skills/vibelens/requirements.txt
+2026-11-04T05:33:33.0838926Z [36;1mpython -m pip install -r skills/vibelens/requirements.txt[0m
+2026-11-04T05:33:33.1357785Z shell: /usr/bin/bash -e {0}
+2026-11-04T05:33:33.1358012Z env:
+2026-11-04T05:33:33.1358245Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:33.1358589Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T05:33:33.1358919Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:33.1359218Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:33.1359521Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:33.1359814Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T05:33:33.1360068Z ##[endgroup]
+2026-11-04T05:33:34.3695917Z Collecting jsonschema==4.25.1 (from -r skills/vibelens/requirements.txt (line 2))
+2026-11-04T05:33:34.4151772Z   Downloading jsonschema-4.25.1-py3-none-any.whl.metadata (7.6 kB)
+2026-11-04T05:33:34.6024640Z Collecting attrs>=22.2.0 (from jsonschema==4.25.1->-r skills/vibelens/requirements.txt (line 2))
+2026-11-04T05:33:34.6137191Z   Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+2026-11-04T05:33:34.9821743Z Collecting jsonschema-specifications>=2023.03.6 (from jsonschema==4.25.1->-r skills/vibelens/requirements.txt (line 2))
+2026-11-04T05:33:34.9936189Z   Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+2026-11-04T05:33:35.0880306Z Collecting referencing>=0.28.4 (from jsonschema==4.25.1->-r skills/vibelens/requirements.txt (line 2))
+2026-11-04T05:33:35.1001762Z   Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+2026-11-04T05:33:35.8101910Z Collecting rpds-py>=0.7.1 (from jsonschema==4.25.1->-r skills/vibelens/requirements.txt (line 2))
+2026-11-04T05:33:35.8215271Z   Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
+2026-11-04T05:33:36.0652374Z Downloading jsonschema-4.25.1-py3-none-any.whl (90 kB)
+2026-11-04T05:33:36.1116272Z Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+2026-11-04T05:33:36.2321606Z Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+2026-11-04T05:33:36.4332219Z Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+2026-11-04T05:33:36.4721786Z Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (370 kB)
+2026-11-04T05:33:36.7265781Z Installing collected packages: rpds-py, attrs, referencing, jsonschema-specifications, jsonschema
+2026-11-04T05:33:37.4004296Z 
+2026-11-04T05:33:37.4017175Z Successfully installed attrs-26.1.0 jsonschema-4.25.1 jsonschema-specifications-2025.9.1 referencing-0.37.0 rpds-py-2026.9.1
+2026-11-04T05:33:37.4024037Z 
+2026-11-04T05:33:37.4024319Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-04T05:33:37.4025000Z [notice] To update, run: pip install --upgrade pip
+2026-11-04T05:33:37.5322482Z ##[group]Run actions/setup-node@v4
+2026-11-04T05:33:37.5322713Z with:
+2026-11-04T05:33:37.5322874Z   node-version: 22
+2026-11-04T05:33:37.5323048Z   always-auth: false
+2026-11-04T05:33:37.5323225Z   check-latest: false
+2026-11-04T05:33:37.5325523Z   token: ***
+2026-11-04T05:33:37.5325694Z env:
+2026-11-04T05:33:37.5325904Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:37.5326237Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T05:33:37.5326565Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:37.5326858Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:37.5327154Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:37.5327443Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T05:33:37.5327699Z ##[endgroup]
+2026-11-04T05:33:37.6458996Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-04T05:33:37.6463035Z (node:2225) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T05:33:37.6463901Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T05:33:37.6465493Z ##[group]Environment details
+2026-11-04T05:33:37.9892735Z node: v22.23.4
+2026-11-04T05:33:37.9893049Z npm: 10.9.9
+2026-11-04T05:33:37.9893545Z yarn: 1.22.22
+2026-11-04T05:33:37.9912737Z ##[endgroup]
+2026-11-04T05:33:38.0005591Z ##[group]Run npm install --no-save --no-package-lock playwright@1.56.1
+2026-11-04T05:33:38.0005999Z [36;1mnpm install --no-save --no-package-lock playwright@1.56.1[0m
+2026-11-04T05:33:38.0040875Z shell: /usr/bin/bash -e {0}
+2026-11-04T05:33:38.0041079Z env:
+2026-11-04T05:33:38.0041302Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:38.0041650Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T05:33:38.0041988Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:38.0042442Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:38.0042731Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:38.0043030Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T05:33:38.0043283Z ##[endgroup]
+2026-11-04T05:33:39.7392449Z 
+2026-11-04T05:33:39.7397211Z added 2 packages in 2s
+2026-11-04T05:33:39.7592455Z ##[group]Run npx playwright install --with-deps chromium
+2026-11-04T05:33:39.7592808Z [36;1mnpx playwright install --with-deps chromium[0m
+2026-11-04T05:33:39.7622734Z shell: /usr/bin/bash -e {0}
+2026-11-04T05:33:39.7622931Z env:
+2026-11-04T05:33:39.7623149Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:39.7623489Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T05:33:39.7623825Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:39.7624127Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:39.7624433Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:39.7624937Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T05:33:39.7625304Z ##[endgroup]
+2026-11-04T05:33:40.4394089Z BEWARE: your OS is not officially supported by Playwright; installing dependencies for ubuntu26.04-x64 as a fallback.
+2026-11-04T05:33:40.4395785Z Cannot install dependencies for ubuntu26.04-x64 with Playwright 1.56.1!
+2026-11-04T05:33:40.4446792Z Failed to install browsers
+2026-11-04T05:33:40.4447486Z Error: ERROR: Playwright does not support chromium on ubuntu26.04-x64
+2026-11-04T05:33:40.4660990Z ##[error]Process completed with exit code 1.
+2026-11-04T05:33:40.4754461Z ##[group]Run actions/upload-artifact@v4
+2026-11-04T05:33:40.4754688Z with:
+2026-11-04T05:33:40.4755040Z   name: recording-timeline-browser
+2026-11-04T05:33:40.4755673Z   path: .validation/timeline-*
+.validation/semantic-names-*
+.validation/lifecycle-*
+.validation/execution-*
+.validation/caption-*
+.validation/graph-quality-browser
+.validation/api-observation-browser
+
+2026-11-04T05:33:40.4756301Z   if-no-files-found: warn
+2026-11-04T05:33:40.4756508Z   compression-level: 6
+2026-11-04T05:33:40.4756688Z   overwrite: false
+2026-11-04T05:33:40.4756864Z   include-hidden-files: false
+2026-11-04T05:33:40.4757056Z env:
+2026-11-04T05:33:40.4757256Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:40.4757588Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib/pkgconfig
+2026-11-04T05:33:40.4757910Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:40.4758211Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:40.4758511Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.17/x64
+2026-11-04T05:33:40.4758805Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.17/x64/lib
+2026-11-04T05:33:40.4759056Z ##[endgroup]
+2026-11-04T05:33:40.6079283Z (node:2295) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T05:33:40.6079943Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T05:33:40.6118298Z ##[warning]No files were found with the provided path: .validation/timeline-*
+.validation/semantic-names-*
+.validation/lifecycle-*
+.validation/execution-*
+.validation/caption-*
+.validation/graph-quality-browser
+.validation/api-observation-browser. No artifacts will be uploaded.
+2026-11-04T05:33:40.6295443Z Post job cleanup.
+2026-11-04T05:33:40.7022801Z [command]/usr/bin/git version
+2026-11-04T05:33:40.7059366Z git version 2.56.0
+2026-11-04T05:33:40.7091411Z Temporarily overriding HOME='/home/runner/work/_temp/95693ea4-9435-4e93-a75c-086497e47e0e' before making global git config changes
+2026-11-04T05:33:40.7092453Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T05:33:40.7095935Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/VibeLens/VibeLens
+2026-11-04T05:33:40.7129267Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T05:33:40.7159736Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T05:33:40.7471660Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T05:33:40.7493632Z http.https://github.com/.extraheader
+2026-11-04T05:33:40.7503434Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-04T05:33:40.7544976Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T05:33:40.7821182Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T05:33:40.7849850Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T05:33:40.8222529Z Cleaning up orphan processes
+2026-11-04T05:33:40.8551739Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
