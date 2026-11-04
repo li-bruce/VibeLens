@@ -3,6 +3,7 @@
  */
 import { callKey, callScope, referencedParent } from "./trace-evidence.js";
 import { lifecycleTransition, lifecycleBoundary } from "./node-lifecycle.js";
+import { projectAPIIntervals } from "./api-observation.js";
 
 export function traceLifecycles(items, all, { projections = true, registeredOnly = false } = {}) {
   const opened = new Map(),
@@ -175,6 +176,7 @@ export function traceLifecycles(items, all, { projections = true, registeredOnly
         ...observed.slices.map((slice) => ({ ...slice, role: "registered", source_node: owner })),
       );
     }
+  if (projections) slices.push(...projectAPIIntervals(slices, all.values()));
   return { slices, links };
 }
 

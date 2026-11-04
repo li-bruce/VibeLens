@@ -12,11 +12,13 @@ from .index import build, identity
 from .file_dependencies import file_units
 from .query import query, representation_links
 from .filesystem import inventory as project_inventory
+from .observation import qualify
+from ..observation.telemetry import load_registrations
 
 
 class CodeGraph:
     def __init__(self, root, *, persist=True):
-        self.root = Path(root).resolve()
+        self.root = Path(root).absolute().resolve()
         self.lock = threading.RLock()
         self.previous = None
         self.graph = None
@@ -66,13 +68,14 @@ class CodeGraph:
         """Check file bytes on demand; parse only changed units and invalidate deletions."""
         with self.lock:
             cfg, model = self.inputs()
+            telemetry = load_registrations(self.root, model)
             inventory = source_inventory(self.root, cfg)
             project = project_inventory(self.root, cfg, inventory)
             # Source inventory reports hidden implementation separately from parser errors.
             fingerprint = digest([inventory, project])
             from ..sources import adapter_identity
 
-            fingerprint = digest([fingerprint, adapter_identity()])
+            fingerprint = digest([fingerprint, adapter_identity(), model, telemetry])
             if self.graph is None or fingerprint != self.fingerprint:
                 index = scan(self.root, inventory["files"], self.previous)
                 index["errors"] += [
@@ -85,6 +88,7 @@ class CodeGraph:
                 ]
                 index["errors"] += project["errors"]
                 self.previous, self.graph = index, build(index, project, self.root)
+                self.graph = qualify(self.graph, model, telemetry)
                 self.graph["scope"] = {
                     "files": list(inventory["files"]),
                     "excluded": inventory["excluded"],
@@ -106,6 +110,131 @@ class CodeGraph:
             result = query(graph, model, **options)
             result["scope"] = graph["scope"]
             return result
+
+    def api_snapshot(self):
+        """Return exact HTTP endpoints for mandatory live/recording context.
+
+        Native capture nodes already belong to the authored model. Only their
+        qualified mapping edges are added; file/function expansion stays optional.
+        The caller's persist=False policy is respected by the shared refresh.
+        """
+        with self.lock:
+            graph, model = self.refresh()
+            endpoints = [
+                deepcopy(node) for node in graph["nodes"] if node.get("code_role") == "endpoint"
+            ]
+            selected = {node["id"] for node in endpoints}
+            links = []
+            for endpoint in endpoints:
+                for source in endpoint.get("observation_sources", []):
+                    links.append(
+                        {
+                            "id": identity(
+                                "http-observation",
+                                [source["node"], endpoint["id"], source["method"], source["route"]],
+                            ),
+                            "from": source["node"],
+                            "to": endpoint["id"],
+                            "type": "data",
+                            "code_relation": "maps",
+                            "mapping_role": "http-observation",
+                            "label": "HTTP observation",
+                            "origin": "code-index",
+                            "evidence": deepcopy(source),
+                        }
+                    )
+            return {
+                "schema": graph["schema"],
+                "revision": graph["revision"],
+                "nodes": endpoints,
+                "edges": links,
+                "bindings": {
+                    key: deepcopy(value)
+                    for key, value in graph["bindings"].items()
+                    if key in selected
+                },
+                "endpoint_aliases": {
+                    key: value
+                    for key, value in graph.get("endpoint_aliases", {}).items()
+                    if value in selected
+                },
+                "observation_issues": deepcopy(graph.get("observation_issues", [])),
+                "errors": deepcopy(graph["errors"]),
+                "scope": graph["scope"],
+            }
+
+    def api_observation_check(self, *, require_complete=False):
+        """Report exact selected HTTP mapping gaps independently of code-cache use."""
+        from .observation import http_selector
+
+        snapshot = self.api_snapshot()
+        _, model = self.inputs()
+        configuration = load_registrations(self.root, model)
+        authored = {node["id"]: node for node in model["nodes"]}
+        configured = any(
+            authored[item["node"]].get("layer") == "api" or http_selector(item["match"]) is not None
+            for item in (configuration or {}).get("registrations", [])
+        )
+        issues = snapshot["observation_issues"]
+        observed = [node["id"] for node in snapshot["nodes"] if node.get("observation_projection")]
+        unobserved = [
+            node["id"] for node in snapshot["nodes"] if not node.get("observation_projection")
+        ]
+        incomplete_methods = [
+            {
+                "endpoint": node["id"],
+                "methods": sorted(
+                    set(node["api"].get("methods", []))
+                    - {source["method"] for source in node.get("observation_sources", [])}
+                ),
+            }
+            for node in snapshot["nodes"]
+            if set(node["api"].get("methods", []))
+            - {source["method"] for source in node.get("observation_sources", [])}
+        ]
+        missing = (
+            sorted(set(unobserved) | {item["endpoint"] for item in incomplete_methods})
+            if require_complete
+            else []
+        )
+        errors = deepcopy(snapshot["errors"]) if configured or require_complete else []
+        errors.extend({"http_observation_mapping": issue} for issue in issues)
+        errors.extend({"unobserved_api_route": identifier} for identifier in missing)
+        valid = not errors
+        return {
+            "configured": configured,
+            "valid": valid,
+            "status": (
+                "failed"
+                if not valid
+                else (
+                    "passed"
+                    if configured
+                    else "not_configured" if snapshot["nodes"] else "not_applicable"
+                )
+            ),
+            "issues": issues,
+            "errors": errors,
+            "coverage": (
+                "complete"
+                if configured
+                and not issues
+                and not unobserved
+                and not incomplete_methods
+                and not snapshot["errors"]
+                else (
+                    "incomplete"
+                    if snapshot["nodes"] or configured or snapshot["errors"]
+                    else "not_applicable"
+                )
+            ),
+            "strict": require_complete,
+            "observed_routes": observed,
+            "unobserved_routes": unobserved,
+            "incomplete_methods": incomplete_methods,
+            "missing_routes": missing,
+            "revision": snapshot["revision"],
+        }
 
     def project_view(self, **options):
         """Expose files/containment independently of the optional symbol parser.
@@ -163,8 +292,13 @@ class CodeGraph:
                     raise ValueError("expected a nonempty code graph object")
             except (OSError, ValueError) as exc:
                 errors.append("Invalid saved code structure: " + str(exc))
-        fresh, _ = CodeGraph(self.root, persist=False).refresh()
+        fresh_service = CodeGraph(self.root, persist=False)
+        fresh, _ = fresh_service.refresh()
+        api_observation = fresh_service.api_observation_check()
         errors.extend(fresh["errors"])
+        errors.extend(
+            {"api_observation_mapping": issue} for issue in fresh.get("observation_issues", [])
+        )
         if isinstance(saved, dict):
             # Compare content as well as its claimed revision; reject tampering
             # that keeps the old fingerprint while removing a node or relation.
@@ -174,6 +308,9 @@ class CodeGraph:
                 "edges",
                 "bindings",
                 "symbols",
+                "endpoint_aliases",
+                "endpoint_registrations",
+                "observation_issues",
                 "files",
                 "project",
                 "scope",
@@ -190,7 +327,18 @@ class CodeGraph:
             "revision": fresh["revision"],
             "nodes": len(fresh["nodes"]),
             "edges": len(fresh["edges"]),
+            "api_observation": api_observation,
         }
+
+    def documentation(self, *, all_symbols=False):
+        """Read current parser facts; do not trust comments cached in graph nodes."""
+        from ..graph.source_documentation import report
+
+        with self.lock:
+            graph, model = self.refresh()
+            result = report(self.previous, model, all_symbols=all_symbols)
+            result["revision"] = graph["revision"]
+            return result
 
     def source(self, path, revision):
         """Only return an indexed project file from the exact requested revision."""
@@ -211,15 +359,39 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["scan", "query", "check"])
+    parser.add_argument("command", choices=["scan", "query", "check", "docs", "api-check"])
     parser.add_argument("--root", required=True)
     parser.add_argument("--focus")
     parser.add_argument("--depth", type=int, default=1)
     parser.add_argument("--limit", type=int, default=400)
     parser.add_argument("--projection", choices=["all", "project", "api"], default="all")
     parser.add_argument("--out")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Fail missing source comments or incomplete selected HTTP observation coverage",
+    )
+    parser.add_argument(
+        "--all", action="store_true", help="Check every source symbol and parameter"
+    )
     args = parser.parse_args()
-    service = CodeGraph(args.root, persist=args.command != "check")
+    service = CodeGraph(args.root, persist=args.command not in {"check", "api-check"})
+    if args.command == "api-check":
+        result = service.api_observation_check(require_complete=args.strict)
+        if args.out:
+            from ..workflow.sync_io import write
+
+            write(contained(service.root, args.out), result)
+        print(json.dumps(result, ensure_ascii=False))
+        return int(not result["valid"])
+    if args.command == "docs":
+        result = service.documentation(all_symbols=args.all)
+        if args.out:
+            from ..workflow.sync_io import write
+
+            write(contained(service.root, args.out), result)
+        print(json.dumps(result, ensure_ascii=False))
+        return int(bool(result["errors"]) or (args.strict and not result["valid"]))
     if args.command == "check":
         result = service.check()
         print(json.dumps(result, ensure_ascii=False))

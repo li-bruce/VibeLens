@@ -1,6 +1,6 @@
 /** Renderer adapters normalize geometry; routes never change the model's edges. */
 import { edgePorts } from "./layout.js";
-import { regionPort } from "./edge-routing.js";
+import { regionPort, regionVolume } from "./edge-routing.js";
 export function planarScene(graph, presentation, style, scale) {
   const obstacles = [];
   for (const id of presentation.glyphs) {
@@ -44,14 +44,23 @@ export function planarScene(graph, presentation, style, scale) {
     spatial: false,
     obstacles,
     edges,
-    parents: graph.boxes.map((b) => ({ id: b.id, parent: b.node.parent || null })),
+    parents: graph.boxes.map((b) => ({
+      id: b.id,
+      parent: b.node.parent || null,
+    })),
   };
 }
 export function spatialScene(model, positions, volumes, style) {
   const flat = (p) => ({ x: p.x, y: p.z, level: p.y });
   const obstacles = model.nodes
     .filter((n) => n.glyph && positions[n.id])
-    .map((n) => ({ key: "n:" + n.id, id: n.id, kind: "glyph", ...flat(positions[n.id]), r: 32 }));
+    .map((n) => ({
+      key: "n:" + n.id,
+      id: n.id,
+      kind: "glyph",
+      ...flat(positions[n.id]),
+      r: 32,
+    }));
   for (const v of volumes)
     obstacles.push({
       key: `r:${v.id}:${v.layer}`,
@@ -64,8 +73,8 @@ export function spatialScene(model, positions, volumes, style) {
     let a = positions[e.from],
       b = positions[e.to];
     if (!a || !b) return [];
-    const from = volumes.find((v) => v.id === e.from && !v.projection)?.center || a;
-    const to = volumes.find((v) => v.id === e.to && !v.projection)?.center || b;
+    const from = regionVolume(e.from, b, volumes)?.center || a;
+    const to = regionVolume(e.to, a, volumes)?.center || b;
     if (e.sourceRegion) a = regionPort(e.from, e.to, to, positions, volumes);
     if (e.targetRegion) b = regionPort(e.to, e.from, from, positions, volumes);
     return [

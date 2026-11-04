@@ -1,0 +1,148 @@
+{
+  "valid": true,
+  "baseline_sha256": "4b95f3fbf81c20f02e52e3fd8876016e13c41b08fa389502407129c94e530b73",
+  "candidate_id": "e686ebc92a023fa8fc68e5bc6a34c0915f4c3b9ef2b47938ef1c6b863981593c",
+  "frozen_change": "graph-quality-20261104-api-focus",
+  "source_change": "graph-quality-20261104",
+  "canonical_runtime_current": true,
+  "checks": [
+    {
+      "stage": "generate",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tooling/build_graph.py"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-delivery-api-focus-final-generate.log"
+    },
+    {
+      "stage": "seal",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/architecture_guard.py",
+        "seal",
+        "--root",
+        ".",
+        "--reason",
+        "Reviewed graph-quality viewer/API/source-mapping update, complete planar labels, explicit D3 packEnclose export and exact vendor hash; business/state definitions and expectations retained."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-delivery-api-focus-final-seal.log"
+    },
+    {
+      "stage": "scan",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/bo_sync.py",
+        "scan",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-delivery-api-focus-final-scan.log"
+    },
+    {
+      "stage": "inspect-before-review",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/change_sync.py",
+        "inspect",
+        "--root",
+        "."
+      ],
+      "exit_code": 1,
+      "expected_exit_code": [
+        0,
+        1
+      ],
+      "valid": true,
+      "log": "examples-delivery-api-focus-final-inspect-before-review.log"
+    },
+    {
+      "stage": "inspect",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/change_sync.py",
+        "inspect",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-delivery-api-focus-final-inspect.log"
+    },
+    {
+      "stage": "verify",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/change_sync.py",
+        "verify",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-delivery-api-focus-final-verify.log"
+    },
+    {
+      "stage": "accept",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/change_sync.py",
+        "accept",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-delivery-api-focus-final-accept.log"
+    },
+    {
+      "stage": "check",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/change_sync.py",
+        "check",
+        "--root",
+        "."
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "valid": true,
+      "log": "examples-delivery-api-focus-final-check.log"
+    }
+  ]
+}

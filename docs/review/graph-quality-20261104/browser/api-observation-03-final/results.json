@@ -1,0 +1,511 @@
+{
+  "basis": "serialized exact HTTP observation fixture; native browser controls",
+  "timeline": {
+    "eventId": "store-enter",
+    "raw": 3,
+    "window": {
+      "start": 0,
+      "end": 131
+    },
+    "range": null,
+    "rows": [
+      {
+        "id": "lane:execution:business-enter:business",
+        "layer": "business",
+        "group": "lane:execution:business-enter",
+        "groupStart": true,
+        "groupKind": "invocation",
+        "folded": false,
+        "members": [
+          "share"
+        ]
+      },
+      {
+        "id": "lane:execution:business-enter:api",
+        "layer": "api",
+        "group": "lane:execution:business-enter",
+        "groupStart": false,
+        "groupKind": "invocation",
+        "folded": false,
+        "members": [
+          "endpoint:files"
+        ]
+      },
+      {
+        "id": "lane:execution:business-enter:execution",
+        "layer": "execution",
+        "group": "lane:execution:business-enter",
+        "groupStart": false,
+        "groupKind": "invocation",
+        "folded": false,
+        "members": [
+          "api_get",
+          "store",
+          "api_post"
+        ]
+      },
+      {
+        "id": "lane:execution:business-enter:code",
+        "layer": "code",
+        "group": "lane:execution:business-enter",
+        "groupStart": false,
+        "groupKind": "invocation",
+        "folded": false,
+        "members": [
+          "code:files"
+        ]
+      }
+    ],
+    "executions": [
+      {
+        "id": "execution:business-enter",
+        "start": 1,
+        "end": 121,
+        "root": "business-enter",
+        "kind": "invocation",
+        "lane": "lane:execution:business-enter"
+      }
+    ],
+    "groups": 1,
+    "invocationGroups": 1,
+    "unassignedObservations": 0,
+    "points": [
+      {
+        "raw": 0,
+        "time": 0
+      },
+      {
+        "raw": 1,
+        "time": 1
+      },
+      {
+        "raw": 2,
+        "time": 11
+      },
+      {
+        "raw": 3,
+        "time": 21
+      },
+      {
+        "raw": 4,
+        "time": 41
+      },
+      {
+        "raw": 5,
+        "time": 71
+      },
+      {
+        "raw": 6,
+        "time": 81
+      },
+      {
+        "raw": 7,
+        "time": 111
+      },
+      {
+        "raw": 8,
+        "time": 121
+      },
+      {
+        "raw": 9,
+        "time": 131
+      }
+    ],
+    "transfers": [],
+    "clock": "time",
+    "scroll": 0,
+    "painted": 20,
+    "flows": 6,
+    "source": "saved",
+    "depth": "all",
+    "layerMode": "through",
+    "lifecycles": [
+      {
+        "node": "share",
+        "start": 1,
+        "end": 121,
+        "duration": 120,
+        "unfinished": false,
+        "clippedStart": false,
+        "entryEventId": "business-enter",
+        "raw": 1,
+        "last": 8,
+        "stages": [
+          {
+            "state": "running",
+            "label": "Running",
+            "start": 1,
+            "end": 121,
+            "registered": false
+          }
+        ],
+        "terminal": {
+          "boundary": "end",
+          "state": "returned",
+          "label": "Returned",
+          "kind": "ended",
+          "registered": false,
+          "termination": "return"
+        }
+      },
+      {
+        "node": "api_get",
+        "start": 11,
+        "end": 71,
+        "duration": 60,
+        "unfinished": false,
+        "clippedStart": false,
+        "entryEventId": "get-enter",
+        "raw": 2,
+        "last": 5,
+        "stages": [
+          {
+            "state": "running",
+            "label": "Running",
+            "start": 11,
+            "end": 71,
+            "registered": false
+          }
+        ],
+        "terminal": {
+          "boundary": "end",
+          "state": "returned",
+          "label": "Returned",
+          "kind": "ended",
+          "registered": false,
+          "termination": "return"
+        }
+      },
+      {
+        "node": "endpoint:files",
+        "start": 11,
+        "end": 71,
+        "duration": 60,
+        "unfinished": false,
+        "clippedStart": false,
+        "entryEventId": "get-enter",
+        "observation_basis": {
+          "kind": "http-registration",
+          "source_node": "api_get",
+          "registrations": [
+            {
+              "node": "api_get",
+              "method": "GET",
+              "route": "/files",
+              "source": {
+                "path": "web.py",
+                "symbol": "files"
+              },
+              "selector": {
+                "name": "GET /files"
+              }
+            }
+          ]
+        },
+        "source_node": "api_get",
+        "call_id": "get",
+        "parent_call_id": "business",
+        "parent_event_id": null,
+        "endEventId": "get-return",
+        "raw": 2,
+        "last": 5,
+        "stages": [
+          {
+            "state": "running",
+            "label": "Running",
+            "start": 11,
+            "end": 71,
+            "registered": false
+          }
+        ],
+        "terminal": {
+          "boundary": "end",
+          "state": "returned",
+          "label": "Returned",
+          "kind": "ended",
+          "registered": false,
+          "termination": "return"
+        }
+      },
+      {
+        "node": "endpoint:files",
+        "start": 81,
+        "end": 111,
+        "duration": 30,
+        "unfinished": false,
+        "clippedStart": false,
+        "entryEventId": "post-enter",
+        "observation_basis": {
+          "kind": "http-registration",
+          "source_node": "api_post",
+          "registrations": [
+            {
+              "node": "api_post",
+              "method": "POST",
+              "route": "/files",
+              "source": {
+                "path": "web.py",
+                "symbol": "files"
+              },
+              "selector": {
+                "name": "POST /files"
+              }
+            }
+          ]
+        },
+        "source_node": "api_post",
+        "call_id": "post",
+        "parent_call_id": "business",
+        "parent_event_id": null,
+        "endEventId": "post-return",
+        "raw": 6,
+        "last": 7,
+        "stages": [
+          {
+            "state": "running",
+            "label": "Running",
+            "start": 81,
+            "end": 111,
+            "registered": false
+          }
+        ],
+        "terminal": {
+          "boundary": "end",
+          "state": "returned",
+          "label": "Returned",
+          "kind": "ended",
+          "registered": false,
+          "termination": "return"
+        }
+      },
+      {
+        "node": "store",
+        "start": 21,
+        "end": 41,
+        "duration": 20,
+        "unfinished": false,
+        "clippedStart": false,
+        "entryEventId": "store-enter",
+        "raw": 3,
+        "last": 4,
+        "stages": [
+          {
+            "state": "running",
+            "label": "Running",
+            "start": 21,
+            "end": 41,
+            "registered": false
+          }
+        ],
+        "terminal": {
+          "boundary": "end",
+          "state": "returned",
+          "label": "Returned",
+          "kind": "ended",
+          "registered": false,
+          "termination": "return"
+        }
+      },
+      {
+        "node": "api_post",
+        "start": 81,
+        "end": 111,
+        "duration": 30,
+        "unfinished": false,
+        "clippedStart": false,
+        "entryEventId": "post-enter",
+        "raw": 6,
+        "last": 7,
+        "stages": [
+          {
+            "state": "running",
+            "label": "Running",
+            "start": 81,
+            "end": 111,
+            "registered": false
+          }
+        ],
+        "terminal": {
+          "boundary": "end",
+          "state": "returned",
+          "label": "Returned",
+          "kind": "ended",
+          "registered": false,
+          "termination": "return"
+        }
+      }
+    ],
+    "paintMs": 0.6999998092651367,
+    "routes": [
+      {
+        "key": "1:2:2:call",
+        "type": "call",
+        "raw": 2,
+        "row": "lane:execution:business-enter:api",
+        "fromRow": 0,
+        "toRow": 1,
+        "route": [
+          {
+            "x": 303.7251908396947,
+            "y": 64
+          },
+          {
+            "x": 293.7251908396947,
+            "y": 64
+          },
+          {
+            "x": 293.7251908396947,
+            "y": 92
+          },
+          {
+            "x": 303.7251908396947,
+            "y": 92
+          }
+        ]
+      },
+      {
+        "key": "2:3:3:call",
+        "type": "call",
+        "raw": 3,
+        "row": "lane:execution:business-enter:execution",
+        "fromRow": 1,
+        "toRow": 2,
+        "route": [
+          {
+            "x": 410.7480916030534,
+            "y": 92
+          },
+          {
+            "x": 397.7480916030534,
+            "y": 92
+          },
+          {
+            "x": 397.7480916030534,
+            "y": 142
+          },
+          {
+            "x": 410.7480916030534,
+            "y": 142
+          }
+        ]
+      },
+      {
+        "key": "4:2:4:return",
+        "type": "return",
+        "raw": 4,
+        "row": "lane:execution:business-enter:api",
+        "fromRow": 2,
+        "toRow": 1,
+        "route": [
+          {
+            "x": 624.793893129771,
+            "y": 142
+          },
+          {
+            "x": 608.793893129771,
+            "y": 142
+          },
+          {
+            "x": 608.793893129771,
+            "y": 92
+          },
+          {
+            "x": 624.793893129771,
+            "y": 92
+          }
+        ]
+      },
+      {
+        "key": "5:1:5:return",
+        "type": "return",
+        "raw": 5,
+        "row": "lane:execution:business-enter:business",
+        "fromRow": 1,
+        "toRow": 0,
+        "route": [
+          {
+            "x": 945.8625954198474,
+            "y": 92
+          },
+          {
+            "x": 935.8625954198474,
+            "y": 92
+          },
+          {
+            "x": 935.8625954198474,
+            "y": 64
+          },
+          {
+            "x": 945.8625954198474,
+            "y": 64
+          }
+        ]
+      },
+      {
+        "key": "1:6:6:call",
+        "type": "call",
+        "raw": 6,
+        "row": "lane:execution:business-enter:api",
+        "fromRow": 0,
+        "toRow": 1,
+        "route": [
+          {
+            "x": 1052.8854961832062,
+            "y": 64
+          },
+          {
+            "x": 1039.8854961832062,
+            "y": 64
+          },
+          {
+            "x": 1039.8854961832062,
+            "y": 92
+          },
+          {
+            "x": 1052.8854961832062,
+            "y": 92
+          }
+        ]
+      },
+      {
+        "key": "7:1:7:return",
+        "type": "return",
+        "raw": 7,
+        "row": "lane:execution:business-enter:business",
+        "fromRow": 1,
+        "toRow": 0,
+        "route": [
+          {
+            "x": 1373.9541984732823,
+            "y": 92
+          },
+          {
+            "x": 1357.9541984732823,
+            "y": 92
+          },
+          {
+            "x": 1357.9541984732823,
+            "y": 64
+          },
+          {
+            "x": 1373.9541984732823,
+            "y": 64
+          }
+        ]
+      }
+    ],
+    "zooming": false,
+    "geometry": {
+      "left": 186,
+      "plot": 1402,
+      "top": 50
+    }
+  },
+  "passed": true,
+  "errors": [],
+  "checks": [
+    "Recorded API view loads retained snapshot; exact GET interval activates only /files",
+    "POST reuses endpoint identity with its own interval and recorded HTTP 403 value",
+    "Overview retains original event cursor and cross-layer causal Timeline links"
+  ]
+}

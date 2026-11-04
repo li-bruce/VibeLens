@@ -95,10 +95,15 @@ def validate(root, model):
     return intent
 
 
-def symbols(path):
+def symbols(path, source_path=None):
     """Locate declarations using the same lexical scope rules as source inventory."""
     source = path.read_text(encoding="utf-8-sig")
     tree = ast.parse(source)
+    from .source_documentation import python_documentation
+    from .code_structure import parse_unit
+    from ..code_graph.endpoints import endpoints
+
+    parsed = parse_unit(source_path or path.name, source)
     result = {}
 
     def walk(body, prefix=""):
@@ -112,6 +117,8 @@ def symbols(path):
                     "line": line,
                     "end_line": n.end_lineno,
                     "signature": ast.unparse(n.args) if hasattr(n, "args") else name,
+                    "documentation": python_documentation(source_path or path.name, name, n),
+                    "api_routes": endpoints(parsed["symbols"][name]),
                     "ast_sha256": ast_fingerprint(n),
                     "snippet": "\n".join(source.splitlines()[line - 1 : n.end_lineno]),
                     "calls": sorted(
@@ -135,6 +142,8 @@ def symbols(path):
 
 
 def capture(root, model):
+    from ..code_graph.endpoints import endpoints
+
     intent = validate(root, model)
     files, inventories, bindings = {}, {}, {}
     for name in sorted(set(model["source_files"])):
@@ -144,7 +153,7 @@ def capture(root, model):
             raise ValueError(f"source too large: {name}")
         files[name] = digest(raw)
         if path.suffix == ".py":
-            inventories[name] = symbols(path)
+            inventories[name] = symbols(path, name)
     bound_paths = {n["source"]["path"] for n in model["nodes"] if n.get("source")}
     foreign = [
         n
@@ -172,6 +181,8 @@ def capture(root, model):
                     "snippet": "\n".join(lines[item["line"] - 1 : item["end_line"]]),
                     "calls": [c["expression"] for c in item["calls"]],
                     "guards": item["predicates"],
+                    "documentation": item.get("documentation"),
+                    "api_routes": endpoints(item),
                 }
     for n in model["nodes"]:
         src = n.get("source")
@@ -180,6 +191,20 @@ def capture(root, model):
             if not info:
                 raise ValueError(f"unresolved symbol: {src}")
             bindings[n["id"]] = {**src, **info, "file_sha256": files[src["path"]]}
+            documentation = bindings[n["id"]].get("documentation")
+            if documentation:
+                documentation["source"].update(path=src["path"], file_sha256=files[src["path"]])
+    from ..observation.telemetry import load_registrations
+
+    # A tracing selector is an observation anchor, not another HTTP endpoint.
+    # Its stable ID remains the address used by all original runtime events.
+    telemetry = load_registrations(root, model)
+    for registration in (telemetry or {}).get("registrations", []):
+        binding = bindings.get(registration["node"])
+        node = next(n for n in model["nodes"] if n["id"] == registration["node"])
+        if binding is not None and node.get("layer") == "api":
+            binding["api_role"] = "capture"
+            binding["telemetry_match"] = registration["match"]
     return {
         "schema_version": 3,
         "build_id": digest({"files": files, "model": model, "intent": intent}),

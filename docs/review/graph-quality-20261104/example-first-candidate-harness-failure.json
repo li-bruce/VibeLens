@@ -1,0 +1,11 @@
+{
+  "scope": "Review harness support-symbol classification, not application execution",
+  "example": "team-archive",
+  "phase": "First candidate after inspect; before review verification",
+  "observed_error": "AssertionError: Review an unrecognized support symbol explicitly: integrations/bo_observer.py::BOObserver.__init__",
+  "result": "The review writer stopped rather than blanket-excluding an unknown symbol.",
+  "reviewed_source": "examples/team-archive/integrations/bo_observer.py",
+  "finding": "BOObserver is existing optional observation transport. The file is unchanged from the preserved baseline; business execution remains in the independently verified application and state module.",
+  "repair": "The review writer explicitly recognizes the existing integration adapter file while retaining byte-identity assertions and all normal mapping/state/business/project checks.",
+  "retest_evidence": "examples-team-archive-caption-final-inspect.json"
+}

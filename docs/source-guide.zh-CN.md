@@ -137,6 +137,20 @@ Canvas 图层工具的排序和显隐交互集中在 `layer-ruler.js`，统一�
 
 ## Routing and node icons
 
+[source_documentation.py](../skills/vibelens/scripts/bo_observer/graph/source_documentation.py)
+提取源码注释，检查映射函数、API 处理函数和重要参数的说明。它与代码索引共用处理函数的解析结果。
+端点注册、处理函数和采集锚点保留各自的身份与关联。
+
+[code_graph/observation.py](../skills/vibelens/scripts/bo_observer/code_graph/observation.py)
+按处理函数、方法和路由确认观测来源；`api-observation.js` 为运行图、回放和时间轴共用这些精确关联。
+API 最小结构独立于完整代码索引，录制开始时冻结保存，运行检查点不重复扫描源码。
+
+[containment-geometry.js](../skills/vibelens/assets/stategraph-viewer/containment-geometry.js)
+拟合可见文字、图标及子圈，`containment-view.js` 在筛选后重建可见包含关系。
+三维相机与投影标记使用实际显示对象的边界；隐藏父节点的坐标继续保存，但不扩大显示范围。
+[proximity-layout.js](../skills/vibelens/assets/stategraph-viewer/proximity-layout.js)
+为二维、三维布局提供有上限的源码邻近提示，保留手动位置，不生成语义关系。
+
 The shared viewer pipeline is `routing-scene.js` (renderer adapters), `routing-client.js` / `routing-worker.js` (epochs and lifecycle), `routing-engine.js` (routing and typed bundles), `routing-navigation.js` (reusable A* channels), and `routing-geometry.js` (R-tree checks and certified smoothing). `route-picking.js` resolves shared strokes to original edges. `node-icons.js` is generated from selected Tabler vectors; `glyphs.js` and `spatial-geometry.js` draw the same vocabulary in 2D and 3D. Rebuild pinned dependencies with `tools/routing/build.mjs` and icons with `tools/routing/build-icons.mjs`.
 
 二维类型聚集由 [cluster-layout.js](../skills/vibelens/assets/stategraph-viewer/cluster-layout.js) 和其 worker 负责；[route-shapes.js](../skills/vibelens/assets/stategraph-viewer/route-shapes.js) 统一处理直线、曲线和连续虚线；[spatial-geometry.js](../skills/vibelens/assets/stategraph-viewer/spatial-geometry.js) 组合立体对象，供批量绘制和图例共同使用。图层选择在 Canvas2D 中绘制，间距统一由底部调整。

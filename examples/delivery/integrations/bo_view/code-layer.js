@@ -94,8 +94,7 @@ export function migrateCodeFilters(value) {
 
 /** Merge by stable identity; never replace the authored graph or its build. */
 export function withCodeGraph(view, slice) {
-  if (view.project_structure) {
-    const project = view.project_structure;
+  for (const project of [view.project_structure, view.api_structure].filter(Boolean)) {
     view = {
       ...view,
       model: mergeGraph(view.model, project),

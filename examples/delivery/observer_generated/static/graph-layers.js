@@ -46,6 +46,7 @@ export function layerOf(node) {
   const type = nodeType(node);
   if (["query", "transform"].includes(node.data_role || node.capture_owner_role))
     return "operations";
+  if (node.api_role === "capture" || node.capture_owner_api_role === "capture") return "execution";
   if (node.layer === "api" || node.code_role === "endpoint") return "api";
   if (["directory", "file"].includes(node.code_role) || node.reference_scope === "project")
     return "project";

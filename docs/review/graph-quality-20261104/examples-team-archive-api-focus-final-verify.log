@@ -1,0 +1,218 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+{
+  "valid": true,
+  "errors": [],
+  "candidate_id": "55b0a42a5f386f1ec422524526ac11e6151d3bf344b3c71756e7bda9efbb6afd",
+  "reports": {
+    "mapping": {
+      "status": "passed",
+      "errors": [],
+      "database": {
+        "configured": false,
+        "valid": true,
+        "errors": [],
+        "changed": false
+      },
+      "code_structure": {
+        "enabled": false,
+        "valid": true,
+        "status": "not_enabled",
+        "errors": []
+      },
+      "api_observation": {
+        "configured": false,
+        "valid": true,
+        "status": "not_applicable",
+        "issues": [],
+        "errors": [],
+        "coverage": "not_applicable",
+        "strict": false,
+        "observed_routes": [],
+        "unobserved_routes": [],
+        "incomplete_methods": [],
+        "missing_routes": [],
+        "revision": "61d99e1fd3af5f38b9226831513d1e64aefda61fb49247d1bd3ebc33ded148f8"
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+      "producer_health": {
+        "valid": true,
+        "checked_runs": 0,
+        "required": false,
+        "errors": []
+      },
+      "invocation_closure": {
+        "valid": true,
+        "closed_calls": 0,
+        "legacy_events": 135,
+        "errors": []
+      },
+      "layers": {
+        "business": {
+          "declared_nodes": 6,
+          "direct_observations": [
+            "flow.checks",
+            "ui.command",
+            "ui.dirty",
+            "ui.validate"
+          ],
+          "required_cases": 4,
+          "boundary_observations": [],
+          "basis": "actual invocation and selected result"
+        },
+        "state": {
+          "declared_nodes": 10,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "actual state changes and residence"
+        },
+        "rules": {
+          "declared_nodes": 8,
+          "direct_observations": [
+            "approval_candidate",
+            "approval_check",
+            "archive_unique",
+            "commit_guard",
+            "scope_check",
+            "size_guard"
+          ],
+          "required_cases": 6,
+          "boundary_observations": [],
+          "basis": "evaluated/skipped conditions and actual enclosing invocation"
+        },
+        "api": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "request boundary and actual response"
+        },
+        "execution": {
+          "declared_nodes": 30,
+          "direct_observations": [
+            "approval_revoked",
+            "archive_commit",
+            "archive_request",
+            "authority_read",
+            "cancel_run",
+            "content_changed",
+            "content_check",
+            "index_check",
+            "issue_approval",
+            "move_folder",
+            "project_limit",
+            "resume_run",
+            "set_size_limit"
+          ],
+          "required_cases": 15,
+          "boundary_observations": [],
+          "basis": "call boundaries, selected values and actual nested parent identities"
+        },
+        "operations": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "query, transform, transaction and enclosing native call identity"
+        },
+        "project": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "source projection only"
+        },
+        "code": {
+          "declared_nodes": 70,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "explicitly mapped runtime evidence"
+        },
+        "data": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "operation-linked structural projection"
+        }
+      },
+      "stategraph_export": "checked",
+      "witnesses": 480,
+      "projection_checks": 1113,
+      "implementation": {
+        "errors": [],
+        "events_checked": 53,
+        "features": 22
+      }
+    },
+    "state_rules": {
+      "status": "passed",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "passed",
+      "errors": [],
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "passed",
+      "errors": [],
+      "assertions": {
+        "required": 189,
+        "executed": 189
+      },
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    }
+  },
+  "review_hash": "7e3ca696d2eabb6da18a83f3d1ed159e411d003fe7d27c180a4926dd6f2edcc0",
+  "observations_hash": "b031f86244cc2c7e45b3ae06522b81f1702093cb29392356095f3e28af07f0b8",
+  "tests": [
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tooling/tests.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tooling/graph_tests.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tooling/test_recording.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tooling/test_recorded_views.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tooling/test_stategraph_module.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "checked_at": "2026-11-04T05:24:13.922308+00:00",
+  "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+}

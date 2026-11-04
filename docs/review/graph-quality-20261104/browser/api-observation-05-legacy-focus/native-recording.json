@@ -1,0 +1,686 @@
+{
+  "id": "api-recording",
+  "started_at": "2024-12-31T23:59:59.999Z",
+  "ended_at": "2025-01-01T00:00:00.130Z",
+  "status": "stopped",
+  "commands": [],
+  "context": {
+    "model": {
+      "nodes": [
+        {
+          "id": "share",
+          "label": "Share file",
+          "kind": "function",
+          "layer": "business",
+          "basis_fields": []
+        },
+        {
+          "id": "api_get",
+          "label": "HTTP GET",
+          "kind": "function",
+          "layer": "execution",
+          "basis_fields": []
+        },
+        {
+          "id": "api_post",
+          "label": "HTTP POST",
+          "kind": "function",
+          "layer": "execution",
+          "basis_fields": []
+        },
+        {
+          "id": "store",
+          "label": "Save file",
+          "kind": "function",
+          "basis_fields": []
+        }
+      ],
+      "edges": [],
+      "machine": {
+        "values": [],
+        "states": [],
+        "transitions": [],
+        "events": {}
+      },
+      "presentation": {}
+    },
+    "events": [],
+    "authority": {
+      "parameters": {},
+      "basis": {}
+    },
+    "machine": {
+      "current": null,
+      "configurations": [],
+      "journal": []
+    },
+    "manifest": {
+      "build_id": "build",
+      "bindings": {}
+    },
+    "binding_status": {
+      "status": "current"
+    },
+    "api_structure": {
+      "nodes": [
+        {
+          "id": "endpoint:files",
+          "label": "GET POST /files",
+          "kind": "function",
+          "code_role": "endpoint",
+          "api_role": "endpoint",
+          "api": {
+            "path": "/files",
+            "methods": [
+              "GET",
+              "POST"
+            ]
+          },
+          "observation_projection": true,
+          "observation_sources": [
+            {
+              "node": "api_get",
+              "method": "GET",
+              "route": "/files",
+              "source": {
+                "path": "web.py",
+                "symbol": "files"
+              },
+              "selector": {
+                "name": "GET /files"
+              }
+            },
+            {
+              "node": "api_post",
+              "method": "POST",
+              "route": "/files",
+              "source": {
+                "path": "web.py",
+                "symbol": "files"
+              },
+              "selector": {
+                "name": "POST /files"
+              }
+            }
+          ]
+        },
+        {
+          "id": "endpoint:archive",
+          "label": "GET /archive",
+          "kind": "function",
+          "code_role": "endpoint",
+          "api_role": "endpoint",
+          "api": {
+            "path": "/archive",
+            "methods": [
+              "GET"
+            ]
+          },
+          "observation_sources": []
+        },
+        {
+          "id": "code:files",
+          "kind": "function",
+          "code_role": "function",
+          "source": {
+            "path": "web.py",
+            "symbol": "files"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "map",
+          "from": "api_get",
+          "to": "code:files",
+          "type": "data",
+          "code_relation": "maps"
+        },
+        {
+          "id": "handles:endpoint:files",
+          "from": "endpoint:files",
+          "to": "code:files",
+          "type": "data",
+          "code_relation": "handles"
+        },
+        {
+          "id": "handles:endpoint:archive",
+          "from": "endpoint:archive",
+          "to": "code:files",
+          "type": "data",
+          "code_relation": "handles"
+        },
+        {
+          "id": "observation",
+          "from": "api_get",
+          "to": "endpoint:files",
+          "type": "data",
+          "code_relation": "maps",
+          "mapping_role": "http-observation"
+        }
+      ],
+      "bindings": {}
+    }
+  },
+  "final": {
+    "model": {
+      "nodes": [
+        {
+          "id": "share",
+          "label": "Share file",
+          "kind": "function",
+          "layer": "business",
+          "basis_fields": []
+        },
+        {
+          "id": "api_get",
+          "label": "HTTP GET",
+          "kind": "function",
+          "layer": "execution",
+          "basis_fields": []
+        },
+        {
+          "id": "api_post",
+          "label": "HTTP POST",
+          "kind": "function",
+          "layer": "execution",
+          "basis_fields": []
+        },
+        {
+          "id": "store",
+          "label": "Save file",
+          "kind": "function",
+          "basis_fields": []
+        }
+      ],
+      "edges": [],
+      "machine": {
+        "values": [],
+        "states": [],
+        "transitions": [],
+        "events": {}
+      },
+      "presentation": {}
+    },
+    "events": [
+      {
+        "id": "business-enter",
+        "node": "share",
+        "phase": "enter",
+        "lifecycle": "span",
+        "observed_at": "2025-01-01T00:00:00.000Z",
+        "kind": "probe",
+        "call_id": "business",
+        "parent_call_id": null,
+        "run_id": "run",
+        "stream_id": "stream",
+        "producer_id": "worker",
+        "project_id": "project",
+        "build_id": "build",
+        "model_revision": "revision",
+        "attempt": "attempt",
+        "entity": "entity",
+        "basis": {},
+        "inputs": {},
+        "outputs": {}
+      },
+      {
+        "id": "get-enter",
+        "node": "api_get",
+        "phase": "enter",
+        "lifecycle": "span",
+        "observed_at": "2025-01-01T00:00:00.010Z",
+        "kind": "probe",
+        "call_id": "get",
+        "parent_call_id": "business",
+        "run_id": "run",
+        "stream_id": "stream",
+        "producer_id": "worker",
+        "project_id": "project",
+        "build_id": "build",
+        "model_revision": "revision",
+        "attempt": "attempt",
+        "entity": "entity",
+        "basis": {},
+        "inputs": {
+          "method": "GET",
+          "path": "/files"
+        },
+        "outputs": {}
+      },
+      {
+        "id": "store-enter",
+        "node": "store",
+        "phase": "enter",
+        "lifecycle": "span",
+        "observed_at": "2025-01-01T00:00:00.020Z",
+        "kind": "probe",
+        "call_id": "store",
+        "parent_call_id": "get",
+        "run_id": "run",
+        "stream_id": "stream",
+        "producer_id": "worker",
+        "project_id": "project",
+        "build_id": "build",
+        "model_revision": "revision",
+        "attempt": "attempt",
+        "entity": "entity",
+        "basis": {},
+        "inputs": {},
+        "outputs": {}
+      },
+      {
+        "id": "store-return",
+        "node": "store",
+        "phase": "return",
+        "lifecycle": "span",
+        "observed_at": "2025-01-01T00:00:00.040Z",
+        "kind": "probe",
+        "call_id": "store",
+        "parent_call_id": "get",
+        "run_id": "run",
+        "stream_id": "stream",
+        "producer_id": "worker",
+        "project_id": "project",
+        "build_id": "build",
+        "model_revision": "revision",
+        "attempt": "attempt",
+        "entity": "entity",
+        "basis": {},
+        "inputs": {},
+        "outputs": {
+          "count": 3
+        }
+      },
+      {
+        "id": "get-return",
+        "node": "api_get",
+        "phase": "return",
+        "lifecycle": "span",
+        "observed_at": "2025-01-01T00:00:00.070Z",
+        "kind": "probe",
+        "call_id": "get",
+        "parent_call_id": "business",
+        "run_id": "run",
+        "stream_id": "stream",
+        "producer_id": "worker",
+        "project_id": "project",
+        "build_id": "build",
+        "model_revision": "revision",
+        "attempt": "attempt",
+        "entity": "entity",
+        "basis": {},
+        "inputs": {},
+        "outputs": {
+          "status": 200
+        }
+      },
+      {
+        "id": "post-enter",
+        "node": "api_post",
+        "phase": "enter",
+        "lifecycle": "span",
+        "observed_at": "2025-01-01T00:00:00.080Z",
+        "kind": "probe",
+        "call_id": "post",
+        "parent_call_id": "business",
+        "run_id": "run",
+        "stream_id": "stream",
+        "producer_id": "worker",
+        "project_id": "project",
+        "build_id": "build",
+        "model_revision": "revision",
+        "attempt": "attempt",
+        "entity": "entity",
+        "basis": {},
+        "inputs": {
+          "method": "POST",
+          "path": "/files"
+        },
+        "outputs": {}
+      },
+      {
+        "id": "post-return",
+        "node": "api_post",
+        "phase": "return",
+        "lifecycle": "span",
+        "observed_at": "2025-01-01T00:00:00.110Z",
+        "kind": "probe",
+        "call_id": "post",
+        "parent_call_id": "business",
+        "run_id": "run",
+        "stream_id": "stream",
+        "producer_id": "worker",
+        "project_id": "project",
+        "build_id": "build",
+        "model_revision": "revision",
+        "attempt": "attempt",
+        "entity": "entity",
+        "basis": {},
+        "inputs": {},
+        "outputs": {
+          "status": 403
+        }
+      },
+      {
+        "id": "business-return",
+        "node": "share",
+        "phase": "return",
+        "lifecycle": "span",
+        "observed_at": "2025-01-01T00:00:00.120Z",
+        "kind": "probe",
+        "call_id": "business",
+        "parent_call_id": null,
+        "run_id": "run",
+        "stream_id": "stream",
+        "producer_id": "worker",
+        "project_id": "project",
+        "build_id": "build",
+        "model_revision": "revision",
+        "attempt": "attempt",
+        "entity": "entity",
+        "basis": {},
+        "inputs": {},
+        "outputs": {}
+      }
+    ],
+    "authority": {
+      "parameters": {},
+      "basis": {}
+    },
+    "machine": {
+      "current": null,
+      "configurations": [],
+      "journal": []
+    },
+    "manifest": {
+      "build_id": "build",
+      "bindings": {}
+    },
+    "binding_status": {
+      "status": "current"
+    },
+    "api_structure": {
+      "nodes": [
+        {
+          "id": "endpoint:files",
+          "label": "GET POST /files",
+          "kind": "function",
+          "code_role": "endpoint",
+          "api_role": "endpoint",
+          "api": {
+            "path": "/files",
+            "methods": [
+              "GET",
+              "POST"
+            ]
+          },
+          "observation_projection": true,
+          "observation_sources": [
+            {
+              "node": "api_get",
+              "method": "GET",
+              "route": "/files",
+              "source": {
+                "path": "web.py",
+                "symbol": "files"
+              },
+              "selector": {
+                "name": "GET /files"
+              }
+            },
+            {
+              "node": "api_post",
+              "method": "POST",
+              "route": "/files",
+              "source": {
+                "path": "web.py",
+                "symbol": "files"
+              },
+              "selector": {
+                "name": "POST /files"
+              }
+            }
+          ]
+        },
+        {
+          "id": "endpoint:archive",
+          "label": "GET /archive",
+          "kind": "function",
+          "code_role": "endpoint",
+          "api_role": "endpoint",
+          "api": {
+            "path": "/archive",
+            "methods": [
+              "GET"
+            ]
+          },
+          "observation_sources": []
+        },
+        {
+          "id": "code:files",
+          "kind": "function",
+          "code_role": "function",
+          "source": {
+            "path": "web.py",
+            "symbol": "files"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "map",
+          "from": "api_get",
+          "to": "code:files",
+          "type": "data",
+          "code_relation": "maps"
+        },
+        {
+          "id": "handles:endpoint:files",
+          "from": "endpoint:files",
+          "to": "code:files",
+          "type": "data",
+          "code_relation": "handles"
+        },
+        {
+          "id": "handles:endpoint:archive",
+          "from": "endpoint:archive",
+          "to": "code:files",
+          "type": "data",
+          "code_relation": "handles"
+        },
+        {
+          "id": "observation",
+          "from": "api_get",
+          "to": "endpoint:files",
+          "type": "data",
+          "code_relation": "maps",
+          "mapping_role": "http-observation"
+        }
+      ],
+      "bindings": {}
+    }
+  },
+  "events": [
+    {
+      "id": "business-enter",
+      "node": "share",
+      "phase": "enter",
+      "lifecycle": "span",
+      "observed_at": "2025-01-01T00:00:00.000Z",
+      "kind": "probe",
+      "call_id": "business",
+      "parent_call_id": null,
+      "run_id": "run",
+      "stream_id": "stream",
+      "producer_id": "worker",
+      "project_id": "project",
+      "build_id": "build",
+      "model_revision": "revision",
+      "attempt": "attempt",
+      "entity": "entity",
+      "basis": {},
+      "inputs": {},
+      "outputs": {}
+    },
+    {
+      "id": "get-enter",
+      "node": "api_get",
+      "phase": "enter",
+      "lifecycle": "span",
+      "observed_at": "2025-01-01T00:00:00.010Z",
+      "kind": "probe",
+      "call_id": "get",
+      "parent_call_id": "business",
+      "run_id": "run",
+      "stream_id": "stream",
+      "producer_id": "worker",
+      "project_id": "project",
+      "build_id": "build",
+      "model_revision": "revision",
+      "attempt": "attempt",
+      "entity": "entity",
+      "basis": {},
+      "inputs": {
+        "method": "GET",
+        "path": "/files"
+      },
+      "outputs": {}
+    },
+    {
+      "id": "store-enter",
+      "node": "store",
+      "phase": "enter",
+      "lifecycle": "span",
+      "observed_at": "2025-01-01T00:00:00.020Z",
+      "kind": "probe",
+      "call_id": "store",
+      "parent_call_id": "get",
+      "run_id": "run",
+      "stream_id": "stream",
+      "producer_id": "worker",
+      "project_id": "project",
+      "build_id": "build",
+      "model_revision": "revision",
+      "attempt": "attempt",
+      "entity": "entity",
+      "basis": {},
+      "inputs": {},
+      "outputs": {}
+    },
+    {
+      "id": "store-return",
+      "node": "store",
+      "phase": "return",
+      "lifecycle": "span",
+      "observed_at": "2025-01-01T00:00:00.040Z",
+      "kind": "probe",
+      "call_id": "store",
+      "parent_call_id": "get",
+      "run_id": "run",
+      "stream_id": "stream",
+      "producer_id": "worker",
+      "project_id": "project",
+      "build_id": "build",
+      "model_revision": "revision",
+      "attempt": "attempt",
+      "entity": "entity",
+      "basis": {},
+      "inputs": {},
+      "outputs": {
+        "count": 3
+      }
+    },
+    {
+      "id": "get-return",
+      "node": "api_get",
+      "phase": "return",
+      "lifecycle": "span",
+      "observed_at": "2025-01-01T00:00:00.070Z",
+      "kind": "probe",
+      "call_id": "get",
+      "parent_call_id": "business",
+      "run_id": "run",
+      "stream_id": "stream",
+      "producer_id": "worker",
+      "project_id": "project",
+      "build_id": "build",
+      "model_revision": "revision",
+      "attempt": "attempt",
+      "entity": "entity",
+      "basis": {},
+      "inputs": {},
+      "outputs": {
+        "status": 200
+      }
+    },
+    {
+      "id": "post-enter",
+      "node": "api_post",
+      "phase": "enter",
+      "lifecycle": "span",
+      "observed_at": "2025-01-01T00:00:00.080Z",
+      "kind": "probe",
+      "call_id": "post",
+      "parent_call_id": "business",
+      "run_id": "run",
+      "stream_id": "stream",
+      "producer_id": "worker",
+      "project_id": "project",
+      "build_id": "build",
+      "model_revision": "revision",
+      "attempt": "attempt",
+      "entity": "entity",
+      "basis": {},
+      "inputs": {
+        "method": "POST",
+        "path": "/files"
+      },
+      "outputs": {}
+    },
+    {
+      "id": "post-return",
+      "node": "api_post",
+      "phase": "return",
+      "lifecycle": "span",
+      "observed_at": "2025-01-01T00:00:00.110Z",
+      "kind": "probe",
+      "call_id": "post",
+      "parent_call_id": "business",
+      "run_id": "run",
+      "stream_id": "stream",
+      "producer_id": "worker",
+      "project_id": "project",
+      "build_id": "build",
+      "model_revision": "revision",
+      "attempt": "attempt",
+      "entity": "entity",
+      "basis": {},
+      "inputs": {},
+      "outputs": {
+        "status": 403
+      }
+    },
+    {
+      "id": "business-return",
+      "node": "share",
+      "phase": "return",
+      "lifecycle": "span",
+      "observed_at": "2025-01-01T00:00:00.120Z",
+      "kind": "probe",
+      "call_id": "business",
+      "parent_call_id": null,
+      "run_id": "run",
+      "stream_id": "stream",
+      "producer_id": "worker",
+      "project_id": "project",
+      "build_id": "build",
+      "model_revision": "revision",
+      "attempt": "attempt",
+      "entity": "entity",
+      "basis": {},
+      "inputs": {},
+      "outputs": {}
+    }
+  ]
+}

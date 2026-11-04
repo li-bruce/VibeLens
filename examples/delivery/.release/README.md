@@ -1,5 +1,38 @@
 # Reviewed release records
 
+The current record is `graph-quality-20261104-api-focus`. The reviewed viewer fits visible
+contents and full planar labels, preserves filtered owner identities, and uses the
+existing pinned D3 enclosing-circle implementation. Source mapping and API metadata
+were regenerated; native business/state code, probes and expectations are unchanged.
+Normal generate, seal, scan, inspect, verify, accept and check passed before these
+receipts were frozen. Earlier records remain below.
+
+## Previous records
+
+# Reviewed release records
+
+The current record is `graph-quality-20261104-api-runtime`. The reviewed viewer fits visible
+contents and full planar labels, preserves filtered owner identities, and uses the
+existing pinned D3 enclosing-circle implementation. Source mapping and API metadata
+were regenerated; native business/state code, probes and expectations are unchanged.
+Normal generate, seal, scan, inspect, verify, accept and check passed before these
+receipts were frozen. Earlier records remain below.
+
+## Previous records
+
+# Reviewed release records
+
+The current record is `graph-quality-20261104`. The reviewed viewer fits visible
+contents and full planar labels, preserves filtered owner identities, and uses the
+existing pinned D3 enclosing-circle implementation. Source mapping and API metadata
+were regenerated; native business/state code, probes and expectations are unchanged.
+Normal generate, seal, scan, inspect, verify, accept and check passed before these
+receipts were frozen. Earlier records remain below.
+
+## Previous records
+
+# Reviewed release records
+
 The current record is `semantic-focus-20261029`. Restoring keyboard focus to an already selected node keeps its source/detail panel open. Business code, state and policy declarations, probes and expected results are unchanged. Both examples completed normal inspect, verify, accept and check before these receipts were frozen.
 
 ## Previous records

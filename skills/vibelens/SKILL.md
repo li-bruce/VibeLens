@@ -58,6 +58,8 @@ Before implementation, define independent expectations for confirmed rules: succ
 
 For data access, configure `bo_stategraph/databases.json`, a native ORM/ODM or explicit data model, its JSON exporter, and `BODataRuntime` wiring in an isolated `bo_` module. Map actual reads, writes, commits/rollbacks, and selected data transformations to source and required cases. Distinguish application model rules, database-enforced structure, and observed samples. The observer reads metadata; the application's migration workflow changes the database.
 
+Write concise source docstrings/JSDoc for authored mapped API handlers, functions and important parameters as implementation begins. Extract explanations from verified source bindings and distinguish concrete routes from collection wrappers. Read [source documentation](references/source-documentation.md) for the format and strict check; the coding agent maintains these with the code.
+
 ## 3. Maintain the graph during each coding batch
 
 For a later business request, first follow [iteration dialogue](references/iteration-dialogue.md): restore confirmed decisions, locate the affected graph region and its boundaries, show the proposed local change in conversation and Web, and resolve only new or changed business meaning before implementation. Reuse explicit confirmations of the same scope. Source-only refactors keep their business meaning and update mappings without repeating business questions.
@@ -98,6 +100,10 @@ Keep project, node, and relation IDs stable across iterations. Use explicit `pre
 Route authored relation construction and updates through the [relation insertion](references/relation-insertion.md) interface. Register exact context, duplicate identity and permitted conceptual compositions from confirmed declarations. Keep physical execution facts direct. Missing meaning or evidence retains the edge; invalid or conflicting registrations stop the batch. Preserve raw IDs and witness paths, and check restoration after a witness changes or disappears.
 
 Focused capture selects value builders and retains minimal witnessed caller boundaries. Unselected inputs and results remain uncollected; boundary metadata adds no ordinary replay steps. Disclose any remaining partial ownership without inferring parents or claiming full capture. See [observation continuity](references/observation-continuity.md#focused-values-and-execution-context).
+
+Update affected source explanations with each coding batch. Run `bo_code.py docs --root PROJECT --strict` for new projects' mapped scope and keep it in their verification entrypoint; adopted code reports missing explanations while retaining complete mapping and all existing checks. A missing comment cannot be replaced by an AI label or a fabricated source reference.
+
+For HTTP applications, also run `bo_code.py api-check --root PROJECT --strict`. Bind observed requests by actual handler source, method and route; verify their intervals in Graph and Timeline, including routes sharing a handler. Keep this gate in new projects so adding an unregistered API cannot silently lose observation.
 
 ## 4. Present and inspect
 

@@ -1,17 +1,45 @@
 # Changelog
 
-## Unreleased — recording timeline
+## 0.11.0 — 2026-11-04
+
+- Add optional Python/Node OpenTelemetry collection and W3C trace propagation
+  for asynchronous calls, queued work and linked operations. Retain selected
+  actor, workflow and object references alongside original event identities;
+  native business/state execution and the independent observer keep their roles.
+- Register application-defined node lifecycles shared by Graph and Timeline.
+  Undeclared lifecycles use observed entry, waiting, return and exception
+  boundaries; business outcomes remain explicitly declared meanings.
+- Switch between source names and concise explained labels without changing
+  node/edge identities, mappings, saved views or recorded facts.
+- Restore confirmed decisions in later development turns, preview the affected
+  local graph, clarify changed meaning and verify updated code/probe mappings.
+- Fit expanded regions to visible glyphs and nested regions in 2D and 3D;
+  preserve manual positions and keep external connections on visible boundaries.
+- Distinguish concrete API registrations, shared handlers and capture anchors;
+  extract source docstrings/JSDoc for API, function and parameter explanations.
+- Add a strict mapped-source documentation report to the development workflow.
+- Qualify API observations by actual handler, method, route and capture identity;
+  retain separate request intervals and reject incomplete strict HTTP coverage.
+- Place related source symbols closer within existing type clusters, using
+  bounded source/identifier hints while preserving pins and saved layouts.
+- Keep queries, transactions and transformations connected to stored data in
+  the Data operations layer, with observer-owned activity excluded.
 
 - Add an execution timeline/Gantt dock linked to the 2D/3D graph's replay cursor,
   actual state/value changes and evidence-supported transfers.
-- Group tracks by graph layer; expand nodes, drag to seek/pan, zoom the overview,
-  and select loop ranges with the existing playback controls.
+- Group tracks by invocation, with one row per graph layer and a foldable
+  business-flow summary; drag to seek/pan, zoom the overview and select loop ranges.
 - Preserve project display settings and distinguish real durations, instant
   changes, source projections and incomplete observations.
 - Add invocation/clock tests, native mouse/touch/browser acceptance, a real
   two-iteration project trial and a 20,000-event load test.
 - See the [design](docs/development/recording-timeline.md) and
-  [review evidence](docs/review/recording-timeline/README.md).
+  [timeline review](docs/review/recording-timeline/README.md),
+  [registered lifecycle review](docs/review/declared-lifecycles/README.md),
+  [OTel/provenance acceptance](docs/review/otel-provenance-20261101/README.md),
+  [iteration guidance checks](docs/review/iteration-publish-20261102/README.md)
+  and [graph-quality repairs](docs/review/graph-quality-20261104/README.md).
+  Dynamic connections across hidden layers remain a design proposal.
 
 ## 0.10.0 — 2026-10-30
 

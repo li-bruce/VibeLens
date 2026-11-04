@@ -1,0 +1,10 @@
+{
+  "example": "team-archive",
+  "phase": "API runtime candidate after successful inspect, verify, accept and check",
+  "native_checks_passed": true,
+  "freeze_permitted": false,
+  "observed_error": "AssertionError: Viewer changed again before freeze: graph-links.js",
+  "cause": "The full repository gate found the missing legacy focus-selection fallback; canonical graph-links.js changed while this prior candidate was completing native checks.",
+  "action": "Preserve the passed native phase, refuse stale frozen receipts, managed-copy the final focus-only compatibility fix, then run the full unchanged native workflow on the same original baseline.",
+  "native_check_evidence": "examples-team-archive-api-runtime-final-check.json"
+}

@@ -2,6 +2,7 @@
  * Static declarations remain static. These links locate the observed owner; they
  * do not assert that every function or parameter in a source file was executed.
  */
+import { apiObservationIds } from "./api-observation.js";
 export function runtimeOwners(model, id) {
   const nodes = new Map(model.nodes.map((node) => [node.id, node]));
   const mapped = new Map();
@@ -25,6 +26,13 @@ export function runtimeOwners(model, id) {
     seen.add(key);
     const node = nodes.get(key);
     if (!node) continue;
+    if (node.code_role === "endpoint" && Array.isArray(node.observation_sources)) {
+      for (const owner of apiObservationIds(node)) result.add(owner);
+      continue;
+    }
+    // Older inventories have no HTTP qualification metadata. Preserve their
+    // source-based focus/capture selection; activation and duration still use
+    // only qualified bindings in api-observation.js.
     if (!node.code_role) {
       result.add(node.event_node || node.referenceOf || node.id);
       continue;

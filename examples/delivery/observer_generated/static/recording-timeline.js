@@ -223,7 +223,12 @@ export class RecordingTimeline {
       items.length,
       items.at(-1)?.id,
       recording.status,
-      [...all.keys()],
+      [...all.values()].map((node) => [
+        node.id,
+        node.lifecycle,
+        node.observation_projection,
+        node.observation_sources,
+      ]),
       edges.filter((edge) => edge.code_relation).map((edge) => [edge.id, edge.from, edge.to]),
     ]);
     if (indexKey !== this.indexKey) {
@@ -865,6 +870,18 @@ export class RecordingTimeline {
               unfinished: slice.unfinished,
               clippedStart: !!slice.clippedStart,
               entryEventId: slice.context_entry?.id || this.index.items[slice.raw]?.id,
+              ...(slice.observation_basis
+                ? {
+                    observation_basis: slice.observation_basis,
+                    source_node: slice.source_node,
+                    call_id: (slice.context_entry || this.index.items[slice.raw])?.call_id,
+                    parent_call_id: (slice.context_entry || this.index.items[slice.raw])
+                      ?.parent_call_id,
+                    parent_event_id: (slice.context_entry || this.index.items[slice.raw])
+                      ?.parent_event_id,
+                    endEventId: slice.unfinished ? null : this.index.items[slice.last]?.id,
+                  }
+                : {}),
               raw: slice.raw,
               last: slice.last,
               stages: slice.stages?.map((stage) => ({

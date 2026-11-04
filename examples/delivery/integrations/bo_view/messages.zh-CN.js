@@ -543,6 +543,7 @@ export default {
     "源码定位到采集所在的函数；该字段也可能由适配器生成。",
   "Collection metadata": "采集信息",
   "Static source declaration": "源码声明",
+  "HTTP observation anchor": "HTTP 观测点",
   "Within: {0}": "所属：{0}",
   "Layers": "分层",
   "Separate graph layers": "分层查看图",

@@ -48,6 +48,7 @@ export function graphActivations(events, nodes) {
       activeCount: runningCount + waitingCount,
       explicitActive,
       callId: start.call_id,
+      ...(slice.observation_basis ? { observation_basis: slice.observation_basis } : {}),
       start: start.id,
       end: slice.unfinished ? null : last.id,
       duration:

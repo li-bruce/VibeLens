@@ -6,7 +6,7 @@ dispatch, or data flow from a syntactic call.
 
 from pathlib import PurePosixPath
 from copy import deepcopy
-from .endpoints import endpoints
+from .endpoints import endpoints, combine_handler_registrations
 from .structure import attach_tree, analyze
 from .manifests import dependencies
 from ..sources import SOURCE_SUFFIXES
@@ -56,6 +56,24 @@ def import_target(path, reference, units, modules=None):
     return next((p for p in candidates if p in units), None)
 
 
+def handler_key(path, reference, units, symbols):
+    """Resolve one literal registered callable using the source import inventory."""
+    local = path + "::" + reference
+    if local in symbols:
+        return local
+    if units[path]["language"] == "python":
+        imported = import_target(path, reference, units)
+        module = module_name(imported) if imported else ""
+        return str(imported) + "::" + reference.removeprefix(module + ".")
+    head, *tail = reference.split(".")
+    binding = units[path].get("imports", {}).get(head)
+    imported = import_target(path, binding, units) if binding else None
+    name = ".".join(
+        tail if binding and binding["name"] == "*" else [(binding or {}).get("name", head), *tail]
+    )
+    return str(imported) + "::" + name
+
+
 def build(index, project=None, root=None):
     """Project files, declarations, parameters, imports and call occurrences."""
     index = deepcopy(index)
@@ -94,7 +112,7 @@ def build(index, project=None, root=None):
                 index["unresolved"].append(
                     {**evidence, "reason": "External or unresolved initializer"}
                 )
-    nodes, edges, bindings = {}, [], {}
+    nodes, edges, bindings, endpoint_registrations = {}, [], {}, []
     units, symbols = index["units"], index["symbols"]
     symbol_ids = {key: identity("symbol", key) for key in symbols}
     if project is None:
@@ -173,6 +191,11 @@ def build(index, project=None, root=None):
         value["code_symbol"] = key
         value["code_signature"] = symbol.get("signature", "")
         value["code_returns"] = symbol.get("returns")
+        documentation = deepcopy(symbol.get("documentation"))
+        if documentation:
+            documentation["source"]["file_sha256"] = units[symbol["path"]]["file_hash"]
+            value["documentation"] = documentation
+            bindings[value["id"]]["documentation"] = documentation
         edge(parent, value["id"], "defines", "Defines")
         for route in endpoints(symbol):
             endpoint_id = identity("endpoint", [key, route["path"], route["methods"]])
@@ -184,10 +207,17 @@ def build(index, project=None, root=None):
                 summary=route["declaration"],
             )
             endpoint["api"] = route
+            endpoint["api_role"] = "endpoint"
+            endpoint_registrations.append(
+                {"endpoint": endpoint_id, "handler": key, "route": deepcopy(route)}
+            )
+            if documentation:
+                endpoint["documentation"] = documentation
+                bindings[endpoint_id]["documentation"] = documentation
             edge(endpoint_id, value["id"], "handles", "Handled by", route["declaration"])
         for parameter in symbol.get("parameters", []):
             pid = identity("parameter", [key, parameter["name"]])
-            node(
+            parameter_node = node(
                 pid,
                 parameter["name"],
                 "parameter",
@@ -198,6 +228,17 @@ def build(index, project=None, root=None):
                 value["id"],
                 parameter.get("annotation") or "Type unspecified",
             )
+            parameter_documentation = (
+                (documentation or {}).get("parameters", {}).get(parameter["name"])
+            )
+            if parameter_documentation:
+                parameter_node["documentation"] = {
+                    **documentation,
+                    "summary": parameter_documentation["description"],
+                    "description": parameter_documentation["description"],
+                    "parameter": parameter["name"],
+                }
+                bindings[pid]["documentation"] = parameter_node["documentation"]
             edge(pid, value["id"], "parameter", "Parameter")
 
     # Programmatic registrations live at the factory/module source location,
@@ -207,11 +248,7 @@ def build(index, project=None, root=None):
             if observer_route(route["path"]):
                 continue
             reference = route.get("handler") or ""
-            target_key = path + "::" + reference
-            if target_key not in symbols:
-                imported = import_target(path, reference, units)
-                module = module_name(imported) if imported else ""
-                target_key = str(imported) + "::" + reference.removeprefix(module + ".")
+            target_key = handler_key(path, reference, units, symbols)
             handler = symbol_ids.get(target_key)
             owner_key = path + "::" + route["source"]["symbol"]
             identifier = identity(
@@ -230,6 +267,17 @@ def build(index, project=None, root=None):
                 summary=route["declaration"],
             )
             endpoint["api"] = {**route, "handler_resolved": bool(handler)}
+            endpoint["api_role"] = "endpoint"
+            endpoint_registrations.append(
+                {
+                    "endpoint": identifier,
+                    "handler": target_key if handler else None,
+                    "route": deepcopy(route),
+                }
+            )
+            if handler and nodes[handler].get("documentation"):
+                endpoint["documentation"] = deepcopy(nodes[handler]["documentation"])
+                bindings[identifier]["documentation"] = endpoint["documentation"]
             if owner_key in symbol_ids:
                 edge(
                     symbol_ids[owner_key],
@@ -317,6 +365,11 @@ def build(index, project=None, root=None):
         )
     if root is not None:
         index["errors"] += dependencies(root, project, nodes, edge, identity)
+    endpoint_aliases = combine_handler_registrations(nodes, edges, bindings)
+    for registration in endpoint_registrations:
+        registration["endpoint"] = endpoint_aliases.get(
+            registration["endpoint"], registration["endpoint"]
+        )
     analysis = analyze(nodes, edges)
     result = {
         "schema": "bo-code-graph/v1",
@@ -329,6 +382,8 @@ def build(index, project=None, root=None):
         },
         "project": {"entries": project["entries"], **analysis},
         "symbols": symbol_ids,
+        "endpoint_aliases": endpoint_aliases,
+        "endpoint_registrations": endpoint_registrations,
         "errors": index["errors"],
         "limits": index["limits"],
         "incremental": index["incremental"],

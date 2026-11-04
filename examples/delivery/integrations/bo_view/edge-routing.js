@@ -57,10 +57,30 @@ export function routePoints(start, end, style, trunk) {
   return points.filter((p, i) => !i || Object.keys(p).some((key) => p[key] !== points[i - 1][key]));
 }
 
+/** Resolve a displayed owner to real geometry, including an occupied projection.
+ * Some owners have visible children only on other semantic planes. Their hidden
+ * saved anchor is not a drawable endpoint. Prefer the owner's occupied plane;
+ * otherwise choose the nearest occupied projection with deterministic ties.
+ */
+export function regionVolume(id, towards, volumes) {
+  const candidates = volumes.filter((volume) => volume.id === id);
+  return (
+    candidates.find((volume) => !volume.projection) ||
+    candidates.sort(
+      (a, b) =>
+        Math.abs(a.center.y - (towards?.y || 0)) - Math.abs(b.center.y - (towards?.y || 0)) ||
+        Math.hypot(a.center.x - (towards?.x || 0), a.center.z - (towards?.z || 0)) -
+          Math.hypot(b.center.x - (towards?.x || 0), b.center.z - (towards?.z || 0)) ||
+        String(a.layer).localeCompare(String(b.layer)),
+    )[0]
+  );
+}
+
 /** An external group edge terminates on its owner's ring. Internal edges keep the self node. */
 export function regionPort(id, otherId, towards, positions, volumes) {
-  const volume = volumes.find((v) => v.id === id && !v.projection);
-  if (!volume || volume.members.includes(otherId)) return positions[id];
+  const volume = regionVolume(id, towards, volumes);
+  if (!volume) return positions[id];
+  if (!volume.projection && volume.members.includes(otherId)) return positions[id];
   const dx = towards.x - volume.center.x,
     dz = towards.z - volume.center.z;
   const length = Math.hypot(dx, dz);

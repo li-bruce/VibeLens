@@ -1,5 +1,6 @@
 /** Causal geometry is independent of Canvas and uses the graph's exact event ordinals. */
 import { visibleSlices } from "./trace-viewport.js";
+import { apiObservationIds } from "./api-observation.js";
 
 export function indexFlows(links, times) {
   const slices = links
@@ -30,6 +31,15 @@ export function visibleFlows(index, rows, window) {
       (index.executions.boundaryOwners.get(original)?.has(otherOwner) ? otherOwner : null);
     const group = index.executions.laneByChain.get(chain);
     const owner = node || index.items[raw]?.node;
+    // A qualified endpoint is another view of this same HTTP invocation. It may
+    // represent the HTTP scope before its technical capture anchor, even when
+    // both are displayed. This changes row placement, not the causal evidence.
+    for (const id of index.eventRows.get(raw) || [])
+      if (
+        positions.has(`${group}:${id}`) &&
+        apiObservationIds(index.rows.get(id)?.node).includes(owner)
+      )
+        return positions.get(`${group}:${id}`);
     if (positions.has(`${group}:${owner}`)) return positions.get(`${group}:${owner}`);
     if (node) return null;
     // A display reference remains the same observed identity; semantic equivalence
@@ -53,10 +63,27 @@ export function visibleFlows(index, rows, window) {
         executionOwner(flow.from, flow.fromEvent),
       );
     if (fromRow === null || toRow === null) return [];
+    const projectionAt = (row, raw, explicit) =>
+      (rows[row].members || []).find((id) =>
+        apiObservationIds(index.rows.get(id)?.node).includes(explicit || index.items[raw]?.node),
+      );
+    const fromProjection = projectionAt(fromRow, flow.from, flow.fromNode),
+      toProjection = projectionAt(toRow, flow.to, flow.toNode);
     const at = index.axis.times[flow.at];
     return [
       {
         ...flow,
+        // Subtrack lookup needs the displayed endpoint identity. Keep the native
+        // observed subject alongside it; raw ordinals and causal links are intact.
+        ...(fromProjection
+          ? {
+              fromNode: fromProjection,
+              fromObservedNode: flow.fromNode || index.items[flow.from]?.node,
+            }
+          : {}),
+        ...(toProjection
+          ? { toNode: toProjection, toObservedNode: flow.toNode || index.items[flow.to]?.node }
+          : {}),
         fromRow,
         toRow,
         fromTime: ["call", "activation", "transition", "observation"].includes(flow.type)

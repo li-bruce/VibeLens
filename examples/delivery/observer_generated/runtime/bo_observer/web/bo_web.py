@@ -70,6 +70,9 @@ class BOWeb:
         self.design = BODesign(self.root, discovery)
         self.graph_routes = set(graph_routes)
         self.code_graph = CodeGraph(self.root)
+        # API entrypoints are part of normal observation. Reading their small
+        # projection must not opt the project into a persisted full code index.
+        self.bo_api_graph = CodeGraph(self.root, persist=False)
         self.control = ControlScope(self.root)
         self.control_view = None
         self.control_recording = None

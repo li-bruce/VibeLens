@@ -35,32 +35,49 @@ def registrations(tree, path):
             return None
         return reference(node, names)
 
-    def route(call, names, owner):
+    def route(call, names, owner, handler_symbol=None):
         if not isinstance(call.func, ast.Attribute):
             return
         receiver = reference(call.func.value, names)
         verb = call.func.attr
-        if not receiver or receiver[0] != "router" or verb not in {"add_url_rule", "add_api_route"}:
+        decorators = {
+            "get",
+            "post",
+            "put",
+            "patch",
+            "delete",
+            "head",
+            "options",
+            "route",
+            "api_route",
+            "websocket",
+        }
+        allowed = decorators if handler_symbol else {"add_url_rule", "add_api_route"}
+        if not receiver or receiver[0] != "router" or verb not in allowed:
             return
         keywords = {value.arg: value.value for value in call.keywords if value.arg}
         route_path = (
             call.args[0]
             if call.args
-            else keywords.get("rule" if verb == "add_url_rule" else "path")
+            else keywords.get("rule" if verb in {"add_url_rule", "route"} else "path")
         )
         if not isinstance(route_path, ast.Constant) or not isinstance(route_path.value, str):
             return
         position, keyword = (2, "view_func") if verb == "add_url_rule" else (1, "endpoint")
         handler = call.args[position] if len(call.args) > position else keywords.get(keyword)
-        target = reference(handler, names)
-        methods = []
+        target = ("callable", handler_symbol) if handler_symbol else reference(handler, names)
+        methods = [verb.upper()] if handler_symbol and verb not in {"route", "api_route"} else []
         if "methods" in keywords:
             try:
                 value = ast.literal_eval(keywords["methods"])
                 if isinstance(value, (list, tuple, set)) and all(
                     isinstance(item, str) for item in value
                 ):
-                    methods = sorted({item.upper() for item in value})
+                    methods = (
+                        [item.upper() for item in value]
+                        if handler_symbol
+                        else sorted({item.upper() for item in value})
+                    )
             except (ValueError, TypeError):
                 pass
         result.append(
@@ -70,11 +87,16 @@ def registrations(tree, path):
                 "declaration": ast.unparse(call),
                 "handler": target[1] if target and target[0] in {"callable", "module"} else None,
                 "handler_expression": ast.unparse(handler) if handler else "",
+                "registration_kind": "decorator" if handler_symbol else "call",
+                "receiver": ast.unparse(call.func.value),
+                "framework": receiver[1],
                 "source": {
                     "path": path,
                     "symbol": owner or "<module>",
                     "line": call.lineno,
+                    "column": call.col_offset,
                     "end_line": call.end_lineno,
+                    "end_column": call.end_col_offset,
                 },
             }
         )
@@ -86,6 +108,10 @@ def registrations(tree, path):
             if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 symbol = owner + "." + statement.name if owner else statement.name
                 category = "class" if isinstance(statement, ast.ClassDef) else "callable"
+                if category == "callable":
+                    for decorator in statement.decorator_list:
+                        if isinstance(decorator, ast.Call):
+                            route(decorator, names, symbol, handler_symbol=symbol)
                 names[statement.name] = (category, symbol)
                 local = dict(
                     method_outer if category == "callable" and method_outer is not None else names

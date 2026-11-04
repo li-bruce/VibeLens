@@ -204,6 +204,29 @@ runtime execution. Read [the design](development/code-vis.md) for scope and limi
 
 ## Comment and formatting conventions
 
+[graph/source_documentation.py](../skills/vibelens/scripts/bo_observer/graph/source_documentation.py)
+extracts concise source explanations and checks documented mapped functions,
+API handlers and important parameters. It shares actual handler resolution
+with the code index. API endpoint registrations, source handlers and technical
+capture anchors retain separate identities and explicit connections.
+
+[code_graph/observation.py](../skills/vibelens/scripts/bo_observer/code_graph/observation.py)
+qualifies API observation sources by handler, method and route;
+[api-observation.js](../skills/vibelens/assets/stategraph-viewer/api-observation.js)
+shares those exact sources across graph values, lifecycle display, replay and
+Timeline. `GraphSession` retains a minimal API snapshot independently of the
+optional full symbol cache. Recordings freeze it once at their start boundary.
+
+[containment-geometry.js](../skills/vibelens/assets/stategraph-viewer/containment-geometry.js)
+fits visible labels, glyphs and nested disks with D3;
+[containment-view.js](../skills/vibelens/assets/stategraph-viewer/containment-view.js)
+rebuilds the visible hierarchy after filtering. The 3D renderer uses displayed
+bodies for fitting, picking and projection guides. Hidden owner coordinates
+remain saved without expanding visible bounds.
+[proximity-layout.js](../skills/vibelens/assets/stategraph-viewer/proximity-layout.js)
+supplies bounded source/identifier neighborhood hints to both layouts; it never
+creates semantic edges or overrides saved positions.
+
 - Describe purpose at public function boundaries; explain ordering, ownership, and failure handling where they are less obvious.
 - Use explicit blocks for validation and state changes. Keep each operation readable on its own line.
 - Keep public identifiers, protocol fields, graph IDs, and protected expectations stable during readability work.

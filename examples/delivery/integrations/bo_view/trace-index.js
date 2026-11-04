@@ -7,6 +7,7 @@ import { stateResidencies, activityResidencies } from "./trace-residencies.js";
 import { indexFlows } from "./trace-flows.js";
 import { lowerBound } from "./trace-viewport.js";
 import { executionIndex, executionRows } from "./trace-executions.js";
+import { apiObservationIds } from "./api-observation.js";
 
 const canonical = (node) => node.referenceOf || node.event_node || node.id;
 
@@ -75,7 +76,12 @@ function projections(all, edges) {
     return value;
   };
   for (const node of all.values()) {
-    const origin = node.code_role ? [...new Set([node.id, ...owners(node.id)])] : [canonical(node)];
+    const origin =
+      node.code_role === "endpoint"
+        ? [node.id, ...apiObservationIds(node)]
+        : node.code_role
+          ? [...new Set([node.id, ...owners(node.id)])]
+          : [canonical(node)];
     for (const id of origin) {
       if (!aliases.has(id)) aliases.set(id, []);
       aliases.get(id).push(node);

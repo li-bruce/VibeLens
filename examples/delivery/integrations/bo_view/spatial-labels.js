@@ -31,3 +31,32 @@ export function regionLabelAnchor(volume, project) {
   }
   return { ...best, y: best.y + 7 };
 }
+
+/** Keep circle captions below their projected rims without overlapping targets.
+ * The renderer caps captions at 300. A deterministic sweep checks each earlier
+ * rectangle at most once per caption; no simulation or source graph changes.
+ */
+export function stackRegionCaptions(captions, gap = 4) {
+  const placed = [],
+    result = new Map();
+  for (const caption of captions
+    .slice()
+    .sort((a, b) => a.y - b.y || a.x - b.x || a.key.localeCompare(b.key))) {
+    const left = caption.x - caption.width / 2,
+      right = left + caption.width;
+    let top = caption.y;
+    for (const previous of placed)
+      if (
+        left < previous.right + gap &&
+        right + gap > previous.left &&
+        top < previous.bottom + gap &&
+        top + caption.height + gap > previous.top
+      )
+        top = previous.bottom + gap;
+    const rectangle = { left, right, top, bottom: top + caption.height };
+    placed.push(rectangle);
+    placed.sort((a, b) => a.top - b.top);
+    result.set(caption.key, { x: caption.x, y: top, shift: top - caption.y });
+  }
+  return result;
+}

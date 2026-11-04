@@ -65,6 +65,8 @@ uninspected properties remain explicitly unverified.
 
 ## Development and runtime
 
+The **Data operations** layer shows executed queries, transactions and selected transformations: what was read or written, relevant values or counts, elapsed work and the actual commit/rollback outcome. The **Data structure** layer describes stores, tables/collections and fields. The function layers show the implementation that performs those operations. Link these facts in the existing graph; use recorded calls and values for execution evidence. A collector's own metadata queries stay excluded. Empty operation layers need no plane, and technical collection wrappers must not appear as application data processing.
+
 Store configuration belongs in `bo_stategraph/databases.json`. Connection URLs
 come from named environment variables. Native exporters write catalog JSON to
 stdout; the synchronizer validates it before publishing generated files.

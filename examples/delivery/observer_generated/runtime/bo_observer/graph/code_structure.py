@@ -66,6 +66,7 @@ def parse_unit(path, source):
     """Extract Python symbols, parameters, and call expressions from the syntax tree."""
     tree = ast.parse(source, filename=path)
     from .python_routes import registrations
+    from .source_documentation import python_documentation
 
     source_lines = source.splitlines()
     imports, symbols, shadowed_globals = {}, {}, set()
@@ -118,6 +119,7 @@ def parse_unit(path, source):
                 "predicates": [],
                 "fields": [],
                 "bases": [ast.unparse(base) for base in node.bases] if is_class else [],
+                "documentation": python_documentation(path, name, node),
             }
             item["entrypoints"] = [
                 ast.unparse(d)
@@ -267,6 +269,13 @@ def parse_unit(path, source):
             self.generic_visit(call)
 
     ModuleCalls().visit(tree)
+    http_routes = registrations(tree, path)
+    for symbol in symbols.values():
+        symbol["http_endpoints"] = [
+            route
+            for route in http_routes
+            if route["registration_kind"] == "decorator" and route["handler"] == symbol["symbol"]
+        ]
     return {
         "imports": imports,
         "file_references": file_references,
@@ -274,7 +283,9 @@ def parse_unit(path, source):
         "declarations": declarations,
         "shadowed_globals": sorted(shadowed_globals),
         "module_calls": module_calls,
-        "http_registrations": registrations(tree, path),
+        "http_registrations": [
+            route for route in http_routes if route["registration_kind"] != "decorator"
+        ],
     }
 
 

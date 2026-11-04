@@ -16,13 +16,19 @@ export function graphInventory(
 ) {
   const all = new Map(view.model.nodes.map((n) => [n.id, n])),
     rawEdges = [...view.model.edges];
-  for (const n of view.model.nodes) {
+  for (const original of view.model.nodes) {
+    const n = nameNode(original, view.model, view.manifest?.bindings);
+    all.set(n.id, n);
     if (n.kind === "state") continue;
     const captures = captureFields(n);
     for (const field of captures.nodes) all.set(field.id, field);
     rawEdges.push(...captures.edges);
   }
-  const machine = machineProjection(view.model, view.machine, { attempt, choice, step });
+  const machine = machineProjection(view.model, view.machine, {
+    attempt,
+    choice,
+    step,
+  });
   for (const node of machine.nodes) all.set(node.id, node);
   rawEdges.push(...machine.edges);
   // Membership is a view reference to one canonical identity, not another call.

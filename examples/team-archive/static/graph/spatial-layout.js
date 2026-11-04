@@ -1,5 +1,6 @@
 import { nodeElevation } from "./spatial-model.js";
 import { layerHeights } from "./graph-layers.js";
+import { proximityOrder, proximitySeeds, proximityNeighbors } from "./proximity-layout.js";
 import {
   forceSimulation,
   forceManyBody,
@@ -41,7 +42,21 @@ export function solveSpatial({
     }
     return current.id;
   };
-  const roots = [...new Set(nodes.map(rootOf))].sort();
+  const rootIds = new Set(nodes.map(rootOf));
+  const neighbors = proximityNeighbors(edges);
+  const roots = proximityOrder(
+    nodes.filter((node) => rootIds.has(node.id)),
+    neighbors,
+  ).map((node) => node.id);
+  const siblings = new Map();
+  for (const node of nodes) {
+    const key = JSON.stringify([node.parent || "", node.layer, node.type]);
+    if (!siblings.has(key)) siblings.set(key, []);
+    siblings.get(key).push(node);
+  }
+  const local = new Map();
+  for (const group of siblings.values())
+    for (const [id, point] of proximitySeeds(group, neighbors, 300)) local.set(id, point);
   // Spiral area already grows with node count; scaling spacing by sqrt(count)
   // again would spread a large graph beyond the camera's useful range.
   const spacing = 220;
@@ -63,16 +78,19 @@ export function solveSpatial({
       saved = positions[node.id],
       shared = planar[node.id];
     const angle = seed(node.id) * Math.PI * 2,
-      radius = node.parent ? 90 + seed(node.id + "r") * 150 : 0;
+      radius = node.parent ? 90 + seed(node.id + "r") * 150 : 0,
+      hint = node.parent && local.get(node.id),
+      dx = hint?.x ?? Math.cos(angle) * radius,
+      dz = hint?.y ?? Math.sin(angle) * radius;
     const y = nodeElevation(node, byId, layerY.get(node.layer), gap);
     return {
       ...node,
-      x: saved?.x ?? shared?.x ?? center.x + Math.cos(angle) * radius,
+      x: saved?.x ?? shared?.x ?? center.x + dx,
       y: y,
-      z: saved?.z ?? shared?.z ?? center.z + Math.sin(angle) * radius,
-      tx: center.x + Math.cos(angle) * radius,
+      z: saved?.z ?? shared?.z ?? center.z + dz,
+      tx: center.x + dx,
       ty: y,
-      tz: center.z + Math.sin(angle) * radius,
+      tz: center.z + dz,
       ...(saved && (!arrange || saved.pinned) ? { fx: saved.x, fz: saved.z } : {}),
       // A shared planar result is already collision-tested. Preserve its exact
       // X/Z coordinates instead of pulling connected layers back into one knot.

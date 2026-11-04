@@ -3,6 +3,7 @@ import { dataTransferLabel } from "./data-layer.js";
 // Observation facts and display steps are independent. No business commands.
 import { runtimeFrame, runtimeChanges, rememberRuntimeMachine } from "./runtime-frames.js";
 import { phaseLabel, stateLabels } from "./graph-core.js";
+import { apiObservationIds, observesNode } from "./api-observation.js";
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const cached = new WeakMap();
 const boFieldKey = (event, direction, field) =>
@@ -208,9 +209,13 @@ export function boFacts(recording, items) {
 export function boOwners(all, visible) {
   const shown = new Map();
   for (const b of visible) {
-    const key = b.node.referenceOf || b.node.event_node || b.id;
-    if (!shown.has(key)) shown.set(key, []);
-    shown.get(key).push(b);
+    for (const key of new Set([
+      b.node.referenceOf || b.node.event_node || b.id,
+      ...apiObservationIds(b.node),
+    ])) {
+      if (!shown.has(key)) shown.set(key, []);
+      shown.get(key).push(b);
+    }
   }
   return (id, change = null) => {
     if (change?.direction) {
@@ -262,7 +267,7 @@ export function boStepPlan(recording, items, all, visible, { mode = "view" } = {
         (b) =>
           b.type !== "data" &&
           (b.type !== "business" || event.phase !== "return") &&
-          (b.node.referenceOf || b.node.event_node || b.id) === event.node,
+          observesNode(b.node, event.node),
       );
     const command = event.kind === "command" && direct.some((b) => b.type === "business");
     if (changed || call || command) plan.push(i);

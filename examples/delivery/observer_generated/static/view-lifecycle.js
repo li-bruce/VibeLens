@@ -34,6 +34,7 @@ export function graphVersion(view) {
   return JSON.stringify([
     view.manifest.build_id,
     view.manifest.model_hash || canonical(view.model),
+    ...(view.api_structure ? [view.api_structure.revision] : []),
   ]);
 }
 

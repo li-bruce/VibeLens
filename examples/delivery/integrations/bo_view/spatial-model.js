@@ -1,4 +1,5 @@
 import { layerOf, layers, layerColor } from "./graph-layers.js";
+import { enclosingCircle, REGION_PADDING, SPATIAL_GLYPH_RADIUS } from "./containment-geometry.js";
 
 /** Lift planar node centers into X/Z without changing either saved layout.
  * Box coordinates use a top-left origin; spatial objects use their center.
@@ -38,7 +39,11 @@ export function prepareSpatialHierarchy(graph, preferences) {
   }
   const self = new Set();
   for (const edge of graph.rawEdges) {
-    if (edge.type === "contains") continue;
+    if (
+      ["contains", "code-contains"].includes(edge.type) ||
+      (edge.origin === "code-index" && edge.code_relation === "contains")
+    )
+      continue;
     if (ancestors.get(edge.to)?.has(edge.from)) self.add(edge.from);
     if (ancestors.get(edge.from)?.has(edge.to)) self.add(edge.to);
   }
@@ -65,11 +70,20 @@ export function prepareSpatialHierarchy(graph, preferences) {
 /** Renderer-neutral scene input. Coordinates, camera and GPU objects never become graph facts. */
 export function spatialModel(graph, presentation) {
   const visible = new Set([...presentation.glyphs, ...presentation.regions]);
+  const visibleParent = (node) => {
+    const seen = new Set([node.id]);
+    let parent = node.parent;
+    while (parent && !visible.has(parent) && !seen.has(parent)) {
+      seen.add(parent);
+      parent = graph.all.get(parent)?.parent;
+    }
+    return parent && visible.has(parent) && !seen.has(parent) ? parent : null;
+  };
   const nodes = graph.boxes
     .filter((box) => visible.has(box.id))
     .map((box) => ({
       id: box.id,
-      parent: visible.has(box.node.parent) ? box.node.parent : null,
+      parent: visibleParent(box.node),
       layer: layerOf(box.node),
       type: box.type,
       color: layerColor(box.node),
@@ -77,6 +91,9 @@ export function spatialModel(graph, presentation) {
       glyph: presentation.glyphs.has(box.id),
       region: presentation.regions.has(box.id),
       label: box.node.label || box.id,
+      source: box.node.source,
+      source_name: box.node.source_name,
+      signature: box.node.signature,
       state: box.state,
       rows: box.rows || box.lines || [],
     }));
@@ -122,32 +139,67 @@ export function descendants(model, id) {
   return result;
 }
 
-/** One owner may enclose descendants on several layers. Every projection keeps its owner ID. */
-export function containmentVolumes(model, positions, gap) {
-  const volumes = [];
-  for (const owner of model.nodes.filter((node) => node.region)) {
-    const ids = descendants(model, owner.id);
-    for (const layer of model.layers) {
-      const members = model.nodes.filter((node) => ids.has(node.id) && node.layer === layer.id);
-      if (!members.length) continue;
-      const points = members.map((node) => positions[node.id]).filter(Boolean);
-      if (!points.length) continue;
-      const min = ["x", "y", "z"].map((key) => Math.min(...points.map((p) => p[key])));
-      const max = ["x", "y", "z"].map((key) => Math.max(...points.map((p) => p[key])));
-      const center = Object.fromEntries(
-        ["x", "y", "z"].map((key, i) => [key, (min[i] + max[i]) / 2]),
-      );
-      const radius = Math.max(65, Math.hypot(max[0] - min[0], max[2] - min[2]) / 2 + 55);
-      volumes.push({
-        id: owner.id,
-        layer: layer.id,
-        center,
-        radius,
-        height: 0,
-        projection: layer.id !== owner.layer,
-        members: members.map((node) => node.id),
-      });
+/** Fit visible bodies bottom-up on each semantic plane.
+ * Region-only owners have no physical center glyph, so their saved coordinates
+ * cannot enlarge an enclosure. Child regions contribute their full disks,
+ * including cross-layer projections, instead of only a stale owner point.
+ */
+export function containmentVolumes(model, positions, _gap) {
+  const volumes = [],
+    children = new Map(),
+    byId = new Map(model.nodes.map((node) => [node.id, node]));
+  for (const node of model.nodes) {
+    if (!children.has(node.parent)) children.set(node.parent, []);
+    children.get(node.parent).push(node.id);
+  }
+  for (const layer of model.layers) {
+    const memo = new Map(),
+      visiting = new Set();
+    function fit(id) {
+      if (memo.has(id)) return memo.get(id);
+      // Invalid draft parent cycles must not hang a presentation calculation.
+      if (visiting.has(id)) return { disks: [], members: [] };
+      visiting.add(id);
+      const node = byId.get(id),
+        position = positions[id],
+        disks = [],
+        members = [];
+      if (
+        node.glyph &&
+        node.layer === layer.id &&
+        [position?.x, position?.y, position?.z].every(Number.isFinite)
+      ) {
+        disks.push({
+          x: position.x,
+          y: position.z,
+          radius: SPATIAL_GLYPH_RADIUS,
+        });
+        members.push(id);
+      }
+      for (const child of children.get(id) || []) {
+        const result = fit(child);
+        disks.push(...result.disks);
+        members.push(...result.members);
+      }
+      const circle = node.region && enclosingCircle(disks, REGION_PADDING);
+      if (circle) {
+        const plane = members.map((member) => positions[member]).find(Boolean);
+        volumes.push({
+          id,
+          layer: layer.id,
+          center: { x: circle.x, y: plane.y, z: circle.y },
+          radius: circle.radius,
+          height: 0,
+          projection: layer.id !== node.layer,
+          members,
+        });
+      }
+      const result = { disks: circle ? [circle] : disks, members };
+      visiting.delete(id);
+      memo.set(id, result);
+      return result;
     }
+    for (const node of model.nodes) fit(node.id);
   }
   return volumes;
 }

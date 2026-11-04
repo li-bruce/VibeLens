@@ -370,6 +370,9 @@ class GraphSession:
             if self.bo_project_context.get()
             else None
         )
+        api_structure = (
+            self.web.bo_api_graph.api_snapshot() if self.bo_project_context.get() else None
+        )
         with self.lock:
             instances = self.graph.bo_instances()
             current = next(
@@ -408,6 +411,7 @@ class GraphSession:
                 "layout_id": self.project["project_id"],
                 "model": model,
                 "project_structure": project_structure,
+                "api_structure": api_structure,
                 "manifest": deepcopy(self.manifest),
                 "binding_status": self.binding(),
                 "events": [],

@@ -13,7 +13,8 @@ import { cleanRoute, polylineAt } from "./edge-routing.js";
 import { RoutingClient } from "./routing-client.js";
 import { spatialScene } from "./routing-scene.js";
 import { nodeGeometry } from "./spatial-geometry.js";
-import { regionLabelAnchor } from "./spatial-labels.js";
+import { SPATIAL_GLYPH_RADIUS } from "./containment-geometry.js";
+import { regionLabelAnchor, stackRegionCaptions } from "./spatial-labels.js";
 import { relationStyle, relationName, displayName, annotationFor } from "./layout.js";
 import { t } from "./i18n.js";
 
@@ -24,6 +25,76 @@ const cameraDirections = {
   side: [2, 0.3, 0.1],
   top: [0, 2, 0.0001],
 };
+
+/** Resolve actual drawn bodies once for meshes, picking, labels and routing.
+ * Hiding projection rings leaves a glyph for an owner represented only on
+ * other planes. Its canonical identity and saved coordinates stay unchanged.
+ */
+export function visibleSpatialBodies(model, volumes, projections = true) {
+  const visibleVolumes = volumes.filter((volume) => projections || !volume.projection),
+    ringOwners = new Set(visibleVolumes.map((volume) => volume.id)),
+    glyphs = new Set(
+      model.nodes
+        .filter((node) => node.glyph || (node.region && !ringOwners.has(node.id)))
+        .map((node) => node.id),
+    );
+  return { volumes: visibleVolumes, glyphs, ringOwners };
+}
+
+/** Camera and plane bounds follow rendered bodies, including ring boundaries.
+ * Hidden owner anchors remain useful for saved layouts and group movement, but
+ * cannot make a fitted viewport mostly empty. An optional ID set scopes focus.
+ */
+export function visibleSpatialPoints(positions, volumes, glyphs, ids = null) {
+  const points = [];
+  for (const id of glyphs) {
+    if (ids && !ids.has(id)) continue;
+    const point = positions[id];
+    if (!point) continue;
+    for (const sign of [-1, 1])
+      points.push({
+        x: point.x + sign * SPATIAL_GLYPH_RADIUS,
+        y: point.y + sign * SPATIAL_GLYPH_RADIUS,
+        z: point.z + sign * SPATIAL_GLYPH_RADIUS,
+      });
+  }
+  for (const volume of volumes) {
+    if (ids && !ids.has(volume.id)) continue;
+    for (const sign of [-1, 1])
+      points.push({
+        x: volume.center.x + sign * volume.radius,
+        y: volume.center.y,
+        z: volume.center.z + sign * volume.radius,
+      });
+  }
+  return points;
+}
+
+/** Connect repeated owner regions through visible bodies, never a hidden anchor.
+ * A real self glyph is the source when present. Otherwise the first occupied
+ * owner region connects its other projections; it needs no guide to itself.
+ */
+export function spatialProjectionGuides(positions, volumes, glyphs) {
+  const primary = new Map();
+  for (const volume of volumes)
+    if (!primary.has(volume.id) || !volume.projection) primary.set(volume.id, volume);
+  return volumes.flatMap((volume) => {
+    if (!volume.projection) return [];
+    const source = glyphs.has(volume.id) ? positions[volume.id] : primary.get(volume.id)?.center;
+    if (!source || source === volume.center) return [];
+    return [
+      {
+        id: `projection:${volume.id}:${volume.layer}`,
+        from: volume.id,
+        to: volume.id,
+        type: "contains",
+        guide: true,
+        fromPosition: source,
+        toPosition: volume.center,
+      },
+    ];
+  });
+}
 
 /** Owns the real WebGL scene and nothing in the business/state model.
  * Nodes and arrows are instanced; curves share one wide-line buffer; labels are
@@ -256,10 +327,25 @@ export class SpatialRenderer {
     this.pickable = [];
     this.labelItems = [];
     this.curves = new Map();
+    // One non-interactive overlay holds leader strokes for displaced captions.
+    this.captionLeaders = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    this.captionLeaders.setAttribute("aria-hidden", "true");
+    Object.assign(this.captionLeaders.style, {
+      position: "absolute",
+      inset: "0",
+      width: "100%",
+      height: "100%",
+      pointerEvents: "none",
+    });
+    this.labels.append(this.captionLeaders);
     const { graph, preferences, selected, focusContext } = this.input;
     const matrix = new T.Object3D();
+    this.volumes = containmentVolumes(this.model, this.positions, this.settings.gap);
+    const bodies = visibleSpatialBodies(this.model, this.volumes, this.settings.projections);
+    this.visibleVolumes = bodies.volumes;
+    this.visibleGlyphs = bodies.glyphs;
     const typeGroups = new Map();
-    for (const node of this.model.nodes.filter((node) => node.glyph)) {
+    for (const node of this.model.nodes.filter((node) => this.visibleGlyphs.has(node.id))) {
       if (!typeGroups.has(node.type)) typeGroups.set(node.type, []);
       typeGroups.get(node.type).push(node);
     }
@@ -287,10 +373,8 @@ export class SpatialRenderer {
       this.group.add(mesh);
       this.pickable.push(mesh);
     }
-    this.volumes = containmentVolumes(this.model, this.positions, this.settings.gap);
     const circle = new T.CircleGeometry(1, 64);
-    for (const volume of this.volumes) {
-      if (volume.projection && !this.settings.projections) continue;
+    for (const volume of this.visibleVolumes) {
       const node = this.model.byId.get(volume.id),
         color = node.color;
       const active = selected === volume.id || focusContext.regions.has(volume.id);
@@ -332,14 +416,16 @@ export class SpatialRenderer {
     }
     this.drawLayerGuides();
     this.router.request(
-      spatialScene(this.model, this.positions, this.volumes, cleanRoute(this.input.routing)),
+      spatialScene(this.model, this.positions, this.visibleVolumes, cleanRoute(this.input.routing)),
     );
     this.drawEdges(matrix);
     // Projected regions repeat the owner's label, not the owner node or its facts.
     const labelNodes = [...this.model.nodes].sort(
       (a, b) => (b.id === selected) - (a.id === selected) || Number(b.region) - Number(a.region),
     );
-    for (const node of labelNodes.filter((n) => n.glyph && !n.region).slice(0, 220)) {
+    for (const node of labelNodes
+      .filter((n) => this.visibleGlyphs.has(n.id) && !bodies.ringOwners.has(n.id))
+      .slice(0, 220)) {
       const box = graph.byId.get(node.id),
         label = document.createElement("div");
       label.className = "spatial-label" + (node.id === selected ? " selected" : "");
@@ -368,7 +454,7 @@ export class SpatialRenderer {
       this.labels.append(label);
       this.labelItems.push({ el: label, id: node.id, offset: 18 });
     }
-    for (const volume of this.volumes.filter((v) => !v.projection || this.settings.projections)) {
+    for (const volume of this.visibleVolumes) {
       if (this.labelItems.length >= 300) break;
       const label = document.createElement("div");
       label.className = "spatial-label region-label";
@@ -378,10 +464,23 @@ export class SpatialRenderer {
       label.textContent = displayName(graph.byId.get(volume.id).node, preferences);
       this.updateBadges(label, graph.byId.get(volume.id));
       label.style.setProperty("--node-color", "#" + owner.color.toString(16).padStart(6, "0"));
-      label.onpointerdown = (event) => this.startDrag(event, { region: volume.id });
+      label.onpointerdown = (event) =>
+        this.startDrag(event, { region: volume.id, anchor: volume.center });
       label.onclick = () => this.callbacks.onSelect?.(volume.id);
       this.labels.append(label);
-      this.labelItems.unshift({ el: label, id: volume.id, volume, offset: 0 });
+      const leader = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      leader.setAttribute("stroke", "#" + owner.color.toString(16).padStart(6, "0"));
+      leader.setAttribute("stroke-width", "0.75");
+      leader.setAttribute("opacity", "0.55");
+      leader.style.pointerEvents = "none";
+      this.captionLeaders.append(leader);
+      this.labelItems.unshift({
+        el: label,
+        id: volume.id,
+        volume,
+        leader,
+        offset: 0,
+      });
     }
     this.updateTransferLabels();
     this.schedule();
@@ -500,6 +599,7 @@ export class SpatialRenderer {
       item.el.title = name;
       item.el.classList.toggle("selected", item.id === selected);
       this.updateBadges(item.el, graph.byId.get(item.id));
+      item.measurement = null;
       const values = node.rows
         .filter((row) => ["value", "bad", "state"].includes(row.role))
         .slice(0, item.id === selected ? 5 : 2)
@@ -564,7 +664,11 @@ export class SpatialRenderer {
 
   /** Draw only populated, visible semantic planes at their current compacted heights. */
   drawLayerGuides() {
-    const values = this.model.nodes.map((node) => this.positions[node.id]).filter(Boolean);
+    const values = visibleSpatialPoints(
+      this.positions,
+      this.visibleVolumes || [],
+      this.visibleGlyphs || new Set(this.model.nodes.map((node) => node.id)),
+    );
     if (!values.length) return;
     const bounds = new T.Box3().setFromPoints(values.map(vector)),
       size = bounds.getSize(new T.Vector3());
@@ -629,17 +733,7 @@ export class SpatialRenderer {
     this.arrowMesh = null;
     this.arrowEdges = [];
     const guides = this.settings.projections
-      ? this.volumes
-          .filter((volume) => volume.projection)
-          .map((volume) => ({
-            id: `projection:${volume.id}:${volume.layer}`,
-            from: volume.id,
-            to: volume.id,
-            type: "contains",
-            guide: true,
-            fromPosition: this.positions[volume.id],
-            toPosition: volume.center,
-          }))
+      ? spatialProjectionGuides(this.positions, this.visibleVolumes, this.visibleGlyphs)
       : [];
     for (const edge of [...this.model.edges, ...guides]) {
       let start = edge.fromPosition || this.positions[edge.from],
@@ -698,7 +792,11 @@ export class SpatialRenderer {
     if (arrows.length) {
       const mesh = new T.InstancedMesh(
         new T.ConeGeometry(3.4, 11, 7),
-        new T.MeshBasicMaterial({ transparent: true, opacity: 0.45, depthWrite: false }),
+        new T.MeshBasicMaterial({
+          transparent: true,
+          opacity: 0.45,
+          depthWrite: false,
+        }),
         arrows.length,
       );
       const up = new T.Vector3(0, 1, 0);
@@ -733,7 +831,7 @@ export class SpatialRenderer {
     // target on the node's own plane, rather than requiring a stroke-perfect click.
     const targets = [];
     for (const node of this.model?.nodes || [])
-      if (node.glyph) {
+      if (this.visibleGlyphs?.has(node.id) ?? node.glyph) {
         const p = this.positions[node.id];
         if (!p) continue;
         const q = this.raycaster.ray.intersectPlane(
@@ -748,8 +846,7 @@ export class SpatialRenderer {
       }
     if (targets.length) return targets.sort((a, b) => a.distance - b.distance)[0];
     const under = [];
-    for (const volume of this.volumes || []) {
-      if (volume.projection && !this.settings.projections) continue;
+    for (const volume of this.visibleVolumes || []) {
       const point = this.raycaster.ray.intersectPlane(
         new T.Plane(new T.Vector3(0, 1, 0), -volume.center.y),
         new T.Vector3(),
@@ -782,10 +879,10 @@ export class SpatialRenderer {
       }
     }
     if (choices.length) return { edge: { ...choices[0], alternatives: choices } };
-    if (under.length)
-      return {
-        region: under.sort((a, b) => a.distance - b.distance || a.radius - b.radius)[0].id,
-      };
+    if (under.length) {
+      const volume = under.sort((a, b) => a.distance - b.distance || a.radius - b.radius)[0];
+      return { region: volume.id, anchor: volume.center };
+    }
     return null;
   }
 
@@ -815,7 +912,9 @@ export class SpatialRenderer {
     const normal = this.camera.getWorldDirection(new T.Vector3());
     this.dragPlane = new T.Plane().setFromNormalAndCoplanarPoint(
       normal,
-      vector(this.positions[id]),
+      // A fitted/projected ring may be far from its hidden owner's saved point.
+      // Use the clicked body's depth so perspective motion tracks the pointer.
+      vector(hit.anchor || this.positions[id]),
     );
     this.dragOrigin = this.raycaster.ray.intersectPlane(this.dragPlane, new T.Vector3());
     this.dragPositions = structuredClone(this.positions);
@@ -910,11 +1009,14 @@ export class SpatialRenderer {
 
   fit(id = null, angle = this.settings?.camera || "top") {
     if (!this.model) return;
-    const ids = id ? descendants(this.model, id) : new Set(this.model.nodes.map((n) => n.id));
-    const points = [...ids]
-      .map((key) => this.positions[key])
-      .filter(Boolean)
-      .map(vector);
+    const ids = id ? descendants(this.model, id) : null;
+    const points = visibleSpatialPoints(
+      this.positions,
+      this.visibleVolumes || [],
+      this.visibleGlyphs ||
+        new Set(this.model.nodes.filter((node) => node.glyph).map((node) => node.id)),
+      ids,
+    ).map(vector);
     if (!points.length) return;
     const box = new T.Box3().setFromPoints(points),
       center = box.getCenter(new T.Vector3());
@@ -1042,19 +1144,51 @@ export class SpatialRenderer {
     this.updateParticles(now);
     this.resizeGlyphs();
     this.renderer.render(this.scene, this.camera);
-    // Labels with colliding screen rectangles yield to selected/region labels.
+    // Region captions retain separate mouse targets even for nested close rims.
+    // Measure only when content changes; orbit frames reuse these DOM dimensions.
+    const projections = new Map(),
+      captions = [];
+    for (const item of this.labelItems || []) {
+      const point = item.volume
+        ? regionLabelAnchor(item.volume, (position) => this.screen(position))
+        : this.screen(item.position || this.positions[item.id]);
+      projections.set(item, point);
+      if (!item.volume || !point.visible) continue;
+      if (!item.measurement) {
+        item.el.hidden = false;
+        item.measurement = {
+          width: item.el.offsetWidth,
+          height: item.el.offsetHeight,
+        };
+      }
+      captions.push({
+        key: `${item.id}:${item.volume.layer}`,
+        x: point.x,
+        y: point.y + item.offset,
+        ...item.measurement,
+      });
+    }
+    const captionPositions = stackRegionCaptions(captions);
+    // Ordinary labels yield to selected/region labels at overview scale.
     const occupied = new Set();
     for (const item of this.labelItems || []) {
-      const p = item.volume
-        ? regionLabelAnchor(item.volume, (p) => this.screen(p))
-        : this.screen(item.position || this.positions[item.id]);
-      const key = `${Math.round(p.x / 145)}:${Math.round(p.y / 42)}`;
+      const p = projections.get(item),
+        caption = item.volume && captionPositions.get(`${item.id}:${item.volume.layer}`),
+        y = caption?.y ?? p.y + item.offset,
+        key = `${Math.round(p.x / 145)}:${Math.round(y / 42)}`;
       const visible =
         p.visible && (item.volume || !occupied.has(key) || item.id === this.input.selected);
       item.el.hidden = !visible;
+      if (item.leader) {
+        item.leader.style.display = visible && caption?.shift > 1 ? "" : "none";
+        item.leader.setAttribute("x1", p.x);
+        item.leader.setAttribute("x2", p.x);
+        item.leader.setAttribute("y1", p.y - 4);
+        item.leader.setAttribute("y2", y - 2);
+      }
       if (visible) {
         occupied.add(key);
-        item.el.style.transform = `translate(${p.x}px,${p.y + item.offset}px) translate(-50%,0)`;
+        item.el.style.transform = `translate(${p.x}px,${y}px) translate(-50%,0)`;
       }
     }
     this.frames.push(performance.now() - start);

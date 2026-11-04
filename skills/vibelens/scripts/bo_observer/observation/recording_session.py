@@ -76,6 +76,8 @@ def checkpoint(view, *, context=False):
     if context:
         if view.get("project_structure"):
             value["project_structure"] = deepcopy(view["project_structure"])
+        if view.get("api_structure"):
+            value["api_structure"] = deepcopy(view["api_structure"])
         value.update(
             model=deepcopy(view["model"]),
             manifest=deepcopy(view["manifest"]),
@@ -342,6 +344,8 @@ class Recordings:
                 # exact static tree already scanned at this same graph version.
                 if view.get("project_structure"):
                     latest["project_structure"] = view["project_structure"]
+                if view.get("api_structure"):
+                    latest["api_structure"] = view["api_structure"]
                 view = latest
             except Exception:
                 self.bo_restore_capture()

@@ -14,7 +14,10 @@ if (ts.version !== "5.9.3" || bo_require("@vue/compiler-sfc/package.json").versi
   throw Error("Adapter dependency versions differ from package-lock.json");
 
 const hash = (text) => createHash("sha256").update(text).digest("hex");
-const printer = ts.createPrinter({ removeComments: true, newLine: ts.NewLineKind.LineFeed });
+const printer = ts.createPrinter({
+  removeComments: true,
+  newLine: ts.NewLineKind.LineFeed,
+});
 const functionLike = (n) =>
   ts.isFunctionDeclaration(n) ||
   ts.isFunctionExpression(n) ||
@@ -23,7 +26,17 @@ const functionLike = (n) =>
   ts.isGetAccessorDeclaration(n) ||
   ts.isSetAccessorDeclaration(n) ||
   ts.isConstructorDeclaration(n);
-const routeNames = new Set(["get", "post", "put", "patch", "delete", "route", "websocket"]);
+const routeNames = new Set([
+  "get",
+  "post",
+  "put",
+  "patch",
+  "delete",
+  "head",
+  "options",
+  "route",
+  "websocket",
+]);
 
 /** Extract declarations, parameters, call sites, and frontend handlers from one source file. */
 function parseUnit(path, original, fileOnly = false) {
@@ -59,9 +72,49 @@ function parseUnit(path, original, fileOnly = false) {
   const line = (n) => sf.getLineAndCharacterOfPosition(n.getStart(sf)).line + 1;
   const imports = {},
     fileReferences = [],
+    httpRegistrations = [],
     symbols = {},
     names = new Map();
   const counts = new Map();
+  /** Read compiler-associated JSDoc, including arrow functions and Vue scripts.
+   * Source positions remain those of the complete original file.
+   */
+  function documentation(n, name) {
+    const docs = ts.getJSDocCommentsAndTags(n).filter(ts.isJSDoc),
+      doc = docs.at(-1),
+      prose = (value) =>
+        typeof value === "string"
+          ? value.trim()
+          : (value || [])
+              .map((part) => part.text || "")
+              .join("")
+              .trim(),
+      description = prose(doc?.comment),
+      parameters = {};
+    for (const tag of doc?.tags || [])
+      if (ts.isJSDocParameterTag(tag))
+        parameters[text(tag.name)] = {
+          description: prose(tag.comment).replace(/^-\s+/, ""),
+          line: line(tag),
+        };
+    return {
+      status: description ? "documented" : "missing",
+      format: "jsdoc",
+      summary: description
+        .split(/\n\s*\n/, 1)[0]
+        .replace(/\s+/g, " ")
+        .split(/(?<=[.!?])\s+|(?<=[。！？])/, 1)[0]
+        .slice(0, 100),
+      description,
+      parameters,
+      source: {
+        path,
+        symbol: name,
+        line: doc ? line(doc) : line(n),
+        end_line: sf.getLineAndCharacterOfPosition((doc || n).end).line + 1,
+      },
+    };
+  }
   function bindingNames(name) {
     if (ts.isIdentifier(name)) return [name.text];
     if (ts.isObjectBindingPattern(name) || ts.isArrayBindingPattern(name))
@@ -104,7 +157,11 @@ function parseUnit(path, original, fileOnly = false) {
       n.arguments.length === 1 &&
       ts.isStringLiteral(n.arguments[0])
     )
-      fileReferences.push({ module: n.arguments[0].text, relation: "imports", line: line(n) });
+      fileReferences.push({
+        module: n.arguments[0].text,
+        relation: "imports",
+        line: line(n),
+      });
     if (fileOnly) {
       ts.forEachChild(n, (child) => register(child));
       return;
@@ -125,7 +182,10 @@ function parseUnit(path, original, fileOnly = false) {
       if (ts.isObjectBindingPattern(n.name))
         for (const entry of n.name.elements)
           if (ts.isIdentifier(entry.name))
-            imports[entry.name.text] = { module, name: text(entry.propertyName || entry.name) };
+            imports[entry.name.text] = {
+              module,
+              name: text(entry.propertyName || entry.name),
+            };
     }
     if (ts.isImportDeclaration(n) && ts.isStringLiteral(n.moduleSpecifier)) {
       const from = n.moduleSpecifier.text,
@@ -136,7 +196,10 @@ function parseUnit(path, original, fileOnly = false) {
       if (b && ts.isNamespaceImport(b)) imports[b.name.text] = { module: from, name: "*" };
       if (b && ts.isNamedImports(b))
         for (const e of b.elements)
-          imports[e.name.text] = { module: from, name: (e.propertyName || e.name).text };
+          imports[e.name.text] = {
+            module: from,
+            name: (e.propertyName || e.name).text,
+          };
     }
     if (ts.isObjectLiteralExpression(n)) {
       let part;
@@ -177,6 +240,7 @@ function parseUnit(path, original, fileOnly = false) {
         end_line: sf.getLineAndCharacterOfPosition(n.end).line + 1,
         ast_hash: hash(printed),
         signature: isClass ? name : (n.parameters || []).map(text).join(", "),
+        documentation: documentation(n, name),
         parameters: (n.parameters || []).map((p) => ({
           name: text(p.name),
           annotation: p.type ? text(p.type) : null,
@@ -195,6 +259,7 @@ function parseUnit(path, original, fileOnly = false) {
           ? (n.heritageClauses || []).flatMap((c) => c.types.map((v) => text(v.expression)))
           : [],
         entrypoints: [],
+        http_endpoints: [],
         local_names: (n.parameters || []).flatMap((p) => bindingNames(p.name)),
         role:
           !isClass && /^[A-Z]/.test(own) && kind === ts.ScriptKind.TSX ? "component" : undefined,
@@ -252,8 +317,13 @@ function parseUnit(path, original, fileOnly = false) {
   }
   register(sf);
   if (fileOnly)
-    return { imports, file_references: fileReferences, symbols: {}, language: "javascript" };
-  function addEntry(node, label) {
+    return {
+      imports,
+      file_references: fileReferences,
+      symbols: {},
+      language: "javascript",
+    };
+  function addEntry(node, label, endpoint = null) {
     let parent = node.parent,
       owner;
     while (parent && !owner) {
@@ -264,6 +334,17 @@ function parseUnit(path, original, fileOnly = false) {
     const name =
       names.get(node) || (owner && symbols[`${owner}.${local}`] ? `${owner}.${local}` : local);
     if (name && symbols[name]) symbols[name].entrypoints.push(label);
+    if (endpoint && name && symbols[name]) symbols[name].http_endpoints.push(endpoint);
+    else if (endpoint)
+      httpRegistrations.push({
+        ...endpoint,
+        handler: local || text(node),
+        handler_expression: text(node),
+        source: {
+          ...endpoint.source,
+          symbol: owner && symbols[owner] ? owner : "<module>",
+        },
+      });
     if (label.startsWith("jsx:") && owner && symbols[owner] && name && symbols[name])
       symbols[owner].calls.push({
         expression: local || name,
@@ -273,7 +354,81 @@ function parseUnit(path, original, fileOnly = false) {
         keywords: {},
       });
   }
-  function routes(n) {
+  /** A method called get/post is not evidence of an HTTP server.
+   * Track proven Express/Fastify/Koa router receivers through lexical scopes;
+   * a shadowing function argument or assignment removes that proof.
+   */
+  function routeReceiver(n, environment) {
+    if (ts.isIdentifier(n)) return environment.get(n.text);
+    if (ts.isPropertyAccessExpression(n)) {
+      const base = routeReceiver(n.expression, environment);
+      if (base?.kind === "import") return { ...base, name: base.name + "." + n.name.text };
+    }
+    if (ts.isCallExpression(n) || ts.isNewExpression(n)) {
+      const factory = routeReceiver(n.expression, environment);
+      if (
+        factory?.kind === "import" &&
+        ((factory.module === "express" &&
+          /^(default|\*)(\.Router)?$|^Router$/.test(factory.name)) ||
+          (factory.module === "fastify" && ["default", "*", "fastify"].includes(factory.name)) ||
+          (["@koa/router", "koa-router"].includes(factory.module) &&
+            ["default", "*"].includes(factory.name)))
+      )
+        return { kind: "router", module: factory.module };
+    }
+    return null;
+  }
+  function routes(n, environment) {
+    if (ts.isImportDeclaration(n) || ts.isImportEqualsDeclaration(n)) return;
+    if (functionLike(n)) {
+      const local = new Map(environment);
+      for (const parameter of n.parameters || [])
+        for (const name of bindingNames(parameter.name)) local.delete(name);
+      for (const declaration of n.body?.statements || []) {
+        if (ts.isVariableStatement(declaration))
+          for (const binding of declaration.declarationList.declarations)
+            for (const name of bindingNames(binding.name)) local.delete(name);
+      }
+      if (n.body) ts.forEachChild(n.body, (child) => routes(child, local));
+      return;
+    }
+    if (
+      ts.isIfStatement(n) ||
+      ts.isForStatement(n) ||
+      ts.isWhileStatement(n) ||
+      ts.isTryStatement(n)
+    ) {
+      // A conditional reassignment cannot leave an unconditional router proof.
+      // Parse the branches for their own declarations before invalidating joins.
+      const assigned = new Set();
+      function writes(part) {
+        if (functionLike(part)) return;
+        if (
+          ts.isBinaryExpression(part) &&
+          part.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+          ts.isIdentifier(part.left)
+        )
+          assigned.add(part.left.text);
+        ts.forEachChild(part, writes);
+      }
+      writes(n);
+      ts.forEachChild(n, (child) => routes(child, new Map(environment)));
+      for (const name of assigned) environment.delete(name);
+      return;
+    }
+    if (ts.isVariableDeclaration(n)) {
+      for (const name of bindingNames(n.name)) environment.delete(name);
+      if (ts.isIdentifier(n.name) && n.initializer) {
+        const value = routeReceiver(n.initializer, environment);
+        if (value) environment.set(n.name.text, value);
+        // CommonJS import aliases were independently identified above.
+        else if (imports[n.name.text] && text(n.initializer.expression) === "require")
+          environment.set(n.name.text, {
+            kind: "import",
+            ...imports[n.name.text],
+          });
+      }
+    }
     if (
       ts.isCallExpression(n) &&
       ts.isPropertyAccessExpression(n.expression) &&
@@ -293,9 +448,31 @@ function parseUnit(path, original, fileOnly = false) {
       ts.isPropertyAccessExpression(n.expression) &&
       routeNames.has(n.expression.name.text)
     ) {
-      const [pathNode, ...handlers] = n.arguments;
+      const [pathNode, ...handlers] = n.arguments,
+        receiver = routeReceiver(n.expression.expression, environment),
+        endpoint =
+          pathNode && ts.isStringLiteralLike(pathNode) && receiver?.kind === "router"
+            ? {
+                path: pathNode.text,
+                methods:
+                  n.expression.name.text === "route" ? [] : [n.expression.name.text.toUpperCase()],
+                declaration: text(n),
+                receiver: text(n.expression.expression),
+                framework: receiver.module,
+                source: {
+                  path,
+                  line: line(n),
+                  column: sf.getLineAndCharacterOfPosition(n.getStart(sf)).character,
+                  end_line: sf.getLineAndCharacterOfPosition(n.end).line + 1,
+                  end_column: sf.getLineAndCharacterOfPosition(n.end).character,
+                },
+              }
+            : null;
+      // Callback registration syntax is still a source-entry fact when the
+      // external receiver is unknown. Only proven routers create HTTP facts.
       if (pathNode)
-        for (const h of handlers) addEntry(h, `${text(n.expression)}(${text(pathNode)})`);
+        for (const handler of handlers)
+          addEntry(handler, `${text(n.expression)}(${text(pathNode)})`, endpoint);
     }
     if (
       ts.isJsxAttribute(n) &&
@@ -305,9 +482,24 @@ function parseUnit(path, original, fileOnly = false) {
       n.initializer.expression
     )
       addEntry(n.initializer.expression, `jsx:${text(n.name)}`);
-    ts.forEachChild(n, routes);
+    if (
+      ts.isBinaryExpression(n) &&
+      n.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+      ts.isIdentifier(n.left)
+    ) {
+      const value = routeReceiver(n.right, environment);
+      if (value) environment.set(n.left.text, value);
+      else environment.delete(n.left.text);
+    }
+    if (ts.isBlock(n)) {
+      const local = new Map(environment);
+      ts.forEachChild(n, (child) => routes(child, local));
+    } else ts.forEachChild(n, (child) => routes(child, environment));
   }
-  routes(sf);
+  routes(
+    sf,
+    new Map(Object.entries(imports).map(([name, ref]) => [name, { kind: "import", ...ref }])),
+  );
   if (template) {
     // The template is a real source symbol, so inline UI logic cannot disappear
     // from coverage. SFC supplies its actual source range; no inferred runtime.
@@ -348,7 +540,11 @@ function parseUnit(path, original, fileOnly = false) {
                 args: [],
                 keywords: {},
               });
-            else item.predicates.push({ line: p.loc.start.line, expression: expr });
+            else
+              item.predicates.push({
+                line: p.loc.start.line,
+                expression: expr,
+              });
           }
         }
       for (const child of n.children || []) templateWalk(child);
@@ -408,6 +604,7 @@ function parseUnit(path, original, fileOnly = false) {
   return {
     imports,
     file_references: fileReferences,
+    http_registrations: httpRegistrations,
     symbols,
     declarations: [],
     shadowed_globals: [],

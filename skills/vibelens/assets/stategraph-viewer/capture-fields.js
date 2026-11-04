@@ -29,6 +29,7 @@ export function captureFields(owner) {
       origin: "capture-field",
       capture_role: diagnostic ? "diagnostic" : "value",
       capture_owner_role: owner.data_role,
+      ...(owner.api_role ? { capture_owner_api_role: owner.api_role } : {}),
       ...(owner.policy_node ? { capture_owner_policy: owner.policy_node } : {}),
       ...(diagnostic ? { analysis_level: "advanced" } : {}),
       summary: t(direction === "in" ? "Recorded input" : "Recorded output"),
@@ -88,6 +89,13 @@ export function nodeExplanation(node, all) {
     ];
   }
   const result = [];
+  if (node.api?.registration_ids?.length > 1) {
+    for (const binding of Object.values(node.api.registration_bindings || {}))
+      result.push(
+        `${binding.symbol}${binding.documentation?.summary ? ": " + binding.documentation.summary : ""}`,
+      );
+  } else if (node.documentation?.summary) result.push(node.documentation.summary);
+  if (node.api_role === "capture") result.push(t("HTTP observation anchor"));
   if (node.project_cycle) result.push(t("Dependency cycle"));
   if (node.project_metrics?.files !== undefined)
     result.push(t("Files: {0}", node.project_metrics.files));
@@ -102,7 +110,7 @@ export function nodeExplanation(node, all) {
   if (node.machine_state) result.push(t("Executable state: {0}", node.value));
   if (["query", "transform"].includes(node.data_role))
     result.push(t("Data operation · {0}", node.data_metadata?.action || node.data_role));
-  if (node.summary) result.push(node.summary);
+  if (node.summary && node.summary !== node.documentation?.summary) result.push(node.summary);
   if (node.code_role) result.push(t("Static source declaration"));
   if (node.source?.symbol) result.push(`${node.source.path} · ${node.source.symbol}`);
   if (node.parent) result.push(t("Within: {0}", all.get(node.parent)?.label || node.parent));

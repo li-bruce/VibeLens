@@ -30,7 +30,7 @@ This resolves the stated uncertainty. It adds no expiration policy, notification
 
 ## During and after coding
 
-Maintain the declaration, actual execution or observation adapters, source/function/parameter bindings, probes and independent cases through the existing coding workflow. A source-only refactor retains the business network and its IDs; reconcile implementation details without reopening business decisions.
+Maintain the declaration, actual execution or observation adapters, source/function/parameter bindings, probes and independent cases through the existing coding workflow. Update affected API/function/parameter comments and run the [source-documentation check](source-documentation.md) against their current bindings. A source-only refactor retains the business network and its IDs; reconcile implementation details without reopening business decisions.
 
 Run scan, inspect, verify, accept and check. Show the resulting local graph and briefly identify what changed. Report implementation mapping, state constraints, business rules and project checks separately. The user discusses intent and examines the graph; the agent maintains the intermediate files.
 

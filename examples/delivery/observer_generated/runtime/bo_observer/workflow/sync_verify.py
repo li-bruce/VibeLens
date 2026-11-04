@@ -148,12 +148,30 @@ def verify(root, cfg, change, *, inspect, snapshot):
         root, model_path=cfg.get("model", "bo_stategraph/project.json"), update=False
     )
     mapping_errors.extend(database["errors"])
+    from ..code_graph.service import CodeGraph
+
+    source_graph = CodeGraph(root, persist=False)
     code_structure = {"enabled": False, "valid": True, "status": "not_enabled", "errors": []}
     if (root / ".stategraph/code-graph.json").is_file():
-        from ..code_graph.service import CodeGraph
-
-        code_structure = CodeGraph(root, persist=False).check()
+        code_structure = source_graph.check()
         mapping_errors.extend(code_structure["errors"])
+    # An optional full code cache is not a prerequisite for HTTP observation.
+    # Verify configured route selectors independently, preserving declared but
+    # unobserved routes as explicit coverage diagnostics for adoption review.
+    api_observation = code_structure.get("api_observation")
+    if api_observation is None:
+        api_observation = source_graph.api_observation_check()
+        mapping_errors.extend(api_observation["errors"])
+    if not api_observation["valid"]:
+        mapping_errors.append(
+            {
+                "invalid_api_observation": {
+                    "issues": api_observation.get("issues", []),
+                    "missing_routes": api_observation.get("missing_routes", []),
+                    "errors": api_observation["errors"],
+                }
+            }
+        )
     rule_errors, business_errors, project_errors = [], [], []
     reports = {
         "mapping": {
@@ -161,6 +179,7 @@ def verify(root, cfg, change, *, inspect, snapshot):
             "errors": mapping_errors,
             "database": database,
             "code_structure": code_structure,
+            "api_observation": api_observation,
             "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
         },
         "state_rules": {"status": "not_run", "errors": rule_errors},

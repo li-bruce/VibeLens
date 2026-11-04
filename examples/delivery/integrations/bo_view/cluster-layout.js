@@ -10,6 +10,7 @@ import {
   forceX,
   forceY,
 } from "./spatial-force.vendor.js";
+import { proximitySeeds, proximityNeighbors } from "./proximity-layout.js";
 const groupOf = (unit) => JSON.stringify([unit.layer || "", unit.type]);
 
 /** Group whole containment footprints; layer identity takes precedence over glyph type. */
@@ -36,6 +37,7 @@ export function clusterGroups(units) {
 }
 
 export function clusterUnits(units, edges, seeds = []) {
+  const neighbors = proximityNeighbors(edges);
   const byId = new Map(units.map((n) => [n.id, n]));
   const clusters = clusterGroups(units);
   const seedById = new Map(seeds.map((seed) => [seed.id, seed]));
@@ -86,15 +88,17 @@ export function clusterUnits(units, edges, seeds = []) {
     ]),
   );
   const nodes = [];
-  for (const group of clusters)
+  for (const group of clusters) {
+    const local = proximitySeeds(group.members, neighbors, group.radius * 0.78);
     group.members
       .sort((a, b) => a.id.localeCompare(b.id))
       .forEach((unit, i) => {
         const neighbors = outside.get(unit.id),
           angle = i * 2.3999632297;
-        const r = group.radius * 0.45 * Math.sqrt((i + 1) / group.members.length);
-        let dx = Math.cos(angle) * r,
-          dy = Math.sin(angle) * r;
+        // Source neighbors begin nearby inside the existing type cluster.
+        // Cross-cluster bridges retain their stronger directional placement.
+        let dx = local.get(unit.id).x,
+          dy = local.get(unit.id).y;
         if (neighbors.length) {
           const x = neighbors.reduce((s, p) => s + p.x - group.x, 0),
             y = neighbors.reduce((s, p) => s + p.y - group.y, 0),
@@ -123,6 +127,7 @@ export function clusterUnits(units, edges, seeds = []) {
           ...(unit.pin ? { fx: unit.pin.x, fy: unit.pin.y } : {}),
         });
       });
+  }
   const links = edges
     .filter((e) => byId.has(e.from) && byId.has(e.to))
     .map((e) => ({ source: e.from, target: e.to }));

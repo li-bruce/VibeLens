@@ -1,0 +1,16 @@
+{
+  "valid": true,
+  "issue": "Node Playwright and Python Playwright do not share every patch release",
+  "registry_checks": [
+    {
+      "url": "https://pypi.org/pypi/playwright/1.56.1/json",
+      "status": 404
+    },
+    {
+      "url": "https://pypi.org/pypi/playwright/1.56.0/json",
+      "status": 200
+    }
+  ],
+  "locally_tested_python_playwright": "1.56.0",
+  "fix": "Pin Python 1.56.0 and install its own matching Chromium; retain Node 1.56.1"
+}

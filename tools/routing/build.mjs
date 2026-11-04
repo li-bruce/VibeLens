@@ -7,7 +7,7 @@ await mkdir(output, { recursive: true });
 await build({
   stdin: {
     contents:
-      'export {default as RBush} from "rbush"; export {hierarchy,stratify} from "d3-hierarchy"; export {line,curveBundle} from "d3-shape"; export {Delaunay} from "d3-delaunay"; export {default as createGraph} from "ngraph.graph"; export {aGreedy} from "ngraph.path";',
+      'export {default as RBush} from "rbush"; export {hierarchy,stratify,packEnclose} from "d3-hierarchy"; export {line,curveBundle} from "d3-shape"; export {Delaunay} from "d3-delaunay"; export {default as createGraph} from "ngraph.graph"; export {aGreedy} from "ngraph.path";',
     resolveDir: fileURLToPath(new URL(".", import.meta.url)),
   },
   outfile: fileURLToPath(new URL("routing-tools.vendor.js", output)),

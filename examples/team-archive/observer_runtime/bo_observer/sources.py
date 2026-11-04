@@ -38,6 +38,7 @@ def adapter_identity():
         Path(__file__),
         Path(__file__).parent / "graph/code_structure.py",
         Path(__file__).parent / "graph/python_routes.py",
+        Path(__file__).parent / "graph/source_documentation.py",
         ADAPTER / "scan.mjs",
         ADAPTER / "package-lock.json",
     ]

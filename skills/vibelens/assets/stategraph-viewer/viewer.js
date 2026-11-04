@@ -15,6 +15,7 @@ import { cleanRoute } from "./edge-routing.js";
 import { cleanReplaySelection, selectedReplayPlan, nextReplayIndex } from "./replay-selection.js";
 import { SemanticView } from "./semantic-view.js";
 import { prepareSpatialHierarchy, planarSeeds } from "./spatial-model.js";
+import { fitVisibleHierarchy } from "./containment-view.js";
 import {
   layers,
   cleanLayers,
@@ -495,6 +496,9 @@ function updateLegendMode() {
 function updatePresentation() {
   displayGraph = layerSlice(graph, cleanLayers(analysisSettings?.layers));
   presentation = presentationGraph(displayGraph, preferences.filters);
+  // Refit from this view's visible bodies. The complete layout and its saved
+  // anchors remain available when the user restores a hidden node or layer.
+  ({ graph: displayGraph, presentation } = fitVisibleHierarchy(displayGraph, presentation));
   renderedEdges = presentation.edges;
   const visibleTypes = new Set(
     graph.boxes
@@ -2118,7 +2122,9 @@ function updateAnalysisOptions() {
 function recordedSourceUnavailable(id) {
   return (
     !!recording &&
-    (["code", "api"].includes(id) || (id === "project" && !recording.context?.project_structure))
+    (id === "code" ||
+      (id === "api" && !recording.context?.api_structure) ||
+      (id === "project" && !recording.context?.project_structure))
   );
 }
 function changeAnalysis(id) {

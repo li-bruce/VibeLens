@@ -3,6 +3,7 @@ import { observedDataTransfer } from "./data-layer.js";
 // Read-only replay. This module has no business-command endpoint.
 import { applyRuntimeFrame } from "./runtime-frames.js";
 import { parentEvent, spanLinkEvents } from "./trace-evidence.js";
+import { apiObservationIds, observesNode } from "./api-observation.js";
 const copy = (value) => structuredClone(value);
 const millis = (value) => (Number.isFinite(Date.parse(value)) ? Date.parse(value) : 0);
 /** Build the replay sequence from recorded events and its start/end boundaries. */
@@ -154,6 +155,11 @@ export function transferEdges(event, events, edges, all, configuration = null) {
         edge.type !== "shared" &&
         edge.members?.some((member) => {
           if (member.mapping_role === "equivalent") return false;
+          if (member.mapping_role === "http-observation")
+            return (
+              event.node === member.from &&
+              apiObservationIds(all.get(member.to)).includes(event.node)
+            );
           if (observedDataTransfer(member, event, all)) return true;
           const source = canonical(member.from),
             target = canonical(member.to);
@@ -195,8 +201,9 @@ export function transferEdges(event, events, edges, all, configuration = null) {
             );
           if (
             ["call", "flow"].includes(edge.type) &&
-            target === event.node &&
-            parent?.node === source
+            observesNode(all.get(target) || { id: target }, event.node) &&
+            parent &&
+            observesNode(all.get(source) || { id: source }, parent.node)
           )
             return true;
           return (

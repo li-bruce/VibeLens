@@ -1,0 +1,175 @@
+{
+  "fixture": "isolated nested file-sharing geometry",
+  "canonical_assets": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\\u5e73\u53f0\u8f6f\u8457\\SoftwareStatusObserverSkill\\skills\\vibelens\\assets\\stategraph-viewer",
+  "url": "http://127.0.0.1:50283/graph?lang=en",
+  "initial": {
+    "ids": [
+      "share",
+      "notify",
+      "store",
+      "database",
+      "files",
+      "file_id",
+      "file_name",
+      "shares"
+    ],
+    "regions": [
+      {
+        "id": "share",
+        "root": "share",
+        "depth": 0,
+        "ids": [
+          "share",
+          "store",
+          "database",
+          "files",
+          "file_id",
+          "file_name",
+          "shares"
+        ],
+        "self": false,
+        "cx": 189.08181639547942,
+        "cy": 39.917512391629046,
+        "radius": 333.87708488234307,
+        "x": -144.79526848686365,
+        "y": -293.95957249071404,
+        "w": 667.7541697646861,
+        "h": 667.7541697646861
+      },
+      {
+        "id": "database",
+        "root": "share",
+        "depth": 1,
+        "ids": [
+          "database",
+          "files",
+          "file_id",
+          "file_name",
+          "shares"
+        ],
+        "self": false,
+        "cx": 184.04438789962725,
+        "cy": 57.34166363748003,
+        "radius": 303.73936913616615,
+        "x": -119.6949812365389,
+        "y": -246.39770549868612,
+        "w": 607.4787382723323,
+        "h": 607.4787382723323
+      },
+      {
+        "id": "files",
+        "root": "share",
+        "depth": 2,
+        "ids": [
+          "files",
+          "file_id",
+          "file_name"
+        ],
+        "self": false,
+        "cx": 75,
+        "cy": 51.5,
+        "radius": 182.53862020806665,
+        "x": -107.53862020806665,
+        "y": -131.03862020806665,
+        "w": 365.0772404161333,
+        "h": 365.0772404161333
+      }
+    ],
+    "ports": [
+      {
+        "id": "summary:share|notify|flow|true|false|model",
+        "start": {
+          "x": 522.6668950083833,
+          "y": 25.956741053553294,
+          "level": 0
+        },
+        "end": {
+          "x": 665,
+          "y": 20,
+          "level": 0
+        },
+        "vertices": 25
+      },
+      {
+        "id": "summary:store|shares|data|false|false|model",
+        "start": {
+          "x": 245,
+          "y": -190,
+          "level": 0
+        },
+        "end": {
+          "x": 355,
+          "y": 30,
+          "level": 0
+        },
+        "vertices": 25
+      }
+    ],
+    "edges": [
+      {
+        "id": "summary:share|notify|flow|true|false|model",
+        "from": "share",
+        "to": "notify",
+        "members": [
+          "share-notify"
+        ]
+      },
+      {
+        "id": "summary:store|shares|data|false|false|model",
+        "from": "store",
+        "to": "shares",
+        "members": [
+          "store-shares"
+        ]
+      }
+    ]
+  },
+  "captions": [
+    {
+      "id": "share",
+      "layer": "execution",
+      "x": 633.239501953125,
+      "y": 600.1085205078125,
+      "w": 66.140625,
+      "h": 33.796875
+    },
+    {
+      "id": "files",
+      "layer": "data",
+      "x": 755.822021484375,
+      "y": 811.2476196289062,
+      "w": 29.859375,
+      "h": 33.796875
+    },
+    {
+      "id": "database",
+      "layer": "data",
+      "x": 787.1752319335938,
+      "y": 849.2476196289062,
+      "w": 59.984375,
+      "h": 33.796875
+    },
+    {
+      "id": "share",
+      "layer": "data",
+      "x": 784.0828857421875,
+      "y": 887.2476196289062,
+      "w": 66.140625,
+      "h": 33.796875
+    }
+  ],
+  "drag_delta": {
+    "x": 50.87665524662134,
+    "z": 115.34853063322043
+  },
+  "passed": true,
+  "checks": [
+    "2D circles fit visible children with distant saved owners unchanged",
+    "Nested circle captions do not overlap; exact caption drag moves only its target owner",
+    "Tilted 3D ring drag moves the complete branch by one delta and keeps pins",
+    "Layer hide/restore uses same-ID fallback glyphs and restores child positions",
+    "Explicit node exclusion and native restore retain the same identity",
+    "Saved projection visibility hides projected rings and routes to the same-ID visible glyph"
+  ],
+  "errors": []
+}

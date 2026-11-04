@@ -79,6 +79,14 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.56.1
       - run: npx playwright install --with-deps chromium
+      - run: python -m pip install playwright==1.56.0
+      - run: python -m playwright install chromium
+      - run: python tools/test_graph_quality_browser.py
+        env:
+          BO_GRAPH_QUALITY_EVIDENCE: .validation/graph-quality-browser
+      - run: python tools/test_api_observation_browser.py
+        env:
+          BO_API_OBSERVATION_EVIDENCE: .validation/api-observation-browser
       - run: node tools/test_recording_timeline_browser.mjs
         env:
           BO_TIMELINE_EVIDENCE: .validation/timeline-browser
@@ -119,3 +127,5 @@ jobs:
             .validation/lifecycle-*
             .validation/execution-*
             .validation/caption-*
+            .validation/graph-quality-browser
+            .validation/api-observation-browser

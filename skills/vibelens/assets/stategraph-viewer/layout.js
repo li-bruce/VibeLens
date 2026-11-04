@@ -4,6 +4,8 @@ import { graphBounds, nodeTypes, viewTypes, relationType } from "./graph-core.js
 import { dataRelations, migrateDataFilters } from "./data-layer.js";
 import { codeRelations, migrateCodeFilters } from "./code-layer.js";
 import { layerOf } from "./graph-layers.js";
+import { enclosingCircle, planarBodyCircle, REGION_PADDING } from "./containment-geometry.js";
+import { proximityOrder, proximityNeighbors } from "./proximity-layout.js";
 export const layoutKey = (model, projectId) =>
   "business-observer.layout.v2:" +
   (projectId ||
@@ -325,34 +327,9 @@ export function hasSelfRelation(graph, id) {
   );
 }
 function encloseCircles(circles) {
-  const ordered = [...circles].sort((a, b) => b.radius - a.radius),
-    seeds = [ordered[0]];
-  for (const key of ["x", "y"])
-    for (const sign of [-1, 1])
-      seeds.push(
-        ordered.reduce((a, b) => (sign * a[key] + a.radius > sign * b[key] + b.radius ? a : b)),
-      );
-  let best = null;
-  for (const seed of seeds) {
-    let { x, y, radius } = seed;
-    for (const c of ordered) {
-      const distance = Math.hypot(c.x - x, c.y - y);
-      if (distance + c.radius <= radius) continue;
-      if (distance + radius <= c.radius) {
-        ({ x, y, radius } = c);
-        continue;
-      }
-      const next = (radius + distance + c.radius) / 2,
-        shift = (next - radius) / distance;
-      x += (c.x - x) * shift;
-      y += (c.y - y) * shift;
-      radius = next;
-    }
-    if (!best || radius < best.radius) best = { x, y, radius };
-  }
-  return best;
+  return enclosingCircle(circles);
 }
-export function hierarchyRegions(graph) {
+export function hierarchyRegions(graph, presentation = null) {
   const tree = hierarchyOf(graph),
     regions = [];
   function visit(id) {
@@ -360,22 +337,32 @@ export function hierarchyRegions(graph) {
       center = nodeCenter(b),
       ids = [id];
     const children = tree.children.get(id) || [],
-      self = children.length > 0 && hasSelfRelation(graph, id);
-    const circles = children.length && !self ? [] : [{ ...center, radius: nodeRadius(b) }];
+      enabled = !presentation || presentation.regions.has(id),
+      self =
+        children.length > 0 &&
+        hasSelfRelation(graph, id) &&
+        (!presentation || presentation.glyphs.has(id)),
+      glyph = presentation ? presentation.glyphs.has(id) : !children.length || self;
+    // The hidden owner's saved anchor is for dragging/packing only. Bounds use
+    // visible glyphs with their label rectangles and actual child-region disks.
+    const circles = glyph ? [planarBodyCircle(b)] : [];
     for (const child of children) {
       const sub = visit(child);
+      if (!sub) continue;
       ids.push(...sub.ids);
       circles.push({ x: sub.cx, y: sub.cy, radius: sub.radius });
     }
-    const enclosure = self
-      ? {
-          ...center,
-          radius: Math.max(
-            ...circles.map((c) => Math.hypot(c.x - center.x, c.y - center.y) + c.radius),
-          ),
-        }
-      : encloseCircles(circles);
-    const radius = enclosure.radius + (ids.length > 1 ? 30 : 0);
+    if (!circles.length) return null;
+    const enclosure =
+      self && enabled
+        ? {
+            ...center,
+            radius: Math.max(
+              ...circles.map((c) => Math.hypot(c.x - center.x, c.y - center.y) + c.radius),
+            ),
+          }
+        : encloseCircles(circles);
+    const radius = enclosure.radius + (children.length && enabled ? REGION_PADDING : 0);
     let root = id;
     while (tree.parents.has(root)) root = tree.parents.get(root);
     const region = {
@@ -392,7 +379,7 @@ export function hierarchyRegions(graph) {
       w: radius * 2,
       h: radius * 2,
     };
-    if (ids.length > 1) regions.push(region);
+    if (children.length && enabled) regions.push(region);
     return region;
   }
   for (const id of tree.roots) visit(id);
@@ -653,6 +640,7 @@ export function renderRevision(view, selection = []) {
     selection,
     view.manifest.build_id,
     view.manifest.model_hash || view.model,
+    ...(view.api_structure ? [view.api_structure.revision] : []),
     view.binding_status,
     view.busy,
     view.events.length,
@@ -877,13 +865,20 @@ function placeCircle(radius, occupied, preferred = -Math.PI / 2) {
 }
 function circleTemplates(graph) {
   const tree = hierarchyOf(graph),
-    templates = new Map();
+    templates = new Map(),
+    neighbors = proximityNeighbors(graph.edges);
   function pack(id) {
     const b = graph.byId.get(id),
       core = { x: 0, y: 0, radius: nodeRadius(b) };
-    let children = (tree.children.get(id) || [])
-      .map(pack)
-      .sort((a, b) => b.radius - a.radius || a.id.localeCompare(b.id));
+    let children = proximityOrder(
+      (tree.children.get(id) || []).map(pack).map((child) => ({
+        ...child,
+        node: graph.byId.get(child.id).node,
+      })),
+      neighbors,
+    );
+    // Pack larger footprint bands first; locality breaks ties within each band.
+    children.sort((a, b) => Math.floor(Math.log2(b.radius)) - Math.floor(Math.log2(a.radius)));
     // Repeated sibling types get local packing neighborhoods, without adding
     // synthetic containment to the graph. Small groups retain their simple pack.
     const types = new Map();
@@ -976,6 +971,7 @@ async function clusteredLayout(elk, graph, state) {
       id: c.id,
       type: graph.byId.get(c.id).type,
       layer: layerOf(graph.byId.get(c.id).node),
+      node: graph.byId.get(c.id).node,
       radius: c.radius,
       pin: pinned
         ? {

@@ -6,6 +6,7 @@ import { graphInventory } from "./graph-inventory.js";
 export { stateNodeId } from "./graph-inventory.js";
 import { capturedValue } from "./capture-fields.js";
 import { explainedName } from "./graph-names.js";
+import { apiObservationIds, observesNode } from "./api-observation.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   dataRoles,
@@ -116,14 +117,14 @@ export function nodeEvents(node, events) {
   // request's result. Prefix replay arrays naturally select the earlier check.
   const check = policy ? events.findLast((event) => event.inputs?.bo_check)?.inputs.bo_check : null;
   return events.filter(
-    (e) => e.node === (node.event_node || node.id) && (!policy || e.inputs?.bo_check === check),
+    (e) => observesNode(node, e.node) && (!policy || e.inputs?.bo_check === check),
   );
 }
 export function callValues(node, events) {
   const calls = nodeEvents(node, events),
     last = calls.at(-1);
   if (!last) return { inputs: {}, outputs: {} };
-  const keys = ["call_id", "run_id", "attempt", "entity", "build_id", "model_revision"];
+  const keys = ["node", "call_id", "run_id", "attempt", "entity", "build_id", "model_revision"];
   // Old probes used attempt:node for every call. That is not enough identity
   // to merge values; keep the last event until the caller supplies a call ID.
   const identified =
@@ -188,7 +189,10 @@ export function parameterSummary(view, _configuration = null, step = "latest") {
     .join(" · ");
 }
 function staleBasis(node, view, last) {
-  const owner = view.model.nodes.find((n) => n.id === (node.event_node || node.id)) || node;
+  const ownerId = apiObservationIds(node).includes(last.node)
+    ? last.node
+    : node.event_node || node.id;
+  const owner = view.model.nodes.find((n) => n.id === ownerId) || node;
   const fields = owner.basis_fields || ["param_version"];
   return fields.some((key) => last.basis?.[key] !== view.authority.basis?.[key]);
 }
@@ -326,6 +330,21 @@ function baseLines(node, view, events, choice, configuration = null) {
   if (dataRoles.includes(node.data_role)) {
     const values = callValues(node, events);
     return dataLines(node, values.inputs, values.outputs, nodeEvents(node, events).length > 0);
+  }
+  if (
+    node.code_role === "endpoint" &&
+    apiObservationIds(node).length &&
+    nodeEvents(node, events).length
+  ) {
+    const values = callValues(node, events);
+    return [
+      ...Object.entries(values.inputs)
+        .slice(0, 3)
+        .map(([key, value]) => ({ text: `${key}: ${compact(value)}`, role: "value" })),
+      ...Object.entries(values.outputs)
+        .slice(0, 3)
+        .map(([key, value]) => ({ text: `${key}: ${compact(value)}`, role: "value" })),
+    ];
   }
   if (node.code_role)
     return [

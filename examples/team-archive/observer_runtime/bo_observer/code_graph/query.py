@@ -265,6 +265,12 @@ def query(graph, model, *, focus=None, depth=1, limit=400, projection="all"):
         "nodes": list(result.values()),
         "edges": relations,
         "bindings": {k: v for k, v in graph["bindings"].items() if k in result},
+        "endpoint_aliases": {
+            old: current
+            for old, current in graph.get("endpoint_aliases", {}).items()
+            if current in result
+        },
+        "observation_issues": deepcopy(graph.get("observation_issues", [])),
         "focus": focus,
         "projection": projection,
         "project": project_summary,
