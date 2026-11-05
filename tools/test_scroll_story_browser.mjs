@@ -47,6 +47,9 @@ try {
   await page.waitForFunction(
     () => document.querySelector("#second").getBoundingClientRect().top < innerHeight * 0.48,
   );
+  // The scroll event schedules chapter selection on the next animation frame.
+  // Correct geometry alone does not mean that scheduled update has run yet.
+  await page.waitForFunction(() => document.body.dataset.active === "0", null, { timeout: 1000 });
   assert.equal(
     await page.getAttribute("body", "data-active"),
     "0",

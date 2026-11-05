@@ -114,6 +114,16 @@ try {
       });
     }
     await page.setViewportSize({ width: 720, height: 720 });
+    // ResizeObserver constrains the dragged panel before the next paint; the
+    // viewport protocol acknowledgement can arrive before that browser frame.
+    await page.waitForFunction(
+      () => {
+        const bounds = document.getElementById("step-changes").getBoundingClientRect();
+        return bounds.left >= 0 && bounds.right <= innerWidth;
+      },
+      null,
+      { timeout: 1000 },
+    );
     const compact = await page.locator("#step-changes").boundingBox();
     assert.ok(compact.x >= 0 && compact.x + compact.width <= 720);
     await page.setViewportSize({ width: 1440, height: 1000 });
