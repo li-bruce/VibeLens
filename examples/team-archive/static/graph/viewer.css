@@ -704,36 +704,73 @@ canvas {
 }
 #step-changes {
   position: absolute;
-  bottom: calc(var(--view-tools-height, 100px) + 24px);
-  /* Keep change actions outside the layer ruler as the replay dock reduces height. */
-  left: calc(var(--layer-ruler-width, 0px) + 20px);
-  right: 12px;
+  bottom: calc(var(--view-tools-height, 100px) + 16px);
+  right: 14px;
+  width: 360px;
+  max-width: calc(100% - var(--layer-ruler-width, 0px) - 38px);
   z-index: 4;
-  background: #fffffff5;
+  background: #fffffff0;
   border: 1px solid #d4e2ec;
-  border-radius: 7px;
-  padding: 9px 11px;
-  max-height: 32%;
-  overflow: auto;
+  border-radius: 9px;
+  box-shadow: 0 4px 18px #27425d12;
+  padding: 7px 9px;
+  max-height: 45%;
+  display: flex;
+  flex-direction: column;
   font-size: 11px;
 }
 .change-heading {
   display: flex;
-  gap: 10px;
+  gap: 6px;
   align-items: center;
-  margin-bottom: 5px;
+  min-height: 24px;
+  flex-shrink: 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.change-heading.is-dragging {
+  cursor: grabbing;
+}
+.change-grip {
+  color: #96a8b4;
+  font-size: 14px;
 }
 .change-heading strong {
   font-weight: 550;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.change-heading button {
+  border: 0;
+  background: transparent;
+  color: #547285;
+  min-width: 26px;
+  min-height: 24px;
+  padding: 2px 5px;
+  font-size: 11px;
+}
+#change-content {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 #change-count {
+  display: none;
   font-size: 10px;
   color: var(--muted);
-  margin-left: auto;
+  margin: 4px 0 6px;
+}
+#step-changes[data-expanded="true"] #change-count {
+  display: block;
 }
 #change-rows {
   display: grid;
-  gap: 4px;
+  gap: 5px;
+  margin-top: 5px;
 }
 .change-row {
   display: flex;
@@ -741,20 +778,28 @@ canvas {
   align-items: baseline;
   overflow-wrap: anywhere;
 }
+.change-row[hidden] {
+  display: none;
+}
 .change-kind {
   font-size: 9px;
   font-weight: 600;
   min-width: 23px;
 }
+#step-changes:not([data-expanded="true"]) .change-kind {
+  display: none;
+}
 .change-row button {
   flex: 0 0 auto;
-  max-width: 125px;
+  max-width: 105px;
   border: 0;
   background: transparent;
   padding: 1px 0;
   font-size: 11px;
   color: #4c6c86;
-  white-space: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: left;
 }
 .change-value {
@@ -764,6 +809,14 @@ canvas {
   font:
     11px Consolas,
     monospace;
+}
+#step-changes:not([data-expanded="true"]) .change-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#step-changes:not([data-expanded="true"]) .change-before[data-unknown="true"] {
+  display: none;
 }
 .change-value del {
   text-decoration: none;

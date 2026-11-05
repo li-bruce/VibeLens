@@ -179,6 +179,7 @@ The shared viewer pipeline is `routing-scene.js` (renderer adapters), `routing-c
 - `bo_observer/service.py` 负责 HTTP 鉴权、路由和会话借用；[observation/session.py](../skills/vibelens/scripts/bo_observer/observation/session.py) 负责事件接收、版本、因果关系和一致的状态帧。旧的 `service.GraphSession` 导入继续可用。
 - [data/schema_compare.py](../skills/vibelens/scripts/bo_observer/data/schema_compare.py) 独立比较数据库结构；`data/projection.py` 负责把结构投影到图中。
 - 前端 `viewer.js` 连接交互与数据；[detail-panel.js](../skills/vibelens/assets/stategraph-viewer/detail-panel.js)、[edge-panel.js](../skills/vibelens/assets/stategraph-viewer/edge-panel.js)、[change-panel.js](../skills/vibelens/assets/stategraph-viewer/change-panel.js) 分别显示源码与值、关系、步骤变化。面板把选择操作交回协调模块，避免直接修改模型和录制。
+- 变化面板默认只显示两条变化，展开后查看全部原始值。[change-panel-position.js](../skills/vibelens/assets/stategraph-viewer/change-panel-position.js) 单独处理拖动和画布边界；拖动、收起面板均不会移动图中的节点，也不会影响采集。
 - 源码面板只缓存当前构建和源码版本的文件。异步响应过期或用户已切换节点时，丢弃旧结果。
 
 维护者运行：

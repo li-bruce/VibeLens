@@ -1,7 +1,7 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
 import { messages, chapters } from "./case-messages.mjs?rev=clarity-2";
-import { scrollStory } from "./scroll-story.mjs?rev=files-1";
+import { scrollStory } from "./scroll-story.mjs?rev=clarity-3";
 import { companion } from "./case-companion.mjs?rev=clarity-2";
 
 const $ = (id) => document.getElementById(id);
@@ -69,7 +69,7 @@ function stage(index) {
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=files-1`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=clarity-3`;
   } else send(message);
   document.body.dataset.chapter = String(index);
 }
@@ -232,6 +232,7 @@ function render() {
     scenes: document.querySelectorAll("[data-case-scene]"),
     navigation: $("case-chapters"),
     onChange: stage,
+    interactionSelector: ".view-editor",
   });
   setInteraction(interacting);
 }

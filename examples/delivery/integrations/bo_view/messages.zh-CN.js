@@ -495,6 +495,11 @@ export default {
   Done: "完成",
   "Complete file": "完整文件",
   "Changes in this step": "本步变化",
+  "Drag to move": "拖动移动",
+  "Show all changes": "展开全部变化",
+  "Show fewer changes": "只看关键变化",
+  "Show current changes": "展开当前变化",
+  "Minimize changes": "收起变化",
   Legend: "图例",
   "Nodes and regions": "节点与区域",
   "Color identifies type; expanded regions keep that color. Dark fill marks a core or selected node. Badges show runtime status.":

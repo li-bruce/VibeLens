@@ -26,3 +26,11 @@
 - [x] Evidence and final assessment.
 
 The completed trial does not prove a later business iteration or exhaustive UI coverage. This page redesign must not turn those missing results into a release claim.
+
+## Interaction follow-up
+
+- [x] Reproduce the CI custom-view failure and keep its original evidence.
+- [x] Preserve the chapter while a visible editor is in use; release it for scrolling and navigation.
+- [x] Replace the full-width change list with a movable compact panel, with two preview rows and full detail disclosure.
+- [x] Recheck shipped viewer copies and both clean exported example installations.
+- Publication status is checked on the pushed commit in GitHub Actions; the final delivery links that run and the published pages.

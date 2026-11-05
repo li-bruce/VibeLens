@@ -96,6 +96,8 @@ jobs:
         env:
           BO_API_OBSERVATION_EVIDENCE: .validation/api-observation-browser
       - run: python tools/build_site_viewer.py
+      - run: node tools/test_scroll_story_browser.mjs
+      - run: node tools/test_change_panel_browser.mjs
       - run: node tools/test_demo_startup_browser.mjs
         env:
           BO_DEMO_STARTUP_EVIDENCE: .validation/demo-startup-browser
@@ -151,3 +153,5 @@ jobs:
             .validation/design-browser
             .validation/clarity-story/browser
             .validation/file-story/browser
+            .validation/story-scroll
+            .validation/compact-changes

@@ -269,6 +269,13 @@ remain saved without expanding visible bounds.
 supplies bounded source/identifier neighborhood hints to both layouts; it never
 creates semantic edges or overrides saved positions.
 
+The floating change panel separates observation rendering in
+[change-panel.js](../skills/vibelens/assets/stategraph-viewer/change-panel.js)
+from canvas-bound dragging in
+[change-panel-position.js](../skills/vibelens/assets/stategraph-viewer/change-panel-position.js).
+The compact preview and expanded list share the same recorded rows. Moving or
+minimizing the panel has no effect on graph geometry or capture.
+
 - Describe purpose at public function boundaries; explain ordering, ownership, and failure handling where they are less obvious.
 - Use explicit blocks for validation and state changes. Keep each operation readable on its own line.
 - Keep public identifiers, protocol fields, graph IDs, and protected expectations stable during readability work.

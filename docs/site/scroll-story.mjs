@@ -1,10 +1,28 @@
 /** Native scrolling with one active scene. No wheel/touch event interception. */
-export function scrollStory({ scenes, onChange = () => {}, navigation = null }) {
+export function scrollStory({
+  scenes,
+  onChange = () => {},
+  navigation = null,
+  interactionSelector = null,
+}) {
   const elements = [...scenes],
     reduced = matchMedia("(prefers-reduced-motion: reduce)");
   let active = -1,
     scheduled = false,
-    destroyed = false;
+    destroyed = false,
+    interaction = null;
+
+  // Editing a visible inline panel belongs to its chapter. Native focus scrolling
+  // and asynchronously resized content must not replace that chapter mid-click.
+  // Scrolling the panel offscreen, clicking elsewhere or explicit navigation
+  // releases it; wheel and touch scrolling remain entirely native.
+  function rememberInteraction(event) {
+    // The embedded graph can focus its own controls after a preview completes.
+    // That asynchronous focus is not a reader leaving the parent editor.
+    if (event.type === "focusin" && event.target.tagName === "IFRAME") return;
+    interaction = event.target.closest?.(interactionSelector) ? event.target : null;
+    schedule();
+  }
   function measure() {
     scheduled = false;
     if (destroyed) return;
@@ -22,6 +40,15 @@ export function scrollStory({ scenes, onChange = () => {}, navigation = null }) 
         next = index;
       }
     });
+    if (interaction) {
+      const bounds = interaction.getBoundingClientRect();
+      const owner = elements.findIndex((element) => element.contains(interaction));
+      const x = bounds.left + bounds.width / 2;
+      const y = bounds.top + bounds.height / 2;
+      const visible = document.elementFromPoint(x, y)?.closest(interactionSelector);
+      if (owner >= 0 && visible === interaction.closest(interactionSelector)) next = owner;
+      else interaction = null;
+    }
     if (next !== active) {
       active = next;
       elements.forEach((element, index) => element.classList.toggle("is-active", index === active));
@@ -40,7 +67,12 @@ export function scrollStory({ scenes, onChange = () => {}, navigation = null }) 
   }
   addEventListener("scroll", schedule, { passive: true });
   addEventListener("resize", schedule, { passive: true });
+  if (interactionSelector) {
+    document.addEventListener("pointerdown", rememberInteraction);
+    document.addEventListener("focusin", rememberInteraction);
+  }
   function go(index) {
+    interaction = null;
     elements[index]?.scrollIntoView({
       behavior: reduced.matches ? "instant" : "smooth",
       block: "start",
@@ -63,6 +95,8 @@ export function scrollStory({ scenes, onChange = () => {}, navigation = null }) 
       destroyed = true;
       removeEventListener("scroll", schedule);
       removeEventListener("resize", schedule);
+      document.removeEventListener("pointerdown", rememberInteraction);
+      document.removeEventListener("focusin", rememberInteraction);
     },
   };
 }

@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { createDetailPanel } from "../skills/vibelens/assets/stategraph-viewer/detail-panel.js";
 import { conceptDefinitionElement } from "../skills/vibelens/assets/stategraph-viewer/concept-details.js";
+import { previewChangeIndices } from "../skills/vibelens/assets/stategraph-viewer/change-panel.js";
 let resolve;
 const oldFetch = globalThis.fetch;
 const state = {
@@ -96,4 +97,26 @@ assert.equal(conceptDefinitionElement({ id: "native" }), null);
 assert.equal(JSON.stringify(node), original);
 console.log(
   "PASS: inspectable typed concept payloads, guard order/read basis, safe text and preserved identity.",
+);
+
+const changes = [
+  { kind: "value", field: "actor", after: "recipient" },
+  { kind: "value", field: "rows", after: 0 },
+  { kind: "state", field: "status", before: "shared", after: "private" },
+  { kind: "call", field: "phase", after: "returned" },
+  { kind: "business", field: "flow", after: "revoked" },
+  { kind: "decision", field: "allowed", after: false },
+];
+const unchanged = JSON.stringify(changes);
+assert.deepEqual([...previewChangeIndices(changes)], [4, 2]);
+assert.deepEqual([...previewChangeIndices(changes, 3)], [4, 2, 5]);
+assert.deepEqual([...previewChangeIndices(changes.slice(0, 2))], [0, 1]);
+assert.equal(previewChangeIndices([]).size, 0);
+assert.equal(
+  JSON.stringify(changes),
+  unchanged,
+  "The preview never sorts or removes recorded rows",
+);
+console.log(
+  "PASS: bounded change preview prioritizes state and decisions without mutating evidence.",
 );

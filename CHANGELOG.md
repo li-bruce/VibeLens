@@ -15,6 +15,10 @@
   evidence in the [assessment](docs/review/clarity-story-20261105/README.md).
   Its three runtime/workflow gaps remain open; the presentation checks are
   reported separately.
+- Keep current changes in a movable, compact panel with two preview rows and
+  expandable full values. Preserve panel minimization across incoming events.
+- Keep an active custom-view editor in its story chapter while its controls
+  remain visible; ordinary scrolling and chapter navigation remain available.
 
 ## 0.12.1 — 2026-11-05
 

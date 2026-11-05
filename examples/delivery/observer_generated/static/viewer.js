@@ -796,10 +796,9 @@ async function arrange(initial = false) {
 }
 function plotArea() {
   const top = 42,
-    tools = document.querySelector(".view-tools").offsetHeight + 24,
-    bottom = $("step-changes").hidden
-      ? tools
-      : Math.min(app.screen.height * 0.6, $("step-changes").offsetHeight + tools + 12);
+    // Change details float over a small corner, so their contents must not
+    // resize the entire graph or move it whenever another event arrives.
+    bottom = document.querySelector(".view-tools").offsetHeight + 24;
   return {
     top,
     height: Math.max(60, app.screen.height - top - bottom),

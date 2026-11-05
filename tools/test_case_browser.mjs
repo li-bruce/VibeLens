@@ -466,6 +466,18 @@ try {
   console.log(JSON.stringify({ passed: true, receipts }));
 } catch (error) {
   await page?.screenshot({ path: path.join(output, "failure.png") });
+  const parent = await page?.evaluate(() => ({
+    chapter: document.body.dataset.chapter,
+    ready: document.body.dataset.sceneReady,
+    focused: document.activeElement?.id,
+    scroll: scrollY,
+    bounds: Object.fromEntries(
+      ["drill", "iterate", "watch-name", "save-watch"].map((id) => {
+        const bounds = document.getElementById(id).getBoundingClientRect();
+        return [id, { top: bounds.top, bottom: bounds.bottom, height: bounds.height }];
+      }),
+    ),
+  }));
   const child = page?.frame({ url: /viewer\/index.html\?case=/ });
   const graph = await child?.evaluate(() => ({
     nodes: window.graphDebug?.graph?.boxes.map((box) => box.id),
@@ -478,7 +490,7 @@ try {
   }));
   await writeFile(
     path.join(output, "failure.json"),
-    JSON.stringify({ scene, error: String(error.stack), graph, errors }, null, 2),
+    JSON.stringify({ scene, error: String(error.stack), parent, graph, errors }, null, 2),
   );
   throw error;
 } finally {
