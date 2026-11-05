@@ -4,7 +4,7 @@
 <a href="https://github.com/li-bruce/VibeLens/blob/main/README.zh-CN.md">中文</a> ·
 <a href="https://liblog.vip/VibeLens/?lang=en">Explore VibeLens</a> ·
 <a href="https://liblog.vip/VibeLens/demo.html?lang=en">Try the interactive story</a> ·
-<a href="#get-started">Install</a>
+<a href="#install-for-deepseek-harness">Install</a>
 </p>
 
 <p align="center">
@@ -21,25 +21,23 @@ Your AI can build a working app quickly. Understanding its permissions, state ch
 
 ## Confirm the model before the code
 
-> “I want a file-sharing app. Owners can share a file with a colleague and revoke access later. Show me how that should work.”
+> “/vibelens Show me the business flow, states and rules for this project so we can confirm how it should work.”
 
 VibeLens turns the conversation into connected **business, state and rule graphs**. Clarify the important details, see the graph, then build. Choose **Drive** to develop from executable state declarations, or **Observe** to inspect your application's own logic.
 
 ## Follow the evidence to the source
 
-**Access revoked. Still downloading. Why?**
+Record an operation and replay its state and value changes. Keep the relevant chain in a custom view, expand a decision and its inputs, then open the highlighted source.
 
-Record that operation. Keep the relevant chain in a custom view. Expand the decision and its inputs, then open the highlighted source: the query used the owner's ID where it needed the recipient's.
-
-[![A focused graph links the selected recipient, actor, delete operation and affected row count to the highlighted SQL source](https://github.com/li-bruce/VibeLens/blob/main/docs/site/images/source-en.png)](https://liblog.vip/VibeLens/demo.html?lang=en#drill)
+[![A focused graph connects observed values to highlighted source](https://raw.githubusercontent.com/li-bruce/VibeLens/main/docs/site/images/source-en.png)](https://liblog.vip/VibeLens/demo.html?lang=en#drill)
 
 Tell your coding agent what you found. VibeLens keeps the model, source mappings and checks alongside the change. Run it again and inspect the result.
 
-[**Explore the five-step file-sharing story →**](https://liblog.vip/VibeLens/demo.html?lang=en)
+[**Explore the interactive story →**](https://liblog.vip/VibeLens/demo.html?lang=en)
 
 ## One graph, the detail you need
 
-[![The native 3D viewer connects business behavior, state and captured code values](https://github.com/li-bruce/VibeLens/blob/main/docs/site/images/layers-en.png)](https://liblog.vip/VibeLens/?lang=en#explore)
+[![The native 3D viewer connects business behavior, state and captured code values](https://raw.githubusercontent.com/li-bruce/VibeLens/main/docs/site/images/layers-en.png)](https://liblog.vip/VibeLens/?lang=en#explore)
 
 | Start with a question | Follow it through the graph |
 |---|---|

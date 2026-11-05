@@ -78,4 +78,12 @@ three images uploaded through the site, as required by its editor.
 
 ![SkillHub version 0.13.0 awaiting review](images/skillhub-submitted.png)
 
-The local full suite passed. Hosted checks and release receipts are added when their results exist.
+The local full suite and [all nine hosted jobs](checks/github-checks.json) passed
+on `c9eb7d19`: Windows/Linux with Python 3.11/3.13, source checks on both systems,
+real database services, the complete browser suite, and actual Harness plugin
+installation/invocation. Subsequent changes only correct documentation links and
+record these results; package parity was rerun after the plugin README update.
+
+The versioned [release](https://github.com/li-bruce/VibeLens/releases/tag/v0.13.0)
+and [Pages workflow](https://github.com/li-bruce/VibeLens/actions/workflows/pages.yml)
+provide the publication records.
