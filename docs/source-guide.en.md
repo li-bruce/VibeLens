@@ -319,3 +319,7 @@ Run `python tools/check_release_export.py --staged` after staging the reviewed c
 The HTTP waiting regression holds actual checking tasks at their existing test hook until an HTTP snapshot contains the real running/waiting pair. It then releases those tasks and verifies the normal SQLite effect. This avoids relying on polling speed or lengthening arbitrary demo delays.
 
 The older delivery example’s [HTTP adapter](../examples/delivery/integrations/bo_server.py) enumerates its installed viewer assets, including module and WASM dependencies. `python tests/test_runtime_http.py` checks actual asset bytes/types and business execution. The optional `node tools/test_delivery_browser.mjs` checks the installed example in a real browser; it uses the same Playwright/browser setup as the other browser tools and keeps its temporary application isolated.
+
+## Distribution adapters
+
+The canonical Skill lives in `skills/vibelens/`. `plugins/deepseek-harness/` registers it with the pinned host and binds explicit invocation to the real conversation. `distributions/skillhub/` contains the local archive bootstrap for that catalog's file limit. `tools/build_distribution.py` packages the same canonical bytes and emits checksums. `tools/harness-tests/` tests the actual host registry and invocation pipeline; `tests/test_distribution.py` verifies archive parity, isolation and tamper rejection.

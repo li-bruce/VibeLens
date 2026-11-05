@@ -1,6 +1,8 @@
 ---
 name: vibelens
 license: MIT
+metadata:
+  version: "0.13.0"
 description: Develop and inspect Python, Node.js, React, or Vue software through connected business, state and rule models. Preserve confirmed intent while mapping source, selected values and runtime evidence so developers can debug AI implementations.
 ---
 

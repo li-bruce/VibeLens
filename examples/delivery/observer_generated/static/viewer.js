@@ -1,4 +1,5 @@
 import { stepHierarchy } from "./step-hierarchy.js";
+import { transferPose, transferPolygon } from "./transfer-glyph.js";
 /** Viewer coordinator: connect API snapshots, graph presentation and user actions.
  * Feature modules own drawing, source/edge/change panels, layout, evidence and
  * persistence. This module owns view selection and lifecycle; it never executes
@@ -2581,17 +2582,15 @@ function animateEvent(event) {
     for (const id of animatedIds) {
       const path = edgePaths.get(id);
       if (path) {
-        const p = bezierAt(path, boTransfers.get(id)?.reverse ? 1 - t : t);
+        const pose = transferPose(
+          (position) => bezierAt(path, position),
+          t,
+          boTransfers.get(id)?.reverse,
+        );
         const edge = renderedEdges.find((e) => e.id === id),
           style = relationStyles[edge?.type] || relationStyles.other,
           r = 5 / scale;
-        if (["guard", "transition"].includes(edge?.type))
-          animationDot
-            .poly([p.x, p.y - r, p.x + r, p.y, p.x, p.y + r, p.x - r, p.y])
-            .fill(style.color);
-        else if (["data", "resource", "reads", "writes", "transforms"].includes(edge?.type))
-          animationDot.rect(p.x - r, p.y - r, 2 * r, 2 * r).fill(style.color);
-        else animationDot.circle(p.x, p.y, r).fill(style.color);
+        animationDot.poly(transferPolygon(pose, r)).fill(style.color);
       }
     }
     const node = graph.boxes.find(

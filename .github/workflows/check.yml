@@ -3,6 +3,33 @@ on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
+  harness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.9.0'
+      - run: python tools/build_distribution.py
+      - run: npm ci --prefix tools/harness-tests
+      - run: npm install -g @deepseek-ai/dsh@0.2.2-rc.1 pnpm@10.34.1
+      - name: Install and inspect the real plugin bundle
+        env:
+          DSH_HOME: ${{ runner.temp }}/vibelens-harness
+        run: |
+          dsh plugin --profile trial add "$PWD/.validation/distribution/dsh-vibelens-0.13.0.tgz"
+          dsh --profile trial --dump-config > .validation/harness-config.yml
+          grep -q 'name: dsh-vibelens' .validation/harness-config.yml
+          VIBELENS_PLUGIN="$DSH_HOME/profiles/trial/node_modules/dsh-vibelens" node tools/harness-tests/test.mjs
+          dsh plugin --profile trial remove dsh-vibelens
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: harness-runtime
+          path: .validation/harness-*
   source-quality:
     strategy:
       matrix:
@@ -98,6 +125,7 @@ jobs:
       - run: python tools/build_site_viewer.py
       - run: node tools/test_scroll_story_browser.mjs
       - run: node tools/test_change_panel_browser.mjs
+      - run: node tools/test_glyph_design_browser.mjs
       - run: node tools/test_demo_startup_browser.mjs
         env:
           BO_DEMO_STARTUP_EVIDENCE: .validation/demo-startup-browser
@@ -155,3 +183,4 @@ jobs:
             .validation/file-story/browser
             .validation/story-scroll
             .validation/compact-changes
+            .validation/glyph-design

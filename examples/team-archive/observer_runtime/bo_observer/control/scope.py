@@ -51,12 +51,15 @@ def user_command(message):
 class ControlScope:
     """A local scope is bound to its canonical project path and host conversation identity."""
 
-    def __init__(self, root):
+    def __init__(self, root, host="codex"):
+        if host not in {"codex", "deepseek-harness"}:
+            raise ValueError("Unsupported conversation host")
+        self.host = host
         self.root = Path(root).resolve()
         self.directory = self.root / "bo_stategraph/config/control"
 
     def conversation(self, supplied=None):
-        current = os.environ.get("CODEX_THREAD_ID")
+        current = os.environ.get("CODEX_THREAD_ID") if self.host == "codex" else None
         if current and supplied and current != supplied:
             raise ValueError("The requested conversation differs from CODEX_THREAD_ID")
         value = current or supplied
@@ -65,6 +68,11 @@ class ControlScope:
                 "A host conversation ID is required; never infer a global active conversation"
             )
         return value
+
+    def _token(self, conversation):
+        """Keep existing Codex identities stable and separate other host namespaces."""
+        identity = conversation if self.host == "codex" else self.host + "\0" + conversation
+        return hashlib.sha256((str(self.root) + "\0" + identity).encode()).hexdigest()[:32]
 
     def _path(self, token):
         if not isinstance(token, str) or not re.fullmatch(r"[a-f0-9]{32}", token):
@@ -82,18 +90,23 @@ class ControlScope:
 
     def activate(self, message, project_id, conversation=None):
         """Activation never installs instructions into other conversations or changes views."""
+        pattern = (
+            r"^/vibelens(?:\s|$)"
+            if self.host == "deepseek-harness"
+            else r"^(?:\$vibelens(?:\s|$)|Use\s+\$vibelens\b|使用\s*\$vibelens\b)"
+        )
         if not isinstance(message, str) or not re.match(
-            r"^(?:\$vibelens(?:\s|$)|Use\s+\$vibelens\b|使用\s*\$vibelens\b)",
+            pattern,
             message.lstrip(),
             re.IGNORECASE,
         ):
             raise ValueError(
-                "Explicit $vibelens invocation is required to activate this conversation"
+                "Explicit VibeLens invocation is required to activate this conversation"
             )
         if not isinstance(project_id, str) or not 1 <= len(project_id) <= 256:
             raise ValueError("A declared project identity is required")
         conversation = self.conversation(conversation)
-        token = hashlib.sha256((str(self.root) + "\0" + conversation).encode()).hexdigest()[:32]
+        token = self._token(conversation)
         path = self._path(token)
         with file_lock(path.with_suffix(".lock")):
             if path.exists():
@@ -109,6 +122,7 @@ class ControlScope:
                 "session": token,
                 "root": str(self.root),
                 "conversation": conversation,
+                "host": self.host,
                 "project_id": project_id,
                 "active": True,
                 "revision": 0,
@@ -121,10 +135,11 @@ class ControlScope:
     def authorized(self, message, conversation=None):
         user_command(message)
         conversation = self.conversation(conversation)
-        token = hashlib.sha256((str(self.root) + "\0" + conversation).encode()).hexdigest()[:32]
+        token = self._token(conversation)
         path = self._path(token)
         if not path.exists():
-            raise ValueError("Invoke $vibelens in this conversation before using controls")
+            invocation = "/vibelens" if self.host == "deepseek-harness" else "$vibelens"
+            raise ValueError(f"Invoke {invocation} in this conversation before using controls")
         value = self._bound(read(path))
         if value["conversation"] != conversation:
             raise ValueError("Conversation identity differs")
@@ -163,7 +178,15 @@ class ControlScope:
             raise ValueError("Control session belongs to another project")
         return {
             key: deepcopy(value[key])
-            for key in ("schema", "session", "project_id", "active", "revision", "plan", "result")
+            for key in (
+                "schema",
+                "session",
+                "project_id",
+                "active",
+                "revision",
+                "plan",
+                "result",
+            )
         }
 
     def preferences(self, token, fallback=None):
@@ -177,7 +200,14 @@ class ControlScope:
 
     def acknowledge(self, token, value):
         """Record viewer application status, never application/runtime observations."""
-        if set(value) != {"revision", "status", "view_id", "nodes", "events", "error"} or value[
+        if set(value) != {
+            "revision",
+            "status",
+            "view_id",
+            "nodes",
+            "events",
+            "error",
+        } or value[
             "status"
         ] not in {"applied", "rejected"}:
             raise ValueError("Invalid control acknowledgement")

@@ -12,8 +12,8 @@ export const layerContent = [
       "在对话中确认操作与分支，再沿着业务链查看对应实现。",
     ],
     "examples": [
-      ["Upload", "Share", "Download"],
-      ["上传", "共享", "下载"],
+      ["Actors", "Actions", "Outcomes"],
+      ["参与者", "业务操作", "业务结果"],
     ],
   },
   {
@@ -28,8 +28,8 @@ export const layerContent = [
       "开发前明确状态、事件与转换条件，运行时对照实际变化。",
     ],
     "examples": [
-      ["Private", "Shared", "Private"],
-      ["私有", "已共享", "私有"],
+      ["States", "Events", "Transitions"],
+      ["状态", "事件", "转换"],
     ],
   },
   {
@@ -44,8 +44,8 @@ export const layerContent = [
       "多个操作共用条件，查看条件的输入、组合和实际判定结果。",
     ],
     "examples": [
-      ["Signed in", "Owner", "Active grant"],
-      ["已登录", "所有者", "有效授权"],
+      ["Facts", "Conditions", "Decisions"],
+      ["输入事实", "条件组合", "判定结果"],
     ],
   },
   {
@@ -60,8 +60,8 @@ export const layerContent = [
       "找到接口，再沿处理函数进入代码。",
     ],
     "examples": [
-      ["GET /files", "POST /share", "POST /revoke"],
-      ["GET /files", "POST /share", "POST /revoke"],
+      ["Routes", "Methods", "Handlers"],
+      ["路由", "请求方法", "处理函数"],
     ],
   },
   {
@@ -89,8 +89,8 @@ export const layerContent = [
       "沿函数、参数和读写关系，定位源码。",
     ],
     examples: [
-      ["revoke()", "recipient_id", "rows = 0"],
-      ["revoke()", "recipient_id", "rows = 0"],
+      ["Functions", "Parameters", "Calls"],
+      ["函数", "参数", "调用"],
     ],
   },
   {
@@ -105,8 +105,8 @@ export const layerContent = [
       "查看表、集合、字段及其关联，连接到实际读写它们的操作。",
     ],
     "examples": [
-      ["users", "files", "shares"],
-      ["users", "files", "shares"],
+      ["Tables", "Collections", "Fields"],
+      ["表", "集合", "字段"],
     ],
   },
 ];

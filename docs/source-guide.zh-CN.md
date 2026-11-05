@@ -206,3 +206,7 @@ HTTP 等待测试通过现有检查钩子暂停真实任务，观察到“运行
 - `code_graph/service.py` 单独维护文件与导入关系，完整符号分析仍按需加载。开始录制时保存文件树，旧记录使用当时保存的树。
 - 录制列表、读取和清除只检查当前图版本；周期检查点读取运行事实；实时图仍检查源码。它们共用 `GraphSession`，分别读取所需内容。
 - `event_batch.py` 完成逐条预检与批次前后源码检查后，一次提交游标；`bo_retention.py` 批量写入日志，保持逐条通知、错误计数和原有文件轮转规则。
+
+## 发布适配模块
+
+完整 Skill 位于 `skills/vibelens/`。`plugins/deepseek-harness/` 负责宿主注册与当前对话绑定；`distributions/skillhub/` 处理目录平台的文件数限制，在本地校验并解包资源。`tools/build_distribution.py` 打包同一份源码并输出校验信息。`tools/harness-tests/` 检查真实宿主的调用流程，`tests/test_distribution.py` 检查包内容、对话隔离及篡改拒绝。

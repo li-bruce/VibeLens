@@ -7,7 +7,7 @@ const names = {
   business: "route",
   state: "circle-dot",
   decision: "git-branch",
-  function: "function",
+  function: "cpu",
   data: "variable",
   resource: "stack-2",
   wait: "hourglass",
@@ -23,7 +23,7 @@ const names = {
   "code-file": "file-code",
   "code-directory": "folder",
   "code-class": "cube",
-  "code-function": "code",
+  "code-function": "cpu",
   "code-parameter": "brackets",
   "code-unresolved": "question-mark",
   "code-reference": "link",
@@ -34,7 +34,8 @@ const nodes = JSON.parse(
 );
 const paths = {};
 // Tabler uses path/line/rect/circle/polyline primitives. Convert them at build
-// time so Pixi and the real volumetric meshes consume identical centerlines.
+// time for Pixi and the 2D legend. The 3D objects share their semantic vocabulary,
+// while retaining genuine volumes rather than extruded SVG outlines.
 for (const [type, name] of Object.entries(names)) {
   if (!nodes[name]) throw Error("Missing pinned icon: " + name);
   const commands = nodes[name].flatMap(([tag, a]) => {
@@ -71,6 +72,6 @@ await writeFile(
 );
 await writeFile(
   new URL("NODE-ICONS-LICENSE.txt", root),
-  "Tabler Icons 3.49.0\nhttps://github.com/tabler/tabler-icons\nSelected vectors are sampled into shared 2D strokes and volumetric 3D meshes.\n\n" +
+  "Tabler Icons 3.49.0\nhttps://github.com/tabler/tabler-icons\nSelected vectors are sampled into 2D node and legend strokes.\n\n" +
     (await readFile(new URL("node_modules/@tabler/icons/LICENSE", import.meta.url), "utf8")),
 );

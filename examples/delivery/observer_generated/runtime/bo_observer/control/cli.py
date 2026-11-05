@@ -40,6 +40,7 @@ def main(argv=None):
     )
     parser.add_argument("--root", required=True)
     parser.add_argument("--conversation")
+    parser.add_argument("--host", choices=["codex", "deepseek-harness"], default="codex")
     parser.add_argument(
         "--message",
         required=True,
@@ -47,16 +48,20 @@ def main(argv=None):
     )
     parser.add_argument("--url", help="The verified local observer URL")
     parser.add_argument(
-        "--snapshot", type=Path, help="A current observer JSON snapshot, for offline preview"
+        "--snapshot",
+        type=Path,
+        help="A current observer JSON snapshot, for offline preview",
     )
     parser.add_argument(
-        "--spec", type=Path, help="A structured interpretation of this prefixed user request"
+        "--spec",
+        type=Path,
+        help="A structured interpretation of this prefixed user request",
     )
     parser.add_argument(
         "--recording", help="Exact stopped recording ID; no implicit latest selection"
     )
     args = parser.parse_args(argv)
-    scope = ControlScope(args.root)
+    scope = ControlScope(args.root, host=args.host)
     try:
         if args.command == "activate":
             if not args.url:
@@ -75,7 +80,10 @@ def main(argv=None):
                 ):
                     raise ValueError("Observer design does not match this project's declaration")
                 known.add(local["layout_id"])
-            for path in [scope.root / "bo_stategraph/project.json", scope.root / "behavior.json"]:
+            for path in [
+                scope.root / "bo_stategraph/project.json",
+                scope.root / "behavior.json",
+            ]:
                 if path.exists():
                     value = read(path)
                     known.update(
@@ -96,7 +104,10 @@ def main(argv=None):
                 known.update(
                     filter(
                         None,
-                        [model.get("project_id"), model.get("presentation", {}).get("layout_id")],
+                        [
+                            model.get("project_id"),
+                            model.get("presentation", {}).get("layout_id"),
+                        ],
                     )
                 )
             project_id = (
@@ -192,7 +203,10 @@ def main(argv=None):
         return 0
     except ClarificationRequired as error:
         print(
-            json.dumps({"valid": False, "needs_clarification": error.question}, ensure_ascii=False)
+            json.dumps(
+                {"valid": False, "needs_clarification": error.question},
+                ensure_ascii=False,
+            )
         )
         return 2
     except (OSError, ValueError, KeyError, TypeError) as error:

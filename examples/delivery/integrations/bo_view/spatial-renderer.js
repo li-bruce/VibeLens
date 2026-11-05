@@ -12,7 +12,8 @@ import { cleanLayers, layerHeights } from "./graph-layers.js";
 import { cleanRoute, polylineAt } from "./edge-routing.js";
 import { RoutingClient } from "./routing-client.js";
 import { spatialScene } from "./routing-scene.js";
-import { nodeGeometry } from "./spatial-geometry.js";
+import { nodeGeometry, nodeMaterial, transferGeometry } from "./spatial-geometry.js";
+import { transferPose } from "./transfer-glyph.js";
 import { SPATIAL_GLYPH_RADIUS } from "./containment-geometry.js";
 import { regionLabelAnchor, stackRegionCaptions } from "./spatial-labels.js";
 import { relationStyle, relationName, displayName, annotationFor } from "./layout.js";
@@ -352,7 +353,11 @@ export class SpatialRenderer {
     }
     for (const [type, nodes] of typeGroups) {
       const geometry = this.nodeGeometry(type);
-      const mesh = new T.InstancedMesh(geometry, new T.MeshLambertMaterial(), nodes.length);
+      const mesh = new T.InstancedMesh(
+        geometry,
+        nodeMaterial(0xffffff, this.model.nodes.length > 2000),
+        nodes.length,
+      );
       mesh.userData.ids = nodes.map((n) => n.id);
       for (const [i, node] of nodes.entries()) {
         const p = this.positions[node.id];
@@ -754,6 +759,7 @@ export class SpatialRenderer {
       const style = relationStyle(edge),
         color = this.edgeColor(edge),
         segmentStart = positions.length / 6;
+      curve.boTransferColor = style.color;
       // At whole-graph scale, fewer curve samples reduce GPU overdraw. Focused
       // relations retain full detail; their underlying cubic path is unchanged.
       const focused = edge.from === selected || edge.to === selected;
@@ -1108,8 +1114,8 @@ export class SpatialRenderer {
         this.particles.material.dispose();
       }
       this.particles = new T.InstancedMesh(
-        new T.SphereGeometry(4.5, 10, 8),
-        new T.MeshBasicMaterial({ color: 0x196f9a }),
+        transferGeometry(),
+        new T.MeshBasicMaterial({ depthWrite: false }),
         Math.max(1, active.length),
       );
       this.scene.add(this.particles);
@@ -1117,17 +1123,25 @@ export class SpatialRenderer {
     this.particles.visible = true;
     this.particles.count = active.length;
     const matrix = new T.Object3D(),
+      up = new T.Vector3(0, 1, 0),
+      color = new T.Color(),
       progress = (now - this.animation.start) / 650;
     for (const [i, id] of active.entries()) {
-      matrix.position.copy(
-        this.curves
-          .get(id)
-          .getPoint(this.animation.transfers.get(id)?.reverse ? 1 - progress : progress),
+      const curve = this.curves.get(id);
+      const pose = transferPose(
+        (position) => curve.getPoint(position),
+        progress,
+        this.animation.transfers.get(id)?.reverse,
       );
+      matrix.position.copy(pose.point);
+      matrix.quaternion.setFromUnitVectors(up, vector(pose.direction));
+      matrix.scale.setScalar(this.glyphScale(null, pose.point, 29) / 29);
       matrix.updateMatrix();
       this.particles.setMatrixAt(i, matrix.matrix);
+      this.particles.setColorAt(i, color.setHex(curve.boTransferColor ?? 0x196f9a));
     }
     this.particles.instanceMatrix.needsUpdate = true;
+    if (this.particles.instanceColor) this.particles.instanceColor.needsUpdate = true;
     this.particles.computeBoundingSphere();
   }
 

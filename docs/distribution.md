@@ -1,26 +1,45 @@
-# Where people can find VibeLens
+# Find and install VibeLens
 
-Start with the GitHub repository and Pages introduction. They provide one place to
-inspect the code, try the example, read the limits, and install a version.
-
-| Channel | How to use it |
+| Channel | Entry |
 |---|---|
-| [GitHub topics](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/classifying-your-repository-with-topics) | Add accurate topics such as `agent-skills`, `vibe-coding`, `debugging`, `code-visualization`, and `state-machine`. Include the Pages URL in the repository description. |
-| [Skills.sh](https://www.skills.sh/docs/faq) | Publish the complete Skill in a public repository and document `npx skills add li-bruce/VibeLens --skill vibelens`. The directory's ranking uses anonymous CLI installation telemetry; creating a GitHub repository does not guarantee placement or rank. |
-| [Tessl](https://docs.tessl.io/distribute/promote-or-claim-a-skill-you-have-created) | Consider its registry and evaluations when ready to maintain an additional publishing channel. Its current flow uses plugin metadata, linting and evaluation before publication. |
-| [Show HN](https://news.ycombinator.com/showhn.html) | Share a working, easy-to-try release with a short explanation of what a developer can learn from the graph. A landing page alone is a poor submission. |
-| [V2EX 分享创造](https://www.v2ex.com/go/create) | Present the developer problem and a short Chinese walkthrough with an installation link. |
+| GitHub | [Source](https://github.com/li-bruce/VibeLens), [versioned downloads](https://github.com/li-bruce/VibeLens/releases/latest) |
+| Product website | [Features](https://liblog.vip/VibeLens/), [interactive walkthrough](https://liblog.vip/VibeLens/demo.html) |
+| Skills CLI | `npx skills add li-bruce/VibeLens --skill vibelens` |
+| SkillHub | [VibeLens by user_fbf26156](https://skillhub.cn/skills/user_fbf26156/vibelens) |
+| DeepSeek Harness | [Plugin installation and compatibility](deepseek-harness.md) |
 
-A useful demonstration follows one real operation: observe an unexpected value,
-expand the affected graph region, inspect the function, change the code, and verify
-the updated graph. Keep it around one minute and link the reproducible example.
+## Release packages
 
-These are distribution options, not claims that VibeLens is listed or promoted on
-those services. No external listing or community post was submitted in this change.
-Agent Skills format compatibility is distinct from verified support in each host.
+Each release builds three artifacts from the same canonical Skill:
+
+- `vibelens-vVERSION.zip`: the complete directory for direct installation.
+- `dsh-vibelens-VERSION.tgz`: a prebuilt Harness plugin with the complete Skill.
+- `vibelens-skillhub-vVERSION.zip`: a compact catalog package. SkillHub limits
+  uploads to 200 files, so this package contains the complete resource archive
+  and a local Python bootstrap. It verifies every file and extracts the Skill on
+  first explicit use, without downloading another dependency bundle.
+
+`SHA256SUMS` identifies the archives. `manifest.json` records their source files.
+[Build and verification records](review/harness-distribution-20261105/README.md)
+separate published versions from submissions waiting for catalog review.
+
+## Maintaining the descriptions
+
+The English [README](../README.md), [Chinese README](../README.zh-CN.md), packaged
+[Skill README](../skills/vibelens/README.md), and
+[SkillHub overview](distribution/skillhub.zh-CN.md) share the same product story.
+Catalog copies use absolute image and documentation links. Product descriptions
+cover the model, connected graph, focused views and runtime inspection; application
+stories belong in the interactive demo.
+
+Harness's official project supports tarball installation and recommends the
+`dsh-plugin` GitHub topic for discovery. This release does not claim a separate
+marketplace listing. Skills.sh discovery is based on CLI usage; repository
+publication does not guarantee a ranking.
 
 ## 中文
 
-优先使用 **GitHub + Pages + Skills.sh 安装入口**。用一分钟展示一次真实的
-“发现异常 → 展开图 → 定位函数 → 修改并复测”，再分享至 V2EX 或 Show HN。
-Tessl 可作为后续的评测和分发渠道。仓库公开并不等于已进入目录排名；目前未代发推广帖子。
+通过 GitHub、产品网站、Skills CLI 或现有 SkillHub 条目获取 VibeLens。
+DeepSeek Harness 使用独立插件包，安装说明列出了已测试版本。
+SkillHub 包在首次使用时校验并解包完整资源；GitHub 完整包可直接安装。
+各渠道的发布状态记录在本轮验收材料中。

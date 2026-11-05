@@ -1,5 +1,5 @@
 /** Accessible layer explanations stay useful before WebGL loads or if it fails. */
-import { layerContent } from "./layer-content.mjs?rev=clarity-2";
+import { layerContent } from "./layer-content.mjs?rev=0.13.0";
 
 export function mountLayerExplorer(host, { locale, onLanguageChange }) {
   if (!host) return;
@@ -55,9 +55,8 @@ export function mountLayerExplorer(host, { locale, onLanguageChange }) {
     panel.querySelector("[data-layer-group]").textContent = item.group[language];
     panel.querySelector("h3").textContent = item.question[language];
     panel.querySelector("[data-layer-body]").textContent = item.body[language];
-    panel.querySelector("[data-layer-examples]").textContent = item.examples[language].join(
-      ["business", "state", "operations"].includes(item.id) ? "  →  " : "  ·  ",
-    );
+    panel.querySelector("[data-layer-examples]").textContent =
+      item.examples[language].join("  ·  ");
     host.querySelector("[data-layer-hint]").textContent = language
       ? "拖动旋转 · 点击选层"
       : "Drag to orbit · Select a layer";
@@ -72,7 +71,7 @@ export function mountLayerExplorer(host, { locale, onLanguageChange }) {
       if (!entry.isIntersecting || loading) return;
       loading = true;
       try {
-        const { layerScene } = await import("./layer-scene.mjs?rev=clarity-2");
+        const { layerScene } = await import("./layer-scene.mjs?rev=0.13.0");
         scene = layerScene(host.querySelector("[data-layer-stage]"), layerContent, select);
         scene.select(selected, locale() === "zh-CN" ? 1 : 0);
         scene.visible(entry.isIntersecting);

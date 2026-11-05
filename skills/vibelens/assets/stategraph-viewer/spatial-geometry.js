@@ -3,10 +3,10 @@ import { iconFor } from "./node-icons.js";
 
 /** Semantic objects share meaning and color with 2D icons, not their geometry. */
 export const objectNames = {
-  business: "workflow-blocks",
-  function: "gear",
+  business: "workflow-route",
+  function: "function-chip",
   state: "state-orb",
-  decision: "decision-crystal",
+  decision: "decision-branch",
   resource: "stacked-crates",
   data: "value-vial",
   effect: "commit-check",
@@ -22,7 +22,7 @@ export const objectNames = {
   "code-endpoint": "connected-plugs",
   "code-file": "source-document",
   "code-directory": "file-folder",
-  "code-class": "class-cabinet",
+  "code-class": "class-module",
   "code-function": "function-chip",
   "code-reference": "source-link",
   "code-parameter": "parameter-dial",
@@ -43,7 +43,30 @@ export function nodeGeometry(type, dense = false) {
     geometry.translate(x, y, z);
     parts.push(geometry);
   };
-  const box = (w, h, d, x = 0, y = 0, z = 0) => add(new T.BoxGeometry(w, h, d), x, y, z);
+  // Small bevels catch light at normal scale. Dense overviews use the cheaper
+  // box primitive; all instances of a type still share one geometry/material.
+  const box = (w, h, d, x = 0, y = 0, z = 0) => {
+    if (dense) return add(new T.BoxGeometry(w, h, d), x, y, z);
+    const radius = Math.min(w, h, d) * 0.14;
+    const shape = new T.Shape(),
+      a = w / 2 - radius,
+      b = d / 2 - radius;
+    shape.moveTo(-a, -b);
+    shape.lineTo(a, -b);
+    shape.lineTo(a, b);
+    shape.lineTo(-a, b);
+    shape.closePath();
+    const geometry = new T.ExtrudeGeometry(shape, {
+      depth: h - 2 * radius,
+      bevelEnabled: true,
+      bevelSegments: 1,
+      bevelSize: radius,
+      bevelThickness: radius,
+      steps: 1,
+    });
+    geometry.translate(0, 0, -h / 2 + radius);
+    add(geometry, x, y, z, Math.PI / 2);
+  };
   const cylinder = (r, h, x = 0, y = 0, z = 0, top = r) =>
     add(new T.CylinderGeometry(top, r, h, segments), x, y, z);
   const ball = (r, x = 0, y = 0, z = 0) =>
@@ -91,41 +114,32 @@ export function nodeGeometry(type, dense = false) {
       for (const x of [-0.43, 0.43]) cylinder(0.13, 0.12, x, -0.77, 0.25);
       break;
     case "business":
-      box(1.8, 0.18, 1.45, 0, -0.55);
       for (const [x, z] of [
-        [-0.55, 0.35],
-        [0.55, 0.35],
-        [0, -0.45],
+        [-0.7, 0.55],
+        [0.1, 0.55],
+        [0.65, -0.55],
       ]) {
-        box(0.55, 0.65, 0.5, x, -0.12, z);
-        ball(0.11, x, 0.29, z);
+        cylinder(0.28, 0.32, x, 0, z);
+        ball(0.19, x, 0.23, z);
       }
-      rod([-0.55, -0.35, 0.35], [0, -0.35, -0.45]);
-      rod([0.55, -0.35, 0.35], [0, -0.35, -0.45]);
-      break;
-    case "function":
-      ring(0.52, 0.19);
-      for (let i = 0; i < 8; i++) {
-        const a = (i * Math.PI) / 4;
-        add(
-          new T.BoxGeometry(0.34, 0.48, 0.35),
-          Math.cos(a) * 0.75,
-          0,
-          Math.sin(a) * 0.75,
-          0,
-          -a,
-          0,
-        );
-      }
-      cylinder(0.17, 0.65);
+      rod([-0.7, 0, 0.55], [0.1, 0, 0.55], 0.11);
+      rod([0.1, 0, 0.55], [0.65, 0, -0.55], 0.11);
       break;
     case "state":
       ball(0.57);
       ring(0.88, 0.1);
       break;
     case "decision":
-      add(new T.OctahedronGeometry(0.98));
-      cylinder(0.26, 0.12, 0, -0.85);
+      // The same fork as the 2D rule icon, built from rounded solid junctions.
+      for (const [x, z] of [
+        [0, 0.7],
+        [-0.65, -0.6],
+        [0.65, -0.6],
+      ]) {
+        ball(0.28, x, 0, z);
+        rod([0, 0, 0.2], [x, 0, z], 0.13);
+      }
+      ball(0.2, 0, 0, 0.2);
       break;
     case "data":
       cylinder(0.42, 0.9);
@@ -187,12 +201,10 @@ export function nodeGeometry(type, dense = false) {
       }
       break;
     case "code-class":
-      box(1.45, 1.5, 0.95);
-      for (const y of [-0.48, 0, 0.48]) {
-        box(1.1, 0.28, 0.14, 0, y, 0.55);
-        cylinder(0.09, 0.13, 0, y, 0.67);
-      }
+      box(1.25, 1.25, 1.25);
+      for (const z of [-0.35, 0, 0.35]) box(0.72, 0.08, 0.12, 0, 0.68, z);
       break;
+    case "function":
     case "code-function":
       box(1.15, 0.55, 1.15);
       cylinder(0.3, 0.18, 0, 0.37);
@@ -232,6 +244,27 @@ export function nodeGeometry(type, dense = false) {
   return geometry;
 }
 
+/** Satin surfaces reveal real volume without extra meshes or outline passes. */
+export function nodeMaterial(color = 0xffffff, dense = false) {
+  return dense
+    ? new T.MeshLambertMaterial({ color })
+    : new T.MeshPhongMaterial({ color, shininess: 24, specular: 0x344556 });
+}
+
+/** One revolved arrow mesh for every live transfer; +Y is the travel direction. */
+export function transferGeometry() {
+  return new T.LatheGeometry(
+    [
+      new T.Vector2(0, -7),
+      new T.Vector2(1.25, -7),
+      new T.Vector2(1.25, -1),
+      new T.Vector2(4, -1),
+      new T.Vector2(0, 7),
+    ],
+    8,
+  );
+}
+
 let thumbnails;
 /** Render the actual objects once; release the legend's temporary WebGL context. */
 export function spatialLegend(styles) {
@@ -242,6 +275,7 @@ export function spatialLegend(styles) {
     preserveDrawingBuffer: true,
   });
   renderer.setSize(48, 48);
+  renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio || 1, 2));
   renderer.setClearColor(0, 0);
   const camera = new T.PerspectiveCamera(36, 1, 0.1, 20);
   camera.position.set(2.2, 3.4, 3.6);
@@ -254,10 +288,7 @@ export function spatialLegend(styles) {
   thumbnails = new Map();
   try {
     for (const [type, style] of Object.entries(styles)) {
-      const mesh = new T.Mesh(
-        nodeGeometry(type),
-        new T.MeshLambertMaterial({ color: style.color }),
-      );
+      const mesh = new T.Mesh(nodeGeometry(type), nodeMaterial(style.color));
       scene.add(mesh);
       renderer.render(scene, camera);
       thumbnails.set(type, renderer.domElement.toDataURL("image/png"));

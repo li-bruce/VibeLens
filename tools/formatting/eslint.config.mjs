@@ -31,7 +31,8 @@ export default [
     rules,
   },
   {
-    files: ["skills/vibelens/scripts/bo_observer/adapters/javascript/*.mjs"],
+    files: ["skills/vibelens/scripts/bo_observer/adapters/javascript/*.mjs",
+      "plugins/deepseek-harness/*.mjs", "tools/harness-tests/*.mjs"],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
 ];

@@ -38,8 +38,10 @@ function mix(a, b, amount) {
 export function glyphAppearance(color, { core = false, selected = false, related = false } = {}) {
   const strong = core || selected;
   return {
-    fill: strong ? mix(color, 0x142a40, 0.24) : mix(0xffffff, color, related ? 0.3 : 0.18),
-    ink: strong ? 0xffffff : mix(color, 0x142a40, 0.55),
+    // Preserve each layer's hue while keeping every normal, related and selected
+    // icon above the same 4.5:1 contrast threshold used by the existing viewer.
+    fill: strong ? mix(color, 0x142a40, 0.24) : mix(0xffffff, color, related ? 0.24 : 0.12),
+    ink: strong ? 0xffffff : mix(color, 0x142a40, 0.42),
     border: color,
     emphasis: selected ? "selected" : core ? "core" : related ? "related" : "normal",
   };
@@ -49,12 +51,14 @@ export const spatialShape = (type) => "tabler:" + iconFor(type).name;
 export const glyphShapes = (type) =>
   iconFor(type).strokes.map((points) => ({ kind: "polyline", points }));
 export function drawGlyph(g, type, x, y, color, appearance = glyphAppearance(color)) {
-  g.circle(x, y, 29).fill({ color: appearance.fill, alpha: 1 });
+  g.circle(x, y, 29)
+    .fill({ color: appearance.fill, alpha: 1 })
+    .stroke({ color: appearance.border, alpha: 0.38, width: 1.4 });
   for (const path of iconFor(type).strokes) {
-    g.moveTo(x + path[0][0] * 2.2, y + path[0][1] * 2.2);
-    for (const p of path.slice(1)) g.lineTo(x + p[0] * 2.2, y + p[1] * 2.2);
+    g.moveTo(x + path[0][0] * 2.05, y + path[0][1] * 2.05);
+    for (const p of path.slice(1)) g.lineTo(x + p[0] * 2.05, y + p[1] * 2.05);
   }
-  g.stroke({ color: appearance.ink, width: 3.3, cap: "round", join: "round" });
+  g.stroke({ color: appearance.ink, width: 2.8, cap: "round", join: "round" });
 }
 export function legendGlyph(type, style, options = {}) {
   const ns = "http://www.w3.org/2000/svg",
@@ -65,7 +69,15 @@ export function legendGlyph(type, style, options = {}) {
   svg.dataset.mode = options.spatial ? "3D" : "2D";
   svg.dataset.icon = iconFor(type).name;
   svg.dataset.shape = spatialShape(type);
-  const ink = glyphAppearance(style.color, options).ink;
+  const appearance = glyphAppearance(style.color, options),
+    ink = appearance.ink;
+  const disc = document.createElementNS(ns, "circle");
+  disc.setAttribute("r", "13.2");
+  disc.setAttribute("fill", "#" + appearance.fill.toString(16).padStart(6, "0"));
+  disc.setAttribute("stroke", "#" + appearance.border.toString(16).padStart(6, "0"));
+  disc.setAttribute("stroke-opacity", "0.38");
+  disc.setAttribute("stroke-width", "0.65");
+  svg.append(disc);
   for (const points of iconFor(type).strokes) {
     const path = document.createElementNS(ns, "polyline");
     path.setAttribute("points", points.map((p) => p.join(",")).join(" "));

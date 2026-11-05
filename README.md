@@ -1,197 +1,86 @@
-# VibeLens
+<p align="center"><a href="https://liblog.vip/VibeLens/"><img src="docs/media/overview-en.svg" alt="VibeLens — See what your AI built. Connected business, state, rule, entry, project, code and storage views." width="100%"></a></p>
 
-**Understand the code your agent builds and trace what it does.**
+<p align="center">
+<a href="README.zh-CN.md">中文</a> ·
+<a href="https://liblog.vip/VibeLens/?lang=en">Explore VibeLens</a> ·
+<a href="https://liblog.vip/VibeLens/demo.html?lang=en">Try the interactive story</a> ·
+<a href="#get-started">Install</a>
+</p>
 
-Previously named Business Observer (`business-observer`). [Rename and migration](docs/rename-vibelens.md).
+<p align="center">
+<a href="https://github.com/li-bruce/VibeLens/releases/latest"><img src="https://img.shields.io/github/v/release/li-bruce/VibeLens?color=087f80" alt="Latest release"></a>
+<a href="https://github.com/li-bruce/VibeLens/actions/workflows/check.yml"><img src="https://github.com/li-bruce/VibeLens/actions/workflows/check.yml/badge.svg?branch=main" alt="Repository checks"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-526b71" alt="MIT license"></a>
+</p>
 
-[中文](README.zh-CN.md) · [Product introduction](https://li-bruce.github.io/VibeLens/?lang=en) · [Interactive demo](https://li-bruce.github.io/VibeLens/demo.html?lang=en) · [Installation & usage](docs/usage.en.md) · [Source guide](docs/source-guide.en.md)
+# Understand the program behind the screen
 
-Vibe coding can produce a working screen while leaving its decisions, state changes, and internal dependencies difficult to inspect. `vibelens` keeps a developer-facing graph connected to the implementation: business flows, state machines, decision dependencies, important functions, parameters, and actual runtime evidence.
+Your AI can build a working app quickly. Understanding its permissions, state changes and hidden dependencies takes a clearer view.
 
-![Nine connected layers from business intent to source and physical data structure](docs/review/layer-order/site-final/layers-en.png)
+**VibeLens connects the model you confirm, the code your agent writes, and what actually happens when you run it.** Follow one operation from business intent to the value, function or query that explains its behavior.
 
-These are views of **one typed network** with shared nodes and typed relationships. Expand a region, follow a relation, or combine types to answer the question in front of you.
+## Confirm the model before the code
 
-Read from business flows, states and rules through API entries, core functions
-and data operations. Expand the scanned project tree into code symbols, with
-physical data structure at the base. Saved views and positions carry across
-iterations. [Explore the layers](https://liblog.vip/VibeLens/index.html?lang=en#explore).
+> “Use VibeLens for this project. Show me the business flow, states and rules so we can confirm how it should work.”
 
-Shared rule conditions connect permissions to the functions that implement them. Reuse an ownership check across actions, distinguish different parameter bindings, and inspect each request's actual inputs, result and skipped conditions. [Rule-network interface](skills/vibelens/references/shared-policy.md).
+VibeLens turns the conversation into connected **business, state and rule graphs**. Clarify the important details, see the graph, then build. Choose **Drive** to develop from executable state declarations, or **Observe** to inspect your application's own logic.
 
-Use **3D** for a perspective view of connected semantic layers. Rotate the graph, expand a region across layers, follow its colored containment projections, or focus one layer. Spatial positions and the camera are saved with the project. [Interaction and source guide](skills/vibelens/references/spatial-graph.md).
+## Follow the evidence to the source
 
-<details>
-<summary>See the spatial viewer</summary>
+Record an operation and replay its state and value changes. Keep the relevant chain in a custom view, expand a decision and its inputs, then open the highlighted source.
 
-![Connected business, state, function and data layers](docs/review/spatial-graph/browser-delivery/3d-angled.png)
+[![A focused graph links the selected recipient, actor, delete operation and affected row count to the highlighted SQL source](docs/site/images/source-en.png)](https://liblog.vip/VibeLens/demo.html?lang=en#drill)
 
-</details>
+Tell your coding agent what you found. VibeLens keeps the model, source mappings and checks alongside the change. Run it again and inspect the result.
 
-## Two development modes
+[**Try the interactive walkthrough →**](https://liblog.vip/VibeLens/demo.html?lang=en)
 
-The Skill asks you to choose when adopting it:
+## One graph, the detail you need
 
-| | Drive | Observe |
-|---|---|---|
-| Business execution | A native executor reads the state declaration. | The application keeps its own logic. |
-| What the graph shows | The declaration and actual execution. | The declaration mapped to actual application behavior. |
-| Required in both | Source mapping, identifiable probes, actual values, synchronization, and verification. | The same requirements. |
+[![The native 3D viewer connects business behavior, state and captured code values](docs/site/images/layers-en.png)](https://liblog.vip/VibeLens/?lang=en#explore)
 
-Python supplies shared graph services, recording, validation, export, and the viewer. The application's Python or JavaScript adapter stays native and communicates through versioned JSON. Business execution must continue when the observer is unavailable.
+| Start with a question | Follow it through the graph |
+|---|---|
+| What should happen? | Business actions, object states and shared rules |
+| Where is it implemented? | Entry points → folders and files → functions and parameters |
+| What changed at runtime? | Captured inputs, decisions, states, queries and effects |
+| What matters in this iteration? | A saved custom view, focused recording and synchronized timeline |
 
-The native Python/JS `bo.fsm/1` executors support a strictly validated **flat state-machine subset**. The complete Python examples additionally exercise concurrent activities, waiting, resources, joins, and recovery. Complex native engines need an explicit adapter.
+Switch between **2D and 3D**, expand a region, filter relationships, and keep your layout and annotations as the code evolves. Live observation, recording and replay share the same graph.
 
-## From conversation to a checked iteration
+## Get started
 
-```mermaid
-flowchart LR
-  R[Your request] --> G[Conversation diagram + live Web graph]
-  G --> C{Confirm or correct}
-  C -->|Correct| G
-  C -->|Confirm| I[Implement + bind source + capture facts]
-  I --> V[Check mapping, states, rules, project]
-  V -->|Failure| I
-  V -->|Pass| O[Inspect the updated graph]
-  O -->|Next change| R
-```
+### Codex
 
-1. **Confirm intent.** See a small business graph directly in the conversation and receive its verified Web address. Necessary questions and counterexamples clarify your meaning; the Skill does not proactively add business rules or recommend features.
-2. **Code with the graph attached.** Use your preferred architecture, framework, and coding Skills. The coding agent maintains declarations, source anchors, capture fields, and the graph during each batch. A source inventory independent of existing graph nodes catches new features, including login, notifications, queries, and frontend actions.
-3. **Verify and repair.** Run scenarios defined from confirmed requirements and independent expectations. Missing mappings, stale source, invalid states, and wrong captured values block acceptance. Fix code and graph, then retest. Report **implementation mapping**, **state constraints**, **business rules**, and **project checks** separately.
-
-Synchronization happens in the agent-managed development workflow. A Skill does not create a daemon that controls every editor. `scan/watch` reports changes; the coding agent must reconcile them before accepting the iteration.
-
-## Inspect live behavior or record an operation
-
-```mermaid
-flowchart LR
-  S[All instrumented events or a focused region] --> A[Start recording]
-  A --> B[Operate your application]
-  B --> E[Stop recording]
-  E --> P[Replay state and value changes]
-  P --> F[Locate the responsible function and source]
-```
-
-- Watch actual state and value updates on the running graph.
-- Record a selected region, or record all **instrumented** events and filter afterwards. Capture scope and replay detail are separate.
-- Scrub the execution timeline to follow calls and state changes across layers. Its cursor, selected range and playback stay aligned with the 2D/3D graph.
-- Replay before/after states, values, decisions, and effects. Animate transfers only when actual call or dependency evidence supports them.
-- Expand typed regions, drag groups, pin nodes, search hidden details, rename display labels, and add notes or core markers.
-- Keep layouts and custom views in `bo_stategraph/config/views/local.json`. Graph regeneration preserves personal annotations by stable ID.
-- Preserve per-node/per-relation exclusions, type filters, and expanded groups across iterations. **All elements** clears exclusions while retaining positions and collapse choices. Recordings in the current list belong to the current code/graph version.
-- Use built-in business, state-machine, function/parameter, authorization, concurrency/resource, data-dependency, observed-execution, waiting/failure, and shared-membership views. Combine node/edge/region types, depth, scope, and text into custom views.
-- Export the complete modeled structure and retained evidence independently of what the current view hides. Hide or remove debug Web components without removing the state declaration or executor.
-
-Viewing, reporting, polling, layout, and recording controls do not create business events. Missing capture stays unknown. A graph that faithfully exposes a business bug can pass mapping checks while failing business checks.
-
-## Install and use
-
-Install the **complete** Skill folder from the fixed **v0.12.1** release:
-
-```bash
-git clone --branch v0.12.1 --single-branch https://github.com/li-bruce/VibeLens.git
-cd VibeLens
-python tools/install_skill.py --project /path/to/your-project
-```
-
-The installer writes `.agents/skills/vibelens` and stops if that directory exists, preserving local changes. Open a new Codex conversation in the target project:
-
-```text
-Use $vibelens to build a small file-sharing app.
-Users upload their own files and share them with named recipients who can view and download them.
-The owner can revoke a recipient's access; their next download must be rejected.
-Show the first business graph in this conversation and give me its Web address.
-Confirm unclear details before implementation, and keep the graph in sync while coding.
-```
-
-Answer the important business questions, choose drive or observe, and confirm the initial graph. The AI handles the intermediate artifacts and checks.
-
-For rolling updates from `main`, install with the Skills CLI:
+Install the complete skill into your project:
 
 ```bash
 npx skills add li-bruce/VibeLens --skill vibelens
 ```
 
-You can also ask Codex's Skill installer to install from [the v0.12.1 Skill directory](https://github.com/li-bruce/VibeLens/tree/v0.12.1/skills/vibelens), or download the [release ZIP](https://github.com/li-bruce/VibeLens/releases/download/v0.12.1/vibelens-v0.12.1.zip). Existing `business-observer` installations have an explicit [migration command](docs/rename-vibelens.md). See the [release notes](docs/releases/v0.12.1.md), [release validation](docs/review/release-v0.12.1/README.md), and [implementation assessment](docs/assessment/2026-10-24/README.md).
-
-English is the maintained source/documentation language. Conversation follows the user; the viewer offers English/Chinese and saves the preference in the project. Original answers and historical evidence retain their original language.
-
-## Control a view from the conversation
-
-Installation makes the skill available; it is activated explicitly with `$vibelens` for the current conversation and project. Other conversations keep their own activation and private views.
-
-Once activated, use the `/vibelens` prefix to control a view or filter an existing recording:
+Start a project conversation with:
 
 ```text
-/vibelens Focus the upload-to-approval chain, showing business actions and decisions
-/vibelens Show the approval rule and its parameters two relationships deep
-/vibelens In recording RECORDING_ID, replay only the approval path and loop it
+Use $vibelens for this project.
+Show the business, state and rule graphs before we implement it.
 ```
 
-The agent resolves actual graph identities, asks about ambiguous matches, then creates a saved custom view using the viewer's native layout and replay controls. Open the scoped graph address it returns. The original graph and recorded events remain intact; 2D and 3D share the selection. Ordinary project coding continues to update mappings and probes.
+### DeepSeek Harness
 
-`/vibelens` is a skill-local text prefix. Clients that intercept it can use `$vibelens /vibelens …`. Manual viewer changes require the prefix; it never grants source-edit permissions. See [scope, commands and boundaries](skills/vibelens/references/conversation-controls.md).
-
-## Run locally
-
-Shared services require Python 3.11–3.13. JS/TS/React/Vue analysis requires Node.js 20.19+ or 22.12+. The viewer needs a modern WebGL browser.
+Install the packaged plugin from the [v0.13.0 release](https://github.com/li-bruce/VibeLens/releases/tag/v0.13.0):
 
 ```bash
-python -m venv .venv
-# Windows: .venv\Scripts\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
-python -m pip install -r examples/delivery/requirements.txt -r skills/vibelens/requirements.txt
-python tools/setup_adapters.py
-npm ci --prefix examples/multilanguage
-python tools/multilanguage_demo.py --mode drive
+dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.13.0/dsh-vibelens-0.13.0.tgz
 ```
 
-The launcher prints the application and graph URLs. See [the multilingual example](examples/multilanguage/README.md) for both modes, [delivery](examples/delivery/README.md) for concurrent checks and resource waiting, and [team archive](examples/team-archive/README.md) for an earlier complete trial.
+Open that profile and start a conversation with `/vibelens` followed by your project idea. [Harness setup and tested compatibility](docs/deepseek-harness.md).
 
-To open the illustrated introduction locally:
+**Python · Node.js · React · Vue** — English and Chinese interface. Python 3.11+ runs the shared observer; application adapters stay native. [Installation, dependencies and versioned downloads](docs/usage.en.md).
 
-```bash
-python -m http.server 8862 --bind 127.0.0.1
-```
+## Built for inspection
 
-Visit [the introduction](http://127.0.0.1:8862/docs/site/) for a bilingual overview of the Skill. Run `python tools/build_site_viewer.py` before opening the separate [interactive case](http://127.0.0.1:8862/docs/site/demo.html). Follow a file-sharing application from its first business graph to a recording that exposes revoked access still being accepted, then inspect the repair and retest. Its actual recordings use the maintained 2D/3D viewer. [Run the project](examples/file-sharing/README.md) or read the [dialogue and evidence](docs/review/file-sharing-demo/README.md). The dialogue is scripted and the first defect deliberately seeded.
+The source is open. Reproducible examples and retained checks let you inspect the implementation as well as the interface.
 
-To read or modify the implementation, start with the [source guide](docs/source-guide.en.md). It maps the modules and follows a coding iteration, a runtime event, and a graph interaction through the code. [Readability review](docs/review/readability-20261023/README.md) records the syntax comparison and regression results for this update.
+[Architecture & source guide](docs/source-guide.en.md) · [Supported capabilities](docs/capabilities.md) · [Validation records](docs/review/harness-distribution-20261105/README.md) · [Release notes](docs/releases/v0.13.0.md) · [Distribution](docs/distribution.md)
 
-## Architecture and boundaries
-
-| Part | Responsibility |
-|---|---|
-| `skills/vibelens/SKILL.md` | Agent guidance, clarification, iteration, and acceptance |
-| `scripts/bo_observer/graph/` | Graph projection, source relationships, focused extraction |
-| `scripts/bo_observer/workflow/` | Source inventory, mapping and semantic verification |
-| `scripts/bo_observer/observation/` | Bounded capture, recording, replay facts, retention |
-| `scripts/bo_observer/data/` | Database catalogs, native data operations, graph projection and refresh |
-| `scripts/bo_observer/web/` and `assets/stategraph-viewer/` | Shared API and interactive viewer |
-| `scripts/bo_observer/adapters/` | Native Python/JS execution, probes, and source adapters |
-| Target project's `bo_stategraph/` | Declarations, native execution, private view preferences |
-
-[JSON protocols and language support](skills/vibelens/references/multilanguage.md) · [Source depth and database relationships](docs/source-data-and-language.md) · [Recording](skills/vibelens/references/recorded-analysis.md) · [Development checks](skills/vibelens/references/continuous-development.md)
-
-The [development roadmap](docs/development/dev-roadmap.md) records implemented source and database views and the remaining API relationship work.
-
-Current adapters inventory Python, JS/TS, React, and Vue source. **Local code** opens source relationships around a selected region; **Code structure** explores the indexed project. Files, classes, functions, parameters, imports, inheritance and call occurrences use stable identities and refresh after edits. Large displays show limits and explicit boundaries; CLI export retains the complete indexed structure. Unresolved dynamic calls stay unknown. [Source view and commands](skills/vibelens/references/code-structure.md).
-
-**Database structure** and **Data operations** views connect tables, document collections, key patterns, graph labels, query targets, selected values, transformations, and transaction outcomes. SQLite, PostgreSQL, MongoDB, Redis and Neo4j have real-runtime checks; Python and Node.js share the same JSON protocol. The data watcher refreshes the graph after model/schema changes and retains personal view settings. [Run the database example](examples/database-observer/README.md) · [Support and boundaries](skills/vibelens/references/database-observation.md) · [Review evidence](docs/review/db-vis/README.md).
-
-Automatic column lineage, typed API relationships, additional database adapters, incremental APIs and performance baselines remain extensions. The tool captures selected fields and supported relationships; it does not prove every possible execution or execute business commands through graph edits.
-
-## Verify
-
-```bash
-python tools/verify.py
-# With requirements-database.txt installed:
-python tools/verify.py --database
-```
-
-Checks include strict declarations, source/graph drift, independent mapping evidence, actual state/value/effect scenarios, observer isolation, view relations, recording, localization, installation, and runnable core exports. Read [the current trial record](docs/review/english-gallery/README.md) for failures, fixes, retests, and limits. Historical evidence is retained unchanged.
-
-## License
-
-[MIT](LICENSE). PixiJS and Tabler Icons are MIT; ELK.js is EPL-2.0; the separately replaceable libavoid router is LGPL-2.1-or-later. No proprietary yFiles code is included. See [third-party notices](THIRD_PARTY_NOTICES.md).
+[MIT](LICENSE) · [Third-party licenses](THIRD_PARTY_NOTICES.md)

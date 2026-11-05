@@ -18,6 +18,15 @@ Private control metadata lives in `bo_stategraph/config/control/`. Views live in
 
 ## Interpret a request, then run the constrained tools
 
+### DeepSeek Harness
+
+The packaged plugin uses Harness's user-only `/vibelens` invocation. For its
+control CLI calls, pass `--host deepseek-harness --conversation ACTUAL_SESSION_ID`
+and retain the actual prefixed user message, including on `activate`. The plugin
+adds the session ID and working directory only to the host's explicit skill
+injection. Host namespaces are distinct even if two products use the same ID.
+Never borrow a Codex environment identity for a Harness conversation.
+
 Examples of actual user requests:
 
 ```text

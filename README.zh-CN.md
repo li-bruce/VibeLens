@@ -1,129 +1,86 @@
-# VibeLens
+<p align="center"><a href="https://liblog.vip/VibeLens/?lang=zh-CN"><img src="docs/media/overview-zh-CN.svg" alt="VibeLens — 看清 AI 写出的程序。连接业务、状态、规则、入口、工程结构、代码执行与存储结构。" width="100%"></a></p>
 
-**帮助开发者看懂 AI 实现的代码，以及程序真正发生的行为。**
+<p align="center">
+<a href="README.md">English</a> ·
+<a href="https://liblog.vip/VibeLens/?lang=zh-CN">了解 VibeLens</a> ·
+<a href="https://liblog.vip/VibeLens/demo.html?lang=zh-CN">体验交互演示</a> ·
+<a href="#开始使用">安装</a>
+</p>
 
-原名 Business Observer（`business-observer`）。[更名与迁移说明](docs/rename-vibelens.md)。
+<p align="center">
+<a href="https://github.com/li-bruce/VibeLens/releases/latest"><img src="https://img.shields.io/github/v/release/li-bruce/VibeLens?color=087f80" alt="最新版本"></a>
+<a href="https://github.com/li-bruce/VibeLens/actions/workflows/check.yml"><img src="https://github.com/li-bruce/VibeLens/actions/workflows/check.yml/badge.svg?branch=main" alt="仓库检查"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-526b71" alt="MIT 开源协议"></a>
+</p>
 
-[English](README.md) · [产品介绍](https://li-bruce.github.io/VibeLens/?lang=zh-CN) · [交互演示](https://li-bruce.github.io/VibeLens/demo.html?lang=zh-CN) · [安装与使用](docs/usage.zh-CN.md) · [源码导览](docs/source-guide.zh-CN.md)
+# 界面能用了，内部逻辑看清了吗
 
-Vibe coding 可以很快做出能用的页面，但内部状态、判断和调用关系往往难以掌握。`vibelens` 在开发过程中维护一张面向开发者的状态网，把业务流程、状态、判定依赖、关键函数、参数与实际运行事实联系起来。
+AI 可以很快写出一个应用。权限在哪里判断，状态为什么改变，一次操作经过了哪些函数，这些细节仍然需要开发者掌握。
 
-![九个相互连接的观察层，底部为数据结构](docs/review/layer-order/site-final/data-bottom-zh-CN.png)
+**VibeLens 把你确认的模型、AI 写出的代码和程序的实际运行连接在一张图上。** 沿着一次业务操作，找到解释它的参数、函数和查询。
 
-这些是**同一张图的不同观察层次**。节点可以属于多个抽象区域；可以逐层展开，也可以混合类型检查关系。
+## 先看懂模型，再开始开发
 
-从业务、状态和规则，追到 API、核心函数与数据处理，再展开工程目录、文件和代码符号，底部展示数据存储结构。自定义视图与布局随开发迭代保留。[查看各层](https://liblog.vip/VibeLens/index.html?lang=zh-CN#explore)。
+> “这个项目使用 VibeLens。先画出业务流、状态和规则，让我确认它应该怎样运行。”
 
-权限等规则可以共用条件节点，并关联到实际函数。所有者判断可由多个操作复用，同一函数的不同参数绑定会分别呈现；运行时可以查看每次判断的输入、结果及跳过的条件。[规则网接口](skills/vibelens/references/shared-policy.md)。
+VibeLens 通过对话构建相互关联的**业务网、状态网和规则网**。确认关键细节、看清图，再进入开发。选择 **Drive**，基于可执行的状态声明开发；选择 **Observe**，观察项目自身的逻辑。
 
-点击 **3D** 可在真实三维视窗中观察各层及跨层关系。可以旋转视角、逐层展开、查看同一包含区域在各层的颜色投影，或只聚焦某一层；空间位置和相机视角随项目保存。[交互与源码说明](skills/vibelens/references/spatial-graph.md)。
+## 沿着运行，找到问题所在
 
-## 两种模式，由你选择
+录下操作，回放状态和数值的变化。在自定义视图中保留相关链路，展开判定和输入参数，再打开高亮的源码。
 
-| 模式 | 业务如何执行 | 两者共同保留 |
-|---|---|---|
-| 驱动 drive | 项目原生执行器读取状态声明，执行条件与转换。 | 状态网、源码关联、探针、真实值、更新与验证。 |
-| 观察 observe | 项目使用自己的逻辑，图反映实际状态与行为。 | 同样的监控与映射要求。 |
+[![自定义视图将接收者、操作者、删除操作与影响行数连接到高亮的 SQL 源码](docs/site/images/source-zh-CN.png)](https://liblog.vip/VibeLens/demo.html?lang=zh-CN#drill)
 
-Python 提供共用的图、记录、验证、导出和 Web；项目使用 Python 或 JavaScript 原生适配器，通过统一 JSON 交换事实。观测不可用不应阻止业务执行。
+把发现的问题告诉 coding agent。修改过程中，VibeLens 同步维护模型、源码映射和检查。再次运行，查看修改后的实际结果。
 
-当前原生 `bo.fsm/1` 执行器支持严格校验的平面状态机子集。完整 Python 示例另有并发活动、资源、等待、汇合与恢复。其他复杂引擎需要明确适配。
+[**体验交互演示 →**](https://liblog.vip/VibeLens/demo.html?lang=zh-CN)
 
-## 贯穿一次开发迭代
+## 同一张图，按需深入
 
-```mermaid
-flowchart LR
-  R[描述需求] --> G[对话中展示图与 Web 地址]
-  G --> C{确认或修正}
-  C -->|修正| G
-  C -->|确认| I[开发并同步源码关联与采集]
-  I --> V[验证映射、状态、业务与项目检查]
-  V -->|失败| I
-  V -->|通过| O[查看更新后的图]
-  O -->|下一条需求| R
-```
+[![三维视图连接业务行为、状态和代码中的实际参数](docs/site/images/layers-zh-CN.png)](https://liblog.vip/VibeLens/?lang=zh-CN#explore)
 
-开始时，通过必要的追问与反例确认你原本的意图，不主动扩展业务或推荐规则。先在对话中给出直观的业务图和可访问的 Web 地址；你仍在对话中修改与确认。
+| 你想了解什么 | 沿着图去看 |
+|---|---|
+| 程序应该怎样运行 | 业务动作、对象状态、共享规则 |
+| 具体在哪里实现 | 入口 → 目录与文件 → 函数与参数 |
+| 这次运行改变了什么 | 采集到的输入、判定、状态、查询和实际效果 |
+| 这轮修改需要关注哪里 | 保存的自定义视图、局部录制和同步时间轴 |
 
-开发时，可使用自己的框架、架构和编码 Skill。AI 在每轮编码中维护状态声明、源码锚点、探针与检查。源码盘点独立于已有图，登录、消息、查询和前端操作等新增功能也要映射。
+切换 **2D / 3D**，逐层展开，筛选节点与关系。代码迭代后，继续沿用你的布局和批注。实时观察、录制与回放都围绕同一张图展开。
 
-收尾时，运行根据已确认需求与独立预期制定的场景，检查实际参数、状态和结果。发现遗漏或不一致后修复代码与图，再次测试。**实现映射、状态约束、业务规则、项目检查分别报告**；图如实反映一个业务错误，不代表业务正确。
+## 开始使用
 
-Skill 本身不是监听所有编辑器的后台程序。扫描发现变化后，当前编码 AI 需要处理，才能完成验收。
+### Codex
 
-## 运行时观察与记录
-
-1. 选择全部已埋点事件或局部范围。
-2. 点击开始记录，再操作程序。
-3. 结束记录，逐步回放状态、数值、判定和结果变化。
-4. 根据视图层次调整回放细节，定位到函数和源码。
-
-下方的执行时间轴按层展示调用、状态变化和关联。拖动标尺定位，缩放查看局部，框选一段循环回放；游标与二维、三维 Graph 同步。
-
-也可以先记录全部已埋点事件，再筛选展示。采集范围与回放粒度不同；未采集的信息保持未知。边上的传递动画需要真实调用或依赖证据，不能只凭静态连线或时间接近推断。
-
-内置业务流、状态机、函数与参数、权限、并发资源、数据依赖、实际执行、等待失败、共享归属等视图；可自定义节点、边、区域、深度、范围和搜索的组合。支持展开、整体拖动、固定节点、显示名称修改、批注、核心标记与源码定位。个人布局保存在项目的 `bo_stategraph/config/views/local.json`。
-
-迭代后会保留类型筛选、单个节点和连接的隐藏选择、展开状态及位置。“全部元素”清除筛选，保留布局和收起状态，并分别显示已展示、已收起、已筛除的数量。图版本变化后，当前录制列表清空并退出旧回放；同一版本重启仍保留录制。
-
-[`dev` 开发计划](docs/development/dev-roadmap.md)列出了源码下钻、数据库结构和 API 关系层的现有基础、待实现内容与验收要求。
-
-查看、上报、轮询、布局和录制控制本身不会进入业务事件。完整结构导出不受当前筛选影响；可关闭或移除 debug Web，同时保留真实状态声明和执行器。
-
-## 安装并开始
-
-安装固定版本 **v0.12.1**：
+将完整 Skill 安装到项目：
 
 ```bash
-git clone --branch v0.12.1 --single-branch https://github.com/li-bruce/VibeLens.git
-cd VibeLens
-python tools/install_skill.py --project /path/to/your-project
+npx skills add li-bruce/VibeLens --skill vibelens
 ```
 
-脚本安装完整目录到项目的 `.agents/skills/vibelens`，已有目录会停止，避免覆盖修改。然后在该项目的新对话中输入：
+在项目对话中输入：
 
 ```text
-$vibelens
-在当前对话和项目中使用。
-我想开发：[描述你的项目]。
-先在对话中展示业务图，并提供可打开的 Web 地址。
-确认没有理解偏差后，再开始实现，并持续更新图和检查。
+使用 $vibelens 梳理这个项目。
+实现前，先让我确认业务网、状态网和规则网。
 ```
 
-也可以让 Codex 从 [v0.12.1 的 Skill 目录](https://github.com/li-bruce/VibeLens/tree/v0.12.1/skills/vibelens)安装，或下载[发行包](https://github.com/li-bruce/VibeLens/releases/download/v0.12.1/vibelens-v0.12.1.zip)。如需跟随 `main` 持续更新，可运行 `npx skills add li-bruce/VibeLens --skill vibelens`。已有旧安装可使用 [迁移命令](docs/rename-vibelens.md)，先保留完整备份，再切换到新名称；项目的运行模块和个人布局继续沿用。
+### DeepSeek Harness
 
-你只需要回答重要业务问题、选择模式并查看图；中间文件和验证由 AI 处理。维护中的源码、注释、Skill 与默认文档使用英文；对话跟随用户语言，界面可切换中英文。原始对话与历史证据不改写。
+安装 [v0.13.0 中的插件包](https://github.com/li-bruce/VibeLens/releases/tag/v0.13.0)：
 
-依赖与完整命令见[使用说明](docs/usage.zh-CN.md)和[英文首页](README.md)。本地产品介绍可通过 `python -m http.server 8862 --bind 127.0.0.1` 启动，然后打开[介绍页](http://127.0.0.1:8862/docs/site/?lang=zh-CN)。
-
-[独立交互演示](https://li-bruce.github.io/VibeLens/demo.html?lang=zh-CN)以文件共享应用串联“确认业务图、记录、定位、修改、复测”：用户发现共享已撤销却仍可下载，沿运行关系查看原因，再对照修复后的运行。录制使用项目的实际二维、三维视窗；首版缺陷为演示预设，对话为模拟。可[运行项目](examples/file-sharing/README.md)，或查看[对话与验收材料](docs/review/file-sharing-demo/README.md)。[源码导览](docs/source-guide.zh-CN.md)说明整体模块职责。
-
-## 在对话中控制视图
-
-安装后通过 `$vibelens` 在当前对话和项目中显式启用。其他对话独立启用，各自保存视图配置。
-
-```text
-/vibelens 只观察上传到审核的业务链路，保留业务节点和判断节点
-/vibelens 展开审核规则及其参数，查看两层关联
-/vibelens 在记录 RECORDING_ID 中只回放审核链路，并循环播放
+```bash
+dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.13.0/dsh-vibelens-0.13.0.tgz
 ```
 
-AI 根据当前图匹配具体节点，遇到重名或多份记录时先确认，再生成自定义视图并整理布局。打开返回的专属图地址即可查看；二维、三维使用同一筛选，原图和原始记录保持完整。正常业务编码仍会维护图、埋点和映射检查。
+打开该 profile，在对话中以 `/vibelens` 开头描述项目。[Harness 安装与已测试兼容范围](docs/deepseek-harness.md)。
 
-`/vibelens` 是 Skill 识别的对话前缀。客户端若拦截这类输入，可以使用 `$vibelens /vibelens …`。手动控制视图需要前缀，控制工具只处理展示与回放。详见[范围、命令与边界](skills/vibelens/references/conversation-controls.md)。
+**Python · Node.js · React · Vue**，界面支持中英文切换。共享观察器使用 Python 3.11+，项目沿用原生语言。[安装、依赖与固定版本下载](docs/usage.zh-CN.md)。
 
-## 当前边界
+## 从界面到源码，都可以查看
 
-当前支持 Python、JS/TS、React、Vue 的源码盘点与原生采集。“局部代码”按选中区域打开关联结构，“代码结构”查看已索引的项目，包含文件、类、函数、参数、导入、继承与调用关系。代码修改后自动刷新，未解析的动态调用保留未知。大图显示数量限制和边界，完整索引可以导出为 JSON。[源码视图和命令](skills/vibelens/references/code-structure.md)。
+完整源码、可运行示例和保留的检查材料，帮助你了解工具本身的实现与验证情况。
 
-数据库结构与数据操作视图连接表、文档集合、键模式、图数据库标签、查询目标、选定参数、数据处理和事务结果。SQLite、PostgreSQL、MongoDB、Redis、Neo4j 已有真实运行测试；Python 与 Node.js 使用统一 JSON 协议。模型或数据库结构变化后自动刷新图，并保留个人布局。[运行数据库示例](examples/database-observer/README.md) · [支持范围](skills/vibelens/references/database-observation.md) · [验收材料](docs/review/db-vis/README.md)。
+[源码结构](docs/source-guide.zh-CN.md) · [功能支持](docs/capabilities.md) · [验收记录](docs/review/harness-distribution-20261105/README.md) · [更新说明](docs/releases/v0.13.0.md) · [发布渠道](docs/distribution.md)
 
-自动列血缘、专门的 API 关系、更多数据库适配、增量接口和性能基线仍待扩展。采集针对选定字段和支持的关系；完整动态调用解析、所有执行情况的正确性、编辑图执行业务命令均不在当前能力范围。
-
-[架构与协议](skills/vibelens/references/multilanguage.md) · [源码及数据层分析](docs/source-data-and-language.md) · [测试证据](docs/review/english-gallery/README.md)
-
-许可证：[MIT](LICENSE)。可视化使用开源 PixiJS、ELK.js，不包含 yFiles 专有代码。见[第三方声明](THIRD_PARTY_NOTICES.md)。
-
-持续更新版从 `main` 安装；本次固定版本为 `v0.12.1`。见[版本说明](docs/releases/v0.12.1.md)、[本版验收](docs/review/release-v0.12.1/README.md)和[实现评估](docs/assessment/2026-10-24/README.md)。
-
-节点图标采用 MIT 许可的 Tabler Icons；可独立替换的 libavoid 路由库采用 LGPL-2.1-or-later。详见第三方许可说明。
+[MIT 开源协议](LICENSE) · [第三方许可](THIRD_PARTY_NOTICES.md)

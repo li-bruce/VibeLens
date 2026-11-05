@@ -1,6 +1,6 @@
 {
   "schema": "bo-maintenance/v1",
-  "source_id": "6d9ac1fac35839dcc917656d21f3d39b8940f5e0e3226dd619bdfd57201a955d",
+  "source_id": "7e308bb77afdbe32eaf842f17a50f056e99f80f4f5fe9480af7731b59830fdaf",
   "inventory": {
     "files": {
       "archive_app/__init__.py": "c4cc8d894a9cb6e2da5510317e540d22b50b75b2a187f86675d20e86d967f9bf",
@@ -246,6 +246,7 @@
       "static/graph/caption-layout.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/capture-fields.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/capture-scope.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
+      "static/graph/change-panel-position.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/change-panel.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/cluster-layout.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/cluster-worker.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
@@ -277,6 +278,7 @@
       "static/graph/graph-names.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/hidden-paths.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/i18n.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
+      "static/graph/implementation-planes.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/layer-ruler.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/layer-style.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/layout.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
@@ -331,6 +333,7 @@
       "static/graph/trace-tooltip.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/trace-tracks.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/trace-viewport.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
+      "static/graph/transfer-glyph.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/view-lifecycle.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "static/graph/viewer.js": "Reviewed graph viewer assets; runtime manifest checks their exact bytes.",
       "tooling/__init__.py": "Project generation and test commands; separately watched and executed.",
@@ -505,7 +508,7 @@
     "changed": false,
     "errors": []
   },
-  "status": "needs_update",
+  "status": "current",
   "internal_prompt": "Review the listed implementation changes. Update affected business abstractions, states, function/parameter mappings, and probes. Do not omit new entrypoints because the old graph lacks them. Match features, parameters, and runtime cases through the implementation inventory. Exclusions must not bypass business implementation. Check real relations and filter boundaries in every view, then run project acceptance. Do not ask users to maintain observation files. Ask only when new business ambiguity appears.",
   "confirmations": {
     "user": [],
@@ -2986,39 +2989,5 @@
     "instruction": "Ask the user about business ambiguity; reconcile implementation bindings during coding. Do not recommend or expand business scope."
   },
   "ai_invocation": "host_or_coding_agent_required",
-  "affected_nodes": [],
-  "unmapped_symbols": [
-    "archive_app/ports.py::BOTracePort",
-    "archive_app/ports.py::BOTracePort.__init__",
-    "archive_app/ports.py::BOTracePort.bo_record",
-    "archive_app/ports.py::bo_record_change",
-    "archive_app/ports.py::no_trace",
-    "bo_stategraph/workflow.py::Phase",
-    "integrations/bo_observer.py::BOObserver",
-    "integrations/bo_observer.py::BOObserver.__init__",
-    "integrations/bo_observer.py::BOObserver.close",
-    "integrations/bo_observer.py::BOObserver.health",
-    "integrations/bo_observer.py::BOObserver.snapshot",
-    "integrations/bo_observer.py::BOObserver.trace",
-    "integrations/bo_observer.py::BOObserver.trace.broken",
-    "integrations/bo_observer.py::BOObserver.write",
-    "integrations/bo_server.py::LocalApplication",
-    "integrations/bo_server.py::LocalApplication.__init__",
-    "integrations/bo_server.py::LocalApplication.bo_export_graph",
-    "integrations/bo_server.py::LocalApplication.cases",
-    "integrations/bo_server.py::LocalApplication.command",
-    "integrations/bo_server.py::LocalApplication.graph_view",
-    "integrations/bo_server.py::LocalApplication.recording_view",
-    "integrations/bo_server.py::LocalApplication.state",
-    "integrations/bo_server.py::LocalApplication.version_sources",
-    "integrations/bo_server.py::serve",
-    "integrations/bo_server.py::serve.Handler",
-    "integrations/bo_server.py::serve.Handler.do_GET",
-    "integrations/bo_server.py::serve.Handler.do_POST",
-    "integrations/bo_server.py::serve.Handler.log_message",
-    "integrations/bo_server.py::serve.Handler.reply",
-    "run.py::main",
-    "static/app.js::bo_record"
-  ],
-  "candidate_id": "57ebbe17c82673cd3f11fcc5b90ff1f805bbcca094a575a017cf60159dd88dd3"
+  "candidate_id": "f04eaa062cf41eee3272c6882c9dcfbc7bb382fccbd83492c85371abebddca26"
 }
