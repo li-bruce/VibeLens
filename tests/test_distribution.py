@@ -27,6 +27,7 @@ class DistributionTests(unittest.TestCase):
             self.assertEqual(build(output)["artifacts"], report["artifacts"])
             version = report["version"]
             with zipfile.ZipFile(output / f"vibelens-v{version}.zip") as archive:
+                self.assertTrue(all(member.create_system == 3 for member in archive.infolist()))
                 with tarfile.open(output / f"dsh-vibelens-{version}.tgz") as plugin:
                     for name, expected in report["skill_files"].items():
                         raw = archive.read("vibelens/" + name)
@@ -41,6 +42,7 @@ class DistributionTests(unittest.TestCase):
                         self.assertNotIn("node_modules", name)
                         self.assertNotIn("__pycache__", name)
             with zipfile.ZipFile(output / f"vibelens-skillhub-v{version}.zip") as catalog:
+                self.assertTrue(all(member.create_system == 3 for member in catalog.infolist()))
                 self.assertLessEqual(len(catalog.infolist()), 200)
                 self.assertLess(sum(item.file_size for item in catalog.infolist()), 10_000_000)
                 self.assertEqual(catalog.read("vibelens/LICENSE.txt"), (ROOT / "LICENSE").read_bytes())

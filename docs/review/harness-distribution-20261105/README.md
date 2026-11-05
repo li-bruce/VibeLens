@@ -59,6 +59,13 @@ rendering measurements, not guarantees for every machine or application.
    in all four states. Native browser captures were regenerated. Both examples
    use a second managed change, `.release/stategraph/harness-contrast-20261105`.
 
+8. Download verification exposed host-dependent ZIP creator metadata (`0` on
+   Windows, `3` on Linux). Every source file and the Harness tarball already
+   matched. The builder now fixes this byte to `3`; both ZIPs rebuilt on Windows
+   match the existing Linux release exactly. Package regression and source
+   formatting checks passed again. The already-submitted SkillHub transport
+   retains its original self-consistent checksums and identical resource bytes.
+
 ## Scope
 
 The existing product regression includes an old narrow-viewport check; no new
@@ -81,9 +88,15 @@ three images uploaded through the site, as required by its editor.
 The local full suite and [all nine hosted jobs](checks/github-checks.json) passed
 on `c9eb7d19`: Windows/Linux with Python 3.11/3.13, source checks on both systems,
 real database services, the complete browser suite, and actual Harness plugin
-installation/invocation. Subsequent changes only correct documentation links and
-record these results; package parity was rerun after the plugin README update.
+installation/invocation. Subsequent changes correct documentation links, normalize ZIP creator metadata
+and record these results. Package parity and source checks were rerun; all
+three rebuilt artifacts match the downloaded release byte-for-byte.
 
 The versioned [release](https://github.com/li-bruce/VibeLens/releases/tag/v0.13.0)
 and [Pages workflow](https://github.com/li-bruce/VibeLens/actions/workflows/pages.yml)
 provide the publication records.
+
+GitHub Release and Pages are live. [Publication receipt](checks/publication.json)
+and [download verification](checks/published-packages.json) record the public
+results. Chinese/English switching and deployed viewer assets were checked.
+SkillHub remains under platform review; its public entry still showed 0.7.1.

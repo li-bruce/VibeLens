@@ -13,7 +13,8 @@ Keep the native state engine, observation protocol and per-conversation activati
 - [x] Add an explicit-invocation Harness skill provider and reproducible package.
 - [x] Test real Harness registration, resource loading, isolation and installation.
 - [x] Run source, package, documentation and relevant product regressions.
-- [ ] Publish the release, Pages and available catalog updates; verify public results.
+- [x] Publish the release and Pages, submit the SkillHub update, and verify each public status.
+- External status: SkillHub 0.13.0 is awaiting its security review; the public entry remains on 0.7.1.
 
 ## Distribution inventory
 
