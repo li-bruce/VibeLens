@@ -430,10 +430,11 @@ try {
     await shot(language + "-mobile");
     await page.click("#language");
     await page.waitForFunction((previous) => document.documentElement.lang !== previous, language);
-    await go("drill");
+    // Translating a chapter must preserve it without an extra corrective scroll.
+    await page.waitForFunction(() => document.body.dataset.sceneReady === "drill");
     assert.equal(await page.locator("#case-application").isVisible(), false);
     await page.click("#language");
-    await go("drill");
+    await page.waitForFunction(() => document.body.dataset.sceneReady === "drill");
     await page.setViewportSize({ width: 1536, height: 1050 });
     receipts.push({
       language,

@@ -26,7 +26,15 @@ export function scrollStory({
   function measure() {
     scheduled = false;
     if (destroyed) return;
-    const focus = innerHeight * (innerWidth < 700 ? 0.72 : 0.48);
+    // Chapter links use CSS scroll margins to clear the sticky graph. Read below
+    // that same inset; a fixed viewport percentage can still fall in the prior
+    // chapter after scrollIntoView has correctly positioned the requested one.
+    const padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    const margin = Math.max(
+      0,
+      ...elements.map((element) => parseFloat(getComputedStyle(element).scrollMarginTop) || 0),
+    );
+    const focus = Math.min(innerHeight - 24, Math.max(innerHeight * 0.48, padding + margin + 24));
     let next = 0,
       distance = Infinity;
     elements.forEach((element, index) => {

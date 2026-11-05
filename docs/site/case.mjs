@@ -1,7 +1,7 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
 import { messages, chapters } from "./case-messages.mjs?rev=clarity-2";
-import { scrollStory } from "./scroll-story.mjs?rev=clarity-3";
+import { scrollStory } from "./scroll-story.mjs?rev=clarity-4";
 import { companion } from "./case-companion.mjs?rev=clarity-2";
 
 const $ = (id) => document.getElementById(id);
@@ -85,6 +85,12 @@ function button(parent, key, action, css = "scene-action") {
   return node;
 }
 function render() {
+  // Translation replaces chapter elements. Preserve the selected chapter, then
+  // anchor its translated content after companions have their new height.
+  // Focusing the sticky language button can itself change scroll position, so
+  // restoring that pixel offset would incorrectly select an adjacent chapter.
+  const previousChapter = story ? chapter : null;
+  story?.destroy();
   context?.destroy();
   $("case-chapters").replaceChildren();
   $("case-foundation").replaceChildren();
@@ -227,7 +233,10 @@ function render() {
     send,
     begin: () => story.go(1),
   });
-  story?.destroy?.();
+  if (previousChapter !== null) {
+    context.stage(previousChapter);
+    $(chapters[previousChapter].id).scrollIntoView({ behavior: "instant", block: "start" });
+  }
   story = scrollStory({
     scenes: document.querySelectorAll("[data-case-scene]"),
     navigation: $("case-chapters"),

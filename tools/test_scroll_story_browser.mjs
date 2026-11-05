@@ -63,6 +63,16 @@ try {
   await page.fill("#name", "Second path");
   await page.locator('[data-chapter="1"]').click();
   await page.waitForFunction(() => document.body.dataset.active === "1");
+  // The narrow walkthrough reserves half the viewport for its sticky graph.
+  // Chapter selection must use those real CSS insets, including at tablet widths.
+  await page.setViewportSize({ width: 758, height: 817 });
+  await page.addStyleTag({
+    content: "html{scroll-padding-top:90px}section{scroll-margin-top:calc(50svh + 125px)}",
+  });
+  await page.locator('[data-chapter="0"]').click();
+  await page.waitForFunction(() => document.body.dataset.active === "0");
+  await page.locator('[data-chapter="1"]').click();
+  await page.waitForFunction(() => document.body.dataset.active === "1");
   await writeFile(
     path.join(output, "result.json"),
     JSON.stringify(
@@ -72,6 +82,7 @@ try {
         save: true,
         scroll_release: true,
         explicit_navigation: true,
+        sticky_graph_insets: true,
       },
       null,
       2,
