@@ -1,0 +1,41 @@
+{
+  "valid": true,
+  "python_modules": 166,
+  "javascript_modules": 114,
+  "boundary": "Syntax/lint/formatting only; execution, business and mapping require their own tests.",
+  "checks": [
+    {
+      "command": [
+        "C:\\Users\\Lvi_P\\miniforge3\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "node",
+        "tools/formatting/node_modules/eslint/bin/eslint.js",
+        "--config",
+        "tools/formatting/eslint.config.mjs",
+        "docs/site/case-application.mjs",
+        "docs/site/case-code.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Users\\Lvi_P\\miniforge3\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tools/format_source.py",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

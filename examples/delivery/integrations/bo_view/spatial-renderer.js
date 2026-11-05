@@ -1,3 +1,4 @@
+import { crossLayerColor } from "./edge-color.js";
 import { strokeSegments } from "./route-shapes.js";
 import { edgeCurve } from "./spatial-paths.js";
 import * as T from "./spatial-three.vendor.js";
@@ -713,10 +714,10 @@ export class SpatialRenderer {
     }
   }
 
-  /** Smooth curves are batched into one GPU draw, with gaps for conceptual relations. */
+  /** Keep layer hue while fading unrelated edges during focus. */
   edgeColor(edge) {
     const { selected, focusContext } = this.input;
-    const color = new T.Color(relationStyle(edge).color);
+    const color = new T.Color(relationStyle(edge, this.input.graph.byId).color);
     const related = relationIds(edge).some((id) => focusContext.edges.has(id));
     const dim =
       focusContext.active &&
@@ -756,7 +757,7 @@ export class SpatialRenderer {
         curve.boPoints = points;
       }
       this.curves.set(edge.id, curve);
-      const style = relationStyle(edge),
+      const style = relationStyle(edge, this.input.graph.byId),
         color = this.edgeColor(edge),
         segmentStart = positions.length / 6;
       curve.boTransferColor = style.color;
@@ -1138,7 +1139,7 @@ export class SpatialRenderer {
       matrix.scale.setScalar(this.glyphScale(null, pose.point, 29) / 29);
       matrix.updateMatrix();
       this.particles.setMatrixAt(i, matrix.matrix);
-      this.particles.setColorAt(i, color.setHex(curve.boTransferColor ?? 0x196f9a));
+      this.particles.setColorAt(i, color.setHex(curve.boTransferColor ?? crossLayerColor));
     }
     this.particles.instanceMatrix.needsUpdate = true;
     if (this.particles.instanceColor) this.particles.instanceColor.needsUpdate = true;
@@ -1265,6 +1266,7 @@ export class SpatialRenderer {
         midpoint: curve.getPoint(0.5),
         end: curve.getPoint(1),
         vertices: curve.boPoints?.length || 25,
+        color: curve.boTransferColor,
       })),
       volumes: this.volumes || [],
       layerPlanes: (this.group?.children || [])

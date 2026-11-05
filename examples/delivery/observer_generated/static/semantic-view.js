@@ -64,7 +64,7 @@ export class SemanticView {
     }
     for (const edge of presentation.edges) {
       const el = document.createElement("button"),
-        style = relationStyle(edge);
+        style = relationStyle(edge, graph.byId);
       el.textContent = t(
         "{0}: {1} → {2}, {3} relations",
         relationName(edge, preferences),
@@ -78,6 +78,7 @@ export class SemanticView {
         from: edge.from,
         to: edge.to,
         relationType: edge.type,
+        color: "#" + style.color.toString(16).padStart(6, "0"),
         stroke: style.dash.length ? "dashed" : "solid",
         layer: edge.crossing ? "foreground" : "internal",
         sourceRegion: edge.sourceRegion,

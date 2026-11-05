@@ -4,6 +4,7 @@ import { graphBounds, nodeTypes, viewTypes, relationType } from "./graph-core.js
 import { dataRelations, migrateDataFilters } from "./data-layer.js";
 import { codeRelations, migrateCodeFilters } from "./code-layer.js";
 import { layerOf } from "./graph-layers.js";
+import { crossLayerColor, edgeColor } from "./edge-color.js";
 import { conceptRelations, conceptRelationTypes } from "./concept-relations.js";
 import { enclosingCircle, planarBodyCircle, REGION_PADDING } from "./containment-geometry.js";
 import { proximityOrder, proximityNeighbors } from "./proximity-layout.js";
@@ -419,13 +420,13 @@ export function refreshHierarchy(graph) {
   return graph;
 }
 export { relationType };
-export const relationStyles = {
+// Relationship meaning is independent of layer hue. Legends use neutral samples.
+const relationPatterns = {
   ...Object.fromEntries(
     Object.entries(conceptRelations).map(([type, label]) => [
       type,
       {
         label: boTranslate(label),
-        color: 0x7d7894,
         dash: [4, 4],
         arrow: "open",
       },
@@ -433,182 +434,163 @@ export const relationStyles = {
   ),
   indirect: {
     label: boTranslate("Indirect path"),
-    color: 0x778693,
     dash: [2, 4, 8, 4],
     arrow: "open",
   },
   "code-contains": {
     label: boTranslate("Contains"),
-    color: 0x997c4f,
     dash: [2, 5],
     arrow: "none",
   },
   "code-exports": {
     label: boTranslate("Re-exports"),
-    color: 0x8172a3,
     dash: [],
     arrow: "open",
   },
   "code-links": {
     label: boTranslate("File link"),
-    color: 0x997c4f,
     dash: [3, 4],
     arrow: "open",
   },
   "code-dependency": {
     label: boTranslate("Package dependency"),
-    color: 0x8172a3,
     dash: [],
     arrow: "open",
   },
   "code-handles": {
     label: boTranslate("Handled by"),
-    color: 0x986345,
     dash: [],
     arrow: "open",
   },
   "code-defines": {
     label: boTranslate("Defines"),
-    color: 0x83929e,
     dash: [2, 5],
     arrow: "none",
   },
   "code-calls": {
     label: boTranslate("Static call"),
-    color: 0x2476ad,
     dash: [],
     arrow: "open",
   },
   "code-imports": {
     label: boTranslate("Import"),
-    color: 0x8172a3,
     dash: [],
     arrow: "open",
   },
   "code-inherits": {
     label: boTranslate("Inheritance"),
-    color: 0x975b86,
     dash: [],
     arrow: "open",
   },
   "code-parameter": {
     label: boTranslate("Parameter"),
-    color: 0x627f9c,
     dash: [],
     arrow: "open",
   },
   "code-maps": {
     label: boTranslate("Source binding"),
-    color: 0x638b98,
     dash: [2, 4],
     arrow: "open",
   },
   call: {
     label: boTranslate("Call"),
-    color: 0x2476ad,
     dash: [],
     arrow: "open",
   },
   flow: {
     label: boTranslate("Flow"),
-    color: 0x4e647b,
     dash: [6, 4],
     arrow: "filled",
   },
   transition: {
     label: boTranslate("State transition"),
-    color: 0x8c57ad,
     dash: [10, 4],
     arrow: "filled",
   },
   guard: {
     label: boTranslate("Decision dependency"),
-    color: 0xaf731c,
     dash: [3, 5],
     arrow: "diamond",
   },
   data: {
     label: boTranslate("Value transfer"),
-    color: 0x207e7d,
     dash: [],
     arrow: "open",
   },
   reads: {
     label: boTranslate("Read"),
-    color: 0x316da4,
     dash: [],
     arrow: "open",
   },
   writes: {
     label: boTranslate("Write"),
-    color: 0xb16b36,
     dash: [],
     arrow: "filled",
   },
   references: {
     label: boTranslate("Reference"),
-    color: 0x716a9c,
     dash: [3, 4],
     arrow: "open",
   },
   maps: {
     label: boTranslate("Mapping"),
-    color: 0x677a88,
     dash: [8, 3, 2, 3],
     arrow: "diamond",
   },
   transforms: {
     label: boTranslate("Transform"),
-    color: 0x887130,
     dash: [],
     arrow: "filled",
   },
   resource: {
     label: boTranslate("Resource"),
-    color: 0x7c7b2d,
     dash: [10, 3, 2, 3],
     arrow: "open",
   },
   join: {
     label: boTranslate("Join"),
-    color: 0xa36045,
     dash: [6, 4],
     arrow: "bar",
   },
   shared: {
     label: boTranslate("Shared reference"),
-    color: 0x68759e,
     dash: [2, 6],
     arrow: "none",
   },
   contains: {
     label: boTranslate("Contains"),
-    color: 0x83929e,
     dash: [2, 5],
     arrow: "none",
   },
   other: {
     label: boTranslate("Relation"),
-    color: 0x677a88,
     dash: [4, 4],
     arrow: "open",
   },
 };
-/** Stroke describes relation meaning; a runtime marker separately shows observation. */
-export function relationStyle(edge) {
+export const relationStyles = Object.fromEntries(
+  Object.entries(relationPatterns).map(([type, pattern]) => [
+    type,
+    { ...pattern, color: crossLayerColor },
+  ]),
+);
+
+/** Stroke describes meaning; color follows the endpoints' displayed layers. */
+export function relationStyle(edge, nodes) {
   const members = edge.members || [edge];
+  let style = relationStyles[edge.type] || relationStyles.other;
   if (members.length && members.every((member) => member.evidence_kind === "conceptual"))
-    return {
+    style = {
       ...(relationStyles[relationType(edge)] || relationStyles.other),
       dash: [4, 4],
     };
-  if (members.length && members.every((m) => m.origin === "capture-field"))
-    return {
+  else if (members.length && members.every((member) => member.origin === "capture-field"))
+    style = {
       ...relationStyles.data,
       label: members[0].label || boTranslate("Recorded field"),
       dash: [3, 5],
     };
-  return relationStyles[edge.type] || relationStyles.other;
+  return { ...style, color: edgeColor(edge, nodes) };
 }
 /** One caption for planar, spatial, accessible and inspected relations. */
 export function relationName(edge, state) {

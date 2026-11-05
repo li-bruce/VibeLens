@@ -33,6 +33,7 @@ def main():
     run(ROOT, "tests/test_conversation_controls.py")
     run(ROOT, "tests/test_distribution.py")
     subprocess.run(["node", "tools/test_transfer_glyph.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_edge_colors.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_conversation_controls.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_control_projection.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_detail_panel.mjs"], cwd=ROOT, check=True)

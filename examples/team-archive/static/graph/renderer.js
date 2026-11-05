@@ -291,7 +291,7 @@ export function createGraphRenderer({
       scope("edge:" + e.id);
       const highlight = [...e.edgeIds].some((id) => focusContext.edges.has(id)),
         dim = focusContext.active && !highlight,
-        style = relationStyle(e),
+        style = relationStyle(e, graph.byId),
         col = style.color;
       const resolved = router.routes.get(e.id);
       if (!resolved) continue;
@@ -299,6 +299,8 @@ export function createGraphRenderer({
         start: resolved[0],
         end: resolved.at(-1),
         points: resolved,
+        // Playback follows this exact rendered route and its layer color.
+        color: col,
       };
       const { end } = path;
       let mid = bezierAt(path, 0.5);

@@ -1,5 +1,6 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "Layer color · Cross-layer gray": "同层随层色 · 跨层灰色",
   Workflow: "业务实例",
   Trace: "执行链",
   Span: "调用",

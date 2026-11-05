@@ -2587,10 +2587,9 @@ function animateEvent(event) {
           t,
           boTransfers.get(id)?.reverse,
         );
-        const edge = renderedEdges.find((e) => e.id === id),
-          style = relationStyles[edge?.type] || relationStyles.other,
-          r = 5 / scale;
-        animationDot.poly(transferPolygon(pose, r)).fill(style.color);
+        // The route already carries the line's layer color. Reusing it also
+        // avoids searching every rendered edge on every animation frame.
+        animationDot.poly(transferPolygon(pose, 5 / scale)).fill(path.color);
       }
     }
     const node = graph.boxes.find(
@@ -2993,6 +2992,7 @@ window.graphDebug = {
       start: { ...path.start },
       end: { ...path.end },
       vertices: path.points?.length,
+      color: path.color,
     }));
   },
   get planarCaptions() {

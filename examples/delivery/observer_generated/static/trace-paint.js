@@ -3,6 +3,8 @@ import { rowMetrics, trackOf, trackPitch } from "./trace-tracks.js";
 import { t } from "./i18n.js";
 import { displayName } from "./layout.js";
 import { layers, canonicalLayer } from "./graph-layers.js";
+import { layerConnectionColor, crossLayerColor } from "./edge-color.js";
+import { colorHex } from "./layer-style.js";
 import { visibleSlices } from "./trace-viewport.js";
 import { visibleFlows } from "./trace-flows.js";
 import { marksInWindow } from "./trace-index.js";
@@ -270,7 +272,7 @@ export function paintTrace(canvas, state) {
   const sourcePosition = positionFor(raw);
   for (const target of positions.get(raw) || []) {
     if (!sourcePosition || target.layer === sourcePosition.layer) continue;
-    ctx.strokeStyle = target.projected ? "#8172a3" : "#8c57ad";
+    ctx.strokeStyle = colorHex(crossLayerColor);
     ctx.setLineDash([3, 3]);
     ctx.beginPath();
     ctx.moveTo(sourcePosition.x, sourcePosition.y);
@@ -312,11 +314,9 @@ export function paintTrace(canvas, state) {
     const emphasized = selected || hovered;
     ctx.globalAlpha = emphasized ? 1 : state.hover ? 0.22 : 0.65;
     ctx.lineWidth = emphasized ? 1.8 : 1.1;
-    const color = flow.outlivesParent
-      ? "#b87842"
-      : flow.type === "transition"
-        ? "#8c57ad"
-        : traceColor(rows[flow.toRow].layer);
+    // Use the same hue as the graph. Call/return semantics remain in line style;
+    // lifetime mismatches remain available in the flow's factual tooltip.
+    const color = colorHex(layerConnectionColor(rows[flow.fromRow].layer, rows[flow.toRow].layer));
     ctx.strokeStyle = color;
     ctx.setLineDash(
       ["call", "return", "data", "control", "transition"].includes(flow.type) ? [] : [3, 3],
