@@ -9,6 +9,7 @@ identities retain their existing behavior.
 
 | Check | Evidence |
 |---|---|
+| Full repository suite, including database adapters and both examples: exit 0 | [Run receipt](checks/full-verification.json), [complete log](checks/full-verification.log) |
 | Source syntax, lint and formatting: 166 Python / 113 JavaScript modules | [Source report](checks/source-quality.json) |
 | Actual Harness 0.2.2-rc.1 CLI installation, registry and native invocation | [Installed checks](checks/harness-runtime.json), [installation](checks/harness-install.log) |
 | User-only invocation, actual chat identity, quote/tool-result rejection and disposal | Same native-host checks; fixture sessions, no LLM application trial |
@@ -47,7 +48,9 @@ rendering measurements, not guarantees for every machine or application.
    carries the original ZIP as `resources.zip.b64.txt`; the local bootstrap
    decodes it and verifies its checksum and all 355 files. Directory-link
    rejection is tested with actual symlinks/junctions, including Python 3.11. The upload preview
-   retained all seven files (4.56 MB). The corruption test uses valid base64 with
+   retained all seven files (4.56 MB). Submission also rejected an extensionless
+   license; the catalog now carries the same bytes as `LICENSE.txt`, covered by a
+   file-extension regression. The corruption test uses valid base64 with
    invalid archive bytes so it exercises checksum rejection explicitly.
 
 7. The full suite detected insufficient related/selected contrast in several
@@ -66,4 +69,13 @@ and CLI installation. They do not establish a new model-driven application trial
 The previous independent trial's [open findings](../clarity-story-20261105/TRIAL-ASSESSMENT.md)
 remain recorded; this release does not relabel them as resolved.
 
-Publication and full-suite results are appended when their final receipts exist.
+## Publication
+
+SkillHub accepted the **0.13.0** update for security review. Its overview uses
+three images uploaded through the site, as required by its editor.
+[Submission receipt](checks/skillhub-submission.json) and
+[submitted overview](checks/skillhub-overview.md) preserve the published draft.
+
+![SkillHub version 0.13.0 awaiting review](images/skillhub-submitted.png)
+
+The local full suite passed. Hosted checks and release receipts are added when their results exist.

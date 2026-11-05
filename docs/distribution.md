@@ -28,7 +28,9 @@ separate published versions from submissions waiting for catalog review.
 The English [README](../README.md), [Chinese README](../README.zh-CN.md), packaged
 [Skill README](../skills/vibelens/README.md), and
 [SkillHub overview](distribution/skillhub.zh-CN.md) share the same product story.
-Catalog copies use absolute image and documentation links. Product descriptions
+Repository copies use absolute image and documentation links. SkillHub requires
+images uploaded through its overview editor; replace the three image URLs with
+the returned hosted URLs before submission, keeping their original positions. Product descriptions
 cover the model, connected graph, focused views and runtime inspection; application
 stories belong in the interactive demo.
 

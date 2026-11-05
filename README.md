@@ -21,7 +21,7 @@ Your AI can build a working app quickly. Understanding its permissions, state ch
 
 ## Confirm the model before the code
 
-> “Use VibeLens for this project. Show me the business flow, states and rules so we can confirm how it should work.”
+> “Use $vibelens for this project. Show me the business flow, states and rules so we can confirm how it should work.”
 
 VibeLens turns the conversation into connected **business, state and rule graphs**. Clarify the important details, see the graph, then build. Choose **Drive** to develop from executable state declarations, or **Observe** to inspect your application's own logic.
 

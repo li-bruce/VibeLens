@@ -12,14 +12,14 @@ Keep the native state engine, observation protocol and per-conversation activati
 - [x] Rewrite English and Chinese product READMEs with current, traceable visuals.
 - [x] Add an explicit-invocation Harness skill provider and reproducible package.
 - [x] Test real Harness registration, resource loading, isolation and installation.
-- [ ] Run source, package, documentation and relevant product regressions.
+- [x] Run source, package, documentation and relevant product regressions.
 - [ ] Publish the release, Pages and available catalog updates; verify public results.
 
 ## Distribution inventory
 
 GitHub, Pages and the existing SkillHub entry are the authorized channels.
 The owner supplied https://skillhub.cn/skills/user_fbf26156/vibelens and completed
-login. The previous public version was 0.7.1. The update draft now contains the
+login. The previous public version was 0.7.1. The 0.13.0 submission is under security review and contains the
 complete seven-file transport, a branded icon and a three-image product overview.
 The full archive remains directly installable from GitHub; Harness uses its
 supported tarball plugin path. Skills CLI continues to read the public repository.

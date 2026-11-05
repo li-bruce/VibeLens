@@ -116,7 +116,8 @@ def build(output):
                 + "\n"
             ).encode(),
             "README.md": skill["README.md"],
-            "LICENSE": (ROOT / "LICENSE").read_bytes(),
+            # Catalog uploads reject extensionless files; preserve the license bytes.
+            "LICENSE.txt": (ROOT / "LICENSE").read_bytes(),
             "agents/openai.yaml": skill["agents/openai.yaml"],
         }
     )

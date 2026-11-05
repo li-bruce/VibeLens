@@ -43,6 +43,9 @@ class DistributionTests(unittest.TestCase):
             with zipfile.ZipFile(output / f"vibelens-skillhub-v{version}.zip") as catalog:
                 self.assertLessEqual(len(catalog.infolist()), 200)
                 self.assertLess(sum(item.file_size for item in catalog.infolist()), 10_000_000)
+                self.assertEqual(catalog.read("vibelens/LICENSE.txt"), (ROOT / "LICENSE").read_bytes())
+                for name in catalog.namelist():
+                    self.assertIn(Path(name).suffix, {".md", ".py", ".txt", ".json", ".yaml"}, name)
                 catalog.extractall(output / "installed")
             installed = output / "installed/vibelens"
             spec = importlib.util.spec_from_file_location("vibelens_loader", installed / "bootstrap.py")
