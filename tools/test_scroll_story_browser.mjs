@@ -39,11 +39,16 @@ try {
     }),
   );
   await page.goto(server.url + "/editor-fixture");
-  await page.fill("#name", "Selected path");
+  await page.locator("#name").scrollIntoViewIfNeeded();
   await page.evaluate(() => {
     const input = document.querySelector("#name").getBoundingClientRect();
     scrollBy({ top: input.top - 150, behavior: "instant" });
   });
+  // First place the field clear of the sticky header, then interact with it.
+  // Focusing before this scroll can release ownership while the field passes
+  // beneath the header; merely bringing it back does not start a new edit.
+  await page.click("#name");
+  await page.fill("#name", "Selected path");
   await page.waitForFunction(
     () => document.querySelector("#second").getBoundingClientRect().top < innerHeight * 0.48,
   );
