@@ -113,7 +113,7 @@ def main():
             page.wait_for_function("() => graphDebug.timeline?.source === 'saved'")
             page.select_option("#analysis-view", "api")
             page.wait_for_function(
-                "() => !graphDebug.layoutBusy && graphDebug.timeline?.rows.some(r=>r.layer==='implementation' && r.members.includes('endpoint:files'))"
+                "() => !graphDebug.layoutBusy && graphDebug.timeline?.rows.some(r=>r.layer==='entry' && r.members.includes('endpoint:files'))"
             )
             page.select_option("#replay-grain", "events")
             page.select_option("#replay-events", "2")
@@ -170,31 +170,31 @@ def main():
             trace = page.evaluate("graphDebug.timeline")
             assert trace["flows"] > 0, trace
             assert any(
-                row["layer"] == "implementation" and "endpoint:files" in row["members"]
+                row["layer"] == "entry" and "endpoint:files" in row["members"]
                 for row in trace["rows"]
             )
             assert any(
-                trace["rows"][route["fromRow"]]["layer"] == "implementation"
-                and trace["rows"][route["toRow"]]["layer"] == "implementation"
+                trace["rows"][route["fromRow"]]["layer"] == "entry"
+                and trace["rows"][route["toRow"]]["layer"] == "symbols"
                 and route["key"] == "2:3:3:call"
                 for route in trace["routes"]
             ), trace
             assert any(
-                trace["rows"][route["toRow"]]["layer"] == "implementation"
+                trace["rows"][route["toRow"]]["layer"] == "entry"
                 and route["key"] == "4:2:4:return"
                 and route["type"] == "return"
                 for route in trace["routes"]
             ), trace
             assert any(
                 trace["rows"][route["fromRow"]]["layer"] == "business"
-                and trace["rows"][route["toRow"]]["layer"] == "implementation"
+                and trace["rows"][route["toRow"]]["layer"] == "entry"
                 and route["key"] == "1:2:2:call"
                 for route in trace["routes"]
             ), trace
             page.screenshot(path=str(OUT / "03-cross-layer-causality.png"))
             result["timeline"] = trace
             checks.append(
-                "Overview retains the original cursor, business-to-API links and horizontal API-to-operation links"
+                "Overview retains the original cursor and business-to-entry-to-execution causal links"
             )
             assert not errors, errors
             result["passed"] = True

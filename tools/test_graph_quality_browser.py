@@ -416,20 +416,20 @@ def main():
                 "Tilted 3D ring drag moves the complete branch by one delta and keeps pins"
             )
             layer("data")
-            # The legacy execution facet shares the implementation plane.
+            # The legacy execution facet now occupies the code execution plane.
             assert (
                 page.evaluate(
                     "async () => { const {implementationFacet} = await import('/graph-classification.js'); return implementationFacet(graphDebug.graph.all.get('store')); }"
                 )
                 == "execution"
             )
-            layer("implementation")
+            layer("symbols")
             assert page.evaluate("graphDebug.presentation.glyphs.has('share')")
             assert not page.evaluate("graphDebug.presentation.regions.has('share')")
             assert page.locator('[data-spatial-label="share"]').count() == 1
             page.screenshot(path=str(OUT / "04-hidden-children-fallback.png"))
             layer("data")
-            layer("implementation")
+            layer("symbols")
             restored = page.evaluate("graphDebug.spatialPositions")
             for name in ["database", "files", "shares", "file_id", "file_name"]:
                 assert restored[name] == moved[name], (
