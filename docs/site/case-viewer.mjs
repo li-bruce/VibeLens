@@ -195,7 +195,7 @@ if (!controlMode) {
   artifact.recording.context.model = mergeGraph(artifact.recording.context.model, sourceRegion);
 }
 await import("./viewer/viewer.js?rev=clarity-3");
-const { scenePlayer } = await import("./case-scene-player.mjs?rev=clarity-5");
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=clarity-6");
 const runtimeView = structuredClone(view);
 const designView = {
   ...structuredClone(artifact.recording.context),

@@ -35,4 +35,5 @@ The completed trial does not prove a later business iteration or exhaustive UI c
 - [x] Recheck shipped viewer copies and both clean exported example installations.
 - [x] Preserve the reader's chapter during language changes and recheck the complete walkthrough after the Linux CI mobile failure.
 - [x] Isolate custom-view editing from scroll layout and embedded focus; recheck slow previews, saving, Escape and later-build reuse.
+- [x] Keep scripted scene setup from moving keyboard focus into the iframe; recheck both mobile translation directions and restored native interaction.
 - Publication status is checked on the pushed commit in GitHub Actions; the final delivery links that run and the published pages.

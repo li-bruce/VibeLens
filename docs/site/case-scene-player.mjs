@@ -7,7 +7,9 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
   let epoch = 0,
     lastState = "",
     current = "foundation",
-    needsPlanarLayout = false;
+    needsPlanarLayout = false,
+    editing = false,
+    presenting = 0;
   const pause = (ms = 25) => new Promise((resolve) => setTimeout(resolve, ms));
   const paint = () =>
     new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -258,10 +260,21 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       $("replay-play").click();
   }
   async function scene(message) {
-    // A parent dialog does not reliably make an embedded document inert.
-    // Background native previews may still select nodes, but must not take
-    // keyboard focus away from the editor. This affects interaction only.
-    if (message.editing !== undefined) document.body.inert = Boolean(message.editing);
+    // Native actions may restore focus to their own toolbar or canvas. During a
+    // scripted presentation that would focus this iframe and scroll its parent,
+    // changing the reader's chapter. Keep presentation work non-interactive;
+    // restore native input as soon as all overlapping requests have settled.
+    if (message.editing !== undefined) editing = Boolean(message.editing);
+    presenting++;
+    document.body.inert = true;
+    try {
+      await present(message);
+    } finally {
+      presenting--;
+      document.body.inert = editing || presenting > 0;
+    }
+  }
+  async function present(message) {
     const ticket = message.scene || message.action ? ++epoch : epoch;
     current = message.scene || current;
     if (message.compact !== undefined) document.body.dataset.caseCompact = String(message.compact);

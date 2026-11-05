@@ -454,13 +454,28 @@ try {
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2));
     assert.equal(await page.locator("#case-application").isVisible(), false);
     await shot(language + "-mobile");
+    // The sticky header is already visible. Native focus preparation must not
+    // scroll the document and silently select the preceding story chapter.
+    const beforeLanguage = await page.evaluate(() => scrollY);
+    await page.locator("#language").scrollIntoViewIfNeeded();
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+    assert.ok(Math.abs((await page.evaluate(() => scrollY)) - beforeLanguage) <= 1);
+    assert.equal(await page.getAttribute("body", "data-chapter"), "2");
     await page.click("#language");
     await page.waitForFunction((previous) => document.documentElement.lang !== previous, language);
     // Translating a chapter must preserve it without an extra corrective scroll.
     await page.waitForFunction(() => document.body.dataset.sceneReady === "drill");
+    await (await frame()).waitForFunction(() => !document.body.inert);
+    assert.notEqual(
+      await page.evaluate(() => document.activeElement?.id),
+      "case-graph",
+      "Translated presentation must not steal focus into the embedded viewer",
+    );
     assert.equal(await page.locator("#case-application").isVisible(), false);
     await page.click("#language");
     await page.waitForFunction(() => document.body.dataset.sceneReady === "drill");
+    await (await frame()).waitForFunction(() => !document.body.inert);
+    assert.notEqual(await page.evaluate(() => document.activeElement?.id), "case-graph");
     await page.setViewportSize({ width: 1536, height: 1050 });
     receipts.push({
       language,

@@ -1,5 +1,11 @@
 /* One investigation, two reading columns. App captures and conversation occupy
    the narrative rail; the native graph keeps the remaining viewport width. */
+.demo-document {
+  /* Chapter scroll margins clear the sticky graph. Root scroll padding would
+     also exclude the header's own controls, making focus/scrollIntoView move
+     the document when its visible language button is already under the pointer. */
+  scroll-padding-top: 0;
+}
 .demo-story {
   --display: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   --blue: #147766;
