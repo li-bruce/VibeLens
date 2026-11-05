@@ -18,7 +18,7 @@
 命令入口为 [bo_concepts.py](../skills/vibelens/scripts/bo_concepts.py)，操作说明见
 [概念模型](../skills/vibelens/references/concept-models.md)。
 
-主视图为业务、状态、规则、实现和数据。API、文件、声明、观测函数和数据访问是实现层的不同筛选维度。
+语义分类仍为业务、状态、规则、实现和数据。查看器通过 `implementation-planes.js` 将实现细化为**入口、工程结构、代码执行**三个阅读层次。接口、文件、函数的原始 ID 保持不变；观测调用、数值和数据访问归入代码执行。默认先展示三张概念图，旧配置中的筛选和隐藏条件会保留。
 Python 的 `graph/classification.py` 与前端 `graph-classification.js` 通过一致性测试共用分类；
 无法分类的节点保留诊断信息。`graph/source_identity.py` 让多个源码引用指向同一个声明，
 采集节点和调用实例仍保留各自身份。`hidden-paths.js` 只为当前视图计算有类型的间接路径。

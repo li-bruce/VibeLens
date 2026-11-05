@@ -1,49 +1,19 @@
 /** Exercise the bilingual product introduction and its separate sample walkthrough. */
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
+import { startSite } from "./site_browser_fixture.mjs";
 import { createRequire } from "node:module";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
-const root = fileURLToPath(new URL("../", import.meta.url));
-const plans = JSON.parse(await readFile(path.join(root, "docs/site/control-plans.json"), "utf8"));
 const output = path.resolve(process.env.BO_SITE_EVIDENCE || ".validation/site-browser");
-const python =
-  process.env.BO_PYTHON ||
-  path.join(root, ".venv", process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
-const base = (
-  process.env.BO_SITE_URL || "http://127.0.0.1:" + (process.env.BO_SITE_PORT || "8873")
-).replace(/\/$/, "");
-// A supplied URL tests the deployed introduction; the default starts a local copy.
-const server = process.env.BO_SITE_URL
-  ? null
-  : spawn(
-      python,
-      [
-        "-B",
-        "-m",
-        "http.server",
-        new URL(base).port,
-        "--bind",
-        "127.0.0.1",
-        "--directory",
-        "docs/site",
-      ],
-      { cwd: root, windowsHide: true, stdio: "ignore" },
-    );
+const server = await startSite();
+const base = server.url;
 let browser;
 const errors = [],
   checks = [];
 await mkdir(output, { recursive: true });
 try {
-  for (let attempt = 0; attempt < 80; attempt++) {
-    try {
-      if ((await fetch(base)).ok) break;
-    } catch {}
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
   browser = await chromium.launch({
     headless: true,
     args: ["--enable-unsafe-swiftshader"],
@@ -70,15 +40,17 @@ try {
     const brand = await page.locator(".brand .brand-mark").getAttribute("src");
     assert.equal(brand, await page.locator('link[rel="icon"]').getAttribute("href"));
     assert.equal(
-      await page.locator("a.github").getAttribute("href"),
+      await page
+        .locator('header a[href="https://github.com/li-bruce/VibeLens"]')
+        .getAttribute("href"),
       "https://github.com/li-bruce/VibeLens",
     );
     assert.match(await page.locator("#install-prompt").textContent(), /^\$vibelens\n/);
     for (const title of await page.locator("h1,h2,h3").allTextContents())
       assert.ok(!/[.。]$/.test(title.trim()), title);
     assert.equal(await page.locator("[data-control-preset]").count(), 0);
-    assert.equal(await page.locator(".development-loop > li").count(), 3);
-    assert.equal(await page.locator("[data-layer-tabs] [role=tab]").count(), 9);
+    assert.equal(await page.locator(".home-steps > li").count(), 3);
+    assert.equal(await page.locator("[data-layer-tabs] [role=tab]").count(), 7);
     await page.screenshot({ path: path.join(output, language + "-hero.png") });
     await page.locator('[data-capture="layers"]').focus();
     await page.keyboard.press("Enter");
@@ -105,6 +77,9 @@ try {
       .locator("#workflow")
       .screenshot({ path: path.join(output, language + "-workflow.png") });
     await page.locator("#explore").scrollIntoViewIfNeeded();
+    await page.waitForFunction(
+      () => document.querySelector("#layer-explorer").dataset.webgl === "ready",
+    );
     await page.waitForFunction(() =>
       [...document.querySelectorAll("[data-product-image]")].every(
         (image) => image.complete && image.naturalWidth > 1000,
@@ -112,21 +87,8 @@ try {
     );
     await page.locator("#explore").screenshot({ path: path.join(output, language + "-depth.png") });
     await page.locator("#conversation-controls").scrollIntoViewIfNeeded();
-    await page.waitForFunction(
-      () => document.querySelector("#conversation-controls").dataset.applied === "business",
-    );
-    const frame = page.frames().find((frame) => frame.url().includes("controls=1"));
-    assert.deepEqual(
-      await frame.evaluate(() => graphDebug.graph.boxes.map((box) => box.id).sort()),
-      plans.locales[language].business.node_ids.slice().sort(),
-    );
-    assert.ok(await frame.evaluate(() => graphDebug.graph.edges.length > 0));
-    const link = await page
-      .locator(
-        'a[href*="demo.html#conversation-controls"],a[href*="demo.html?lang="][href$="#conversation-controls"]',
-      )
-      .getAttribute("href");
-    assert.ok(link.includes("demo.html") && link.endsWith("#conversation-controls"));
+    const link = await page.locator("#conversation-controls a").getAttribute("href");
+    assert.ok(link.includes("demo.html"));
     await page
       .locator("#conversation-controls")
       .screenshot({ path: path.join(output, language + "-single-example.png") });
@@ -145,7 +107,7 @@ try {
     await page.screenshot({ path: path.join(output, language + "-mobile.png"), fullPage: true });
     checks.push(
       language +
-        ": problem/approach/iteration narrative, native screenshots, localized 2D/3D image switching, one focused graph with real relations, demo link and mobile layout",
+        ": problem/model/observation/iteration narrative, native screenshots, localized 2D/3D image switching, seven interactive display layers, demo link and mobile layout",
     );
     await page.setViewportSize({ width: 1440, height: 1000 });
   }
@@ -187,14 +149,12 @@ try {
     "Legacy URL reaches the real case; recorded replay seeks backward without mutating business facts",
   );
   const quiet = await browser.newPage({ reducedMotion: "reduce" });
-  await quiet.goto(base + "/?lang=en#conversation-controls");
+  await quiet.goto(base + "/?lang=en#explore");
   await quiet.waitForFunction(
-    () => document.querySelector("#conversation-controls").dataset.applied === "business",
+    () => document.querySelector("#layer-explorer").dataset.webgl === "ready",
   );
-  const quietFrame = quiet.frames().find((frame) => frame.url().includes("controls=1"));
-  assert.ok(
-    !/Pause|暂停/.test(await quietFrame.locator("#replay-play").getAttribute("aria-label")),
-  );
+  assert.equal(await quiet.locator("iframe").count(), 0);
+  assert.ok(await quiet.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches));
   await quiet.close();
   checks.push("Reduced-motion homepage has no automatic replay");
   assert.deepEqual(errors, []);
@@ -203,7 +163,7 @@ try {
     JSON.stringify({ passed: true, url: base, checks, errors }, null, 2),
   );
   console.log(
-    "PASS: bilingual homepage narrative, real captures, single-example controls, mobile layout and independent recording walkthrough.",
+    "PASS: bilingual homepage, native captures, seven display layers, mobile layout and recorded walkthrough.",
   );
 } catch (error) {
   await writeFile(
@@ -217,5 +177,5 @@ try {
   throw error;
 } finally {
   await browser?.close();
-  if (server?.exitCode === null) server.kill();
+  server.close();
 }

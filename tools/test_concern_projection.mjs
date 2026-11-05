@@ -4,6 +4,7 @@ import { performance } from "node:perf_hooks";
 import {
   layers,
   layerOf,
+  canonicalLayer,
   cleanLayers,
   savedLayerVisibility,
   layerSlice,
@@ -68,8 +69,8 @@ function graphOf(ns = nodes, es = rawEdges) {
 }
 const graph = graphOf(),
   original = JSON.stringify({ nodes, rawEdges });
-assert.equal(layerOf(nodes[1]), "implementation");
-assert.equal(layerOf({ kind: "function", origin: "source-ast" }), "implementation");
+assert.equal(layerOf(nodes[1]), "symbols");
+assert.equal(layerOf({ kind: "function", origin: "source-ast" }), "symbols");
 assert.equal(implementationFacet({ code_role: "file" }), "project");
 assert.equal(layerOf({ kind: "data", execution_role: "resource" }), "state");
 assert.equal(layerOf({ kind: "decision", execution_role: "join" }), "state");
@@ -89,7 +90,7 @@ for (const facet of ["execution", "code", "api", "project", "operations"]) {
   };
   const next = cleanLayers(prior);
   assert.equal(next.facets.join(), facet);
-  assert.deepEqual(next.order.slice(0, 3), ["rules", "implementation", "business"]);
+  assert.deepEqual(next.order.slice(0, 3), ["rules", canonicalLayer(facet), "business"]);
   assert.deepEqual(cleanLayers(next), next);
   assert.deepEqual(cleanLayers({ visible: savedLayerVisibility(next) }).facets, [facet]);
 }
@@ -144,7 +145,7 @@ for (let mask = 0; mask < 512; mask++) {
   });
   const accepts = (n) =>
     config.visible.includes(layerOf(n)) &&
-    (layerOf(n) !== "implementation" || config.facets.includes(implementationFacet(n)));
+    (classifyNode(n).layer !== "implementation" || config.facets.includes(implementationFacet(n)));
   const result = layerSlice(graph, config);
   const visible = nodes.filter(accepts).map((n) => n.id);
   assert.deepEqual(

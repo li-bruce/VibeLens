@@ -164,7 +164,9 @@ for (const id of [
   const key = baseKey + (id === "overview" ? "" : ":view:" + id);
   if (!preferences.entries[key]) {
     const layout = emptyLayout();
-    layout.algorithm = "cluster";
+    // The overview becomes a small diagnostic path. A directed layout keeps
+    // that path readable beside source code; broader views retain clustering.
+    layout.algorithm = id === "overview" ? "layered" : "cluster";
     layout.filters = profileFor(id);
     preferences.entries[key] = JSON.stringify(layout);
   }
@@ -192,8 +194,8 @@ if (!controlMode) {
   view.model = mergeGraph(view.model, sourceRegion);
   artifact.recording.context.model = mergeGraph(artifact.recording.context.model, sourceRegion);
 }
-await import("./viewer/viewer.js?rev=files-1");
-const { scenePlayer } = await import("./case-scene-player.mjs?rev=files-1");
+await import("./viewer/viewer.js?rev=clarity-2");
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=clarity-2");
 const runtimeView = structuredClone(view);
 const designView = {
   ...structuredClone(artifact.recording.context),
@@ -252,7 +254,7 @@ window.addEventListener("message", (event) => {
 });
 const style = document.createElement("link");
 style.rel = "stylesheet";
-style.href = new URL("./case-canvas.css?rev=files-1", import.meta.url).href;
+style.href = new URL("./case-canvas.css?rev=clarity-2", import.meta.url).href;
 document.head.append(style);
 document.body.dataset.caseCompact = "true";
 // Keep the captured provenance visible; recording and project-write controls are

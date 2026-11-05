@@ -1,5 +1,5 @@
 /** Accessible layer explanations stay useful before WebGL loads or if it fails. */
-import { layerContent } from "./layer-content.mjs";
+import { layerContent } from "./layer-content.mjs?rev=clarity-2";
 
 export function mountLayerExplorer(host, { locale, onLanguageChange }) {
   if (!host) return;
@@ -72,7 +72,7 @@ export function mountLayerExplorer(host, { locale, onLanguageChange }) {
       if (!entry.isIntersecting || loading) return;
       loading = true;
       try {
-        const { layerScene } = await import("./layer-scene.mjs");
+        const { layerScene } = await import("./layer-scene.mjs?rev=clarity-2");
         scene = layerScene(host.querySelector("[data-layer-stage]"), layerContent, select);
         scene.select(selected, locale() === "zh-CN" ? 1 : 0);
         scene.visible(entry.isIntersecting);

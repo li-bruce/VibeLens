@@ -1,4 +1,4 @@
-/** A small real WebGL scene: nine planes, shared graph objects, on-demand frames.
+/** A small real WebGL scene: shared graph objects and on-demand frames.
  * Only the visible introduction loads Three.js. Offscreen and hidden scenes stop
  * rendering; selection changes emphasis without rebuilding GPU geometry.
  */
@@ -41,7 +41,8 @@ export function layerScene(host, items, onSelect) {
   });
   for (const [index, item] of items.entries()) {
     const group = new T.Group();
-    group.position.set((index - 4) * 18, (4 - index) * 74, (index - 4) * 10);
+    const middle = (items.length - 1) / 2;
+    group.position.set((index - middle) * 18, (middle - index) * 74, (index - middle) * 10);
     const surface = new T.Mesh(
       new T.BoxGeometry(570, 3, 300),
       new T.MeshPhysicalMaterial({

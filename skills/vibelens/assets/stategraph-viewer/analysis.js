@@ -3,7 +3,7 @@ import { t as boTranslate } from "./i18n.js";
 import { viewTypes, relationType, stateNodeId } from "./graph-core.js";
 import { dataRoles, dataRelations, migrateDataFilters } from "./data-layer.js";
 import { codeTypes, codeRelations, migrateCodeFilters } from "./code-layer.js";
-import { layerOf } from "./graph-layers.js";
+import { concernOf } from "./graph-layers.js";
 import { conceptRelationTypes } from "./concept-relations.js";
 import { relationTypeAllowed } from "./edge-identities.js";
 const types = [
@@ -278,7 +278,7 @@ export function matchingNodes(all, view, events, profile, statusOf, relations = 
     const canonical = n.referenceOf || n.id;
     let inScope = profile.scope === "all";
     if (["rules", "state", "implementation"].includes(profile.scope))
-      inScope = layerOf(n) === profile.scope;
+      inScope = concernOf(n) === profile.scope;
     if (["permission", "execution"].includes(profile.scope))
       inScope =
         scopeNodes.has(canonical) || scopeNodes.has(n.event_node) || scopeNodes.has(n.parent);

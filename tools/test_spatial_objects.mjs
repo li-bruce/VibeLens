@@ -16,7 +16,7 @@ import { clusterUnits } from "../skills/vibelens/assets/stategraph-viewer/cluste
 assert.deepEqual(
   [...layerHeights({ visible: ["business", "state", "code"], gap: 180 })],
   [
-    ["implementation", 0],
+    ["symbols", 0],
     ["state", 180],
     ["business", 360],
   ],

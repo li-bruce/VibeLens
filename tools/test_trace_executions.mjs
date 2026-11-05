@@ -81,7 +81,7 @@ assert.equal(index.executions.lanes.length, 2);
 assert.equal(rows.length, 6, "two concurrent executions occupy exactly 2 × 3 layer rows");
 assert.deepEqual(
   rows.map((row) => row.layer),
-  [...options.order, ...options.order],
+  ["business", "rules", "symbols", "business", "rules", "symbols"],
 );
 assert.equal(
   rows.filter((row) => row.layer === "rules")[0].slices.length,

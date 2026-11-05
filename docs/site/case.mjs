@@ -1,10 +1,8 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
-import { messages, chapters } from "./case-messages.mjs?rev=files-1";
+import { messages, chapters } from "./case-messages.mjs?rev=clarity-2";
 import { scrollStory } from "./scroll-story.mjs?rev=files-1";
-import { companion } from "./case-companion.mjs?rev=files-1";
-
-import { mountConversationTour } from "./conversation-tour.mjs?rev=files-1";
+import { companion } from "./case-companion.mjs?rev=clarity-2";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -112,7 +110,12 @@ function render() {
     title.textContent = copy(current.title);
     const body = document.createElement("p");
     body.textContent = copy(current.body);
-    section.append(kicker, title, body);
+    if (index === 0) {
+      const introduction = document.createElement("div");
+      introduction.className = "scene-copy";
+      introduction.append(kicker, title, body);
+      section.append(introduction);
+    } else section.append(kicker, title, body);
     if (current.steps) {
       const steps = document.createElement("ol");
       steps.className = "scene-steps";
@@ -330,9 +333,8 @@ document.querySelectorAll("[data-case-lens]").forEach((button) => {
 });
 onLanguageChange(render);
 initialize(messages);
-mountConversationTour();
 // Story sections are created after HTML parsing; restore direct links afterward.
-if (location.hash === "#conversation-controls")
+if (chapters.some((item) => "#" + item.id === location.hash))
   requestAnimationFrame(() =>
-    document.getElementById("conversation-controls").scrollIntoView({ behavior: "instant" }),
+    document.querySelector(location.hash).scrollIntoView({ behavior: "instant" }),
   );

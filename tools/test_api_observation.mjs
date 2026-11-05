@@ -323,7 +323,7 @@ assert(
   flows.some(
     (flow) =>
       rows[flow.fromRow].layer === "business" &&
-      rows[flow.toRow].layer === "implementation" &&
+      rows[flow.toRow].layer === "entry" &&
       flow.toNode === endpoint.id,
   ),
 );
@@ -332,10 +332,10 @@ assert(
     (flow) =>
       flow.fromNode === endpoint.id &&
       (flow.toNode || items[flow.to]?.node) === "store" &&
-      rows[flow.fromRow].layer === "implementation" &&
-      rows[flow.toRow].layer === "implementation",
+      rows[flow.fromRow].layer === "entry" &&
+      rows[flow.toRow].layer === "symbols",
   ),
-  "API-to-operation causality stays visible horizontally in the shared implementation plane",
+  "API-to-operation causality crosses entry and code planes with the same identities",
 );
 assert(flows.some((flow) => flow.type === "return" && flow.toNode === endpoint.id));
 assert(
@@ -378,7 +378,7 @@ const parallelEvents = [
       (flow) =>
         flow.type === "call" &&
         flow.toNode === endpoint.id &&
-        parallelRows[flow.toRow].layer === "implementation",
+        parallelRows[flow.toRow].layer === "entry",
     )
     .map((flow) => trackOf(parallelRows[flow.toRow], flow.toNode, flow.to));
 assert.equal(

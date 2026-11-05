@@ -6,9 +6,7 @@ import path from "node:path";
 import { serveRecording } from "./recording_browser_fixture.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
-const out = path.resolve(
-  process.env.BO_TIMELINE_EVIDENCE || "docs/review/recording-timeline/performance-01",
-);
+const out = path.resolve(process.env.BO_TIMELINE_EVIDENCE || ".validation/timeline-performance");
 await mkdir(out, { recursive: true });
 const fixture = await serveRecording(
   path.resolve("docs/review/spatial-workspace/replay-fixture.json"),
@@ -112,15 +110,19 @@ try {
   };
   measured = report;
   assert.ok(perf.seeks.length >= 20, "pointer drag produces many real seeks");
-  assert.equal(report.semanticLayers, 5, "all five graph concerns participate in the load fixture");
+  assert.equal(
+    report.semanticLayers,
+    7,
+    "all seven display planes participate in the load fixture",
+  );
   assert.equal(
     report.visibleRows,
-    5,
-    "20k sequential events reuse five concern rows across nine node roles",
+    7,
+    "20k sequential events reuse seven plane rows across nine node roles",
   );
   assert.deepEqual(
     [...new Set(perf.state.rows.map((row) => row.layer))].sort(),
-    ["business", "state", "rules", "implementation", "data"].sort(),
+    ["business", "state", "rules", "entry", "structure", "symbols", "data"].sort(),
   );
   assert.ok(report.initialMs < 2500);
   assert.ok(report.seekP95Ms < 100, "20k timeline seek/render p95 under 100 ms on this host");

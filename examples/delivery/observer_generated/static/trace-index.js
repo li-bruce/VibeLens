@@ -1,6 +1,6 @@
 /** Immutable execution index. Static projections locate facts and never become calls. */
 import { boFacts } from "./replay-steps.js";
-import { layerOf, layers, canonicalLayer } from "./graph-layers.js";
+import { layerOf, layers, canonicalLayer, expandLayerIds } from "./graph-layers.js";
 import { traceTime, configurationScopeMatches } from "./trace-evidence.js";
 import { contextualLifecycles } from "./trace-context.js";
 import { stateResidencies, activityResidencies } from "./trace-residencies.js";
@@ -261,7 +261,7 @@ export function traceRows(
     layerMode = "through",
   } = {},
 ) {
-  order = [...new Set(order.map(canonicalLayer))];
+  order = expandLayerIds(order);
   depth = canonicalLayer(depth);
   if (order.includes("business")) order = ["business", ...order.filter((id) => id !== "business")];
   const boundary = order.indexOf(depth);

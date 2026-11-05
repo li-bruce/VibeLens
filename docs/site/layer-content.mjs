@@ -1,4 +1,4 @@
-/** Product explanations share the native graph concern IDs and colors. */
+/** Product explanations share the native graph's display layer IDs and colors. */
 export const layerContent = [
   {
     "id": "business",
@@ -28,8 +28,8 @@ export const layerContent = [
       "开发前明确状态、事件与转换条件，运行时对照实际变化。",
     ],
     "examples": [
-      ["Private", "Shared", "Revoked"],
-      ["私有", "已共享", "已撤销"],
+      ["Private", "Shared", "Private"],
+      ["私有", "已共享", "私有"],
     ],
   },
   {
@@ -49,19 +49,48 @@ export const layerContent = [
     ],
   },
   {
-    "id": "implementation",
+    "id": "entry",
     "color": 3308985,
-    "type": "code-function",
+    "type": "code-endpoint",
     "group": ["Implementation", "实现"],
-    "name": ["Implementation", "程序实现"],
-    "question": ["Which code handles this operation?", "哪些代码完成这次操作？"],
+    "name": ["Entry points", "入口"],
+    "question": ["Where does the request enter?", "请求从哪里进入？"],
     "body": [
-      "Move through API entries, files, functions and selected values. Open local calls and data access when needed.",
-      "从接口、文件深入函数与关键值，按需展开局部调用和数据访问。",
+      "Find the endpoint and follow its handler into the code.",
+      "找到接口，再沿处理函数进入代码。",
     ],
     "examples": [
-      ["POST /share", "service.py", "share()"],
-      ["POST /share", "service.py", "share()"],
+      ["GET /files", "POST /share", "POST /revoke"],
+      ["GET /files", "POST /share", "POST /revoke"],
+    ],
+  },
+  {
+    id: "structure",
+    color: 0x6872ad,
+    type: "code-file",
+    group: ["Implementation", "实现"],
+    name: ["Project structure", "工程结构"],
+    question: ["Where does the code live?", "代码分布在哪里？"],
+    body: ["Explore directories, files and their dependencies.", "查看目录、文件及其依赖。"],
+    examples: [
+      ["app/", "service.py", "storage.py"],
+      ["app/", "service.py", "storage.py"],
+    ],
+  },
+  {
+    id: "symbols",
+    color: 0xb9654c,
+    type: "code-function",
+    group: ["Implementation", "实现"],
+    name: ["Code execution", "代码执行"],
+    question: ["Which call or value explains the result?", "哪个调用或数值解释了结果？"],
+    body: [
+      "Follow functions, parameters and data access to the source.",
+      "沿函数、参数和读写关系，定位源码。",
+    ],
+    examples: [
+      ["revoke()", "recipient_id", "rows = 0"],
+      ["revoke()", "recipient_id", "rows = 0"],
     ],
   },
   {

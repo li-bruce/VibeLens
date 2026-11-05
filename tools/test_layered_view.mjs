@@ -28,7 +28,7 @@ import {
 } from "../skills/vibelens/assets/stategraph-viewer/layout.js";
 
 assert.equal(layerOf({ kind: "wait" }), "state");
-assert.equal(layerOf({ kind: "function", layer: "api" }), "implementation");
+assert.equal(layerOf({ kind: "function", layer: "api" }), "entry");
 assert.equal(layerOf({ kind: "function", execution_role: "join" }), "state");
 assert.equal(layerOf({ kind: "function", execution_role: "resource" }), "state");
 const owner = {
@@ -130,7 +130,7 @@ assert.notEqual(positions.fn.y, positions.publish.y);
 assert.notEqual(positions.fn.z, positions.publish.z);
 assert.ok(Object.values(positions).every((p) => [p.x, p.y, p.z].every(Number.isFinite)));
 const volumes = containmentVolumes(model, positions, 260);
-assert.ok(volumes.some((v) => v.id === "publish" && v.layer === "implementation" && v.projection));
+assert.ok(volumes.some((v) => v.id === "publish" && v.layer === "symbols" && v.projection));
 const saved = {
   ...positions,
   fn: { ...positions.fn, x: 712, z: 231, pinned: true },

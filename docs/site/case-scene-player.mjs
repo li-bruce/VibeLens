@@ -1,5 +1,5 @@
 /** Stage the real viewer through its public UI controls and original recording. */
-import { focusIds, focusTypes, focusRelations } from "./case-focus.mjs?rev=files-1";
+import { focusIds, focusTypes, focusRelations } from "./case-focus.mjs?rev=clarity-2";
 
 export function scenePlayer({ artifact, setDesign, locale, post }) {
   const story = artifact.story;

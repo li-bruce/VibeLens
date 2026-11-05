@@ -118,17 +118,15 @@ assert.equal(
   "Span Links connect executions without merging them",
 );
 assert.equal(index.executions.lanes.length, 2);
-assert.equal(rows.length, 4);
+assert.equal(rows.length, 6);
 assert.deepEqual(
   rows.map((row) => row.layer),
-  ["business", "implementation", "business", "implementation"],
+  ["business", "entry", "symbols", "business", "entry", "symbols"],
   "Each independent execution retains one row per active concern",
 );
+assert.ok(rows.filter((row) => row.layer === "entry").some((row) => row.members.includes("api")));
 assert.ok(
-  rows.filter((row) => row.layer === "implementation").some((row) => row.members.includes("api")),
-);
-assert.ok(
-  rows.filter((row) => row.layer === "implementation").some((row) => row.members.includes("job")),
+  rows.filter((row) => row.layer === "symbols").some((row) => row.members.includes("job")),
   "Consolidation preserves both the HTTP registration and asynchronous job identities",
 );
 assert.equal(JSON.stringify(events), original);

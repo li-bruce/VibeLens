@@ -8,10 +8,10 @@ import {
   cleanLayerVisibility,
   visibilityForView,
   savedLayerVisibility,
-  canonicalLayer,
+  expandLayerIds,
 } from "../skills/vibelens/assets/stategraph-viewer/graph-layers.js";
 import { LayerRuler } from "../skills/vibelens/assets/stategraph-viewer/layer-ruler.js";
-const expected = ["business", "state", "rules", "implementation", "unknown", "data"];
+const expected = ["business", "state", "rules", "entry", "structure", "symbols", "unknown", "data"];
 const legacyVisibility = {
   visible: ["business", "state", "rules", "api"],
   gap: 420,
@@ -21,7 +21,7 @@ const viewSettings = {
   layerVisibility: cleanLayerVisibility(undefined, legacyVisibility),
 };
 assert.deepEqual(visibilityForView(viewSettings, "overview"), legacyVisibility.visible);
-assert.ok(visibilityForView(viewSettings, "project").includes("implementation"));
+assert.ok(visibilityForView(viewSettings, "project").includes("structure"));
 assert.ok(visibilityForView(viewSettings, "database").includes("data"));
 viewSettings.layerVisibility.project = ["project"];
 viewSettings.layerVisibility["custom-empty"] = [];
@@ -56,7 +56,7 @@ assert.deepEqual(
   expected,
 );
 assert.equal(layerHeights({}).get("data"), 0);
-assert.ok(layerHeights({}).get("implementation") > layerHeights({}).get("data"));
+assert.ok(layerHeights({}).get("symbols") > layerHeights({}).get("data"));
 assert.deepEqual(
   layerContent.map((layer) => layer.id),
   expected.filter((id) => id !== "unknown"),
@@ -87,27 +87,28 @@ for (const order of [legacy, [...expected].reverse(), ["rules", "api", "business
     visible: ["rules", "api"],
     gap: 420,
   });
-  const mapped = [...new Set(order.map(canonicalLayer))];
+  const mapped = expandLayerIds(order);
   assert.deepEqual(
     result.order.slice(0, mapped.length),
     mapped,
     "Custom relative order survives collapsed facets",
   );
   assert.equal(result.orderMode, "custom");
-  assert.deepEqual(result.visible, ["rules", "implementation"]);
+  assert.deepEqual(result.visible, ["rules", "entry"]);
   assert.deepEqual(result.facets, ["api"]);
   assert.equal(result.gap, 420);
   assert.deepEqual(cleanLayers(result), result);
   assert.deepEqual(savedLayerVisibility(result), ["rules", "api"]);
 }
 const custom = cleanLayers({ order: ["rules", "state", "api"] });
-assert.deepEqual(custom.order.slice(0, 3), ["rules", "state", "implementation"]);
+assert.deepEqual(custom.order.slice(0, 3), ["rules", "state", "entry"]);
 assert.equal(custom.orderMode, "custom");
 assert.deepEqual(
   [...layerHeights({ visible: ["business", "api", "code"] })],
   [
-    ["implementation", 0],
-    ["business", 260],
+    ["symbols", 0],
+    ["entry", 260],
+    ["business", 520],
   ],
 );
 const changes = [];

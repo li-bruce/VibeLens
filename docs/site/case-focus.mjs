@@ -24,6 +24,9 @@ export const focusTypes = [
   "code-endpoint",
 ];
 export const focusRelations = [
+  // A business action contains its observed database operation. Keeping this
+  // declared relation avoids presenting two disconnected parts of one action.
+  "contains",
   "call",
   "flow",
   "guard",

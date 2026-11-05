@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="Start with a business graph. Follow a recorded operation, focus your own view, and see a repair take effect in VibeLens."
+      content="Build a file-sharing app with AI, trace a failed revocation to its source, and verify the repair in VibeLens."
     />
-    <title>VibeLens — Follow the logic</title>
+    <title>VibeLens — Access revoked, still downloading</title>
     <link rel="icon" href="favicon.svg?rev=files-1" type="image/svg+xml" />
     <link rel="stylesheet" href="site.css?rev=files-1" />
     <link rel="stylesheet" href="scroll-story.css?rev=files-1" />
     <link rel="stylesheet" href="case.css?rev=files-1" />
-    <link rel="stylesheet" href="conversation-tour.css?rev=files-1" />
-    <script type="module" src="case.mjs?rev=files-1"></script>
+    <link rel="stylesheet" href="case-editorial.css?rev=clarity-2" />
+    <script type="module" src="case.mjs?rev=clarity-2"></script>
   </head>
   <body class="demo-story">
     <a class="skip" href="#foundation" data-i18n="skip">Skip to content</a>
@@ -29,7 +29,7 @@
         />VibeLens</a
       >
       <nav aria-label="Main navigation" data-i18n-aria="navigation">
-        <a href="#conversation-controls" data-i18n="controls.nav">How to use</a
+        <a href="#foundation" data-i18n="case.navigation">Walkthrough</a
         ><a href="index.html#install" data-local-link data-i18n="case.install">Get VibeLens</a
         ><button class="language" id="language" aria-label="Switch to Chinese">中文</button>
       </nav>
@@ -37,10 +37,10 @@
     <main id="main">
       <section class="case-intro" data-scroll-scene>
         <p class="eyebrow" data-i18n="case.eyebrow">VibeLens in action</p>
-        <h1 data-i18n="case.title">See what your AI built</h1>
+        <h1 data-i18n="case.title">Access revoked<br />Still downloading</h1>
         <p data-i18n="case.lead">
-          Follow a developer building a file-sharing app with VibeLens, from the first business
-          graph to investigating and fixing a bug.
+          Build a file-sharing app with AI. Confirm the model, record a failed revocation and trace
+          it to the line that needs fixing.
         </p>
         <a class="scroll-cue" href="#foundation"
           ><span data-i18n="case.scroll">Scroll to follow the build</span
@@ -117,105 +117,6 @@
         <aside id="case-app-dock" class="case-app-dock"></aside>
       </div>
       <div id="case-context" hidden></div>
-      <section class="wrap conversation-tour section-space" id="conversation-controls">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow" data-i18n="controls.kicker">From your conversation</p>
-            <h2 data-i18n="controls.title">Your view,<br />in a sentence</h2>
-          </div>
-          <p data-i18n="controls.body">
-            Tell Codex which path to keep in view. A focused view appears in VibeLens.
-          </p>
-        </div>
-        <div class="conversation-tour-grid">
-          <div class="conversation-tour-copy">
-            <div
-              class="control-choices"
-              role="group"
-              aria-label="Choose an example"
-              data-i18n-aria="controls.choose"
-            >
-              <button
-                type="button"
-                data-control-preset="business"
-                aria-pressed="true"
-                data-i18n="controls.business"
-              >
-                Focus a path
-              </button>
-              <button
-                type="button"
-                data-control-preset="details"
-                aria-pressed="false"
-                data-i18n="controls.details"
-              >
-                Go deeper
-              </button>
-              <button
-                type="button"
-                data-control-preset="replay"
-                aria-pressed="false"
-                data-i18n="controls.replay"
-              >
-                Filter a recording
-              </button>
-            </div>
-            <p id="control-description"></p>
-            <div class="control-command">
-              <pre id="control-command"></pre>
-              <button
-                type="button"
-                id="copy-control"
-                aria-label="Copy command"
-                data-i18n-aria="controls.copy"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  aria-hidden="true"
-                >
-                  <rect x="8" y="8" width="12" height="12" rx="2" />
-                  <path d="M15 8V4H4v11h4" />
-                </svg>
-              </button>
-            </div>
-            <span id="control-copy-status" class="control-copy-status" role="status"></span>
-          </div>
-          <div class="control-preview-window">
-            <div class="control-preview-bar">
-              <strong
-                ><img
-                  class="brand-mark"
-                  src="favicon.svg?rev=files-1"
-                  width="18"
-                  height="18"
-                  alt=""
-                  aria-hidden="true"
-                />VibeLens</strong
-              >
-
-              <div
-                class="control-dimensions"
-                role="group"
-                aria-label="View dimensions"
-                data-i18n-aria="controls.dimensions"
-              >
-                <button type="button" data-control-mode="2d" aria-pressed="true">2D</button>
-                <button type="button" data-control-mode="3d" aria-pressed="false">3D</button>
-              </div>
-            </div>
-            <iframe
-              id="control-preview"
-              title="Conversation-selected graph preview"
-              referrerpolicy="same-origin"
-            ></iframe>
-            <p id="control-result" role="status"></p>
-          </div>
-        </div>
-      </section>
-
       <section class="case-end" data-scroll-scene>
         <h2 data-i18n="case.end">Bring clarity to your next build</h2>
         <a class="button primary" href="index.html#install" data-local-link data-i18n="case.install"

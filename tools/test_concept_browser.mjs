@@ -241,7 +241,7 @@ try {
   assert.ok(spatial.webgl);
   assert.deepEqual(spatial.native, bound.native);
   assert.equal(spatial.bound, bound.revision);
-  assert.ok(spatial.planes.some((plane) => plane.id === "implementation"));
+  assert.ok(spatial.planes.some((plane) => plane.id === "symbols"));
   const canvas = await page.locator("#viewport").boundingBox();
   await page.mouse.move(canvas.x + canvas.width * 0.8, canvas.y + canvas.height * 0.35);
   await page.mouse.down();

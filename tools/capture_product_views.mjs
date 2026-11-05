@@ -1,34 +1,19 @@
 /** Capture real viewer states for the product page, with their original evidence. */
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
+import { startSite } from "./site_browser_fixture.mjs";
 import { createRequire } from "node:module";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const artifact = JSON.parse(await readFile("docs/site/case-data/v1.json", "utf8"));
 const anchor = artifact.view.model.nodes.find((node) => node.id === artifact.story.inspection_node);
-const base = process.env.BO_SITE_URL || "http://127.0.0.1:8891";
 const output = "docs/site/images";
 await mkdir(output, { recursive: true });
-const python =
-  process.env.BO_PYTHON ||
-  (process.platform === "win32" ? ".venv/Scripts/python.exe" : ".venv/bin/python");
-const server = process.env.BO_SITE_URL
-  ? null
-  : spawn(
-      python,
-      ["-B", "-m", "http.server", "8891", "--bind", "127.0.0.1", "--directory", "docs/site"],
-      { windowsHide: true, stdio: "ignore" },
-    );
+const server = await startSite();
+const base = server.url;
 let browser;
 const captures = [];
 try {
-  for (let i = 0; i < 50; i++) {
-    try {
-      if ((await fetch(base)).ok) break;
-    } catch {}
-    await new Promise((resolve) => setTimeout(resolve, 150));
-  }
   browser = await chromium.launch({
     headless: true,
     args: ["--enable-unsafe-swiftshader"],
@@ -89,7 +74,7 @@ try {
           scene: "watch",
           mode: "3d",
           compact: true,
-          options: { inputs: true, effects: true, states: true },
+          options: { inputs: true, effects: false, states: true },
         },
         location.origin,
       );
@@ -104,6 +89,9 @@ try {
     await page.mouse.down();
     await page.mouse.move(655, 195, { steps: 18 });
     await page.mouse.up();
+    // Keep the chosen angle and leave room for the lower plane's labels.
+    await page.mouse.move(550, 280);
+    await page.mouse.wheel(0, 180);
     await page.mouse.move(5, 5);
     await page.waitForTimeout(500);
     const three = `${output}/layers-${locale}.png`;
@@ -144,6 +132,6 @@ try {
   );
 } finally {
   await browser?.close();
-  server?.kill();
+  server.close();
 }
 console.log("PASS: captured real bilingual source and 3D views");

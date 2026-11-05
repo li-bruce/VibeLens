@@ -373,17 +373,17 @@ try {
   await page.mouse.up();
   await page.waitForTimeout(350);
   assert.notDeepEqual(await page.evaluate(() => graphDebug.spatial.camera.position), camera);
-  await isolateLayer("implementation");
+  await isolateLayer("symbols");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.deepEqual(
     await page.evaluate(() => graphDebug.spatial.layerPlanes),
-    [{ ...renderedPlanes.find((p) => p.id === "implementation"), y: 0 }],
+    [{ ...renderedPlanes.find((p) => p.id === "symbols"), y: 0 }],
     "A layer mask compacts the remaining plane to zero",
   );
   assert.ok(
     await page.evaluate(() =>
       [...document.querySelectorAll("#semantic [data-node-id]")].every(
-        (e) => e.dataset.plane === "implementation",
+        (e) => e.dataset.plane === "symbols",
       ),
     ),
   );
@@ -441,25 +441,25 @@ try {
   assert.ok(Math.abs(restored.x - after.positions.load.x) < 0.001);
   assert.ok(Math.abs(restored.z - after.positions.load.z) < 0.001);
   checks.roundTrip = true;
-  await isolateLayer("implementation");
+  await isolateLayer("symbols");
   await layerAction("state", true);
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
-    "implementation",
     "state",
+    "symbols",
   ]);
   await page.reload();
   await page.waitForFunction(
     () => window.graphDebug?.spatial?.perspective && !graphDebug.layoutBusy,
   );
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
-    "implementation",
     "state",
+    "symbols",
   ]);
   await page.click("#layered-toggle");
   assert.deepEqual(await page.evaluate(() => graphDebug.layers.visible.slice().sort()), [
-    "implementation",
     "state",
+    "symbols",
   ]);
   assert.equal(await page.locator("#legend-panel").getAttribute("data-mode"), "2D");
   await page.click("#show-all");
@@ -569,7 +569,7 @@ try {
   assert.equal(await page.locator("#layered-toggle").innerText(), "3D");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(200);
-  await isolateLayer("implementation");
+  await isolateLayer("symbols");
   await page.waitForTimeout(200);
   assert.ok(
     await page

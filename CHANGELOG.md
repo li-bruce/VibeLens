@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+- Separate implementation detail into entry points, project structure and code
+  execution display planes. Preserve semantic identities, saved exclusions,
+  cross-layer paths and Graph/Timeline correspondence.
+- Redesign the bilingual product home around model confirmation, runtime
+  exploration and development iteration. Add native screenshots and a focused
+  seven-plane explainer.
+- Condense the file-sharing walkthrough into five stages, following an incorrect
+  revocation predicate from observed values to source and a verified correction.
+  Keep development dialogue distinct from application and viewer operations.
+- Preserve the completed independent trial's dialogue and failed acceptance
+  evidence in the [assessment](docs/review/clarity-story-20261105/README.md).
+  Its three runtime/workflow gaps remain open; the presentation checks are
+  reported separately.
+
 ## 0.12.1 — 2026-11-05
 
 - Open source-free design graphs using their project identity, including drafts

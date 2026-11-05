@@ -99,6 +99,10 @@ jobs:
       - run: node tools/test_demo_startup_browser.mjs
         env:
           BO_DEMO_STARTUP_EVIDENCE: .validation/demo-startup-browser
+      - run: python tools/test_product_story_browser.py
+      - run: node tools/test_case_browser.mjs
+        env:
+          BO_CASE_BROWSER_EVIDENCE: .validation/file-story/browser
       - run: node tools/test_recording_timeline_browser.mjs
         env:
           BO_TIMELINE_EVIDENCE: .validation/timeline-browser
@@ -145,3 +149,5 @@ jobs:
             .validation/demo-startup-browser
             .validation/concept-browser
             .validation/design-browser
+            .validation/clarity-story/browser
+            .validation/file-story/browser

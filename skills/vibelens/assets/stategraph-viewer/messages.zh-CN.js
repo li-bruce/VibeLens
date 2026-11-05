@@ -589,6 +589,8 @@ export default {
   "Execution boundary": "执行边界",
   Behavior: "行为",
   Implementation: "实现",
+  "Entry points": "入口",
+  "Code execution": "代码执行",
   "Rule network": "规则网",
   "Data access": "数据访问",
   Analysis: "分析",

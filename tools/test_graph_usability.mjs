@@ -23,7 +23,7 @@ assert.deepEqual(
 assert.equal(new Set(layers.map((layer) => layer.color)).size, layers.length);
 assert.equal(defaultLayerOrder.at(-1), "data", "The stored structure remains the lowest concern");
 for (const layer of layers) assert.equal(layer.color, layerPalette[layer.id]);
-assert.equal(layerColor({ kind: "function", layer: "api" }), layerPalette.implementation);
+assert.equal(layerColor({ kind: "function", layer: "api" }), layerPalette.entry);
 
 const intervals = packTracks([
   { node: "pending", scope: "file:1", start: 0, end: 40 },
@@ -67,7 +67,7 @@ assert.deepEqual(
   [...hierarchy.values()].map((entry) => entry.depth),
   [0, 1, 2, 1, 0, 1],
 );
-assert.equal(hierarchy.get(1).color, "#" + layerPalette.implementation.toString(16));
+assert.equal(hierarchy.get(1).color, "#" + layerPalette.entry.toString(16));
 const foreign = stepHierarchy(
   [event("foreign", "api", "enter", "other", "root", { producer_id: "q" })],
   all,

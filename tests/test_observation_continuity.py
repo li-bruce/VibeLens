@@ -509,7 +509,7 @@ class ObservationContinuityTests(unittest.TestCase):
             {"kind": "unregistered-node-type"},
         ]
         module = (ROOT / "skills/vibelens/assets/stategraph-viewer/graph-layers.js").as_uri()
-        script = f"import {{layerOf}} from {json.dumps(module)}; console.log(JSON.stringify({json.dumps(nodes)}.map(layerOf)));"
+        script = f"import {{concernOf as layerOf}} from {json.dumps(module)}; console.log(JSON.stringify({json.dumps(nodes)}.map(layerOf)));"
         result = subprocess.run(
             ["node", "--input-type=module", "-e", script],
             capture_output=True,

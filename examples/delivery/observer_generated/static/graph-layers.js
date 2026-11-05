@@ -1,27 +1,34 @@
-/** Shared concern planes. Source granularity and capture selection are facets. */
+/** Shared display planes; semantic concerns and capture selection stay distinct. */
 import { layerPalette } from "./layer-style.js";
-import { classifyNode, canonicalLayer, implementationFacets } from "./graph-classification.js";
+import { classifyNode, implementationFacets } from "./graph-classification.js";
+import {
+  displayLayerOf,
+  displayLayerId,
+  expandLayerIds,
+  implementationPlanes,
+} from "./implementation-planes.js";
 import { projectHiddenPaths } from "./hidden-paths.js";
-export {
-  canonicalLayer,
-  implementationFacet,
-  implementationFacets,
-} from "./graph-classification.js";
+export { implementationFacet, implementationFacets } from "./graph-classification.js";
+export { expandLayerIds } from "./implementation-planes.js";
+export const canonicalLayer = displayLayerId;
+export const concernOf = (node) => classifyNode(node).layer;
 export const layers = [
   { id: "business", label: "Business" },
   { id: "state", label: "States" },
   { id: "rules", label: "Rules" },
-  { id: "implementation", label: "Implementation" },
+  { id: "entry", label: "Entry points" },
+  { id: "structure", label: "Project structure" },
+  { id: "symbols", label: "Code execution" },
   { id: "unknown", label: "Unclassified" },
   { id: "data", label: "Data structure" },
 ].map((layer) => ({ ...layer, color: layerPalette[layer.id] }));
-export const layerOf = (node) => classifyNode(node).layer;
+export const layerOf = displayLayerOf;
 export const layerColor = (node) => layerPalette[layerOf(node)];
 const ids = layers.map((layer) => layer.id);
-const mapped = (values) =>
-  [...new Set(values.map(canonicalLayer))].filter((id) => ids.includes(id));
+const mapped = (values) => expandLayerIds(values).filter((id) => ids.includes(id));
 const sliceCache = new WeakMap();
 const oldDefaults = [
+  ["business", "state", "rules", "implementation", "unknown", "data"],
   ["business", "state", "rules", "api", "execution", "project", "code", "operations", "data"],
   ["business", "state", "rules", "api", "execution", "operations", "project", "code", "data"],
   ["api", "business", "state", "rules", "operations", "execution", "data", "project", "code"],
@@ -39,7 +46,12 @@ export function cleanLayers(value) {
       : implementationFacets.includes(value?.only)
         ? [value.only]
         : [...implementationFacets];
-  const only = ids.includes(canonicalLayer(value?.only)) ? canonicalLayer(value.only) : "all";
+  const only =
+    value?.only === "implementation"
+      ? "all"
+      : ids.includes(canonicalLayer(value?.only))
+        ? canonicalLayer(value.only)
+        : "all";
   const priorOrder = Array.isArray(value?.order) ? mapped(value.order) : [];
   const same = (a, b) => a.length === b.length && a.every((id, i) => id === b[i]);
   const defaultOrder =
@@ -48,7 +60,7 @@ export function cleanLayers(value) {
       (!value?.order?.length || [ids, ...oldDefaults].some((order) => same(value.order, order))));
   const order = defaultOrder ? [...ids] : [...new Set([...priorOrder, ...ids])];
   return {
-    schema: 3,
+    schema: 4,
     enabled: value?.enabled === true,
     drawer: value?.drawer === true,
     compact: value?.compact === true,
@@ -57,7 +69,11 @@ export function cleanLayers(value) {
     order,
     orderMode: defaultOrder ? "default" : "custom",
     only,
-    visible: oldVisible ? mapped(oldVisible) : ids.filter((id) => only === "all" || only === id),
+    visible: oldVisible
+      ? mapped(oldVisible)
+      : value?.only === "implementation"
+        ? [...implementationPlanes]
+        : ids.filter((id) => only === "all" || only === id),
     facets,
     projections: value?.projections !== false,
   };
@@ -66,9 +82,12 @@ export function cleanLayers(value) {
 /** Encode narrow legacy facets in per-view lists without changing old view IDs. */
 export function savedLayerVisibility(value) {
   const config = cleanLayers(value);
-  return config.visible.includes("implementation") &&
+  return config.visible.some((id) => implementationPlanes.includes(id)) &&
     config.facets.length < implementationFacets.length
-    ? [...config.visible.filter((id) => id !== "implementation"), ...config.facets]
+    ? [
+        ...config.visible.filter((id) => !implementationPlanes.includes(id)),
+        ...config.facets.filter((facet) => config.visible.includes(displayLayerId(facet))),
+      ]
     : [...config.visible];
 }
 export function cleanLayerVisibility(value, legacy) {
@@ -89,18 +108,18 @@ export function visibilityForView(settings, id) {
     states: ["state"],
     rules: ["rules"],
     permission: ["business", "state", "rules"],
-    implementation: ["implementation"],
-    functions: ["implementation"],
-    code: ["implementation"],
-    api: ["implementation"],
-    project: ["implementation"],
+    implementation: [...implementationPlanes],
+    functions: ["symbols"],
+    code: ["symbols"],
+    api: ["entry"],
+    project: ["structure"],
     database: ["data"],
-    "data-access": ["implementation", "data"],
-    "data-operations": ["implementation", "data"],
+    "data-access": ["symbols", "data"],
+    "data-operations": ["symbols", "data"],
   };
   return Array.isArray(visible) ? [...visible] : presets[id] || [...ids];
 }
-/** Only occupied, visible concerns reserve a plane. */
+/** Only occupied, visible display layers reserve a plane. */
 export function layerHeights(settings, scope = layers) {
   const config = cleanLayers(settings),
     result = new Map();
@@ -125,7 +144,7 @@ export function layerSlice(graph, settings, exclusions = {}) {
   if (cached?.key === key) return cached.value;
   const accepts = (node) =>
     config.visible.includes(layerOf(node)) &&
-    (layerOf(node) !== "implementation" || config.facets.includes(classifyNode(node).facet));
+    (concernOf(node) !== "implementation" || config.facets.includes(classifyNode(node).facet));
   const boxes = graph.boxes.filter((box) => accepts(box.node));
   if (
     boxes.length === graph.boxes.length &&

@@ -1,0 +1,100 @@
+{
+  "build_id": "81adf90426f8377a755ae057109e35911cda01c416eb89c6cb04d6167e5b09b9",
+  "formal_acceptance": false,
+  "purpose": "Independent unchanged canonical assessors; does not override the immutable baseline rejection",
+  "reports": {
+    "business": {
+      "errors": [],
+      "assertions": {
+        "required": 93,
+        "executed": 93
+      },
+      "valid": true
+    },
+    "probe_health": {
+      "valid": true,
+      "checked_runs": 15,
+      "required": true,
+      "errors": []
+    },
+    "invocation_closure": {
+      "valid": true,
+      "closed_calls": 558,
+      "legacy_events": 0,
+      "errors": []
+    },
+    "instance_mapping": {
+      "valid": true,
+      "errors": [],
+      "checks": 48,
+      "projection_checks": 720,
+      "context_checks": 0,
+      "scope": "Protected scenario/field plan against actual source facts and public projections; unexercised behavior remains unknown."
+    },
+    "implementation": {
+      "errors": [],
+      "events_checked": 527,
+      "features": 21,
+      "valid": true
+    },
+    "policy": {
+      "errors": [],
+      "valid": true
+    },
+    "concept_runtime": {
+      "errors": [],
+      "valid": true
+    },
+    "telemetry": {
+      "errors": [],
+      "valid": true
+    },
+    "database_runtime": {
+      "errors": [],
+      "valid": true
+    },
+    "state_rules": {
+      "errors": [],
+      "valid": true
+    }
+  },
+  "negative_checks": {
+    "removed_transition_witness": {
+      "detected": true,
+      "errors": [
+        {
+          "missing_runtime_probe": {
+            "case": "full-workflow",
+            "node": "transition",
+            "phase": "change"
+          }
+        }
+      ]
+    },
+    "removed_instance": {
+      "detected": true,
+      "errors": [
+        "invalid or incomplete implementation mapping: scenario instances differ from its runtime machine"
+      ]
+    },
+    "incorrect_native_revision": {
+      "detected": true,
+      "errors": [
+        {
+          "case": [
+            "full-workflow",
+            "on"
+          ],
+          "instance": "30be44808d7b4c6f89197737b8c74f0d",
+          "field": "revision",
+          "node": "transition",
+          "source": {
+            "path": "bo_stategraph/query.py",
+            "symbol": "read_authority"
+          },
+          "error": "actual value differs from exported projection"
+        }
+      ]
+    }
+  }
+}

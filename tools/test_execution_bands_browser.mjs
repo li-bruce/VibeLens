@@ -171,7 +171,7 @@ try {
     );
   }
   await page.click(".trace-maximize");
-  await page.waitForFunction(() => graphDebug.timeline.rows.length === 8);
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 10);
   await page.screenshot({ path: path.join(out, "concurrent-wait.png") });
   let trace = await page.evaluate(() => graphDebug.timeline);
   assert.deepEqual(
@@ -180,11 +180,13 @@ try {
       "business",
       "state",
       "rules",
-      "implementation",
+      "structure",
+      "symbols",
       "business",
       "state",
       "rules",
-      "implementation",
+      "structure",
+      "symbols",
     ],
   );
   assert.equal(trace.executions.length, 2);
@@ -192,23 +194,23 @@ try {
     trace.lifecycles.filter((slice) => slice.node === "advance").every((slice) => slice.unfinished),
   );
   checks.push(
-    "two real users wait in two complete four concern bands retaining implementation and file projections",
+    "two real users wait in two complete five-plane bands retaining separate code and file projections",
   );
   const canvas = page.locator("#recording-timeline canvas");
   const box = await canvas.boundingBox();
   await page.mouse.click(box.x + 50, box.y + trace.geometry.top + 14);
-  await page.waitForFunction(() => graphDebug.timeline.rows.length === 5);
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 6);
   assert.equal((await page.evaluate(() => graphDebug.timeline.rows))[0].layer, "business");
   await page.screenshot({ path: path.join(out, "one-group-collapsed.png") });
   await page.mouse.click(box.x + 50, box.y + trace.geometry.top + 14);
-  await page.waitForFunction(() => graphDebug.timeline.rows.length === 8);
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 10);
   await page.click(".trace-tracks");
   await page.waitForFunction(() => graphDebug.timeline.rows.length === 2);
   assert.ok(
     (await page.evaluate(() => graphDebug.timeline.rows)).every((row) => row.layer === "business"),
   );
   await page.click(".trace-tracks");
-  await page.waitForFunction(() => graphDebug.timeline.rows.length === 8);
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 10);
   checks.push("independent collapse and all-group collapse retain only business rows");
   await page.request.post(ready.application + "/release");
   let completed = false;
@@ -313,7 +315,7 @@ try {
     (await page.evaluate(() => graphDebug.timeline.rows)).every((row) => row.layer === "rules"),
   );
   await page.selectOption(".trace-depth", "all");
-  await page.waitForFunction(() => graphDebug.timeline.rows.length === 8);
+  await page.waitForFunction(() => graphDebug.timeline.rows.length === 10);
   const later = await (await page.request.get(ready.application)).json();
   assert.equal(later.events, actual.events, "observation controls create zero business events");
   assert.deepEqual(
@@ -332,7 +334,7 @@ try {
       checks: checks.length,
       events: recording.events.length,
       groups: 2,
-      layerRows: 8,
+      layerRows: trace.rows.length,
     }),
   );
 } catch (error) {

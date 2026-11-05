@@ -45,7 +45,7 @@ assert.equal(explained.id, "api_get");
 assert.equal(explained.source.line, 21);
 assert.equal(explained.source_name, "GET /api/<path:operation>");
 assert.equal(explained.api_role, "capture");
-assert.equal(layerOf(explained), "implementation");
+assert.equal(layerOf(explained), "symbols");
 assert.equal(
   implementationFacet(explained),
   "execution",
@@ -54,7 +54,7 @@ assert.equal(
 const view = { model, manifest: { bindings } },
   inventory = graphInventory(view),
   field = inventory.all.get("field:api_get:out:status");
-assert.equal(layerOf(field), "implementation");
+assert.equal(layerOf(field), "symbols");
 assert.equal(
   implementationFacet(field),
   "execution",
@@ -89,7 +89,7 @@ const endpoint = {
   api: { path: "/files/<file_id>", methods: ["GET"] },
   documentation,
 };
-assert.equal(layerOf(endpoint), "implementation");
+assert.equal(layerOf(endpoint), "entry");
 assert.equal(
   implementationFacet(endpoint),
   "api",

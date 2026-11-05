@@ -1,6 +1,6 @@
 /** Scripted development dialogue and a separate, event-bound application preview. */
 import { locale, t } from "./site-ui.mjs?rev=files-1";
-import { proposedFlow } from "./case-flow.mjs?rev=files-1";
+import { proposedFlow } from "./case-flow.mjs?rev=clarity-2";
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
 function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -14,7 +14,6 @@ export function companion({ host, chapters, artifacts, send, begin }) {
     source = 0,
     progress = 1,
     open = true;
-  const narrow = matchMedia("(max-width: 900px)");
   const conversation = node("section", "case-conversation");
   conversation.id = "case-conversation";
   const toggle = node("button", "conversation-toggle");
@@ -77,10 +76,8 @@ export function companion({ host, chapters, artifacts, send, begin }) {
       renderConversation();
       requestAnimationFrame(() => {
         turns.scrollTop = turns.scrollHeight;
-        next.scrollIntoView({
-          block: "nearest",
-          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-        });
+        // Keep the page at the confirmation step. Scrolling the page here can
+        // activate the next chapter and move this button before it is pressed.
       });
       if (progress === chapters[0].dialogue.length) document.body.dataset.flowConfirmed = "true";
     } else begin();
@@ -151,11 +148,9 @@ export function companion({ host, chapters, artifacts, send, begin }) {
     const before = conversation.getBoundingClientRect();
     const wasFoundation = conversation.closest("#foundation");
     if (target && conversation.parentNode !== target) target.append(conversation);
-    const appTarget = narrow.matches
-      ? current?.querySelector(".scene-app-slot")
-      : document.getElementById("case-app-dock");
+    const appTarget = current?.querySelector(".scene-app-slot");
     if (appTarget && app.parentNode !== appTarget) appTarget.append(app);
-    document.getElementById("case-app-dock").hidden = chapter === 0 || narrow.matches;
+    document.getElementById("case-app-dock").hidden = true;
     if (
       wasFoundation &&
       chapter === 1 &&
@@ -206,17 +201,17 @@ export function companion({ host, chapters, artifacts, send, begin }) {
     host.dataset.scene = chapters[index].id;
     host.dataset.surface = chapters[index].surface;
     open = !!chapters[index].dialogue;
-    app.hidden = chapter === 0;
+    // App actions accompany recording and retesting; source investigation gets
+    // the full viewing area. The developer's earlier conversation stays folded.
+    app.hidden = !["run", "verify"].includes(chapters[chapter].id);
     renderConversation();
     place();
     update(null);
   }
-  narrow.addEventListener("change", place);
   return {
     stage,
     update,
     destroy() {
-      narrow.removeEventListener("change", place);
       conversation.remove();
       app.remove();
       capture.remove();

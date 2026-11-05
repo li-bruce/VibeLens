@@ -5,68 +5,45 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="Understand AI-built software with a state graph. Confirm the flow, follow running values and trace a result to its source."
+      content="A Skill that connects your intent, AI-written code and real execution in one explorable state graph."
     />
-    <title>VibeLens — See how your code works</title>
-    <link rel="stylesheet" href="site.css?rev=files-1" />
-    <link rel="stylesheet" href="scroll-story.css?rev=files-1" />
-    <link rel="stylesheet" href="conversation-tour.css?rev=files-1" />
-    <link rel="stylesheet" href="homepage.css?rev=files-1" />
-    <link rel="icon" href="favicon.svg?rev=files-1" type="image/svg+xml" />
-    <script type="module" src="site.js?rev=files-1"></script>
+    <title>VibeLens — See the logic behind your code</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="site.css?rev=clarity-2" />
+    <link rel="stylesheet" href="homepage.css?rev=clarity-2" />
+    <script type="module" src="site.js?rev=clarity-2"></script>
   </head>
   <body class="landing">
     <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
     <header class="wrap nav">
       <a class="brand" href="index.html" data-local-link
-        ><img
-          class="brand-mark"
-          src="favicon.svg?rev=files-1"
-          width="32"
-          height="32"
-          alt=""
-          aria-hidden="true"
-        />VibeLens<span class="skill-tag">SKILL</span></a
+        ><img class="brand-mark" src="favicon.svg" width="30" height="30" alt="" />VibeLens</a
       >
       <nav aria-label="Main navigation" data-i18n-aria="navigation">
-        <a href="#workflow" data-i18n="nav.explore">Explore</a
-        ><a href="demo.html" data-local-link data-i18n="nav.demo">Try the demo</a
-        ><a class="github" href="https://github.com/li-bruce/VibeLens">GitHub ↗</a
-        ><button class="language" id="language" type="button" aria-label="Switch to Chinese">
-          中文
-        </button>
+        <a href="#explore" data-i18n="nav.explore">Explore</a
+        ><a href="demo.html" data-local-link data-i18n="nav.demo">Demo</a
+        ><a href="https://github.com/li-bruce/VibeLens">GitHub ↗</a
+        ><button class="language" id="language" aria-label="Switch to Chinese">中文</button>
       </nav>
     </header>
-    <div class="product-progress" aria-hidden="true"><i></i></div>
     <main id="main">
-      <section class="wrap hero">
-        <div class="hero-copy">
-          <p class="eyebrow" data-i18n="home.kicker">A Skill for understanding AI-built software</p>
-          <h1 data-i18n="home.title">AI writes the code<br />See how it works</h1>
-          <p class="lead" data-i18n="home.lead">
-            Confirm the business flow in conversation. Follow its states, decisions and code in
-            VibeLens as your project grows.
+      <section class="wrap home-hero">
+        <div class="home-hero-copy">
+          <p class="eyebrow" data-i18n="home.kicker">A Skill for vibe coding</p>
+          <h1 data-i18n="home.title">See the logic<br />behind your code</h1>
+          <p class="home-lead" data-i18n="home.lead">
+            Connect what you asked for, what AI built and what actually runs — in one state graph.
           </p>
           <div class="actions">
-            <a class="button primary" href="#install" data-i18n="hero.start">Use the Skill</a
-            ><a class="button quiet" href="demo.html" data-local-link data-i18n="home.demo"
-              >Follow a real example ↗</a
-            >
+            <a class="button primary" href="demo.html" data-local-link data-i18n="home.demo"
+              >Follow one investigation ↗</a
+            ><a class="text-link" href="#install" data-i18n="hero.start">Get VibeLens</a>
           </div>
         </div>
-        <figure class="product-capture" id="product-capture">
-          <div class="capture-bar">
-            <span class="capture-brand"
-              ><img
-                class="brand-mark"
-                src="favicon.svg?rev=files-1"
-                width="18"
-                height="18"
-                alt=""
-                aria-hidden="true"
-              />VibeLens</span
-            >
-            <div role="group" aria-label="View dimensions" data-i18n-aria="controls.dimensions">
+        <figure class="home-proof">
+          <div class="proof-toolbar">
+            <span><img src="favicon.svg" width="18" height="18" alt="" />VibeLens</span>
+            <div role="group" aria-label="View dimensions" data-i18n-aria="home.dimensions">
               <button data-capture="source" aria-pressed="true">2D</button
               ><button data-capture="layers" aria-pressed="false">3D</button>
             </div>
@@ -74,177 +51,70 @@
           <img
             id="hero-screenshot"
             data-product-image="source"
-            src="images/source-en.png"
+            src="images/source-en.png?rev=clarity-2"
             width="1650"
             height="840"
-            alt="VibeLens download permissions and highlighted function source"
+            alt="A revocation path and its source code"
             fetchpriority="high"
           />
-          <figcaption data-i18n="home.image.caption">
-            One operation, from its inputs to the function that handled it
+          <figcaption>
+            <span data-i18n="home.proof.path">Operation → values → source</span
+            ><a href="demo.html#drill" data-local-link data-i18n="home.proof.open"
+              >Explore the path ↗</a
+            >
           </figcaption>
         </figure>
       </section>
-      <section class="problem-band" id="problem">
-        <div class="wrap problem-copy">
-          <div>
-            <p class="eyebrow" data-i18n="home.problem.kicker">The challenge of vibe coding</p>
-            <h2 data-i18n="home.problem.title">The app works<br />How did it reach that result?</h2>
-          </div>
+      <section class="wrap home-workflow" id="workflow">
+        <div class="home-section-heading">
+          <p class="eyebrow" data-i18n="home.problem.kicker">When AI changes the code</p>
+          <h2 data-i18n="home.problem.title">Keep the behavior<br />within reach</h2>
           <p data-i18n="home.problem.body">
-            AI keeps changing the code. A working screen tells you little about the conditions it
-            checked, the state it changed or the data it wrote.
+            A working screen leaves questions. Which rule allowed it? Which state changed? Where did
+            that value come from?
           </p>
         </div>
-      </section>
-      <section class="wrap landing-section" id="workflow">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow" data-i18n="home.workflow.kicker">The approach</p>
-            <h2 data-i18n="home.workflow.title">Connect the intent,<br />the code and the run</h2>
-          </div>
-          <p data-i18n="home.workflow.body">
-            Start with the flow you confirm. Add implementation links while coding, then use
-            recorded behavior to understand and refine it.
-          </p>
-        </div>
-        <div
-          class="workflow-map"
-          role="group"
-          aria-label="A confirmed request connects to the state graph and running code"
-          data-i18n-aria="home.diagram.aria"
-        >
-          <div class="map-dialog">
-            <span class="map-heading" data-i18n="home.diagram.chat"
-              >In your coding conversation</span
-            >
-            <p class="map-request" data-i18n="home.diagram.request">
-              I want a file-sharing app. Users log in, upload files and share them with specific
-              people. Recipients can download while sharing is active.
-            </p>
-            <div class="map-reply">
-              <span>Codex</span>
-              <p data-i18n="home.diagram.reply">
-                Upload → share → download. The owner controls sharing; each download checks the
-                current permission.
-              </p>
-            </div>
-            <p class="map-confirm">
-              <span aria-hidden="true">✓</span
-              ><span data-i18n="home.diagram.confirm">Confirm the flow and its states</span>
-            </p>
-          </div>
-          <svg class="map-arrow" viewBox="0 0 32 24" aria-hidden="true">
-            <path d="M1 12H29M23 6L29 12L23 18" />
-          </svg>
-          <div class="map-network">
-            <span class="map-heading" data-i18n="home.diagram.graph">The project's state graph</span
-            ><svg viewBox="0 0 400 220" aria-hidden="true">
-              <defs>
-                <marker
-                  id="map-tip"
-                  markerWidth="6"
-                  markerHeight="6"
-                  refX="5"
-                  refY="3"
-                  orient="auto"
-                >
-                  <path d="M0 0L6 3L0 6Z" fill="#6d89b0" />
-                </marker>
-              </defs>
-              <ellipse cx="200" cy="105" rx="189" ry="101" fill="#f4f7ff" stroke="#cfdbf3" />
-              <g fill="none" stroke="#6d89b0" stroke-width="1.5" marker-end="url(#map-tip)">
-                <path d="M72 75H173" />
-                <path d="M227 75H328" />
-              </g>
-              <g fill="#e4ecff" stroke="#315eef" stroke-width="1.5">
-                <circle cx="50" cy="75" r="21" />
-                <circle cx="200" cy="75" r="21" />
-                <circle cx="350" cy="75" r="21" />
-              </g>
-              <g fill="none" stroke="#315eef" stroke-width="1.5">
-                <path d="M50 85V65M43 72L50 65L57 72" />
-                <path d="M200 64L209 68V76Q208 83 200 87Q192 83 191 76V68Z M196 75L199 78L205 71" />
-                <path d="M50 85V65M43 72L50 65L57 72" transform="translate(300 150) scale(1 -1)" />
-              </g>
-              <g class="map-label" text-anchor="middle">
-                <text x="50" y="119" data-i18n="home.diagram.upload">Upload</text>
-                <text x="200" y="119" data-i18n="home.diagram.share">Share</text>
-                <text x="350" y="119" data-i18n="home.diagram.download">Download</text>
-              </g>
-              <path d="M200 132V140H123V150" fill="none" stroke="#ad9acb" stroke-dasharray="4 4" />
-              <g fill="#f2edf9" stroke="#cbbadd">
-                <rect x="78" y="150" width="90" height="36" rx="18" />
-                <rect x="232" y="150" width="90" height="36" rx="18" />
-              </g>
-              <path
-                d="M168 168H230"
-                fill="none"
-                stroke="#ad9acb"
-                stroke-width="1.5"
-                marker-end="url(#map-tip)"
-              />
-              <g class="map-state-label" text-anchor="middle">
-                <text x="123" y="173" data-i18n="home.diagram.shared">Shared</text>
-                <text x="277" y="173" data-i18n="home.diagram.revoked">Revoked</text>
-              </g>
-            </svg>
-          </div>
-          <svg class="map-arrow" viewBox="0 0 32 24" aria-hidden="true">
-            <path d="M1 12H29M23 6L29 12L23 18" />
-          </svg>
-          <div class="map-code">
-            <span class="map-heading" data-i18n="home.diagram.code">Code and running values</span>
-            <div class="map-source">
-              <span>policy.py</span><code>can_download(…)</code>
-              <p>grant_active <b>false</b></p>
-              <p>allowed <b>false</b></p>
-            </div>
-          </div>
-          <div class="map-return">
-            <svg viewBox="0 0 1000 52" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M920 1V12Q920 32 900 32H100Q80 32 80 12V1M74 8L80 1L86 8" /></svg
-            ><span data-i18n="home.diagram.return"
-              >Inspect the result, then refine the code together</span
-            >
-          </div>
-        </div>
-        <ol class="development-loop">
+        <ol class="home-steps">
           <li>
-            <span>01</span>
-            <h3 data-i18n="home.step.confirm">Agree on the behavior</h3>
+            <span class="step-index">01</span>
+            <h3 data-i18n="home.step.confirm">Agree on the model</h3>
             <p data-i18n="home.step.confirm.body">
-              VibeLens clarifies your description and shows the first flow for you to confirm.
+              Confirm the flow, states and shared rules in conversation.
             </p>
+            <a href="demo.html#foundation" data-local-link data-i18n="home.step.confirm.link"
+              >See the first conversation ↗</a
+            >
           </li>
           <li>
-            <span>02</span>
-            <h3 data-i18n="home.step.build">Keep the implementation visible</h3>
-            <p data-i18n="home.step.build.body">
-              As AI changes the project, the graph follows its functions, parameters, API and data
-              relationships.
-            </p>
-          </li>
-          <li>
-            <span>03</span>
-            <h3 data-i18n="home.step.inspect">Find and verify the next change</h3>
+            <span class="step-index">02</span>
+            <h3 data-i18n="home.step.inspect">Follow a real run</h3>
             <p data-i18n="home.step.inspect.body">
-              Record an operation, inspect its path and describe the issue to AI. Check the next run
-              after the repair.
+              Record an operation. Follow its calls and values down to the source.
             </p>
+            <a href="demo.html#run" data-local-link data-i18n="home.step.inspect.link"
+              >Inspect the recording ↗</a
+            >
+          </li>
+          <li>
+            <span class="step-index">03</span>
+            <h3 data-i18n="home.step.refine">Make the next change</h3>
+            <p data-i18n="home.step.refine.body">
+              Give AI a precise finding. Review the updated graph and test the next run.
+            </p>
+            <a href="demo.html#iterate" data-local-link data-i18n="home.step.refine.link"
+              >Follow the repair ↗</a
+            >
           </li>
         </ol>
       </section>
-      <section class="depth-section" id="explore">
+      <section class="home-depth" id="explore">
         <div class="wrap">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow" data-i18n="home.depth.kicker">From overview to implementation</p>
-              <h2 data-i18n="home.depth.title">Follow the part<br />you need to understand</h2>
-            </div>
+          <div class="home-section-heading">
+            <p class="eyebrow" data-i18n="home.depth.kicker">One graph, different depths</p>
+            <h2 data-i18n="home.depth.title">Start with intent<br />Arrive at the exact value</h2>
             <p data-i18n="home.depth.body">
-              Start with business concepts. Follow connected rules and states into the functions,
-              API calls and data handling them. One run stays connected across every layer.
+              Business, states and rules connect to entry points, files, functions and stored data.
+              Choose the part you need.
             </p>
           </div>
           <div class="layer-explorer" id="layer-explorer">
@@ -267,123 +137,65 @@
               tabindex="0"
             >
               <p class="eyebrow" data-layer-group>Intent</p>
-              <h3>What should the application do?</h3>
-              <p data-layer-body>
-                The actions and paths you confirm in conversation become the starting graph.
-              </p>
+              <h3>What should people be able to do?</h3>
+              <p data-layer-body>Confirm the actions and paths in conversation.</p>
               <p class="layer-examples" data-layer-examples>Upload → Share → Download</p>
-              <a href="demo.html" data-local-link data-i18n="home.depth.try">Follow a path ↗</a>
+              <a href="demo.html#drill" data-local-link data-i18n="home.depth.try"
+                >Explore a connected path ↗</a
+              >
             </div>
           </div>
         </div>
       </section>
-      <section class="wrap landing-section modes-compact" id="modes">
-        <h2 data-i18n="home.modes.title">Build with the graph<br />or observe your own design</h2>
-        <div class="mode-options">
-          <div>
-            <h3 data-i18n="home.modes.drive">Drive</h3>
-            <p data-i18n="home.modes.drive.body">
-              Use the confirmed states and transitions to structure execution.
-            </p>
-          </div>
-          <div>
-            <h3 data-i18n="home.modes.observe">Observe</h3>
-            <p data-i18n="home.modes.observe.body">
-              Keep your architecture and map its behavior into the same graph.
-            </p>
-          </div>
+      <section class="wrap home-modes" id="modes">
+        <div>
+          <p class="eyebrow" data-i18n="home.modes.kicker">Your architecture, your choice</p>
+          <h2 data-i18n="home.modes.title">A model to build with<br />A lens to look through</h2>
         </div>
-      </section>
-      <section class="wrap conversation-tour landing-section" id="conversation-controls">
-        <div class="section-heading">
+        <dl>
           <div>
-            <p class="eyebrow" data-i18n="controls.kicker">From your conversation</p>
-            <h2 data-i18n="home.controls.title">Ask for the path<br />you want to see</h2>
+            <dt data-i18n="home.modes.drive">Drive</dt>
+            <dd data-i18n="home.modes.drive.body">
+              Build execution around the confirmed state model.
+            </dd>
           </div>
-          <p data-i18n="home.controls.body">
-            Describe the path you want to follow. VibeLens brings it into focus.
+          <div>
+            <dt data-i18n="home.modes.observe">Observe</dt>
+            <dd data-i18n="home.modes.observe.body">
+              Map your existing logic and follow its real behavior.
+            </dd>
+          </div>
+        </dl>
+      </section>
+      <section class="home-case-band" id="conversation-controls">
+        <div class="wrap">
+          <p class="eyebrow" data-i18n="home.case.kicker">Try it in a file-sharing app</p>
+          <h2 data-i18n="home.case.title">Access revoked<br />Still downloading</h2>
+          <p data-i18n="home.case.body">
+            Follow the shared permission, the zero-row deletion and the line AI needs to fix.
           </p>
-        </div>
-        <div class="conversation-tour-grid">
-          <div class="conversation-tour-copy">
-            <span class="command-speaker" data-i18n="home.speaker">You → Codex</span>
-            <div class="control-command">
-              <pre id="control-command"></pre>
-              <button
-                type="button"
-                id="copy-control"
-                aria-label="Copy command"
-                data-i18n-aria="controls.copy"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  aria-hidden="true"
-                >
-                  <rect x="8" y="8" width="12" height="12" rx="2" />
-                  <path d="M15 8V4H4v11h4" />
-                </svg>
-              </button>
-            </div>
-            <span id="control-copy-status" class="control-copy-status" role="status"></span
-            ><a
-              class="text-link"
-              href="demo.html#conversation-controls"
-              data-local-link
-              data-i18n="home.controls.more"
-              >Try view controls and replay filtering ↗</a
-            >
-          </div>
-          <div class="control-preview-window">
-            <div class="control-preview-bar">
-              <strong
-                ><img
-                  class="brand-mark"
-                  src="favicon.svg?rev=files-1"
-                  width="18"
-                  height="18"
-                  alt=""
-                  aria-hidden="true"
-                />VibeLens</strong
-              >
-            </div>
-            <iframe
-              id="control-preview"
-              title="Conversation-selected graph preview"
-              tabindex="-1"
-              referrerpolicy="same-origin"
-            ></iframe>
-            <p id="control-result" role="status"></p>
-          </div>
+          <a href="demo.html" class="text-link" data-local-link data-i18n="home.demo"
+            >Follow one investigation ↗</a
+          >
         </div>
       </section>
-      <section class="install landing-section" id="install">
-        <div class="wrap install-grid">
-          <div>
-            <p class="eyebrow" data-i18n="install.kicker">Start with your own project</p>
-            <h2 data-i18n="install.title">Bring the graph into<br />your next conversation</h2>
-            <p data-i18n="install.body">
-              Install VibeLens, then start with $vibelens in the conversation where you want to use
-              it.
-            </p>
-
-            <a
-              class="button primary"
-              id="usage-link"
-              href="https://github.com/li-bruce/VibeLens/blob/main/docs/usage.en.md"
-              data-i18n="install.guide"
-              >Installation & usage ↗</a
-            >
-          </div>
-          <div class="prompt-panel">
-            <p class="prompt-label" data-i18n="install.promptLabel">A starting prompt</p>
-            <pre id="install-prompt"></pre>
-            <button class="copy-button" id="copy-prompt" data-i18n="install.copy">
-              Copy prompt</button
-            ><span id="copy-status" role="status"></span>
-          </div>
+      <section class="wrap home-install" id="install">
+        <div>
+          <p class="eyebrow" data-i18n="install.kicker">For your next project</p>
+          <h2 data-i18n="install.title">Start with a conversation</h2>
+          <p data-i18n="install.body">Install the Skill, then call $vibelens in Codex.</p>
+          <a
+            id="usage-link"
+            href="https://github.com/li-bruce/VibeLens/blob/main/docs/usage.en.md"
+            data-i18n="install.guide"
+            >Installation & usage ↗</a
+          >
+        </div>
+        <div class="home-prompt">
+          <span class="prompt-label">You → Codex</span>
+          <pre id="install-prompt"></pre>
+          <button id="copy-prompt" data-i18n="install.copy">Copy prompt</button
+          ><span id="copy-status" role="status"></span>
         </div>
       </section>
     </main>
@@ -399,7 +211,7 @@
           href="https://github.com/li-bruce/VibeLens/tree/main/docs/review"
           data-i18n="footer.evidence"
           >Test records</a
-        ><a href="https://github.com/li-bruce/VibeLens/blob/main/LICENSE">MIT License</a>
+        ><a href="https://github.com/li-bruce/VibeLens/blob/main/LICENSE">MIT</a>
       </div>
     </footer>
   </body>

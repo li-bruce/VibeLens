@@ -32,7 +32,7 @@ for (const node of [
   { code_role: "function" },
   { code_role: "unresolved", reference_scope: "project" },
 ])
-  assert.equal(layerOf(node), "implementation");
+  assert.equal(layerOf(node), node.code_role === "function" ? "symbols" : "structure");
 assert.equal(implementationFacet(directory), "project");
 assert.equal(implementationFacet({ code_role: "file" }), "project");
 assert.equal(implementationFacet({ code_role: "function" }), "code");
@@ -98,7 +98,7 @@ assert.deepEqual(migrateCodeFilters(narrow).regions, []);
 assert.deepEqual(migrateCodeFilters(narrow).edges, narrow.edges);
 const oldLayers = ["business", "state", "rules", "execution", "code", "data"];
 const migrated = cleanLayers({ order: oldLayers, visible: oldLayers });
-assert.ok(migrated.visible.includes("implementation"));
+assert.ok(migrated.visible.includes("symbols"));
 assert.deepEqual(migrated.facets, ["execution", "code"]);
 assert.ok(!migrated.facets.includes("project"), "A previously hidden project facet stays hidden");
 const hidden = cleanLayers({ ...migrated, facets: ["code"] });
@@ -107,7 +107,10 @@ assert.deepEqual(
   ["code"],
   "New deliberate facet hiding survives reloading",
 );
-assert.equal(layers.filter((layer) => layer.id === "implementation").length, 1);
+assert.equal(
+  layers.filter((layer) => ["entry", "structure", "symbols"].includes(layer.id)).length,
+  3,
+);
 
 const layout = emptyLayout();
 layout.positions.file = { x: 42, y: 108 };

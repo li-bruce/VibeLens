@@ -18,8 +18,12 @@ IDs, causal references, selected completion values and transaction identities.
 [bo_concepts.py](../skills/vibelens/scripts/bo_concepts.py) is the public CLI;
 [concept-models.md](../skills/vibelens/references/concept-models.md) describes its workflow.
 
-The main views are business, state, rules, implementation and data. API entries,
-files, declarations, observed functions and data access are implementation facets.
+The semantic concerns are business, state, rules, implementation and data.
+The viewer displays implementation at three reading scales: **Entry points**,
+**Project structure**, and **Code execution**. `implementation-planes.js` owns this
+display mapping. Endpoints, files and functions keep their original IDs; observed
+calls, values and data access remain with code execution. Default views still
+start with the three concept models. Existing facet exclusions survive migration.
 [classification.py](../skills/vibelens/scripts/bo_observer/graph/classification.py)
 and `graph-classification.js` share this vocabulary, with parity tests. Unknown
 types remain diagnostic entries. Source references point to one canonical

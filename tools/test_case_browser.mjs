@@ -1,12 +1,11 @@
 /** Exercise the recorded file-sharing story through native viewer interactions. */
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
+import { startSite } from "./site_browser_fixture.mjs";
 import { createRequire } from "node:module";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { layers as nativeLayers } from "../skills/vibelens/assets/stategraph-viewer/graph-layers.js";
 const { chromium } = createRequire(import.meta.url)("playwright");
-const base = (process.env.BO_SITE_URL || "http://127.0.0.1:8897").replace(/\/$/, "");
 const output = path.resolve(
   process.env.BO_CASE_BROWSER_EVIDENCE || ".validation/file-story/browser",
 );
@@ -20,16 +19,8 @@ const first = artifacts[0],
   fixed = artifacts[1];
 const inspection = (artifact) =>
   artifact.recording.events.find((event) => event.id === artifact.story.inspection_event);
-const python =
-  process.env.BO_PYTHON ||
-  path.resolve(".venv", process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
-const server = process.env.BO_SITE_URL
-  ? null
-  : spawn(
-      python,
-      ["-B", "-m", "http.server", "8897", "--bind", "127.0.0.1", "--directory", "docs/site"],
-      { windowsHide: true, stdio: "ignore" },
-    );
+const server = await startSite();
+const base = server.url;
 let browser, page, scene;
 const errors = [],
   receipts = [];
@@ -115,12 +106,6 @@ async function cameraPoint(child) {
   throw Error("The camera gesture is covered by another element");
 }
 try {
-  for (let attempt = 0; attempt < 60; attempt++) {
-    try {
-      if ((await fetch(base)).ok) break;
-    } catch {}
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
   browser = await chromium.launch({
     headless: true,
     args: ["--enable-unsafe-swiftshader"],
@@ -160,8 +145,12 @@ try {
           .locator("[data-intent-node]")
           .evaluateAll((nodes) => nodes.map((node) => node.dataset.intentNode))
       ).sort(),
-      first.story.business.slice().sort(),
+      ["upload", "share", "download", "revoke"].sort(),
     );
+    for (const tab of ["states", "rules", "business"]) {
+      await page.click(`[data-confirmation="${tab}"]`);
+      assert.ok(await page.locator("[data-intent-edge]").count());
+    }
     await shot(language + "-proposed-flow");
     await page.click("#conversation-next");
     assert.equal(await page.locator('.conversation-flow[data-confirmed="true"]').count(), 1);
@@ -172,7 +161,8 @@ try {
       chat = await page.locator("#case-conversation").boundingBox(),
       app = await page.locator("#case-application").boundingBox();
     assert.ok(chat.x + chat.width <= area.x + 1);
-    assert.ok(app.x >= area.x + area.width - 1);
+    assert.ok(app.x + app.width <= area.x + 1);
+    assert.ok(app.y + app.height <= chat.y || chat.y + chat.height <= app.y);
     await page.click('[data-case-lens="states"]');
     await child.waitForFunction(
       (ids) => ids.every((id) => graphDebug.graph.boxes.some((box) => box.id === id)),
@@ -270,6 +260,9 @@ try {
       await child.evaluate(async () => (await (await fetch("/api/view")).json()).events),
       raw,
     );
+    await page.locator("#case-application .app-frame").click();
+    assert.ok(await page.locator(".app-capture-dialog").isVisible());
+    await page.keyboard.press("Escape");
     child = await go("drill");
     await child.waitForFunction(
       (id) => graphDebug.view.replay?.event?.id === id,
@@ -295,9 +288,7 @@ try {
     const focused = await boxIds(child);
     assert.ok(focused.length <= 18);
     for (const id of first.story.focus.inputs) assert.ok(focused.includes(id));
-    await page.locator("#case-application .app-frame").click();
-    assert.ok(await page.locator(".app-capture-dialog").isVisible());
-    await page.keyboard.press("Escape");
+    assert.equal(await page.locator("#case-application").isVisible(), false);
     await shot(language + "-source");
     await page.locator(".view-editor summary").click();
     const effect = first.story.focus.effects[0];
@@ -426,17 +417,7 @@ try {
     );
     assert.deepEqual(
       layers.map((layer) => layer.id).sort(),
-      [
-        "api",
-        "business",
-        "state",
-        "rules",
-        "operations",
-        "execution",
-        "data",
-        "project",
-        "code",
-      ].sort(),
+      ["business", "state", "rules", "entry", "structure", "symbols", "data"].sort(),
     );
     await shot(language + "-all-layers");
     await page.click("#case-2d");
@@ -445,12 +426,12 @@ try {
     await page.setViewportSize({ width: 390, height: 844 });
     child = await go("drill");
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2));
-    assert.equal(await page.locator("#drill .case-application").count(), 1);
+    assert.equal(await page.locator("#case-application").isVisible(), false);
     await shot(language + "-mobile");
     await page.click("#language");
     await page.waitForFunction((previous) => document.documentElement.lang !== previous, language);
     await go("drill");
-    assert.equal(await page.locator("#drill .case-application").count(), 1);
+    assert.equal(await page.locator("#case-application").isVisible(), false);
     await page.click("#language");
     await go("drill");
     await page.setViewportSize({ width: 1536, height: 1050 });
@@ -502,5 +483,5 @@ try {
   throw error;
 } finally {
   await browser?.close();
-  server?.kill();
+  server.close();
 }

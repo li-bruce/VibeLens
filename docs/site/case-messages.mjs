@@ -17,12 +17,13 @@ export const messages = {
   "case.home": ["VibeLens", "VibeLens"],
   "case.install": ["Get VibeLens", "开始使用"],
   "case.eyebrow": ["VibeLens in action", "VibeLens 交互演示"],
-  "case.title": ["See what your AI built", "看清 AI 写出的程序"],
+  "case.title": ["Access revoked\nStill downloading", "取消了共享\n为什么还能下载"],
   "case.lead": [
-    "I want a file-sharing app. Follow its first build, find a failed revocation and ask AI to fix it.",
-    "我要做一个文件共享应用。一起确认流程，运行时发现取消共享失败，再让 AI 修好它。",
+    "Build a file-sharing app with AI. Confirm the model, record a failed revocation and trace it to the line that needs fixing.",
+    "我要做一个文件共享应用。从对话确认模型，到录下取消共享失败，再沿图找到需要 AI 修正的代码。",
   ],
   "case.scroll": ["Scroll to follow the build", "向下，跟随一次开发"],
+  "case.navigation": ["Walkthrough", "演示流程"],
   "case.nav": ["Development stages", "开发阶段"],
   "case.confirm": ["Continue to development", "确认后进入开发"],
   "case.business": ["Business graph", "业务图"],
@@ -102,10 +103,10 @@ export const chapters = [
     surface: "codex",
     application: false,
     label: ["Define", "定图"],
-    title: ["Confirm the flow", "先确认业务流程"],
+    title: ["Agree on what\nthe app should do", "先说清楚\n程序该如何工作"],
     body: [
-      "Who can share? What can a recipient do? Confirm the first graph together.",
-      "谁能共享，对方能做什么？在对话中看图确认。",
+      "The first conversation becomes the business flow, state model and shared permission rules.",
+      "在对话中确认业务流程、状态变化和共用权限规则。",
     ],
     dialogue: [
       [
@@ -144,17 +145,10 @@ export const chapters = [
     version: 1,
     surface: "vibelens",
     label: ["Run", "运行"],
-    title: ["Record the problem", "录下出错的操作"],
+    title: ["Revoke the share\nTry the old link", "取消共享\n再试一次下载"],
     body: [
-      "The app is ready. Revoke a share, then try downloading from the recipient’s open page.",
-      "应用已运行。取消共享后，对方还开着的页面居然仍能下载。",
-    ],
-    steps: [
-      [
-        "vibelens",
-        ["Start recording, operate the app, then stop.", "开始记录，操作应用，再停止记录。"],
-      ],
-      ["vibelens", ["Replay the state and permission changes.", "回放状态与权限的变化。"]],
+      "Record in VibeLens while using the app. The recipient can still download after revocation.",
+      "在 VibeLens 开始记录，再操作应用：取消共享后，对方居然仍能下载。",
     ],
   },
   {
@@ -162,10 +156,10 @@ export const chapters = [
     version: 1,
     surface: "vibelens",
     label: ["Inspect", "下钻"],
-    title: ["Trace the result to its source", "沿结果找到出错的代码"],
+    title: ["Zero rows deleted\nWhich ID was used?", "删除了 0 行\n到底用了谁的 ID"],
     body: [
-      "Keep the revocation path. The state is still shared and the deletion affected zero rows. Open the function to see why.",
-      "聚焦取消共享链路：共享状态没变，删除影响 0 行。打开函数，核对删除条件。",
+      "Keep the revocation path and its values. The deletion uses the owner’s ID where the recipient’s ID belongs.",
+      "只保留取消共享链路与关键值。打开源码，发现删除条件把接收者 ID 写成了所有者 ID。",
     ],
   },
   {
@@ -173,10 +167,10 @@ export const chapters = [
     version: 2,
     surface: "codex",
     label: ["Refine", "迭代"],
-    title: ["Give AI a precise problem to fix", "带着具体问题，继续开发"],
+    title: ["Give AI\na precise finding", "把具体发现\n交给 AI 修改"],
     body: [
-      "Send AI the symptom and the values you found. Follow the repair in the updated graph.",
-      "把现象和图中的数值告诉 AI，在更新后的图中查看修改。",
+      "The conversation resumes with the observed values and the source location.",
+      "带上图中的数值和源码位置，继续这一轮开发对话。",
     ],
     dialogue: [
       [
@@ -200,10 +194,10 @@ export const chapters = [
     version: 2,
     surface: "vibelens",
     label: ["Verify", "验证"],
-    title: ["Watch the change take effect", "让下一次运行验证修改"],
+    title: ["Same path\nDifferent result", "同一条链路\n验证新的结果"],
     body: [
-      "The share is removed. The recipient is blocked; the owner can still download. The saved view follows the updated code.",
-      "共享关系已移除，对方被拦截，所有者仍可下载。保存的观察视图跟随代码更新。",
+      "One row removed. Access revoked. The recipient’s next download is denied; the owner keeps access.",
+      "删除 1 行，授权失效。接收者再次下载被拒绝，所有者仍可访问。",
     ],
   },
 ];
