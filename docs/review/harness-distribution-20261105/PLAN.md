@@ -14,13 +14,13 @@ Keep the native state engine, observation protocol and per-conversation activati
 - [x] Test real Harness registration, resource loading, isolation and installation.
 - [x] Run source, package, documentation and relevant product regressions.
 - [x] Publish the release and Pages, submit the SkillHub update, and verify each public status.
-- External status: SkillHub 0.13.0 is awaiting its security review; the public entry remains on 0.7.1.
+- SkillHub 0.13.0 is public. Its downloaded archive preserves all 355 resources and the local bootstrap passed.
 
 ## Distribution inventory
 
 GitHub, Pages and the existing SkillHub entry are the authorized channels.
 The owner supplied https://skillhub.cn/skills/user_fbf26156/vibelens and completed
-login. The previous public version was 0.7.1. The 0.13.0 submission is under security review and contains the
+login. The previous public version was 0.7.1. The published 0.13.0 update contains the
 complete seven-file transport, a branded icon and a three-image product overview.
 The full archive remains directly installable from GitHub; Harness uses its
 supported tarball plugin path. Skills CLI continues to read the public repository.

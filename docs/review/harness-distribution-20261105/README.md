@@ -78,10 +78,10 @@ remain recorded; this release does not relabel them as resolved.
 
 ## Publication
 
-SkillHub accepted the **0.13.0** update for security review. Its overview uses
+SkillHub **0.13.0 is published**. Its overview uses
 three images uploaded through the site, as required by its editor.
 [Submission receipt](checks/skillhub-submission.json) and
-[submitted overview](checks/skillhub-overview.md) preserve the published draft.
+[submitted overview](checks/skillhub-overview.md) preserve the submitted content and its earlier review state.
 
 ![SkillHub version 0.13.0 awaiting review](images/skillhub-submitted.png)
 
@@ -99,4 +99,11 @@ provide the publication records.
 GitHub Release and Pages are live. [Publication receipt](checks/publication.json)
 and [download verification](checks/published-packages.json) record the public
 results. Chinese/English switching and deployed viewer assets were checked.
-SkillHub remains under platform review; its public entry still showed 0.7.1.
+SkillHub now serves 0.13.0. [Its actual download](checks/skillhub-roundtrip.json)
+contains all seven uploaded files plus platform metadata. Every one of the 355
+resource files matches the canonical release, and first-use extraction passed.
+
+The final packaging correction also passed [all nine main-branch checks](checks/main-checks.json)
+on `57776fee`.
+
+![Published SkillHub overview and version](images/skillhub-published.png)
