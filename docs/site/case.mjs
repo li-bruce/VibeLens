@@ -1,6 +1,6 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
-import { messages, chapters } from "./case-messages.mjs?rev=clarity-2";
+import { messages, chapters } from "./case-messages.mjs?rev=clarity-5";
 import { scrollStory } from "./scroll-story.mjs?rev=clarity-4";
 import { companion } from "./case-companion.mjs?rev=clarity-2";
 
@@ -52,6 +52,7 @@ function stage(index) {
     scene: chapters[index].id,
     mode,
     compact: !tools,
+    editing: !!$("view-editor")?.open,
     options,
     name: $("watch-name")?.value || t("case.viewName"),
   };
@@ -69,7 +70,7 @@ function stage(index) {
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=clarity-3`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=clarity-5`;
   } else send(message);
   document.body.dataset.chapter = String(index);
 }
@@ -159,11 +160,20 @@ function render() {
       button(section, "case.drill", () => send({ action: "source" }));
     }
     if (current.id === "drill") {
-      const editor = document.createElement("details");
+      // Keep editing outside document flow. Preview acknowledgements can resize
+      // the graph and move focus; a native dialog keeps the form usable without
+      // changing the narrative's height or advancing to the next chapter.
+      const editor = document.createElement("dialog");
       editor.className = "view-editor";
-      const summary = document.createElement("summary");
-      summary.textContent = t("case.customize");
-      editor.append(summary);
+      editor.id = "view-editor";
+      editor.setAttribute("aria-labelledby", "view-editor-title");
+      const heading = document.createElement("h2");
+      heading.id = "view-editor-title";
+      heading.textContent = t("case.customize");
+      const close = button(editor, "case.closeView", () => editor.close(), "view-editor-close");
+      close.textContent = "×";
+      close.setAttribute("aria-label", t("case.closeView"));
+      editor.append(heading);
       const fieldset = document.createElement("fieldset");
       fieldset.className = "watch-options";
       const legend = document.createElement("legend");
@@ -207,6 +217,23 @@ function render() {
         "watch-save",
       );
       save.id = "save-watch";
+      const trigger = button(
+        section,
+        "case.customize",
+        () => {
+          editor.showModal();
+          send({ editing: true });
+          name.focus({ preventScroll: true });
+        },
+        "view-editor-trigger scene-action",
+      );
+      trigger.setAttribute("aria-haspopup", "dialog");
+      trigger.setAttribute("aria-controls", editor.id);
+      editor.addEventListener("close", () => {
+        send({ editing: false });
+        trigger.focus({ preventScroll: true });
+        story?.refresh();
+      });
       section.append(editor);
     }
     if (current.id === "iterate") {
@@ -269,6 +296,7 @@ window.addEventListener("message", (event) => {
     $("save-watch").textContent = t("case.saved");
     $("case-view-name").textContent = data.name;
     document.body.dataset.savedView = data.id;
+    $("view-editor").close();
   }
   if (data.type === "vibelens-case-error") {
     $("case-step").textContent = data.error;

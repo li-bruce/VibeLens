@@ -34,4 +34,5 @@ The completed trial does not prove a later business iteration or exhaustive UI c
 - [x] Replace the full-width change list with a movable compact panel, with two preview rows and full detail disclosure.
 - [x] Recheck shipped viewer copies and both clean exported example installations.
 - [x] Preserve the reader's chapter during language changes and recheck the complete walkthrough after the Linux CI mobile failure.
+- [x] Isolate custom-view editing from scroll layout and embedded focus; recheck slow previews, saving, Escape and later-build reuse.
 - Publication status is checked on the pushed commit in GitHub Actions; the final delivery links that run and the published pages.

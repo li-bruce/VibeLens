@@ -43,6 +43,7 @@ export const messages = {
   "case.status": ["State changes", "状态变化"],
   "case.selected": ["Keep in this view", "保留在这个视图中"],
   "case.customize": ["Adjust this view", "调整观察范围"],
+  "case.closeView": ["Close view settings", "关闭视图设置"],
   "case.observer": ["VibeLens", "VibeLens"],
   "case.explore": ["Explore graph", "操作图"],
   "case.browse": ["Continue scrolling", "继续浏览"],

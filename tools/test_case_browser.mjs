@@ -290,7 +290,14 @@ try {
     for (const id of first.story.focus.inputs) assert.ok(focused.includes(id));
     assert.equal(await page.locator("#case-application").isVisible(), false);
     await shot(language + "-source");
-    await page.locator(".view-editor summary").click();
+    // Exercise asynchronous graph previews under slower execution. The editor
+    // remains outside chapter layout and keeps keyboard focus above the iframe.
+    const editorSession = await page.context().newCDPSession(page);
+    await editorSession.send("Emulation.setCPUThrottlingRate", { rate: 2 });
+    const chapterHeight = (await page.locator("#drill").boundingBox()).height;
+    await page.locator(".view-editor-trigger").click();
+    assert.ok(await page.locator("#view-editor").isVisible());
+    assert.equal((await page.locator("#drill").boundingBox()).height, chapterHeight);
     const effect = first.story.focus.effects[0];
     await page.locator('[data-watch="effects"]').check();
     await child.waitForFunction(
@@ -312,17 +319,36 @@ try {
       (id) => graphDebug.graph.boxes.some((box) => box.id === id),
       first.story.states[0],
     );
+    assert.equal(await page.getAttribute("body", "data-chapter"), "2");
+    assert.ok(
+      await page.evaluate(() =>
+        document.querySelector("#view-editor").contains(document.activeElement),
+      ),
+      "Graph previews must not steal focus from the open editor",
+    );
     await page.fill("#watch-name", "Alternate path");
     await page.click("#save-watch");
     await page.waitForFunction(() => document.body.dataset.savedView?.startsWith("custom-"));
+    await page.locator("#view-editor").waitFor({ state: "hidden" });
+    assert.equal(await page.getAttribute("body", "data-chapter"), "2");
     const alternate = await page.getAttribute("body", "data-saved-view");
     const name = language === "en" ? "Revocation analysis" : "取消共享排查";
+    await page.locator(".view-editor-trigger").click();
     await page.fill("#watch-name", name);
     await page.click("#save-watch");
     await page.waitForFunction(
       (previous) => document.body.dataset.savedView !== previous,
       alternate,
     );
+    await page.locator("#view-editor").waitFor({ state: "hidden" });
+    await editorSession.send("Emulation.setCPUThrottlingRate", { rate: 1 });
+    await editorSession.detach();
+    await child.waitForFunction(() => !document.body.inert);
+    await page.locator(".view-editor-trigger").click();
+    await child.waitForFunction(() => document.body.inert);
+    await page.keyboard.press("Escape");
+    await page.locator("#view-editor").waitFor({ state: "hidden" });
+    await child.waitForFunction(() => !document.body.inert);
     const saved = await page.getAttribute("body", "data-saved-view"),
       savedNodes = await boxIds(child);
     assert.ok(savedNodes.length <= 30);
@@ -452,6 +478,8 @@ try {
       code_nodes: fixed.code.nodes.length,
       layers: layers.length,
       mobile: true,
+      isolated_editor: true,
+      editor_cpu_slowdown: 2,
     });
   }
   await page.emulateMedia({ reducedMotion: "reduce" });

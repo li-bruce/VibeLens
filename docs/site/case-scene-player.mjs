@@ -258,6 +258,10 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       $("replay-play").click();
   }
   async function scene(message) {
+    // A parent dialog does not reliably make an embedded document inert.
+    // Background native previews may still select nodes, but must not take
+    // keyboard focus away from the editor. This affects interaction only.
+    if (message.editing !== undefined) document.body.inert = Boolean(message.editing);
     const ticket = message.scene || message.action ? ++epoch : epoch;
     current = message.scene || current;
     if (message.compact !== undefined) document.body.dataset.caseCompact = String(message.compact);

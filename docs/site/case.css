@@ -918,15 +918,41 @@
   }
 }
 
-/* View editing belongs to inspection; keep its extra controls out of the story. */
+/* The editor floats beside the graph; its controls never resize a chapter. */
 .view-editor {
-  margin-top: 18px;
-  border-top: 1px solid #dce4ef;
-  padding-top: 12px;
+  position: fixed;
+  inset: auto auto 24px 24px;
+  margin: 0;
+  width: min(320px, calc(100vw - 48px));
+  max-height: calc(100svh - 48px);
+  padding: 24px;
+  overflow: auto;
+  border: 1px solid #dce4df;
+  border-radius: 8px;
+  background: #fff;
+  color: #18332f;
+  box-shadow: 0 12px 48px #18332f20;
 }
-.view-editor summary {
-  color: #315eef;
-  font-size: 12px;
+.view-editor::backdrop {
+  background: #18332f12;
+}
+.case-scene .view-editor h2 {
+  margin: 0 28px 24px 0;
+  font-size: 18px;
+}
+.view-editor-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  color: #65776e;
+  font-size: 23px;
   cursor: pointer;
-  margin-bottom: 14px;
+}
+.view-editor-trigger {
+  display: block;
+  margin-top: 14px;
 }
