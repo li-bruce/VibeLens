@@ -50,6 +50,9 @@ Use authored concept labels and, for bilingual overlays,
 `names.nodes` applies to physical declarations. Never copy one variable's label
 to all its concepts. Names and explanations cannot change IDs or accepted
 meaning. Maintain the labels when that meaning changes during iteration.
+Use the managed `semantic-names.json` overlay and `bo_names.py` inventory/apply/check
+for complete bilingual maintenance; see [interface language](interface-language.md).
+Source names are a separate inspection mode, not a completed semantic translation.
 
 ## In-panel explanation
 

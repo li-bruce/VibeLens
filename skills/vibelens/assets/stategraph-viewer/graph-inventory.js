@@ -124,14 +124,13 @@ export function graphInventory(
   for (let index = 0; index < rawEdges.length; index++) {
     const edge = rawEdges[index],
       explanation = explainedName(view.model.presentation?.names?.edges?.[edge.id]);
-    if (view.model.presentation?.name_mode === "source" || explanation)
-      rawEdges[index] = {
-        ...edge,
-        label:
-          view.model.presentation.name_mode === "source"
-            ? edge.event || edge.code_relation || edge.data_relation || edge.type
-            : explanation,
-      };
+    rawEdges[index] = {
+      ...edge,
+      label:
+        view.model.presentation?.name_mode === "source"
+          ? edge.event || edge.code_relation || edge.data_relation || edge.type
+          : explanation || boTranslate(edge.label || ""),
+    };
   }
   return { all, rawEdges };
 }

@@ -50,6 +50,7 @@ export const presets = [
     label: boTranslate("Business flow"),
     nodes: ["business"],
     edges: ["flow", "guard", "data", "join"],
+    scope: "business",
   },
   {
     id: "project",
@@ -223,6 +224,7 @@ export function cleanProfile(value) {
     fields: value?.fields === "all" ? "all" : "selected",
     scope: [
       "all",
+      "business",
       "permission",
       "execution",
       "observed",
@@ -277,6 +279,11 @@ export function matchingNodes(all, view, events, profile, statusOf, relations = 
   for (const n of all.values()) {
     const canonical = n.referenceOf || n.id;
     let inScope = profile.scope === "all";
+    // A business-flow preset displays actions, not a collapsed network root or
+    // standalone object definitions. Their original containment stays in inventory.
+    if (profile.scope === "business")
+      inScope =
+        concernOf(n) === "business" && !["business_network", "object"].includes(n.concept_kind);
     if (["rules", "state", "implementation"].includes(profile.scope))
       inScope = concernOf(n) === profile.scope;
     if (["permission", "execution"].includes(profile.scope))

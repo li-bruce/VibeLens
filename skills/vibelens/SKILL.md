@@ -43,6 +43,7 @@ Route business ownership, permissions, and state meaning to the user. Reconcile 
 When permissions or other decision rules are in scope, build their shared network alongside the business flow in `discovery.policy`. Reuse confirmed conditions across operations; distinguish the same predicate with different arguments. Show the focused rule graph for confirmation, asking only about ambiguous current intent. Read [shared rule networks](references/shared-policy.md).
 
 Before sharing the first graph URL, record the conversation language with `bo_design.py language` as described in step 4. The user can override it in the page.
+Generate concise, layer-specific node and relationship names in English and Chinese with the `bo_names.py inventory → apply → check` workflow in [interface language](references/interface-language.md). Repeat for missing or changed meanings in later batches. The viewer chooses the active interface language; source identities remain fixed.
 
 When the requested software stores data, reuse its database choice or run `bo_db.py guide --root PROJECT` to prepare a short selection question. Recommend a database that fits the stated workload, explain the tradeoff, and record the user's choice. Keep confirmed business scope unchanged. See [database observation](references/database-observation.md) for supported stores and model layers.
 

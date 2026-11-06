@@ -421,7 +421,9 @@ class GraphSession:
                 cfg["snapshot_instance"] = o["instance_id"]
                 cfg["native_instance_id"] = self.identities[o["instance_id"]]["native_instance_id"]
                 configurations.append(cfg)
-            model = self._view_model()
+            from ..web.semantic_names import overlay_model
+
+            model = overlay_model(self.root, self._view_model())
             health = self.history.health()
             producer = self.bo_producer_health() if self.bo_producer_health else None
             current_frame = self.frames.get(current.get("evidence_id"), (None, 0))[0]

@@ -125,6 +125,7 @@ for (const relation of edges) {
 assert.ok(cleanFilters({ edges: ["other"] }).edges.includes("requests_transition"));
 assert.deepEqual(cleanFilters({ edges: ["call"] }).edges, ["call"]);
 for (const [preset, concern] of [
+  ["overview", null],
   ["business", "business"],
   ["states", "state"],
   ["rules", "rules"],
@@ -144,12 +145,21 @@ for (const [preset, concern] of [
   );
   refreshHierarchy(graph);
   const shown = presentationGraph(graph, profile);
-  for (const node of nodes.filter((node) => node.layer === concern))
+  // The broad behavior view retains every concept. Business flow intentionally
+  // selects actions; object definitions remain in inventory and the broad view.
+  const expected = nodes.filter(
+    (node) =>
+      (!concern || node.layer === concern) &&
+      (preset !== "business" || node.concept_kind === "action"),
+  );
+  for (const node of expected)
     assert.ok(shown.glyphs.has(node.id), preset + " preserves " + node.id);
+  if (preset === "business") {
+    assert.equal(shown.glyphs.has("object:grant"), false);
+    assert.ok(graph.all.has("object:grant"), "Flow filtering preserves the original inventory");
+  }
   for (const relation of edges.filter((relation) =>
-    [relation.from, relation.to].every(
-      (id) => nodes.find((node) => node.id === id)?.layer === concern,
-    ),
+    [relation.from, relation.to].every((id) => expected.some((node) => node.id === id)),
   ))
     assert.ok(
       shown.edges.some((drawn) => drawn.members.some((member) => member.id === relation.id)),

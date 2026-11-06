@@ -1,0 +1,2586 @@
+{
+  "schema": "bo-semantic-names/v1",
+  "locales": [
+    "en",
+    "zh-CN"
+  ],
+  "names": {
+    "concepts": {
+      "business-network:sharing": {
+        "en": "File sharing",
+        "zh-CN": "文件共享"
+      },
+      "event:grant:revoke": {
+        "en": "Revoke recipient grant",
+        "zh-CN": "撤销接收者授权"
+      },
+      "event:grant:share": {
+        "en": "Grant recipient access",
+        "zh-CN": "授予接收者访问权"
+      },
+      "fact:active-grant": {
+        "en": "Current grant validity",
+        "zh-CN": "当前授权有效性"
+      },
+      "fact:actor-id": {
+        "en": "Acting user identity",
+        "zh-CN": "操作者标识"
+      },
+      "fact:owner-id": {
+        "en": "Owner identity",
+        "zh-CN": "所有者标识"
+      },
+      "fact:recipient-id": {
+        "en": "Recipient identity",
+        "zh-CN": "接收者标识"
+      },
+      "guard:grant:may_manage": {
+        "en": "Owner may change access",
+        "zh-CN": "所有者可变更授权"
+      },
+      "list": {
+        "en": "See received files",
+        "zh-CN": "查看接收文件"
+      },
+      "object:actor": {
+        "en": "Acting user",
+        "zh-CN": "操作者"
+      },
+      "object:grant": {
+        "en": "Recipient grant",
+        "zh-CN": "接收者授权"
+      },
+      "policy-operation:manage": {
+        "en": "May manage sharing",
+        "zh-CN": "能否管理共享"
+      },
+      "policy-operation:read": {
+        "en": "May download file",
+        "zh-CN": "能否下载文件"
+      },
+      "policy-predicate:same_identity": {
+        "en": "User identities match",
+        "zh-CN": "用户标识相同"
+      },
+      "policy:active": {
+        "en": "Grant remains valid",
+        "zh-CN": "授权仍然有效"
+      },
+      "policy:actor": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "policy:is_owner": {
+        "en": "Actor is file owner",
+        "zh-CN": "操作者是文件所有者"
+      },
+      "policy:is_recipient": {
+        "en": "Actor is recipient",
+        "zh-CN": "操作者是接收者"
+      },
+      "policy:may_read": {
+        "en": "Recipient with active grant",
+        "zh-CN": "接收者且授权有效"
+      },
+      "policy:owner": {
+        "en": "File owner",
+        "zh-CN": "文件所有者"
+      },
+      "policy:recipient": {
+        "en": "Granted recipient",
+        "zh-CN": "获授权的接收者"
+      },
+      "read": {
+        "en": "Download shared file",
+        "zh-CN": "下载共享文件"
+      },
+      "revoke": {
+        "en": "Revoke sharing",
+        "zh-CN": "撤销共享"
+      },
+      "share": {
+        "en": "Share file",
+        "zh-CN": "共享文件"
+      },
+      "state-model:grant": {
+        "en": "Recipient access lifecycle",
+        "zh-CN": "接收者授权状态"
+      },
+      "state:grant:active": {
+        "en": "Access active",
+        "zh-CN": "授权有效"
+      },
+      "state:grant:inactive": {
+        "en": "Access inactive",
+        "zh-CN": "授权无效"
+      },
+      "transition:grant:grant-replace": {
+        "en": "Renew active access",
+        "zh-CN": "更新有效授权"
+      },
+      "transition:grant:grant-revoke": {
+        "en": "Deactivate access",
+        "zh-CN": "使授权失效"
+      },
+      "transition:grant:grant-share": {
+        "en": "Activate access",
+        "zh-CN": "使授权生效"
+      },
+      "upload": {
+        "en": "Upload file",
+        "zh-CN": "上传文件"
+      }
+    },
+    "edges": {
+      "business-contains:sharing:list": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "business-contains:sharing:read": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "business-contains:sharing:revoke": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "business-contains:sharing:share": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "business-contains:sharing:upload": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "concept-relation:list-read": {
+        "en": "Download received file",
+        "zh-CN": "下载接收的文件"
+      },
+      "concept-relation:share-list": {
+        "en": "File appears for recipient",
+        "zh-CN": "文件出现在接收列表"
+      },
+      "concept-relation:share-revoke": {
+        "en": "Owner revokes access",
+        "zh-CN": "所有者撤销访问权"
+      },
+      "concept-relation:upload-share": {
+        "en": "Choose a recipient",
+        "zh-CN": "选择接收者"
+      },
+      "db-edge:db%3Afiles%3Astore:contains:db%3Afiles%3Atable%253Afiles": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:db%3Afiles%3Astore:contains:db%3Afiles%3Atable%253Agrants": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:db%3Afiles%3Atable%253Afiles:contains:db%3Afiles%3Atable%253Afiles%3Afield%3Aid": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:db%3Afiles%3Atable%253Afiles:contains:db%3Afiles%3Atable%253Afiles%3Afield%3Aname": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:db%3Afiles%3Atable%253Afiles:contains:db%3Afiles%3Atable%253Afiles%3Afield%3Aowner": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:db%3Afiles%3Atable%253Afiles:reads:db.facts": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "db-edge:db%3Afiles%3Atable%253Afiles:reads:db.list": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "db-edge:db%3Afiles%3Atable%253Afiles:reads:db.revoke": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "db-edge:db%3Afiles%3Atable%253Afiles:reads:db.share": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants%3Afield%3Afile_id:maps:db%3Afiles%3Atable%253Afiles%3Afield%3Aid": {
+        "en": "References file identity",
+        "zh-CN": "引用文件标识"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants:contains:db%3Afiles%3Atable%253Agrants%3Afield%3Aactive": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants:contains:db%3Afiles%3Atable%253Agrants%3Afield%3Afile_id": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants:contains:db%3Afiles%3Atable%253Agrants%3Afield%3Arecipient": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants:contains:db%3Afiles%3Atable%253Agrants%3Afield%3Arevision": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants:reads:db.facts": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants:reads:db.list": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants:reads:db.revoke": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants:reads:db.share": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "db-edge:db%3Afiles%3Atable%253Agrants:references:db%3Afiles%3Atable%253Afiles": {
+        "en": "References file identity",
+        "zh-CN": "引用文件标识"
+      },
+      "db-edge:db.revoke:writes:db%3Afiles%3Atable%253Agrants": {
+        "en": "Writes stored records",
+        "zh-CN": "写入存储记录"
+      },
+      "db-edge:db.share:writes:db%3Afiles%3Atable%253Agrants": {
+        "en": "Writes stored records",
+        "zh-CN": "写入存储记录"
+      },
+      "db-edge:db.upload:writes:db%3Afiles%3Atable%253Afiles": {
+        "en": "Writes stored records",
+        "zh-CN": "写入存储记录"
+      },
+      "db-edge:facts:contains:db.facts": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:list:contains:db.list": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:revoke:contains:db.revoke": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:share:contains:db.share": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "db-edge:upload:contains:db.upload": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "event-trigger:grant:grant-replace": {
+        "en": "Requests state event",
+        "zh-CN": "请求状态事件"
+      },
+      "event-trigger:grant:grant-revoke": {
+        "en": "Requests state event",
+        "zh-CN": "请求状态事件"
+      },
+      "event-trigger:grant:grant-share": {
+        "en": "Requests state event",
+        "zh-CN": "请求状态事件"
+      },
+      "fact:active": {
+        "en": "Grant is active",
+        "zh-CN": "授权有效"
+      },
+      "fact:actor": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "fact:owner": {
+        "en": "File owner",
+        "zh-CN": "文件所有者"
+      },
+      "fact:recipient": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "guard-decision:guard%3Agrant%3Amay_manage": {
+        "en": "Evaluate condition",
+        "zh-CN": "计算条件"
+      },
+      "http-call:download": {
+        "en": "Invoke handler",
+        "zh-CN": "调用处理函数"
+      },
+      "http-call:received": {
+        "en": "Invoke handler",
+        "zh-CN": "调用处理函数"
+      },
+      "http-call:revoke": {
+        "en": "Invoke handler",
+        "zh-CN": "调用处理函数"
+      },
+      "http-call:share": {
+        "en": "Invoke handler",
+        "zh-CN": "调用处理函数"
+      },
+      "http-call:upload": {
+        "en": "Invoke handler",
+        "zh-CN": "调用处理函数"
+      },
+      "list-read": {
+        "en": "Download received file",
+        "zh-CN": "下载接收的文件"
+      },
+      "object-fact:active-grant": {
+        "en": "Describes object fact",
+        "zh-CN": "描述对象事实"
+      },
+      "object-fact:actor-id": {
+        "en": "Describes object fact",
+        "zh-CN": "描述对象事实"
+      },
+      "object-fact:owner-id": {
+        "en": "Describes object fact",
+        "zh-CN": "描述对象事实"
+      },
+      "object-fact:recipient-id": {
+        "en": "Describes object fact",
+        "zh-CN": "描述对象事实"
+      },
+      "operation-rule:list:read": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "operation-rule:read:read": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "operation-rule:revoke:manage": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "operation-rule:share:manage": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "operation-state:list:grant": {
+        "en": "Reads current grant",
+        "zh-CN": "读取当前授权"
+      },
+      "operation-state:read:grant": {
+        "en": "Reads current grant",
+        "zh-CN": "读取当前授权"
+      },
+      "operation-state:revoke:grant": {
+        "en": "Changes grant state",
+        "zh-CN": "改变授权状态"
+      },
+      "operation-state:share:grant": {
+        "en": "Changes grant state",
+        "zh-CN": "改变授权状态"
+      },
+      "policy-dependency:is_owner:0": {
+        "en": "Supplies decision input",
+        "zh-CN": "提供判定输入"
+      },
+      "policy-dependency:is_owner:1": {
+        "en": "Supplies decision input",
+        "zh-CN": "提供判定输入"
+      },
+      "policy-dependency:is_owner:2": {
+        "en": "Supplies decision input",
+        "zh-CN": "提供判定输入"
+      },
+      "policy-dependency:is_recipient:0": {
+        "en": "Supplies decision input",
+        "zh-CN": "提供判定输入"
+      },
+      "policy-dependency:is_recipient:1": {
+        "en": "Supplies decision input",
+        "zh-CN": "提供判定输入"
+      },
+      "policy-dependency:is_recipient:2": {
+        "en": "Supplies decision input",
+        "zh-CN": "提供判定输入"
+      },
+      "policy-dependency:may_read:0": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "policy-dependency:may_read:1": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "policy-result:manage": {
+        "en": "Produces decision result",
+        "zh-CN": "给出判定结果"
+      },
+      "policy-result:read": {
+        "en": "Produces decision result",
+        "zh-CN": "给出判定结果"
+      },
+      "policy:contains:active": {
+        "en": "Supplies rule term",
+        "zh-CN": "提供规则项"
+      },
+      "policy:contains:actor": {
+        "en": "Supplies rule term",
+        "zh-CN": "提供规则项"
+      },
+      "policy:contains:is_owner": {
+        "en": "Supplies rule term",
+        "zh-CN": "提供规则项"
+      },
+      "policy:contains:is_recipient": {
+        "en": "Supplies rule term",
+        "zh-CN": "提供规则项"
+      },
+      "policy:contains:may_read": {
+        "en": "Supplies rule term",
+        "zh-CN": "提供规则项"
+      },
+      "policy:contains:owner": {
+        "en": "Supplies rule term",
+        "zh-CN": "提供规则项"
+      },
+      "policy:contains:recipient": {
+        "en": "Supplies rule term",
+        "zh-CN": "提供规则项"
+      },
+      "policy:dependency:is_owner:0": {
+        "en": "Left identity",
+        "zh-CN": "左侧用户标识"
+      },
+      "policy:dependency:is_owner:1": {
+        "en": "Right identity",
+        "zh-CN": "右侧用户标识"
+      },
+      "policy:dependency:is_recipient:0": {
+        "en": "Left identity",
+        "zh-CN": "左侧用户标识"
+      },
+      "policy:dependency:is_recipient:1": {
+        "en": "Right identity",
+        "zh-CN": "右侧用户标识"
+      },
+      "policy:dependency:may_read:0": {
+        "en": "All conditions must hold",
+        "zh-CN": "全部条件成立"
+      },
+      "policy:dependency:may_read:1": {
+        "en": "All conditions must hold",
+        "zh-CN": "全部条件成立"
+      },
+      "policy:mapping:is_owner": {
+        "en": "Implemented by",
+        "zh-CN": "对应实现"
+      },
+      "policy:mapping:is_recipient": {
+        "en": "Implemented by",
+        "zh-CN": "对应实现"
+      },
+      "policy:operation:manage:revoke": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "policy:operation:manage:share": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "policy:operation:read:list": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "policy:operation:read:read": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "read-active-grant": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "read-actor-id": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "read-owner-id": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "read-recipient-id": {
+        "en": "Reads stored records",
+        "zh-CN": "读取存储记录"
+      },
+      "replace-guard": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "revoke-guard": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "revoke-requests-event": {
+        "en": "Requests state event",
+        "zh-CN": "请求状态事件"
+      },
+      "share-guard": {
+        "en": "Requires this condition",
+        "zh-CN": "要求此条件成立"
+      },
+      "share-list": {
+        "en": "File appears for recipient",
+        "zh-CN": "文件出现在接收列表"
+      },
+      "share-requests-event": {
+        "en": "Requests state event",
+        "zh-CN": "请求状态事件"
+      },
+      "share-revoke": {
+        "en": "Owner revokes access",
+        "zh-CN": "所有者撤销访问权"
+      },
+      "state-contains:grant:active": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "state-contains:grant:inactive": {
+        "en": "Contains",
+        "zh-CN": "包含"
+      },
+      "state-event:grant:revoke": {
+        "en": "Accept state event",
+        "zh-CN": "接收状态事件"
+      },
+      "state-event:grant:share": {
+        "en": "Accept state event",
+        "zh-CN": "接收状态事件"
+      },
+      "state-guard:grant:may_manage": {
+        "en": "Check access condition",
+        "zh-CN": "检查访问条件"
+      },
+      "state-subject:grant": {
+        "en": "Tracks recipient grant",
+        "zh-CN": "描述接收者授权"
+      },
+      "state-transition:grant:grant-replace:active": {
+        "en": "Grant access",
+        "zh-CN": "授予访问权"
+      },
+      "state-transition:grant:grant-revoke:active": {
+        "en": "Revoke access",
+        "zh-CN": "撤销访问权"
+      },
+      "state-transition:grant:grant-share:inactive": {
+        "en": "Grant access",
+        "zh-CN": "授予访问权"
+      },
+      "transition-guard:grant:grant-replace:may_manage": {
+        "en": "Condition must be true",
+        "zh-CN": "条件须为真"
+      },
+      "transition-guard:grant:grant-revoke:may_manage": {
+        "en": "Condition must be true",
+        "zh-CN": "条件须为真"
+      },
+      "transition-guard:grant:grant-share:may_manage": {
+        "en": "Condition must be true",
+        "zh-CN": "条件须为真"
+      },
+      "transition-target:grant:grant-replace": {
+        "en": "Enter target state",
+        "zh-CN": "进入目标状态"
+      },
+      "transition-target:grant:grant-revoke": {
+        "en": "Enter target state",
+        "zh-CN": "进入目标状态"
+      },
+      "transition-target:grant:grant-share": {
+        "en": "Enter target state",
+        "zh-CN": "进入目标状态"
+      },
+      "upload-share": {
+        "en": "Choose a recipient",
+        "zh-CN": "选择接收者"
+      }
+    },
+    "events": {
+      "revoke": {
+        "en": "Revoke access",
+        "zh-CN": "撤销访问权"
+      },
+      "share": {
+        "en": "Grant access",
+        "zh-CN": "授予访问权"
+      }
+    },
+    "nodes": {
+      "active": {
+        "en": "Grant is active",
+        "zh-CN": "授权有效"
+      },
+      "code.24cdb96f0e01ca5e": {
+        "en": "Read owner and recipient grant",
+        "zh-CN": "读取所有者及接收者授权"
+      },
+      "code.2d0fba968befe8e9": {
+        "en": "Check download access",
+        "zh-CN": "校验下载权限"
+      },
+      "code.2f7251da638c0fb6": {
+        "en": "Read request user",
+        "zh-CN": "读取请求用户"
+      },
+      "code.338b224b6f166a79": {
+        "en": "Open database connection",
+        "zh-CN": "打开数据库连接"
+      },
+      "code.443b87aed036bffa": {
+        "en": "Read owner and recipient grant",
+        "zh-CN": "读取所有者及接收者授权"
+      },
+      "code.46c14661548922c3": {
+        "en": "Read owner and recipient grant",
+        "zh-CN": "读取所有者及接收者授权"
+      },
+      "code.50ae654d4260e164": {
+        "en": "Open database connection",
+        "zh-CN": "打开数据库连接"
+      },
+      "code.60b0d89a81c9e44a": {
+        "en": "Open database connection",
+        "zh-CN": "打开数据库连接"
+      },
+      "code.67cfd97725f287a9": {
+        "en": "Read request user",
+        "zh-CN": "读取请求用户"
+      },
+      "code.6e677d1af4b037c9": {
+        "en": "Open database connection",
+        "zh-CN": "打开数据库连接"
+      },
+      "code.759905501e184a8a": {
+        "en": "Read request user",
+        "zh-CN": "读取请求用户"
+      },
+      "code.9f57adb327d759ec": {
+        "en": "Check download access",
+        "zh-CN": "校验下载权限"
+      },
+      "code.a57b37d7cd8b013c": {
+        "en": "Read request user",
+        "zh-CN": "读取请求用户"
+      },
+      "code.c54383296a450071": {
+        "en": "Read request user",
+        "zh-CN": "读取请求用户"
+      },
+      "code.d404af1fab7556b5": {
+        "en": "Open database connection",
+        "zh-CN": "打开数据库连接"
+      },
+      "code.dd12587c6ebe1bb1": {
+        "en": "Check file ownership",
+        "zh-CN": "校验文件所有者"
+      },
+      "code.e7570fd6ab05f362": {
+        "en": "Check file ownership",
+        "zh-CN": "校验文件所有者"
+      },
+      "code.fdc882a96e26f912": {
+        "en": "Read owner and recipient grant",
+        "zh-CN": "读取所有者及接收者授权"
+      },
+      "code:base:84d8ed6246a336b68f61a605": {
+        "en": "Exception base",
+        "zh-CN": "异常基类"
+      },
+      "code:base:caecd752f497e17a502dd306": {
+        "en": "SQLite connection class",
+        "zh-CN": "SQLite 连接类"
+      },
+      "code:directory:7299b59de0b5dad3b622afc3": {
+        "en": "Application project",
+        "zh-CN": "应用工程"
+      },
+      "code:endpoint:179a8ee56fbc7816ec075ec4": {
+        "en": "Upload file endpoint",
+        "zh-CN": "上传文件接口"
+      },
+      "code:endpoint:43b2043bda8d5c3c89a4d8bc": {
+        "en": "Download file endpoint",
+        "zh-CN": "下载文件接口"
+      },
+      "code:endpoint:81ea93d1601078137dc29352": {
+        "en": "Revoke sharing endpoint",
+        "zh-CN": "撤销共享接口"
+      },
+      "code:endpoint:a7b02ce1099441eaedf11342": {
+        "en": "Open sharing page",
+        "zh-CN": "打开共享页面"
+      },
+      "code:endpoint:d75a64a39e86cdd7033e90e3": {
+        "en": "Received files endpoint",
+        "zh-CN": "接收文件接口"
+      },
+      "code:endpoint:eeac761459e6208e1ec62861": {
+        "en": "Share file endpoint",
+        "zh-CN": "共享文件接口"
+      },
+      "code:file:3a86fe4bf5023ef10a5b2023": {
+        "en": "File sharing page",
+        "zh-CN": "文件共享页面"
+      },
+      "code:file:49dd0aa9e32828655ab551e8": {
+        "en": "HTTP application · app.py",
+        "zh-CN": "接口入口 · app.py"
+      },
+      "code:file:4b38be2b7dc21f9b17d2666c": {
+        "en": "File service · service.py",
+        "zh-CN": "文件服务 · service.py"
+      },
+      "code:file:978ac4e82e4756d463e0c480": {
+        "en": "Python dependencies",
+        "zh-CN": "Python 依赖"
+      },
+      "code:file:b5eb0c667b752689fd8665df": {
+        "en": "Ignored files",
+        "zh-CN": "忽略文件配置"
+      },
+      "code:import:30a01d3dd84fcfda7bbeeb01": {
+        "en": "JSON response helper",
+        "zh-CN": "JSON 响应函数"
+      },
+      "code:import:3c0dccb1fa0f0991f801b192": {
+        "en": "Filesystem path class",
+        "zh-CN": "文件路径类"
+      },
+      "code:import:7589b7f504d7f0876d6c2098": {
+        "en": "SQLite module",
+        "zh-CN": "SQLite 模块"
+      },
+      "code:import:8550eb21202504be4cf0c87a": {
+        "en": "Filesystem path class",
+        "zh-CN": "文件路径类"
+      },
+      "code:import:8bf35377cec3f101a189e369": {
+        "en": "HTTP response class",
+        "zh-CN": "HTTP 响应类"
+      },
+      "code:import:93bb211038c5f85f825c9e4f": {
+        "en": "Unique identity module",
+        "zh-CN": "唯一标识模块"
+      },
+      "code:import:945805848a15f50a332b55ce": {
+        "en": "Flask application class",
+        "zh-CN": "Flask 应用类"
+      },
+      "code:import:b1eb6848d39b7a63383d5f2b": {
+        "en": "Current HTTP request",
+        "zh-CN": "当前 HTTP 请求"
+      },
+      "code:parameter:026c63525fc3b8601b88279f": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:03439c92658097bf0279a640": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:05ac91a87eae0b398d3a04b9": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "code:parameter:07e8411728f73ad752e5ca18": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:1a9b59f88fd9d61f44d0267b": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:2c531cd1eed2aa808483dba9": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "code:parameter:30c547f9289fc64cb9616df0": {
+        "en": "Left identity",
+        "zh-CN": "左侧用户标识"
+      },
+      "code:parameter:37762f3d7ebc43bb7ca09084": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "code:parameter:37b130a014b0608c9da418f6": {
+        "en": "Error detail",
+        "zh-CN": "错误详情"
+      },
+      "code:parameter:3c60a00476ef3abaf1d3d9ba": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:4717702ec125ed456caff6f4": {
+        "en": "Storage directory",
+        "zh-CN": "存储目录"
+      },
+      "code:parameter:586ab938ad2c9546019956f7": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "code:parameter:58720f4e8d9fb5b1f6de27d2": {
+        "en": "Read access facts",
+        "zh-CN": "读取权限依据"
+      },
+      "code:parameter:59b75ce2daa4f358c1eb39f3": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:5eb9136f672f15727ff277f2": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "code:parameter:631b071f4587c76b4142c89b": {
+        "en": "File bytes",
+        "zh-CN": "文件内容"
+      },
+      "code:parameter:6c2e352304ae16e0f53b03a7": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:704a7beffe5fd8cd2b26c923": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "code:parameter:7507f717eef955c65ab758d8": {
+        "en": "File service module",
+        "zh-CN": "文件服务模块"
+      },
+      "code:parameter:7637a091a14c4d7e8f7f6691": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:76d34ea0fc6bf3589d2746ed": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "code:parameter:7c32b795845e6a5696214890": {
+        "en": "File name",
+        "zh-CN": "文件名称"
+      },
+      "code:parameter:7f7560994cc3709ed40d1f12": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "code:parameter:7fc0dd3781c65e27d79b18c1": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "code:parameter:86e814b3d32056f3d03d7a8b": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "code:parameter:8b9c5f04c266fe8045bf9389": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "code:parameter:8e8ba717bf59df20f699b8af": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "code:parameter:9e548d95239b00066e07c3f0": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "code:parameter:a0dd158ba71a5ff69ad55442": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "code:parameter:af2a7e6d804214240f134a08": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "code:parameter:c1077788d0117e644639d1f9": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "code:parameter:ca6f90afef9eea57df5619a1": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "code:parameter:df175ef6b2f0ffe5ea428415": {
+        "en": "Error detail",
+        "zh-CN": "错误详情"
+      },
+      "code:parameter:df86b8dc854ed1a763811cc6": {
+        "en": "Grant is active",
+        "zh-CN": "授权有效"
+      },
+      "code:parameter:ed3fe8d2235d93ca16e8e10c": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:f1bd293b058681c2c5c717df": {
+        "en": "Right identity",
+        "zh-CN": "右侧用户标识"
+      },
+      "code:parameter:f48e575adeacc380071299be": {
+        "en": "File owner",
+        "zh-CN": "文件所有者"
+      },
+      "code:parameter:f88478d43bdc1cbfc19ff250": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "code:parameter:fc44024152b3abba06bfe51c": {
+        "en": "Current service instance",
+        "zh-CN": "当前服务实例"
+      },
+      "code:parameter:fd8a2255bd445124b2db7006": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "code:parameter:ffb9410cd94c7aab647bbb2c": {
+        "en": "Error detail",
+        "zh-CN": "错误详情"
+      },
+      "code:symbol:01fc565dfb3ed18f6b561385": {
+        "en": "Read request user",
+        "zh-CN": "读取请求用户"
+      },
+      "code:symbol:09532a23ce9ac4eedf203aee": {
+        "en": "Access denied exception",
+        "zh-CN": "无权访问异常"
+      },
+      "code:symbol:0a5d07ef8f72fed29f37fc12": {
+        "en": "Create access denied detail",
+        "zh-CN": "构造无权访问详情"
+      },
+      "code:symbol:1ac4f1ecae4c9c1946d33785": {
+        "en": "Query accessible received files",
+        "zh-CN": "查询可访问的接收文件"
+      },
+      "code:symbol:2d1baf22920362510869b0f6": {
+        "en": "Check download access",
+        "zh-CN": "校验下载权限"
+      },
+      "code:symbol:36cdad30cc5ad6e2b5af632e": {
+        "en": "Check access and read bytes",
+        "zh-CN": "校验权限并读取文件"
+      },
+      "code:symbol:3e14f884f4aa21d540f9ad3c": {
+        "en": "Create HTTP application",
+        "zh-CN": "创建 HTTP 应用"
+      },
+      "code:symbol:41305c6cc8e1b5e3ea7541a3": {
+        "en": "Check file ownership",
+        "zh-CN": "校验文件所有者"
+      },
+      "code:symbol:44ab87502dc49a335ee97acb": {
+        "en": "Read owner and recipient grant",
+        "zh-CN": "读取所有者及接收者授权"
+      },
+      "code:symbol:464843d79a8d87b1aec2a378": {
+        "en": "Invalidate recipient grant",
+        "zh-CN": "使接收者授权失效"
+      },
+      "code:symbol:513587538d58192c30a19f12": {
+        "en": "Database connection",
+        "zh-CN": "数据库连接"
+      },
+      "code:symbol:6b3ba1f897f29f89bdf2fa38": {
+        "en": "Compare user identities",
+        "zh-CN": "比较用户标识"
+      },
+      "code:symbol:7870d81b99f5f658f55e34c5": {
+        "en": "Handle grant revocation",
+        "zh-CN": "处理撤销共享"
+      },
+      "code:symbol:8d8bc326cd203706736d4f35": {
+        "en": "Handle received-file listing",
+        "zh-CN": "处理接收文件列表"
+      },
+      "code:symbol:9a7db9663e1e9dcdca6ae0af": {
+        "en": "Return file not found",
+        "zh-CN": "返回文件不存在"
+      },
+      "code:symbol:afad41df87cf69fb3c364df2": {
+        "en": "Handle file download",
+        "zh-CN": "处理文件下载"
+      },
+      "code:symbol:b14be48ec016845bbf857512": {
+        "en": "File sharing service",
+        "zh-CN": "文件共享服务"
+      },
+      "code:symbol:b24de73e894f63be81ef8761": {
+        "en": "Open database connection",
+        "zh-CN": "打开数据库连接"
+      },
+      "code:symbol:b83e78f85bdfcb9ab7c937b8": {
+        "en": "Return access denied",
+        "zh-CN": "返回无权访问"
+      },
+      "code:symbol:bad3cbed059847e6cb11c4be": {
+        "en": "Finish transaction and close",
+        "zh-CN": "结束事务并关闭连接"
+      },
+      "code:symbol:be6d39eed3bcc15fd9b2e2f8": {
+        "en": "Initialize file storage",
+        "zh-CN": "初始化文件存储"
+      },
+      "code:symbol:bf5f2cfce6ffbd28f1ef07a1": {
+        "en": "Handle file upload",
+        "zh-CN": "处理文件上传"
+      },
+      "code:symbol:c6ca04471fb04066fcc4588e": {
+        "en": "Save bytes and file metadata",
+        "zh-CN": "保存文件内容及元数据"
+      },
+      "code:symbol:cdbd238aeb1f5e93d719e150": {
+        "en": "Module body",
+        "zh-CN": "模块主体"
+      },
+      "code:symbol:d1dfb9305dc76221c992ce89": {
+        "en": "Handle sharing request",
+        "zh-CN": "处理共享请求"
+      },
+      "code:symbol:dff6661b3a8752219116bc36": {
+        "en": "Serve sharing page",
+        "zh-CN": "返回共享页面"
+      },
+      "code:symbol:f3a45c7bce1007a62d6bb0a8": {
+        "en": "Create or renew recipient grant",
+        "zh-CN": "创建或更新接收者授权"
+      },
+      "code:unresolved:042cad95823eafe32135d5bf": {
+        "en": "Execute SQL statement",
+        "zh-CN": "执行 SQL 语句"
+      },
+      "code:unresolved:0f4e17dc5be745459526b1f4": {
+        "en": "Convert to text",
+        "zh-CN": "转换为文本"
+      },
+      "code:unresolved:101544df0d6d842a71bb669b": {
+        "en": "Generate file identity",
+        "zh-CN": "生成文件标识"
+      },
+      "code:unresolved:1405eb57466f346e0d3d696e": {
+        "en": "Execute SQL statement",
+        "zh-CN": "执行 SQL 语句"
+      },
+      "code:unresolved:250ac37ecb074369e8ccc9d9": {
+        "en": "Base class",
+        "zh-CN": "基类"
+      },
+      "code:unresolved:289e7ef8d667405ce46b27bd": {
+        "en": "Close database connection",
+        "zh-CN": "关闭数据库连接"
+      },
+      "code:unresolved:2b90c479a73742cd477aef97": {
+        "en": "Store uploaded file",
+        "zh-CN": "存储上传文件"
+      },
+      "code:unresolved:2d7129140c02857cab41c49c": {
+        "en": "Append accessible file",
+        "zh-CN": "加入可访问文件"
+      },
+      "code:unresolved:2e22b3433e0bb0e7caf13ffb": {
+        "en": "Build JSON response",
+        "zh-CN": "构造 JSON 响应"
+      },
+      "code:unresolved:33eca310aa15695595799ffc": {
+        "en": "Missing file exception",
+        "zh-CN": "文件不存在异常"
+      },
+      "code:unresolved:393f770b954a056f20960115": {
+        "en": "Write uploaded file bytes",
+        "zh-CN": "写入上传文件内容"
+      },
+      "code:unresolved:3afb831f0af4b114eeee9d9f": {
+        "en": "Flask application",
+        "zh-CN": "Flask 应用"
+      },
+      "code:unresolved:442ded8c63c18527b8553d13": {
+        "en": "Filesystem path",
+        "zh-CN": "文件路径"
+      },
+      "code:unresolved:44d0c40127c1f44568ee86c1": {
+        "en": "Build JSON response",
+        "zh-CN": "构造 JSON 响应"
+      },
+      "code:unresolved:4e201695ad7932929b950e35": {
+        "en": "Build HTTP response",
+        "zh-CN": "构造 HTTP 响应"
+      },
+      "code:unresolved:51a6f3b257ed6a44a9ed6886": {
+        "en": "Execute SQL statement",
+        "zh-CN": "执行 SQL 语句"
+      },
+      "code:unresolved:551c627b73d5e27c8073af58": {
+        "en": "Execute SQL statement",
+        "zh-CN": "执行 SQL 语句"
+      },
+      "code:unresolved:5a16434174178e8878e32bf4": {
+        "en": "Create storage directory",
+        "zh-CN": "创建存储目录"
+      },
+      "code:unresolved:5c203f65dbf41de384a324c8": {
+        "en": "Read query row",
+        "zh-CN": "读取查询行"
+      },
+      "code:unresolved:5d2e384d5057ad3bc74af7b6": {
+        "en": "Execute SQL statement",
+        "zh-CN": "执行 SQL 语句"
+      },
+      "code:unresolved:5e1a00c76d72863e768010ce": {
+        "en": "Start HTTP server",
+        "zh-CN": "启动 HTTP 服务"
+      },
+      "code:unresolved:6f75c2d0937a572338b3b2f6": {
+        "en": "List accessible received files",
+        "zh-CN": "列出可访问的接收文件"
+      },
+      "code:unresolved:71cd0ce124526d9a4753c54e": {
+        "en": "Read uploaded bytes",
+        "zh-CN": "读取上传内容"
+      },
+      "code:unresolved:728b8a16479e867e754cdbba": {
+        "en": "Save recipient grant",
+        "zh-CN": "保存接收者授权"
+      },
+      "code:unresolved:745c5f3b151ff66194410037": {
+        "en": "Base class",
+        "zh-CN": "基类"
+      },
+      "code:unresolved:75e9a4eaa62fac08143eb862": {
+        "en": "Build JSON response",
+        "zh-CN": "构造 JSON 响应"
+      },
+      "code:unresolved:766ae8161f07ea0576eb4916": {
+        "en": "Read query row",
+        "zh-CN": "读取查询行"
+      },
+      "code:unresolved:76a820405dbceb58608dce76": {
+        "en": "Read stored file bytes",
+        "zh-CN": "读取存储文件内容"
+      },
+      "code:unresolved:76b85dda7ea33ce992371ea8": {
+        "en": "Locate adjacent page file",
+        "zh-CN": "定位同目录页面文件"
+      },
+      "code:unresolved:78df336fa48c9a48e4a5d718": {
+        "en": "Read query rows",
+        "zh-CN": "读取查询行"
+      },
+      "code:unresolved:7bdaa7993d4a700a66fae8ea": {
+        "en": "Revoke recipient access",
+        "zh-CN": "撤销接收者访问权"
+      },
+      "code:unresolved:a2176ea22b312085d23f9c9b": {
+        "en": "Read authorized file bytes",
+        "zh-CN": "读取获准访问的文件"
+      },
+      "code:unresolved:b0ba2eef187ae204d5d5600f": {
+        "en": "Filesystem path",
+        "zh-CN": "文件路径"
+      },
+      "code:unresolved:b7b20aa36ecad0abc77e717f": {
+        "en": "Build JSON response",
+        "zh-CN": "构造 JSON 响应"
+      },
+      "code:unresolved:bd47f9ea57bd60b9059ac3fe": {
+        "en": "Read query row",
+        "zh-CN": "读取查询行"
+      },
+      "code:unresolved:c3233f31fe69d2420a1e242c": {
+        "en": "Create storage tables",
+        "zh-CN": "创建存储表"
+      },
+      "code:unresolved:c3d67ebe0a65f3b5846e43df": {
+        "en": "Missing file exception",
+        "zh-CN": "文件不存在异常"
+      },
+      "code:unresolved:cb43d6674f10d0877615785f": {
+        "en": "Execute SQL statement",
+        "zh-CN": "执行 SQL 语句"
+      },
+      "code:unresolved:ce663302d6ff0b3600a2f3be": {
+        "en": "Complete base transaction",
+        "zh-CN": "完成底层事务"
+      },
+      "code:unresolved:d2cfff622c49f5f27c5ab285": {
+        "en": "Build JSON response",
+        "zh-CN": "构造 JSON 响应"
+      },
+      "code:unresolved:d4324971fea1b89280495bf4": {
+        "en": "Execute SQL statement",
+        "zh-CN": "执行 SQL 语句"
+      },
+      "code:unresolved:da12513e7e2203f89d022ff9": {
+        "en": "Connect to SQLite",
+        "zh-CN": "连接 SQLite"
+      },
+      "code:unresolved:dd61e70e6a9c8ce7068516ab": {
+        "en": "Invalid value exception",
+        "zh-CN": "无效值异常"
+      },
+      "code:unresolved:dd82c2d80fd1e4d3dca599d8": {
+        "en": "Initialize base exception",
+        "zh-CN": "初始化异常对象"
+      },
+      "code:unresolved:e1cce48cc09a2f10db8ad866": {
+        "en": "Read request header",
+        "zh-CN": "读取请求头"
+      },
+      "code:unresolved:e2b10494f8e480fdc982235b": {
+        "en": "Build JSON response",
+        "zh-CN": "构造 JSON 响应"
+      },
+      "code:unresolved:e47d7d5bcc183cfd0dc52ee4": {
+        "en": "Read URL parameter",
+        "zh-CN": "读取 URL 参数"
+      },
+      "code:unresolved:ed8b325f0cdf1080b561e9ad": {
+        "en": "Read sharing page HTML",
+        "zh-CN": "读取共享页面 HTML"
+      },
+      "code:unresolved:ee9463cc58f797aed3ae8d28": {
+        "en": "Convert to Boolean",
+        "zh-CN": "转换为布尔值"
+      },
+      "code:unresolved:feec852653698fb8497a6133": {
+        "en": "Create field map",
+        "zh-CN": "创建字段映射"
+      },
+      "db.facts": {
+        "en": "Read current recipient grant",
+        "zh-CN": "读取当前接收者授权"
+      },
+      "db.list": {
+        "en": "See received files",
+        "zh-CN": "查看接收文件"
+      },
+      "db.revoke": {
+        "en": "Revoke sharing",
+        "zh-CN": "撤销共享"
+      },
+      "db.share": {
+        "en": "Share file",
+        "zh-CN": "共享文件"
+      },
+      "db.upload": {
+        "en": "Upload file",
+        "zh-CN": "上传文件"
+      },
+      "db:files:store": {
+        "en": "File sharing storage",
+        "zh-CN": "文件共享存储"
+      },
+      "db:files:table%3Afiles": {
+        "en": "Files table",
+        "zh-CN": "文件表"
+      },
+      "db:files:table%3Afiles:field:id": {
+        "en": "Record identity",
+        "zh-CN": "记录标识"
+      },
+      "db:files:table%3Afiles:field:name": {
+        "en": "File name",
+        "zh-CN": "文件名称"
+      },
+      "db:files:table%3Afiles:field:owner": {
+        "en": "File owner",
+        "zh-CN": "文件所有者"
+      },
+      "db:files:table%3Agrants": {
+        "en": "Recipient grants table",
+        "zh-CN": "接收者授权表"
+      },
+      "db:files:table%3Agrants:field:active": {
+        "en": "Grant is active",
+        "zh-CN": "授权有效"
+      },
+      "db:files:table%3Agrants:field:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "db:files:table%3Agrants:field:recipient": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "db:files:table%3Agrants:field:revision": {
+        "en": "Grant revision",
+        "zh-CN": "授权修订号"
+      },
+      "facts": {
+        "en": "Read current recipient grant",
+        "zh-CN": "读取当前接收者授权"
+      },
+      "field:db.facts:in:operation": {
+        "en": "Storage operation",
+        "zh-CN": "存储操作"
+      },
+      "field:db.facts:in:parameters": {
+        "en": "Query parameters",
+        "zh-CN": "查询参数"
+      },
+      "field:db.facts:in:statement": {
+        "en": "SQL statement",
+        "zh-CN": "SQL 语句"
+      },
+      "field:db.facts:out:before": {
+        "en": "Previous value",
+        "zh-CN": "变更前的值"
+      },
+      "field:db.facts:out:duration_ms": {
+        "en": "Elapsed milliseconds",
+        "zh-CN": "耗时毫秒数"
+      },
+      "field:db.facts:out:error_type": {
+        "en": "Exception type",
+        "zh-CN": "异常类型"
+      },
+      "field:db.facts:out:input_count": {
+        "en": "Input item count",
+        "zh-CN": "输入项数"
+      },
+      "field:db.facts:out:output_count": {
+        "en": "Output item count",
+        "zh-CN": "输出项数"
+      },
+      "field:db.facts:out:result": {
+        "en": "Operation result",
+        "zh-CN": "操作结果"
+      },
+      "field:db.facts:out:rows": {
+        "en": "Affected rows",
+        "zh-CN": "涉及行数"
+      },
+      "field:db.facts:out:rows_known": {
+        "en": "Row count available",
+        "zh-CN": "行数已知"
+      },
+      "field:db.facts:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:db.facts:out:target_access": {
+        "en": "Target access mode",
+        "zh-CN": "目标访问方式"
+      },
+      "field:db.facts:out:target_source": {
+        "en": "Target evidence source",
+        "zh-CN": "目标判定来源"
+      },
+      "field:db.facts:out:targets": {
+        "en": "Accessed storage targets",
+        "zh-CN": "访问的存储对象"
+      },
+      "field:db.facts:out:transaction_id": {
+        "en": "Transaction identity",
+        "zh-CN": "事务标识"
+      },
+      "field:db.facts:out:unknown_targets": {
+        "en": "Unresolved storage targets",
+        "zh-CN": "未解析的存储对象"
+      },
+      "field:db.list:in:operation": {
+        "en": "Storage operation",
+        "zh-CN": "存储操作"
+      },
+      "field:db.list:in:parameters": {
+        "en": "Query parameters",
+        "zh-CN": "查询参数"
+      },
+      "field:db.list:in:statement": {
+        "en": "SQL statement",
+        "zh-CN": "SQL 语句"
+      },
+      "field:db.list:out:before": {
+        "en": "Previous value",
+        "zh-CN": "变更前的值"
+      },
+      "field:db.list:out:duration_ms": {
+        "en": "Elapsed milliseconds",
+        "zh-CN": "耗时毫秒数"
+      },
+      "field:db.list:out:error_type": {
+        "en": "Exception type",
+        "zh-CN": "异常类型"
+      },
+      "field:db.list:out:input_count": {
+        "en": "Input item count",
+        "zh-CN": "输入项数"
+      },
+      "field:db.list:out:output_count": {
+        "en": "Output item count",
+        "zh-CN": "输出项数"
+      },
+      "field:db.list:out:result": {
+        "en": "Operation result",
+        "zh-CN": "操作结果"
+      },
+      "field:db.list:out:rows": {
+        "en": "Affected rows",
+        "zh-CN": "涉及行数"
+      },
+      "field:db.list:out:rows_known": {
+        "en": "Row count available",
+        "zh-CN": "行数已知"
+      },
+      "field:db.list:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:db.list:out:target_access": {
+        "en": "Target access mode",
+        "zh-CN": "目标访问方式"
+      },
+      "field:db.list:out:target_source": {
+        "en": "Target evidence source",
+        "zh-CN": "目标判定来源"
+      },
+      "field:db.list:out:targets": {
+        "en": "Accessed storage targets",
+        "zh-CN": "访问的存储对象"
+      },
+      "field:db.list:out:transaction_id": {
+        "en": "Transaction identity",
+        "zh-CN": "事务标识"
+      },
+      "field:db.list:out:unknown_targets": {
+        "en": "Unresolved storage targets",
+        "zh-CN": "未解析的存储对象"
+      },
+      "field:db.revoke:in:operation": {
+        "en": "Storage operation",
+        "zh-CN": "存储操作"
+      },
+      "field:db.revoke:in:parameters": {
+        "en": "Query parameters",
+        "zh-CN": "查询参数"
+      },
+      "field:db.revoke:in:statement": {
+        "en": "SQL statement",
+        "zh-CN": "SQL 语句"
+      },
+      "field:db.revoke:out:before": {
+        "en": "Previous value",
+        "zh-CN": "变更前的值"
+      },
+      "field:db.revoke:out:duration_ms": {
+        "en": "Elapsed milliseconds",
+        "zh-CN": "耗时毫秒数"
+      },
+      "field:db.revoke:out:error_type": {
+        "en": "Exception type",
+        "zh-CN": "异常类型"
+      },
+      "field:db.revoke:out:input_count": {
+        "en": "Input item count",
+        "zh-CN": "输入项数"
+      },
+      "field:db.revoke:out:output_count": {
+        "en": "Output item count",
+        "zh-CN": "输出项数"
+      },
+      "field:db.revoke:out:result": {
+        "en": "Operation result",
+        "zh-CN": "操作结果"
+      },
+      "field:db.revoke:out:rows": {
+        "en": "Affected rows",
+        "zh-CN": "涉及行数"
+      },
+      "field:db.revoke:out:rows_known": {
+        "en": "Row count available",
+        "zh-CN": "行数已知"
+      },
+      "field:db.revoke:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:db.revoke:out:target_access": {
+        "en": "Target access mode",
+        "zh-CN": "目标访问方式"
+      },
+      "field:db.revoke:out:target_source": {
+        "en": "Target evidence source",
+        "zh-CN": "目标判定来源"
+      },
+      "field:db.revoke:out:targets": {
+        "en": "Accessed storage targets",
+        "zh-CN": "访问的存储对象"
+      },
+      "field:db.revoke:out:transaction_id": {
+        "en": "Transaction identity",
+        "zh-CN": "事务标识"
+      },
+      "field:db.revoke:out:unknown_targets": {
+        "en": "Unresolved storage targets",
+        "zh-CN": "未解析的存储对象"
+      },
+      "field:db.share:in:operation": {
+        "en": "Storage operation",
+        "zh-CN": "存储操作"
+      },
+      "field:db.share:in:parameters": {
+        "en": "Query parameters",
+        "zh-CN": "查询参数"
+      },
+      "field:db.share:in:statement": {
+        "en": "SQL statement",
+        "zh-CN": "SQL 语句"
+      },
+      "field:db.share:out:before": {
+        "en": "Previous value",
+        "zh-CN": "变更前的值"
+      },
+      "field:db.share:out:duration_ms": {
+        "en": "Elapsed milliseconds",
+        "zh-CN": "耗时毫秒数"
+      },
+      "field:db.share:out:error_type": {
+        "en": "Exception type",
+        "zh-CN": "异常类型"
+      },
+      "field:db.share:out:input_count": {
+        "en": "Input item count",
+        "zh-CN": "输入项数"
+      },
+      "field:db.share:out:output_count": {
+        "en": "Output item count",
+        "zh-CN": "输出项数"
+      },
+      "field:db.share:out:result": {
+        "en": "Operation result",
+        "zh-CN": "操作结果"
+      },
+      "field:db.share:out:rows": {
+        "en": "Affected rows",
+        "zh-CN": "涉及行数"
+      },
+      "field:db.share:out:rows_known": {
+        "en": "Row count available",
+        "zh-CN": "行数已知"
+      },
+      "field:db.share:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:db.share:out:target_access": {
+        "en": "Target access mode",
+        "zh-CN": "目标访问方式"
+      },
+      "field:db.share:out:target_source": {
+        "en": "Target evidence source",
+        "zh-CN": "目标判定来源"
+      },
+      "field:db.share:out:targets": {
+        "en": "Accessed storage targets",
+        "zh-CN": "访问的存储对象"
+      },
+      "field:db.share:out:transaction_id": {
+        "en": "Transaction identity",
+        "zh-CN": "事务标识"
+      },
+      "field:db.share:out:unknown_targets": {
+        "en": "Unresolved storage targets",
+        "zh-CN": "未解析的存储对象"
+      },
+      "field:db.upload:in:operation": {
+        "en": "Storage operation",
+        "zh-CN": "存储操作"
+      },
+      "field:db.upload:in:parameters": {
+        "en": "Query parameters",
+        "zh-CN": "查询参数"
+      },
+      "field:db.upload:in:statement": {
+        "en": "SQL statement",
+        "zh-CN": "SQL 语句"
+      },
+      "field:db.upload:out:before": {
+        "en": "Previous value",
+        "zh-CN": "变更前的值"
+      },
+      "field:db.upload:out:duration_ms": {
+        "en": "Elapsed milliseconds",
+        "zh-CN": "耗时毫秒数"
+      },
+      "field:db.upload:out:error_type": {
+        "en": "Exception type",
+        "zh-CN": "异常类型"
+      },
+      "field:db.upload:out:input_count": {
+        "en": "Input item count",
+        "zh-CN": "输入项数"
+      },
+      "field:db.upload:out:output_count": {
+        "en": "Output item count",
+        "zh-CN": "输出项数"
+      },
+      "field:db.upload:out:result": {
+        "en": "Operation result",
+        "zh-CN": "操作结果"
+      },
+      "field:db.upload:out:rows": {
+        "en": "Affected rows",
+        "zh-CN": "涉及行数"
+      },
+      "field:db.upload:out:rows_known": {
+        "en": "Row count available",
+        "zh-CN": "行数已知"
+      },
+      "field:db.upload:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:db.upload:out:target_access": {
+        "en": "Target access mode",
+        "zh-CN": "目标访问方式"
+      },
+      "field:db.upload:out:target_source": {
+        "en": "Target evidence source",
+        "zh-CN": "目标判定来源"
+      },
+      "field:db.upload:out:targets": {
+        "en": "Accessed storage targets",
+        "zh-CN": "访问的存储对象"
+      },
+      "field:db.upload:out:transaction_id": {
+        "en": "Transaction identity",
+        "zh-CN": "事务标识"
+      },
+      "field:db.upload:out:unknown_targets": {
+        "en": "Unresolved storage targets",
+        "zh-CN": "未解析的存储对象"
+      },
+      "field:facts:in:actor": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "field:facts:in:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:facts:out:active": {
+        "en": "Grant is active",
+        "zh-CN": "授权有效"
+      },
+      "field:facts:out:actor": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "field:facts:out:owner": {
+        "en": "File owner",
+        "zh-CN": "文件所有者"
+      },
+      "field:facts:out:recipient": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "field:facts:out:revision": {
+        "en": "Grant revision",
+        "zh-CN": "授权修订号"
+      },
+      "field:facts:out:scope": {
+        "en": "Observation scope",
+        "zh-CN": "观测范围"
+      },
+      "field:facts:out:timing": {
+        "en": "Observed duration",
+        "zh-CN": "观测时长"
+      },
+      "field:http.download:in:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:http.download:in:method": {
+        "en": "HTTP method",
+        "zh-CN": "HTTP 方法"
+      },
+      "field:http.download:in:route": {
+        "en": "Request route",
+        "zh-CN": "请求路由"
+      },
+      "field:http.download:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:http.home:in:method": {
+        "en": "HTTP method",
+        "zh-CN": "HTTP 方法"
+      },
+      "field:http.home:in:route": {
+        "en": "Request route",
+        "zh-CN": "请求路由"
+      },
+      "field:http.home:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:http.received:in:method": {
+        "en": "HTTP method",
+        "zh-CN": "HTTP 方法"
+      },
+      "field:http.received:in:route": {
+        "en": "Request route",
+        "zh-CN": "请求路由"
+      },
+      "field:http.received:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:http.revoke:in:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:http.revoke:in:method": {
+        "en": "HTTP method",
+        "zh-CN": "HTTP 方法"
+      },
+      "field:http.revoke:in:route": {
+        "en": "Request route",
+        "zh-CN": "请求路由"
+      },
+      "field:http.revoke:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:http.share:in:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:http.share:in:method": {
+        "en": "HTTP method",
+        "zh-CN": "HTTP 方法"
+      },
+      "field:http.share:in:route": {
+        "en": "Request route",
+        "zh-CN": "请求路由"
+      },
+      "field:http.share:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:http.upload:in:method": {
+        "en": "HTTP method",
+        "zh-CN": "HTTP 方法"
+      },
+      "field:http.upload:in:route": {
+        "en": "Request route",
+        "zh-CN": "请求路由"
+      },
+      "field:http.upload:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:list:in:actor": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "field:list:out:count": {
+        "en": "Result count",
+        "zh-CN": "结果数量"
+      },
+      "field:policy:active:in:bo_basis": {
+        "en": "Decision facts",
+        "zh-CN": "判定依据"
+      },
+      "field:policy:active:in:bo_check": {
+        "en": "Recorded predicate",
+        "zh-CN": "已采集条件"
+      },
+      "field:policy:active:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:policy:active:out:value": {
+        "en": "Fact value",
+        "zh-CN": "事实值"
+      },
+      "field:policy:actor:in:bo_basis": {
+        "en": "Decision facts",
+        "zh-CN": "判定依据"
+      },
+      "field:policy:actor:in:bo_check": {
+        "en": "Recorded predicate",
+        "zh-CN": "已采集条件"
+      },
+      "field:policy:actor:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:policy:actor:out:value": {
+        "en": "Fact value",
+        "zh-CN": "事实值"
+      },
+      "field:policy:is_owner:in:bo_basis": {
+        "en": "Decision facts",
+        "zh-CN": "判定依据"
+      },
+      "field:policy:is_owner:in:bo_check": {
+        "en": "Recorded predicate",
+        "zh-CN": "已采集条件"
+      },
+      "field:policy:is_owner:in:left": {
+        "en": "Left identity",
+        "zh-CN": "左侧用户标识"
+      },
+      "field:policy:is_owner:in:right": {
+        "en": "Right identity",
+        "zh-CN": "右侧用户标识"
+      },
+      "field:policy:is_owner:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:policy:is_owner:out:value": {
+        "en": "Fact value",
+        "zh-CN": "事实值"
+      },
+      "field:policy:is_recipient:in:bo_basis": {
+        "en": "Decision facts",
+        "zh-CN": "判定依据"
+      },
+      "field:policy:is_recipient:in:bo_check": {
+        "en": "Recorded predicate",
+        "zh-CN": "已采集条件"
+      },
+      "field:policy:is_recipient:in:left": {
+        "en": "Left identity",
+        "zh-CN": "左侧用户标识"
+      },
+      "field:policy:is_recipient:in:right": {
+        "en": "Right identity",
+        "zh-CN": "右侧用户标识"
+      },
+      "field:policy:is_recipient:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:policy:is_recipient:out:value": {
+        "en": "Fact value",
+        "zh-CN": "事实值"
+      },
+      "field:policy:may_read:in:bo_basis": {
+        "en": "Decision facts",
+        "zh-CN": "判定依据"
+      },
+      "field:policy:may_read:in:bo_check": {
+        "en": "Recorded predicate",
+        "zh-CN": "已采集条件"
+      },
+      "field:policy:may_read:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:policy:may_read:out:value": {
+        "en": "Fact value",
+        "zh-CN": "事实值"
+      },
+      "field:policy:owner:in:bo_basis": {
+        "en": "Decision facts",
+        "zh-CN": "判定依据"
+      },
+      "field:policy:owner:in:bo_check": {
+        "en": "Recorded predicate",
+        "zh-CN": "已采集条件"
+      },
+      "field:policy:owner:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:policy:owner:out:value": {
+        "en": "Fact value",
+        "zh-CN": "事实值"
+      },
+      "field:policy:recipient:in:bo_basis": {
+        "en": "Decision facts",
+        "zh-CN": "判定依据"
+      },
+      "field:policy:recipient:in:bo_check": {
+        "en": "Recorded predicate",
+        "zh-CN": "已采集条件"
+      },
+      "field:policy:recipient:out:status": {
+        "en": "Returned status",
+        "zh-CN": "返回状态"
+      },
+      "field:policy:recipient:out:value": {
+        "en": "Fact value",
+        "zh-CN": "事实值"
+      },
+      "field:read:in:actor": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "field:read:in:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:read:out:count": {
+        "en": "Result count",
+        "zh-CN": "结果数量"
+      },
+      "field:revoke:in:actor": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "field:revoke:in:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:revoke:in:recipient": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "field:revoke:out:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:revoke:out:recipient": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "field:revoke:out:revision": {
+        "en": "Grant revision",
+        "zh-CN": "授权修订号"
+      },
+      "field:revoke:out:state": {
+        "en": "Current grant state",
+        "zh-CN": "当前授权状态"
+      },
+      "field:share:in:actor": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "field:share:in:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:share:in:recipient": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "field:share:out:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:share:out:recipient": {
+        "en": "Recipient",
+        "zh-CN": "接收者"
+      },
+      "field:share:out:revision": {
+        "en": "Grant revision",
+        "zh-CN": "授权修订号"
+      },
+      "field:share:out:state": {
+        "en": "Current grant state",
+        "zh-CN": "当前授权状态"
+      },
+      "field:upload:in:actor": {
+        "en": "Acting user",
+        "zh-CN": "当前操作者"
+      },
+      "field:upload:in:content_size": {
+        "en": "File size",
+        "zh-CN": "文件大小"
+      },
+      "field:upload:in:name": {
+        "en": "File name",
+        "zh-CN": "文件名称"
+      },
+      "field:upload:out:file_id": {
+        "en": "File identity",
+        "zh-CN": "文件标识"
+      },
+      "field:upload:out:name": {
+        "en": "File name",
+        "zh-CN": "文件名称"
+      },
+      "field:upload:out:owner": {
+        "en": "File owner",
+        "zh-CN": "文件所有者"
+      },
+      "http.download": {
+        "en": "Download request",
+        "zh-CN": "下载请求"
+      },
+      "http.home": {
+        "en": "Page request",
+        "zh-CN": "页面请求"
+      },
+      "http.received": {
+        "en": "Received-files request",
+        "zh-CN": "接收文件请求"
+      },
+      "http.revoke": {
+        "en": "Revoke request",
+        "zh-CN": "撤销请求"
+      },
+      "http.share": {
+        "en": "Share request",
+        "zh-CN": "共享请求"
+      },
+      "http.upload": {
+        "en": "Upload request",
+        "zh-CN": "上传请求"
+      },
+      "inactive": {
+        "en": "Grant is inactive",
+        "zh-CN": "授权无效"
+      },
+      "policy:function:same_identity": {
+        "en": "Compare user identities",
+        "zh-CN": "比较用户标识"
+      },
+      "policy:network": {
+        "en": "Access rules",
+        "zh-CN": "访问规则"
+      },
+      "support:app.py::create_app.denied": {
+        "en": "Return access denied",
+        "zh-CN": "返回无权访问"
+      },
+      "support:app.py::create_app.missing": {
+        "en": "Return file not found",
+        "zh-CN": "返回文件不存在"
+      }
+    },
+    "states": {
+      "active": {
+        "en": "Grant is active",
+        "zh-CN": "授权有效"
+      },
+      "inactive": {
+        "en": "Grant is inactive",
+        "zh-CN": "授权无效"
+      }
+    }
+  },
+  "basis": {
+    "concepts": {
+      "business-network:sharing": "a98434cd6230c2f5282125013f3060501dd9c0d7e36d384f103c4ef9746f91e4",
+      "event:grant:revoke": "5285a6625110de124647f66c24cadfa71951f5d20a00948c7bc8cdbf1212533d",
+      "event:grant:share": "dfa7dcd2cf8b699907cac431856c4164623310827993941135f2090f1b46663e",
+      "fact:active-grant": "6cba3ab7eaef0421d044e59c6e81af806034bf4e0c9bf37b0394141efbe81bfa",
+      "fact:actor-id": "cf2484c378a07cde6eefee3c21d7cd0649ed36b0384f30d2b431fcfc963d0557",
+      "fact:owner-id": "1023a7dbec0d00fb47b50e8c7d21a3f70a0d956b4be116a642dbfc8aeecc9a69",
+      "fact:recipient-id": "6ec4b999afad8108b324356505daa7aa8b63491180b15c8d53eef0cbd514e2c1",
+      "guard:grant:may_manage": "94e8a1909a8804c07437ae158b3531cb59864ecbe2eaebc6e9de14e9bd231573",
+      "list": "d60963763d3b8491b5f550061ca8f6d571109fe7a4a357fbbff36a19d5e896c8",
+      "object:actor": "617aa64e5cfb39eefa03c023dac162df92637fbe6f49ba251c94b9ab54125234",
+      "object:grant": "4dab7cca78e1899063640add7428090aa7e15b629f94b8d16343f855cf449805",
+      "policy-operation:manage": "ac1fcbbb362919f86e59c03241065836e1447dfa335480f2bde0c7551f9b2e7c",
+      "policy-operation:read": "f426787aeabe01c15860b87047d1a9a1bbbaedc617f0f906b368695cacba8b23",
+      "policy-predicate:same_identity": "770f7cc8262632cc923808d7c4d64c02cdc14279ee89372d194f44c776c6a143",
+      "policy:active": "7690bf953ebd6d7810e19b8c71ddbfcfc7e243735cd0a1b421ac49dd505e880b",
+      "policy:actor": "5d27e697a2bdd23a2696fa424cdb82d4efaae3568545c978e9c542d4df25a6a7",
+      "policy:is_owner": "bc265345edbf6fe1397d587622e0ba18ebda71bd1a439e8dc24060ac1c92eaab",
+      "policy:is_recipient": "acbf12ccd2037c2985a80acd5e6c5035d25b55b4dec9a698d3849938e1b760e4",
+      "policy:may_read": "219158498d9af39dbd860c5414c27ab34ce352b94a937c6006592e191833e150",
+      "policy:owner": "33933356ccbeee4934d5b9ac861c660c0ab5d6fb757ee4524845d59348b737fc",
+      "policy:recipient": "47a1a3698f25dfb1f2603a06eb1b00f379b96294fabc8fea9b48b896271bafa1",
+      "read": "72b7f20e51f46954fd35fb467cca9885a306ca05953485128d534808b3295ace",
+      "revoke": "f51cff4218a99f319a8214343da28278b485aab0a13c5a0fb5a32053834ff4f8",
+      "share": "b092ab49561a038bccd6fb7f19e732f868b49786adc7116f35a050bc3036f555",
+      "state-model:grant": "072c23be922a359d02abda789fe3b938e21fee20c4786274637cd18430ea01d3",
+      "state:grant:active": "8456c9213c0e42eac1792337e3ad8506bb2fe6a9788f558b6a6aa04cf513c1a8",
+      "state:grant:inactive": "6f10739c6d580d29c57baed78bce08306708211dcec6923cf7601d9946a165d1",
+      "transition:grant:grant-replace": "18284db2b2b8ad386dfa6e056d67c789dca06a3acbf56d3f856ce9aae9c9ab42",
+      "transition:grant:grant-revoke": "2e8b1d94218279c9557474c9bd440f94cd517a4239b9d96fa8b7244c3db28b2d",
+      "transition:grant:grant-share": "5824f312b2a36e7ee2cedcc3106d1bc2af2c230e959e8bbdf9ce6494b13f1ac3",
+      "upload": "b44b051f9ea4bd93c445c470dde3ec1d32d299184ca21a598f9cc2eca225da3a"
+    },
+    "edges": {
+      "business-contains:sharing:list": "519c871181505da8206811ade32d62c3281998deb9fe6b9624647ab569d00c54",
+      "business-contains:sharing:read": "fafe1617078ef3ae2c5c7413ef6bf909ebde6fd63b77b08939a0153bb3172e92",
+      "business-contains:sharing:revoke": "d79dffeda6c3c5cc76af9b861a80df6b246b9e216a9a38a9d2e5166a39c37e7c",
+      "business-contains:sharing:share": "b3692d77d336680b4cd629baea7e4633081dac1db4805d6bd9021ea6fea4b592",
+      "business-contains:sharing:upload": "9a5726aa5867e183a78d01384c587f8a33ff96fdf273dc0c57639715b9274a50",
+      "concept-relation:list-read": "91c922385b1d86c9188ada94c99b254665d097c55517cfeebae2ec63d468e289",
+      "concept-relation:share-list": "3f78e6aa5343154e3b7bb26f788919575b29b6a704f492feae07f870b886a9b0",
+      "concept-relation:share-revoke": "7cf90de6ee8a5e409737391eebedb2a12b7c388249a11659a66d18b827206311",
+      "concept-relation:upload-share": "883fbc637b967515c7939efe0e6ee1469fa3c03148aeee93a0db28f2c5f2ee76",
+      "db-edge:db%3Afiles%3Astore:contains:db%3Afiles%3Atable%253Afiles": "8dba3854f65d83f9d8d21bb67a3c8ef4c71be1af177984973a0fa8a38dcd633d",
+      "db-edge:db%3Afiles%3Astore:contains:db%3Afiles%3Atable%253Agrants": "bc69fb9d49b99ce343df0218b606c7e08d3702c0852f9a056f8aca7951f74348",
+      "db-edge:db%3Afiles%3Atable%253Afiles:contains:db%3Afiles%3Atable%253Afiles%3Afield%3Aid": "49b4fb583cf17e712e2fe791fcac92fcd8ec1372f000f883f9e48401c94f6ddd",
+      "db-edge:db%3Afiles%3Atable%253Afiles:contains:db%3Afiles%3Atable%253Afiles%3Afield%3Aname": "bebc5e3ac805aefe8a6aa1544f95a9bdf9f1e4932580fb9f3003e9c3ebc5cb6c",
+      "db-edge:db%3Afiles%3Atable%253Afiles:contains:db%3Afiles%3Atable%253Afiles%3Afield%3Aowner": "5475efccccf5c60f9f3ee61a112e44f3c8be75026da49d3ed49b63eabc1ae05d",
+      "db-edge:db%3Afiles%3Atable%253Afiles:reads:db.facts": "7ff68f8d37b51cf69579422decdfbfafc8f05ed7d9401dd3da79579f25ff16a5",
+      "db-edge:db%3Afiles%3Atable%253Afiles:reads:db.list": "65ab73cb9e99378a88a7634399316c9860e21b4b2663128bcd641cdaa27470c9",
+      "db-edge:db%3Afiles%3Atable%253Afiles:reads:db.revoke": "98aa02b00519c71c510a275ca24f2a3dc7d9ae90bb6cbd4f0209b7e2a76bc231",
+      "db-edge:db%3Afiles%3Atable%253Afiles:reads:db.share": "1d10ea69e55ec66a99fe95a69350ea965f19036fdddf7eae2bad783126897474",
+      "db-edge:db%3Afiles%3Atable%253Agrants%3Afield%3Afile_id:maps:db%3Afiles%3Atable%253Afiles%3Afield%3Aid": "4216cbc6832a38c0fbef3b6f40536bca01847ca4fdd6e34de7a0a81d0164d9ef",
+      "db-edge:db%3Afiles%3Atable%253Agrants:contains:db%3Afiles%3Atable%253Agrants%3Afield%3Aactive": "8174f0817343049bc52e8bbb0a9b6798539a4a739e4fe4068c4e97739b080d90",
+      "db-edge:db%3Afiles%3Atable%253Agrants:contains:db%3Afiles%3Atable%253Agrants%3Afield%3Afile_id": "f49ef3433637124ab65f93a314cdca4e8d98909b74c7876fba28c52e84e80cfe",
+      "db-edge:db%3Afiles%3Atable%253Agrants:contains:db%3Afiles%3Atable%253Agrants%3Afield%3Arecipient": "36b1da993b98c48efc773447aa8c110aef0a55a4ee2e432a998f9ebedadec5b0",
+      "db-edge:db%3Afiles%3Atable%253Agrants:contains:db%3Afiles%3Atable%253Agrants%3Afield%3Arevision": "a103bef6640ea1113a3f34d03f8b06c37d8266a58588c302f344a77bfba8be9e",
+      "db-edge:db%3Afiles%3Atable%253Agrants:reads:db.facts": "91437ff2619294619cca94dbe1236fcb7f2583f436e9e441a49bbc9610dff118",
+      "db-edge:db%3Afiles%3Atable%253Agrants:reads:db.list": "0dea7cb2d31a22ab88fd6672349e7258215aa8b393b95f52b7bd1c9c75b9ed2d",
+      "db-edge:db%3Afiles%3Atable%253Agrants:reads:db.revoke": "67b3f1f8a1eae468003a3d6a2f960962ab691dad80213d3c2e6cf0055ca0574b",
+      "db-edge:db%3Afiles%3Atable%253Agrants:reads:db.share": "d6d85a514292dada6df05d2bbc6f85ced00b5d1644a62a25bc6b8e7e81fba895",
+      "db-edge:db%3Afiles%3Atable%253Agrants:references:db%3Afiles%3Atable%253Afiles": "8a46d55228432a24a321c4449b955372bfe594b0a5b601211a9707e40d6f4d59",
+      "db-edge:db.revoke:writes:db%3Afiles%3Atable%253Agrants": "39392adb4f066a36687b8af877f1873d6e3c2068bf28c9e1d00e67a992f22836",
+      "db-edge:db.share:writes:db%3Afiles%3Atable%253Agrants": "fde5ff8d7ad8da893a8108610d245a118d5c94491da62164e482c48f4241fdfe",
+      "db-edge:db.upload:writes:db%3Afiles%3Atable%253Afiles": "6b2a7315b1003058f7f05369a90eed8e4e90ed114d059a4b31e75a1387430bf4",
+      "db-edge:facts:contains:db.facts": "9b23dd72b821204916fb6c414d03fe5cb0f196787149fc3afdd07b1ac88059eb",
+      "db-edge:list:contains:db.list": "101d789535bcc14d15c29c5b37fe23dc01af4c71e6ffa82175f1eb4ff7c3fa79",
+      "db-edge:revoke:contains:db.revoke": "d417845596a775751697364bf7f7e8182c67446a18672d917b4e8f89ca2b7591",
+      "db-edge:share:contains:db.share": "275d612242967091b4ebdfbe2a50be7d9edee6694f7127be4a8a17eedf43e1c6",
+      "db-edge:upload:contains:db.upload": "a5cd56df746b2c3e1a220e7efd80ed3aaa8d36cb235f56a84ee222ba316b637a",
+      "event-trigger:grant:grant-replace": "5807dc4ac9363e5e5aadab897dd56d2b2b8dc62c7465e5ad92c83f8ca5793390",
+      "event-trigger:grant:grant-revoke": "060c5e8d940366c0a726280c67e5cdf8b6bd09800874bf17f4787007f1105808",
+      "event-trigger:grant:grant-share": "b20f576e69d29e9ba8f6888dbbc325addbffa463b3c1c7efbd26e575e57fd618",
+      "fact:active": "122477725efa5193cea7a6dbf41e94420866175d8303b3847ef348b4408931d6",
+      "fact:actor": "c06ecd647921ae72404818b1b1863d1e134f08d34a80bc7314d94a1bff9465fa",
+      "fact:owner": "683f0f77d33ef40f93c0303d445bdfeaebdff8811a574fd32786184613002dde",
+      "fact:recipient": "9f3016b613a63e7939973dcd2c62be9f679c070ba028b4437103c5de08e300fc",
+      "guard-decision:guard%3Agrant%3Amay_manage": "ed78804055d94009055fd6a8e23ed7ec41f0c5ad0885954715a0e3e913c0fb2a",
+      "http-call:download": "84276ee23fa883abf320ba3a49961586f4fdf380c3edfd43c2b76d8aafb76478",
+      "http-call:received": "00ba3abe95665a42a49e3581a29839cb0add61a722f99620e2331eada3ada6bd",
+      "http-call:revoke": "8146b4c3c5ecf03d9d2b4e48e45c589d4de7f6f640cb75847b298285f54dcbea",
+      "http-call:share": "7a11fec9186547289fc9f4aca1b1679e6517169c714c0ca7cd811cd95daa30ab",
+      "http-call:upload": "ce50ea4f1ebefb41d322ddcfc6dfe67f8e8619ffc3221aa037ee6aae73c7d334",
+      "list-read": "d7cc183afea55fba8548eb77e7b744723e1e563dd3110afe4b4df3d5a4b4e47d",
+      "object-fact:active-grant": "becacd54f79f6c676566c86f73ec3e6d98743451acfb0f0ae4754eed210947e2",
+      "object-fact:actor-id": "4a2ee002f7af78595632265c450c2d9b51c1f26d76510cc00e691b08ad8389b6",
+      "object-fact:owner-id": "abbd13fffa11a57e423145890693b28698d31418b9011ab678a20cfba6b847d0",
+      "object-fact:recipient-id": "05d0ec95ba02114f05c3d23b9e141ad8f2e5b03e85b7b34e6636a49c7c6df531",
+      "operation-rule:list:read": "0fb17677a5dc0c83eae445cec5017d88db1fec873dc3e67dea23010db1360714",
+      "operation-rule:read:read": "b00d3b32292cb04d03f49b47b472df5ae1e04525299c15b03d4b5c8e28d317cf",
+      "operation-rule:revoke:manage": "45c872e927b4a84fd70f47fcb637d32690a6b553e8164a31633a3bc009b2ea2b",
+      "operation-rule:share:manage": "898911640a5c2545dc56d319753ba45c92b997b77bbdd8ee74d8ac63d24d8fe6",
+      "operation-state:list:grant": "72a88bb8dfc2426386eac1f4bf2afb3787d7886511e86047a19aa41b19bcd1a9",
+      "operation-state:read:grant": "4fd2d375d9b52dc9ea18c8b2e348bd142ddafcf378e463efa1f77921c2b9a300",
+      "operation-state:revoke:grant": "e8997cf3c6a57699096264676cab2804b269ad6f9f8e373c10fbf547dcca0a2f",
+      "operation-state:share:grant": "fa4a1d977bafe281329b152936797ed06219e5fda56179c6dd98a04df52055b7",
+      "policy-dependency:is_owner:0": "5703a0e9c1d951d1f9e0eea0519ff5383fa19f5861042057d595fd29b719bf96",
+      "policy-dependency:is_owner:1": "e6ffb797fdf55023d591adbc7f2a56ee16fa1322ad3f3c7c371c586e60bc7870",
+      "policy-dependency:is_owner:2": "bf3cf8a2fd2390b4581d9bfa3f9db0f7e31f140345166d926c2676928f8caffb",
+      "policy-dependency:is_recipient:0": "424c52f5581979de8ad2dd1702918c4ae02223c61e6481e43ffa297991e4840f",
+      "policy-dependency:is_recipient:1": "842a39d954bd3225af0fdee1c12afbee8597cebc005580176dcd2e94dbfdaff5",
+      "policy-dependency:is_recipient:2": "0faabe37e781adc2ed4404c8bdea843ea23401380b525f881087b7d59958db26",
+      "policy-dependency:may_read:0": "8c0cf5a32d1a7fb87df5aabf4ea7bb7408122f6b42c758298e79f9aca13d6fcb",
+      "policy-dependency:may_read:1": "5dfc4d20c953e010e65f782a83ae7ba6ab1c51d3f5bd55cb5e65f59575cacc4e",
+      "policy-result:manage": "58edd1ee84eadeadb9cd608b7c34bab976d42acea00b895ecc857117a88e5516",
+      "policy-result:read": "58a81a50edfade57e81cdb84a4ec37bf6ca8e897032159b8c5e298d0a9df0834",
+      "policy:contains:active": "7a801b7f6f23bdc6bd8062426732ca90dc954ba181158f3d654f973fcec04449",
+      "policy:contains:actor": "66c1556b8e5ecf93fcf207efc36f512a581eef3b125c1e45e9dba604d10339ba",
+      "policy:contains:is_owner": "0f5ce623b7b1a10d155c274fc1e5e0ad1a1e2634f00be7ec5045e7295df70ca5",
+      "policy:contains:is_recipient": "b4ba1c52f71902e179dd7b16b934de1562409e1692f032d9c8673404935de973",
+      "policy:contains:may_read": "b336f5872e3f45def03750c247dbc074425d3499cac9a51c33a60111cbcb3dd5",
+      "policy:contains:owner": "c837958f9abc23669f112f397f3b2200d3d0385af6e89f828426b12fd8059fa5",
+      "policy:contains:recipient": "461d97167af21b996b0f31ae4c31d6d842012ed70411f9094fefbd1961c1706a",
+      "policy:dependency:is_owner:0": "11b0298acab8f402e44041e3aac9738da7905ff689bd50d2b6be87e7bbfe93c0",
+      "policy:dependency:is_owner:1": "3e9439049632bfcfa3c36570f339bc9b7fee9a2b25fcf192a79b68b4bf3e5eea",
+      "policy:dependency:is_recipient:0": "c3f486e15079c7f750b628ab50f4f4b26e7951414927108a3e7c8881c481668a",
+      "policy:dependency:is_recipient:1": "abac1d5681a97949cca38d0384f4f3c947728f498611787e93554ccdc2943171",
+      "policy:dependency:may_read:0": "6cb86f4c7e31219134b2021873b82ff129e9c2557fdcefe644226ea622bd9040",
+      "policy:dependency:may_read:1": "ae71087201c77b9227dd4fb2ecf89d441ada0d70cfeb2ca1d0e7a745f81da4b4",
+      "policy:mapping:is_owner": "a8977485e532d0ff678c9448affe43a022609fcb401536f9df748fe72af85587",
+      "policy:mapping:is_recipient": "f3d974c81356446c7cbfdc71bd1f1be165302b06b61f5c97f6036d81f10bbbc3",
+      "policy:operation:manage:revoke": "e4cfdbb8989fdbb82f028485654e44822600b8162122c67b9bbe4ec43d28ef44",
+      "policy:operation:manage:share": "5222e49bb3819562d8a49a23d26774e0988caeb040dd5f1325d02137164e781a",
+      "policy:operation:read:list": "b6fb6c5db7723034e1a62c9ea5e543e2e3497254d71a8fb6114c02f5ced6a8e3",
+      "policy:operation:read:read": "156170e500d88f0e58919582965ab2ed846b946d1a3bbc3e257e880b9240ffb3",
+      "read-active-grant": "f8ee32ac36199253d816e361644c1922de7ae766e9d94e1c675d8b940f770921",
+      "read-actor-id": "622aa07ccaf4d20e3b149d071dec992d96436d5ddc813844e9b6d25d5c87e641",
+      "read-owner-id": "117e51b7b2c222ac6f7f1cd76ef0d573ebdcc867bc86b52d5097b63b1cf83c8e",
+      "read-recipient-id": "e1c9d881d26407e563053d8c00251370cb2d9cd712583eb354b0a95bffdc17dc",
+      "replace-guard": "3902a9d03e8a2ef29f34ac0d29475d843fe4e767d66227806ce688ed215a0896",
+      "revoke-guard": "e16c050fba74b27847e960c79db18bcc25ce69366813a9a1ab8658e0d215b528",
+      "revoke-requests-event": "0d9979406c2b6e416082dc21e35012a0371b600d79681dde94aff024fdfcb43a",
+      "share-guard": "fa109065b7e3cf315854e7dd44554af24ba89e069cdf6b910a4f8ba54f8d89a0",
+      "share-list": "0816f6de9e6a3f96c30c73d3e87ded9a0124f9384ecc6f2338f4de8f3a9be9e9",
+      "share-requests-event": "1f92e972de0d88c21eba5b73f355735969680406d9194277929437937e657523",
+      "share-revoke": "3fb7787a031d0527f92fa115df46a5cc5b34f4930f4fc6702e6e19d1b39ecf5a",
+      "state-contains:grant:active": "b31d022a679ddaae861636018101a9bf8db626d3a82e2a12e596cd4ee6f76edd",
+      "state-contains:grant:inactive": "bff439e288011f6e5e4da39872a7cd6c81fc3149bf4071fb2d64e08cd97e868a",
+      "state-event:grant:revoke": "2a264612d95d8183853a040ab703efe74726cd883c96d307e932cd45876b67ea",
+      "state-event:grant:share": "dea6368e91289ef97ff7840ec8e4939a85f3793262d723c74cf769009df7227e",
+      "state-guard:grant:may_manage": "2815b018a8fda4eaed94fa3e94371aa605c57a4f32b88086f163670a2cd587b1",
+      "state-subject:grant": "aad041403e14e7dd283a954bef747a081979bc3cb1180ff0b03919d0ccd16a75",
+      "state-transition:grant:grant-replace:active": "771dae4172163d313e443f2950c667c56376256cb33d32b43e1eb63acb03ae51",
+      "state-transition:grant:grant-revoke:active": "3b73d51f7bffc599917824dd91d2ae78d824a6621324b02810dd90f08a99b232",
+      "state-transition:grant:grant-share:inactive": "dce933e33470b54549f87e70443d94ee06bd36dc117eb8eb2f7b2fbb755ac7f7",
+      "transition-guard:grant:grant-replace:may_manage": "45a953fada9532ef4d51b0826cffcb1428c69c595bad271cc8dcdb8d46d16259",
+      "transition-guard:grant:grant-revoke:may_manage": "5bc07e434023ee1ca29c58e30881befdf651833f6560c631436c9432286d9620",
+      "transition-guard:grant:grant-share:may_manage": "2f5539165ef777c863c92b046b90e9f98599f697dda15e85b408435fd6c62dae",
+      "transition-target:grant:grant-replace": "c7c7c2bd45dfcd7abe5e3ff46d7359235016af42e25e95a652f0dbcd84c6f510",
+      "transition-target:grant:grant-revoke": "f1a5a2a0297c747b04afb3bf007c9317c8f0e6aa7e16bb02595530f0fdf53bed",
+      "transition-target:grant:grant-share": "1d95c5acb8fd8f1a9376de7efed550a38e8016135c3fae25bc971b3b12bf0c16",
+      "upload-share": "31184cf6bc6b200c76b13e60ddee40fcbde6b13243fab68a5e68e12daafb83d1"
+    },
+    "events": {
+      "revoke": "c4b6e706d1c3245cc6f152126f9a6132f56e4b4a067e687b09c5be44de7032d4",
+      "share": "92ce9b876d4b014368115f7ecdccef44df7de3c4d2c1ce038663507c60ce5215"
+    },
+    "nodes": {
+      "active": "d6d24bc04f2f5ed570ee1a5b9731ca6c1031eddb14c200f550b3db34088e272a",
+      "code.24cdb96f0e01ca5e": "8ffe9d5945fc02f1d77125808debb02f770782acedb79ef4cd96e12fb9224fa0",
+      "code.2d0fba968befe8e9": "369ec3fc7b4dd31aa2e70657904f165c13bbe6e3438ea4c244d83948a30f7e71",
+      "code.2f7251da638c0fb6": "ac5b22c81b6f727971cb3f988b70eb3966d8de2350465e81de5468be5ec24ed6",
+      "code.338b224b6f166a79": "fb8f807f8cdaefe78003e97bc4ef9761f774aae9aa522dc235bb3d1ed634ca12",
+      "code.443b87aed036bffa": "08786830f1ccda6f96dac554c3542f72667a93410f547bd8cb5faea615274b9d",
+      "code.46c14661548922c3": "d5d4fd2c65fa2d5c0642dd8595ce6c6d6a0800de2a1603ae3478a0780d138315",
+      "code.50ae654d4260e164": "526534502b607d511fc2aed8ed70540af10839a502c102195fec959887fdaa0e",
+      "code.60b0d89a81c9e44a": "e8594071140e5412e15706bbd7fd945f4ea8b3f6b20d8b8cd1e04a532e43c78d",
+      "code.67cfd97725f287a9": "edfb5ecdd7c09b340beb395c1e32f4a3bceab9f5b986a4a640516184d18ebb5e",
+      "code.6e677d1af4b037c9": "0794ea59c314727c6c8bf4a0b3d0af3b2b4bf688c32853527f4de6a5f42aa1c0",
+      "code.759905501e184a8a": "070eecabf95bd0bb4836f3b5650c60aa9da825cedbe0c512ef32530e47ceeddc",
+      "code.9f57adb327d759ec": "e95fda429933371b49a72b13cbddcde11cda0ce48cf3c7b18f8c48429339aac7",
+      "code.a57b37d7cd8b013c": "8aa9cb49be659c0598d88bf34f0ef99553c2d599f9141007ce7fd3938b4754df",
+      "code.c54383296a450071": "b7c4945ac5add19bff656f10a68987931fd6e895a79bf679e4dfc9b8da462d35",
+      "code.d404af1fab7556b5": "dc36b22e1e4c82a8af1ece24a9943600c92f8622dec8e0041e4c537a38c046b7",
+      "code.dd12587c6ebe1bb1": "4ba98594485e97a77f9cf06341ec98b4b692530ef9e0330fd2a654307ea9293a",
+      "code.e7570fd6ab05f362": "ee97599b965c0184f6c9ec5bdfd058f29ebd810557a7cfeef80887ebd9b71e0c",
+      "code.fdc882a96e26f912": "319cd3b36a446305a0642b642f36d876c989645cb323ae2336d98e14e7897c0e",
+      "code:base:84d8ed6246a336b68f61a605": "fcf55d2da66b05192440f4bb2b8340eb99be145901a3875145bf32ab0e099f65",
+      "code:base:caecd752f497e17a502dd306": "f01cd1e17b87e5ed06f3bb5f437170a2478d1004ce1cb9af96fb0650d29fc202",
+      "code:directory:7299b59de0b5dad3b622afc3": "237ddbcc4646aeff553a5cf34526e55704675e7b2c5c1917d658125db1e96802",
+      "code:endpoint:179a8ee56fbc7816ec075ec4": "01d805031222206ba5aa6a5462210488242dd389fc7f4ba1cf6ee33e2bbc4e02",
+      "code:endpoint:43b2043bda8d5c3c89a4d8bc": "687fa1049d396a4ba89954395a73a519b89722d267d2c0b0a35b255f09678511",
+      "code:endpoint:81ea93d1601078137dc29352": "7c1ae2216b92d552adca5a7bf1d65ef062f7054cc0ee3ac58d3d26e80f8d72b4",
+      "code:endpoint:a7b02ce1099441eaedf11342": "c8321d3417b7dec4fe00a15b183c6690a44610a09c0fb0ec1be8dcce4589fb95",
+      "code:endpoint:d75a64a39e86cdd7033e90e3": "511e212aa438f9b85f0c1cf19753a7bd26207f581def30de791f5d50b310325b",
+      "code:endpoint:eeac761459e6208e1ec62861": "0d0b33d47dca0dc5436d36e7d106eb75878e1e8c809e97aa9a2f431b6505df8d",
+      "code:file:3a86fe4bf5023ef10a5b2023": "693d23a11baa3634b7576110a9da14fb234f2b32b369328a882a4fc791a23bbc",
+      "code:file:49dd0aa9e32828655ab551e8": "d8aaa58fd9e26d584d5ef878aed94d40c968f0d4142452e04f6c47323be0259d",
+      "code:file:4b38be2b7dc21f9b17d2666c": "1b88dc162b43f18de03adec54fdb9635bd91f10a3fd864026d19684ce4baa01c",
+      "code:file:978ac4e82e4756d463e0c480": "47829fbc5e8a4c1515bf11d209d247a6790c2b1765ad0593764364482e5aefb7",
+      "code:file:b5eb0c667b752689fd8665df": "8f8f20afb1374e36529ecc0f8636eef7ea4719d0e1eb35f6e39ca8328683d6b3",
+      "code:import:30a01d3dd84fcfda7bbeeb01": "cfccd608d9d2fe00e24c8bd7d5ce3fbaf59094f11cba6c80d2ccac622b73273a",
+      "code:import:3c0dccb1fa0f0991f801b192": "4f9dd2fe913ffba2142089b6652ef66c6c2c187ab9c7c52951d0866e08cd2d2f",
+      "code:import:7589b7f504d7f0876d6c2098": "a267023bf30c4e4e5ccf8b01d3c306654d8c4ea47219e10846a7ac8cdc807f1c",
+      "code:import:8550eb21202504be4cf0c87a": "5a99c4cb628991f43aa48a3a841a884c02c0f47fa3bee858dc32e8c5e5479916",
+      "code:import:8bf35377cec3f101a189e369": "8d2565a33ee0e952463f725bd2ce2502b7fbc9e54ace36ad8a767aafeeadaa0b",
+      "code:import:93bb211038c5f85f825c9e4f": "0b0b94533f889436d83f33deadbe9c8858df8b2d7b77508ddec6a802eb49c3ff",
+      "code:import:945805848a15f50a332b55ce": "f93505c611cc417380613b6d675a14bafd7d2890ae4dde7804cedb28358114f5",
+      "code:import:b1eb6848d39b7a63383d5f2b": "a85851c5c6aea6203905cd1e8d9579a4fd4e8c45b14c5fa9ca6d14b715ca989e",
+      "code:parameter:026c63525fc3b8601b88279f": "4f4057acd3d6bd0de8b5c3b65712f920684bafe508d00a27dc1f47fb60332acf",
+      "code:parameter:03439c92658097bf0279a640": "ae9af8bd87d3b80e52d12e4ea18bc1960f6cffa87cbb87f8fd049bbbbe3ed593",
+      "code:parameter:05ac91a87eae0b398d3a04b9": "e31d69af5b754424c1fd1119a7707b1dee9b89229f95ae732d7e2c9c5d7d6042",
+      "code:parameter:07e8411728f73ad752e5ca18": "8d817a4b910a4166b3b94211ac832ecb518bb51bbc3fc3f5620bec6dd943f661",
+      "code:parameter:1a9b59f88fd9d61f44d0267b": "aae6750d241bbcf3fed8aed0ee33998c497958379e188b2e91704061ce030845",
+      "code:parameter:2c531cd1eed2aa808483dba9": "86851f453ced2dab346e221c7ec9e5d521f4b1d3a37ad7da53cf5cb2cf451919",
+      "code:parameter:30c547f9289fc64cb9616df0": "627402111cf5a69f381da34438c32c2a6671f2ec8c9a1bc27d5402a438d6f133",
+      "code:parameter:37762f3d7ebc43bb7ca09084": "97560ddcc37fddd1c6ceb2ab9305cf26400acc013031b7b5cfd7ffe8138602fa",
+      "code:parameter:37b130a014b0608c9da418f6": "f105f677b15421007dc8077f7c480acc972026e6d469dc5075ebd09289419db2",
+      "code:parameter:3c60a00476ef3abaf1d3d9ba": "2a476e5c4f7ff68d485c062cf353d2b9069b5d3e1003a0d797362f1bc64c9f90",
+      "code:parameter:4717702ec125ed456caff6f4": "44ed413ec484f736f166e96884bfa6cc0752a0dfbb7a0c6dcc0a4b7413b8f520",
+      "code:parameter:586ab938ad2c9546019956f7": "23b2f4b35c07fe6debdea418538cb808e1b93a71d292c87f476d232bf895f8e3",
+      "code:parameter:58720f4e8d9fb5b1f6de27d2": "c5690333b29df0ebb259b6cbb3a49153f5289340a8afaef1b2dcf23853979450",
+      "code:parameter:59b75ce2daa4f358c1eb39f3": "fc512df97df53a83495a8e4c690957c87c3d8469e480ef9b2ddbcaee546fb75d",
+      "code:parameter:5eb9136f672f15727ff277f2": "feddb9808d6b2dec2b7c1ea04569468a6e1378a22683915d0d300f7ce019e6eb",
+      "code:parameter:631b071f4587c76b4142c89b": "34d5401fec21673500324f539706e08875cb16f48f91cae1823a530d2be26568",
+      "code:parameter:6c2e352304ae16e0f53b03a7": "e20c01f0c13af36e988108f2a7e8e75acb7d8a25f5102fea3471ecc0b65bf856",
+      "code:parameter:704a7beffe5fd8cd2b26c923": "56054dd361ee5e19fa23e3ec08d18a6f7b56627d47ec6bc7689e73c1daec47d2",
+      "code:parameter:7507f717eef955c65ab758d8": "ed1b0ce20514d1867a6805a98759aaf87499e70df7ec0dbe6c743cfe38088600",
+      "code:parameter:7637a091a14c4d7e8f7f6691": "b9acbb3af0161e3c7b8e6f2b4d1870dd4a1f0c701c77c055a35466d8e02997a1",
+      "code:parameter:76d34ea0fc6bf3589d2746ed": "26b5e10325be49eae359a98d28e69da88983f41256d1aac11f2987745bd098a4",
+      "code:parameter:7c32b795845e6a5696214890": "2688532fef0ef1c3683abd418f0e760820b9ef08911af6c274433ae5eabff8ec",
+      "code:parameter:7f7560994cc3709ed40d1f12": "54c202a80ae65a603cb3aaf8c3957e96e3fdcccf9c49cf87c0581bb50f641e73",
+      "code:parameter:7fc0dd3781c65e27d79b18c1": "e18774e7186da5066b6b4a6bac664ec8bec9b3e82839b2e5fe559bccea8c52dc",
+      "code:parameter:86e814b3d32056f3d03d7a8b": "091cd753c63189f603fc64d6121a777f9e56439806430eef1a575391688aa705",
+      "code:parameter:8b9c5f04c266fe8045bf9389": "b98572c5d2b6c3aedd1a70faabbea7e19c73aab465166cffd76377b2d10ccf16",
+      "code:parameter:8e8ba717bf59df20f699b8af": "854deed3ded4b39f24d9cd2fae78a60243e0c956baba3191f7b0bf1af1c0b47c",
+      "code:parameter:9e548d95239b00066e07c3f0": "c3504875ddcc802fd1cff2329fbdebb516cda49a174b27613e4787d25355e918",
+      "code:parameter:a0dd158ba71a5ff69ad55442": "0325092ba72451f1c8d8a20cccd5a218de2b3478f86b2e31bee998d017f181bb",
+      "code:parameter:af2a7e6d804214240f134a08": "0664ec17af934c9735a983196defe995f584c2869af8f501c34f155388443145",
+      "code:parameter:c1077788d0117e644639d1f9": "3fad2a5d4ef0ad115e8969048d21f60b31f3d304010b32c47d4e42113e92adb7",
+      "code:parameter:ca6f90afef9eea57df5619a1": "7322db0020d98c02d1024bd2ec50658e5c5b6f9246e708a7df03726e26eaff09",
+      "code:parameter:df175ef6b2f0ffe5ea428415": "351f00d71bb71469eaa6b00648ee89947c8405347e12f2beac09ec005e1f0681",
+      "code:parameter:df86b8dc854ed1a763811cc6": "1698bd8f1c5861b261c8c428c552c3f2cd2eeb7754438fe36f5bd6ca6faf8f5b",
+      "code:parameter:ed3fe8d2235d93ca16e8e10c": "47802deb539e7b3a6824fc844a787628a01a21c0d399c0a3ab076bbc86071352",
+      "code:parameter:f1bd293b058681c2c5c717df": "b9aaa4c731ba8d238eb7552efbd395fce110c10f34c45a86a971ed4483281eeb",
+      "code:parameter:f48e575adeacc380071299be": "9e64fbc64758b0b58430664c14c0a257af05e202bed222ab542f9873e0b0bfe1",
+      "code:parameter:f88478d43bdc1cbfc19ff250": "847cba7b14b6ce1de60c9f7d4d9c2332049b59589ae6d0a63d572b06c9f8d4e0",
+      "code:parameter:fc44024152b3abba06bfe51c": "7a4444b0dcc1dbff21bc674f1f31eb98b805e66b5973f6f14aefe6f17ed81974",
+      "code:parameter:fd8a2255bd445124b2db7006": "24b85615fb4262ef566652006f6ed73fa928314357d4bcdf9595ef1a183e28a8",
+      "code:parameter:ffb9410cd94c7aab647bbb2c": "a9d1493e0a41ac2ef3d1e5355616c6f359422d3af4f95455231352f0180aa38a",
+      "code:symbol:01fc565dfb3ed18f6b561385": "2f1c07243d688a1e0fcd59a91c64f81e2f76ed6c7de28da2a069189b304c1b58",
+      "code:symbol:09532a23ce9ac4eedf203aee": "f221c0c27d28b313d707f2083b294e3a3adba46d3753a9b1e0d4801146326f07",
+      "code:symbol:0a5d07ef8f72fed29f37fc12": "08f3d39599589376d516b2a05ec011f29d441cad7d8e89963e3ec01693897b17",
+      "code:symbol:1ac4f1ecae4c9c1946d33785": "3a06ddcee3045cdd62b51fe19ec6e4f9e45d4fe7f9c8e2ca81d59fa8e52feb5e",
+      "code:symbol:2d1baf22920362510869b0f6": "c80539d75ebfaa12a852d62981f30e9ae362ed6f5743467a33d27362c964d2a2",
+      "code:symbol:36cdad30cc5ad6e2b5af632e": "c344615bc35e429bce60e5bbea324f1900f27c5143d8b618e1472eb7cc31d2af",
+      "code:symbol:3e14f884f4aa21d540f9ad3c": "240c142b2a0fd53f45fb7fd8c862b415e859fcf7ee997437708c7ec6b4559cb2",
+      "code:symbol:41305c6cc8e1b5e3ea7541a3": "b09ed016792d1af58327380ef48e3f55dcd1c514a0935ab96bafbed154fec52d",
+      "code:symbol:44ab87502dc49a335ee97acb": "91d54747fb9b05b0cc537a9ea7f9cd62a26929831bf0fd42048130606a18644a",
+      "code:symbol:464843d79a8d87b1aec2a378": "2f79ffd9e47cd4f5db4fb247684f3bd6b6014db24178dabc7d0015bf890024ea",
+      "code:symbol:513587538d58192c30a19f12": "1f7432a0e49b1198f85dc7d4bf1509744387b284d98711cc4f307f9f313122d0",
+      "code:symbol:6b3ba1f897f29f89bdf2fa38": "1e7e0e0c9382e2b69f81a5ce4841ede59de763f5d98ed44a98687feec28d1b59",
+      "code:symbol:7870d81b99f5f658f55e34c5": "c768383de4ceb766102fd4d54557862b6801b7389535599fe21c5f6675231f5f",
+      "code:symbol:8d8bc326cd203706736d4f35": "114bcc2d12b5009369dd218a6eedd2165f76ff9b3c36efcc4e7f120de52278af",
+      "code:symbol:9a7db9663e1e9dcdca6ae0af": "a249cc56507af27083804e82f46edaa915e362f4441a15fe0fad16b69e50ff48",
+      "code:symbol:afad41df87cf69fb3c364df2": "009a1f5ba5df976b9c4a00eb9eb40a33cb5d6cc3ace3568d9e97ceaf617a60da",
+      "code:symbol:b14be48ec016845bbf857512": "871ede055d84dfd132c85f951f4ef95d8917844880cd3848c9f55c5b0fb404f6",
+      "code:symbol:b24de73e894f63be81ef8761": "54af5e9c26cafea1138ad93ccc515b1a1ca4d850ae9f0eab7208103fa830e88c",
+      "code:symbol:b83e78f85bdfcb9ab7c937b8": "2921c1b44020ccc36205905d1aa1e2185a96a16bdd1e7263a2dca5a96665e8e8",
+      "code:symbol:bad3cbed059847e6cb11c4be": "343aa07f3e15bd90bb86fae5d5ff6dfd24fb82869e02b43561a6a88a22d15239",
+      "code:symbol:be6d39eed3bcc15fd9b2e2f8": "4b4cbfdec2b0e88f9404bbc77bee32afe41a80149d62360b5a8a0a8c3b345ecc",
+      "code:symbol:bf5f2cfce6ffbd28f1ef07a1": "8b58320cf1111699a07d252ae40947ca1a590c66185226168b1e92c8d9b56ac8",
+      "code:symbol:c6ca04471fb04066fcc4588e": "7d8f4574cbfd7906505e5908773c9a6079388096aa9465d05369a7eb60839f6a",
+      "code:symbol:cdbd238aeb1f5e93d719e150": "e0e126e337cd876272f28dc8fda4240de71dea1a31e3b2471db1413868f05b01",
+      "code:symbol:d1dfb9305dc76221c992ce89": "7e0614faa208f87955b494ef4c3f513089adaa640d3ecf5ba12be8453063654c",
+      "code:symbol:dff6661b3a8752219116bc36": "94215742b5901d13e5587d879fba5bb953b7884e72ce3db93dad0814e38a8a71",
+      "code:symbol:f3a45c7bce1007a62d6bb0a8": "4e12203b46687e3f8a2c0f669fc4f33775c3c3a812a23bfe3af643cb72c942ba",
+      "code:unresolved:042cad95823eafe32135d5bf": "9b487d858925bd0a39e59bb0ce4db87f835225e7e29ea48eba710df25d39518c",
+      "code:unresolved:0f4e17dc5be745459526b1f4": "bec7e0a5a16bf2f3c57f108b2a1042e5fb6ae7f2126111b667d2094d0cb230f7",
+      "code:unresolved:101544df0d6d842a71bb669b": "4a5fada389bede796891fcdb4850d465eff7cf830691ad73a3640bd543b65351",
+      "code:unresolved:1405eb57466f346e0d3d696e": "ddfd4efe8be0913390e893e061af5a65093532fa4dff8d1181a80b3c1e4d5b0a",
+      "code:unresolved:250ac37ecb074369e8ccc9d9": "110f40076c68bd15c323db97d0a274860f031059a0441e1f0e2f3db3cae46c62",
+      "code:unresolved:289e7ef8d667405ce46b27bd": "e5d13f26220e20d25ab44de0427fb2326e423645d7f4037498a49e9d3cfb5a20",
+      "code:unresolved:2b90c479a73742cd477aef97": "f09f507e4b91a67ac88313f1e4f72415bc76b47d7e00618168d8077292f874c0",
+      "code:unresolved:2d7129140c02857cab41c49c": "eef7c48713a435a4c812919f65c917f8fb523f1cd08e5aa59f5f3e58f4fe3101",
+      "code:unresolved:2e22b3433e0bb0e7caf13ffb": "7d447dc8bc4851c563eab45bdd725bfb85746c38794908dc5bf138245451de4c",
+      "code:unresolved:33eca310aa15695595799ffc": "1d13c884b3cd25448f34d5e562c50a62299e0c80a547b6b8a10a9e0abad4e9b6",
+      "code:unresolved:393f770b954a056f20960115": "53b467bf943981868bcddfcc9fcb699297523149e519f19a83490bb5866fbc01",
+      "code:unresolved:3afb831f0af4b114eeee9d9f": "6318f5ce5ca65c23f599a8aff94c838c13373ca372961a332a4f776f275875c9",
+      "code:unresolved:442ded8c63c18527b8553d13": "8186a5a5659f0e73ced6188ba393a450aceda78dcf07c4bae54221ff2f878b67",
+      "code:unresolved:44d0c40127c1f44568ee86c1": "3f9b2c726d9ffff32abbab312aec0ade45aa139cd5b348e3ce79f0cdb6fca761",
+      "code:unresolved:4e201695ad7932929b950e35": "a83573c3633f7b369312991d63a7d4e32a91b0900cc2de42c028c3a6d8b7dac3",
+      "code:unresolved:51a6f3b257ed6a44a9ed6886": "6ef77f68605f00a53d16a0a45037086148eeac9b44bda5f489e6c89f9280c5f4",
+      "code:unresolved:551c627b73d5e27c8073af58": "8c49f7cd223aa49dbdecfba98babb96f169e0b40eadffc8dfc5d0d6cbebaa8fc",
+      "code:unresolved:5a16434174178e8878e32bf4": "1085a492d3914769a9204441ccb2582495b474c15672acb508e028ac8e885727",
+      "code:unresolved:5c203f65dbf41de384a324c8": "c53644b776d419c1708080d964b611b011fba94a1bdc9ed03c6ef4028853f435",
+      "code:unresolved:5d2e384d5057ad3bc74af7b6": "1e230fb9656101ef702f3ea6e6331619a3ba614ee992378c429df35e38f6a830",
+      "code:unresolved:5e1a00c76d72863e768010ce": "7e3dfcb8b0908c7cfd453875c66798ee28e7e82d03f8b14d6f238a2dacbdc876",
+      "code:unresolved:6f75c2d0937a572338b3b2f6": "c9e80b8cad2b2e4963873a3be1116a711567e2a18c5b09c7c756dd4c9d6227f0",
+      "code:unresolved:71cd0ce124526d9a4753c54e": "5ca6c3918df47d6c4d9de43688cd4e7bef74cbbe05f60033d510198d60cd48b7",
+      "code:unresolved:728b8a16479e867e754cdbba": "b3793dedeafefcb5f00d32b22de05c3e02e98fce52596686354ff317dd254922",
+      "code:unresolved:745c5f3b151ff66194410037": "12b4617752dda3766a479a3227450205e9a73a48cf5d0ecb89e3dcb595b2826c",
+      "code:unresolved:75e9a4eaa62fac08143eb862": "18fa479ef90ac15d8b25457c15f69f3138651af0dd43a562c9f2e059a49f7ab7",
+      "code:unresolved:766ae8161f07ea0576eb4916": "9033fdd274c4b8b4d0261e614c2fc7e204a9f2489126e12c23aeaae97494c98b",
+      "code:unresolved:76a820405dbceb58608dce76": "2ff58afb3553871a9a1bd51a21fe78615b13300741cd6c24366793e270744cd8",
+      "code:unresolved:76b85dda7ea33ce992371ea8": "7121e3540496acc82888830d10e0e0e2ff12c491bd0a837487ad0141b7769623",
+      "code:unresolved:78df336fa48c9a48e4a5d718": "af53181411b7dce1dc62aa77ac8d7e456f8a65cb4b705b28601557e70da91fbe",
+      "code:unresolved:7bdaa7993d4a700a66fae8ea": "f86f4216721b24393f49345213968b1d9e385f00b52e5c3d1efe86c624c898f7",
+      "code:unresolved:a2176ea22b312085d23f9c9b": "c52bebc79b0f47f83cf5fa59884522e30c9a37371e4333ab0b4b849ace2891cc",
+      "code:unresolved:b0ba2eef187ae204d5d5600f": "ed9c76fda4ffb5caffce4ef0e95d0098551cfac2ba697e3fdeb6059be9e6a06c",
+      "code:unresolved:b7b20aa36ecad0abc77e717f": "8ac09a1db6e1200b94245f1294c1a9c6d423fbdee547d053e81fb127480b2855",
+      "code:unresolved:bd47f9ea57bd60b9059ac3fe": "3b1e89dfc02b40e16d27350047ce87e6654f0f39155b7fac656daa47fffb9bb1",
+      "code:unresolved:c3233f31fe69d2420a1e242c": "971c0065676816a6e95d7417bf230b8956f1554f24a5ab59966b8f606309dc5e",
+      "code:unresolved:c3d67ebe0a65f3b5846e43df": "2c906ff5ac9f76af59f69ef6c52eeea709f00325cbac8b9be09de86eb3a189ce",
+      "code:unresolved:cb43d6674f10d0877615785f": "08ce6d8061bb319c1310257659e0d9f87666b2ab747f53d69d51f96b57a428a4",
+      "code:unresolved:ce663302d6ff0b3600a2f3be": "1bd39ecf8359f1ab252d14b45575e78c3de151a9961f2ab81e73714b1d1b1397",
+      "code:unresolved:d2cfff622c49f5f27c5ab285": "b85469408a61032e6f65dc259e23d07321c0588af32a3a7207ff58d0564af736",
+      "code:unresolved:d4324971fea1b89280495bf4": "88e11dcdd1b3716d669da035210e7425d5bcaa925393bcbd9576662e0cd2be3d",
+      "code:unresolved:da12513e7e2203f89d022ff9": "6b6a5a2dbfb0c880f01d9672385e99dea3096c67088af1181d587504716ed00c",
+      "code:unresolved:dd61e70e6a9c8ce7068516ab": "ba7de501e6aa0627c1b73b4d0a4151bbcef135160d5da1f539b8be411f98aeae",
+      "code:unresolved:dd82c2d80fd1e4d3dca599d8": "ca5d710dd7d7be44d83bf90ab2175d5b56b92fd615e743e87e052e2bc2d3457c",
+      "code:unresolved:e1cce48cc09a2f10db8ad866": "9d2ee5fcd4bcdc3579c7bb80d2cd9475b0585b0ae65b1d14c2a21dc4a95908d0",
+      "code:unresolved:e2b10494f8e480fdc982235b": "02b713af784df27581d941e77bde6c342a0cd9655f11422f53b4f776376d8509",
+      "code:unresolved:e47d7d5bcc183cfd0dc52ee4": "61392e65f83565bfa11ae556c840a4a4b62b2739730a3466dfc5aecdf66aa7cc",
+      "code:unresolved:ed8b325f0cdf1080b561e9ad": "ec93e053e0f9d89e50ea8b85d50ecb44c180ed3525de52a4c3481096ffc42324",
+      "code:unresolved:ee9463cc58f797aed3ae8d28": "c0f80fbd4c4fbebad0b3022bb9ede20ae1ec2838491532a3a821c0caf150479b",
+      "code:unresolved:feec852653698fb8497a6133": "bf16acef6c0881253dd63d6f8775abae12529f1840114c52473a42c302eba7d5",
+      "db.facts": "8c0ff0b7237d686c7f0441a3e61186b780deca5fc49b8e1dbc4563c2696c03db",
+      "db.list": "e59f641476b9e450161bac40caf05262a9d0456a2870c8facceea6d4274e7812",
+      "db.revoke": "f7797c62fb91536dfa036ac8bad9c1a8a8582eb2bd86d4861a5d1ac10dddfebd",
+      "db.share": "d309c7c107a0707a34948b35cec2b6dbda5930afdbd4dc40003fdd83065e8bf6",
+      "db.upload": "0712b4a0c448f472ee6cdfc8ff8e53ea0e56400f4e6b8a1efc39a7172effbf53",
+      "db:files:store": "6d76dbd1ccdd596995eaccca04e8c5ea0742790c1743b5747c6af33ac9fe619e",
+      "db:files:table%3Afiles": "1ee7200e9f8e11e04d6c6915f6898117e9933a0ba59913c3d6bf75fc4675ed9e",
+      "db:files:table%3Afiles:field:id": "429c0796b53a7c703052544834160b182cc6fe9cf052bd384d262a9003e12466",
+      "db:files:table%3Afiles:field:name": "e4ca0749b9e7bb62199b4179ee5308ed826854d779c52d1267ca27d8e0650375",
+      "db:files:table%3Afiles:field:owner": "081389ccce91b1dc8fc98d56e060c4079d6a43b74715c09d4af5baebe5ab231e",
+      "db:files:table%3Agrants": "0077d0a2df96a6b023177a8f86e774693b1417355dce9664b90f6f2bef8da171",
+      "db:files:table%3Agrants:field:active": "978bb1f2e2cbb381d9c741fcdfba4f6ebfcd86769d2b990d8854e98e23cc35da",
+      "db:files:table%3Agrants:field:file_id": "c5e425c5bf34d42ac95e9eab1eb1a74799149eacc17f528be1437ba235ab5d4f",
+      "db:files:table%3Agrants:field:recipient": "13c9bc336109a67f40778db0281ce589031648d6d030cf77c25b7a34a651f469",
+      "db:files:table%3Agrants:field:revision": "2f0dc7356eabee0f8b8f5c721dfadf87e9d3ce7bd3775a7e847af34c3ec53a0e",
+      "facts": "6fe0b660814e6b75300a504aa8472e74edc688118cba3d04d8e46b1c9eb3a29a",
+      "field:db.facts:in:operation": "97f84b14503cebc0c2019f2648441dbbec53cbd44c1514774699d5c339830e5c",
+      "field:db.facts:in:parameters": "9673f13a00f44026cfb8e8dce3e6beb5332ef718556a3fc90b9163f84671d6e4",
+      "field:db.facts:in:statement": "a8431e74634c99b5264c73df0ae72db7147ec02a1b51a4643b76d7bb57679912",
+      "field:db.facts:out:before": "e08f165cc85c7f5e97bf61f5bfd9cd04d28b9d4411708d8cfe6247448a4e75c3",
+      "field:db.facts:out:duration_ms": "d934a9c1bd56dd306af8da601657da57be6813c644c009c8fc4af10668ff9b57",
+      "field:db.facts:out:error_type": "5f7c322bcc28d8d5cb4d50ebec1f3222f03feda611a424b93c257dc2abcde0c3",
+      "field:db.facts:out:input_count": "2531b2a3b9075c5ee41cabdd3879e86e3dae16e305606562d36844d6b9668ff0",
+      "field:db.facts:out:output_count": "4d9331aae3b9ad880328686f087fdd848d34526c755d11c7a2a909e2c98c5541",
+      "field:db.facts:out:result": "63bd879a225384df0b2dca2847ffd921bf2ad0c015d6b72c4957a6be77d3f996",
+      "field:db.facts:out:rows": "09a086e3f7fa0d5d880e9ccaf99f16cfdd56ca5f086a406899a248ed6a6fe4fc",
+      "field:db.facts:out:rows_known": "72a50b7cb3f724520c192b9e0845b4c16f28d3663cd9b830913b4984c39e44ec",
+      "field:db.facts:out:status": "d82ae0e5b6bb7b4bb7fba8aa88a74edfb101d46e36e0545b00a82a3b5f7c70fc",
+      "field:db.facts:out:target_access": "201ed56b5c02da28ff5e042563023e95cdbca69d0270861e5396151b9b244a1d",
+      "field:db.facts:out:target_source": "84617d1b91f0c38738c6ac24b30ff39d9b62f715f0ec57d45194f737020a1e1e",
+      "field:db.facts:out:targets": "5d11e0d8234e492fcde6d8847fd8ab8331f57e062d8e08ab9a5c14384b62d0be",
+      "field:db.facts:out:transaction_id": "6f68b5dc700e53e7e7c68098c6c350183017355500eee3ea284ab5ed5dcfa972",
+      "field:db.facts:out:unknown_targets": "11703cad0d25883ab3d40b29ce3b022b955be41e829e87bf1964d05c1a6b4a8b",
+      "field:db.list:in:operation": "da31afefc97521acb53d8f8d8cb202db301782d52a0bd85f7258d05f82e2d08b",
+      "field:db.list:in:parameters": "f1421ce7bfb6b2f1a7087e548f98a28c3b162cf5d5749e61bc875f766094b48d",
+      "field:db.list:in:statement": "9d2a907f5f6a4f91b3628c46263586b2ef769a2e1da8ce535038612c0c3affdf",
+      "field:db.list:out:before": "ae569647b8f84c2652cdff8865e0ed967b12e866f770d82ef55dff0119c8da82",
+      "field:db.list:out:duration_ms": "af75475b1934e04d6c00ee6531e76c3f0e56c148b21e2a5978115857d1cf53dd",
+      "field:db.list:out:error_type": "63fe093866b637e0f484a20f00f7a2c11ae19095a6ed213805e2e9203f743bcf",
+      "field:db.list:out:input_count": "6feda040a8a4db91b803b1836ea70c16d7cf536f4696d8bcb75ee4e6616b2004",
+      "field:db.list:out:output_count": "43831515817d94087d5b4ac9e72147be3531fd66e28bea2a20cc721d54d00f9f",
+      "field:db.list:out:result": "da9b6ec8c56980ea925dc9687a0af0480887ef23b1e4d998cd42cfa0a1bf5bb2",
+      "field:db.list:out:rows": "c92eeac0238dfdb596fa18bcd747be9d84f7ca768a31e3238e48aec67a55dcb3",
+      "field:db.list:out:rows_known": "3bfb639fcb819a458d1670a8844433bd73e6b45deb2d231f548f8a7d2bb2055b",
+      "field:db.list:out:status": "286414b3db944affe9f49e7c714dc31a5c2862be6bf159ec720d0bbf6ed49da8",
+      "field:db.list:out:target_access": "b57d3cec75a5cae8701f38196cffe80166134a2797368b8665f207d09f68eaff",
+      "field:db.list:out:target_source": "4b182fe1febed3ac911e709f4c93fa2319e0fa560dfc7dd048e038e394ca00bd",
+      "field:db.list:out:targets": "ebf1f406d9aaff9efe935dd68e620573bc3d83fbd615893c4dffea17b47c4cd4",
+      "field:db.list:out:transaction_id": "b0fc7fe3b1dc21f0a74f0c38385fd31659852034518bb18853af563d773d4b73",
+      "field:db.list:out:unknown_targets": "3d55515691fb6bdc8f05dd7cbab78e8d020c6acbffc500c494934205d1a13cf9",
+      "field:db.revoke:in:operation": "42fac9428da71316732aba12ef2fddd8eac1217857f96fd0efd78271f0f0ebca",
+      "field:db.revoke:in:parameters": "cd6e3215bbce0886b5c762a2a0b9de6a9994d643a61f2fa3cf5d3441ed9b0b03",
+      "field:db.revoke:in:statement": "7e0a8468c463ead2b5350088bc687ea84fd7110dd97763a13b671cab51832445",
+      "field:db.revoke:out:before": "308e8a3a947ad97026cba2ec22e348f5315037bbb776456c024c7484c557059f",
+      "field:db.revoke:out:duration_ms": "0942b7720dfa01d7e3a479940411fc97eac3cdcfbc8a9369448bf40e276c31aa",
+      "field:db.revoke:out:error_type": "148532fac2fb488a7f429ed2edf2c75c3cadeb2e71c96efe992fec3a61e4ba67",
+      "field:db.revoke:out:input_count": "741ac299bd135359c5a605153a972412846317ee97bbbfe6ff7c05be60395767",
+      "field:db.revoke:out:output_count": "6e943b0a6fc10b0c80edb6d96613d93008d2e9df871d246d7027a022f80325f2",
+      "field:db.revoke:out:result": "ea2f1cd8809f36dea87e1e5161dbd4df8aea35be63bc8614bb6fbdffab33967a",
+      "field:db.revoke:out:rows": "e964fd69cee17c0668874b9fa5153538ca8140f3f732f3f1bd505237f4433be4",
+      "field:db.revoke:out:rows_known": "46d824ada5a717ccf1cd5148754a48077f9fb764dc9202e2eba859e3c1ee69ab",
+      "field:db.revoke:out:status": "907d7571e9c0b80461ee8c01ef05c481053fa4a8446caeb0786b09d958e04e7b",
+      "field:db.revoke:out:target_access": "4707aeeede267104435bd4c32b9f53515556eaf81126debaa29c75e3ad7f1e2a",
+      "field:db.revoke:out:target_source": "0e51139b710545f3f7a0cbd6c272a42a1b78901fe21aa94edfb65abeedf98b2d",
+      "field:db.revoke:out:targets": "8e752a483112baa7fd9f365fd85782e6c3bc63dd29ec41deb7be892bc3b6dbe4",
+      "field:db.revoke:out:transaction_id": "e8cbb63694499da3220a45670663244f09f3040c8de3daea89d0a43ce659db5f",
+      "field:db.revoke:out:unknown_targets": "b0e77118b1f25848130428a11887ba6a7e013114d0ebc773d60b8250adbd519c",
+      "field:db.share:in:operation": "bab6480ddc30ab8a8a52159fc574113f160aaa9bd04fae7cd342f73194ba9fcd",
+      "field:db.share:in:parameters": "01c5668c6cc5bed529a681f45337b83ea08330ac08b67179826eb74424c54582",
+      "field:db.share:in:statement": "4bb5960a6b4a92a9c9128af899bd645324c42c960b9839f2a1bddde680a5fe3b",
+      "field:db.share:out:before": "5f3a5c9d57147f046a9d50247c0d4e46a0a4db5b92145864fa7bca14e3303007",
+      "field:db.share:out:duration_ms": "bd766a4c927ba976638a409fa5d4b7a81f1b5a2cc95f7c35d265923e5a0e4932",
+      "field:db.share:out:error_type": "af5200dc3a1f945fe97e6379335bd183e37e39aaadf812cfea0e328e4260c2c9",
+      "field:db.share:out:input_count": "2ffb2ce1381ab9e9ede73cb752198d917a58518a6b608eaa5b3ecb855859e628",
+      "field:db.share:out:output_count": "22e74e2ec351c2ab372b90d82748ad049b03e2710d58be850517195cb0677043",
+      "field:db.share:out:result": "3b83f9047da64222baa68ba51be5da1c6ededbe5aed08b5bef34682d975cede2",
+      "field:db.share:out:rows": "aef08d54bdb1ae4307e832525dcaa8a3c6fb12cc80204df946a15b4861691645",
+      "field:db.share:out:rows_known": "f9e7b49afd4e0b2109273db35ddf6eee4a74bbf79f726ed38fec3457fecfcaeb",
+      "field:db.share:out:status": "2a232de787b728c478063ed33fc02b7a9ca899ffbc67844b7ee21e3c9e6c4d9e",
+      "field:db.share:out:target_access": "3591f719e83cb05cb6cc20a0cd55d1d2d8fc2af24281ced34932975bf8ce91a1",
+      "field:db.share:out:target_source": "9145d68cc3b6984ed6580b277be3216104d8f8cc88de03b3d8100133c7d80a99",
+      "field:db.share:out:targets": "827390ab8f764c8cec00813a872729547f006932620a63054cbb292a12909aa8",
+      "field:db.share:out:transaction_id": "580c3dfd03d9aadf13ce556f2fb9f2ddaf6ceebf090e59d401d81547d1cb3687",
+      "field:db.share:out:unknown_targets": "87b4001b73d036761ec6d5a9e2cf03eb6e491576fa08a0d50cbfebb50d55c8ac",
+      "field:db.upload:in:operation": "b06237ac44047ec322ab2be3dbee4747e3f2d61c1e414cb8994afc8a9ae67af7",
+      "field:db.upload:in:parameters": "fe8ededfba2f6ac232bf5574bbdf47b40acfc3279318f62226beaa5577a33589",
+      "field:db.upload:in:statement": "713622a8ec337c3150c9c8f7af6b6bd37c686a54f4803cbb502a1565b889802e",
+      "field:db.upload:out:before": "45bf6ff66534eec9bba656f0d8d9e0907f072cf02b992f5002917a7af955ae2e",
+      "field:db.upload:out:duration_ms": "67eef16fb6cecc99f8852230776ea7ee139f472fbbe4165c7d3175ed47369f7c",
+      "field:db.upload:out:error_type": "b0f1e85a239a3ade1dc9b06cd36e54941224d43d12ff758ec08b868a00c3dce3",
+      "field:db.upload:out:input_count": "79795a89411810eccaf879f61409e5997c73760d49c9a9570ffeef5d0dc52c30",
+      "field:db.upload:out:output_count": "bfa37b65384677fbdd22cef7af2f2027f6356dddee60a77d9c2236117a02127b",
+      "field:db.upload:out:result": "20230378f892723f663fb8dbe2d1d98a43dd147943512a2cdc813532fc210f6a",
+      "field:db.upload:out:rows": "b9b30439389a5abc53d06283c4edc858286e8ec58c83ba3702a14ad74fa0dd93",
+      "field:db.upload:out:rows_known": "39e68713336960ff1555a5b4fe7feb52dc2128a0cdc843cdb8dc84b538307b08",
+      "field:db.upload:out:status": "f1b7785eddc9438400e22302fa0dbea489b27ec0fa9aa86a273a1f404c415ded",
+      "field:db.upload:out:target_access": "f32e84a0a8ef7ebda57d25ad64f974343f35b6e12ad921ec54cf726d34169da7",
+      "field:db.upload:out:target_source": "41f38780bcbc16085444109ca36b9691e0a3260540176b38f8697f10e3719b83",
+      "field:db.upload:out:targets": "c4de67815b44692a41fac12fbfe81d2d985b633333648791642fe639dcbc9bbb",
+      "field:db.upload:out:transaction_id": "e1808536825d23ead350851be03b73aa60380a70a60e7bc41b418ac0b74ca359",
+      "field:db.upload:out:unknown_targets": "629ba174e273f87a469751279cd35a9ea7373b68df26c412e1175559ae0008ed",
+      "field:facts:in:actor": "a9a38545dfb8c73248c5ef5f0292668a28ea019a3fdf75ae731bb7e16ba494e8",
+      "field:facts:in:file_id": "66b790f9fff54d635c2073fd90b00862b5f1dfca6f473459f75193d879fa7508",
+      "field:facts:out:active": "830919b268d1735f6df2a688c165310847804c1bed7ca443546ac60df6c77fb4",
+      "field:facts:out:actor": "80be2e4ffb9d481efebabeac0ad5d93cb223680a4a5c209fc2fce894a194ba24",
+      "field:facts:out:owner": "6741cf21dfa08b9e0cee37f9445baf24470da890a9e8bca57f6c7f61ffeea9bb",
+      "field:facts:out:recipient": "e022b088fa22624a6676b50e72628ad28f66217f009544f5d8f7e15b17e826f0",
+      "field:facts:out:revision": "9f0390fcbaef5ce8350b5ffc938adf2f919a961765ee4b091bda50d70ea856a4",
+      "field:facts:out:scope": "9feeb56400c8263c3420d60f01523878b20b0ec8c97ae352e35f8e2cd03d840a",
+      "field:facts:out:timing": "0f40159c9f537881380f3dde8f89a8e7555a4fcfa0ca00cc234392bc01dd9613",
+      "field:http.download:in:file_id": "27d4c6872a374b93fb5b128fabcd428b8fee3e389062714bb85f230583f0fa2d",
+      "field:http.download:in:method": "5853b2697a4cbaf076fad8d96ff35e29eb278cf1b5ce3213377c8a2cbce603d0",
+      "field:http.download:in:route": "ff6735358f8a2cf2bba69b034dd9f6dd681945e6a16fb1f82aea6c038e4111e1",
+      "field:http.download:out:status": "dfcdae55f89b454ce2db54a399202a679fc96fb11a5065e2ef7c48a48744bb4b",
+      "field:http.home:in:method": "52c2a1303af6c62ae3bc9c94f68f09bb03d09e7ee8172d6155b405b6ff670321",
+      "field:http.home:in:route": "83d5fd11ce2774b39581460f643e7fff8e56eb595bd9c4a3795542f0ab8cbc6f",
+      "field:http.home:out:status": "8e9b67484cd20a93102043a7417c0ccfefad30fd0b00863f39a3ab4bb22462bd",
+      "field:http.received:in:method": "969a47a01f4d56646f0563afa044807d3b8b6d4d299d1828ebb00b5085877de6",
+      "field:http.received:in:route": "c07dc5f24332b5b1612984eaed08932230d78455e6e7e78a3b2bdbbc36e17354",
+      "field:http.received:out:status": "b26793ef0695b10561d88146509898a875eaff128ab36f6cb30ec820b5d7cbe0",
+      "field:http.revoke:in:file_id": "2dc46efcb6ed29172e5cfaca17be1eb14fd323bb1c612bd4f0ec53e86cbcfe4e",
+      "field:http.revoke:in:method": "48edd7e8b2a968289eb63129338da3230a4ce440c9844fda5ba0aa186e33416c",
+      "field:http.revoke:in:route": "e0b53171c6a009ef1adff72a703e4f3452465b33fc4128b57e4de88c89d54bfa",
+      "field:http.revoke:out:status": "f819c18dcaee74c11e6ce105417cc15522f974d6e1ef148e29ad615c6a45c3ef",
+      "field:http.share:in:file_id": "bf715c8bc50d129d797ba21da8849eaf3fa74c7852d393f319b04a3a5886a96d",
+      "field:http.share:in:method": "27dc15a24a21b4da49cc1da108ab1d9fcd1236d108d7c7413ecddd429536ae94",
+      "field:http.share:in:route": "74a8272fdd1db5b59ac9aab687befd5518fb44ee6ed73bc1eda58c680b0b3756",
+      "field:http.share:out:status": "f4afe249127ca123e430cbdce8282e37cb51fb7cc20d02fc57e42b19fc8fa008",
+      "field:http.upload:in:method": "3940215d4a4fa9fc8740fd0f9352ea40cb4688dfccb31f2b38212ea1951296e7",
+      "field:http.upload:in:route": "763657aeab31d261b985a1f087fdd58b4c90f3fa1a3e10bd351c1a1729c2c962",
+      "field:http.upload:out:status": "3b0eaeaa63dc514e9b6b61b24b9a3421afd175eba50320b09074e7b12a433a79",
+      "field:list:in:actor": "56710814f30285178215115c396a5c221bd500d2a0ebb9ab48fc242751b8a9d4",
+      "field:list:out:count": "ac0022ff1551e161179a238cab6d136d65c368951669987af65af3d28cc5a5d0",
+      "field:policy:active:in:bo_basis": "e66c99ff9da8fd87590971941818cf62fa4059b40cd4b91853b4d677cf83b2a6",
+      "field:policy:active:in:bo_check": "97b1bae4d0c093aca9a26af3eaff28928288df37977e274792f89a03483f79de",
+      "field:policy:active:out:status": "38c8f7cc87af3c304f10faaa508e35e416ff5b80de2148cc523f977566dec1c6",
+      "field:policy:active:out:value": "3d297823c89060df9b22b71f8e548fecdef3f1c9e940e8d8ba7aadb07624705c",
+      "field:policy:actor:in:bo_basis": "6dcf4daa698b9d9aafb29c1d249b41eed74b5f1e2f35d8a7234d16fe63301b53",
+      "field:policy:actor:in:bo_check": "321a69c48eb705b90e04f162320795c0a9e5c1b748898af3605269ee68f6613d",
+      "field:policy:actor:out:status": "ea1de15d13b620715c368aaf1086467a7e3ec1753d31e6679e0ba0bd585465a1",
+      "field:policy:actor:out:value": "cc129da9f4727af4780aed1e3b136917790fc9d1c066b9805131bc15635574d4",
+      "field:policy:is_owner:in:bo_basis": "872d3bc9aa895dbee611c31a943672bbcb5c4c15f6aa83d65fc85329ffb4e7d6",
+      "field:policy:is_owner:in:bo_check": "e03dc79934d5a820a408f24c401b4218443807b9bd77d8a1a73bd2d002f48c5c",
+      "field:policy:is_owner:in:left": "b5dee66f760932cb64606f276c24e603e727c239dfac82398f56efd359bfab0a",
+      "field:policy:is_owner:in:right": "345c09d54f775864a89b5cc06ffc75250c3c30769f91ea773574a6fcfa1ffdac",
+      "field:policy:is_owner:out:status": "9e1f2f7fed4c0251767b892a25fdf80696f7e46e7f8913d551a9a3c9eb7af88d",
+      "field:policy:is_owner:out:value": "579e977a30464ab0a0d3010a682de5894478b4828dd497fc24a77ae035955dc6",
+      "field:policy:is_recipient:in:bo_basis": "2f594ef437114fc65253e37287ea39db8efb654f15a33225f02a8e4c13dfa769",
+      "field:policy:is_recipient:in:bo_check": "aee5e11a872b2c3d24dacb58963d1d8119909bd48947a7008bef4f24434e8453",
+      "field:policy:is_recipient:in:left": "6934f7a6df281c583ccc42725f1c030a494c17328b8c563dd49bf2eaa0c47307",
+      "field:policy:is_recipient:in:right": "658932d0f56d370a3571f79f6b017427a5712b15654920bde054b0e9c703b9c6",
+      "field:policy:is_recipient:out:status": "459c5969e281d3ff0686bb63ec7162e9ba9b8377b061666666eaa419964f0cff",
+      "field:policy:is_recipient:out:value": "39a8a6b284596ae09b65a0fb047edebc71e4c3dbbb3267a59aee43476c65374b",
+      "field:policy:may_read:in:bo_basis": "c4600c9d4a1cbf6e17c51845c61547eb0ac5895a0f905934d9524b686e51ed1f",
+      "field:policy:may_read:in:bo_check": "08ae31e76c15ce126a0c4f1fb5a299e8bd10ca87af2cf3b8b640fd0e01f4eabc",
+      "field:policy:may_read:out:status": "f5d3a066ba5c75e0a001b280466012002407139eb4b2abcdf1cee89e4036bf07",
+      "field:policy:may_read:out:value": "62294bdecd8fa7de92b51f65d613c9fc57269bba3679d067446d4bd053a843fd",
+      "field:policy:owner:in:bo_basis": "c81489f4d6e1bbd2104b65e84846a104c66e7f33af9979929cee1e71459575f4",
+      "field:policy:owner:in:bo_check": "ba21954dc4464cf787000e9dcc77e1b5222e8df375868b31d00b594181c12ca6",
+      "field:policy:owner:out:status": "d6a8b8d85661f6db6853a9814c586c3541f996ac9d3ef33850d49d9a8868f753",
+      "field:policy:owner:out:value": "9cc6de08d85bca58f693609f521e2baec02d693cbcabbda17acd53a162122d05",
+      "field:policy:recipient:in:bo_basis": "415a89c4386d5bc8bcd24b87de2cfbb05a80739d75e8ca597f711ead91a460ab",
+      "field:policy:recipient:in:bo_check": "9cc7d27eed0bda25299aba66c2582236207a34fac06f3788d5005a0520c188a0",
+      "field:policy:recipient:out:status": "bf0c0600f822a9a47c9f675117580bec827b00d51c6f3ea66556b4e1ae16b8b9",
+      "field:policy:recipient:out:value": "c2efe71a0f3150c64a0c1a603e93d58fb6927da761ea743a1e147ad458ce7900",
+      "field:read:in:actor": "1d24b2c3538e568c3963772685ed3f204869dcb636cbf15ee16e9a1b0aed80ef",
+      "field:read:in:file_id": "7885577fd1222adfcca70ee68f5e4247f1604b64ad8cfa96979fa599fb003638",
+      "field:read:out:count": "19e9e36ac257b46a04ef32f91a8dd87ac51f3a8624ea256bd2f227a79c14a853",
+      "field:revoke:in:actor": "558b25324db3a1a784e580b03afd52d0bec6c40f3cd4ae81801581a3107c4a2b",
+      "field:revoke:in:file_id": "a3edbc1f6d80f1e0fa7d258aa26609a9e6ea6789cd70d397ebef1eec70cbfcb7",
+      "field:revoke:in:recipient": "8ba5456cbdcf132cbb3239350b8f37c625586f3883a3907996c671e5d752bbd7",
+      "field:revoke:out:file_id": "32e2140ce302c2eaaec3b357855b9def25a9bbc5f583a65344b40681e37492da",
+      "field:revoke:out:recipient": "1138e38d0ff62b5e9427fc4bddffbcd7ee0e9300019ef745bd83e8da33ae0094",
+      "field:revoke:out:revision": "a103c62a7f87c0ef4759cd5b698f3753c153af87ea609297278ed8b81f0790c4",
+      "field:revoke:out:state": "3c13fc619f78ba950fbc2205278b7fd35059067b30acae60fcca1c7f301c67d8",
+      "field:share:in:actor": "11ec42fdc1afb3d4e9619e962f8c24f5a6a29014a6026928f3707a8a62fee2ef",
+      "field:share:in:file_id": "9902ffccf1ab1976c6e4a6b5edec843e57da4ea869dce59f1f17733622cb2a93",
+      "field:share:in:recipient": "7816ac430253f19a394c1257e2bb21f6328b9e614acc6dfeac3a5645346130dc",
+      "field:share:out:file_id": "936a52bf9a34afcd560b7feaf443a5490a6af7bde4ebc111fb01188c4db7d6a4",
+      "field:share:out:recipient": "9f4e7d9ee1f21fe31f24844bc012e5912b46dfe8cf4fc2c9d22138aeac7742ff",
+      "field:share:out:revision": "22d2dbac183046cc2b45be20ca408ca197cefe965625a12e33e0e9d0fc595608",
+      "field:share:out:state": "d742cc0cb6ec965420d14e1b1dbba1f303a894b5e902ead9400bb3b224525db6",
+      "field:upload:in:actor": "6ee5d75c87f436669e960c9ac641749229c025052edac146b67feb3cbf3ca4a1",
+      "field:upload:in:content_size": "872250ee4f9c93010069d5bdc00c6ff0871fb564a25976bc7d5434de4c852a81",
+      "field:upload:in:name": "d3c63a6b8ca41d6e118c24e3e067bfaeedf513187deb387abf0624cd4bc5efdc",
+      "field:upload:out:file_id": "a08a72a5c14f6f9471ec7db29ef4057ea7419275ee8e6cf965e70f57a48bce95",
+      "field:upload:out:name": "63a5562cd0bd53e8477d91ba68387eb6554f4fc978dbda738a6c913a86e9a448",
+      "field:upload:out:owner": "aaf6e62c04d8d67a20c5e3a0869a5074715b27688c1a1300f356a8ea93c7344a",
+      "http.download": "fc19e96d3d24eb31d24269a9c71d68a0d23078c22368f3d36a254dfbcbbde330",
+      "http.home": "173780cfd6c1562a3b184206cf6249233eb3e236e3dc70f05e0609b04e8af2cf",
+      "http.received": "6dd86f146ffa8ad1c702d435605c4563432816877b70d0e0c137abea3ad81fb5",
+      "http.revoke": "c538ce8aaf1850ad7362c73301dcd7568e4cce75c82f6eb3e4fae6e1d2e5402a",
+      "http.share": "2bbb8ba05800b9ca763570e7d14b21405fa753a754e96340d48822d90e129d80",
+      "http.upload": "496d17519d1f64f159dd896f703ed7756ced42f88c124534c216dc527b7ec77b",
+      "inactive": "2fc48282efd70ee33bb9ca9cec05adf11878d225ca343d87d859155bebb1d551",
+      "policy:function:same_identity": "70a6e98ff5399caf9d7208e9e1469ba840fa930f27fe77872cbc65bc1b0c1442",
+      "policy:network": "9c83a8d6975f1550364d194becdd94cd16c973e66a26dd2ad385922238fd9b92",
+      "support:app.py::create_app.denied": "1059353d9a685dc69d5ef4dc9bfe76c08a2b57151cb5077dd35dda8c103004d5",
+      "support:app.py::create_app.missing": "b8b6700641d4c275ffd09f71ac9da4ffa13344c6208d7f455c23afc320bd6284"
+    },
+    "states": {
+      "active": "a09872689de0dc202117aea19581aa7986dc78755905e94097eefba88eed0287",
+      "inactive": "81d049de12ff8335ee85be149c63c52585e0fd5fae462284f18d6def2cc29de0"
+    }
+  }
+}

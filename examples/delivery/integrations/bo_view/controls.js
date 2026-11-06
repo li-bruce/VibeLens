@@ -1,5 +1,6 @@
 /** Small, accessible controls shared by the graph toolbar and context menus. */
 const shapes = {
+  bundle: [["path", { d: "M3 3C10 3 8 12 12 12s2-9 9-9M3 21c7 0 5-9 9-9s2 9 9 9M3 12h18" }]],
   select: [["path", { d: "M4 3v16l5-5 4 7 3-2-4-7 7-1Z" }]],
   pan: [
     [

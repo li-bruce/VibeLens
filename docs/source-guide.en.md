@@ -96,6 +96,20 @@ by [interface_language.py](../skills/vibelens/scripts/bo_observer/web/interface_
 it never changes graph identities or business data. Recording deletion stays in the
 recording service and removes one stopped interval after version and identity checks.
 
+Layer-aware names are maintained through [bo_names.py](../skills/vibelens/scripts/bo_names.py).
+[semantic_names.py](../skills/vibelens/scripts/bo_observer/web/semantic_names.py) inventories
+current identities and validates AI-authored language maps and meaning fingerprints.
+Its project-owned JSON overlays display names only. The iteration scan and verification
+gate report missing or stale entries. [graph-names.js](../skills/vibelens/assets/stategraph-viewer/graph-names.js)
+selects the active interface locale without renaming source or recorded facts.
+
+[curve-bundling.js](../skills/vibelens/assets/stategraph-viewer/curve-bundling.js) groups compatible
+directed curves using D3 splines; [routing-engine.js](../skills/vibelens/assets/stategraph-viewer/routing-engine.js)
+checks them against obstacles and shares the same routes with both renderers.
+[viewport-scale.js](../skills/vibelens/assets/stategraph-viewer/viewport-scale.js) owns the
+geometry-dependent fit/zoom range and wheel-unit conversion. Three.js draws node bodies
+in a second depth pass, keeping them legible above connections without moving their layers.
+
 ### 1. A coding iteration changes the graph
 
 1. [workflow/bo_sync.py](../skills/vibelens/scripts/bo_observer/workflow/bo_sync.py): source_inventory enumerates the declared project scope independently of existing graph nodes. maintenance_task compares that inventory with the last accepted baseline.

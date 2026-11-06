@@ -19,6 +19,7 @@ import { nodeGeometry, nodeMaterial, transferGeometry } from "./spatial-geometry
 import { transferPose } from "./transfer-glyph.js";
 import { SPATIAL_GLYPH_RADIUS } from "./containment-geometry.js";
 import { regionLabelAnchor, stackRegionCaptions } from "./spatial-labels.js";
+import { wheelFactor } from "./viewport-scale.js";
 import { relationStyle, relationCaption, displayName, annotationFor } from "./layout.js";
 import { t } from "./i18n.js";
 import { relationIds } from "./edge-identities.js";
@@ -118,9 +119,12 @@ export class SpatialRenderer {
     });
     this.scene = new T.Scene();
     this.scene.background = new T.Color(0xf6f8fa);
-    this.scene.add(new T.AmbientLight(0xffffff, 1.3));
+    const ambient = new T.AmbientLight(0xffffff, 1.3);
+    ambient.layers.enable(1);
+    this.scene.add(ambient);
     const light = new T.DirectionalLight(0xffffff, 2);
     light.position.set(3, 4, 5);
+    light.layers.enable(1);
     this.scene.add(light);
     this.camera = new T.PerspectiveCamera(43, 1, 1, 100000);
     this.camera.position.set(1400, 1000, 1800);
@@ -145,7 +149,14 @@ export class SpatialRenderer {
     this.controls.maxDistance = 60000;
     this.controls.addEventListener("change", () => this.schedule());
     this.controls.addEventListener("end", () => this.callbacks.onSave?.());
+    // Labels remain draggable/clickable, but must not become holes in wheel zoom.
+    this.onLabelWheel = (event) => {
+      event.preventDefault();
+      this.zoom(wheelFactor(event, this.viewportSize?.height || 800));
+    };
+    this.labels.addEventListener("wheel", this.onLabelWheel, { passive: false });
     this.raycaster = new T.Raycaster();
+    this.raycaster.layers.enable(1);
     this.positions = {};
     this.epoch = 0;
     this.frames = [];
@@ -244,6 +255,7 @@ export class SpatialRenderer {
       input.preferences.nameMode,
       this.settings.projections,
       input.routing,
+      input.bundling,
       [...input.boTransfers],
     ]);
     if (scopeChanged || topology !== this.topology) {
@@ -258,6 +270,7 @@ export class SpatialRenderer {
       input.preferences.annotations,
       this.settings.projections,
       input.routing,
+      input.bundling,
     ]);
     if (geometry !== this.geometryKey) {
       this.geometryKey = geometry;
@@ -367,6 +380,9 @@ export class SpatialRenderer {
         nodes.length,
       );
       mesh.userData.ids = nodes.map((n) => n.id);
+      // Bodies have their own depth pass: a connection can never obscure a node.
+      // Coordinates remain on the real semantic plane, with normal node/node depth.
+      mesh.layers.set(1);
       for (const [i, node] of nodes.entries()) {
         const p = this.positions[node.id];
         if (!p) continue;
@@ -435,7 +451,13 @@ export class SpatialRenderer {
     }
     this.drawLayerGuides();
     this.router.request(
-      spatialScene(this.model, this.positions, this.visibleVolumes, cleanRoute(this.input.routing)),
+      spatialScene(
+        this.model,
+        this.positions,
+        this.visibleVolumes,
+        cleanRoute(this.input.routing),
+        this.input.bundling,
+      ),
     );
     this.drawEdges(matrix);
     // Projected regions repeat the owner's label, not the owner node or its facts.
@@ -818,9 +840,9 @@ export class SpatialRenderer {
       geometry.setColors(colors);
       const material = new T.LineMaterial({
         vertexColors: true,
-        linewidth: 0.7,
+        linewidth: 0.9,
         transparent: true,
-        opacity: 0.48,
+        opacity: 0.72,
         depthWrite: false,
       });
       material.resolution.set(this.viewportSize?.width || 1, this.viewportSize?.height || 1);
@@ -832,7 +854,7 @@ export class SpatialRenderer {
         new T.ConeGeometry(3.4, 11, 7),
         new T.MeshBasicMaterial({
           transparent: true,
-          opacity: 0.45,
+          opacity: 0.72,
           depthWrite: false,
         }),
         arrows.length,
@@ -1102,6 +1124,9 @@ export class SpatialRenderer {
     const distance =
       (radius / Math.sin(T.MathUtils.degToRad(this.camera.fov) / 2)) *
       (this.camera.aspect < 1 ? 1 / this.camera.aspect : 1);
+    this.controls.maxDistance = Math.max(60000, distance * 4);
+    this.camera.far = Math.max(100000, distance * 8);
+    this.camera.updateProjectionMatrix();
     this.controls.target.copy(center);
     this.camera.position
       .copy(center)
@@ -1307,7 +1332,19 @@ export class SpatialRenderer {
       moving = this.controls.update();
     this.updateParticles(now);
     this.resizeGlyphs();
+    this.camera.layers.set(0);
     this.renderer.render(this.scene, this.camera);
+    const connectionCalls = this.renderer.info.render.calls,
+      background = this.scene.background;
+    this.renderer.autoClear = false;
+    this.renderer.clearDepth();
+    this.scene.background = null;
+    this.camera.layers.set(1);
+    this.renderer.render(this.scene, this.camera);
+    this.drawCalls = connectionCalls + this.renderer.info.render.calls;
+    this.scene.background = background;
+    this.camera.layers.set(0);
+    this.renderer.autoClear = true;
     // Region captions retain separate mouse targets even for nested close rims.
     // Measure only when content changes; orbit frames reuse these DOM dimensions.
     const projections = new Map(),
@@ -1399,7 +1436,7 @@ export class SpatialRenderer {
       nodes: this.model?.nodes.length || 0,
       edges: this.model?.edges.length || 0,
       labels: this.labelItems?.length || 0,
-      drawCalls: this.renderer.info.render.calls,
+      drawCalls: this.drawCalls || 0,
       geometries: this.renderer.info.memory.geometries,
       frames: this.frameCount,
       renderP95Ms: sorted[Math.floor(sorted.length * 0.95)] || 0,
@@ -1431,6 +1468,7 @@ export class SpatialRenderer {
     this.worker.terminate();
     this.router.dispose();
     this.controls.dispose();
+    this.labels.removeEventListener("wheel", this.onLabelWheel);
     this.clearScene();
     if (this.particles) {
       this.particles.geometry.dispose();

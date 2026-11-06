@@ -302,10 +302,12 @@ export function createGraphRenderer({
         // Playback follows this exact rendered route and its layer color.
         color: col,
       };
-      const { end } = path;
+      // Like the spatial renderer, place the direction marker along the route.
+      // Its endpoint still reaches the icon center underneath the node body.
+      const end = bezierAt(path, 0.84);
       let mid = bezierAt(path, 0.5);
       edgePaths.set(e.id, path);
-      const alpha = dim ? 0.1 : highlight ? 0.95 : 0.32,
+      const alpha = dim ? 0.18 : highlight ? 0.98 : 0.78,
         g = graphic();
       if (foreground && !dim)
         strokeRelation(g, path, { color: 0xf6f8fa, dash: [] }, Math.max(5, 3 / scale), 0.9);
@@ -313,12 +315,12 @@ export function createGraphRenderer({
         g,
         path,
         { ...style, dash: style.dash.map((n) => n / Math.min(1, scale)) },
-        Math.max(highlight ? 2.3 : e.observed ? 1.35 : 1, (highlight ? 1.5 : 0.65) / scale),
+        Math.max(highlight ? 2.3 : e.observed ? 1.5 : 1.2, (highlight ? 1.5 : 0.9) / scale),
         alpha,
       );
       scene.addChild(g);
       metrics.edges++;
-      const tangent = bezierAt(path, 0.99);
+      const tangent = bezierAt(path, 0.83);
       const angle = Math.atan2(end.y - tangent.y, end.x - tangent.x);
       const af = Math.max(1, 0.6 / scale),
         arrow = graphic(),
@@ -633,7 +635,15 @@ export function createGraphRenderer({
       contextLost,
     } = state);
     renderedEdges = presentation.edges;
-    router.request(planarScene(graph, presentation, cleanRoute(preferences.routing), scale));
+    router.request(
+      planarScene(
+        graph,
+        presentation,
+        cleanRoute(preferences.routing),
+        scale,
+        preferences.bundling,
+      ),
+    );
     scene.removeChildren();
     edgePaths.clear();
     captions.length = 0;
@@ -644,6 +654,8 @@ export function createGraphRenderer({
     const labelBoxes = [];
     drawRegions();
     drawEdges(false, labelBoxes);
+    // Inter-group links clear region fills, but every node body stays above links.
+    drawEdges(true, labelBoxes);
     for (const box of graph.boxes) {
       const start = scene.children.length;
       drawNode(box);
@@ -651,8 +663,6 @@ export function createGraphRenderer({
         for (let i = start; i < scene.children.length; i++) scene.children[i].alpha *= 0.22;
       }
     }
-    // Cross-group links remain above enclosing fills and nodes.
-    drawEdges(true, labelBoxes);
     trimPool();
     drawCount++;
   }

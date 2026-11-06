@@ -1,7 +1,8 @@
 /** Renderer adapters normalize geometry; routes never change the model's edges. */
 import { edgePorts } from "./layout.js";
 import { regionPort, regionVolume } from "./edge-routing.js";
-export function planarScene(graph, presentation, style, scale) {
+import { layerOf } from "./graph-layers.js";
+export function planarScene(graph, presentation, style, scale, bundling = false) {
   const obstacles = [];
   for (const id of presentation.glyphs) {
     const b = graph.byId.get(id);
@@ -34,6 +35,8 @@ export function planarScene(graph, presentation, style, scale) {
       from: e.from,
       to: e.to,
       type: e.type,
+      fromLayer: layerOf(graph.byId.get(e.from).node),
+      toLayer: layerOf(graph.byId.get(e.to).node),
       a: { ...start, level: 0 },
       b: { ...end, level: 0 },
       allowed: [],
@@ -41,6 +44,7 @@ export function planarScene(graph, presentation, style, scale) {
   });
   return {
     style,
+    bundling,
     spatial: false,
     obstacles,
     edges,
@@ -50,8 +54,9 @@ export function planarScene(graph, presentation, style, scale) {
     })),
   };
 }
-export function spatialScene(model, positions, volumes, style) {
+export function spatialScene(model, positions, volumes, style, bundling = false) {
   const flat = (p) => ({ x: p.x, y: p.z, level: p.y });
+  const byId = model.byId || new Map(model.nodes.map((node) => [node.id, node]));
   const obstacles = model.nodes
     .filter((n) => n.glyph && positions[n.id])
     .map((n) => ({
@@ -83,6 +88,8 @@ export function spatialScene(model, positions, volumes, style) {
         from: e.from,
         to: e.to,
         type: e.type,
+        fromLayer: byId.get(e.from)?.layer,
+        toLayer: byId.get(e.to)?.layer,
         a: flat(a),
         b: flat(b),
         allowed: [],
@@ -91,6 +98,7 @@ export function spatialScene(model, positions, volumes, style) {
   });
   return {
     style,
+    bundling,
     spatial: true,
     obstacles,
     edges,

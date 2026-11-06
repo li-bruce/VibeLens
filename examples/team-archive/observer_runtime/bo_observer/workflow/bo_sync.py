@@ -320,6 +320,9 @@ def maintenance_task(root, cfg, previous=None):
     digest = hashlib.sha256(
         json.dumps(semantic_inventory(current), sort_keys=True).encode()
     ).hexdigest()
+    from ..web.semantic_names import check_project as check_names
+
+    semantic_names = check_names(root, declared)
     return {
         "schema": "bo-maintenance/v1",
         "source_id": digest,
@@ -330,6 +333,7 @@ def maintenance_task(root, cfg, previous=None):
         "implementation_gaps": gaps,
         "database": database,
         "policy": policy,
+        "semantic_names": semantic_names,
         "status": (
             "needs_update"
             if changed
@@ -337,6 +341,7 @@ def maintenance_task(root, cfg, previous=None):
             or unregistered
             or gaps
             or not database["valid"]
+            or not semantic_names["valid"]
             or current["excluded_entrypoints"]
             or current["excluded_implementations"]
             else "current"
@@ -344,6 +349,8 @@ def maintenance_task(root, cfg, previous=None):
         "internal_prompt": "Review the listed implementation changes. Update affected business abstractions, states, function/parameter mappings, and probes. "
         "Do not omit new entrypoints because the old graph lacks them. Match features, parameters, and runtime cases through the implementation inventory. "
         "Exclusions must not bypass business implementation. Check real relations and filter boundaries in every view, then run project acceptance. "
+        "Refresh missing/stale semantic names in the conversation locale using bo_names.py inventory/apply/check. "
+        "Translate each concept in its own layer; preserve source and relation identities. "
         "Do not ask users to maintain observation files. Ask only when new business ambiguity appears.",
         "confirmations": (
             questions(

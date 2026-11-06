@@ -612,6 +612,7 @@ export function relationCaption(edge, state) {
   for (const text of [
     "Recorded field",
     "Source binding",
+    "Implemented by",
     "HTTP observation",
     "Contains",
     "Call",

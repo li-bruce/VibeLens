@@ -16,6 +16,10 @@
 `concept-flow-layout.js` 根据关系类型为 ELK 提供业务、状态和规则的布局方向，
 `layout.js` 负责嵌套区域与位置保存。`concepts/presentation.py` 校验可选链路标签引用的节点、边和确认来源；布局不修改图中的实际关系。
 
+`bo_names.py` 提供语义名的清单、应用和检查命令。`web/semantic_names.py` 按当前节点身份、所属层与源码含义检查 AI 编写的中英文名称，保存在项目的 `bo_stategraph/config/semantic-names.json`。迭代扫描和验收会报告缺项或过期项；`graph-names.js` 按界面语言选择名称，源码标识和运行事实保持不变。
+
+`curve-bundling.js` 使用 D3 曲线聚合同方向、同类型的边；`routing-engine.js` 检查障碍物，并将同一份路径交给二维和三维渲染。`viewport-scale.js` 按实际图范围计算缩放下限，统一滚轮单位。三维节点使用独立深度绘制步骤覆盖连线，节点仍留在原图层坐标。
+
 概念建模从 [concepts/](../skills/vibelens/scripts/bo_observer/concepts/) 开始。
 `model.py` 组合业务、状态和规则定义，`state.py` 校验状态语义，`semantics.py`
 保存确认范围和变更。`binding.py` 与 `anchors.py` 核对原生状态、规则、源码绑定和独立测试断言，

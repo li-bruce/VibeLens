@@ -15,9 +15,13 @@ const checks = [],
   errors = [];
 let browser, page;
 const settled = () =>
-  page.waitForFunction(() => window.graphDebug?.graph && !graphDebug.layoutBusy, null, {
-    timeout: 30000,
-  });
+  page.waitForFunction(
+    () => window.graphDebug?.graph && !graphDebug.layoutBusy && !graphDebug.geometryBusy,
+    null,
+    {
+      timeout: 30000,
+    },
+  );
 const shot = (name) => page.screenshot({ path: path.join(out, name + ".png") });
 async function view(id) {
   await page.selectOption("#analysis-view", id);

@@ -187,6 +187,11 @@ def verify(root, cfg, change, *, inspect, snapshot):
             }
         )
     rule_errors, business_errors, project_errors = [], [], []
+    from ..web.semantic_names import check_project as check_names
+
+    semantic_names = check_names(root)
+    if not semantic_names["valid"]:
+        project_errors.append({"semantic_names": semantic_names})
     reports = {
         "mapping": {
             "status": "not_run",
@@ -200,6 +205,7 @@ def verify(root, cfg, change, *, inspect, snapshot):
         "project_checks": {
             "status": "not_run",
             "errors": project_errors,
+            "semantic_names": semantic_names,
             "scope": "Configured project tests, architecture and viewer checks",
         },
         "business": {

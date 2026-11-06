@@ -119,6 +119,7 @@ import { presets, profileFor, cleanProfile, matchingNodes, sharedMemberships } f
 import { legendGlyph, legendRelation, meanings } from "./glyphs.js";
 import { timeline, frame, eventLabel, transferEdges, recordingRequest } from "./recording.js";
 import { namedView } from "./graph-names.js";
+import { fittedScale, zoomedScale, wheelFactor } from "./viewport-scale.js";
 import { boDisplayValue, boStepPlan, boStepDetail, boTransferLabel } from "./replay-steps.js";
 const codeLayer = new CodeLayer();
 let codeLimit = 400;
@@ -330,6 +331,7 @@ const renderer = createGraphRenderer({
 });
 let spatial = null,
   semanticFrame = 0,
+  semanticCamera = "",
   semanticTimer = null;
 /** Throttle movement updates, but always publish the final camera geometry. */
 function spatialGeometry() {
@@ -343,6 +345,7 @@ function spatialGeometry() {
   semanticFrame = performance.now();
   updateRouteStatus(spatial?.diagnostics.routeSolver);
   updateSemanticGeometry();
+  semanticCamera = JSON.stringify(spatial.snapshot().camera);
   positionDetail();
 }
 const semanticView = new SemanticView($("semantic"), $("semantic-edges"), {
@@ -390,6 +393,7 @@ function updateSpatial() {
     boDetail,
     boTransfers,
     routing: cleanRoute(analysisSettings.routing),
+    bundling: analysisSettings.bundling,
   });
 }
 function point(box) {
@@ -436,6 +440,8 @@ function updateLayerControls() {
   $("layers-all").setAttribute("aria-pressed", String(config.visible.length === layers.length));
   $("undo-layout").disabled = !undo || undo.mode !== mode;
   $("edge-routing").value = cleanRoute(analysisSettings?.routing);
+  $("edge-bundling").disabled = cleanRoute(analysisSettings?.routing) !== "curve";
+  $("edge-bundling").setAttribute("aria-pressed", String(analysisSettings?.bundling === true));
   updateLegendMode();
 }
 function changeLayers(visible) {
@@ -475,6 +481,14 @@ $("layer-gap").oninput = () => {
 
 $("edge-routing").onchange = (event) => {
   analysisSettings.routing = cleanRoute(event.target.value);
+  updateLayerControls();
+  updateSpatial();
+  schedule();
+  save();
+};
+$("edge-bundling").onclick = () => {
+  analysisSettings.bundling = !analysisSettings.bundling;
+  updateLayerControls();
   updateSpatial();
   schedule();
   save();
@@ -587,6 +601,7 @@ function draw() {
   spatial?.setVisible(false);
   $("renderer").textContent = "PixiJS / WebGL · ELK";
   preferences.routing = cleanRoute(analysisSettings.routing);
+  preferences.bundling = analysisSettings.bundling;
   renderer.draw({
     graph: displayGraph,
     presentation,
@@ -837,11 +852,14 @@ function plotArea() {
   const top = 42,
     // Change details float over a small corner, so their contents must not
     // resize the entire graph or move it whenever another event arrives.
-    bottom = document.querySelector(".view-tools").offsetHeight + 24;
+    bottom = document.querySelector(".view-tools").offsetHeight + 24,
+    left = $("layer-controls").offsetWidth + 28,
+    right = $("legend-panel").offsetWidth + 28;
   return {
     top,
+    left,
     height: Math.max(60, app.screen.height - top - bottom),
-    width: Math.max(60, app.screen.width - 45),
+    width: Math.max(60, app.screen.width - left - right),
   };
 }
 function fit() {
@@ -857,12 +875,9 @@ function fit() {
   refreshHierarchy(graph);
   updatePresentation();
   const area = plotArea();
-  scale = Math.max(
-    0.12,
-    Math.min(1.05, area.width / displayGraph.width, area.height / displayGraph.height),
-  );
+  scale = fittedScale(displayGraph.width, displayGraph.height, area);
   pan = {
-    x: (app.screen.width - displayGraph.width * scale) / 2 - displayGraph.minX * scale,
+    x: area.left + (area.width - displayGraph.width * scale) / 2 - displayGraph.minX * scale,
     y: area.top + (area.height - displayGraph.height * scale) / 2 - displayGraph.minY * scale,
   };
   schedule();
@@ -873,7 +888,7 @@ function zoom(factor, point = { x: app.screen.width / 2, y: app.screen.height / 
     spatial?.zoom(factor);
     return;
   }
-  const next = Math.max(0.12, Math.min(3, scale * factor));
+  const next = zoomedScale(scale, factor, displayGraph.width, displayGraph.height, plotArea());
   pan.x = point.x - ((point.x - pan.x) * next) / scale;
   pan.y = point.y - ((point.y - pan.y) * next) / scale;
   scale = next;
@@ -918,7 +933,7 @@ function frameDiscussion() {
   const width = Math.max(...bounds.map((b) => b.x + b.w)) - left + 55,
     height = Math.max(...bounds.map((b) => b.y + b.h)) - top + 55;
   const area = plotArea();
-  scale = Math.max(0.12, Math.min(1.1, area.width / width, area.height / height));
+  scale = fittedScale(width, height, area, 1.1);
   pan = {
     x: (app.screen.width - width * scale) / 2 - left * scale,
     y: area.top + (area.height - height * scale) / 2 - top * scale,
@@ -1057,7 +1072,7 @@ function focusSelection() {
   const width = Math.max(...boxes.map((b) => b.x + b.w)) - minX + 55,
     height = Math.max(...boxes.map((b) => b.y + b.h)) - minY + 55;
   const area = plotArea();
-  scale = Math.max(0.12, Math.min(1.15, area.width / width, area.height / height));
+  scale = fittedScale(width, height, area, 1.15);
   pan = {
     x: (app.screen.width - width * scale) / 2 - minX * scale,
     y: area.top + (area.height - height * scale) / 2 - minY * scale,
@@ -1438,7 +1453,7 @@ app.canvas.addEventListener(
   (e) => {
     e.preventDefault();
     const r = app.canvas.getBoundingClientRect();
-    zoom(Math.exp(-e.deltaY * 0.0015), {
+    zoom(wheelFactor(e, app.screen.height), {
       x: e.clientX - r.left,
       y: e.clientY - r.top,
     });
@@ -2193,6 +2208,7 @@ function loadAnalysis(baseKey) {
     layers: cleanLayers(saved?.layers),
     layerVisibility: cleanLayerVisibility(saved?.layerVisibility, saved?.layers),
     routing: cleanRoute(saved?.routing),
+    bundling: saved?.bundling === true,
     timeline: cleanTimeline(saved?.timeline),
     sourceTreeInitialized: Array.isArray(saved?.sourceTreeInitialized)
       ? saved.sourceTreeInitialized.filter((id) => typeof id === "string").slice(0, 40)
@@ -3221,6 +3237,13 @@ $("replay-export").onclick = () => {
 };
 // Read-only debugging data; UI actions use the same pointer/keyboard handlers as users.
 window.graphDebug = {
+  // Accessible coordinates are throttled during orbiting. Consumers must wait
+  // for the current camera, not click coordinates from the previous frame.
+  get geometryBusy() {
+    return (
+      spatialActive() && spatial && semanticCamera !== JSON.stringify(spatial.snapshot().camera)
+    );
+  },
   get selectedNodes() {
     return [...selectedNodes];
   },

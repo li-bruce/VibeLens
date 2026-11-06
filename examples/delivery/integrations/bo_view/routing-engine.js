@@ -10,6 +10,7 @@ import {
 import { stratify } from "./routing-tools.vendor.js";
 import { shapedPath } from "./route-shapes.js";
 import { Navigation } from "./routing-navigation.js";
+import { curveBundles, bundledCurve } from "./curve-bundling.js";
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 function wasmRoute(a, b, index, edge, A, stats) {
@@ -158,6 +159,11 @@ export async function routeScene(
   };
   const groups = new Map(),
     keyFor = bundleKeys(scene);
+  const curveGroups = curveBundles(scene, keyFor),
+    curveFor = new Map(),
+    usedBundles = new Map();
+  for (const [key, bundle] of curveGroups)
+    for (const edge of bundle.members) curveFor.set(edge.id, { key, bundle });
   for (const e of scene.edges) {
     const key = scene.style === "bus" ? keyFor(e) : e.id;
     if (!groups.has(key)) groups.set(key, []);
@@ -249,6 +255,17 @@ export async function routeScene(
                 .free({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, edge);
             });
         };
+        const bundle = curveFor.get(edge.id);
+        if (bundle) {
+          const candidate = bundledCurve(edge, bundle.bundle, scene.edges.length > 5000 ? 3 : 6);
+          if (clear(candidate)) {
+            points = candidate;
+            const used = (usedBundles.get(bundle.key) || 0) + 1;
+            usedBundles.set(bundle.key, used);
+            stats.bundledEdges = (stats.bundledEdges || 0) + 1;
+            if (used === 2) stats.bundles++;
+          }
+        }
         if (scene.style === "curve" && !clear(points)) {
           for (const bend of [-1, 2, -2, 4, -4]) {
             const candidate = shapedPath(edge, "curve", bend, scene.edges.length > 5000 ? 12 : 24);
