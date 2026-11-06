@@ -3,7 +3,7 @@ import { polylineAt, cleanRoute } from "./edge-routing.js";
 import { t as boTranslate } from "./i18n.js";
 // Graph drawing owns Pixi objects and hit geometry, but no fetching, storage or UI commands.
 import { colors as C } from "./graph-core.js";
-import { annotationFor, displayName, relationStyle, relationName } from "./layout.js";
+import { annotationFor, displayName, relationStyle, relationCaption } from "./layout.js";
 import { drawGlyph, glyphAppearance } from "./glyphs.js";
 import { boKinds } from "./replay-steps.js";
 import { RoutingClient } from "./routing-client.js";
@@ -41,7 +41,7 @@ export function createGraphRenderer({
   onRoutes = () => {},
 }) {
   const router = new RoutingClient(onRoutes);
-  let graph, presentation, focusContext, preferences, selected, scale, pan;
+  let graph, presentation, focusContext, preferences, selected, selectedNodes, scale, pan;
   let renderedEdges, boDetail, boTransfers, formatChange, formatValue, contextLost;
   let drawCount = 0;
   const captions = [];
@@ -161,7 +161,7 @@ export function createGraphRenderer({
           color,
           alpha: dim
             ? 0.045
-            : selected === r.id
+            : selectedNodes?.has(r.id)
               ? 0.3
               : core
                 ? 0.26
@@ -375,17 +375,10 @@ export function createGraphRenderer({
       }
       if (!dim && scale > 0.24 && (highlight || scale > 0.38)) {
         const font = Math.max(11.5 / Math.sqrt(Math.min(1, scale)), 10 / scale),
-          description = relationName(e, preferences);
+          description = relationCaption(e, preferences);
         const payload = boTransfers.get(e.id);
-        const caption = payload
-          ? scale < 0.45
-            ? e.type === "data"
-              ? payload.label.startsWith(boTranslate("Input"))
-                ? boTranslate("Input")
-                : boTranslate("Return")
-              : style.label
-            : payload.label
-          : description;
+        const caption = payload?.label || description;
+        if (!caption) continue;
         const label = short(caption, payload ? 40 : highlight ? 34 : 23),
           w = Math.min(
             340,
@@ -429,11 +422,11 @@ export function createGraphRenderer({
         width: 1.6,
         alpha: 0.65,
       });
-    if (selected === b.id)
+    if (selectedNodes?.has(b.id))
       g.circle(p.x, p.y, r + 8).stroke({ color: 0x356ba4, width: 3, alpha: 1 });
     const appearance = glyphAppearance(stroke, {
       core: annotationFor(preferences, b.node.referenceOf || b.id).core,
-      selected: selected === b.id,
+      selected: selectedNodes?.has(b.id),
       related: focusContext.nodes.has(b.id),
     });
     drawGlyph(g, b.type, p.x, p.y, stroke, appearance);
@@ -492,7 +485,7 @@ export function createGraphRenderer({
     const annotation = annotationFor(preferences, b.node.referenceOf || b.id);
     if (annotation.label || annotation.note) text("✎", p.x - 35, p.y - 31, 14, 0x5075b5, "center");
     if (annotation.core) text("★", p.x - 32, p.y + 20, 14, 0xb18c3c, "center");
-    if (b.kids.length) {
+    if (b.kids.length && !b.open) {
       text(
         b.open ? String(b.kids.length) : "+ " + b.kids.length,
         p.x + 52 * size,
@@ -630,6 +623,7 @@ export function createGraphRenderer({
       focusContext,
       preferences,
       selected,
+      selectedNodes,
       scale,
       pan,
       boDetail,

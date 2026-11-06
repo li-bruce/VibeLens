@@ -12,6 +12,7 @@ from .index import build, identity
 from .file_dependencies import file_units
 from .query import query, representation_links
 from .filesystem import inventory as project_inventory
+from .display_scope import application_inventory, prune_support_shells
 from .observation import qualify
 from ..observation.telemetry import load_registrations
 from ..source_scope import semantic_inventory
@@ -83,12 +84,16 @@ class CodeGraph:
                 model=model,
                 telemetry=telemetry,
             )
-            project = project_inventory(self.root, cfg, inventory)
+            application, display_cfg, display_excluded = application_inventory(
+                self.root, cfg, inventory
+            )
+            project = project_inventory(self.root, display_cfg, application)
+            project = prune_support_shells(project, display_excluded)
             # Source inventory reports hidden implementation separately from parser errors.
             fingerprint = digest([semantic_inventory(inventory), semantic_inventory(project)])
             fingerprint = digest([fingerprint, adapter, model, telemetry])
             if self.graph is None or fingerprint != self.fingerprint:
-                index = scan(self.root, inventory["files"], self.previous)
+                index = scan(self.root, application["files"], self.previous)
                 index["errors"] += [
                     {"path": p, "error": "Excluded application implementation"}
                     for p in inventory["excluded_implementations"]
@@ -104,6 +109,7 @@ class CodeGraph:
                     "files": list(inventory["files"]),
                     "excluded": inventory["excluded"],
                     "project_excluded": project["excluded"],
+                    "display_excluded": display_excluded,
                     **{
                         key: inventory[key]
                         for key in (
@@ -282,13 +288,17 @@ class CodeGraph:
             inventory = source_inventory(
                 self.root, cfg, inspection_cache=self.project_inspections, model=model
             )
-            project = project_inventory(self.root, cfg, inventory)
+            application, display_cfg, display_excluded = application_inventory(
+                self.root, cfg, inventory
+            )
+            project = project_inventory(self.root, display_cfg, application)
+            project = prune_support_shells(project, display_excluded)
             fingerprint = digest([semantic_inventory(project), inventory["scope_id"], adapter])
             cached = getattr(self, "project_cache", None)
             if cached is None or cached[0] != fingerprint:
                 empty = scan(self.root, [])
                 units, errors = file_units(
-                    self.root, inventory["files"], getattr(self, "project_units", None)
+                    self.root, application["files"], getattr(self, "project_units", None)
                 )
                 self.project_units = units
                 empty["units"] = units
@@ -299,6 +309,7 @@ class CodeGraph:
                     "files": list(inventory["files"]),
                     "excluded": inventory["excluded"],
                     "project_excluded": project["excluded"],
+                    "display_excluded": display_excluded,
                     **{
                         key: inventory[key]
                         for key in (

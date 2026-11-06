@@ -310,14 +310,16 @@ try {
   checks.push(
     "Quiet stale focus, real operation capture/replay, active-clear rejection, delayed-load clear guard, isolated selected-record clear, zero observer-only events",
   );
-  await page.setViewportSize({ width: 390, height: 844 });
+  // The developer viewer targets desktop workspaces; mobile support was
+  // explicitly removed from scope. Retain overflow/menu checks at laptop size.
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.click("#fit");
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
   await page.locator('#semantic [data-node-id="publish"]').evaluate((node) => node.click());
   await page.click("#selection-menu");
   const bounds = await page.locator("#graph-menu").boundingBox();
-  assert.ok(bounds.x >= 0 && bounds.x + bounds.width <= 390);
-  await shot("05-mobile-menu");
+  assert.ok(bounds.x >= 0 && bounds.x + bounds.width <= 1280);
+  await shot("05-desktop-menu");
   await page.keyboard.press("Escape");
   assert.deepEqual(errors, []);
   await writeFile(
@@ -335,7 +337,7 @@ try {
     ),
   );
   console.log(
-    "PASS: conversation locale, context menus, stale scope, recording controls and 390px viewer.",
+    "PASS: conversation locale, context menus, stale scope, recording controls and desktop viewer.",
   );
 } catch (error) {
   if (page) await shot("failure").catch(() => {});

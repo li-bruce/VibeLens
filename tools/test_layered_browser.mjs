@@ -142,7 +142,9 @@ try {
   });
   assert.ok(checks.quietCapture.all > 10);
   assert.deepEqual(checks.quietCapture.shown, [], "Captured fields are owner details by default");
+  await page.click("#filter-toggle");
   await page.click("#fields-toggle");
+  await page.click("#close-filters");
   await page.waitForSelector('#semantic [data-node-id="field:transaction:out:status"]', {
     state: "attached",
   });
@@ -360,6 +362,7 @@ try {
   checks.rulerAndBoundaryRoutes = true;
   await shot("3d-top");
   const camera = await page.evaluate(() => graphDebug.spatial.camera.position);
+  await page.click("#tool-orbit");
   // The timeline dock changes the available graph height. Orbit within the
   // actual viewport rather than dragging an unrelated dock at a fixed page Y.
   const orbitBounds = await page.locator("#viewport").boundingBox();
@@ -373,6 +376,7 @@ try {
   await page.mouse.up();
   await page.waitForTimeout(350);
   assert.notDeepEqual(await page.evaluate(() => graphDebug.spatial.camera.position), camera);
+  await page.click("#tool-select");
   await isolateLayer("symbols");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   assert.deepEqual(
@@ -462,7 +466,7 @@ try {
     "symbols",
   ]);
   assert.equal(await page.locator("#legend-panel").getAttribute("data-mode"), "2D");
-  await page.click("#show-all");
+  await page.locator("#layers-all").evaluate((button) => button.click());
   assert.ok(
     (await page.locator('#layer-controls button[data-layer][aria-pressed="false"]').count()) === 0,
   );

@@ -217,7 +217,7 @@ try {
       inspectedKinds.has(kind),
       "Definition details must survive native identity merging: " + kind,
     );
-  await page.click("#show-all");
+  await page.locator("#layers-all").evaluate((button) => button.click());
   await page.click("#expand");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   const shown = await page.evaluate(() =>
@@ -258,6 +258,7 @@ try {
   await page.click("#fit");
   await page.click("#zoom-out");
   await page.click("#zoom-out");
+  await page.click("#tool-orbit");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   const orbitStart = await page.evaluate(() => ({
     camera: graphDebug.spatial.camera.position,
@@ -283,6 +284,7 @@ try {
     orbitStart.camera,
   );
   assert.deepEqual(await page.evaluate(() => graphDebug.spatialPositions), orbitStart.nodes);
+  await page.click("#tool-select");
   await page.screenshot({ path: path.join(output, "bound-model-3d.png") });
   checks.push({ sameGraphIn3D: true, realOrbit: true, planes: spatial.planes });
   assert.deepEqual(errors, []);

@@ -1,3 +1,15 @@
+import { respondingNodes, transferDuration } from "./playback-appearance.js";
+import { foldedOwnerCenters } from "./containment-semantics.js";
+import { SelectionMarquee, rectangleSelection, selectionRoots } from "./graph-selection.js";
+import { relationFamilies, relationFamily } from "./relation-appearance.js";
+import {
+  draftViewId,
+  isPreset,
+  restoredFilters,
+  layerSelection,
+  needsSource,
+  layoutSelection,
+} from "./view-selection.js";
 import { stepHierarchy } from "./step-hierarchy.js";
 import { transferPose, transferPolygon } from "./transfer-glyph.js";
 /** Viewer coordinator: connect API snapshots, graph presentation and user actions.
@@ -27,12 +39,12 @@ import {
   savedLayerVisibility,
   implementationFacets,
   layerOf,
+  layerColor,
   implementationFacet,
 } from "./graph-layers.js";
 import { spatialLegend } from "./spatial-geometry.js";
 import { SpatialRenderer } from "./spatial-renderer.js";
 import { captureRoots } from "./capture-scope.js";
-import { conceptActivityIds } from "./concept-observation.js";
 import { declarationNodes } from "./graph-inventory.js";
 import { t as boTranslate } from "./i18n.js";
 import {
@@ -125,6 +137,11 @@ let version = "live",
   graph = null,
   displayGraph = null,
   selected = null;
+let transferPoints = [];
+let selectedNodes = new Set(),
+  navigationMode = "select",
+  spacePan = false;
+const marquee = new SelectionMarquee($("canvas-host"));
 let scale = 1,
   pan = { x: 0, y: 0 },
   expanded = new Set(),
@@ -337,10 +354,13 @@ function updateSpatial() {
   if (!spatialActive() || !graph) return;
   if (!spatial)
     spatial = new SpatialRenderer($("canvas-host"), {
-      onSelect: (id) => {
+      onSelect: (id, options) => {
         $("viewport").focus({ preventScroll: true });
-        select(id);
+        select(id, options);
       },
+      navigation: () => (spacePan ? "pan" : navigationMode),
+      selected: () => [...selectedNodes],
+      onMarquee: (phase, event, points) => handleMarquee(phase, event, points),
       onToggle: toggle,
       onEdge: (edge) => {
         $("viewport").focus({ preventScroll: true });
@@ -363,6 +383,7 @@ function updateSpatial() {
     presentation,
     preferences,
     selected,
+    selectedNodes,
     focusContext,
     settings: cleanLayers(analysisSettings.layers),
     scope: storageKey,
@@ -382,6 +403,9 @@ function point(box) {
 const layerRuler = new LayerRuler($("layer-controls"), {
   change: (config) => {
     if (!analysisSettings || !graph) return;
+    const visibilityChanged =
+      JSON.stringify(config.visible) !== JSON.stringify(analysisSettings.layers.visible);
+    if (visibilityChanged) customizeLayers(config.visible);
     analysisSettings.layers = cleanLayers(config);
     updateLayerControls();
     updatePresentation();
@@ -399,6 +423,7 @@ function updateLayerControls() {
   const config = cleanLayers(analysisSettings?.layers),
     mode = config.enabled ? "3D" : "2D";
   $("layered-toggle").textContent = mode;
+  $("tool-orbit").hidden = !config.enabled;
   $("layer-gap").value = config.gap;
   $("layer-gap").disabled = !config.enabled;
   $("layer-drawer").classList.toggle("is-compact", config.compact);
@@ -416,6 +441,7 @@ function updateLayerControls() {
 function changeLayers(visible) {
   if (!analysisSettings || !graph) return;
   stopAnimation();
+  customizeLayers(visible);
   analysisSettings.layers = cleanLayers({
     ...analysisSettings.layers,
     only: "all",
@@ -446,10 +472,7 @@ $("layer-gap").oninput = () => {
   schedule();
   saveSoon();
 };
-$("layers-all").onclick = () => {
-  analysisSettings.layers.facets = [...implementationFacets];
-  changeLayers(layers.map((layer) => layer.id));
-};
+
 $("edge-routing").onchange = (event) => {
   analysisSettings.routing = cleanRoute(event.target.value);
   updateSpatial();
@@ -527,7 +550,7 @@ function updatePresentation() {
       .filter((box) => presentation.glyphs.has(box.id) || presentation.regions.has(box.id))
       .map((box) => box.type),
   );
-  const visibleRelations = new Set(renderedEdges.map((edge) => edge.type));
+  const visibleRelations = new Set(renderedEdges.map((edge) => relationFamily(edge.type, edge)));
   $("key-legend").hidden = !displayGraph.boxes.some(
     (box) => box.node.data_metadata?.primary_key === true && presentation.glyphs.has(box.id),
   );
@@ -546,6 +569,11 @@ function draw() {
   focusContext = selected
     ? selectionContext(graph, selected)
     : discussionContext(graph, conversation.ids);
+  for (const id of selectedNodes) {
+    const context = selectionContext(graph, id);
+    for (const key of ["nodes", "edges", "regions"])
+      for (const item of context[key]) focusContext[key].add(item);
+  }
   updatePresentation();
   app.canvas.hidden = spatialActive();
   if (spatialActive()) {
@@ -565,6 +593,7 @@ function draw() {
     focusContext,
     preferences,
     selected,
+    selectedNodes,
     scale,
     pan,
     boDetail,
@@ -690,14 +719,20 @@ function project() {
   expanded = new Set([...expanded].map((id) => renamed[id] || id));
   selected = renamed[selected] || selected;
   const profile = currentProfile();
-  graph = layoutGraph(view, expanded, new Set(), new Map(), choice, step, {
+  // Folding belongs to displayed parents. A file on a hidden structure plane
+  // cannot conceal its functions in the Code view. This projection expansion
+  // leaves the saved user expansion set unchanged when layers are restored.
+  const effectiveExpanded = new Set(expanded);
+  const visibleLayers = new Set(cleanLayers(analysisSettings.layers).visible);
+  for (const node of declarationNodes(view))
+    if (!visibleLayers.has(layerOf(node))) effectiveExpanded.add(node.id);
+  graph = layoutGraph(view, effectiveExpanded, new Set(), new Map(), choice, step, {
     hiddenNodes: preferences.filters.hiddenNodes,
     hiddenEdges: preferences.filters.hiddenEdges,
     include: (n) =>
       n.filter_context ||
       analysisSettings?.advanced ||
-      (["implementation", "code", "project", "api", "functions"].includes(analysisId) &&
-        !!n.code_role) ||
+      (needsSource(analysisId, analysisSettings) && !!n.code_role) ||
       (!["python-ast", "source-ast"].includes(n.origin) && n.analysis_level !== "advanced") ||
       annotationFor(preferences, n.id).core,
     memberships: sharedMemberships(view.model),
@@ -732,6 +767,8 @@ function project() {
 }
 async function arrange(initial = false) {
   if (!graph) return;
+  updatePresentation();
+  const arrangement = layoutSelection(displayGraph, presentation);
   if (spatialActive()) {
     updateSpatial();
     if (!initial) {
@@ -745,7 +782,7 @@ async function arrange(initial = false) {
     try {
       const positions = await calculateLayout(
         elk,
-        graph,
+        arrangement,
         preferences,
         preferences.algorithm || "cluster",
       );
@@ -772,7 +809,7 @@ async function arrange(initial = false) {
   $("arrange").disabled = true;
   $("layout-status").textContent = boTranslate("Arranging\u2026");
   try {
-    const positions = await calculateLayout(elk, graph, preferences, algorithm);
+    const positions = await calculateLayout(elk, arrangement, preferences, algorithm);
     if (epoch !== layoutEpoch || scope !== storageKey || !graph || key !== topologyKey(graph))
       return;
     undo = { mode: "2D", positions: previous, camera };
@@ -843,7 +880,12 @@ function zoom(factor, point = { x: app.screen.width / 2, y: app.screen.height / 
   schedule();
   saveSoon();
 }
-function select(id) {
+function select(id, { additive = false, preserve = false } = {}) {
+  if (additive && id) {
+    if (selectedNodes.has(id)) selectedNodes.delete(id);
+    else selectedNodes.add(id);
+    id = selectedNodes.has(id) ? id : [...selectedNodes].at(-1) || null;
+  } else if (!(preserve && selectedNodes.has(id))) selectedNodes = new Set(id ? [id] : []);
   selectedLayer = null;
   if (analysisSettings) layerRuler.render(analysisSettings.layers, null);
   selected = id;
@@ -899,6 +941,30 @@ function showDiscussion(ids) {
   project();
   frameDiscussion();
 }
+/** Preserve the location people see when a region turns back into a node.
+ * Descendants keep their saved positions, so reopening restores the same group.
+ */
+function anchorFoldedOwners(ids) {
+  const spatialMode = spatialActive();
+  const regions = spatialMode
+    ? spatial?.visibleVolumes || []
+    : displayGraph.regions.map((region) => ({
+        ...region,
+        center: { x: region.cx, y: region.cy },
+      }));
+  const centers = foldedOwnerCenters(regions, presentation.glyphs, new Set(ids), (id) =>
+    layerOf(graph.all.get(id)),
+  );
+  for (const [id, center] of centers) {
+    const positions = spatialMode ? spatial.positions : preferences.positions;
+    if (positions[id]?.pinned) continue;
+    const box = graph.byId.get(id);
+    positions[id] = {
+      ...positions[id],
+      ...(spatialMode ? center : { x: center.x - box.w / 2, y: center.y - 31 }),
+    };
+  }
+}
 async function toggle(id) {
   if (!graph?.children.has(id)) return;
   cancelLayout();
@@ -906,7 +972,10 @@ async function toggle(id) {
   const opening = !expanded.has(id);
   const known = new Set(Object.keys(preferences.positions));
   if (opening) expanded.add(id);
-  else expanded.delete(id);
+  else {
+    anchorFoldedOwners([id]);
+    expanded.delete(id);
+  }
   project();
   if (opening) {
     const epoch = layoutEpoch,
@@ -933,7 +1002,7 @@ async function toggle(id) {
     }
     if (!spatialActive()) settleExpansion(graph, preferences, id);
     updatePresentation();
-    focusSelection();
+    // Expansion changes contents, never the developer's camera or point of attention.
   }
   save();
   schedule();
@@ -1046,6 +1115,7 @@ function updateSemanticGeometry() {
     displayGraph,
     preferences,
     selected,
+    selectedNodes,
     focusContext,
     discussion: conversation.ids,
     spatial: spatialActive() ? spatial : null,
@@ -1247,24 +1317,77 @@ $("edge-hide").onclick = () => {
   select(null);
   applyFilters();
 };
+function handleMarquee(phase, event, points = []) {
+  if (phase === "start") {
+    marquee.start(event);
+    return;
+  }
+  if (phase === "move") {
+    marquee.move(event);
+    return;
+  }
+  const result = marquee.end(event);
+  if (!result) return;
+  if (!result.additive && Math.hypot(result.rect.w, result.rect.h) < 4) {
+    clearCanvasFocus();
+    return;
+  }
+  const ids = rectangleSelection(result.rect, points);
+  selectedNodes = new Set([...(result.additive ? selectedNodes : []), ...ids]);
+  select([...selectedNodes].at(-1) || null, { preserve: true });
+}
+function planarSelectionPoints() {
+  return displayGraph.boxes
+    .filter((box) => presentation.glyphs.has(box.id) || presentation.regions.has(box.id))
+    .map((box) => {
+      const p = point(box);
+      return { id: box.id, x: p.x * scale + pan.x, y: p.y * scale + pan.y };
+    });
+}
+for (const mode of ["select", "pan", "orbit"])
+  $("tool-" + mode).onclick = () => {
+    navigationMode = mode;
+    for (const key of ["select", "pan", "orbit"])
+      $("tool-" + key).setAttribute("aria-pressed", String(mode === key));
+  };
 app.canvas.addEventListener("pointerdown", (e) => {
   if (e.button !== 0 || gesture.active) return;
   $("viewport").focus({ preventScroll: true });
   contextMenu.close();
-  const hit = hitAt(e);
+  const mode = spacePan ? "pan" : navigationMode;
+  const hit = mode === "pan" ? null : hitAt(e);
+  const owner = hit?.id || hit?.region;
+  if (e.shiftKey && owner) {
+    e.preventDefault();
+    select(owner, { additive: true });
+    return;
+  }
+  if (!owner && !hit?.edge && mode === "select") {
+    e.preventDefault();
+    marquee.start(e);
+    app.canvas.setPointerCapture(e.pointerId);
+    return;
+  }
   cancelLayout();
   app.canvas.setPointerCapture(e.pointerId);
-  if (hit?.id) select(hit.id);
-  else if (hit?.region) select(hit.region);
-  const owner = hit?.id || hit?.region;
+  if (owner) select(owner, { preserve: true });
   gesture.start(
     { pointerId: e.pointerId, x: e.clientX, y: e.clientY },
     { node: owner ? displayGraph.byId.get(owner) : null, pan, scale },
   );
   gesture.active.hit = hit;
+  gesture.active.roots = owner
+    ? selectionRoots(selectedNodes, graph.all)
+        .map((id) => ({ ...graph.byId.get(id) }))
+        .filter((box) => box.id)
+    : [];
   app.canvas.style.cursor = owner ? "grabbing" : "move";
 });
 app.canvas.addEventListener("pointermove", (e) => {
+  if (marquee.active) {
+    marquee.move(e);
+    return;
+  }
   const move = gesture.move({
     pointerId: e.pointerId,
     x: e.clientX,
@@ -1272,11 +1395,23 @@ app.canvas.addEventListener("pointermove", (e) => {
   });
   if (!move) return;
   if (move.kind === "node") {
-    setPosition(graph, preferences, move.id, move.x, move.y);
+    const original = gesture.active.node;
+    for (const root of gesture.active.roots)
+      setPosition(
+        graph,
+        preferences,
+        root.id,
+        root.x + move.x - original.x,
+        root.y + move.y - original.y,
+      );
   } else pan = { x: move.x, y: move.y };
   schedule();
 });
 function endDrag(e, cancelled = false) {
+  if (marquee.active) {
+    handleMarquee("end", e, cancelled ? [] : planarSelectionPoints());
+    return;
+  }
   const gestureEnd = gesture.end(e.pointerId);
   if (!gestureEnd) return;
   app.canvas.style.cursor = "default";
@@ -1331,6 +1466,11 @@ $("viewport").addEventListener("keydown", (e) => {
     )
   )
     return;
+  if (e.code === "Space") {
+    e.preventDefault();
+    spacePan = true;
+    return;
+  }
   if (e.key === "Delete" && !e.target.closest('[contenteditable="true"]')) {
     e.preventDefault();
     if (selectedLayer) {
@@ -1375,6 +1515,12 @@ $("viewport").addEventListener("keydown", (e) => {
     schedule();
   }
 });
+$("viewport").addEventListener("keyup", (e) => {
+  if (e.code === "Space") spacePan = false;
+});
+window.addEventListener("blur", () => {
+  spacePan = false;
+});
 $("fit").onclick = fit;
 $("zoom-in").onclick = () => zoom(1.2);
 $("zoom-out").onclick = () => zoom(1 / 1.2);
@@ -1397,6 +1543,7 @@ $("undo-layout").onclick = () => {
 };
 $("collapse").onclick = () => {
   cancelLayout();
+  anchorFoldedOwners(expanded);
   expanded.clear();
   selected = null;
   detailMode = null;
@@ -1516,11 +1663,13 @@ function updateHiddenElements() {
 }
 $("hide-node").onclick = () => {
   if (!selected) return;
-  preferences.filters.hiddenNodes.push(selected);
+  preferences.filters.hiddenNodes.push(...(selectedNodes.size ? selectedNodes : [selected]));
+  selectedNodes.clear();
   selected = null;
   applyFilters();
 };
-$("show-all").onclick = () => {
+$("layers-all").onclick = () => {
+  customizeView();
   analysisOverride = { ...cleanProfile(), hierarchical: true };
   analysisSettings.advanced = true;
   preferences.filters = emptyFilters();
@@ -1539,12 +1688,15 @@ $("fields-toggle").onclick = () => {
   applyFilters();
 };
 function applyFilters() {
+  customizeView();
   cancelLayout();
   preferences.filters = cleanFilters(preferences.filters);
   project();
   showSearch();
   save();
   schedule();
+  lastKey = "";
+  poller.run();
 }
 for (const kind of ["nodes", "edges", "regions"]) {
   const values =
@@ -1781,10 +1933,7 @@ async function poll() {
     if (disposed || version !== requestedVersion || caseChoice !== requestedCase) return;
     loadAnalysis(projectLayoutKey(next, storage));
     const codeEnabled =
-      !recording &&
-      next.stage !== "design" &&
-      (["project", "code", "api", "implementation"].includes(analysisId) ||
-        !!analysisSettings.codeFocus);
+      !recording && next.stage !== "design" && needsSource(analysisId, analysisSettings);
     let codeSlice = null;
     let sourceNeedsLayout = false;
     try {
@@ -1887,8 +2036,11 @@ async function poll() {
       const restored = readLayout(storage, nextStorageKey);
       preferences = restored.state;
       storageKey = nextStorageKey;
-      if (!restored.restored)
-        preferences.filters = cleanFilters(profileFor(analysisId, analysisSettings.custom));
+      preferences.filters = restoredFilters(
+        analysisId,
+        analysisSettings.custom,
+        restored.restored ? preferences.filters : profileFor(analysisId, analysisSettings.custom),
+      );
       if (analysisSettings.annotations) preferences.annotations = analysisSettings.annotations;
       selected = preferences.focus;
       expanded = new Set(restored.restored ? preferences.expanded : []);
@@ -2031,6 +2183,7 @@ function loadAnalysis(baseKey) {
   } catch {}
   analysisWasSaved = !!saved && typeof saved === "object";
   analysisSettings = {
+    selectionSchema: 1,
     advanced: false,
     explainedNames: saved?.explainedNames !== false,
     custom: [],
@@ -2072,22 +2225,75 @@ function loadAnalysis(baseKey) {
         label: p.label.slice(0, 40),
       }));
     for (const [id, p] of Object.entries(saved.overrides || {}))
-      if (presets.some((x) => x.id === id) || analysisSettings.custom.some((x) => x.id === id))
+      if (id === draftViewId || analysisSettings.custom.some((x) => x.id === id))
         analysisSettings.overrides[id] = cleanProfile(p);
     if (saved.annotations && typeof saved.annotations === "object")
       analysisSettings.annotations = saved.annotations;
-    if ([...presets, ...analysisSettings.custom].some((p) => p.id === saved.selected))
+    if (
+      saved.selected === draftViewId ||
+      [...presets, ...analysisSettings.custom].some((p) => p.id === saved.selected)
+    )
       analysisSettings.selected = saved.selected;
   }
   analysisId = analysisSettings.selected;
+  // A legacy preset could hold arbitrary filters. Preserve that exact personal
+  // view as a draft on first migration, then keep named presets immutable.
+  if (saved && !saved.selectionSchema && isPreset(analysisId)) {
+    const legacyVisible =
+      saved.layerVisibility?.[analysisId] ||
+      (analysisId === "overview" ? saved.layers?.visible : null);
+    const modified =
+      saved.overrides?.[analysisId] ||
+      (legacyVisible &&
+        JSON.stringify(cleanLayers({ visible: legacyVisible }).visible) !==
+          JSON.stringify(visibilityForView({}, analysisId)));
+    if (modified) {
+      const oldKey = baseKey + (analysisId === "overview" ? "" : ":view:" + analysisId);
+      const prior = readLayout(storage, oldKey).state;
+      analysisSettings.overrides[draftViewId] =
+        saved.overrides?.[analysisId] || profileFor(analysisId);
+      analysisSettings.layerVisibility[draftViewId] =
+        legacyVisible || visibilityForView({}, analysisId);
+      writeLayout(storage, baseKey + ":view:" + draftViewId, prior);
+      analysisId = draftViewId;
+    }
+  }
   analysisSettings.layers = cleanLayers({
     ...analysisSettings.layers,
     visible: visibilityForView(analysisSettings, analysisId),
     facets: [...implementationFacets],
   });
   updateLayerControls();
-  analysisOverride = analysisSettings.overrides[analysisId] || null;
+  analysisOverride = isPreset(analysisId) ? null : analysisSettings.overrides[analysisId] || null;
   updateAnalysisOptions();
+}
+/** Enter a custom draft without moving the camera or changing model identities. */
+function customizeView() {
+  if (!preferences || !analysisSettings || analysisId === draftViewId) return;
+  const profile = currentProfile();
+  preferences.expanded = [...expanded];
+  preferences.camera = { x: pan.x, y: pan.y, scale };
+  if (spatialActive() && spatial) preferences.spatial = spatial.snapshot();
+  analysisId = draftViewId;
+  analysisOverride = profile;
+  storageKey = analysisKey.slice(0, -":analysis".length) + ":view:" + draftViewId;
+  updateAnalysisOptions();
+}
+function customizeLayers(visible) {
+  const fromTemplate = isPreset(analysisId);
+  customizeView();
+  if (fromTemplate) {
+    const selection = layerSelection(preferences.filters);
+    analysisOverride = selection.profile;
+    preferences.filters = selection.filters;
+  }
+  analysisSettings.layers = cleanLayers({
+    ...analysisSettings.layers,
+    visible,
+  });
+  project();
+  lastKey = "";
+  poller.run();
 }
 function currentProfile() {
   const p = analysisOverride || profileFor(analysisId, analysisSettings?.custom);
@@ -2178,7 +2384,8 @@ async function applyConversationControl(plan, session) {
 function saveAnalysis() {
   if (!analysisKey || !analysisSettings) return;
   analysisSettings.selected = analysisId;
-  analysisSettings.layerVisibility[analysisId] = savedLayerVisibility(analysisSettings.layers);
+  if (!isPreset(analysisId))
+    analysisSettings.layerVisibility[analysisId] = savedLayerVisibility(analysisSettings.layers);
   analysisSettings.annotations = preferences?.annotations || analysisSettings.annotations;
   if (analysisOverride) analysisSettings.overrides[analysisId] = analysisOverride;
   else delete analysisSettings.overrides[analysisId];
@@ -2188,7 +2395,9 @@ function saveAnalysis() {
 }
 function updateAnalysisOptions() {
   const groups = new Map();
-  for (const p of [...presets, ...analysisSettings.custom]) {
+  const draft =
+    analysisId === draftViewId ? [{ id: draftViewId, label: boTranslate("Custom view") }] : [];
+  for (const p of [...presets, ...analysisSettings.custom, ...draft]) {
     const group = p.group || "Custom";
     if (!groups.has(group)) {
       const element = document.createElement("optgroup");
@@ -2205,7 +2414,7 @@ function updateAnalysisOptions() {
   $("fields-toggle").setAttribute("aria-pressed", String(preferences?.filters.fields === "all"));
   $("analysis-details").setAttribute("aria-pressed", String(analysisSettings.advanced));
   $("analysis-view").value = analysisId;
-  $("delete-view").hidden = !analysisId.startsWith("custom-");
+  $("delete-view").hidden = !analysisId.startsWith("custom-") || analysisId === draftViewId;
 }
 function recordedSourceUnavailable(id) {
   return (
@@ -2216,7 +2425,7 @@ function recordedSourceUnavailable(id) {
   );
 }
 function changeAnalysis(id) {
-  if (!analysisSettings || id === analysisId || recordedSourceUnavailable(id)) return;
+  if (!analysisSettings || recordedSourceUnavailable(id)) return;
   stopPlayback();
   cancelLayout();
   save();
@@ -2227,9 +2436,10 @@ function changeAnalysis(id) {
     visible: visibilityForView(analysisSettings, id),
     facets: [...implementationFacets],
   });
+  updateLayerControls();
   codeLayer.clear();
   if (["resources", "permission"].includes(id)) analysisSettings.advanced = true;
-  analysisOverride = analysisSettings.overrides[id] || null;
+  analysisOverride = isPreset(id) ? null : analysisSettings.overrides[id] || null;
   saveAnalysis();
   updateAnalysisOptions();
   const base = analysisKey.slice(0, -":analysis".length),
@@ -2237,8 +2447,11 @@ function changeAnalysis(id) {
     restored = readLayout(storage, key);
   preferences = restored.state;
   storageKey = key;
-  if (!restored.restored)
-    preferences.filters = cleanFilters(profileFor(id, analysisSettings.custom));
+  preferences.filters = restoredFilters(
+    id,
+    analysisSettings.custom,
+    restored.restored ? preferences.filters : profileFor(id, analysisSettings.custom),
+  );
   if (analysisSettings.annotations) preferences.annotations = analysisSettings.annotations;
   expanded = new Set(restored.state.expanded);
   if (!restored.restored && id === "shared")
@@ -2284,6 +2497,7 @@ $("code-more").onclick = () => {
 };
 $("analysis-details").onclick = () => {
   if (!analysisSettings) return;
+  customizeView();
   analysisSettings.advanced = !analysisSettings.advanced;
   updateAnalysisOptions();
   project();
@@ -2323,6 +2537,7 @@ $("save-view").onsubmit = (e) => {
   const id = existing?.id || "custom-" + Date.now().toString(36),
     profile = { ...currentProfile(), hierarchical: false, id, label };
   analysisSettings.custom = analysisSettings.custom.filter((p) => p.id !== id).concat(profile);
+  analysisSettings.layerVisibility[id] = savedLayerVisibility(analysisSettings.layers);
   // A saved view starts from the arrangement the developer is looking at.
   save();
   writeLayout(storage, analysisKey.slice(0, -":analysis".length) + ":view:" + id, preferences);
@@ -2362,14 +2577,14 @@ for (const [type, style] of Object.entries(nodeTypes)) {
 }
 const edgeLegend = document.querySelector(".relation-legend");
 edgeLegend.replaceChildren();
-for (const [type, style] of Object.entries(relationStyles))
-  if (!["contains", "other"].includes(type)) {
-    const label = document.createElement("span");
-    label.dataset.legendEdge = type;
-    label.title = style.label;
-    label.append(legendRelation(style), document.createTextNode(style.label));
-    edgeLegend.append(label);
-  }
+for (const [type, pattern] of Object.entries(relationFamilies)) {
+  const style = { ...pattern, color: 0x6f7d8d };
+  const label = document.createElement("span");
+  label.dataset.legendEdge = type;
+  label.title = style.label;
+  label.append(legendRelation(style), document.createTextNode(style.label));
+  edgeLegend.append(label);
+}
 function boVisible() {
   return graph.boxes.filter((b) => presentation.glyphs.has(b.id) || presentation.regions.has(b.id));
 }
@@ -2563,6 +2778,7 @@ function stopAnimation() {
   animationFrame = null;
   if (disposed) return;
   animationDot.clear();
+  transferPoints = [];
   spatial?.stopAnimation();
   animationUntil = 0;
   $("renderer").dataset.animationActive = "false";
@@ -2571,6 +2787,12 @@ function stopAnimation() {
 function animateEvent(event) {
   if (!graph || disposed || document.hidden || contextLost) return;
   stopAnimation();
+  // The event projection is synchronous; draw it before reading the accepted
+  // routing paths. A queued old frame must not erase the first transfer frame.
+  if (drawFrame) cancelAnimationFrame(drawFrame);
+  draw();
+  const activeNodes = respondingNodes(event, displayGraph, presentation, boDetail);
+  $("renderer").dataset.activeNodes = JSON.stringify([...activeNodes]);
   $("renderer").dataset.animationEpoch = String(
     Number($("renderer").dataset.animationEpoch || 0) + 1,
   );
@@ -2581,12 +2803,13 @@ function animateEvent(event) {
   if (spatialActive()) {
     updateSpatial();
     $("renderer").dataset.animationActive = "true";
-    spatial?.animate(animatedIds, boTransfers);
+    spatial?.animate(animatedIds, boTransfers, activeNodes);
     return;
   }
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const started = performance.now();
-  animationUntil = started + 650;
+  const requested = performance.now();
+  let started = null;
+  animationUntil = requested + transferDuration + 1800;
   const tick = (now) => {
     if (
       now >= animationUntil ||
@@ -2599,10 +2822,20 @@ function animateEvent(event) {
       stopAnimation();
       return;
     }
+    const pathsReady = !animatedIds.length || animatedIds.some((id) => edgePaths.has(id));
+    if (started === null && (pathsReady || now - requested > 1800)) {
+      started = now;
+      animationUntil = started + transferDuration;
+    }
+    if (started === null) {
+      animationFrame = requestAnimationFrame(tick);
+      return;
+    }
     animationLayer.position.set(pan.x, pan.y);
     animationLayer.scale.set(scale);
     animationDot.clear();
-    const t = (now - started) / 650;
+    const t = (now - started) / transferDuration;
+    transferPoints = [];
     for (const id of animatedIds) {
       const path = edgePaths.get(id);
       if (path) {
@@ -2613,22 +2846,30 @@ function animateEvent(event) {
         );
         // The route already carries the line's layer color. Reusing it also
         // avoids searching every rendered edge on every animation frame.
-        animationDot.poly(transferPolygon(pose, 5 / scale)).fill(path.color);
+        transferPoints.push({
+          id,
+          x: pose.point.x,
+          y: pose.point.y,
+          color: path.color,
+        });
+        animationDot
+          .poly(transferPolygon(pose, 9 / scale))
+          .fill(path.color)
+          .stroke({ color: 0xffffff, width: 1.3 / scale, alpha: 0.95 });
       }
     }
-    const node = graph.boxes.find(
-      (b) =>
-        (boDetail?.rows.some((r) => r.owner === b.id) ||
-          (b.node.referenceOf || b.node.event_node || b.id) === event.node ||
-          conceptActivityIds(b.node).includes(event.node)) &&
-        (presentation.glyphs.has(b.id) || presentation.regions.has(b.id)),
-    );
-    if (node) {
+    for (const id of activeNodes) {
+      const node = displayGraph.byId.get(id);
+      if (!node) continue;
       const p = point(node),
-        region = presentation.regions.has(node.id) && graph.regions.find((r) => r.id === node.id);
+        region = presentation.regions.has(id) && displayGraph.regions.find((r) => r.id === id),
+        radius = region?.radius || 32,
+        color = layerColor(node.node),
+        pulse = Math.sin(Math.PI * t);
       animationDot
-        .circle(p.x, p.y, (region?.radius || 32) + 10 * t)
-        .stroke({ color: 0x238065, width: 2 / scale, alpha: 1 - t });
+        .circle(p.x, p.y, radius + (12 * t) / scale)
+        .fill({ color, alpha: 0.12 * pulse })
+        .stroke({ color, width: 3.5 / scale, alpha: 0.35 + 0.65 * pulse });
     }
     $("renderer").dataset.animationActive = "true";
     app.renderer.render(app.stage);
@@ -2821,7 +3062,7 @@ function holdCurrentStep() {
   const replay = () => {
     if (!recording || playTimer || disposed) return;
     if (!document.hidden) animateEvent(replayItems[replayIndex]);
-    heldTimer = setTimeout(replay, 850);
+    heldTimer = setTimeout(replay, transferDuration + 180);
   };
   replay();
 }
@@ -2980,6 +3221,12 @@ $("replay-export").onclick = () => {
 };
 // Read-only debugging data; UI actions use the same pointer/keyboard handlers as users.
 window.graphDebug = {
+  get selectedNodes() {
+    return [...selectedNodes];
+  },
+  get transferPoints() {
+    return spatialActive() ? spatial?.transferPoints || [] : transferPoints;
+  },
   get timeline() {
     return recordingTimeline.diagnostics;
   },

@@ -113,3 +113,11 @@ docs/review/clarity-story-20261105/failures/github-editor-excerpt.log -whitespac
 # Preserve raw release validation output; maintained source keeps strict checks.
 docs/review/harness-distribution-20261105/checks/** -whitespace
 docs/review/harness-distribution-20261105/failures/** -whitespace
+
+# This installed module was accepted with CRLF; preserve its byte fingerprint
+# in the canonical Skill and every managed copy on checkout, including Unix.
+**/bo_observer/code_graph/display_scope.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Retain the original Windows receipts and accepted snapshot bytes.
+docs/review/2026-11-06-viewer-interactions/** whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/review/2026-11-06-viewer-interactions/examples/*.log whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+examples/*/.release/stategraph/viewer-interactions-*/** whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

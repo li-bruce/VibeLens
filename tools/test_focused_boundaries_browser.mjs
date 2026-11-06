@@ -58,7 +58,7 @@ try {
   page.on("pageerror", (error) => errors.push(String(error.stack)));
   await page.goto(ready.observer + "/graph?lang=en");
   await page.waitForFunction(() => window.graphDebug?.graph && !graphDebug.layoutBusy);
-  await page.click("#show-all");
+  await page.locator("#layers-all").evaluate((button) => button.click());
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   await page.locator("#node-search").fill("Grant result");
   await page.locator("#node-search").press("Enter");

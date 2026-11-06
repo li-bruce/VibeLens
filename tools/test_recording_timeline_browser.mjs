@@ -221,7 +221,7 @@ try {
   // This fixture contains actual data-transfer edges. State-only views above
   // correctly have no call edges; exercise a nonempty animation witness as well.
   await page.selectOption("#analysis-view", "data-operations");
-  await page.click("#show-all");
+  await page.locator("#layers-all").evaluate((button) => button.click());
   await page.click("#expand");
   const dataRaw = items.findIndex((item) => item.node === "db.read" && item.phase === "return");
   await page.selectOption("#replay-events", String(dataRaw));

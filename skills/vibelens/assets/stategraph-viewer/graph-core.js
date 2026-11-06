@@ -1,3 +1,4 @@
+import { codeRelations } from "./code-layer.js";
 import { typeColor } from "./layer-style.js";
 import { visualType as nodeType } from "./graph-classification.js";
 import { activationFor } from "./graph-activation.js";
@@ -750,7 +751,8 @@ export function viewTypes(n) {
 }
 export function relationType(e) {
   if (conceptRelationTypes.includes(e.type)) return e.type;
-  if (e.origin === "code-index" && e.code_relation) return "code-" + e.code_relation;
+  if (codeRelations.includes(e.type)) return e.type;
+  if (codeRelations.includes("code-" + e.code_relation)) return "code-" + e.code_relation;
   if (e.type === "data" && dataRelations.includes(e.data_relation)) return e.data_relation;
   if (dataRelations.includes(e.type)) return e.type;
   return ["python-ast", "source-ast"].includes(e.origin) && e.type === "flow"

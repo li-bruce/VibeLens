@@ -87,9 +87,14 @@ for (const type of [
   "writes",
   "transforms",
   "code-calls",
-  "code-parameter",
 ])
   assert.equal(relationStyle({ type }).dash.length, 0, type);
+// A signature declares its parameter; this edge is not a runtime value transfer.
+// Keep actual call/data assertions above and verify the new declaration grammar.
+assert.equal(relationStyle({ type: "code-parameter" }).family, "containment");
+assert.deepEqual(relationStyle({ type: "code-parameter" }).dash, [1, 5]);
+assert.equal(relationStyle({ type: "code-parameter" }).arrow, "none");
+assert.equal(relationStyle({ type: "code-imports" }).family, "reference");
 for (const type of ["guard", "flow", "transition", "maps", "references", "contains"])
   assert.ok(relationStyle({ type }).dash.length, type);
 assert.equal(relationStyle(fields.edges[0]).label, "Recorded input");

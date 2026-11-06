@@ -213,10 +213,10 @@ export function transferEdges(event, events, edges, all, configuration = null) {
             return true;
           return (
             !["python-ast", "source-ast"].includes(member.origin) &&
-            target === event.node &&
+            observesNode(all.get(target) || { id: target }, event.node) &&
             prior.some(
               (e) =>
-                e.node === source &&
+                observesNode(all.get(source) || { id: source }, e.node) &&
                 actualDependencies.some(
                   (d) =>
                     d.event === e.id &&

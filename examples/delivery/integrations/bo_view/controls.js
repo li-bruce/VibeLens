@@ -1,5 +1,19 @@
 /** Small, accessible controls shared by the graph toolbar and context menus. */
 const shapes = {
+  select: [["path", { d: "M4 3v16l5-5 4 7 3-2-4-7 7-1Z" }]],
+  pan: [
+    [
+      "path",
+      {
+        d: "M8 12V5a2 2 0 0 1 4 0v6-8a2 2 0 0 1 4 0v8-5a2 2 0 0 1 4 0v9c0 4-3 7-7 7h-1c-2 0-4-1-5-3l-4-6a2 2 0 0 1 3-2l2 2",
+      },
+    ],
+  ],
+  orbit: [
+    ["ellipse", { cx: 12, cy: 12, rx: 10, ry: 4, transform: "rotate(-30 12 12)" }],
+    ["path", { d: "m17 3 4 2-1 4M8 8v8m4-12v16m4-12v8" }],
+  ],
+  steps: [["path", { d: "M9 6h12M9 12h12M9 18h12M3 6h1M3 12h1M3 18h1" }]],
   timeline: [["path", { d: "M5 3v18M3 7h18M8 11h7m-3 4h9M7 19h9", "stroke-width": 2 }]],
   record: [["circle", { cx: 12, cy: 12, r: 6, fill: "currentColor", stroke: "none" }]],
   stop: [

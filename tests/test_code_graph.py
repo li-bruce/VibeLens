@@ -34,6 +34,29 @@ class CodeGraphTests(unittest.TestCase):
     def write(self, path, text):
         (self.root / path).write_text(text, encoding="utf-8")
 
+    def test_observer_support_is_not_application_source_but_remains_in_coverage(self):
+        """Display ownership must neither hide native code nor weaken iteration checks."""
+        from bo_observer.code_graph.display_scope import application_inventory
+        from bo_observer.workflow.bo_sync import source_inventory
+
+        self.write("observer.py", "def business_observer():\n    return 1\n")
+        self.write("projection.py", "def observed_state():\n    return 'shared'\n")
+        self.write("intent.json", '{"requirements": []}')
+        config, model = self.service.inputs()
+        config.update({"intent": "intent.json", "stategraph": {"module": "projection.py", "execution_mode": "observe"}})
+        inventory = source_inventory(self.root, config, model=model)
+        before = deepcopy(inventory)
+        application, display_config, excluded = application_inventory(self.root, config, inventory)
+        self.assertEqual(inventory, before)
+        self.assertIn("observer.py", application["files"])
+        self.assertIn("projection.py", inventory["files"])
+        self.assertNotIn("projection.py", application["files"])
+        self.assertIn("intent.json", excluded)
+        self.assertNotEqual(display_config, config)
+        config["stategraph"]["execution_mode"] = "drive"
+        native, _, _ = application_inventory(self.root, config, inventory)
+        self.assertIn("projection.py", native["files"], "A native application executor is application code")
+
     def test_file_projection_is_available_without_the_optional_symbol_index(self):
         """Filesystem discovery includes fresh files without parsing their symbols."""
         (self.root / "web").mkdir()

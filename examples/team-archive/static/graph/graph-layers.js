@@ -116,8 +116,15 @@ export function visibilityForView(settings, id) {
     database: ["data"],
     "data-access": ["symbols", "data"],
     "data-operations": ["symbols", "data"],
+    resources: [...ids],
+    data: [...ids],
+    runtime: [...ids],
+    blocked: [...ids],
+    shared: [...ids],
   };
-  return Array.isArray(visible) ? [...visible] : presets[id] || [...ids];
+  // Built-in views are stable templates. Per-view visibility belongs to custom
+  // views only; otherwise a prior manual edit can make a preset appear empty.
+  return presets[id] || (Array.isArray(visible) ? [...visible] : [...ids]);
 }
 /** Only occupied, visible display layers reserve a plane. */
 export function layerHeights(settings, scope = layers) {

@@ -11,6 +11,7 @@ import {
   expandLayerIds,
 } from "../skills/vibelens/assets/stategraph-viewer/graph-layers.js";
 import { LayerRuler } from "../skills/vibelens/assets/stategraph-viewer/layer-ruler.js";
+import { presets } from "../skills/vibelens/assets/stategraph-viewer/analysis.js";
 const expected = ["business", "state", "rules", "entry", "structure", "symbols", "unknown", "data"];
 const legacyVisibility = {
   visible: ["business", "state", "rules", "api"],
@@ -20,14 +21,19 @@ const viewSettings = {
   layers: cleanLayers(legacyVisibility),
   layerVisibility: cleanLayerVisibility(undefined, legacyVisibility),
 };
-assert.deepEqual(visibilityForView(viewSettings, "overview"), legacyVisibility.visible);
+assert.deepEqual(visibilityForView(viewSettings, "overview"), ["business", "state", "rules"]);
 assert.ok(visibilityForView(viewSettings, "project").includes("structure"));
 assert.ok(visibilityForView(viewSettings, "database").includes("data"));
 viewSettings.layerVisibility.project = ["project"];
 viewSettings.layerVisibility["custom-empty"] = [];
-assert.deepEqual(visibilityForView(viewSettings, "project"), ["project"]);
+assert.deepEqual(visibilityForView(viewSettings, "project"), ["structure"]);
 assert.deepEqual(visibilityForView(viewSettings, "custom-empty"), []);
-assert.deepEqual(visibilityForView(viewSettings, "overview"), legacyVisibility.visible);
+for (const { id } of presets) {
+  const template = visibilityForView({ layerVisibility: {} }, id);
+  assert.ok(template.length, id + " must have a nonempty layer template");
+  assert.deepEqual(visibilityForView({ layerVisibility: { [id]: [] } }, id), template);
+}
+assert.deepEqual(visibilityForView(viewSettings, "overview"), ["business", "state", "rules"]);
 assert.equal(viewSettings.layers.gap, 420);
 const restored = cleanLayerVisibility(
   JSON.parse(JSON.stringify(viewSettings.layerVisibility)),

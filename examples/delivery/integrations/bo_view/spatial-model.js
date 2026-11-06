@@ -1,5 +1,6 @@
 import { layerOf, layers, layerColor } from "./graph-layers.js";
 import { enclosingCircle, REGION_PADDING, SPATIAL_GLYPH_RADIUS } from "./containment-geometry.js";
+import { selfRelationOwners } from "./containment-semantics.js";
 
 /** Lift planar node centers into X/Z without changing either saved layout.
  * Box coordinates use a top-left origin; spatial objects use their center.
@@ -25,28 +26,7 @@ export function nodeElevation(_node, _byId, base, _gap) {
  * Real 3D coordinates belong to the worker. Saved 2D positions are read only.
  */
 export function prepareSpatialHierarchy(graph, preferences) {
-  const ancestors = new Map();
-  for (const node of graph.all.values()) {
-    const chain = new Set(),
-      seen = new Set([node.id]);
-    let parent = node.parent;
-    while (parent && !seen.has(parent)) {
-      seen.add(parent);
-      chain.add(parent);
-      parent = graph.all.get(parent)?.parent;
-    }
-    ancestors.set(node.id, chain);
-  }
-  const self = new Set();
-  for (const edge of graph.rawEdges) {
-    if (
-      ["contains", "code-contains"].includes(edge.type) ||
-      (edge.origin === "code-index" && edge.code_relation === "contains")
-    )
-      continue;
-    if (ancestors.get(edge.to)?.has(edge.from)) self.add(edge.from);
-    if (ancestors.get(edge.from)?.has(edge.to)) self.add(edge.to);
-  }
+  const self = selfRelationOwners(graph);
   for (const box of graph.boxes) {
     const saved = preferences.positions[box.id];
     if (saved) Object.assign(box, saved);

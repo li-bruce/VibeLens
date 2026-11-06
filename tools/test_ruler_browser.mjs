@@ -293,7 +293,7 @@ try {
       0,
       "Delete hides selected node",
     );
-    await page.click("#show-all");
+    await page.locator("#layers-all").evaluate((button) => button.click());
     const edge = await page
       .locator("#semantic-edges [data-edge-id]")
       .first()
@@ -309,7 +309,7 @@ try {
       0,
       "Delete hides selected relation",
     );
-    await page.click("#show-all");
+    await page.locator("#layers-all").evaluate((button) => button.click());
     const layerCanvas = await page.locator("#layer-controls canvas").boundingBox();
     const layerOrder = await page.evaluate(() => graphDebug.layers.order);
     await page.mouse.click(

@@ -10,8 +10,14 @@ export function declaredEdges(model) {
 }
 
 export function explainedName(value) {
-  if (typeof value === "string") return value.trim();
-  return value?.[locale()] || value?.en || "";
+  if (typeof value === "string") {
+    const text = value.trim();
+    // Legacy names have no locale tag. Do not substitute an explanation written
+    // in the other UI language; callers can retain the exact source identifier.
+    const chinese = /[\p{Script=Han}]/u.test(text);
+    return chinese === (locale() === "zh-CN") ? text : "";
+  }
+  return typeof value?.[locale()] === "string" ? value[locale()].trim() : "";
 }
 
 /** Prefer lexical names, then native schema names, then the graph identity.
@@ -75,13 +81,15 @@ export function nameNode(node, model, bindings = {}) {
         ? explainedName(model.presentation?.names?.states?.[node.value])
         : "") ||
       explainedName(model.presentation?.names?.nodes?.[node.referenceOf || node.id]) ||
-      node.concept_label ||
+      explainedName(node.concept_label) ||
       // A source comment explains an implementation. It cannot rename a
       // confirmed business action or a peer conceptual definition.
-      (node.layer === "business" || node.origin === "concept-design" ? authored : "") ||
-      (node.api?.registration_ids?.length > 1 ? "" : documentation?.summary) ||
+      (node.layer === "business" || node.origin === "concept-design"
+        ? explainedName(authored)
+        : "") ||
+      (node.api?.registration_ids?.length > 1 ? "" : explainedName(documentation?.summary)) ||
       ((binding?.api_role || node.api_role) === "capture" ? source : "") ||
-      authored ||
+      explainedName(authored) ||
       source;
   return {
     ...node,
@@ -111,7 +119,10 @@ export function namedView(view, explained = true) {
     ...edge,
     authored_label: edge.authored_label ?? edge.label,
     label: explained
-      ? explainedName(names.edges?.[edge.id]) || edge.authored_label || edge.label || edge.type
+      ? explainedName(names.edges?.[edge.id]) ||
+        explainedName(edge.authored_label || edge.label) ||
+        edge.event ||
+        ""
       : edge.event || edge.code_relation || edge.data_relation || edge.type,
   }));
   const chart = original.machine;
@@ -120,14 +131,18 @@ export function namedView(view, explained = true) {
     labels: Object.fromEntries(
       (chart.values || []).map((value) => [
         value,
-        explained ? explainedName(names.states?.[value]) || chart.labels?.[value] || value : value,
+        explained
+          ? explainedName(names.states?.[value]) || explainedName(chart.labels?.[value]) || value
+          : value,
       ]),
     ),
     event_labels: Object.fromEntries(
       Object.keys(chart.events || {}).map((event) => [
         event,
         explained
-          ? explainedName(names.events?.[event]) || chart.event_labels?.[event] || event
+          ? explainedName(names.events?.[event]) ||
+            explainedName(chart.event_labels?.[event]) ||
+            event
           : event,
       ]),
     ),

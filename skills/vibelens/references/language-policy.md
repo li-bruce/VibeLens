@@ -7,7 +7,7 @@ English is the maintained source language for instructions, identifiers, comment
 | Conversation | Use the user's current language unless they request another. Ask necessary business questions in that language. |
 | Skill instructions | Maintain one canonical English SKILL.md; translations are optional reading aids, not independent workflows. |
 | Graph identity | Keep stable IDs, enum values, relation kinds, source symbols, and evidence IDs unchanged when switching display language. |
-| Display | Use an explicit locale, then the environment locale, then English. Store locale with personal view preferences. |
+| Display | Use an explicit UI locale, then the saved/conversation locale, then English. Store locale with personal view preferences. Semantic name maps select only that locale; untranslated names fall back to source identities. |
 | User-authored labels | Preserve exact wording and notes. Translate only on request, keeping the original. |
 | Source and API errors | Use stable English diagnostic codes/messages. Localize presentation separately. |
 | Documentation | README.md is English. Link a Chinese edition and retain navigation between editions. |

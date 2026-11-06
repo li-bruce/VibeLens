@@ -1,5 +1,6 @@
 /** Edge hue follows display layers without losing relation meaning or identity. */
 import assert from "node:assert/strict";
+import { relationFamilies } from "../skills/vibelens/assets/stategraph-viewer/relation-appearance.js";
 import {
   edgeColor,
   crossLayerColor,
@@ -78,10 +79,10 @@ const capture = {
 };
 assert.equal(relationStyle(capture, boxes).color, layerPalette.symbols);
 assert.equal(relationStyle(capture, boxes).label, "Recorded input");
-assert.deepEqual(relationStyle(capture, boxes).dash, [3, 5]);
+assert.deepEqual(relationStyle(capture, boxes).dash, relationFamilies.reference.dash);
 assert.deepEqual(
   relationStyle({ ...capture, members: [{ evidence_kind: "conceptual" }] }, boxes).dash,
-  [4, 4],
+  relationFamilies.reference.dash,
 );
 
 // A state-valued observation belongs to the state plane even when its raw kind

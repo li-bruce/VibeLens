@@ -134,7 +134,7 @@ function start(hit) {
     canvas,
     raycaster: new T.Raycaster(),
     callbacks: {},
-    controls: { enabled: true },
+    controls: { enabled: true, mouseButtons: {} },
     positions,
     branch: () => ["database", "self"],
   };
@@ -170,6 +170,9 @@ assert(
   "A stale hidden owner cannot set the ring drag depth",
 );
 assert.deepEqual(ringDrag.dragIds, ["database", "self"]);
+const edgeGesture = start({ edge: { id: "observed-call" } });
+assert.equal(edgeGesture.selecting, undefined, "A link click cannot begin a marquee");
+assert.equal(edgeGesture.pointer.hit.edge.id, "observed-call");
 assert.deepEqual(ringDrag.dragPositions, positions);
 assert.notEqual(
   ringDrag.dragPositions,

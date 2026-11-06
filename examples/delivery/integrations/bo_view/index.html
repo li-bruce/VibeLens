@@ -22,7 +22,6 @@
         <select id="language" aria-label="Interface language">
           <option value="en">English</option>
           <option value="zh-CN">&#20013;&#25991;</option></select
-        ><span id="connection">Connecting</span
         ><a id="program-link" href="/control" target="_blank" rel="noopener">Open application ↗</a>
       </div>
     </header>
@@ -31,25 +30,14 @@
         id="name-mode"
         role="switch"
         aria-checked="true"
-        title="Use concise AI explanations"
+        title="Show concise names in the interface language"
         disabled
       >
-        <span class="name-switch" aria-hidden="true"></span>AI names
+        <span class="name-switch" aria-hidden="true"></span>Semantic labels
       </button>
       <label
         >View
         <select id="analysis-view" aria-label="Analysis view"></select></label
-      ><button
-        id="analysis-details"
-        aria-pressed="false"
-        title="Show internal calls, resources, and decision dependencies"
-      >
-        Analysis details</button
-      ><button id="fields-toggle" aria-pressed="false" title="Show recorded fields as graph nodes">
-        Recorded fields</button
-      ><button id="code-local" aria-pressed="false" disabled>Local code</button
-      ><button id="code-more" hidden>Load more code</button
-      ><span id="code-status" role="status"></span><button id="show-all">All elements</button
       ><button id="filter-toggle" disabled aria-expanded="false" aria-controls="filter-panel">
         Filters
       </button>
@@ -63,43 +51,42 @@
         />
         <div id="search-results" aria-label="Search results" hidden></div>
       </div>
-    </div>
-    <div class="record-bar">
-      <select id="capture-mode" aria-label="Recording scope">
-        <option value="all">All core events</option>
-        <option value="focused">Selected region only</option></select
-      ><button
-        id="record-start"
-        data-icon="record"
-        aria-label="Start recording"
-        title="Start recording"
-        disabled
-      ></button
-      ><button
-        id="record-stop"
-        data-icon="stop"
-        aria-label="Stop recording"
-        title="Stop recording"
-        disabled
-      ></button
-      ><button
-        id="record-clear"
-        data-icon="clear"
-        aria-label="Clear selected recording"
-        title="Clear selected recording"
-        disabled
-      ></button
-      ><select id="record-list" aria-label="Choose a recording">
-        <option value="">Live observation</option></select
-      ><button
-        id="replay-timeline"
-        data-icon="timeline"
-        aria-label="Timeline"
-        title="Timeline"
-        aria-pressed="true"
-        aria-controls="recording-timeline"
-      ></button
-      ><span id="record-status" role="status"></span>
+      <div class="record-bar">
+        <select id="capture-mode" aria-label="Recording scope">
+          <option value="all">All core events</option>
+          <option value="focused">Selected region only</option></select
+        ><button
+          id="record-start"
+          data-icon="record"
+          aria-label="Start recording"
+          title="Start recording"
+          disabled
+        ></button
+        ><button
+          id="record-stop"
+          data-icon="stop"
+          aria-label="Stop recording"
+          title="Stop recording"
+          disabled
+        ></button
+        ><button
+          id="record-clear"
+          data-icon="clear"
+          aria-label="Clear selected recording"
+          title="Clear selected recording"
+          disabled
+        ></button
+        ><select id="record-list" aria-label="Choose a recording">
+          <option value="">Live observation</option></select
+        ><button
+          id="replay-timeline"
+          data-icon="timeline"
+          aria-label="Timeline"
+          title="Timeline"
+          aria-pressed="true"
+          aria-controls="recording-timeline"
+        ></button>
+      </div>
     </div>
     <section id="replay" hidden aria-label="Recording replay">
       <div class="replay-controls">
@@ -136,9 +123,14 @@
         <select id="replay-events" aria-label="Recorded steps"></select
         ><button id="replay-locate" data-icon="locate" aria-label="Locate" title="Locate"></button
         ><button id="replay-export" data-icon="download" aria-label="Export" title="Export"></button
-        ><button id="replay-steps-toggle" aria-expanded="false" aria-controls="replay-selection">
-          Steps</button
-        ><span id="replay-note"></span>
+        ><button
+          id="replay-steps-toggle"
+          data-icon="steps"
+          aria-label="Playback steps"
+          title="Playback steps"
+          aria-expanded="false"
+          aria-controls="replay-selection"
+        ></button>
       </div>
       <section id="replay-selection" hidden aria-label="Playback steps">
         <div class="replay-loop-controls">
@@ -155,7 +147,7 @@
       <main
         id="viewport"
         tabindex="0"
-        aria-label="Unified graph. Drag a node or empty region space to move the group; drag outside regions to pan. Double-click to expand, scroll to zoom. Select a node and press F to locate, P to pin, arrow keys to move, or Esc to clear focus."
+        aria-label="Unified graph. Use Select to draw a selection rectangle, Pan to move the view, or Orbit to rotate 3D. Drag a selected node or region to move the group. Double-click to expand, scroll to zoom. F locates a node; P pins; Escape clears focus."
       >
         <div id="canvas-host"></div>
         <div id="semantic" class="accessible-graph"></div>
@@ -170,6 +162,22 @@
           <div class="detail-heading">
             <strong>Visible content</strong
             ><button id="close-filters" aria-label="Close filters">×</button>
+          </div>
+          <div class="filter-tools">
+            <button
+              id="analysis-details"
+              aria-pressed="false"
+              title="Show internal calls, resources, and decision dependencies"
+            >
+              Analysis details</button
+            ><button
+              id="fields-toggle"
+              aria-pressed="false"
+              title="Show recorded fields as graph nodes"
+            >
+              Recorded fields</button
+            ><button id="code-local" aria-pressed="false" disabled>Local code</button
+            ><button id="code-more" hidden>Load more code</button>
           </div>
           <fieldset>
             <legend>Nodes</legend>
@@ -289,7 +297,7 @@
           >
             ☷
           </button>
-          <button id="layers-all" title="Show all layers" aria-label="Show all layers">◎</button>
+          <button id="layers-all" title="All elements" aria-label="All elements">◎</button>
           <div id="layer-controls" role="group" aria-label="Visible layers"></div>
         </aside>
         <output id="route-status" hidden></output>
@@ -303,6 +311,29 @@
             >
               2D
             </button>
+            <span class="tool-divider"></span>
+            <button
+              id="tool-select"
+              data-icon="select"
+              aria-label="Select nodes"
+              title="Select nodes"
+              aria-pressed="true"
+            ></button>
+            <button
+              id="tool-pan"
+              data-icon="pan"
+              aria-label="Pan view"
+              title="Pan view"
+              aria-pressed="false"
+            ></button>
+            <button
+              id="tool-orbit"
+              data-icon="orbit"
+              aria-label="Orbit view"
+              title="Orbit view"
+              aria-pressed="false"
+              hidden
+            ></button>
             <div class="toolbar-spacing">
               <label class="layer-spacing" title="Layer separation">
                 <span aria-hidden="true">↕</span>
@@ -384,9 +415,10 @@
     </div>
     <section id="recording-timeline" hidden aria-label="Execution timeline"></section>
     <footer>
+      <span id="replay-note"></span>
       <span id="selection">Right-click a node or edge for actions.</span
-      ><span id="layout-status" role="status"></span
-      ><span title="Solid: calls and data transfer · Dashed: logic and associations">━ · ┄</span
+      ><span id="layout-status" role="status"></span><span id="connection">Connecting</span
+      ><span id="record-status" role="status"></span><span id="code-status" role="status"></span
       ><span id="renderer">PixiJS</span>
     </footer>
     <div hidden aria-hidden="true">

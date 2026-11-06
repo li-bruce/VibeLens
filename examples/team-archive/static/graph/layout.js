@@ -1,3 +1,4 @@
+import { relationFamilies, relationFamily } from "./relation-appearance.js";
 import { t as boTranslate } from "./i18n.js";
 // Layout preferences are local view data. They never change model or runtime facts.
 import { graphBounds, nodeTypes, viewTypes, relationType } from "./graph-core.js";
@@ -9,6 +10,7 @@ import { conceptRelations, conceptRelationTypes } from "./concept-relations.js";
 import { enclosingCircle, planarBodyCircle, REGION_PADDING } from "./containment-geometry.js";
 import { proximityOrder, proximityNeighbors } from "./proximity-layout.js";
 import { relationIds, relationExcluded, relationTypeAllowed } from "./edge-identities.js";
+import { containmentRelation, selfRelationOwners } from "./containment-semantics.js";
 import {
   conceptLayer,
   conceptTemplates,
@@ -338,26 +340,15 @@ export function selectionContext(graph, id) {
 }
 export const nodeCenter = (b) => ({ x: b.x + b.w / 2, y: b.y + 31 });
 const nodeRadius = (b) => Math.hypot(b.w / 2, Math.max(31, b.h - 31)) + 10;
-const containmentRelation = (edge) =>
-  ["contains", "code-contains"].includes(edge.type) ||
-  (edge.origin === "code-index" && edge.code_relation === "contains");
 export function hasSelfRelation(graph, id) {
-  const edges = [
-    ...(graph.rawEdges || []),
-    ...(graph.edges?.flatMap((e) => e.members || [e]) || []),
-  ];
-  const inside = (key) => key === id || ancestorsToReveal(graph.all, key).includes(id);
-  return edges.some(
-    (e) =>
-      !containmentRelation(e) &&
-      ((e.from === id && inside(e.to)) || (e.to === id && inside(e.from))),
-  );
+  return selfRelationOwners(graph).has(id);
 }
 function encloseCircles(circles) {
   return enclosingCircle(circles);
 }
 export function hierarchyRegions(graph, presentation = null) {
   const tree = hierarchyOf(graph),
+    selfOwners = selfRelationOwners(graph),
     regions = [];
   function visit(id) {
     const b = graph.byId.get(id),
@@ -366,9 +357,7 @@ export function hierarchyRegions(graph, presentation = null) {
     const children = tree.children.get(id) || [],
       enabled = !presentation || presentation.regions.has(id),
       self =
-        children.length > 0 &&
-        hasSelfRelation(graph, id) &&
-        (!presentation || presentation.glyphs.has(id)),
+        children.length > 0 && selfOwners.has(id) && (!presentation || presentation.glyphs.has(id)),
       glyph = presentation ? presentation.glyphs.has(id) : !children.length || self;
     // The hidden owner's saved anchor is for dragging/packing only. Bounds use
     // visible glyphs with their label rectangles and actual child-region disks.
@@ -577,26 +566,30 @@ const relationPatterns = {
 export const relationStyles = Object.fromEntries(
   Object.entries(relationPatterns).map(([type, pattern]) => [
     type,
-    { ...pattern, color: crossLayerColor },
+    {
+      ...pattern,
+      ...relationFamilies[relationFamily(type)],
+      label: pattern.label,
+      family: relationFamily(type),
+      color: crossLayerColor,
+    },
   ]),
 );
 
 /** Stroke describes meaning; color follows the endpoints' displayed layers. */
 export function relationStyle(edge, nodes) {
-  const members = edge.members || [edge];
-  let style = relationStyles[edge.type] || relationStyles.other;
-  if (members.length && members.every((member) => member.evidence_kind === "conceptual"))
-    style = {
-      ...(relationStyles[relationType(edge)] || relationStyles.other),
-      dash: [4, 4],
-    };
-  else if (members.length && members.every((member) => member.origin === "capture-field"))
-    style = {
-      ...relationStyles.data,
-      label: members[0].label || boTranslate("Recorded field"),
-      dash: [3, 5],
-    };
-  return { ...style, color: edgeColor(edge, nodes) };
+  const type = relationType(edge),
+    pattern = relationStyles[type] || relationStyles.other,
+    family = relationFamily(type, edge);
+  return {
+    ...pattern,
+    ...relationFamilies[family],
+    label: (edge.members || [edge]).every((member) => member.origin === "capture-field")
+      ? edge.members?.[0]?.label || edge.label || pattern.label
+      : pattern.label,
+    family,
+    color: edgeColor(edge, nodes),
+  };
 }
 /** One caption for planar, spatial, accessible and inspected relations. */
 export function relationName(edge, state) {
@@ -606,6 +599,31 @@ export function relationName(edge, state) {
       ? labels.join(" / ") || edge.type
       : labels.join(" / ") || relationStyle(edge).label;
   return edge.members?.length > 1 ? `${name} × ${edge.members.length}` : name;
+}
+/** Canvas captions carry relationship-specific detail, never repeat the legend. */
+export function relationCaption(edge, state) {
+  const generic = new Set(
+    Object.entries(relationStyles).flatMap(([type, style]) => [
+      type,
+      type.replace(/^code-/, ""),
+      style.label,
+    ]),
+  );
+  for (const text of [
+    "Recorded field",
+    "Source binding",
+    "HTTP observation",
+    "Contains",
+    "Call",
+    "Flow",
+    "Value transfer",
+    "Reference",
+    "Mapping",
+  ])
+    generic.add(boTranslate(text));
+  const labels = [...(edge.labels || [edge.label])].filter((label) => label && !generic.has(label));
+  if (!labels.length) return "";
+  return labels.join(" / ") + (edge.members?.length > 1 ? ` × ${edge.members.length}` : "");
 }
 // Folding projects endpoints in graph-core. Keep already-visible inner endpoints:
 // an expanded cross-circle call must not turn into a new parent-to-parent call.
@@ -717,17 +735,33 @@ export function hiddenByNode(id, all, hidden) {
 export function presentationGraph(graph, value) {
   const filters = cleanFilters(value),
     regions = new Set(),
-    glyphs = new Set();
+    glyphs = new Set(),
+    hiddenEdges = new Set(filters.hiddenEdges);
+  const selfOwners = selfRelationOwners(
+    graph,
+    (edge) =>
+      relationTypeAllowed(edge, filters.edges, relationType) &&
+      !relationExcluded(edge, hiddenEdges) &&
+      [edge.from, edge.to].every((id) => {
+        const node = graph.all.get(id);
+        return (
+          node &&
+          (filterNode(node, graph.all, filters) || filterNode(node, graph.all, filters, true))
+        );
+      }),
+  );
   for (const r of graph.regions || [])
     if (filterNode(graph.all.get(r.id), graph.all, filters, true)) regions.add(r.id);
   const grouped = new Map((graph.regions || []).map((r) => [r.id, r]));
   for (const b of graph.boxes) {
     const region = grouped.get(b.id);
-    if (filterNode(b.node, graph.all, filters) && (!region || region.self || !regions.has(b.id)))
+    if (
+      filterNode(b.node, graph.all, filters) &&
+      (!region || selfOwners.has(b.id) || !regions.has(b.id))
+    )
       glyphs.add(b.id);
   }
-  const hidden = new Set(filters.hiddenNodes),
-    hiddenEdges = new Set(filters.hiddenEdges);
+  const hidden = new Set(filters.hiddenNodes);
   const edges = compoundEdges(graph, regions)
     .map((edge) => ({
       ...edge,

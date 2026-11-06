@@ -1,3 +1,5 @@
+import { transferDuration } from "./playback-appearance.js";
+import { headSegments } from "./relation-appearance.js";
 import { crossLayerColor } from "./edge-color.js";
 import { strokeSegments } from "./route-shapes.js";
 import { edgeCurve } from "./spatial-paths.js";
@@ -17,7 +19,7 @@ import { nodeGeometry, nodeMaterial, transferGeometry } from "./spatial-geometry
 import { transferPose } from "./transfer-glyph.js";
 import { SPATIAL_GLYPH_RADIUS } from "./containment-geometry.js";
 import { regionLabelAnchor, stackRegionCaptions } from "./spatial-labels.js";
-import { relationStyle, relationName, displayName, annotationFor } from "./layout.js";
+import { relationStyle, relationCaption, displayName, annotationFor } from "./layout.js";
 import { t } from "./i18n.js";
 import { relationIds } from "./edge-identities.js";
 
@@ -234,6 +236,7 @@ export class SpatialRenderer {
     const content = JSON.stringify([
       topology,
       input.selected,
+      [...(input.selectedNodes || [])],
       [...input.focusContext.nodes],
       next.nodes.map((n) => [n.id, n.label, n.state, n.rows]),
       next.edges.map((edge) => [edge.id, [...(edge.labels || [edge.label])]]),
@@ -369,7 +372,11 @@ export class SpatialRenderer {
         if (!p) continue;
         const box = graph.byId.get(node.id),
           core = annotationFor(preferences, box.node.referenceOf || node.id).core;
-        const size = this.glyphScale(node, p, selected === node.id ? 40 : core ? 35 : 29);
+        const size = this.glyphScale(
+          node,
+          p,
+          this.input.selectedNodes?.has(node.id) ? 40 : core ? 35 : 29,
+        );
         matrix.position.copy(vector(p));
         matrix.scale.setScalar(size);
         matrix.updateMatrix();
@@ -388,7 +395,8 @@ export class SpatialRenderer {
     for (const volume of this.visibleVolumes) {
       const node = this.model.byId.get(volume.id),
         color = node.color;
-      const active = selected === volume.id || focusContext.regions.has(volume.id);
+      const active =
+        this.input.selectedNodes?.has(volume.id) || focusContext.regions.has(volume.id);
       const shell = new T.Mesh(
         circle,
         new T.MeshBasicMaterial({
@@ -460,7 +468,7 @@ export class SpatialRenderer {
       label.title = displayName(box.node, preferences);
       label.dataset.nodeId = node.id;
       label.onpointerdown = (event) => this.startDrag(event, { id: node.id });
-      label.onclick = () => this.callbacks.onSelect?.(node.id);
+
       label.ondblclick = () => this.callbacks.onToggle?.(node.id);
       this.labels.append(label);
       this.labelItems.push({ el: label, id: node.id, offset: 18 });
@@ -477,7 +485,7 @@ export class SpatialRenderer {
       label.style.setProperty("--node-color", "#" + owner.color.toString(16).padStart(6, "0"));
       label.onpointerdown = (event) =>
         this.startDrag(event, { region: volume.id, anchor: volume.center });
-      label.onclick = () => this.callbacks.onSelect?.(volume.id);
+      label.ondblclick = () => this.callbacks.onToggle?.(volume.id);
       this.labels.append(label);
       const leader = document.createElementNS("http://www.w3.org/2000/svg", "line");
       leader.setAttribute("stroke", "#" + owner.color.toString(16).padStart(6, "0"));
@@ -524,7 +532,7 @@ export class SpatialRenderer {
         matrix.position.copy(vector(p));
         const core = annotationFor(this.input.preferences, node.node?.referenceOf || id).core;
         matrix.scale.setScalar(
-          this.glyphScale(node, p, id === this.input.selected ? 40 : core ? 35 : 29),
+          this.glyphScale(node, p, this.input.selectedNodes?.has(id) ? 40 : core ? 35 : 29),
         );
         matrix.updateMatrix();
         mesh.setMatrixAt(i, matrix.matrix);
@@ -590,7 +598,9 @@ export class SpatialRenderer {
         if (!node || !box || !p) continue;
         const core = annotationFor(preferences, box.node.referenceOf || id).core;
         matrix.position.copy(vector(p));
-        matrix.scale.setScalar(this.glyphScale(node, p, selected === id ? 40 : core ? 35 : 29));
+        matrix.scale.setScalar(
+          this.glyphScale(node, p, this.input.selectedNodes?.has(id) ? 40 : core ? 35 : 29),
+        );
         matrix.updateMatrix();
         mesh.setMatrixAt(i, matrix.matrix);
         const color = new T.Color(node.color);
@@ -608,7 +618,7 @@ export class SpatialRenderer {
       if (item.volume) item.el.firstChild.textContent = name;
       else item.el.querySelector(".spatial-label-title").textContent = name;
       item.el.title = name;
-      item.el.classList.toggle("selected", item.id === selected);
+      item.el.classList.toggle("selected", this.input.selectedNodes?.has(item.id));
       this.updateBadges(item.el, graph.byId.get(item.id));
       item.measurement = null;
       const values = node.rows
@@ -624,7 +634,7 @@ export class SpatialRenderer {
     }
     for (const shell of this.group.children.filter((object) => object.userData.volume)) {
       const volume = shell.userData.volume,
-        active = selected === volume.id || focusContext.regions.has(volume.id);
+        active = this.input.selectedNodes?.has(volume.id) || focusContext.regions.has(volume.id);
       shell.material.opacity = active ? 0.13 : volume.projection ? 0.035 : 0.065;
     }
     const colorStart = this.lines?.geometry.attributes.instanceColorStart;
@@ -661,7 +671,7 @@ export class SpatialRenderer {
       if (!curve || this.labelItems.length >= 330) continue;
       const el = document.createElement("div");
       el.className = "spatial-label edge-label";
-      el.textContent = transfer?.label || relationName(edge, this.input.preferences);
+      el.textContent = transfer?.label || relationCaption(edge, this.input.preferences);
       el.onclick = () => this.callbacks.onEdge?.(edge);
       this.labels.append(el);
       this.labelItems.push({
@@ -779,12 +789,28 @@ export class SpatialRenderer {
         positions.push(a.x, a.y, a.z, b.x, b.y, b.z);
         colors.push(color.r, color.g, color.b, color.r, color.g, color.b);
       }
+      if (!edge.guide && style.arrow !== "filled") {
+        const tip = curve.getPoint(0.84),
+          tangent = curve.getTangent(0.84).normalize();
+        const normal = Math.abs(tangent.y) > 0.95 ? new T.Vector3(0, 0, 1) : new T.Vector3(0, 1, 0);
+        const side = new T.Vector3().crossVectors(tangent, normal).normalize();
+        for (const segment of headSegments(style.arrow)) {
+          for (const [x, y] of segment) {
+            const point = tip
+              .clone()
+              .addScaledVector(tangent, x * 12)
+              .addScaledVector(side, y * 12);
+            positions.push(point.x, point.y, point.z);
+            colors.push(color.r, color.g, color.b);
+          }
+        }
+      }
       this.edgeSegments.push({
         edge,
         start: segmentStart,
         end: positions.length / 6,
       });
-      if (!edge.guide) arrows.push({ edge, curve, color });
+      if (!edge.guide && style.arrow === "filled") arrows.push({ edge, curve, color });
     }
     if (positions.length) {
       const geometry = new T.LineSegmentsGeometry();
@@ -902,7 +928,23 @@ export class SpatialRenderer {
   startDrag(event, hit) {
     if (event.button !== 0) return;
     event.preventDefault();
+    const mode = this.callbacks.navigation?.() || "select";
+    this.controls.mouseButtons.LEFT = mode === "pan" ? T.MOUSE.PAN : T.MOUSE.ROTATE;
+    if (mode === "pan" || mode === "orbit") return;
     const id = hit?.id || hit?.region;
+    if (event.shiftKey && id) {
+      this.callbacks.onSelect?.(id, { additive: true });
+      event.stopImmediatePropagation();
+      return;
+    }
+    if (!id && !hit?.edge) {
+      this.selecting = true;
+      this.controls.enabled = false;
+      this.callbacks.onMarquee?.("start", event);
+      this.canvas.setPointerCapture(event.pointerId);
+      event.stopImmediatePropagation();
+      return;
+    }
     this.pointer = {
       x: event.clientX,
       y: event.clientY,
@@ -919,7 +961,7 @@ export class SpatialRenderer {
       ),
       this.camera,
     );
-    this.callbacks.onSelect?.(id);
+    this.callbacks.onSelect?.(id, { preserve: true });
     this.controls.enabled = false;
     const normal = this.camera.getWorldDirection(new T.Vector3());
     this.dragPlane = new T.Plane().setFromNormalAndCoplanarPoint(
@@ -930,7 +972,9 @@ export class SpatialRenderer {
     );
     this.dragOrigin = this.raycaster.ray.intersectPlane(this.dragPlane, new T.Vector3());
     this.dragPositions = structuredClone(this.positions);
-    this.dragIds = this.branch(id);
+    this.dragIds = [
+      ...new Set((this.callbacks.selected?.() || [id]).flatMap((key) => [...this.branch(key)])),
+    ];
     this.canvas.setPointerCapture(event.pointerId);
     event.stopImmediatePropagation();
   }
@@ -944,6 +988,10 @@ export class SpatialRenderer {
       true,
     );
     this.canvas.addEventListener("pointermove", (event) => {
+      if (this.selecting) {
+        this.callbacks.onMarquee?.("move", event);
+        return;
+      }
       const start = this.pointer;
       if (!start) return;
       if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 4) start.moved = true;
@@ -969,6 +1017,24 @@ export class SpatialRenderer {
       this.rebuild();
     });
     const end = (event) => {
+      if (this.selecting) {
+        this.selecting = false;
+        this.controls.enabled = this.visible;
+        const points = this.model.nodes
+          .filter(
+            (node) =>
+              this.visibleGlyphs.has(node.id) ||
+              this.visibleVolumes.some((volume) => volume.id === node.id),
+          )
+          .map((node) => ({
+            id: node.id,
+            ...this.screen(this.positions[node.id]),
+          }));
+        this.callbacks.onMarquee?.("end", event, points);
+        if (this.canvas.hasPointerCapture(event.pointerId))
+          this.canvas.releasePointerCapture(event.pointerId);
+        return;
+      }
       const start = this.pointer;
       if (!start) return;
       this.pointer = null;
@@ -1086,31 +1152,98 @@ export class SpatialRenderer {
     this.lines?.material.resolution.set(w, h);
     this.schedule();
   }
-  animate(ids, transfers) {
+  animate(ids, transfers, owners = new Set()) {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    this.animation = { ids, transfers, start: performance.now() };
-    const owners = new Set(
-      (this.input.boDetail?.rows || []).flatMap((row) => row.owners || [row.owner]),
-    );
+    this.animation = {
+      ids,
+      transfers,
+      owners,
+      start: null,
+      requested: performance.now(),
+    };
+    this.clearPulses();
+    let geometry;
+    this.pulseRings = [...owners].flatMap((id) => {
+      const node = this.model.byId.get(id);
+      if (!node) return [];
+      const volumes = this.visibleVolumes.filter((volume) => volume.id === id);
+      const bodies = volumes.length
+        ? volumes.map((volume) => ({
+            position: volume.center,
+            radius: volume.radius,
+          }))
+        : [
+            {
+              position: this.positions[id],
+              radius: this.glyphScale(node, this.positions[id], 37),
+            },
+          ];
+      return bodies.map((body) => {
+        geometry ||= new T.RingGeometry(0.94, 1, 48);
+        const ring = new T.Mesh(
+          geometry,
+          new T.MeshBasicMaterial({
+            color: node.color,
+            transparent: true,
+            opacity: 0.9,
+            depthWrite: false,
+            depthTest: false,
+            side: T.DoubleSide,
+          }),
+        );
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.copy(vector(body.position));
+        ring.userData.radius = body.radius;
+        ring.renderOrder = 24;
+        this.scene.add(ring);
+        return ring;
+      });
+    });
     for (const item of this.labelItems || [])
       if (owners.has(item.id))
         item.el.animate?.([{ opacity: 0.4 }, { opacity: 1 }, { opacity: 1 }], {
-          duration: 650,
+          duration: transferDuration,
         });
     this.schedule();
   }
+  clearPulses() {
+    const geometries = new Set();
+    for (const ring of this.pulseRings || []) {
+      this.scene.remove(ring);
+      geometries.add(ring.geometry);
+      ring.material.dispose();
+    }
+    for (const geometry of geometries) geometry.dispose();
+    this.pulseRings = [];
+  }
   stopAnimation() {
+    this.clearPulses();
     this.animation = null;
+    this.transferPoints = [];
     if (this.particles) this.particles.visible = false;
     this.schedule();
   }
   /** Animate retained transfer facts along the same paths as the visible relations. */
   updateParticles(now) {
-    if (!this.animation || now - this.animation.start > 650) {
+    if (
+      this.animation &&
+      this.animation.start === null &&
+      (!this.animation.ids.length ||
+        this.animation.ids.some((id) => this.curves.has(id)) ||
+        now - this.animation.requested > 1800)
+    )
+      this.animation.start = now;
+    if (
+      !this.animation ||
+      (this.animation.start !== null && now - this.animation.start > transferDuration)
+    ) {
+      this.clearPulses();
       this.animation = null;
+      this.transferPoints = [];
       if (this.particles) this.particles.visible = false;
       return;
     }
+    if (this.animation.start === null) return;
     const active = this.animation.ids.filter((id) => this.curves.has(id));
     if (!this.particles || this.particles.instanceMatrix.count < active.length) {
       if (this.particles) {
@@ -1120,9 +1253,10 @@ export class SpatialRenderer {
       }
       this.particles = new T.InstancedMesh(
         transferGeometry(),
-        new T.MeshBasicMaterial({ depthWrite: false }),
+        new T.MeshBasicMaterial({ depthWrite: false, depthTest: false }),
         Math.max(1, active.length),
       );
+      this.particles.renderOrder = 25;
       this.scene.add(this.particles);
     }
     this.particles.visible = true;
@@ -1130,7 +1264,12 @@ export class SpatialRenderer {
     const matrix = new T.Object3D(),
       up = new T.Vector3(0, 1, 0),
       color = new T.Color(),
-      progress = (now - this.animation.start) / 650;
+      progress = (now - this.animation.start) / transferDuration;
+    for (const ring of this.pulseRings || []) {
+      ring.scale.setScalar(ring.userData.radius * (1 + 0.2 * progress));
+      ring.material.opacity = 0.4 + 0.55 * Math.sin(Math.PI * progress);
+    }
+    this.transferPoints = [];
     for (const [i, id] of active.entries()) {
       const curve = this.curves.get(id);
       const pose = transferPose(
@@ -1138,9 +1277,14 @@ export class SpatialRenderer {
         progress,
         this.animation.transfers.get(id)?.reverse,
       );
+      this.transferPoints.push({
+        id,
+        ...this.screen(pose.point),
+        color: curve.boTransferColor,
+      });
       matrix.position.copy(pose.point);
       matrix.quaternion.setFromUnitVectors(up, vector(pose.direction));
-      matrix.scale.setScalar(this.glyphScale(null, pose.point, 29) / 29);
+      matrix.scale.setScalar((2.1 * this.glyphScale(null, pose.point, 29)) / 29);
       matrix.updateMatrix();
       this.particles.setMatrixAt(i, matrix.matrix);
       this.particles.setColorAt(i, color.setHex(curve.boTransferColor ?? crossLayerColor));
@@ -1281,6 +1425,7 @@ export class SpatialRenderer {
   }
   /** Release workers, controls, buffers and contexts when the viewport is removed. */
   dispose() {
+    this.clearPulses();
     this.disposed = true;
     this.pause();
     this.worker.terminate();

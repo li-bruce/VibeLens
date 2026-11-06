@@ -1,5 +1,18 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "Semantic labels": "语义名",
+  "Show concise names in the interface language": "按界面语言显示简明名称",
+  "Custom view": "自定义视图",
+  "Select nodes": "选择节点 / 框选",
+  "Pan view": "平移视角",
+  "Orbit view": "旋转视角",
+  "Call / value transfer": "调用 · 传值",
+  "Flow / transition": "流程 · 转换",
+  "Condition / constraint": "条件 · 约束",
+  "Mapping / reference": "映射 · 引用",
+  "Containment": "包含",
+  "Join / resource": "汇合 · 资源",
+
   "AI explanation": "AI 解释",
   "Explaining…": "正在解释…",
   "No AI explanation provider is connected": "尚未连接 AI 解释服务",
@@ -490,8 +503,8 @@ export default {
   "Parameter values": "参数值",
   Source: "源码",
   "Original node": "原节点",
-  "Unified graph. Drag a node or empty region space to move the group; drag outside regions to pan. Double-click to expand, scroll to zoom. Select a node and press F to locate, P to pin, arrow keys to move, or Esc to clear focus.":
-    "统一节点连接图。拖动节点或圈内空白移动整组，拖动圈外空白平移；双击展开，滚轮缩放。选中节点后按 F 定位、P 固定，方向键移动；Esc 清除高亮。",
+  "Unified graph. Use Select to draw a selection rectangle, Pan to move the view, or Orbit to rotate 3D. Drag a selected node or region to move the group. Double-click to expand, scroll to zoom. F locates a node; P pins; Escape clears focus.":
+    "统一节点连接图。选择工具用于框选，平移工具移动视角，旋转工具调整三维视角。拖动选中的节点或区域可移动整组；双击展开，滚轮缩放。F 定位，P 固定，Esc 清除高亮。",
   "Relations at the current level": "当前层级的关系",
   "Parent hierarchy": "所属层级",
   "Graph filters": "图的筛选条件",

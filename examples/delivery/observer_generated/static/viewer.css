@@ -1435,3 +1435,113 @@ footer {
 #name-mode[aria-checked="true"] .name-switch::after {
   left: 12px;
 }
+
+/* Desktop workbench: one content toolbar, viewport tools below, facts in the footer. */
+.toolbar {
+  flex-wrap: nowrap;
+  gap: 10px;
+  min-height: 44px;
+  padding: 5px 14px;
+}
+.toolbar > label {
+  font-size: 0;
+}
+.toolbar > label select {
+  font-size: 12px;
+  width: 150px;
+}
+.toolbar .record-bar {
+  padding: 0 0 0 10px;
+  border: 0;
+  border-left: 1px solid var(--line);
+  flex-wrap: nowrap;
+  margin-left: auto;
+}
+.toolbar .graph-search {
+  flex: 1 1 200px;
+  max-width: 280px;
+  margin-left: 0;
+  min-width: 130px;
+}
+#capture-mode {
+  max-width: 138px;
+}
+#record-list {
+  max-width: 185px;
+}
+#name-mode {
+  border: 0;
+  background: transparent;
+  padding-inline: 2px;
+}
+.filter-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 10px 0;
+}
+#replay {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 18;
+  width: min(880px, calc(100% - 440px));
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  background: #ffffffed;
+  backdrop-filter: blur(12px);
+  padding: 5px 9px;
+}
+#replay .replay-controls,
+#replay .replay-event-row {
+  padding: 2px;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+#replay #replay-events {
+  min-width: 130px;
+  max-width: 100%;
+  flex: 1;
+}
+footer {
+  gap: 16px;
+  min-height: 25px;
+  font-size: 11px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+footer > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+footer #selection {
+  flex: 1;
+}
+footer #replay-note:empty,
+footer #code-status:empty,
+footer #record-status:empty {
+  display: none;
+}
+#canvas-host,
+.spatial-labels,
+.accessible-graph,
+#hierarchy-path,
+#legend-panel,
+.view-tools,
+#layer-drawer {
+  user-select: none;
+  -webkit-user-select: none;
+}
+.selection-marquee {
+  position: absolute;
+  pointer-events: none;
+  z-index: 40;
+  border: 1px solid #356dca;
+  background: #356dca18;
+  border-radius: 2px;
+}
+.spatial-label.is-multi-selected {
+  text-shadow: 0 0 9px #356dca60;
+}
