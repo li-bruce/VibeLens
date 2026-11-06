@@ -13,11 +13,11 @@ SKILL = ROOT/'skills/vibelens'
 def check():
     sys.path.insert(0, str(SKILL/'scripts'))
     from bo_upgrade import bridge_source, CORE
+    from bo_observer.delivery.files import framework_files
     text = (SKILL/'SKILL.md').read_text(encoding='utf-8')
     assert text.startswith('---\nname: vibelens\n'), 'Skill identity/frontmatter missing'
     assert re.search(r'^description: .+', text, re.M), 'Skill trigger description missing'
-    scripts = [p for p in (SKILL/'scripts').rglob('*') if p.is_file() and
-               p.suffix in {'.py','.mjs','.json'} and not set(p.parts)&{'__pycache__','node_modules'}]
+    scripts = list(framework_files(SKILL/'scripts'))
     for project in ('delivery','team-archive','python-modes'):
         for source, target in [('bo_stategraph.py','__init__.py'),('bo_contracts.py','bo_contracts.py'),('execution_contract.py','execution_contract.py')]:
             assert (SKILL/'scripts'/source).read_bytes() == (ROOT/'examples'/project/'bo_stategraph'/target).read_bytes(), f'State module copy stale: {project}/{target}'

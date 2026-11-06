@@ -8,6 +8,14 @@
 
 ## 先找到对应目录
 
+项目与框架的接入边界位于
+[delivery/integration.py](../skills/vibelens/scripts/bo_observer/delivery/integration.py)。
+`bo_integrate.py` 安装最小原生依赖，并与已安装 Skill 的源码核对；源码扫描仅将核对通过的框架副本排除出业务覆盖检查。
+`observation/capture_bridge.py` 协调跨进程录制范围和队列排空，原生 `bo_capture` 客户端只处理这些观测操作。业务状态转换仍由项目执行。
+
+`concept-flow-layout.js` 根据关系类型为 ELK 提供业务、状态和规则的布局方向，
+`layout.js` 负责嵌套区域与位置保存。`concepts/presentation.py` 校验可选链路标签引用的节点、边和确认来源；布局不修改图中的实际关系。
+
 概念建模从 [concepts/](../skills/vibelens/scripts/bo_observer/concepts/) 开始。
 `model.py` 组合业务、状态和规则定义，`state.py` 校验状态语义，`semantics.py`
 保存确认范围和变更。`binding.py` 与 `anchors.py` 核对原生状态、规则、源码绑定和独立测试断言，

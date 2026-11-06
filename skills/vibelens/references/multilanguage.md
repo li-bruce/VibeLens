@@ -33,6 +33,7 @@ Schemas are in `scripts/bo_observer/schemas/`. Python checks JSON Schema 2020-12
 | `bo-source/v1` | Common symbols, parameters, possible calls, unresolved items, errors |
 | `bo-event/v1` | Project/build/model/run/producer/call identity, before/after values, explicit causal dependencies |
 | `bo-snapshot/v1` | Actual complete instance state, parameters, activities, and resources tied to the same evidence |
+| `bo-capture-control/v1` | Acknowledged scope and queue-flush commands, pinned to project/build/producer |
 | `bo-stategraph/v1` | Full structure and retained actual evidence, independent of UI filters |
 
 The service validates model revision and build identity; native clients return them unchanged. Producer sequences increase within their own streams. Receipt order supports replay, not inferred cross-process causality. Each instance has one authoritative producer. Duplicate events must match exactly. Old sequences, conflicting identity, wrong builds, and invalid protocols fail. Invalid actual business states retain their original values and report `mismatch`. JSON cannot carry functions, cyclic objects, NaN, Infinity, or integers outside the JS safe range; use an explicitly typed string convention for large integers.
@@ -53,7 +54,9 @@ Use `begin → scan → inspect → verify → accept → check`. All languages 
 
 The producer queue is asynchronous. Connect its controls when constructing the
 observer; waiting only for the application's HTTP response does not settle that
-queue. In a Python application, after creating the session and native probe:
+queue. Prefer the supplied `BOCaptureClient` for an external observer process;
+see [minimal integration](integration-boundary.md). Existing in-process Python
+integrations can retain the following callback binding:
 
 ```python
 session.bo_bind_capture(
@@ -79,9 +82,10 @@ an allowlist of known node IDs; `None`/`null` restores full capture. Excluded va
 builders do not run or consume producer sequence numbers. Observer exclusions
 remain in force. Python and Node data adapters also skip query parsing and
 observer-only summaries for excluded operations; the actual database calls,
-transformations and transactions still execute. JavaScript `flush` is asynchronous; a separate-language host
-must provide an acknowledged control bridge for these callbacks. Passing a no-op
-scope setter or assuming an HTTP response drained another process is invalid.
+transformations and transactions still execute. JavaScript `flush` is asynchronous.
+The supplied Python/JavaScript capture clients implement the acknowledged bridge;
+the host wires them once in its observation bootstrap. Passing a no-op scope setter
+or assuming an HTTP response drained another process is invalid.
 
 Run actual full/focused recordings, queued-stop, timeout, on/off/fault and zero
 observer-write cases. Keep source/identity checks, event gaps and application

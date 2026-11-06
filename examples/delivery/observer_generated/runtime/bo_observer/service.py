@@ -202,6 +202,8 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                 if not 0 < size <= (24576 if ingest else 2 * 1024 * 1024):
                     raise ValueError("invalid payload size")
                 body = json.loads(self.rfile.read(size))
+                if path == "/api/bo/capture":
+                    return self.reply(200, session.bo_capture_bridge.exchange(body))
                 control = session.web.control_reply(self.path, body)
                 if control is not None:
                     return self.reply(200, control)

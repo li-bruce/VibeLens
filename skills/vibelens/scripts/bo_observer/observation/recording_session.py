@@ -240,7 +240,21 @@ class Recordings:
             if value["status"] != "recording":
                 with self.stream_lock:
                     self._capture_open = False
-                self.bo_restore_capture()
+                try:
+                    self.bo_restore_capture()
+                except (OSError, ValueError) as error:
+                    # A remote producer may disappear before restoring full
+                    # capture. Preserve that fact and allow observer shutdown.
+                    self.last_error = "Capture scope restore failed: " + str(error)[:120]
+                    value["status"] = "interrupted"
+                    if self.last_error not in value["gaps"]:
+                        value["gaps"].append(self.last_error)
+                    self.cached[value["id"]] = value
+                    self.catalog[value["id"]] = self.summary(value)
+                    try:
+                        self._write(value)
+                    except (OSError, ValueError):
+                        pass  # The interrupted in-memory evidence remains readable.
 
     def bo_capture_plan(self, model, requested=None, *, view=None):
         """Resolve selected regions to descendants and the parents needed to explain them."""

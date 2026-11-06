@@ -2,7 +2,7 @@
 
 ## Recall before each coding turn
 
-Run `python observer_runtime/change_sync.py recall --root .` using the project's actual runtime path. Its output restores current mode, active request, requirement IDs, test commands, contract paths and observation wiring. Read affected entries in `.stategraph/observation-plan.json` when changing a layer. These are regenerated summaries of intent, model, implementation inventory and source, not separate requirements to edit.
+Run `python SKILL/scripts/change_sync.py recall --root PROJECT` from the installed Skill, or the existing managed runtime path. Its output restores current mode, active request, requirement IDs, test commands, contract paths, framework integrity and observation wiring. Read affected entries in `.stategraph/observation-plan.json` when changing a layer. These are regenerated summaries of intent, model, implementation inventory and source, not separate requirements to edit.
 
 Keep those authoritative inputs in project version control. The project's normal validation command must include `change_sync check`. Project instructions point to recall and validation commands without activating this Skill in other conversations. A host that supports pre-edit hooks may call recall there; installation alone cannot force every editor to run a prompt.
 

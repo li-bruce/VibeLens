@@ -1,0 +1,31 @@
+
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\examples\delivery\observer_generated\runtime\change_sync.py", line 16, in <module>
+    raise SystemExit(_bo_module.main())
+                     ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\examples\delivery\observer_generated\runtime\bo_observer\workflow\change_sync.py", line 544, in main
+    current, errors = verified_receipt(root, cfg, change)
+                      ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\examples\delivery\observer_generated\runtime\bo_observer\workflow\change_sync.py", line 449, in verified_receipt
+    _, current, changes = inspect(root, cfg, change)
+                          ~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\examples\delivery\observer_generated\runtime\bo_observer\workflow\change_sync.py", line 390, in inspect
+    current = snapshot(root, cfg, base)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\examples\delivery\observer_generated\runtime\bo_observer\workflow\sync_config.py", line 113, in snapshot
+    source_inventory(root, cfg, model=model)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\examples\delivery\observer_generated\runtime\bo_observer\workflow\bo_sync.py", line 64, in source_inventory
+    framework = inspect_framework(root)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\examples\delivery\observer_generated\runtime\bo_observer\delivery\integration.py", line 181, in inspect
+    canonical = sha(contained(SCRIPTS.parent, source))
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\examples\delivery\observer_generated\runtime\bo_observer\delivery\integration.py", line 46, in sha
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+                          ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\pathlib\_abc.py", line 625, in read_bytes
+    with self.open(mode='rb') as f:
+         ~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\pathlib\_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\examples\\delivery\\observer_generated\\scripts\\bo_stategraph.py'

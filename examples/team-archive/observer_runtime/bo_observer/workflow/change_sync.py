@@ -50,6 +50,8 @@ def verify(root, cfg, change):
 def structural_errors(root, cfg, snap):
     """Check source scope, model bindings, probes, declarations, and test contracts together."""
     errors = list(snap["structure"]["errors"])
+    if not cfg.get("stategraph"):
+        errors.extend(snap.get("source_inventory", {}).get("framework", {}).get("errors", []))
     from .observation_requirements import deferred_builder_errors
     from ..observation.telemetry import business_layer_errors, load_registrations, automatic_sites
 
@@ -388,6 +390,15 @@ def inspect(root, cfg, change):
     current = snapshot(root, cfg, base)
     changes = impact(base, current)
     changes["errors"] = structural_errors(root, cfg, current)
+    old_framework = base.get("source_inventory", {}).get("framework", {})
+    new_framework = current.get("source_inventory", {}).get("framework", {})
+    if (
+        old_framework.get("mode") in {"external", "managed-copy"}
+        and new_framework.get("mode") == "unmanaged"
+    ):
+        changes["errors"].append(
+            "managed framework receipt was removed; restore or explicitly migrate the integration"
+        )
     if cfg.get("source_scope", {}).get("require_symbol_classification"):
         changes["required_classification"] = changes["unmapped_implementation_symbols"]
     changes["review_errors"] = review_errors(change, base, current, changes)

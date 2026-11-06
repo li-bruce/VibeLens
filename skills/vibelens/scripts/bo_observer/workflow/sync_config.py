@@ -3,6 +3,7 @@
 from pathlib import Path
 import ast
 from ..model_io import read_model
+from ..delivery.files import framework_files
 
 try:
     from ...behavior_model import read, contained, digest
@@ -113,6 +114,10 @@ def snapshot(root, cfg, previous=None):
         if cfg.get("source_scope") or cfg.get("stategraph")
         else {"files": {}, "excluded": {}}
     )
+    if "framework" not in inventory:
+        from ..delivery.integration import inspect as inspect_framework
+
+        inventory["framework"] = inspect_framework(root)
     paths = sorted(
         set(paths)
         | set(inventory["files"])
@@ -125,7 +130,7 @@ def snapshot(root, cfg, previous=None):
     index = scan(root, cfg["code_files"], (previous or {}).get("structure"))
     tools = tool_fingerprints(root, cfg)
     return {
-        "id": digest({"files": files, "tools": tools}),
+        "id": digest({"files": files, "tools": tools, "framework": inventory.get("framework")}),
         "files": files,
         "tools": tools,
         "model": model,
@@ -179,13 +184,7 @@ def tool_fingerprints(root, cfg, scripts=None):
     # namespace package. An empty marker has no implementation to version.
     result = {"__init__.py": digest(b"")}
     script_root = Path(scripts or Path(__file__).resolve().parents[2])
-    for path in sorted(script_root.rglob("*")):
-        if (
-            not path.is_file()
-            or set(path.parts) & {"node_modules", "__pycache__"}
-            or path.suffix not in {".py", ".mjs", ".json"}
-        ):
-            continue
+    for path in framework_files(script_root):
         # Installation provenance has no executable semantics and exists only
         # in generated copies. Its integrity is covered by managed_hashes.
         if path.relative_to(script_root).as_posix() == "origin.json":

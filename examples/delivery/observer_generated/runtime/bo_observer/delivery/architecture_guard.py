@@ -10,6 +10,7 @@ import fnmatch
 import ast
 import hashlib
 import json
+import os
 from pathlib import Path
 import zipfile
 
@@ -60,12 +61,23 @@ def owner(name, cfg):
 
 
 def collect(root, prefixes):
+    """Prune installed dependencies before traversal, including large nested trees."""
+    from ..source_scope import IGNORED
+
     files = set()
     for prefix in prefixes:
         target = inside(root, prefix)
         if not target.exists():
             raise ValueError("missing configured path: " + prefix)
-        for p in [target] if target.is_file() else target.rglob("*"):
+        candidates = [target] if target.is_file() else []
+        if target.is_dir():
+            for directory, folders, names in os.walk(target, followlinks=False):
+                for folder in folders:
+                    if (Path(directory) / folder).is_symlink() and folder not in IGNORED:
+                        raise ValueError("symlink not supported: " + str(Path(directory) / folder))
+                folders[:] = [name for name in folders if name not in IGNORED]
+                candidates.extend(Path(directory) / name for name in names)
+        for p in candidates:
             if p.is_symlink():
                 raise ValueError("symlink not supported: " + str(p))
             if (

@@ -53,7 +53,7 @@ def functional_symbols(index):
 
 def inventory_errors(cfg, inventory):
     """Report unregistered source and application code hidden behind exclusions."""
-    errors = []
+    errors = list(inventory.get("framework", {}).get("errors", []))
     if cfg.get("stategraph"):
         if "." not in cfg.get("source_scope", {}).get("roots", ["."]):
             errors.append(

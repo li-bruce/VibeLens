@@ -6,6 +6,21 @@ Read this guide when you want to change the Skill, inspect a recorded value, or 
 
 ## Repository map
 
+Application/framework ownership starts in
+[delivery/integration.py](../skills/vibelens/scripts/bo_observer/delivery/integration.py).
+It installs the native dependency set and compares its bytes with installed Skill
+sources. `bo_integrate.py` is its CLI. `workflow/bo_sync.py` excludes only verified
+framework copies from business coverage and carries integrity errors into the gate.
+[observation/capture_bridge.py](../skills/vibelens/scripts/bo_observer/observation/capture_bridge.py)
+coordinates remote recording scope and queue flushes; native `bo_capture` clients
+only acknowledge those operations. Business state transitions remain native.
+
+Conceptual flow geometry is in
+[concept-flow-layout.js](../skills/vibelens/assets/stategraph-viewer/concept-flow-layout.js).
+It selects typed ordering constraints for ELK, then feeds compound packing in
+`layout.js`. `concepts/presentation.py` validates optional route memberships against
+existing IDs and confirmed source references. Layout never modifies graph facts.
+
 Concept-first work starts in [concepts/](../skills/vibelens/scripts/bo_observer/concepts/).
 `model.py` assembles source-free peer models, `state.py` validates their state
 semantics, and `semantics.py` records scoped confirmations and changes. `binding.py`

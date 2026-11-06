@@ -12,6 +12,7 @@ from .state_projection import add_states
 from .rules import add_rules, policy_semantics as policy_semantics
 from .registry import ConceptGraph
 from .obligations import add_crosslinks, add_applicability, add_expectations
+from .presentation import apply_routes
 
 VERSION = "business-discovery/v2"
 
@@ -41,4 +42,6 @@ def build(doc):
     crosslinks = add_crosslinks(graph, doc, sources)
     add_applicability(graph, doc, sources, business, models, policy, crosslinks)
     add_expectations(graph, doc, sources)
-    return graph.result(sources)
+    result = graph.result(sources)
+    apply_routes(result, doc.get("presentation"), sources)
+    return result

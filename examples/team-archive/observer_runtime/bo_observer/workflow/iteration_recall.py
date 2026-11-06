@@ -74,6 +74,7 @@ def recall(root, cfg, current, previous=None):
         },
         "concepts": concept_recall(current.get("discovery"), (previous or {}).get("discovery")),
         "observation_module": cfg.get("stategraph", {}).get("module"),
+        "framework": current.get("source_inventory", {}).get("framework", {}),
         "observation_sources": [
             sid
             for sid, item in implementation.get("excluded", {}).items()

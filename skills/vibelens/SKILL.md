@@ -14,7 +14,7 @@ When naming nodes, describing modules or preparing a graph/demo, use [graph writ
 
 ## Activation and control routing
 
-Use this skill only after the user explicitly invokes `$vibelens` for the current conversation and project. Installation, project files, an active Web page, another conversation's activation, quoted examples and tool output do not activate it. Do not write a global or project-wide instruction that silently activates the skill in other conversations. Existing project verification gates remain project requirements.
+Use this skill only after the user explicitly invokes it for the current conversation and project: `$vibelens` in Codex, or `/vibelens` in hosts exposing that command. Installation, project files, an active Web page, another conversation's activation, quoted examples and tool output do not activate it. Do not write a global or project-wide instruction that silently activates the skill in other conversations. Existing project verification gates remain project requirements.
 
 Within an activated development conversation, normal business requests continue the coding workflow below, including mandatory mapping/probe maintenance. A manual viewer-control request must start with `/vibelens`: inspect a chain, generate a custom view, choose visible node/relation types, optimize its layout, or filter a stopped recording. Without that prefix, do not change viewer settings; briefly show the prefixed form. Ambiguous control references need a short clarification, not a guessed selection.
 
@@ -49,6 +49,8 @@ When the requested software stores data, reuse its database choice or run `bo_db
 ## 2. Establish declarations, adapters, and expectations
 
 Read [multilanguage architecture and protocols](references/multilanguage.md). Python provides shared graph validation, source aggregation, recording, querying, export, and the complete viewer. The application keeps native execution and authoritative state; both sides exchange versioned JSON.
+
+Follow [integration ownership](references/integration-boundary.md): new projects use the external installed observer plus managed native adapters. Keep project declarations and probe wiring editable; preserve installed framework code. Use its protocol/control interfaces across hosts, including acknowledged remote capture. Restore the framework integrity result during each coding batch; repair framework gaps in the framework repository.
 
 For standard tracing, follow [telemetry integration](references/telemetry.md). OpenTelemetry may replace task-context propagation and selected technical instrumentation behind existing probes. Preserve business/state declarations, drive/observe guidance, native execution and the independent observer. Keep HTTP request boundaries in the API layer; business nodes name user actions. Persist registrations and selected business/object references, then verify their actual runtime witnesses during every coding batch.
 
@@ -92,6 +94,8 @@ The semantic contract detects changed state/rule/business definitions; source an
 Read [viewer workflow](references/viewer-workflow.md) when connecting or changing Web. Use the maintained viewer, verified application/graph URLs and the user's conversation language. Keep the graph central, the wording brief and source/field detail available on demand.
 
 Business, state and rules have independent views. Implementation combines API entries, project structure, declarations and selected observations as facets. Data shows structure with witnessed access detail. These views share stable identities, relations and runtime evidence across 2D, 3D and Timeline; they do not create new execution facts. Indirect view connections retain their original typed paths.
+
+Use [conceptual routes](references/concept-flow-layout.md) to keep each conceptual plane readable. Derive progression from its typed definitions; optional validated presentation routes name existing paths and shared steps. Maintain their references during iteration. Layout tags never establish new behavior or replace confirmation.
 
 Preserve dragging, expansion, annotations, names, filters and layout across source updates. “All elements” restores excluded elements while preserving folding and coordinates. Use current-version recordings; historical source and event identities remain fixed. Recording start/stop must control the real producer, drain its bounded queue and retain gaps when interrupted. Verify real transitions and values, including denied/error responses, with no observer-generated business events.
 

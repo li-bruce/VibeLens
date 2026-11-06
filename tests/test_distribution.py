@@ -20,6 +20,25 @@ from bo_observer.control.scope import ControlScope
 
 
 class DistributionTests(unittest.TestCase):
+    def test_other_hosts_require_an_explicit_identity_and_keep_namespaces_separate(self):
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
+            scopes = [
+                ControlScope(folder, name) for name in ("claude-code", "cursor", "custom-agent")
+            ]
+            sessions = set()
+            for scope in scopes:
+                with self.assertRaisesRegex(ValueError, "host conversation ID"):
+                    scope.activate("/vibelens start", "project")
+                with self.assertRaisesRegex(ValueError, "/vibelens"):
+                    scope.authorized("/vibelens focus", "chat-1")
+                sessions.add(scope.activate("/vibelens start", "project", "chat-1")["session"])
+                self.assertTrue(scope.authorized("/vibelens focus", "chat-1")["active"])
+                with self.assertRaises(ValueError):
+                    scope.authorized("change the source", "chat-1")
+                with self.assertRaises(ValueError):
+                    scope.authorized("/vibelens focus", "chat-2")
+            self.assertEqual(len(sessions), len(scopes))
+
     def test_complete_artifacts_preserve_canonical_bytes(self):
         with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
             output = Path(folder)
@@ -45,22 +64,32 @@ class DistributionTests(unittest.TestCase):
                 self.assertTrue(all(member.create_system == 3 for member in catalog.infolist()))
                 self.assertLessEqual(len(catalog.infolist()), 200)
                 self.assertLess(sum(item.file_size for item in catalog.infolist()), 10_000_000)
-                self.assertEqual(catalog.read("vibelens/LICENSE.txt"), (ROOT / "LICENSE").read_bytes())
+                self.assertEqual(
+                    catalog.read("vibelens/LICENSE.txt"), (ROOT / "LICENSE").read_bytes()
+                )
                 for name in catalog.namelist():
                     self.assertIn(Path(name).suffix, {".md", ".py", ".txt", ".json", ".yaml"}, name)
                 catalog.extractall(output / "installed")
             installed = output / "installed/vibelens"
-            spec = importlib.util.spec_from_file_location("vibelens_loader", installed / "bootstrap.py")
+            spec = importlib.util.spec_from_file_location(
+                "vibelens_loader", installed / "bootstrap.py"
+            )
             loader = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(loader)
             entry = loader.materialize(installed)
             self.assertEqual(entry.read_bytes(), (ROOT / "skills/vibelens/SKILL.md").read_bytes())
             self.assertEqual(loader.materialize(installed), entry)
             for name, expected in report["skill_files"].items():
-                self.assertEqual(hashlib.sha256((entry.parent / name).read_bytes()).hexdigest(), expected)
+                self.assertEqual(
+                    hashlib.sha256((entry.parent / name).read_bytes()).hexdigest(), expected
+                )
             link = output / "linked-install"
             if os.name == "nt":
-                subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(installed)], check=True, capture_output=True)
+                subprocess.run(
+                    ["cmd", "/c", "mklink", "/J", str(link), str(installed)],
+                    check=True,
+                    capture_output=True,
+                )
             else:
                 link.symlink_to(installed, target_is_directory=True)
             try:
@@ -80,7 +109,9 @@ class DistributionTests(unittest.TestCase):
             codex, harness = ControlScope(folder), ControlScope(folder, "deepseek-harness")
             with patch.dict(os.environ, {"CODEX_THREAD_ID": "same-id"}):
                 old = codex.activate("$vibelens", "project")
-                expected = hashlib.sha256((str(Path(folder).resolve()) + "\0same-id").encode()).hexdigest()[:32]
+                expected = hashlib.sha256(
+                    (str(Path(folder).resolve()) + "\0same-id").encode()
+                ).hexdigest()[:32]
                 self.assertEqual(old["session"], expected, "Codex IDs remain stable")
                 with self.assertRaisesRegex(ValueError, "host conversation ID"):
                     harness.activate("/vibelens start", "project")

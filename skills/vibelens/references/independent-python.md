@@ -23,13 +23,19 @@ bo_stategraph/
   config/retention.json     Capture cache/log limits
   config/views/local.json   Personal layout/names/notes/filters/language
 integrations/bo_*.py         Optional capture/service wiring
-observer_runtime/           Optional development, capture, recording tools
+observer_runtime/           Legacy managed installation only; new projects use installed Skill
 behavior.json               Full relation model tied to execution declaration
 ```
 
 Old workflow.py paths in complete examples are compatibility imports; business callers use the independent module. The executor may depend on transitions or another chosen engine. Public query/validation core is standard-library-only; do not extend that claim to the full executor.
 
-Install public core/viewer with bo_upgrade before adding project workflow/query/constraints. Do not redefine BOStateGraph or its export format in __init__.py. Cross-instance resources and other extensions use independent project validators while preserving actual snapshots/diagnostics/public instance protocol. Do not misrepresent a shared pool as a per-run pool.
+For new projects, install the native core with `bo_integrate.py` and run the viewer
+and analysis from the installed Skill; see [integration boundary](integration-boundary.md).
+Use `bo_upgrade` to maintain existing full-copy installations. Add project
+workflow/query/constraints separately. Do not redefine BOStateGraph or its export
+format in __init__.py. Cross-instance resources and other extensions use independent
+project validators while preserving actual snapshots/diagnostics/public instance
+protocol. Do not misrepresent a shared pool as a per-run pool.
 
 BOStateGraph never invokes business guards/effects. bo_structure/bo_definition return declarations; bo_candidates evaluates supplied evidence only and cannot authorize execution. bo_instances uses the authoritative snapshot provider. Page, query, and export share actual configuration, with no second writable state cache. Alternatively bo_observe accepts real complete-version/build snapshots; it is mutually exclusive with a provider.
 

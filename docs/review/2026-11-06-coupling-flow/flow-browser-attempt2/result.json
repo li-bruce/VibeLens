@@ -1,0 +1,2622 @@
+{
+  "passed": false,
+  "checks": [
+    {
+      "mode": "2D",
+      "root": "policy:network",
+      "child": "policy:active",
+      "direction": {
+        "edges": 12,
+        "backwards": []
+      },
+      "expanded": 29,
+      "pin": {
+        "x": 990.5742538300221,
+        "y": 599.8580846100074
+      }
+    }
+  ],
+  "errors": [
+    "AssertionError [ERR_ASSERTION]: Arrange must preserve the pinned coordinate\n+ actual - expected\n\n+ 4311.944804587089\n- 1105.5742538300221\n    at file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/tools/test_concept_flow_browser.mjs:74:12"
+  ],
+  "failureGraph": {
+    "nodes": [
+      {
+        "id": "fact:actor-id",
+        "layer": "rules",
+        "kind": "data",
+        "x": 3080.8239348404004,
+        "y": 1100.5915092537216
+      },
+      {
+        "id": "fact:owner-id",
+        "layer": "rules",
+        "kind": "data",
+        "x": 3526.5401040604147,
+        "y": 1100.5915092537216
+      },
+      {
+        "id": "fact:recipient-id",
+        "layer": "rules",
+        "kind": "data",
+        "x": 3972.25627328043,
+        "y": 1100.5915092537216
+      },
+      {
+        "id": "fact:active-grant",
+        "layer": "rules",
+        "kind": "data",
+        "x": 2635.107765620385,
+        "y": 1100.5915092537216
+      },
+      {
+        "id": "policy-predicate:same_identity",
+        "layer": "rules",
+        "kind": "decision",
+        "x": 2635.107765620385,
+        "y": 1972.5155163020268
+      },
+      {
+        "id": "policy-operation:manage",
+        "layer": "rules",
+        "kind": "decision",
+        "x": 4679.163617545286,
+        "y": 1912.8961547653576
+      },
+      {
+        "id": "policy-operation:read",
+        "layer": "rules",
+        "kind": "decision",
+        "x": 4679.163617545286,
+        "y": 2426.342715666986
+      },
+      {
+        "id": "policy:network",
+        "layer": "predicate",
+        "kind": "decision",
+        "x": 385,
+        "y": 409
+      },
+      {
+        "id": "object:actor",
+        "layer": "business",
+        "kind": "data",
+        "x": 1338.005324245369,
+        "y": 2061.338876380538
+      },
+      {
+        "id": "object:grant",
+        "layer": "business",
+        "kind": "data",
+        "x": 1784.2361771626267,
+        "y": 1759.208371443876
+      },
+      {
+        "id": "guard:grant:may_manage",
+        "layer": "state",
+        "kind": "decision",
+        "x": 1784.2361771626267,
+        "y": 524.6658069227037
+      },
+      {
+        "id": "transition:grant:grant-share",
+        "layer": "state",
+        "kind": "action",
+        "x": 46.9792679225892,
+        "y": 868.8549414777478
+      },
+      {
+        "id": "transition:grant:grant-revoke",
+        "layer": "state",
+        "kind": "action",
+        "x": 411.32606160808996,
+        "y": 344.35993987919886
+      },
+      {
+        "id": "transition:grant:grant-replace",
+        "layer": "state",
+        "kind": "action",
+        "x": 68.95544296128041,
+        "y": 579.8491468556177
+      },
+      {
+        "id": "share",
+        "layer": "business",
+        "kind": "action",
+        "x": 1194.348505921205,
+        "y": 2359.224503611874
+      },
+      {
+        "id": "read",
+        "layer": "business",
+        "kind": "action",
+        "x": 2085.009288817091,
+        "y": 2236.924540663891
+      },
+      {
+        "id": "revoke",
+        "layer": "business",
+        "kind": "action",
+        "x": 1654.2931195970762,
+        "y": 2660.6407098839054
+      },
+      {
+        "id": "list",
+        "layer": "business",
+        "kind": "action",
+        "x": 1654.2931195970762,
+        "y": 2236.924540663891
+      },
+      {
+        "id": "facts",
+        "kind": "function",
+        "x": 5847.589054531249,
+        "y": 2015.1315339275966
+      },
+      {
+        "id": "policy:function:same_identity",
+        "layer": "program",
+        "kind": "function",
+        "x": 7118.20085534928,
+        "y": 1852.0497120394316
+      },
+      {
+        "id": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+        "layer": "code",
+        "kind": "function",
+        "x": 7444.989808254739,
+        "y": 1962.1289621201918
+      },
+      {
+        "id": "code:file:4b38be2b7dc21f9b17d2666c",
+        "layer": "project",
+        "kind": "data",
+        "x": 6543.011225431837,
+        "y": 2014.0065860591585
+      },
+      {
+        "id": "policy:active",
+        "parent": "policy:network",
+        "layer": "predicate",
+        "kind": "data",
+        "x": 990.5742538300221,
+        "y": 599.8580846100074
+      },
+      {
+        "id": "policy:actor",
+        "parent": "policy:network",
+        "layer": "predicate",
+        "kind": "data",
+        "x": 559.8580846100074,
+        "y": 1166.6607215180281
+      },
+      {
+        "id": "policy:is_owner",
+        "parent": "policy:network",
+        "layer": "predicate",
+        "kind": "decision",
+        "x": 990.5742538300221,
+        "y": 1023.5742538300221
+      },
+      {
+        "id": "policy:is_recipient",
+        "parent": "policy:network",
+        "layer": "predicate",
+        "kind": "decision",
+        "x": 990.5742538300221,
+        "y": 1494.9859122793723
+      },
+      {
+        "id": "policy:may_read",
+        "parent": "policy:network",
+        "layer": "predicate",
+        "kind": "decision",
+        "x": 1421.290423050037,
+        "y": 1399.5949338207015
+      },
+      {
+        "id": "policy:owner",
+        "parent": "policy:network",
+        "layer": "predicate",
+        "kind": "data",
+        "x": 559.8580846100074,
+        "y": 742.9445522980133
+      },
+      {
+        "id": "policy:recipient",
+        "parent": "policy:network",
+        "layer": "predicate",
+        "kind": "data",
+        "x": 559.8580846100074,
+        "y": 1590.376890738043
+      }
+    ],
+    "edges": [
+      {
+        "id": "share-list",
+        "from": "share",
+        "to": "list",
+        "type": "flow",
+        "label": "Recipient sees file",
+        "evidence": "Confirmed synthetic trial dialogue",
+        "authored_label": "Recipient sees file",
+        "labels": {},
+        "members": [
+          {
+            "id": "share-list",
+            "from": "share",
+            "to": "list",
+            "type": "flow",
+            "label": "Recipient sees file",
+            "evidence": "Confirmed synthetic trial dialogue",
+            "authored_label": "Recipient sees file",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "list-read",
+        "from": "list",
+        "to": "read",
+        "type": "flow",
+        "label": "Download file",
+        "evidence": "Confirmed synthetic trial dialogue",
+        "authored_label": "Download file",
+        "labels": {},
+        "members": [
+          {
+            "id": "list-read",
+            "from": "list",
+            "to": "read",
+            "type": "flow",
+            "label": "Download file",
+            "evidence": "Confirmed synthetic trial dialogue",
+            "authored_label": "Download file",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "share-revoke",
+        "from": "share",
+        "to": "revoke",
+        "type": "flow",
+        "label": "Owner withdraws access",
+        "evidence": "Confirmed synthetic trial dialogue",
+        "authored_label": "Owner withdraws access",
+        "labels": {},
+        "members": [
+          {
+            "id": "share-revoke",
+            "from": "share",
+            "to": "revoke",
+            "type": "flow",
+            "label": "Owner withdraws access",
+            "evidence": "Confirmed synthetic trial dialogue",
+            "authored_label": "Owner withdraws access",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "object-fact:actor-id",
+        "from": "object:actor",
+        "to": "fact:actor-id",
+        "type": "describes_fact",
+        "label": "Describes",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "object-fact:actor-id",
+            "from": "object:actor",
+            "to": "fact:actor-id",
+            "type": "describes_fact",
+            "label": "Describes",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "object-fact:owner-id",
+        "from": "object:grant",
+        "to": "fact:owner-id",
+        "type": "describes_fact",
+        "label": "Describes",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "object-fact:owner-id",
+            "from": "object:grant",
+            "to": "fact:owner-id",
+            "type": "describes_fact",
+            "label": "Describes",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "object-fact:recipient-id",
+        "from": "object:grant",
+        "to": "fact:recipient-id",
+        "type": "describes_fact",
+        "label": "Describes",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "object-fact:recipient-id",
+            "from": "object:grant",
+            "to": "fact:recipient-id",
+            "type": "describes_fact",
+            "label": "Describes",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "object-fact:active-grant",
+        "from": "object:grant",
+        "to": "fact:active-grant",
+        "type": "describes_fact",
+        "label": "Describes",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "object-fact:active-grant",
+            "from": "object:grant",
+            "to": "fact:active-grant",
+            "type": "describes_fact",
+            "label": "Describes",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "negated": false,
+        "id": "transition-guard:grant:grant-share:may_manage",
+        "from": "transition:grant:grant-share",
+        "to": "guard:grant:may_manage",
+        "type": "guarded_by",
+        "label": "Requires true",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "negated": false,
+            "id": "transition-guard:grant:grant-share:may_manage",
+            "from": "transition:grant:grant-share",
+            "to": "guard:grant:may_manage",
+            "type": "guarded_by",
+            "label": "Requires true",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "negated": false,
+        "id": "transition-guard:grant:grant-revoke:may_manage",
+        "from": "transition:grant:grant-revoke",
+        "to": "guard:grant:may_manage",
+        "type": "guarded_by",
+        "label": "Requires true",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "negated": false,
+            "id": "transition-guard:grant:grant-revoke:may_manage",
+            "from": "transition:grant:grant-revoke",
+            "to": "guard:grant:may_manage",
+            "type": "guarded_by",
+            "label": "Requires true",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "negated": false,
+        "id": "transition-guard:grant:grant-replace:may_manage",
+        "from": "transition:grant:grant-replace",
+        "to": "guard:grant:may_manage",
+        "type": "guarded_by",
+        "label": "Requires true",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "negated": false,
+            "id": "transition-guard:grant:grant-replace:may_manage",
+            "from": "transition:grant:grant-replace",
+            "to": "guard:grant:may_manage",
+            "type": "guarded_by",
+            "label": "Requires true",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-dependency:is_owner:0",
+        "from": "policy-predicate:same_identity",
+        "to": "policy:is_owner",
+        "type": "data",
+        "label": "Input",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-dependency:is_owner:0",
+            "from": "policy-predicate:same_identity",
+            "to": "policy:is_owner",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-dependency:is_owner:1",
+        "from": "policy:actor",
+        "to": "policy:is_owner",
+        "type": "data",
+        "label": "Input",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-dependency:is_owner:1",
+            "from": "policy:actor",
+            "to": "policy:is_owner",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-dependency:is_owner:2",
+        "from": "policy:owner",
+        "to": "policy:is_owner",
+        "type": "data",
+        "label": "Input",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-dependency:is_owner:2",
+            "from": "policy:owner",
+            "to": "policy:is_owner",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-dependency:is_recipient:0",
+        "from": "policy-predicate:same_identity",
+        "to": "policy:is_recipient",
+        "type": "data",
+        "label": "Input",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-dependency:is_recipient:0",
+            "from": "policy-predicate:same_identity",
+            "to": "policy:is_recipient",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-dependency:is_recipient:1",
+        "from": "policy:actor",
+        "to": "policy:is_recipient",
+        "type": "data",
+        "label": "Input",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-dependency:is_recipient:1",
+            "from": "policy:actor",
+            "to": "policy:is_recipient",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-dependency:is_recipient:2",
+        "from": "policy:recipient",
+        "to": "policy:is_recipient",
+        "type": "data",
+        "label": "Input",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-dependency:is_recipient:2",
+            "from": "policy:recipient",
+            "to": "policy:is_recipient",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-dependency:may_read:0",
+        "from": "policy:is_recipient",
+        "to": "policy:may_read",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-dependency:may_read:0",
+            "from": "policy:is_recipient",
+            "to": "policy:may_read",
+            "type": "guard",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-dependency:may_read:1",
+        "from": "policy:active",
+        "to": "policy:may_read",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-dependency:may_read:1",
+            "from": "policy:active",
+            "to": "policy:may_read",
+            "type": "guard",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-result:manage",
+        "from": "policy:is_owner",
+        "to": "policy-operation:manage",
+        "type": "decision_result",
+        "label": "Result",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-result:manage",
+            "from": "policy:is_owner",
+            "to": "policy-operation:manage",
+            "type": "decision_result",
+            "label": "Result",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy-result:read",
+        "from": "policy:may_read",
+        "to": "policy-operation:read",
+        "type": "decision_result",
+        "label": "Result",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy-result:read",
+            "from": "policy:may_read",
+            "to": "policy-operation:read",
+            "type": "decision_result",
+            "label": "Result",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "guard-decision:guard%3Agrant%3Amay_manage",
+        "from": "guard:grant:may_manage",
+        "to": "policy-operation:manage",
+        "type": "guard_resolves_decision",
+        "label": "Evaluates",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "guard-decision:guard%3Agrant%3Amay_manage",
+            "from": "guard:grant:may_manage",
+            "to": "policy-operation:manage",
+            "type": "guard_resolves_decision",
+            "label": "Evaluates",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "share-guard",
+        "from": "transition:grant:grant-share",
+        "to": "policy-operation:manage",
+        "type": "transition_guarded_by",
+        "label": "Requires",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "source_refs": [
+          "U1"
+        ],
+        "labels": {},
+        "members": [
+          {
+            "id": "share-guard",
+            "from": "transition:grant:grant-share",
+            "to": "policy-operation:manage",
+            "type": "transition_guarded_by",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ],
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "revoke-guard",
+        "from": "transition:grant:grant-revoke",
+        "to": "policy-operation:manage",
+        "type": "transition_guarded_by",
+        "label": "Requires",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "source_refs": [
+          "U1"
+        ],
+        "labels": {},
+        "members": [
+          {
+            "id": "revoke-guard",
+            "from": "transition:grant:grant-revoke",
+            "to": "policy-operation:manage",
+            "type": "transition_guarded_by",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ],
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "read-actor-id",
+        "from": "policy:actor",
+        "to": "fact:actor-id",
+        "type": "decision_reads_fact",
+        "label": "Reads",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "source_refs": [
+          "U1"
+        ],
+        "labels": {},
+        "members": [
+          {
+            "id": "read-actor-id",
+            "from": "policy:actor",
+            "to": "fact:actor-id",
+            "type": "decision_reads_fact",
+            "label": "Reads",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ],
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "read-owner-id",
+        "from": "policy:owner",
+        "to": "fact:owner-id",
+        "type": "decision_reads_fact",
+        "label": "Reads",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "source_refs": [
+          "U1"
+        ],
+        "labels": {},
+        "members": [
+          {
+            "id": "read-owner-id",
+            "from": "policy:owner",
+            "to": "fact:owner-id",
+            "type": "decision_reads_fact",
+            "label": "Reads",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ],
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "read-recipient-id",
+        "from": "policy:recipient",
+        "to": "fact:recipient-id",
+        "type": "decision_reads_fact",
+        "label": "Reads",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "source_refs": [
+          "U1"
+        ],
+        "labels": {},
+        "members": [
+          {
+            "id": "read-recipient-id",
+            "from": "policy:recipient",
+            "to": "fact:recipient-id",
+            "type": "decision_reads_fact",
+            "label": "Reads",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ],
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "read-active-grant",
+        "from": "policy:active",
+        "to": "fact:active-grant",
+        "type": "decision_reads_fact",
+        "label": "Reads",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "source_refs": [
+          "U1"
+        ],
+        "labels": {},
+        "members": [
+          {
+            "id": "read-active-grant",
+            "from": "policy:active",
+            "to": "fact:active-grant",
+            "type": "decision_reads_fact",
+            "label": "Reads",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ],
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "replace-guard",
+        "from": "transition:grant:grant-replace",
+        "to": "policy-operation:manage",
+        "type": "transition_guarded_by",
+        "label": "Requires",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "source_refs": [
+          "U2"
+        ],
+        "labels": {},
+        "members": [
+          {
+            "id": "replace-guard",
+            "from": "transition:grant:grant-replace",
+            "to": "policy-operation:manage",
+            "type": "transition_guarded_by",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U2"
+            ],
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "operation-rule:share:manage",
+        "from": "share",
+        "to": "policy-operation:manage",
+        "type": "requires_decision",
+        "label": "Requires",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "operation-rule:share:manage",
+            "from": "share",
+            "to": "policy-operation:manage",
+            "type": "requires_decision",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "operation-rule:read:read",
+        "from": "read",
+        "to": "policy-operation:read",
+        "type": "requires_decision",
+        "label": "Requires",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "operation-rule:read:read",
+            "from": "read",
+            "to": "policy-operation:read",
+            "type": "requires_decision",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "operation-rule:revoke:manage",
+        "from": "revoke",
+        "to": "policy-operation:manage",
+        "type": "requires_decision",
+        "label": "Requires",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "operation-rule:revoke:manage",
+            "from": "revoke",
+            "to": "policy-operation:manage",
+            "type": "requires_decision",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "operation-rule:list:read",
+        "from": "list",
+        "to": "policy-operation:read",
+        "type": "requires_decision",
+        "label": "Requires",
+        "origin": "concept-design",
+        "evidence_kind": "conceptual",
+        "labels": {},
+        "members": [
+          {
+            "id": "operation-rule:list:read",
+            "from": "list",
+            "to": "policy-operation:read",
+            "type": "requires_decision",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "concept-implements:fact%3Aactor-id:facts",
+        "from": "fact:actor-id",
+        "to": "facts",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:fact%3Aactor-id:facts",
+            "from": "fact:actor-id",
+            "to": "facts",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "concept-implements:fact%3Aowner-id:facts",
+        "from": "fact:owner-id",
+        "to": "facts",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:fact%3Aowner-id:facts",
+            "from": "fact:owner-id",
+            "to": "facts",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "concept-implements:fact%3Arecipient-id:facts",
+        "from": "fact:recipient-id",
+        "to": "facts",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:fact%3Arecipient-id:facts",
+            "from": "fact:recipient-id",
+            "to": "facts",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "concept-implements:fact%3Aactive-grant:facts",
+        "from": "fact:active-grant",
+        "to": "facts",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:fact%3Aactive-grant:facts",
+            "from": "fact:active-grant",
+            "to": "facts",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "concept-implements:policy-operation%3Amanage:policy%3Ais_owner",
+        "from": "policy-operation:manage",
+        "to": "policy:is_owner",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:policy-operation%3Amanage:policy%3Ais_owner",
+            "from": "policy-operation:manage",
+            "to": "policy:is_owner",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "concept-implements:policy-operation%3Aread:policy%3Amay_read",
+        "from": "policy-operation:read",
+        "to": "policy:may_read",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:policy-operation%3Aread:policy%3Amay_read",
+            "from": "policy-operation:read",
+            "to": "policy:may_read",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "concept-implements:transition%3Agrant%3Agrant-share:share",
+        "from": "transition:grant:grant-share",
+        "to": "share",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:transition%3Agrant%3Agrant-share:share",
+            "from": "transition:grant:grant-share",
+            "to": "share",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "concept-implements:transition%3Agrant%3Agrant-revoke:revoke",
+        "from": "transition:grant:grant-revoke",
+        "to": "revoke",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:transition%3Agrant%3Agrant-revoke:revoke",
+            "from": "transition:grant:grant-revoke",
+            "to": "revoke",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "concept-implements:transition%3Agrant%3Agrant-replace:share",
+        "from": "transition:grant:grant-replace",
+        "to": "share",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:transition%3Agrant%3Agrant-replace:share",
+            "from": "transition:grant:grant-replace",
+            "to": "share",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "concept-implements:guard%3Agrant%3Amay_manage:policy%3Ais_owner",
+        "from": "guard:grant:may_manage",
+        "to": "policy:is_owner",
+        "type": "maps",
+        "code_relation": "maps",
+        "mapping_role": "implements",
+        "origin": "concept-binding",
+        "label": "Implemented by",
+        "evidence_kind": "binding",
+        "observed": false,
+        "labels": {},
+        "members": [
+          {
+            "id": "concept-implements:guard%3Agrant%3Amay_manage:policy%3Ais_owner",
+            "from": "guard:grant:may_manage",
+            "to": "policy:is_owner",
+            "type": "maps",
+            "code_relation": "maps",
+            "mapping_role": "implements",
+            "origin": "concept-binding",
+            "label": "Implemented by",
+            "evidence_kind": "binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "current": true
+      },
+      {
+        "id": "policy:contains:actor",
+        "from": "policy:network",
+        "to": "policy:actor",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Rule expression",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:contains:actor",
+            "from": "policy:network",
+            "to": "policy:actor",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Rule expression",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:contains:owner",
+        "from": "policy:network",
+        "to": "policy:owner",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Rule expression",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:contains:owner",
+            "from": "policy:network",
+            "to": "policy:owner",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Rule expression",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:contains:recipient",
+        "from": "policy:network",
+        "to": "policy:recipient",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Rule expression",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:contains:recipient",
+            "from": "policy:network",
+            "to": "policy:recipient",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Rule expression",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:contains:active",
+        "from": "policy:network",
+        "to": "policy:active",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Rule expression",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:contains:active",
+            "from": "policy:network",
+            "to": "policy:active",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Rule expression",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:mapping:is_owner",
+        "from": "policy:is_owner",
+        "to": "policy:function:same_identity",
+        "type": "maps",
+        "label": "Implemented by",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "code_relation": "maps",
+        "authored_label": "Implemented by",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:mapping:is_owner",
+            "from": "policy:is_owner",
+            "to": "policy:function:same_identity",
+            "type": "maps",
+            "label": "Implemented by",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "code_relation": "maps",
+            "authored_label": "Implemented by",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:contains:is_owner",
+        "from": "policy:network",
+        "to": "policy:is_owner",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Rule expression",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:contains:is_owner",
+            "from": "policy:network",
+            "to": "policy:is_owner",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Rule expression",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:dependency:is_owner:0",
+        "from": "policy:actor",
+        "to": "policy:is_owner",
+        "type": "data",
+        "label": "left",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "left",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:dependency:is_owner:0",
+            "from": "policy:actor",
+            "to": "policy:is_owner",
+            "type": "data",
+            "label": "left",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "left",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:dependency:is_owner:1",
+        "from": "policy:owner",
+        "to": "policy:is_owner",
+        "type": "data",
+        "label": "right",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "right",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:dependency:is_owner:1",
+            "from": "policy:owner",
+            "to": "policy:is_owner",
+            "type": "data",
+            "label": "right",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "right",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:mapping:is_recipient",
+        "from": "policy:is_recipient",
+        "to": "policy:function:same_identity",
+        "type": "maps",
+        "label": "Implemented by",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "code_relation": "maps",
+        "authored_label": "Implemented by",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:mapping:is_recipient",
+            "from": "policy:is_recipient",
+            "to": "policy:function:same_identity",
+            "type": "maps",
+            "label": "Implemented by",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "code_relation": "maps",
+            "authored_label": "Implemented by",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:contains:is_recipient",
+        "from": "policy:network",
+        "to": "policy:is_recipient",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Rule expression",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:contains:is_recipient",
+            "from": "policy:network",
+            "to": "policy:is_recipient",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Rule expression",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:dependency:is_recipient:0",
+        "from": "policy:actor",
+        "to": "policy:is_recipient",
+        "type": "data",
+        "label": "left",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "left",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:dependency:is_recipient:0",
+            "from": "policy:actor",
+            "to": "policy:is_recipient",
+            "type": "data",
+            "label": "left",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "left",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:dependency:is_recipient:1",
+        "from": "policy:recipient",
+        "to": "policy:is_recipient",
+        "type": "data",
+        "label": "right",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "right",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:dependency:is_recipient:1",
+            "from": "policy:recipient",
+            "to": "policy:is_recipient",
+            "type": "data",
+            "label": "right",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "right",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:contains:may_read",
+        "from": "policy:network",
+        "to": "policy:may_read",
+        "type": "contains",
+        "label": "Rule expression",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Rule expression",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:contains:may_read",
+            "from": "policy:network",
+            "to": "policy:may_read",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Rule expression",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:dependency:may_read:0",
+        "from": "policy:is_recipient",
+        "to": "policy:may_read",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "all",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:dependency:may_read:0",
+            "from": "policy:is_recipient",
+            "to": "policy:may_read",
+            "type": "guard",
+            "label": "all",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "all",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:dependency:may_read:1",
+        "from": "policy:active",
+        "to": "policy:may_read",
+        "type": "guard",
+        "label": "all",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "all",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:dependency:may_read:1",
+            "from": "policy:active",
+            "to": "policy:may_read",
+            "type": "guard",
+            "label": "all",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "all",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:operation:manage:share",
+        "from": "policy:is_owner",
+        "to": "share",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Requires",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:operation:manage:share",
+            "from": "policy:is_owner",
+            "to": "share",
+            "type": "guard",
+            "label": "Requires",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Requires",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:operation:manage:revoke",
+        "from": "policy:is_owner",
+        "to": "revoke",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Requires",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:operation:manage:revoke",
+            "from": "policy:is_owner",
+            "to": "revoke",
+            "type": "guard",
+            "label": "Requires",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Requires",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:operation:read:read",
+        "from": "policy:may_read",
+        "to": "read",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Requires",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:operation:read:read",
+            "from": "policy:may_read",
+            "to": "read",
+            "type": "guard",
+            "label": "Requires",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Requires",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "policy:operation:read:list",
+        "from": "policy:may_read",
+        "to": "list",
+        "type": "guard",
+        "label": "Requires",
+        "origin": "policy-definition",
+        "evidence": "policy declaration",
+        "evidence_kind": "conceptual",
+        "authored_label": "Requires",
+        "labels": {},
+        "members": [
+          {
+            "id": "policy:operation:read:list",
+            "from": "policy:may_read",
+            "to": "list",
+            "type": "guard",
+            "label": "Requires",
+            "origin": "policy-definition",
+            "evidence": "policy declaration",
+            "evidence_kind": "conceptual",
+            "authored_label": "Requires",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "fact:actor",
+        "from": "facts",
+        "to": "policy:actor",
+        "type": "data",
+        "label": "actor",
+        "evidence": "Current request's native facts",
+        "authored_label": "actor",
+        "labels": {},
+        "members": [
+          {
+            "id": "fact:actor",
+            "from": "facts",
+            "to": "policy:actor",
+            "type": "data",
+            "label": "actor",
+            "evidence": "Current request's native facts",
+            "authored_label": "actor",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "fact:owner",
+        "from": "facts",
+        "to": "policy:owner",
+        "type": "data",
+        "label": "owner",
+        "evidence": "Current request's native facts",
+        "authored_label": "owner",
+        "labels": {},
+        "members": [
+          {
+            "id": "fact:owner",
+            "from": "facts",
+            "to": "policy:owner",
+            "type": "data",
+            "label": "owner",
+            "evidence": "Current request's native facts",
+            "authored_label": "owner",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "fact:recipient",
+        "from": "facts",
+        "to": "policy:recipient",
+        "type": "data",
+        "label": "recipient",
+        "evidence": "Current request's native facts",
+        "authored_label": "recipient",
+        "labels": {},
+        "members": [
+          {
+            "id": "fact:recipient",
+            "from": "facts",
+            "to": "policy:recipient",
+            "type": "data",
+            "label": "recipient",
+            "evidence": "Current request's native facts",
+            "authored_label": "recipient",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "fact:active",
+        "from": "facts",
+        "to": "policy:active",
+        "type": "data",
+        "label": "active",
+        "evidence": "Current request's native facts",
+        "authored_label": "active",
+        "labels": {},
+        "members": [
+          {
+            "id": "fact:active",
+            "from": "facts",
+            "to": "policy:active",
+            "type": "data",
+            "label": "active",
+            "evidence": "Current request's native facts",
+            "authored_label": "active",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "inventory-call.03734d5d7c8eb3e8",
+        "from": "share",
+        "to": "facts",
+        "type": "flow",
+        "label": "Static call self.facts",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 119,
+          "column": 16,
+          "args": [
+            "actor",
+            "file_id",
+            "recipient"
+          ],
+          "keywords": {}
+        },
+        "authored_label": "Static call self.facts",
+        "labels": {},
+        "members": [
+          {
+            "id": "inventory-call.03734d5d7c8eb3e8",
+            "from": "share",
+            "to": "facts",
+            "type": "flow",
+            "label": "Static call self.facts",
+            "origin": "source-ast",
+            "evidence": "python syntax reference; execution unproven",
+            "callsite": {
+              "line": 119,
+              "column": 16,
+              "args": [
+                "actor",
+                "file_id",
+                "recipient"
+              ],
+              "keywords": {}
+            },
+            "authored_label": "Static call self.facts",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "inventory-call.5bd76213f28d5bb6",
+        "from": "revoke",
+        "to": "facts",
+        "type": "flow",
+        "label": "Static call self.facts",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 135,
+          "column": 16,
+          "args": [
+            "actor",
+            "file_id",
+            "recipient"
+          ],
+          "keywords": {}
+        },
+        "authored_label": "Static call self.facts",
+        "labels": {},
+        "members": [
+          {
+            "id": "inventory-call.5bd76213f28d5bb6",
+            "from": "revoke",
+            "to": "facts",
+            "type": "flow",
+            "label": "Static call self.facts",
+            "origin": "source-ast",
+            "evidence": "python syntax reference; execution unproven",
+            "callsite": {
+              "line": 135,
+              "column": 16,
+              "args": [
+                "actor",
+                "file_id",
+                "recipient"
+              ],
+              "keywords": {}
+            },
+            "authored_label": "Static call self.facts",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "inventory-call.f9d165c93b7b8c59",
+        "from": "list",
+        "to": "facts",
+        "type": "flow",
+        "label": "Static call self.facts",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 166,
+          "column": 20,
+          "args": [
+            "actor",
+            "row['file_id']"
+          ],
+          "keywords": {}
+        },
+        "authored_label": "Static call self.facts",
+        "labels": {},
+        "members": [
+          {
+            "id": "inventory-call.f9d165c93b7b8c59",
+            "from": "list",
+            "to": "facts",
+            "type": "flow",
+            "label": "Static call self.facts",
+            "origin": "source-ast",
+            "evidence": "python syntax reference; execution unproven",
+            "callsite": {
+              "line": 166,
+              "column": 20,
+              "args": [
+                "actor",
+                "row['file_id']"
+              ],
+              "keywords": {}
+            },
+            "authored_label": "Static call self.facts",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "inventory-call.ff5330def994408e",
+        "from": "read",
+        "to": "facts",
+        "type": "flow",
+        "label": "Static call self.facts",
+        "origin": "source-ast",
+        "evidence": "python syntax reference; execution unproven",
+        "callsite": {
+          "line": 173,
+          "column": 16,
+          "args": [
+            "actor",
+            "file_id"
+          ],
+          "keywords": {}
+        },
+        "authored_label": "Static call self.facts",
+        "labels": {},
+        "members": [
+          {
+            "id": "inventory-call.ff5330def994408e",
+            "from": "read",
+            "to": "facts",
+            "type": "flow",
+            "label": "Static call self.facts",
+            "origin": "source-ast",
+            "evidence": "python syntax reference; execution unproven",
+            "callsite": {
+              "line": 173,
+              "column": 16,
+              "args": [
+                "actor",
+                "file_id"
+              ],
+              "keywords": {}
+            },
+            "authored_label": "Static call self.facts",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:edge:14fa58ec83a860af320783e2",
+        "from": "code:file:4b38be2b7dc21f9b17d2666c",
+        "to": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+        "type": "data",
+        "code_relation": "defines",
+        "label": "Defines",
+        "origin": "source-ast",
+        "evidence": "Source declaration and static syntax reference; execution unproven",
+        "authored_label": "Defines",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:edge:14fa58ec83a860af320783e2",
+            "from": "code:file:4b38be2b7dc21f9b17d2666c",
+            "to": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+            "type": "data",
+            "code_relation": "defines",
+            "label": "Defines",
+            "origin": "source-ast",
+            "evidence": "Source declaration and static syntax reference; execution unproven",
+            "authored_label": "Defines",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:2fc8370585f31aead59f4927",
+        "from": "policy:function:same_identity",
+        "to": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "source-ast",
+        "evidence": "Exact source declaration binding; not an observed call",
+        "source_binding": {
+          "path": "service.py",
+          "symbol": "same_identity"
+        },
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:2fc8370585f31aead59f4927",
+            "from": "policy:function:same_identity",
+            "to": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "source-ast",
+            "evidence": "Exact source declaration binding; not an observed call",
+            "source_binding": {
+              "path": "service.py",
+              "symbol": "same_identity"
+            },
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:e748fad6b40846d786d5c29b",
+        "from": "policy:is_owner",
+        "to": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "source-ast",
+        "evidence": "Exact source declaration binding; not an observed call",
+        "source_binding": {
+          "path": "service.py",
+          "symbol": "same_identity"
+        },
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:e748fad6b40846d786d5c29b",
+            "from": "policy:is_owner",
+            "to": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "source-ast",
+            "evidence": "Exact source declaration binding; not an observed call",
+            "source_binding": {
+              "path": "service.py",
+              "symbol": "same_identity"
+            },
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:9e4151fc90b29cfd1f90be11",
+        "from": "policy:is_recipient",
+        "to": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "source-ast",
+        "evidence": "Exact source declaration binding; not an observed call",
+        "source_binding": {
+          "path": "service.py",
+          "symbol": "same_identity"
+        },
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:9e4151fc90b29cfd1f90be11",
+            "from": "policy:is_recipient",
+            "to": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "source-ast",
+            "evidence": "Exact source declaration binding; not an observed call",
+            "source_binding": {
+              "path": "service.py",
+              "symbol": "same_identity"
+            },
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:25b3769dfd53726ff42b4056",
+        "from": "share",
+        "to": "code:file:4b38be2b7dc21f9b17d2666c",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index",
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:25b3769dfd53726ff42b4056",
+            "from": "share",
+            "to": "code:file:4b38be2b7dc21f9b17d2666c",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "code-index",
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:ed188a9f6d95763edbf929aa",
+        "from": "read",
+        "to": "code:file:4b38be2b7dc21f9b17d2666c",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index",
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:ed188a9f6d95763edbf929aa",
+            "from": "read",
+            "to": "code:file:4b38be2b7dc21f9b17d2666c",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "code-index",
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:e676c4fdabca206ac1c299a6",
+        "from": "revoke",
+        "to": "code:file:4b38be2b7dc21f9b17d2666c",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index",
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:e676c4fdabca206ac1c299a6",
+            "from": "revoke",
+            "to": "code:file:4b38be2b7dc21f9b17d2666c",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "code-index",
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:246feb0dbdb9eb5cc4c33bd7",
+        "from": "list",
+        "to": "code:file:4b38be2b7dc21f9b17d2666c",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index",
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:246feb0dbdb9eb5cc4c33bd7",
+            "from": "list",
+            "to": "code:file:4b38be2b7dc21f9b17d2666c",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "code-index",
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:786ef1412eb846b276d0f386",
+        "from": "facts",
+        "to": "code:file:4b38be2b7dc21f9b17d2666c",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index",
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:786ef1412eb846b276d0f386",
+            "from": "facts",
+            "to": "code:file:4b38be2b7dc21f9b17d2666c",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "code-index",
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:f77d81d0f9b72964c845b5d3",
+        "from": "policy:function:same_identity",
+        "to": "code:file:4b38be2b7dc21f9b17d2666c",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index",
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:f77d81d0f9b72964c845b5d3",
+            "from": "policy:function:same_identity",
+            "to": "code:file:4b38be2b7dc21f9b17d2666c",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "code-index",
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:ce0ccf5d5825a09fa066f6cf",
+        "from": "policy:is_owner",
+        "to": "code:file:4b38be2b7dc21f9b17d2666c",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index",
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:ce0ccf5d5825a09fa066f6cf",
+            "from": "policy:is_owner",
+            "to": "code:file:4b38be2b7dc21f9b17d2666c",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "code-index",
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:559749b1ccea3ba9614a67a1",
+        "from": "policy:is_recipient",
+        "to": "code:file:4b38be2b7dc21f9b17d2666c",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index",
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:559749b1ccea3ba9614a67a1",
+            "from": "policy:is_recipient",
+            "to": "code:file:4b38be2b7dc21f9b17d2666c",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "code-index",
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      },
+      {
+        "id": "code:binding:28b757bf5cdb0f468bd7d469",
+        "from": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+        "to": "code:file:4b38be2b7dc21f9b17d2666c",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index",
+        "authored_label": "Source binding",
+        "labels": {},
+        "members": [
+          {
+            "id": "code:binding:28b757bf5cdb0f468bd7d469",
+            "from": "code:symbol:6b3ba1f897f29f89bdf2fa38",
+            "to": "code:file:4b38be2b7dc21f9b17d2666c",
+            "type": "data",
+            "code_relation": "maps",
+            "mapping_role": "source-binding",
+            "label": "Source binding",
+            "origin": "code-index",
+            "authored_label": "Source binding",
+            "observed": false,
+            "current": true
+          }
+        ],
+        "observed": false,
+        "current": true
+      }
+    ]
+  },
+  "writes": []
+}

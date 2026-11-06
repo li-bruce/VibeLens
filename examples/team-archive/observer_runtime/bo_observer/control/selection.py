@@ -195,7 +195,7 @@ def build_plan(view, spec, recording=None):
     ):
         raise ValueError("A short view name and one to twelve focus nodes are required")
     depth, budget = spec.get("depth", 1), spec.get("max_nodes", 80)
-    direction, layout = spec.get("direction", "both"), spec.get("layout", "layered")
+    direction, layout = spec.get("direction", "both"), spec.get("layout", "cluster")
     if (
         type(depth) is not int
         or not 0 <= depth <= 4

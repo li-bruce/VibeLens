@@ -9,6 +9,12 @@ import { conceptRelations, conceptRelationTypes } from "./concept-relations.js";
 import { enclosingCircle, planarBodyCircle, REGION_PADDING } from "./containment-geometry.js";
 import { proximityOrder, proximityNeighbors } from "./proximity-layout.js";
 import { relationIds, relationExcluded, relationTypeAllowed } from "./edge-identities.js";
+import {
+  conceptLayer,
+  conceptTemplates,
+  conceptPositions,
+  conceptOrderEdges,
+} from "./concept-flow-layout.js";
 export const layoutKey = (model, projectId) =>
   "business-observer.layout.v2:" +
   (projectId ||
@@ -856,6 +862,7 @@ export function placeIncremental(graph, state) {
   const placed = [],
     tree = hierarchyOf(graph);
   const templates = graph.boxes.some((b) => !state.positions[b.id]) ? circleTemplates(graph) : null;
+  const ordering = conceptOrderEdges(graph);
   for (const b of graph.boxes) {
     const p = state.positions[b.id];
     if (p) {
@@ -871,9 +878,27 @@ export function placeIncremental(graph, state) {
       near = parent && placed.includes(parent) ? parent : null;
     const local = near && templates.get(near.id).items.find((item) => item.id === b.id),
       anchor = near && nodeCenter(near);
+    const adjacent = ordering
+      .filter((edge) => edge.to === b.id || edge.from === b.id)
+      .map((edge) => ({
+        edge,
+        box: placed.find((item) => item.id === (edge.to === b.id ? edge.from : edge.to)),
+      }))
+      .filter((entry) => entry.box);
+    const continuation =
+      !near && adjacent.length
+        ? {
+            x:
+              adjacent.reduce(
+                (sum, { edge, box }) => sum + box.x + (edge.to === b.id ? box.w + 105 : -b.w - 105),
+                0,
+              ) / adjacent.length,
+            y: adjacent.reduce((sum, { box }) => sum + box.y, 0) / adjacent.length,
+          }
+        : null;
     const point = local
       ? { x: anchor.x + local.x, y: anchor.y + local.y }
-      : freePosition(b, b.x, b.y, placed);
+      : freePosition(b, continuation?.x ?? b.x, continuation?.y ?? b.y, placed);
     Object.assign(b, point, { pinned: false });
     state.positions[b.id] = { ...point, pinned: false };
     placed.push(b);
@@ -1030,7 +1055,7 @@ function placeCircle(radius, occupied, preferred = -Math.PI / 2) {
   }
   return best;
 }
-function circleTemplates(graph) {
+function circleTemplates(graph, ordered = new Map()) {
   const tree = hierarchyOf(graph),
     templates = new Map(),
     neighbors = proximityNeighbors(graph.edges);
@@ -1054,7 +1079,7 @@ function circleTemplates(graph) {
       if (!types.has(type)) types.set(type, []);
       types.get(type).push(child);
     }
-    if (children.length >= 6 && types.size > 1) {
+    if (!ordered.has(id) && children.length >= 6 && types.size > 1) {
       children = [...types]
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([type, members]) => {
@@ -1085,11 +1110,14 @@ function circleTemplates(graph) {
     const items = [{ id, x: -b.w / 2, y: -31, w: b.w, h: b.h }],
       occupied = children.length && !self ? [] : [core];
     for (const [index, child] of children.entries()) {
-      const position = placeCircle(
-        child.radius,
-        occupied,
-        -Math.PI / 2 + (index * 2 * Math.PI) / Math.max(children.length, 1),
-      );
+      const suggested = ordered.get(id)?.get(child.id);
+      const position = suggested
+        ? { ...suggested, radius: child.radius }
+        : placeCircle(
+            child.radius,
+            occupied,
+            -Math.PI / 2 + (index * 2 * Math.PI) / Math.max(children.length, 1),
+          );
       occupied.push(position);
       items.push(
         ...child.items.map((item) => ({
@@ -1123,7 +1151,9 @@ function circleTemplates(graph) {
 // Semantic clusters place only top-level circles and never flatten their contents.
 async function clusteredLayout(elk, graph, state) {
   const tree = hierarchyOf(graph),
-    templates = circleTemplates(graph),
+    templates = await conceptTemplates(elk, graph, tree, (ordered) =>
+      circleTemplates(graph, ordered),
+    ),
     roots = tree.roots.map((id) => templates.get(id));
   if (!roots.length) return Object.create(null);
   const owner = (id) => {
@@ -1202,8 +1232,9 @@ async function clusteredLayout(elk, graph, state) {
     y: group.y + group.height / 2,
   }));
   // Physics runs away from rendering and input; each request owns its worker.
-  const positions =
-    typeof Worker === "undefined" && typeof window === "undefined"
+  const positions = units.every((unit) => conceptLayer(unit.node))
+    ? units.map((unit) => ({ id: unit.id, x: 0, y: 0 }))
+    : typeof Worker === "undefined" && typeof window === "undefined"
       ? // Headless/CLI layout checks execute the same solver, with no browser shim.
         solver.clusterUnits(units, unitEdges, seeds)
       : await new Promise((resolve, reject) => {
@@ -1226,8 +1257,9 @@ async function clusteredLayout(elk, graph, state) {
           };
           worker.postMessage({ units, edges: unitEdges, seeds });
         });
+  const refined = await conceptPositions(elk, graph, tree, units, positions);
   const proposed = new Map(
-      positions.map((p) => [
+      refined.map((p) => [
         p.id,
         {
           x: p.x - roots.find((c) => c.id === p.id).radius,
@@ -1238,7 +1270,12 @@ async function clusteredLayout(elk, graph, state) {
     result = Object.create(null),
     occupied = [];
   const hasPin = (c) => c.items.some((item) => state.positions[item.id]?.pinned);
-  for (const c of [...roots].sort((a, b) => Number(hasPin(b)) - Number(hasPin(a)))) {
+  for (const c of [...roots].sort(
+    (a, b) =>
+      Number(hasPin(b)) - Number(hasPin(a)) ||
+      Number(!!conceptLayer(graph.byId.get(b.id).node)) -
+        Number(!!conceptLayer(graph.byId.get(a.id).node)),
+  )) {
     const p = proposed.get(c.id);
     if (!coordinate(p?.x) || !coordinate(p?.y)) throw Error("Invalid group position");
     const anchor = c.items.find((item) => state.positions[item.id]?.pinned);
@@ -1321,6 +1358,30 @@ async function clusteredLayout(elk, graph, state) {
         y: b.y + dy,
         pinned: !!state.positions[b.id]?.pinned,
       };
+  }
+  return result;
+}
+/** Position a newly opened conceptual subtree without moving saved descendants.
+ * Callers discard results after a topology, selection or drag epoch changes.
+ */
+export async function conceptExpansion(elk, graph, state, id, known) {
+  if (!conceptLayer(graph.byId.get(id)?.node || {})) return null;
+  const tree = hierarchyOf(graph);
+  const templates = await conceptTemplates(elk, graph, tree, (order) =>
+    circleTemplates(graph, order),
+  );
+  const parent = graph.byId.get(id),
+    template = templates.get(id),
+    result = {};
+  if (!parent || !template) return null;
+  const anchor = template.items.find((item) => item.id === id);
+  for (const item of template.items) {
+    if (item.id === id || known.has(item.id) || state.positions[item.id]?.pinned) continue;
+    result[item.id] = {
+      x: parent.x + item.x - anchor.x,
+      y: parent.y + item.y - anchor.y,
+      pinned: false,
+    };
   }
   return result;
 }

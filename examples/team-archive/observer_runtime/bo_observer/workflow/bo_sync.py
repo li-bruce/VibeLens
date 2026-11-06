@@ -59,6 +59,10 @@ def source_inventory(root, cfg, *, inspection_cache=None, model=None, telemetry=
     runtime copy can be excluded using its managed-file fingerprint.
     """
     root = Path(root).absolute().resolve()
+    from ..delivery.integration import inspect as inspect_framework
+
+    framework = inspect_framework(root)
+    verified_framework = set(framework["verified_files"])
     policy = compile_scope(root, cfg)
     if model is None:
         from ..graph.behavior_model import contained
@@ -107,6 +111,9 @@ def source_inventory(root, cfg, *, inspection_cache=None, model=None, telemetry=
             raw = reader.read(name)
             if raw is None:
                 raise ValueError("source file became unavailable: " + name)
+            if framework["valid"] and name in verified_framework:
+                excluded[name] = "Canonical framework dependency; checked outside business coverage"
+                continue
             # This is an optional native dependency, not observer activity. Only
             # exact managed copies of this tool's own library are excluded from
             # application coverage. A changed file returns to normal inspection.
@@ -239,6 +246,7 @@ def source_inventory(root, cfg, *, inspection_cache=None, model=None, telemetry=
             if name not in inspected:
                 del inspection_cache[name]
     return {
+        "framework": framework,
         "files": dict(sorted(files.items())),
         "excluded": dict(sorted(excluded.items())),
         "excluded_entrypoints": hidden_entrypoints,
@@ -284,7 +292,7 @@ def maintenance_task(root, cfg, previous=None):
     if not cfg.get("source_scope") and not cfg.get("stategraph"):
         registered |= set(cfg.get("watch_files", []))
     unregistered = sorted(set(current["files"]) - registered)
-    gaps = []
+    gaps = list(current.get("framework", {}).get("errors", []))
     if cfg.get("stategraph"):
         try:
             from ...code_structure import scan

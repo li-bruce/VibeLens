@@ -13,6 +13,9 @@ records a synthetic developer/user trial, separate from human acceptance.
    source symbols and selected values in `bo_stategraph/project.json`; bind the
    definitions with `model.concepts`. In observe mode, the native implementation
    supplies facts; the observer does not execute a second business decision.
+   Follow [integration ownership](integration-boundary.md) for the minimal native
+   install and external service. Keep copied framework dependencies intact and
+   bind acknowledged remote capture before testing recording.
 3. **Declare the verification inputs together.** `sync.json` identifies the model,
    manifest, independently inventoried `code_files`, watched adapters/test files,
    `acceptance.json`, a protected `mapping.json`, and actual test commands. Include

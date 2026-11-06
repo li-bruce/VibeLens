@@ -82,6 +82,7 @@ import {
   setPosition,
   togglePin,
   calculateLayout,
+  conceptExpansion,
   applyLayout,
   topologyKey,
   GraphGesture,
@@ -898,15 +899,38 @@ function showDiscussion(ids) {
   project();
   frameDiscussion();
 }
-function toggle(id) {
+async function toggle(id) {
   if (!graph?.children.has(id)) return;
   cancelLayout();
   selected = id;
   const opening = !expanded.has(id);
+  const known = new Set(Object.keys(preferences.positions));
   if (opening) expanded.add(id);
   else expanded.delete(id);
   project();
   if (opening) {
+    const epoch = layoutEpoch,
+      key = topologyKey(graph),
+      current = graph;
+    layoutBusy = true;
+    try {
+      const positions = await conceptExpansion(elk, graph, preferences, id, known);
+      if (epoch !== layoutEpoch || graph !== current || key !== topologyKey(graph)) return;
+      if (positions && Object.keys(positions).length) {
+        applyLayout(graph, preferences, positions);
+        if (spatialActive())
+          spatial.layout(
+            false,
+            planarSeeds(graph, preferences.positions),
+            new Set(Object.keys(positions)),
+          );
+      }
+    } catch (error) {
+      console.error(error);
+      layoutError = boTranslate("Layout failed; keeping previous positions");
+    } finally {
+      if (epoch === layoutEpoch) layoutBusy = false;
+    }
     if (!spatialActive()) settleExpansion(graph, preferences, id);
     updatePresentation();
     focusSelection();

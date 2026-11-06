@@ -14,6 +14,12 @@ change_sync begin -> coding and local generation -> bo_sync scan -> change_sync 
 
 Before every coding turn, run `change_sync.py recall --root PROJECT` and read its concise output. It restores mode, current request, protected contracts, observation-module paths, affected layer nodes and verification commands from project files. `begin` also produces this recall automatically. Detailed per-layer sources, fields, lifecycles and cases are in `.stategraph/observation-plan.json`; inspect only affected entries. Recall does not accept source changes. See [observation continuity](observation-continuity.md).
 
+Read the recalled `framework` integrity result. Use the installed Skill's commands;
+edit project-owned definitions/wiring through the [integration boundary](integration-boundary.md).
+Maintain affected [conceptual route references](concept-flow-layout.md) when the
+confirmed graph changes. Dependency tampering is a framework failure, independent
+of business outcomes and graph coverage.
+
 Commands require the project `--root`; `begin` also needs `--change` and the actual request. Continue an active change instead of replacing its baseline to hide drift. See [continuous development](continuous-development.md).
 
 For an empty project, first use the [source-free concept workflow](concept-models.md)

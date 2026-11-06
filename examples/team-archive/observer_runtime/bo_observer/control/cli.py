@@ -40,7 +40,11 @@ def main(argv=None):
     )
     parser.add_argument("--root", required=True)
     parser.add_argument("--conversation")
-    parser.add_argument("--host", choices=["codex", "deepseek-harness"], default="codex")
+    parser.add_argument(
+        "--host",
+        default="codex",
+        help="Stable host identifier; non-Codex hosts must supply their actual conversation ID",
+    )
     parser.add_argument(
         "--message",
         required=True,
@@ -63,6 +67,14 @@ def main(argv=None):
     args = parser.parse_args(argv)
     scope = ControlScope(args.root, host=args.host)
     try:
+        from ..delivery.integration import inspect as inspect_framework
+
+        framework = inspect_framework(scope.root)
+        if not framework["valid"]:
+            raise ValueError(
+                "Framework integrity failed; use the installed Skill to review the integration: "
+                + str(framework["errors"])
+            )
         if args.command == "activate":
             if not args.url:
                 raise ValueError("Activation requires the verified observer URL")

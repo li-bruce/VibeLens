@@ -9,6 +9,7 @@ import re
 import secrets
 
 from ..web.view_preferences import file_lock, Preferences
+from ..graph.behavior_model import contained
 
 
 def read(path):
@@ -52,8 +53,8 @@ class ControlScope:
     """A local scope is bound to its canonical project path and host conversation identity."""
 
     def __init__(self, root, host="codex"):
-        if host not in {"codex", "deepseek-harness"}:
-            raise ValueError("Unsupported conversation host")
+        if not isinstance(host, str) or not re.fullmatch(r"[a-z][a-z0-9-]{0,63}", host):
+            raise ValueError("Conversation host must be a stable lowercase identifier")
         self.host = host
         self.root = Path(root).resolve()
         self.directory = self.root / "bo_stategraph/config/control"
@@ -77,7 +78,7 @@ class ControlScope:
     def _path(self, token):
         if not isinstance(token, str) or not re.fullmatch(r"[a-f0-9]{32}", token):
             raise ValueError("Invalid VibeLens session")
-        return self.directory / (token + ".json")
+        return contained(self.root, "bo_stategraph/config/control/" + token + ".json")
 
     def _bound(self, value):
         if value.get("schema") != "vibelens-control-session/v1" or value.get("root") != str(
@@ -92,7 +93,7 @@ class ControlScope:
         """Activation never installs instructions into other conversations or changes views."""
         pattern = (
             r"^/vibelens(?:\s|$)"
-            if self.host == "deepseek-harness"
+            if self.host != "codex"
             else r"^(?:\$vibelens(?:\s|$)|Use\s+\$vibelens\b|使用\s*\$vibelens\b)"
         )
         if not isinstance(message, str) or not re.match(
@@ -138,7 +139,7 @@ class ControlScope:
         token = self._token(conversation)
         path = self._path(token)
         if not path.exists():
-            invocation = "/vibelens" if self.host == "deepseek-harness" else "$vibelens"
+            invocation = "$vibelens" if self.host == "codex" else "/vibelens"
             raise ValueError(f"Invoke {invocation} in this conversation before using controls")
         value = self._bound(read(path))
         if value["conversation"] != conversation:

@@ -16,6 +16,7 @@ from ..graph.source_files import SourceFiles
 from .event_batch import BOSessionSink
 from .capture_context import call_key, invocation_boundary, minimal_boundary
 from .concept_context import ConceptContext
+from .capture_bridge import CaptureBridge
 
 OPEN_CONTEXT_LIMIT = 10000
 
@@ -88,6 +89,7 @@ class GraphSession:
             context_provider=self.view,
             version_provider=self.recording_version_context,
         )
+        self.bo_capture_bridge = CaptureBridge(self)
 
     def bo_bind_capture(self, *, scope_setter, flush_capture, health):
         """Connect an observer controller; callbacks cannot execute business actions.

@@ -282,13 +282,17 @@ export class SpatialRenderer {
   }
 
   /** Send constrained layout work off-thread; only explicit Arrange releases saved positions. */
-  layout(arrange = false, shared = null) {
+  layout(arrange = false, shared = null, fresh = null) {
     if (!this.model) return;
     this.busy = true;
     // Newly added nodes are not fixed; saved manual positions and pins survive.
     const existing = arrange
       ? this.positions
-      : Object.fromEntries(Object.entries(this.positions).filter(([id]) => this.settled?.has(id)));
+      : Object.fromEntries(
+          Object.entries(this.positions).filter(
+            ([id, point]) => this.settled?.has(id) && (!fresh?.has(id) || point.pinned),
+          ),
+        );
     this.worker.postMessage({
       epoch: ++this.epoch,
       started: performance.now(),

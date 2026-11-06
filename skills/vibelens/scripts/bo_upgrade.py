@@ -14,9 +14,11 @@ import uuid
 try:
     from .behavior_model import contained, read
     from .sync_io import write
+    from .bo_observer.delivery.files import framework_files
 except ImportError:
     from behavior_model import contained, read
     from sync_io import write
+    from bo_observer.delivery.files import framework_files
 
 RELEASE = "0.12.1"
 PROTOCOLS = {
@@ -119,10 +121,7 @@ def plan(
         )
     sources = {
         runtime + "/" + path.relative_to(source).as_posix(): path
-        for path in source.rglob("*")
-        if path.is_file()
-        and not set(path.parts) & {"__pycache__", "node_modules"}
-        and path.suffix in {".py", ".mjs", ".json"}
+        for path in framework_files(source)
     }
     sources.update({runtime + "/" + name: bridge_source(name, module) for name in CORE})
     sources.update({module + "/" + target: source / name for name, target in CORE.items()})
@@ -229,6 +228,16 @@ def apply(root, **options):
                 written.append(name)
                 target.unlink()
         value = {key: proposed[key] for key in ("release", "protocols", "files", "retired_files")}
+        canonical = Path(options.get("source") or Path(__file__).resolve().parent).parent.resolve()
+        value["source_files"] = {
+            name: (
+                "bridge:" + Path(name).name
+                if isinstance(source, bytes)
+                else Path(source).resolve().relative_to(canonical).as_posix()
+            )
+            for name, source in proposed["sources"].items()
+        }
+        value["module"] = options.get("module", "bo_stategraph")
         write(proposed["metadata"], {"schema": 1, **value})
     except Exception:
         for name in reversed(written):
