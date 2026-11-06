@@ -23,7 +23,7 @@ export function conceptOrderEdges(graph) {
       layer === "business"
         ? ["flow", "event", "join", "retry", "cancel"]
         : layer === "state"
-          ? ["transition", "declares_target"]
+          ? ["transition", "requests_transition", "declares_target", "has_effect"]
           : ["data", "guard", "decision_result", "depends_on"];
     if (!allowed.includes(edge.type)) continue;
     const reverse = layer === "rules" && edge.type === "depends_on";

@@ -401,7 +401,13 @@ def validate_names(model):
     Only exact IDs are looked up; names never create a node or a relationship.
     """
     names = model.get("presentation", {}).get("names", {})
-    if not isinstance(names, dict) or set(names) - {"nodes", "edges", "states", "events"}:
+    if not isinstance(names, dict) or set(names) - {
+        "nodes",
+        "concepts",
+        "edges",
+        "states",
+        "events",
+    }:
         raise ValueError("invalid presentation.names categories")
     for category, entries in names.items():
         if not isinstance(entries, dict):

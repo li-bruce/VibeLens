@@ -6,6 +6,7 @@ from .binding import check_binding
 from .common import digest
 from .model import VERSION, build, policy_semantics
 from .projection import bind_projection
+from .network_review import network_review
 from .semantics import (
     confirm,
     snapshot,
@@ -77,6 +78,7 @@ def assess(doc, previous=None, model=None, bindings=None, *, scope=None, accepta
             "blocked": confirmation["blocked"],
             "compatibility": VERSION,
             "graph": data["graph"],
+            "networks": network_review(data["graph"]),
             "index": data["index"],
             "semantic_revision": snap["semantic_revision"],
             "full_semantic_revision": digest(data["records"]),

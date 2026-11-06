@@ -95,6 +95,8 @@ Read [viewer workflow](references/viewer-workflow.md) when connecting or changin
 
 Business, state and rules have independent views. Implementation combines API entries, project structure, declarations and selected observations as facets. Data shows structure with witnessed access detail. These views share stable identities, relations and runtime evidence across 2D, 3D and Timeline; they do not create new execution facts. Indirect view connections retain their original typed paths.
 
+Follow [node meaning](references/node-meaning.md) when constructing or revising conceptual networks. Preserve each layer's explicit relationships and review disconnected components. Distinct concepts may map to one physical declaration; give them their own IDs and layer-appropriate names. Node details expose definitions and optional in-panel AI explanations through the external observer.
+
 Use [conceptual routes](references/concept-flow-layout.md) to keep each conceptual plane readable. Derive progression from its typed definitions; optional validated presentation routes name existing paths and shared steps. Maintain their references during iteration. Layout tags never establish new behavior or replace confirmation.
 
 Preserve dragging, expansion, annotations, names, filters and layout across source updates. “All elements” restores excluded elements while preserving folding and coordinates. Use current-version recordings; historical source and event identities remain fixed. Recording start/stop must control the real producer, drain its bounded queue and retain gaps when interrupted. Verify real transitions and values, including denied/error responses, with no observer-generated business events.

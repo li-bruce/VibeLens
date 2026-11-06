@@ -506,14 +506,18 @@ function baseLines(node, view, events, choice, configuration = null) {
       return result;
     }
   } else if (node.layer === "state") {
-    result.push({ text: `phase: Phase = ${node.value}`, role: "value" });
+    // State models, events and effects share this plane but have no state value.
+    // Their declared summary and actual binding marks are sufficient.
+    if (node.value === undefined) return result;
+    const active = activeMachineStates(
+      view.model.machine,
+      phaseValue(view, configuration, choice),
+    ).has(node.value);
+    result.push({ text: `phase: Phase = ${node.value}`, role: "value", definition: true });
     result.push({
-      text: activeMachineStates(view.model.machine, phaseValue(view, configuration, choice)).has(
-        node.value,
-      )
-        ? boTranslate("Flow state for this run")
-        : boTranslate("Declared state"),
+      text: active ? boTranslate("Flow state for this run") : boTranslate("Declared state"),
       role: "muted",
+      definition: !active,
     });
     if (node.value === view.model.machine.execution?.within && configuration) {
       for (const [id, state] of Object.entries(configuration.activities || {}))

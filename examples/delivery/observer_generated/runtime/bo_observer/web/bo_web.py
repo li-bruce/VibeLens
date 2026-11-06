@@ -12,6 +12,7 @@ import mimetypes
 from pathlib import Path
 import subprocess
 import sys
+import threading
 from urllib.parse import urlsplit, parse_qs
 from ..code_graph.service import CodeGraph
 from ..control.scope import ControlScope
@@ -76,6 +77,56 @@ class BOWeb:
         self.control = ControlScope(self.root)
         self.control_view = None
         self.control_recording = None
+        self.explanations = None
+        self.explanation_lock = threading.Lock()
+
+    def explanation_reply(self, path, value=None):
+        """Serve display-only AI jobs through the same local observer boundary."""
+        parsed = urlsplit(path)
+        if parsed.path != "/api/explanations":
+            return None
+        from ..explanations.service import Explanations
+        from ..explanations.context import revision
+
+        # Concurrent tabs share one bounded job registry, including first use.
+        with self.explanation_lock:
+            if self.explanations is None:
+                self.explanations = Explanations.configured(self.explanation_context)
+        if value is not None:
+            return self.explanations.start(value)
+        identity = parse_qs(parsed.query).get("job", [None])[0]
+        if identity:
+            return self.explanations.get(identity)
+        view = self.explanation_context()
+        return {
+            **self.explanations.status(),
+            "revision": revision(view),
+            "build_id": view.get("manifest", {}).get("build_id"),
+            "concept_revision": view.get("concept_structure", {}).get("revision"),
+            "code_revision": view.get("code_structure", {}).get("revision"),
+        }
+
+    def explanation_context(self):
+        """Reuse the already refreshed API index for optional code-node details.
+
+        The code inventory has the same source scope as the visible API tree.
+        Accessing a detail neither enables a persisted full index nor scans a
+        second source tree. Only a bounded node packet reaches the provider.
+        """
+        view = self.control_context()
+        if self.bo_api_graph.graph:
+            view["code_structure"] = deepcopy(self.bo_api_graph.graph)
+        return view
+
+    def post(self, path, value):
+        """Dispatch observer controls and explanation jobs, never business commands."""
+        explanation = self.explanation_reply(path, value)
+        return explanation if explanation is not None else self.control_reply(path, value)
+
+    def close(self):
+        """Retire display jobs when their build or server is closed."""
+        if self.explanations:
+            self.explanations.close()
 
     def preferences_for(self, path, fallback):
         """Use a conversation's private view file only for an explicitly scoped URL."""
@@ -192,6 +243,9 @@ class BOWeb:
         return raw.replace(b"data-bo-entry", b"data-bo-entry hidden")
 
     def get(self, path):
+        explanation = self.explanation_reply(path)
+        if explanation is not None:
+            return explanation
         control = self.control_reply(path)
         if control is not None:
             return control
@@ -298,7 +352,7 @@ def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
                 value = json.loads(self.rfile.read(size))
                 if not isinstance(value, dict):
                     raise ValueError("The request must be an object")
-                control = web.control_reply(self.path, value)
+                control = web.post(self.path, value)
                 if control is not None:
                     return self.reply(200, control)
                 if path == "/api/preferences":
@@ -319,6 +373,7 @@ def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
     except KeyboardInterrupt:
         pass
     finally:
+        web.close()
         server.server_close()
 
 

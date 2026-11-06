@@ -9,24 +9,41 @@ import { annotationFor, displayName } from "./layout.js";
 import { sourceBinding, callValues, selectedEvents } from "./graph-core.js";
 import { t as boTranslate } from "./i18n.js";
 import { conceptDefinitionElement } from "./concept-details.js";
+import { nodeFacts, nodeFactsElement, detailRows } from "./node-facts.js";
+import { createNodeExplanation } from "./node-explanation.js";
 
 export function createDetailPanel({ read, point, element = (id) => document.getElementById(id) }) {
   const $ = element,
     sources = new Map(),
     openDefinitions = new Set();
+  let detailIdentity = null;
+  const explanation = createNodeExplanation({
+    read,
+    element: $,
+    refresh: () => {
+      position();
+      // Keep the requested answer visible even after a long definition was read.
+      $("node-details").scrollTop = 0;
+    },
+  });
   /** Render the currently selected node, respecting field/source provenance. */
   function update() {
     const { view, graph, preferences, selected, choice, step, mode: detailMode } = read();
     const b = graph?.byId.get(selected);
     if (!b || !detailMode) {
+      explanation.cancel();
       $("node-details").hidden = true;
       return;
     }
     const annotation = annotationFor(preferences, b.node.referenceOf || b.id),
       editing = detailMode === "annotation";
     $("node-details").hidden = false;
+    const identity = [selected, detailMode].join(":");
+    if (detailIdentity !== identity) $("node-details").scrollTop = 0;
+    detailIdentity = identity;
     $("detail-title").textContent = displayName(b.node, preferences);
     $("annotation-form").hidden = !editing;
+    $("explanation-actions").hidden = editing;
     const rows = [
       ...(annotation.label || editing
         ? [{ text: boTranslate("Original name: ") + b.node.label }]
@@ -43,19 +60,23 @@ export function createDetailPanel({ read, point, element = (id) => document.getE
           ]),
       ...(!editing && annotation.note ? [{ text: boTranslate("Note: ") + annotation.note }] : []),
     ];
+    const facts = editing ? [] : nodeFacts(b.node, view, graph.all, graph.rawEdges || []);
     $("detail-rows").replaceChildren(
-      ...rows.map((r) => {
+      ...(editing ? rows : detailRows(b.node, rows, facts)).map((r) => {
         const p = document.createElement("p");
         p.textContent = r.text;
         return p;
       }),
     );
     if (!editing) {
+      const facts = nodeFactsElement(b.node, view, graph.all, graph.rawEdges || []);
+      if (facts) $("detail-rows").prepend(facts);
       const definition = conceptDefinitionElement(b.node, {
         open: openDefinitions.has(b.id),
         onToggle: (open) => (open ? openDefinitions.add(b.id) : openDefinitions.delete(b.id)),
       });
       if (definition) $("detail-rows").append(definition);
+      explanation.update();
     }
     const binding = sourceBinding(view, graph.all, selected),
       source = detailMode === "source" && binding;
@@ -159,5 +180,13 @@ export function createDetailPanel({ read, point, element = (id) => document.getE
     if (read().selected === id) update();
   }
 
-  return { update, position, load, clear: () => sources.clear() };
+  return {
+    update,
+    position,
+    load,
+    clear: () => {
+      sources.clear();
+      explanation.clear();
+    },
+  };
 }

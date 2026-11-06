@@ -1,0 +1,243 @@
+{
+  "valid": true,
+  "errors": [],
+  "candidate_id": "76d6cfd09e9bed2b9fe1ee25a658437e9a0580d5b6cd5638644477d07ca5266c",
+  "reports": {
+    "mapping": {
+      "status": "passed",
+      "errors": [],
+      "database": {
+        "configured": false,
+        "valid": true,
+        "errors": [],
+        "changed": false
+      },
+      "code_structure": {
+        "enabled": true,
+        "valid": true,
+        "errors": [],
+        "status": "passed",
+        "revision": "e84f8fbfbaa0a7c8c8ab01ff60233fd8067a51815c97605a451253534b4420c3",
+        "nodes": 394,
+        "edges": 533,
+        "api_observation": {
+          "configured": false,
+          "valid": true,
+          "status": "not_applicable",
+          "issues": [],
+          "errors": [],
+          "coverage": "not_applicable",
+          "strict": false,
+          "observed_routes": [],
+          "unobserved_routes": [],
+          "incomplete_methods": [],
+          "missing_routes": [],
+          "revision": "e84f8fbfbaa0a7c8c8ab01ff60233fd8067a51815c97605a451253534b4420c3"
+        }
+      },
+      "api_observation": {
+        "configured": false,
+        "valid": true,
+        "status": "not_applicable",
+        "issues": [],
+        "errors": [],
+        "coverage": "not_applicable",
+        "strict": false,
+        "observed_routes": [],
+        "unobserved_routes": [],
+        "incomplete_methods": [],
+        "missing_routes": [],
+        "revision": "e84f8fbfbaa0a7c8c8ab01ff60233fd8067a51815c97605a451253534b4420c3"
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+      "producer_health": {
+        "valid": true,
+        "checked_runs": 0,
+        "required": false,
+        "errors": []
+      },
+      "invocation_closure": {
+        "valid": true,
+        "closed_calls": 0,
+        "legacy_events": 147,
+        "errors": []
+      },
+      "layers": {
+        "business": {
+          "declared_nodes": 5,
+          "direct_observations": [
+            "flow.checks"
+          ],
+          "required_cases": 1,
+          "boundary_observations": [],
+          "basis": "actual invocation and selected result"
+        },
+        "state": {
+          "declared_nodes": 10,
+          "direct_observations": [
+            "join",
+            "wait"
+          ],
+          "required_cases": 2,
+          "boundary_observations": [],
+          "basis": "actual transitions, residence and activity evidence"
+        },
+        "rules": {
+          "declared_nodes": 3,
+          "direct_observations": [
+            "authorize",
+            "grant",
+            "recheck"
+          ],
+          "required_cases": 3,
+          "boundary_observations": [],
+          "basis": "evaluated/skipped conditions and actual enclosing invocation"
+        },
+        "implementation": {
+          "declared_nodes": 99,
+          "direct_observations": [
+            "change",
+            "checksum",
+            "commit",
+            "execute",
+            "privacy",
+            "read"
+          ],
+          "required_cases": 8,
+          "boundary_observations": [],
+          "basis": "actual calls, responses, selected values and native transaction boundaries; unobserved declarations remain static"
+        },
+        "data": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "operation-linked structural projection"
+        },
+        "unknown": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "no inferred evidence"
+        }
+      },
+      "stategraph_export": "checked",
+      "witnesses": 201,
+      "projection_checks": 303,
+      "implementation": {
+        "errors": [],
+        "events_checked": 19,
+        "features": 10
+      }
+    },
+    "state_rules": {
+      "status": "passed",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "passed",
+      "errors": [],
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "passed",
+      "errors": [],
+      "assertions": {
+        "required": 96,
+        "executed": 96
+      },
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    }
+  },
+  "review_hash": "8b08e72abde4b964b871d60b104344cf3acd013e1f3b3d3df9215f49bac49e6b",
+  "observations_hash": "ae16e56d78760b190a86403f8867f2968ca910a5e71c818a1da0bdbf38068e46",
+  "tests": [
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_business.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/architecture_guard.py",
+        "check",
+        "--root",
+        "."
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_execution.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tooling/graph_fixture.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tests/test_graph_projection.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tests/test_graph_layout.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tests/test_recording.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tests/test_recorded_views.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tests/test_stategraph_module.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "checked_at": "2026-11-06T04:50:58.445207+00:00",
+  "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+}

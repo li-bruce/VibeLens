@@ -204,7 +204,7 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                 body = json.loads(self.rfile.read(size))
                 if path == "/api/bo/capture":
                     return self.reply(200, session.bo_capture_bridge.exchange(body))
-                control = session.web.control_reply(self.path, body)
+                control = session.web.post(self.path, body)
                 if control is not None:
                     return self.reply(200, control)
                 if path == "/api/bo/events":

@@ -34,7 +34,13 @@ export function declarationNodes(view) {
         ? {
             concept_kind: concept.concept_kind,
             concept_definition: concept.concept_definition,
+            concept_id: concept.concept_id || concept.id,
+            concept_layer: concept.layer,
             ...native,
+            ...(concept.layer === "business" && native.layer === "business" && concept.parent
+              ? { parent: concept.parent, containment_kind: "business_decomposition" }
+              : {}),
+            ...(concept.layout_routes ? { layout_routes: concept.layout_routes } : {}),
             // The confirmed conceptual name is a display overlay. Native
             // source, capture registration and lifecycle still own this ID.
             concept_label: concept.label,
@@ -85,7 +91,7 @@ export function graphInventory(
     choice,
     step,
   });
-  for (const node of machine.nodes) all.set(node.id, node);
+  for (const node of machine.nodes) all.set(node.id, { ...all.get(node.id), ...node });
   rawEdges.push(...machine.edges);
   applyConceptContainment(all, rawEdges);
   // Membership is a view reference to one canonical identity, not another call.

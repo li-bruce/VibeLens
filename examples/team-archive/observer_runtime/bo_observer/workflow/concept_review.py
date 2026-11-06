@@ -14,6 +14,23 @@ def compact_report(report):
     graph = report.get("graph")
     if graph is not None:
         result["graph_size"] = {key: len(graph.get(key, [])) for key in ("nodes", "edges")}
+        from ..concepts.network_review import network_review
+
+        result["networks"] = network_review(graph)
+    if "networks" in result:
+        result["networks"] = {
+            layer: {
+                **{
+                    key: value
+                    for key, value in network.items()
+                    if key not in {"components", "unconnected"}
+                },
+                "component_count": len(network["components"]),
+                "unconnected": network["unconnected"][:12],
+                "unconnected_count": len(network["unconnected"]),
+            }
+            for layer, network in result["networks"].items()
+        }
     if "concepts" in result:
         result["concepts"] = compact_report(result["concepts"])
     return result
@@ -54,5 +71,6 @@ def concept_recall(document, previous=None):
             item["id"] for item in (document.get("policy") or {}).get("operations", [])
         ],
         "expectations": [item["id"] for item in document.get("expectations", [])],
+        "networks": compact_report(report).get("networks", {}),
         "action": "Preserve confirmed meaning; bind actual source and evidence. Review only affected semantic changes.",
     }

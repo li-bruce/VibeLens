@@ -35,6 +35,8 @@ def main():
     run(ROOT, "tests/test_integration_boundary.py")
     run(ROOT, "tests/test_capture_bridge.py")
     run(ROOT, "tests/test_concept_routes.py")
+    run(ROOT, "tests/test_node_explanations.py")
+    subprocess.run(["node", "tools/test_node_meaning.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_concept_flow_layout.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_transfer_glyph.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_edge_colors.mjs"], cwd=ROOT, check=True)

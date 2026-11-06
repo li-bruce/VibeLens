@@ -47,7 +47,14 @@ def run_browser(project, evidence):
         thread.start()
     try:
         result = subprocess.run(
-            ["node", str(ROOT / "tools/test_concept_browser.mjs")],
+            [
+                "node",
+                str(
+                    ROOT
+                    / "tools"
+                    / os.environ.get("BO_CONCEPT_BROWSER_SCRIPT", "test_concept_browser.mjs")
+                ),
+            ],
             cwd=ROOT,
             env={
                 **os.environ,

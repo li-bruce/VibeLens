@@ -1,0 +1,31 @@
+{
+  "valid": true,
+  "checks": [
+    {
+      "mode": "2D",
+      "state": "state:grant:active",
+      "details": "状态值\nactive\n可转换状态\nrevoke → inactive · may_manage\nshare → active · may_manage\n对应实现\nactive\n\n所属：Recipient grant\n\n模型定义"
+    },
+    {
+      "mode": "3D",
+      "state": "state:grant:active",
+      "details": "状态值\nactive\n可转换状态\nrevoke → inactive · may_manage\nshare → active · may_manage\n对应实现\nactive\n\n所属：Recipient grant\n\n模型定义"
+    },
+    {
+      "business_neighbors_exclude_internal_calls": true
+    },
+    {
+      "ai": {
+        "status": "complete",
+        "provider": "codex",
+        "text": "此操作激活指定接收者对文件的授权，并保留其他授权。输入为操作者、文件标识和接收者；依赖当前授权事实与管理权限判断，权限不足则抛出 AccessDenied。\n\n其源码绑定到 service.py 的 FileService.share：新增授权时设为激活、修订号为1；已有授权则重新激活并将修订号加1，返回文件标识、接收者、active 状态及修订号。这是实现映射；源码描述上述行为，并不表示已实际执行。"
+      }
+    },
+    {
+      "answer_visible_in_panel": true
+    }
+  ],
+  "errors": [],
+  "initialEvents": 0,
+  "finalEvents": 0
+}

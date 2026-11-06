@@ -32,7 +32,13 @@ export function sourceName(node, binding) {
   if (node.project_path) return node.project_path;
   if (["store", "dataset", "column"].includes(node.data_role))
     return node.data_key === "store" ? node.data_store : node.data_key || node.id;
-  return binding?.selection?.symbol || node.source?.symbol || binding?.symbol || node.id;
+  return (
+    binding?.selection?.symbol ||
+    node.source?.symbol ||
+    binding?.symbol ||
+    node.concept_id ||
+    node.id
+  );
 }
 
 export function nameNode(node, model, bindings = {}) {
@@ -52,8 +58,20 @@ export function nameNode(node, model, bindings = {}) {
     documentation = binding?.documentation || node.documentation,
     source = sourceName(node, binding),
     authored = node.authored_label ?? node.label,
+    // A concept's label describes its role in this network. Global names for a
+    // physical variable/state must not rename all of its conceptual occurrences.
+    conceptual = !!node.concept_kind,
+    conceptLabel = conceptual
+      ? explainedName(model.presentation?.names?.concepts?.[node.concept_id || node.id]) ||
+        (node.concept_id && node.concept_id !== node.id
+          ? ""
+          : explainedName(model.presentation?.names?.nodes?.[node.id])) ||
+        explainedName(node.concept_label) ||
+        explainedName(authored)
+      : "",
     explained =
-      (node.kind === "state"
+      conceptLabel ||
+      (node.kind === "state" && !conceptual
         ? explainedName(model.presentation?.names?.states?.[node.value])
         : "") ||
       explainedName(model.presentation?.names?.nodes?.[node.referenceOf || node.id]) ||

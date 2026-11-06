@@ -7,6 +7,7 @@ from .anchors import native_anchors
 from .binding import check_binding
 from .common import canonical_id
 from .model import build
+from .occurrences import separate_occurrences
 
 
 def bind_projection(doc, model, bindings=None, *, acceptance=None, scope=None):
@@ -33,7 +34,14 @@ def bind_projection(doc, model, bindings=None, *, acceptance=None, scope=None):
         and edge["from"] in selected_nodes
         and edge["to"] in selected_nodes
     ]
+    # Scope and confirmation use canonical concept IDs; only display occurrences
+    # are separated. A variable reused in several conceptual roles stays one
+    # physical declaration with several explicit concept-to-implementation maps.
+    graph["graph_roots"] = [key for key in graph["graph_roots"] if key in selected_nodes]
+    aliases = separate_occurrences(graph, model)
+    selected_nodes = {node["id"] for node in graph["nodes"]}
     for concept, targets in anchors.items():
+        concept = aliases.get(concept, concept)
         if concept not in selected_nodes:
             continue
         for target in targets:
@@ -63,6 +71,8 @@ def bind_projection(doc, model, bindings=None, *, acceptance=None, scope=None):
         "edges": graph["edges"],
         "graph_roots": [key for key in graph["graph_roots"] if key in selected_nodes],
         "index": deepcopy(data["index"]),
+        "occurrences": aliases,
+        "relation_occurrences": graph["relation_occurrences"],
         "stage": "bound",
         "execution_authority": False,
     }

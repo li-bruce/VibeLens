@@ -521,3 +521,4 @@ class GraphSession:
     def close(self):
         """Stop the recording worker and its subscriptions during server shutdown."""
         self.recordings.close()
+        self.web.close()

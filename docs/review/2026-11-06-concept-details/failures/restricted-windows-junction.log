@@ -1,0 +1,26 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+..........................................................................E...............
+======================================================================
+ERROR: test_contract_parent_replacement_cannot_escape_with_identical_bytes (test_concept_workflow.ConceptWorkflowTests.test_contract_parent_replacement_cannot_escape_with_identical_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_concept_workflow.py", line 440, in test_contract_parent_replacement_cannot_escape_with_identical_bytes
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(directory), external],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp1dsy1v8c\\contracts', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp4h28d2v2']' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 90 tests in 9.376s
+
+FAILED (errors=1)

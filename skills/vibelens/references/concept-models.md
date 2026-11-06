@@ -151,6 +151,12 @@ engine is unnecessary.
 
 ## Every later coding batch
 
+Inspect the per-layer `networks` report and the affected incoming/outgoing links.
+Compare behavioral relationships as well as node coverage: containment alone
+cannot establish a business route. Preserve shared rule dependencies and state
+transition conditions. Apply [node meaning](node-meaning.md) for separate concept
+occurrences, layer-specific names and readable explanations.
+
 For a new empty project, preserve the confirmed design with `bo_concepts` first.
 The source-based `change_sync` commands require a parseable project and source
 bindings. Establish the first review baseline after that initial scaffold exists,

@@ -61,7 +61,7 @@ def add_states(graph, doc, state_indexes):
                 ident,
                 "state",
                 value,
-                label=name,
+                label=value.get("label", name),
                 layer="state",
                 aliases=[name],
                 deps=[root],

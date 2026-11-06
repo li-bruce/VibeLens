@@ -225,6 +225,16 @@ try {
   );
   await page.click("#layered-toggle");
   await page.waitForFunction(() => graphDebug.spatial?.perspective && !graphDebug.layoutBusy);
+  assert.equal(
+    await page.evaluate(() =>
+      graphDebug.displayGraph.boxes.some(
+        (box) =>
+          box.node.concept_kind === "state_model" &&
+          box.rows?.some((row) => row.text === "phase: Phase = undefined"),
+      ),
+    ),
+    false,
+  );
   assert.deepEqual(
     await page.evaluate(() =>
       [...new Set([...graphDebug.presentation.glyphs, ...graphDebug.presentation.regions])].sort(),
@@ -242,17 +252,37 @@ try {
   assert.deepEqual(spatial.native, bound.native);
   assert.equal(spatial.bound, bound.revision);
   assert.ok(spatial.planes.some((plane) => plane.id === "symbols"));
+  // A saved focus may put an expanded region under the old fixed drag point.
+  // Frame and zoom out through real controls, then drag the empty left margin.
+  // Moving a group is a different interaction and must not satisfy this check.
+  await page.click("#fit");
+  await page.click("#zoom-out");
+  await page.click("#zoom-out");
+  await page.waitForFunction(() => !graphDebug.layoutBusy);
+  const orbitStart = await page.evaluate(() => ({
+    camera: graphDebug.spatial.camera.position,
+    nodes: graphDebug.spatialPositions,
+  }));
   const canvas = await page.locator("#viewport").boundingBox();
-  await page.mouse.move(canvas.x + canvas.width * 0.8, canvas.y + canvas.height * 0.35);
+  const drag = { x: canvas.x + canvas.width * 0.23, y: canvas.y + canvas.height * 0.82 };
+  assert.ok(
+    await page.evaluate(
+      (point) => document.elementFromPoint(point.x, point.y)?.classList.contains("spatial-canvas"),
+      drag,
+    ),
+    "The orbit gesture must begin on the canvas, not the legend or a control",
+  );
+  await page.mouse.move(drag.x, drag.y);
   await page.mouse.down();
-  await page.mouse.move(canvas.x + canvas.width * 0.8 + 90, canvas.y + canvas.height * 0.35 + 40, {
+  await page.mouse.move(drag.x + 65, drag.y - 45, {
     steps: 8,
   });
   await page.mouse.up();
   await page.waitForFunction(
     (before) => JSON.stringify(graphDebug.spatial.camera.position) !== JSON.stringify(before),
-    spatial.position,
+    orbitStart.camera,
   );
+  assert.deepEqual(await page.evaluate(() => graphDebug.spatialPositions), orbitStart.nodes);
   await page.screenshot({ path: path.join(output, "bound-model-3d.png") });
   checks.push({ sameGraphIn3D: true, realOrbit: true, planes: spatial.planes });
   assert.deepEqual(errors, []);

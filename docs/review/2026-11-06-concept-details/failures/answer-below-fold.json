@@ -1,0 +1,25 @@
+{
+  "valid": true,
+  "checks": [
+    {
+      "mode": "2D",
+      "state": "state:grant:active",
+      "details": "状态值\nactive\n可转换状态\nrevoke → inactive · may_manage\nshare → active · may_manage\n对应实现\nactive\n\n所属：Recipient grant\n\n模型定义"
+    },
+    {
+      "mode": "3D",
+      "state": "state:grant:active",
+      "details": "状态值\nactive\n可转换状态\nrevoke → inactive · may_manage\nshare → active · may_manage\n对应实现\nactive\n\n所属：Recipient grant\n\n模型定义"
+    },
+    {
+      "ai": {
+        "status": "complete",
+        "provider": "codex",
+        "text": "该业务动作激活指定接收者对文件的授权，同时保留其他接收者的授权。输入为 actor、file_id、recipient；成功返回文件、接收者、active 状态及授权修订号。\n\n直接依赖为 facts、can_manage 和 connect：先读取事实，再以操作者和文件所有者检查管理权限；检查失败则抛出 AccessDenied。代码按 (file_id, recipient) 写入 grants：新授权的 active、revision 均为 1；已有授权设为 active=1，revision 加一，随后读取并返回修订号。\n\n图中该动作要求 manage 决策，改变接收者授权状态并请求 share 事件；它与 grant-share、grant-replace 存在实现映射，与 service.py 的 FileService.share 存在源码绑定。这些关联不代表概念语义等同，也不证明实际执行。证据未提供完整状态转换定义或运行时值，无法确认某次调用的结果。"
+      }
+    }
+  ],
+  "errors": [],
+  "initialEvents": 0,
+  "finalEvents": 0
+}
