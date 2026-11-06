@@ -116,6 +116,10 @@ jobs:
       - run: python tools/test_concept_browser.py
         env:
           BO_CONCEPT_EVIDENCE: .validation/concept-browser
+      - run: python tools/test_concept_browser.py
+        env:
+          BO_CONCEPT_BROWSER_SCRIPT: test_expansion_relations_browser.mjs
+          BO_CONCEPT_EVIDENCE: .validation/expansion-relations-browser
       - run: node tools/test_concept_flow_browser.mjs docs/review/2026-11-06-coupling-flow/concept-browser/focused-recording.json .validation/concept-flow-browser
       - run: python tools/test_edge_colors_browser.py
       - run: python tools/test_graph_quality_browser.py
@@ -180,6 +184,7 @@ jobs:
             .validation/api-observation-browser
             .validation/demo-startup-browser
             .validation/concept-browser
+            .validation/expansion-relations-browser
             .validation/concept-flow-browser
             .validation/edge-colors
             .validation/design-browser

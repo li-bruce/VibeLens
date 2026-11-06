@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Keep saved node positions when expanding and collapsing in every display
+  layer, in both 2D and 3D. Prevent hidden function calls from appearing as direct
+  business connections after folding.
+- Count a proven concept/native relation once, retaining both definition IDs in
+  its details. Preserve distinct calls, conditions and indirect-path witnesses.
+- Share visible-child badges and expansion controls across renderers; repair 3D
+  ring-title gestures, overlapping-label picking and keyboard edge inspection.
+- Reject stale source projections after view/focus changes. Add a fresh-fixture,
+  seven-layer browser regression to CI. See the
+  [repair and retest evidence](docs/review/2026-11-06-expansion-relations/README.md).
 - Separate implementation detail into entry points, project structure and code
   execution display planes. Preserve semantic identities, saved exclusions,
   cross-layer paths and Graph/Timeline correspondence.

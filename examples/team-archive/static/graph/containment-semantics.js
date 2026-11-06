@@ -9,20 +9,6 @@ export function containmentRelation(edge) {
   );
 }
 
-/** Fold a region into its visible center, not its obsolete hidden owner anchor.
- * Callers normalize planar/spatial centers; real self glyphs retain their own
- * positions. A cross-plane projection must not replace the owner's home plane.
- */
-export function foldedOwnerCenters(regions, glyphs, ids, layerOfOwner = () => null) {
-  const centers = new Map();
-  for (const region of regions) {
-    if (!ids.has(region.id) || glyphs.has(region.id)) continue;
-    if (!centers.has(region.id) || region.layer === layerOfOwner(region.id))
-      centers.set(region.id, region.center);
-  }
-  return centers;
-}
-
 export function selfRelationOwners(graph, accepts = () => true) {
   const visible = graph.byId || graph.all;
   const owners = new Set(),
@@ -42,6 +28,7 @@ export function selfRelationOwners(graph, accepts = () => true) {
   for (const projected of graph.rawEdges || graph.edges || []) {
     if (!accepts(projected)) continue;
     for (const edge of projected.members || [projected]) {
+      if (graph.acceptsRelation && !graph.acceptsRelation(edge)) continue;
       if (containmentRelation(edge)) continue;
       for (const [owner, child] of [
         [edge.from, edge.to],

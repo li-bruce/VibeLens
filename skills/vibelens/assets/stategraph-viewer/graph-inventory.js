@@ -5,6 +5,7 @@ import { nameNode, explainedName, declaredEdges } from "./graph-names.js";
 import { annotateConcepts } from "./concept-observation.js";
 import { applyConceptContainment } from "./concept-containment.js";
 import { validateEquivalentRelations } from "./edge-identities.js";
+import { boundRelations } from "./bound-relations.js";
 
 export function stateNodeId(model, value) {
   return model.nodes.find((n) => n.kind === "state" && n.value === value)?.id || "state." + value;
@@ -64,11 +65,7 @@ export function graphInventory(
   // Actual model nodes win a collision; the overlay is never an executor or a
   // reason to borrow a physical function's lifetime.
   const all = new Map(declarationNodes(view).map((node) => [node.id, node])),
-    rawEdges = [
-      ...new Map(
-        [...(view.concept_structure?.edges || []), ...view.model.edges].map((e) => [e.id, e]),
-      ).values(),
-    ];
+    rawEdges = boundRelations(view);
   // Naming overlays add UI fields; validate the untouched assertions instead.
   validateEquivalentRelations([
     ...new Map(

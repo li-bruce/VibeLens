@@ -85,6 +85,7 @@ def main():
     subprocess.run(["node", "tools/test_implementation_planes.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_confirmation_story.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_concept_view.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_expansion_relations.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_concept_observation.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_containment_bounds.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_view_selection.mjs"], cwd=ROOT, check=True)

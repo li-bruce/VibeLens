@@ -1420,9 +1420,13 @@ export async function conceptExpansion(elk, graph, state, id, known) {
   }
   return result;
 }
-/** Place newly revealed descendants around their current parent position. */
-export function settleExpansion(graph, state, id) {
+/** Make room for new descendants without rearranging saved neighbors.
+ * Existing coordinates remain user-owned even when they are not pinned.
+ * Global collision removal belongs to the explicit Arrange command.
+ */
+export function settleExpansion(graph, state, id, known = new Set()) {
   const tree = hierarchyOf(graph);
+  if (!graph.byId.has(id)) return graph;
   const footprint = (key) => {
     const group = graph.regions.find((r) => r.id === key),
       b = graph.byId.get(key),
@@ -1442,6 +1446,7 @@ export function settleExpansion(graph, state, id) {
       ? nodeCenter(graph.byId.get(parent))
       : nodeCenter(graph.byId.get(current));
     const fixed = (key) =>
+      known.has(key) ||
       state.positions[key]?.pinned ||
       [...graph.all.keys()].some(
         (k) => state.positions[k]?.pinned && ancestorsToReveal(graph.all, k).includes(key),

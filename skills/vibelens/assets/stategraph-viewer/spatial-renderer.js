@@ -11,7 +11,7 @@ import {
   nodeElevation,
   planarSeeds,
 } from "./spatial-model.js";
-import { cleanLayers, layerHeights } from "./graph-layers.js";
+import { cleanLayers, layerHeights, displayChildren } from "./graph-layers.js";
 import { cleanRoute, polylineAt } from "./edge-routing.js";
 import { RoutingClient } from "./routing-client.js";
 import { spatialScene } from "./routing-scene.js";
@@ -489,9 +489,8 @@ export class SpatialRenderer {
       }
       label.title = displayName(box.node, preferences);
       label.dataset.nodeId = node.id;
-      label.onpointerdown = (event) => this.startDrag(event, { id: node.id });
+      label.onpointerdown = (event) => this.startLabelDrag(event, { id: node.id });
 
-      label.ondblclick = () => this.callbacks.onToggle?.(node.id);
       this.labels.append(label);
       this.labelItems.push({ el: label, id: node.id, offset: 18 });
     }
@@ -506,8 +505,7 @@ export class SpatialRenderer {
       this.updateBadges(label, graph.byId.get(volume.id));
       label.style.setProperty("--node-color", "#" + owner.color.toString(16).padStart(6, "0"));
       label.onpointerdown = (event) =>
-        this.startDrag(event, { region: volume.id, anchor: volume.center });
-      label.ondblclick = () => this.callbacks.onToggle?.(volume.id);
+        this.startLabelDrag(event, { region: volume.id, anchor: volume.center });
       this.labels.append(label);
       const leader = document.createElementNS("http://www.w3.org/2000/svg", "line");
       leader.setAttribute("stroke", "#" + owner.color.toString(16).padStart(6, "0"));
@@ -593,7 +591,11 @@ export class SpatialRenderer {
       badges.className = "node-badges";
       label.append(badges);
     }
-    const count = Array.isArray(box.kids) ? box.kids.length : null;
+    const graph = this.input.graph;
+    const count =
+      graph.expansionChildren || Array.isArray(box.kids)
+        ? displayChildren(graph, box.id).length
+        : null;
     const glyph = { ok: "✓", active: "▶", blocked: "!", historical: "·" }[box.state] || "";
     badges.textContent = [count ? `${box.open ? "" : "+ "}${count}` : "", glyph]
       .filter(Boolean)
@@ -946,6 +948,12 @@ export class SpatialRenderer {
     return null;
   }
 
+  /** A caption overlapping another glyph must not steal that glyph's clicks. */
+  startLabelDrag(event, owner) {
+    const hit = this.pick(event.clientX, event.clientY);
+    this.startDrag(event, hit?.id ? hit : owner);
+  }
+
   /** Labels and meshes share dragging, so text never starts a browser selection. */
   startDrag(event, hit) {
     if (event.button !== 0) return;
@@ -1060,6 +1068,10 @@ export class SpatialRenderer {
       const start = this.pointer;
       if (!start) return;
       this.pointer = null;
+      this.lastClick =
+        !start.moved && event.type === "pointerup"
+          ? { x: event.clientX, y: event.clientY, at: event.timeStamp, hit: start.hit }
+          : null;
       this.controls.enabled = this.visible;
       if (this.canvas.hasPointerCapture(event.pointerId))
         this.canvas.releasePointerCapture(event.pointerId);
@@ -1071,11 +1083,22 @@ export class SpatialRenderer {
     };
     this.canvas.addEventListener("pointerup", end);
     this.canvas.addEventListener("pointercancel", end);
-    this.canvas.addEventListener("dblclick", (event) => {
-      const hit = this.pick(event.clientX, event.clientY),
+    // Labels hand pointer capture to the canvas for shared dragging. Browser
+    // click events then land on their common host, not on the original label.
+    // Retain the actual hit so double-clicking a ring title closes that ring.
+    this.onDoubleClick = (event) => {
+      if (!this.visible) return;
+      const last = this.lastClick;
+      const captured =
+        last &&
+        event.timeStamp - last.at < 500 &&
+        Math.hypot(event.clientX - last.x, event.clientY - last.y) < 4;
+      const hit = captured ? last.hit : this.pick(event.clientX, event.clientY),
         id = hit?.id || hit?.region;
+      this.lastClick = null;
       if (id) this.callbacks.onToggle?.(id);
-    });
+    };
+    this.host.addEventListener("dblclick", this.onDoubleClick);
     this.canvas.addEventListener("contextmenu", (event) => {
       event.preventDefault();
       const hit = this.pick(event.clientX, event.clientY);
@@ -1468,6 +1491,7 @@ export class SpatialRenderer {
     this.worker.terminate();
     this.router.dispose();
     this.controls.dispose();
+    this.host.removeEventListener("dblclick", this.onDoubleClick);
     this.labels.removeEventListener("wheel", this.onLabelWheel);
     this.clearScene();
     if (this.particles) {

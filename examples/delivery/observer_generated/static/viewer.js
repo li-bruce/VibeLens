@@ -1,5 +1,4 @@
 import { respondingNodes, transferDuration } from "./playback-appearance.js";
-import { foldedOwnerCenters } from "./containment-semantics.js";
 import { SelectionMarquee, rectangleSelection, selectionRoots } from "./graph-selection.js";
 import { relationFamilies, relationFamily } from "./relation-appearance.js";
 import {
@@ -46,6 +45,7 @@ import { spatialLegend } from "./spatial-geometry.js";
 import { SpatialRenderer } from "./spatial-renderer.js";
 import { captureRoots } from "./capture-scope.js";
 import { declarationNodes } from "./graph-inventory.js";
+import { displayChildren } from "./graph-layers.js";
 import { t as boTranslate } from "./i18n.js";
 import {
   locale,
@@ -336,6 +336,7 @@ let spatial = null,
 /** Throttle movement updates, but always publish the final camera geometry. */
 function spatialGeometry() {
   clearTimeout(semanticTimer);
+  semanticTimer = null;
   if (disposed || !graph || !spatialActive()) return;
   const remaining = 90 - (performance.now() - semanticFrame);
   if (remaining > 0) {
@@ -956,41 +957,18 @@ function showDiscussion(ids) {
   project();
   frameDiscussion();
 }
-/** Preserve the location people see when a region turns back into a node.
- * Descendants keep their saved positions, so reopening restores the same group.
+/** Expansion changes visibility, never the saved anchor of an existing node.
+ * Region bounds follow visible descendants; their fitted center is not a new
+ * user position. Explicit group dragging moves the anchor and descendants.
  */
-function anchorFoldedOwners(ids) {
-  const spatialMode = spatialActive();
-  const regions = spatialMode
-    ? spatial?.visibleVolumes || []
-    : displayGraph.regions.map((region) => ({
-        ...region,
-        center: { x: region.cx, y: region.cy },
-      }));
-  const centers = foldedOwnerCenters(regions, presentation.glyphs, new Set(ids), (id) =>
-    layerOf(graph.all.get(id)),
-  );
-  for (const [id, center] of centers) {
-    const positions = spatialMode ? spatial.positions : preferences.positions;
-    if (positions[id]?.pinned) continue;
-    const box = graph.byId.get(id);
-    positions[id] = {
-      ...positions[id],
-      ...(spatialMode ? center : { x: center.x - box.w / 2, y: center.y - 31 }),
-    };
-  }
-}
 async function toggle(id) {
-  if (!graph?.children.has(id)) return;
+  if (!displayChildren(displayGraph, id).length) return;
   cancelLayout();
   selected = id;
   const opening = !expanded.has(id);
   const known = new Set(Object.keys(preferences.positions));
   if (opening) expanded.add(id);
-  else {
-    anchorFoldedOwners([id]);
-    expanded.delete(id);
-  }
+  else expanded.delete(id);
   project();
   if (opening) {
     const epoch = layoutEpoch,
@@ -998,7 +976,7 @@ async function toggle(id) {
       current = graph;
     layoutBusy = true;
     try {
-      const positions = await conceptExpansion(elk, graph, preferences, id, known);
+      const positions = await conceptExpansion(elk, displayGraph, preferences, id, known);
       if (epoch !== layoutEpoch || graph !== current || key !== topologyKey(graph)) return;
       if (positions && Object.keys(positions).length) {
         applyLayout(graph, preferences, positions);
@@ -1015,7 +993,7 @@ async function toggle(id) {
     } finally {
       if (epoch === layoutEpoch) layoutBusy = false;
     }
-    if (!spatialActive()) settleExpansion(graph, preferences, id);
+    if (!spatialActive()) settleExpansion(displayGraph, preferences, id, known);
     updatePresentation();
     // Expansion changes contents, never the developer's camera or point of attention.
   }
@@ -1095,7 +1073,7 @@ function updateActions() {
   $("core-toggle").setAttribute("aria-pressed", String(!!core));
   updateHierarchyPath();
   $("focus-selection").disabled = !b;
-  $("node-expand").disabled = !b?.kids.length;
+  $("node-expand").disabled = !displayChildren(displayGraph, b?.id).length;
   $("node-expand").textContent = b?.open ? boTranslate("Collapse") : boTranslate("Expand");
   $("pin").disabled = !b;
   $("pin").textContent = b?.pinned ? boTranslate("Unpin") : boTranslate("Pin node");
@@ -1116,7 +1094,7 @@ function updateActions() {
 /** Both rendering modes expose the same keyboard and screen-reader graph. */
 function updateSemantic() {
   semanticView.render({
-    graph,
+    graph: displayGraph,
     presentation,
     preferences,
     selected,
@@ -1500,6 +1478,13 @@ $("viewport").addEventListener("keydown", (e) => {
   if (e.key === "+" || e.key === "=") zoom(1.15);
   if (e.key === "-") zoom(1 / 1.15);
   if (e.key.toLowerCase() === "p") pin();
+  const focusedEdge = e.target.closest("[data-edge-id]");
+  if (e.key === "Enter" && focusedEdge) {
+    e.preventDefault();
+    const edge = renderedEdges.find((item) => hasRelationId(item, focusedEdge.dataset.edgeId));
+    if (edge) showEdge(edge);
+    return;
+  }
   if (e.key === "Enter" && selected) {
     e.preventDefault();
     toggle(selected);
@@ -1558,7 +1543,6 @@ $("undo-layout").onclick = () => {
 };
 $("collapse").onclick = () => {
   cancelLayout();
-  anchorFoldedOwners(expanded);
   expanded.clear();
   selected = null;
   detailMode = null;
@@ -1570,10 +1554,14 @@ $("focus-selection").onclick = focusSelection;
 $("expand").onclick = () => {
   if (!graph) return;
   cancelLayout();
-  const roots = graph.boxes.filter((b) => !b.node.parent).map((b) => b.id);
+  const known = new Set(Object.keys(preferences.positions));
+  const roots = displayGraph.boxes
+    .filter((b) => !b.node.parent && displayChildren(displayGraph, b.id).length)
+    .map((b) => b.id);
   for (const id of roots) expanded.add(id);
   project();
-  if (!spatialActive()) for (const id of roots) settleExpansion(graph, preferences, id);
+  if (!spatialActive())
+    for (const id of roots) settleExpansion(displayGraph, preferences, id, known);
   fit();
   save();
 };
@@ -1947,15 +1935,29 @@ async function poll() {
     const next = await r.json();
     if (disposed || version !== requestedVersion || caseChoice !== requestedCase) return;
     loadAnalysis(projectLayoutKey(next, storage));
+    // A view/focus change may happen during either fetch. Never apply an old
+    // source slice to the new selection, including its initial tree expansion.
+    const requestedAnalysis = analysisId,
+      requestedFocus = analysisSettings.codeFocus,
+      requestedLimit = codeLimit;
+    let requestedSourceEpoch = codeLayer.epoch;
+    const currentRequest = () =>
+      !disposed &&
+      version === requestedVersion &&
+      caseChoice === requestedCase &&
+      analysisId === requestedAnalysis &&
+      analysisSettings.codeFocus === requestedFocus &&
+      codeLimit === requestedLimit &&
+      codeLayer.epoch === requestedSourceEpoch;
     const codeEnabled =
       !recording && next.stage !== "design" && needsSource(analysisId, analysisSettings);
     let codeSlice = null;
     let sourceNeedsLayout = false;
     try {
       const previousCodeFocus = codeLayer.slice?.focus;
-      codeSlice = recording?.transient
-        ? codeLayer.slice
-        : await codeLayer.load({
+      const sourceRequest = recording?.transient
+        ? Promise.resolve(codeLayer.slice)
+        : codeLayer.load({
             enabled: codeEnabled,
             focus: ["project", "code", "api", "implementation"].includes(analysisId)
               ? null
@@ -1963,12 +1965,16 @@ async function poll() {
             limit: codeLimit,
             projection: ["project", "api"].includes(analysisId) ? analysisId : "all",
           });
+      requestedSourceEpoch = codeLayer.epoch;
+      codeSlice = await sourceRequest;
+      if (!currentRequest()) return;
       if (codeSlice?.focus && codeSlice.focus !== previousCodeFocus)
         for (const node of codeSlice.nodes)
           if (["directory", "file", "class"].includes(node.code_role)) expanded.add(node.id);
       $("code-status").textContent = codeSummary(codeSlice, boTranslate);
       $("code-status").title = codeSlice ? JSON.stringify(codeSlice.errors) : "";
     } catch (error) {
+      if (!currentRequest()) return;
       $("code-status").textContent = boTranslate("Code structure unavailable");
       $("code-status").title = error.message;
     }
@@ -2014,6 +2020,7 @@ async function poll() {
       const source = liveTrace.observe(next, graphVersion(next));
       if (!recordActive) liveTraceSource = source;
       await refreshRecordings(next);
+      if (!currentRequest()) return;
     } else {
       liveTrace.reset();
       liveTraceSource = null;
@@ -3237,11 +3244,25 @@ $("replay-export").onclick = () => {
 };
 // Read-only debugging data; UI actions use the same pointer/keyboard handlers as users.
 window.graphDebug = {
+  // Source views initially display the existing inventory while their complete
+  // slice is fetched. It is ready only after that slice reaches the projection.
+  get sourceBusy() {
+    return (
+      !recording &&
+      view?.stage !== "design" &&
+      analysisSettings &&
+      needsSource(analysisId, analysisSettings) &&
+      (!codeLayer.resolved || (view?.code_structure || null) !== codeLayer.slice)
+    );
+  },
   // Accessible coordinates are throttled during orbiting. Consumers must wait
   // for the current camera, not click coordinates from the previous frame.
   get geometryBusy() {
     return (
-      spatialActive() && spatial && semanticCamera !== JSON.stringify(spatial.snapshot().camera)
+      dirty ||
+      (spatialActive() &&
+        spatial &&
+        (semanticTimer !== null || semanticCamera !== JSON.stringify(spatial.snapshot().camera)))
     );
   },
   get selectedNodes() {

@@ -1,4 +1,4 @@
-import { layerColor } from "./graph-layers.js";
+import { layerColor, displayChildren } from "./graph-layers.js";
 import { polylineAt, cleanRoute } from "./edge-routing.js";
 import { t as boTranslate } from "./i18n.js";
 // Graph drawing owns Pixi objects and hit geometry, but no fetching, storage or UI commands.
@@ -193,7 +193,7 @@ export function createGraphRenderer({
           (annotationFor(preferences, owner.node.referenceOf || r.id).core ? "★ " : "") +
           short(displayName(owner.node, preferences), 22);
       const label = text(
-        `${name} · ${owner.kids.length} ${{ active: "▶", ok: "✓", blocked: "!", historical: "·" }[owner.state] || ""}`,
+        `${name} · ${displayChildren(graph, owner.id).length} ${{ active: "▶", ok: "✓", blocked: "!", historical: "·" }[owner.state] || ""}`,
         0,
         0,
         font,
@@ -487,9 +487,10 @@ export function createGraphRenderer({
     const annotation = annotationFor(preferences, b.node.referenceOf || b.id);
     if (annotation.label || annotation.note) text("✎", p.x - 35, p.y - 31, 14, 0x5075b5, "center");
     if (annotation.core) text("★", p.x - 32, p.y + 20, 14, 0xb18c3c, "center");
-    if (b.kids.length && !b.open) {
+    const children = displayChildren(graph, b.id);
+    if (children.length && !b.open) {
       text(
-        b.open ? String(b.kids.length) : "+ " + b.kids.length,
+        "+ " + children.length,
         p.x + 52 * size,
         p.y - 5,
         Math.max(14, 9 / scale),

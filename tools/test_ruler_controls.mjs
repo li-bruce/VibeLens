@@ -128,14 +128,31 @@ console.log(
 
 const badge = { dataset: {} },
   label = { querySelector: () => badge, dataset: {}, classList: { toggle() {} } };
-SpatialRenderer.prototype.updateBadges.call({}, label, { id: "flat", state: "declared" });
+// Badge counts now use the shared filtered graph rather than the source box's
+// unfiltered children. Supply that renderer input while retaining the unknown
+// metadata contract for static previews.
+const badgeGraph = { byId: new Map() },
+  badgeRenderer = { input: { graph: badgeGraph } };
+const updateBadge = (box) => {
+  badgeGraph.byId.set(box.id, box);
+  SpatialRenderer.prototype.updateBadges.call(badgeRenderer, label, box);
+};
+updateBadge({ id: "flat", state: "declared" });
 assert.equal(badge.dataset.childCount, "", "Absent child metadata remains unknown");
 assert.equal(badge.hidden, true);
-SpatialRenderer.prototype.updateBadges.call({}, label, {
+const groupBox = {
+  id: "group",
   kids: ["a", "b"],
   state: "active",
   open: true,
-});
+};
+updateBadge(groupBox);
 assert.equal(badge.dataset.childCount, "2");
 assert.ok(badge.textContent.includes("▶") && badge.textContent.includes("2"));
 assert.ok(!badge.textContent.includes("−"));
+badgeGraph.expansionChildren = new Map([["group", ["a"]]]);
+updateBadge(groupBox);
+assert.equal(badge.dataset.childCount, "1", "Hidden-layer children are not counted");
+badgeGraph.expansionChildren.clear();
+updateBadge(groupBox);
+assert.equal(badge.dataset.childCount, "0", "An empty view cannot fall back to source children");

@@ -6,6 +6,12 @@
 
 三维视窗与二维视窗使用同一份图和运行证据。`graph-inventory.js` 汇总各层内容，`graph-links.js` 连接明确的源码与运行锚点，`graph-layers.js` 管理层的分类；`spatial-model.js` 计算包含关系的跨层投影，`spatial-layout.js` 在后台线程布局，`spatial-renderer.js` 管理真实三维摄像机和绘制。`semantic-view.js` 统一键盘和辅助访问入口。模块边界与交互说明见[三维图说明](../skills/vibelens/references/spatial-graph.md)。
 
+[bound-relations.js](../skills/vibelens/assets/stategraph-viewer/bound-relations.js)
+只将有明确绑定依据、含义完全相同的设计与实现关系合并显示，保留两者的原始 ID。
+`graph-layers.js` 按原始端点筛选连线，并向两种渲染器提供当前可见的子节点数量。
+展开和收起保留已有坐标；拟合包围圈得到的中心不会覆盖节点的保存位置。
+[逐层浏览器测试](../tools/test_expansion_relations_browser.mjs) 检查二维、三维中的展开、拖动、关系详情和视角保持。
+
 ## 先找到对应目录
 
 项目与框架的接入边界位于

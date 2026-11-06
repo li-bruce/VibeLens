@@ -138,11 +138,13 @@ export class CodeLayer {
     this.fetcher = fetcher;
     this.epoch = 0;
     this.slice = null;
+    this.resolved = false;
   }
   clear() {
     this.epoch++;
     this.controller?.abort();
     this.slice = null;
+    this.resolved = false;
   }
   async load({ enabled, focus = null, limit = 400, depth = 1, projection = "all" }) {
     if (!enabled) {
@@ -164,10 +166,12 @@ export class CodeLayer {
       if (payload.schema !== "bo-code-graph/v1") throw Error("Unsupported code structure protocol");
       if (epoch !== this.epoch) return null;
       this.slice = payload;
+      this.resolved = true;
       return payload;
     } catch (error) {
       if (epoch !== this.epoch) return null;
       this.slice = null;
+      this.resolved = true;
       throw error;
     }
   }

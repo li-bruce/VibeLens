@@ -231,6 +231,15 @@ The complete model, the selected view, and the captured evidence are separate va
 
 ### True 3D and common layer assembly
 
+[bound-relations.js](../skills/vibelens/assets/stategraph-viewer/bound-relations.js)
+reconciles proven concept/native definition pairs for display while retaining both
+original IDs. [graph-layers.js](../skills/vibelens/assets/stategraph-viewer/graph-layers.js)
+checks original endpoints when filtering folded relations and supplies the visible-child counts
+used by both renderers. Expansion preserves existing coordinates; fitted circle
+centers are display geometry and never replace saved owner positions. The
+[all-layer regression](../tools/test_expansion_relations_browser.mjs) exercises
+expansion, dragging, relation details and camera continuity in 2D and 3D.
+
 [graph-inventory.js](../skills/vibelens/assets/stategraph-viewer/graph-inventory.js) assembles all authored nodes, state transitions, captured fields and shared references before either renderer filters them. [graph-links.js](../skills/vibelens/assets/stategraph-viewer/graph-links.js) merges the optional source index and follows explicit handler/source bindings to recording owners. [graph-layers.js](../skills/vibelens/assets/stategraph-viewer/graph-layers.js) owns semantic layer classification. Display names never establish relationships.
 
 [spatial-model.js](../skills/vibelens/assets/stategraph-viewer/spatial-model.js) describes 3D membership and containment projections. [spatial-layout.js](../skills/vibelens/assets/stategraph-viewer/spatial-layout.js) runs its constrained 3D force solver in a worker. [spatial-renderer.js](../skills/vibelens/assets/stategraph-viewer/spatial-renderer.js) owns the perspective camera, GPU resources and pointer interactions. [semantic-view.js](../skills/vibelens/assets/stategraph-viewer/semantic-view.js) maintains shared accessible controls with indexed, incremental attribute updates. [layer-ruler.js](../skills/vibelens/assets/stategraph-viewer/layer-ruler.js) draws the Canvas2D sorting/visibility navigator; [edge-routing.js](../skills/vibelens/assets/stategraph-viewer/edge-routing.js) shares path and boundary math. [replay-selection.js](../skills/vibelens/assets/stategraph-viewer/replay-selection.js) owns non-destructive playback inclusion and range rules. Read [spatial graph](../skills/vibelens/references/spatial-graph.md) for interaction and verification details.

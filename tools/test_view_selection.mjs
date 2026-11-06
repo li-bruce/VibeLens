@@ -1,9 +1,6 @@
 /** Shared projection contracts; no renderer, browser storage or application mocks. */
 import assert from "node:assert/strict";
-import {
-  selfRelationOwners,
-  foldedOwnerCenters,
-} from "../skills/vibelens/assets/stategraph-viewer/containment-semantics.js";
+import { selfRelationOwners } from "../skills/vibelens/assets/stategraph-viewer/containment-semantics.js";
 import {
   selectionRoots,
   rectangleSelection,
@@ -62,21 +59,8 @@ for (const layer of ["business", "state", "rules", "entry", "structure", "symbol
     assert.deepEqual([...selfRelationOwners(graph, (edge) => edge.id !== "call")], []);
   }
   assert.deepEqual(selectionRoots(["owner", "child"], all), ["owner"]);
-  const centers = foldedOwnerCenters(
-    [
-      { id: "owner", layer, center: { x: 200, y: 300 } },
-      { id: "owner", layer: "projection", center: { x: 700, y: 800 } },
-      { id: "child", layer, center: { x: 250, y: 300 } },
-    ],
-    new Set(["child"]),
-    new Set(["owner", "child"]),
-    () => layer,
-  );
-  assert.deepEqual(
-    [...centers],
-    [["owner", { x: 200, y: 300 }]],
-    "Folding retains the visible group location; self glyphs and other planes keep their anchors",
-  );
+  // Saved-anchor continuity is exercised through actual expansion, dragging
+  // and collapse in test_expansion_relations.mjs and its all-plane browser suite.
   assert.deepEqual(
     rectangleSelection({ x: 0, y: 0, w: 20, h: 20 }, [
       { id: "owner", x: 10, y: 10 },

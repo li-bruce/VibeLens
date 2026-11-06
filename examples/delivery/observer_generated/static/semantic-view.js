@@ -1,4 +1,4 @@
-import { layerOf } from "./graph-layers.js";
+import { layerOf, displayChildren } from "./graph-layers.js";
 import { layerColor } from "./graph-layers.js";
 import {
   displayName,
@@ -47,7 +47,7 @@ export class SemanticView {
         core: !!annotationFor(preferences, box.node.referenceOf || box.id).core,
         referenceOf: box.node.referenceOf || "",
         runState: box.state,
-        childCount: box.kids.length,
+        childCount: displayChildren(graph, box.id).length,
         depth: ancestorsToReveal(graph.all, box.id).length,
       });
       el.textContent = name;

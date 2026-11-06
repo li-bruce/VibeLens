@@ -389,6 +389,8 @@ export default {
   "Observed in this run": "本次运行记录",
   "Observed in a previous run": "历史运行记录",
   "Declared relation": "声明关系",
+  "{0} definitions · one relation": "{0} 处定义 · 同一关系",
+  "Design": "设计",
   "Original name: ": "原名：",
   "Node: ": "节点：",
   "All levels": "全部层级",

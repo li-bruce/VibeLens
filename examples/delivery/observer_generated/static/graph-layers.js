@@ -158,7 +158,57 @@ export function layerSlice(graph, settings, exclusions = {}) {
     (!graph.all || ![...graph.all.values()].some((node) => !accepts(node)))
   )
     return graph;
+  // Static previews can supply boxes without the runtime inventory indexes.
+  // Build their declaration lookup once; never infer a missing folded endpoint.
+  const declarations = graph.all || new Map(graph.boxes.map((box) => [box.id, box.node]));
   const visibleIds = new Set(boxes.map((box) => box.id));
+  // A folded endpoint keeps its original layer. A call to a hidden function
+  // must not become a direct call to the enclosing business action.
+  const acceptsRelation = (edge) =>
+    [edge.from, edge.to].every((id) => {
+      const node = declarations.get(id);
+      return node && accepts(node);
+    });
+  const directEdges = graph.edges
+    .filter((edge) => visibleIds.has(edge.from) && visibleIds.has(edge.to))
+    .flatMap((edge) => {
+      const members = (edge.members || [edge]).filter(acceptsRelation);
+      return members.length
+        ? [
+            {
+              ...edge,
+              members,
+              labels: new Set(members.map((member) => member.label).filter(Boolean)),
+              observed: members.some((member) => member.observed),
+              current: members.some((member) => member.current),
+            },
+          ]
+        : [];
+    });
+  // Counts and expansion controls describe children available in this view,
+  // including a visible descendant beneath an intermediate hidden plane.
+  const eligible = new Set(
+    [...declarations]
+      .filter(
+        ([id, node]) =>
+          accepts(node) &&
+          (!graph.eligibleIds || graph.eligibleIds.has(id)) &&
+          (!exclusions.nodeAllowed || exclusions.nodeAllowed(node)),
+      )
+      .map(([id]) => id),
+  );
+  const expansionChildren = new Map();
+  for (const id of eligible) {
+    const seen = new Set([id]);
+    let parent = declarations.get(id)?.parent;
+    while (parent && !seen.has(parent) && !eligible.has(parent)) {
+      seen.add(parent);
+      parent = declarations.get(parent)?.parent;
+    }
+    if (!parent || seen.has(parent)) continue;
+    if (!expansionChildren.has(parent)) expansionChildren.set(parent, []);
+    expansionChildren.get(parent).push(id);
+  }
   const projection = !config.projections
     ? {
         edges: [],
@@ -179,12 +229,18 @@ export function layerSlice(graph, settings, exclusions = {}) {
     boxes,
     byId: new Map(boxes.map((box) => [box.id, box])),
     regions: (graph.regions || []).filter((region) => visibleIds.has(region.id)),
-    edges: [
-      ...graph.edges.filter((edge) => visibleIds.has(edge.from) && visibleIds.has(edge.to)),
-      ...projection.edges,
-    ],
+    edges: [...directEdges, ...projection.edges],
+    acceptsRelation,
+    expansionChildren,
     projection,
   };
   if (exclusions.cacheKey !== undefined) sliceCache.set(graph, { key, value });
   return value;
+}
+
+/** Shared 2D/3D expansion affordance; hidden-layer children stay in the inventory. */
+export function displayChildren(graph, id) {
+  return graph?.expansionChildren
+    ? graph.expansionChildren.get(id) || []
+    : (graph?.byId?.get(id) || graph?.boxes?.find((box) => box.id === id))?.kids || [];
 }

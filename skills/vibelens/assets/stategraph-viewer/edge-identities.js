@@ -52,6 +52,7 @@ export function originalRelations(edge) {
   return (edge.members || [edge]).flatMap((member) => [
     member,
     ...(member.equivalent_relations || []),
+    ...(member.definition_aliases || []),
   ]);
 }
 
@@ -60,26 +61,14 @@ export function relationIds(edge) {
 }
 
 export function hasRelationId(edge, id) {
-  return (
-    edge.id === id ||
-    (edge.members || [edge]).some(
-      (member) =>
-        member.id === id || member.equivalent_relations?.some((original) => original.id === id),
-    )
-  );
+  return edge.id === id || originalRelations(edge).some((member) => member.id === id);
 }
 
 /** Hiding either name hides the same assertion, without rewriting preferences. */
 export function relationExcluded(edge, hidden) {
   if (!hidden?.size && !hidden?.length) return false;
   const has = (id) => (hidden instanceof Set ? hidden.has(id) : hidden.includes(id));
-  return (
-    has(edge.id) ||
-    (edge.members || [edge]).some(
-      (member) =>
-        has(member.id) || member.equivalent_relations?.some((original) => has(original.id)),
-    )
-  );
+  return has(edge.id) || originalRelations(edge).some((member) => has(member.id));
 }
 
 export function relationTypeAllowed(edge, allowed, classify) {

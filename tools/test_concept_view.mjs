@@ -568,10 +568,13 @@ try {
     true,
   );
   const rows = elements.get("edge-members").children;
-  assert.equal(rows.length, 2);
-  assert.equal(rows[1].title, JSON.stringify(explicitEffect.source_refs));
-  rows[1].children.at(-1).onclick();
-  assert.deepEqual(hidden, [explicitEffect.id]);
+  assert.equal(rows.length, 1, "Equivalent definitions occupy one relation row");
+  const definitions = rows[0].children[0].children.slice(1);
+  assert.equal(definitions.length, 2, "Both original declarations remain inspectable");
+  assert.equal(definitions[1].title, JSON.stringify(explicitEffect.source_refs));
+  assert.equal(definitions[1].children[1].textContent, explicitEffect.id);
+  rows[0].children.at(-1).onclick();
+  assert.deepEqual(hidden, [effect.id]);
   assert.ok(relationIds(shown.edges[0]).includes(explicitEffect.id));
 } finally {
   globalThis.document = previousDocument;
