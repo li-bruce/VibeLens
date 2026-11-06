@@ -1,4 +1,5 @@
 import { iconFor } from "./node-icons.js";
+import { strokePasses } from "./relation-strokes.js";
 import { t as boTranslate } from "./i18n.js";
 // One geometry source for WebGL nodes and the SVG legend.
 export const meanings = {
@@ -96,12 +97,27 @@ export function legendRelation(style) {
     color = "#" + style.color.toString(16).padStart(6, "0");
   svg.setAttribute("viewBox", "0 0 44 20");
   svg.setAttribute("aria-hidden", "true");
-  const line = document.createElementNS(ns, "path");
-  line.setAttribute("d", "M2 10 H34");
-  line.setAttribute("stroke", color);
-  line.setAttribute("stroke-width", "2");
-  line.setAttribute("stroke-dasharray", style.dash.join(" "));
-  svg.append(line);
+  svg.dataset.stroke = style.stroke || "single";
+  svg.dataset.arrow = style.arrow;
+  svg.dataset.width = String(style.width || 1);
+  svg.dataset.dash = style.dash.join(" ");
+  const passes = strokePasses(
+    [
+      { x: 2, y: 10 },
+      { x: 34, y: 10 },
+    ],
+    style,
+    1.4,
+  );
+  for (const pass of passes) {
+    const line = document.createElementNS(ns, "path");
+    line.setAttribute("d", `M${pass.points.map((point) => `${point.x} ${point.y}`).join(" L")}`);
+    line.setAttribute("stroke", "#" + pass.color.toString(16).padStart(6, "0"));
+    line.setAttribute("stroke-width", String(pass.width));
+    line.setAttribute("stroke-dasharray", style.dash.join(" "));
+    line.setAttribute("fill", "none");
+    svg.append(line);
+  }
   if (style.arrow !== "none") {
     const arrow = document.createElementNS(ns, "path");
     arrow.setAttribute(

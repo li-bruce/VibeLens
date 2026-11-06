@@ -1,4 +1,4 @@
-import { relationFamilies, relationFamily } from "./relation-appearance.js";
+import { relationFamilies, relationFamily, endpointAppearance } from "./relation-appearance.js";
 import { t as boTranslate } from "./i18n.js";
 // Layout preferences are local view data. They never change model or runtime facts.
 import { graphBounds, nodeTypes, viewTypes, relationType } from "./graph-core.js";
@@ -576,7 +576,7 @@ export const relationStyles = Object.fromEntries(
   ]),
 );
 
-/** Stroke describes meaning; color follows the endpoints' displayed layers. */
+/** Type pairing selects dashes; meaning selects profile/head; layer selects hue. */
 export function relationStyle(edge, nodes) {
   const type = relationType(edge),
     pattern = relationStyles[type] || relationStyles.other,
@@ -584,6 +584,7 @@ export function relationStyle(edge, nodes) {
   return {
     ...pattern,
     ...relationFamilies[family],
+    ...endpointAppearance(edge, nodes),
     label: (edge.members || [edge]).every((member) => member.origin === "capture-field")
       ? edge.members?.[0]?.label || edge.label || pattern.label
       : pattern.label,

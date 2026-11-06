@@ -16,7 +16,11 @@ const checks = [],
 let browser, page;
 const settled = () =>
   page.waitForFunction(
-    () => window.graphDebug?.graph && !graphDebug.layoutBusy && !graphDebug.geometryBusy,
+    () =>
+      window.graphDebug?.graph &&
+      !graphDebug.sourceBusy &&
+      !graphDebug.layoutBusy &&
+      !graphDebug.geometryBusy,
     null,
     {
       timeout: 30000,
@@ -50,21 +54,24 @@ async function toggleLayer(id) {
 async function point(id) {
   // Layout workers finish before the throttled accessible geometry update.
   // Wait for actual screen coordinates instead of dispatching a NaN pointer.
-  await page.waitForFunction((id) => {
+  const ready = await page.waitForFunction((id) => {
     const node = [...document.querySelectorAll("#semantic [data-node-id]")].find(
       (element) => element.dataset.nodeId === id,
     );
-    return (
+    if (
       node &&
+      !graphDebug.geometryBusy &&
       [node.dataset.screenX, node.dataset.screenY].every(
         (value) => value !== undefined && Number.isFinite(Number(value)),
       )
-    );
+    )
+      return { x: +node.dataset.screenX, y: +node.dataset.screenY };
+    return false;
   }, id);
-  return page.locator("#semantic [data-node-id]").evaluateAll((elements, id) => {
-    const node = elements.find((element) => element.dataset.nodeId === id);
-    return node && { x: +node.dataset.screenX, y: +node.dataset.screenY };
-  }, id);
+  // Read the same ready frame; a later poll can remove stale coordinates.
+  const point = await ready.jsonValue();
+  await ready.dispose();
+  return point;
 }
 async function drag(a, b) {
   await page.mouse.move(a.x, a.y);
@@ -498,10 +505,20 @@ try {
   const legend = await page.locator("[data-legend-edge]").evaluateAll((rows) =>
     rows.map((row) => ({
       family: row.dataset.legendEdge,
-      dash: row.querySelector("path").getAttribute("stroke-dasharray"),
+      profile: row.querySelector("svg").dataset.stroke,
+      arrow: row.querySelector("svg").dataset.arrow,
+      width: row.querySelector("svg").dataset.width,
+      dash: row.querySelector("svg").dataset.dash,
     })),
   );
-  assert.ok(new Set(legend.map((row) => row.dash)).size >= 5);
+  assert.equal(new Set(legend.map((row) => `${row.profile}:${row.arrow}:${row.width}`)).size, 7);
+  assert.ok(
+    legend.every((row) => row.dash === ""),
+    "Family examples use same-type solid strokes",
+  );
+  assert.ok(
+    await page.locator("[data-legend-types] path").first().getAttribute("stroke-dasharray"),
+  );
   assert.deepEqual(errors, []);
   await writeFile(
     path.join(out, "result.json"),

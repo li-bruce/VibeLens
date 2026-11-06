@@ -1,14 +1,62 @@
-/** Shared visual grammar. Hue encodes layer; stroke and head encode relationship. */
+/** Shared visual grammar: hue identifies layers, dashes separate node types,
+ * and the stroke profile/head describe the relationship. None imply execution.
+ */
 import { t } from "./i18n.js";
+import { visualType } from "./graph-classification.js";
 export const relationFamilies = {
-  execution: { label: t("Call / value transfer"), dash: [], arrow: "open" },
-  flow: { label: t("Flow / transition"), dash: [10, 5], arrow: "filled" },
-  condition: { label: t("Condition / constraint"), dash: [2, 5], arrow: "diamond" },
-  reference: { label: t("Mapping / reference"), dash: [9, 3, 2, 3], arrow: "open" },
-  containment: { label: t("Containment"), dash: [1, 5], arrow: "none" },
-  synchronization: { label: t("Join / resource"), dash: [6, 3], arrow: "bar" },
-  indirect: { label: t("Indirect path"), dash: [2, 4, 8, 4], arrow: "open" },
+  execution: {
+    label: t("Call / value transfer"),
+    stroke: "single",
+    width: 1,
+    dash: [],
+    arrow: "open",
+  },
+  flow: { label: t("Flow / transition"), stroke: "single", width: 1.3, dash: [], arrow: "filled" },
+  condition: {
+    label: t("Condition / constraint"),
+    stroke: "bordered",
+    width: 1,
+    dash: [],
+    arrow: "diamond",
+  },
+  reference: {
+    label: t("Mapping / reference"),
+    stroke: "double",
+    width: 1,
+    dash: [],
+    arrow: "open",
+  },
+  containment: { label: t("Containment"), stroke: "single", width: 0.8, dash: [], arrow: "none" },
+  synchronization: {
+    label: t("Join / resource"),
+    stroke: "double",
+    width: 1,
+    dash: [],
+    arrow: "bar",
+  },
+  indirect: { label: t("Indirect path"), stroke: "bordered", width: 1, dash: [], arrow: "open" },
 };
+
+export const differentTypeDash = [9, 5];
+
+/** Compare the displayed icon types, not storage kinds or layer membership.
+ * Folding changes the visible endpoints only; original relation IDs survive.
+ * Without an index, legends show a same-type example. Missing indexed nodes
+ * remain explicitly unknown, rather than claiming a same-type relationship.
+ */
+export function endpointAppearance(edge, nodes) {
+  const source = nodes?.get(edge.from),
+    target = nodes?.get(edge.to);
+  const sourceType = source ? visualType(source.node || source) : null;
+  const targetType = target ? visualType(target.node || target) : null;
+  const sameType = sourceType && targetType ? sourceType === targetType : null;
+  return {
+    sourceType,
+    targetType,
+    sameType,
+    dash: edge.guide || (nodes && sameType !== true) ? differentTypeDash : [],
+  };
+}
 
 export function relationFamily(type, edge = {}) {
   if (type === "indirect") return "indirect";

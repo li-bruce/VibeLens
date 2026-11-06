@@ -102,7 +102,8 @@ async function drag(id) {
   await settled();
 }
 async function snapshot() {
-  return page.evaluate(() => {
+  const result = await page.evaluate(async () => {
+    const { visualType } = await import("/graph-classification.js");
     const g = graphDebug,
       spatial = g.layers.enabled,
       visible = new Set([...g.presentation.glyphs, ...g.presentation.regions]);
@@ -124,9 +125,22 @@ async function snapshot() {
           members: e.members.map((m) => m.id).sort(),
         }))
         .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))),
+      strokes: [...document.querySelectorAll("#semantic-edges [data-edge-id]")].map((el) => ({
+        id: el.dataset.edgeId,
+        stroke: el.dataset.stroke,
+        profile: el.dataset.strokeProfile,
+        sameType:
+          visualType(g.graph.byId.get(el.dataset.from).node) ===
+          visualType(g.graph.byId.get(el.dataset.to).node),
+      })),
       visible: [...new Set([...g.presentation.glyphs, ...g.presentation.regions])].sort(),
     };
   });
+  for (const row of result.strokes) {
+    assert.equal(row.stroke, row.sameType ? "solid" : "dashed", row.id);
+    assert.ok(["single", "double", "bordered"].includes(row.profile), row.id);
+  }
+  return result;
 }
 function samePositions(before, after, message) {
   for (const [id, p] of Object.entries(before.positions)) {

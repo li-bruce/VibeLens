@@ -197,7 +197,9 @@ stream lock is independent of JSON serialization; public views are detached.
 | Viewer module | Responsibility |
 |---|---|
 | [layer-style.js](../skills/vibelens/assets/stategraph-viewer/layer-style.js) | One layer order/palette shared by 2D, 3D, regions and controls; shapes identify types. |
-| [edge-color.js](../skills/vibelens/assets/stategraph-viewer/edge-color.js) | Same-layer lines and moving arrows use the layer palette; cross-layer links use neutral gray. Shared by graph and Timeline; relationship patterns remain in `layout.js`. |
+| [edge-color.js](../skills/vibelens/assets/stategraph-viewer/edge-color.js) | Same-layer lines and moving arrows use the layer palette; cross-layer links use neutral gray. Shared by graph and Timeline. |
+| [relation-appearance.js](../skills/vibelens/assets/stategraph-viewer/relation-appearance.js) | Compare visible node types: same type uses solid strokes, different types use dashes. Relationship families select single, double or bordered lines and arrowheads. |
+| [relation-strokes.js](../skills/vibelens/assets/stategraph-viewer/relation-strokes.js) | Shared stroke dimensions; parallel-rail geometry for 2D and the legend. [spatial-line-material.js](../skills/vibelens/assets/stategraph-viewer/spatial-line-material.js) renders the same profiles in one screen-space GPU line batch. |
 | [trace-tracks.js](../skills/vibelens/assets/stategraph-viewer/trace-tracks.js) | Pack simultaneous lifetimes into nonoverlapping tracks within one layer row. |
 | [step-hierarchy.js](../skills/vibelens/assets/stategraph-viewer/step-hierarchy.js) | Derive recorded-step indentation from actual call references and apply layer colors. |
 | [viewer.js](../skills/vibelens/assets/stategraph-viewer/viewer.js) | Connect controls, graph data, live updates, and recording selection. Start here for UI wiring. |

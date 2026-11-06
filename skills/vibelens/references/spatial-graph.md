@@ -68,11 +68,24 @@ For each exercised drive-mode transition, correlate the native event, actual bef
 
 The **Data operations** layer contains Q queries, writes, transactions and transformations, together with their selected event fields. A data operation can wrap multiple calls or driver events; it is not a function signature. **Functions and values** contains authored function anchors; **Source code** contains indexed declarations, formal parameters and static calls. Explicit source mapping edges connect these levels.
 
-For example, `inputs.parameters.count` is a selected observation summary. It does not assert that the business function declares a parameter named `count`. `outputs.committed` belongs only to a transaction outcome, never to an individual write that may later roll back. Recorded input/output edges describe payload membership with dashed strokes; actual arguments/calls retain their solid relation types.
+For example, `inputs.parameters.count` is a selected observation summary. It does not assert that the business function declares a parameter named `count`. `outputs.committed` belongs only to a transaction outcome, never to an individual write that may later roll back. Recorded input/output edges use the mapping/reference family; actual arguments/calls use the execution family. Endpoint types independently determine whether either stroke is dashed.
 
 When an event field has no explicit source-symbol binding, Source loads the operation owner's complete file as context, scrolls to the owner, and highlights no token. An exact source parameter binding still highlights only its declared range. Do not invent a lexical source location for an adapter-produced value.
 
 ## Rendering and verification
+
+Graph strokes compare the visible icon types: same-type endpoints use solid
+lines, different types use dashes. This is independent of layer hue. A state
+value and a state node can share a plane yet have different types; two value
+nodes can occupy different planes yet share one type. Containment guides remain
+dashed. Single, double and bordered profiles plus arrowheads retain relationship
+meaning; line solidity does not assert that a relationship executed. Original
+IDs, evidence and hidden-path witnesses stay intact. The 2D renderer, 3D renderer,
+legend and accessible controls share this contract.
+
+Double lines have a transparent center; bordered lines use a lighter center in
+the same hue. The 3D renderer supplies per-instance profile attributes to one
+wide-line batch, preserving pixel widths without adding a draw call per edge.
 
 Three.js 0.186.1 and d3-force-3d 3.0.6 are bundled locally. Dependencies and build tooling are pinned in tools/spatial/package-lock.json; SPATIAL-LICENSES.txt retains all runtime notices. No source, graph or layout data is sent to a remote renderer.
 

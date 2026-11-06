@@ -80,25 +80,20 @@ assert.match(
     .join(" "),
   /Actual structure/,
 );
-for (const type of [
-  "call",
-  "data",
-  "reads",
-  "writes",
-  "transforms",
-  "code-calls",
-])
+for (const type of ["call", "data", "reads", "writes", "transforms", "code-calls"])
   assert.equal(relationStyle({ type }).dash.length, 0, type);
 // A signature declares its parameter; this edge is not a runtime value transfer.
 // Keep actual call/data assertions above and verify the new declaration grammar.
 assert.equal(relationStyle({ type: "code-parameter" }).family, "containment");
-assert.deepEqual(relationStyle({ type: "code-parameter" }).dash, [1, 5]);
+assert.equal(relationStyle({ type: "code-parameter" }).stroke, "single");
 assert.equal(relationStyle({ type: "code-parameter" }).arrow, "none");
 assert.equal(relationStyle({ type: "code-imports" }).family, "reference");
 for (const type of ["guard", "flow", "transition", "maps", "references", "contains"])
-  assert.ok(relationStyle({ type }).dash.length, type);
+  assert.deepEqual(relationStyle({ type }).dash, [], type);
+assert.equal(relationStyle({ type: "guard" }).stroke, "bordered");
+assert.equal(relationStyle({ type: "flow" }).arrow, "filled");
 assert.equal(relationStyle(fields.edges[0]).label, "Recorded input");
-assert.ok(relationStyle(fields.edges[0]).dash.length);
+assert.equal(relationStyle(fields.edges[0]).stroke, "double");
 
 const nodes = [
   { id: "publish", kind: "action", layer: "business", label: "Publish" },

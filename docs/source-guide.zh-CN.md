@@ -112,7 +112,9 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 
 | 文件 | 阅读重点 |
 |---|---|
-| [edge-color.js](../skills/vibelens/assets/stategraph-viewer/edge-color.js) | 图与时间轴共用连线配色：同层使用层颜色，跨层使用灰色，流动箭头沿用所在连线的颜色。关系线型由 `layout.js` 管理。 |
+| [edge-color.js](../skills/vibelens/assets/stategraph-viewer/edge-color.js) | 图与时间轴共用连线配色：同层使用层颜色，跨层使用灰色，流动箭头沿用所在连线的颜色。 |
+| [relation-appearance.js](../skills/vibelens/assets/stategraph-viewer/relation-appearance.js) | 按可见节点类型区分：同类型使用实线，不同类型使用虚线。关系含义决定单线、双线、描边和箭头形状。 |
+| [relation-strokes.js](../skills/vibelens/assets/stategraph-viewer/relation-strokes.js) | 共用线宽比例和二维双线几何，同时生成图例。[spatial-line-material.js](../skills/vibelens/assets/stategraph-viewer/spatial-line-material.js) 在一个 GPU 连线批次中绘制对应的三维线型，缩放后仍保持可辨认的宽度。 |
 | [viewer.js](../skills/vibelens/assets/stategraph-viewer/viewer.js) | 页面按钮、数据刷新和记录选择的连接入口。 |
 | [graph-core.js](../skills/vibelens/assets/stategraph-viewer/graph-core.js) | 节点值、源码关联、事件筛选与图内容。 |
 | [trace-lifecycles.js](../skills/vibelens/assets/stategraph-viewer/trace-lifecycles.js)、[graph-activation.js](../skills/vibelens/assets/stategraph-viewer/graph-activation.js) | 解析真实调用周期，呈现进入、等待、返回、异常退出及并发数量。 |

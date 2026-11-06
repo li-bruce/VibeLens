@@ -1,5 +1,7 @@
 import { transferDuration } from "./playback-appearance.js";
 import { headSegments } from "./relation-appearance.js";
+import { strokeProfile } from "./relation-strokes.js";
+import { relationLineMaterial } from "./spatial-line-material.js";
 import { crossLayerColor } from "./edge-color.js";
 import { strokeSegments } from "./route-shapes.js";
 import { edgeCurve } from "./spatial-paths.js";
@@ -772,6 +774,7 @@ export class SpatialRenderer {
     const selected = this.input.selected;
     const positions = [],
       colors = [],
+      profiles = [],
       arrows = [];
     this.edgeSegments = [];
     this.lines = null;
@@ -805,6 +808,7 @@ export class SpatialRenderer {
       const samples =
         curve.boPoints || curve.getPoints(this.model.edges.length > 5000 && !focused ? 10 : 24);
       const dash = edge.guide ? [10, 7] : style.dash;
+      const profile = strokeProfile(edge.guide ? {} : style);
       for (const [a, b] of strokeSegments(
         samples,
         dash,
@@ -812,6 +816,7 @@ export class SpatialRenderer {
       )) {
         positions.push(a.x, a.y, a.z, b.x, b.y, b.z);
         colors.push(color.r, color.g, color.b, color.r, color.g, color.b);
+        profiles.push(profile.width * (style.width || 1), profile.mode);
       }
       if (!edge.guide && style.arrow !== "filled") {
         const tip = curve.getPoint(0.84),
@@ -819,6 +824,8 @@ export class SpatialRenderer {
         const normal = Math.abs(tangent.y) > 0.95 ? new T.Vector3(0, 0, 1) : new T.Vector3(0, 1, 0);
         const side = new T.Vector3().crossVectors(tangent, normal).normalize();
         for (const segment of headSegments(style.arrow)) {
+          // Arrowheads keep a single stroke even on a double/bordered shaft.
+          profiles.push(1.4, 0);
           for (const [x, y] of segment) {
             const point = tip
               .clone()
@@ -840,7 +847,11 @@ export class SpatialRenderer {
       const geometry = new T.LineSegmentsGeometry();
       geometry.setPositions(positions);
       geometry.setColors(colors);
-      const material = new T.LineMaterial({
+      geometry.setAttribute(
+        "boStrokeProfile",
+        new T.InstancedBufferAttribute(new Float32Array(profiles), 2),
+      );
+      const material = relationLineMaterial({
         vertexColors: true,
         linewidth: 0.9,
         transparent: true,

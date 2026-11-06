@@ -1,4 +1,5 @@
 import { layerColor, displayChildren } from "./graph-layers.js";
+import { strokePasses } from "./relation-strokes.js";
 import { polylineAt, cleanRoute } from "./edge-routing.js";
 import { t as boTranslate } from "./i18n.js";
 // Graph drawing owns Pixi objects and hit geometry, but no fetching, storage or UI commands.
@@ -230,6 +231,25 @@ export function createGraphRenderer({
     }
   }
   function strokeRelation(g, path, style, width, alpha) {
+    const points = path.points || Array.from({ length: 33 }, (_, i) => bezierAt(path, i / 32));
+    for (const pass of strokePasses(points, style, width)) {
+      if (pass.points.length < 2) continue;
+      strokeLine(
+        g,
+        {
+          ...path,
+          points: pass.points,
+          start: pass.points[0],
+          end: pass.points.at(-1),
+        },
+        { ...style, color: pass.color },
+        pass.width,
+        alpha,
+      );
+    }
+  }
+  /** Dashes continue along the routed polyline, including around bends. */
+  function strokeLine(g, path, style, width, alpha) {
     const { start, end, c1, c2 } = path;
     if (!style.dash.length && path.points) {
       g.moveTo(start.x, start.y);

@@ -40,6 +40,9 @@ PROBE = """async () => {
   const fill = PIXI.Graphics.prototype.fill;
   PIXI.Graphics.prototype.fill = function(style) {
     const points = polygons.get(this);
+    // The same Graphics also paints node pulses. Consume only the immediately
+    // preceding polygon, not a later circle that happens to reuse this object.
+    polygons.delete(this);
     if (probe.capture && Array.isArray(points) && points.length === 14) {
       const sample = probe.planar.get(this) || {colors:new Set(), poses:new Set()};
       sample.colors.add(typeof style === 'number' ? style : style?.color);
@@ -76,25 +79,34 @@ PROBE = """async () => {
   probe.lines = () => {
     const renderer=probe.renderer;
     const attribute=renderer?.lines?.geometry.attributes.instanceColorStart;
+    const profile=renderer?.lines?.geometry.attributes.boStrokeProfile;
     if (!attribute) return [];
     return renderer.edgeSegments.filter(item => !item.edge.guide && item.end > item.start)
       .map(item => ({id:item.edge.id, color:new T.Color().setRGB(
-        attribute.getX(item.start),attribute.getY(item.start),attribute.getZ(item.start)).getHex()}));
+        attribute.getX(item.start),attribute.getY(item.start),attribute.getZ(item.start)).getHex(),
+        width:profile?.getX(item.start), mode:profile?.getY(item.start),
+        segments:attribute.count, profiles:profile?.count}));
   };
 }"""
 
 STATIC_COLORS = """async mode => {
   const {layerOf} = await import('/graph-layers.js');
   const {layerPalette} = await import('/layer-style.js');
+  const {visualType} = await import('/graph-classification.js');
+  const {relationStyle} = await import('/layout.js');
+  const {strokeProfile} = await import('/relation-strokes.js');
   const ports = mode === '2D' ? graphDebug.planarPorts : graphDebug.spatial.edgePorts;
   const paths = new Map(ports.map(path => [path.id, path]));
   const semantic = new Map([...document.querySelectorAll('[data-edge-id]')]
-    .map(el => [el.dataset.edgeId, el.dataset.color]));
+    .map(el => [el.dataset.edgeId, {...el.dataset}]));
   return graphDebug.presentation.edges.filter(edge => paths.has(edge.id)).map(edge => {
     const from=layerOf(graphDebug.graph.byId.get(edge.from).node);
     const to=layerOf(graphDebug.graph.byId.get(edge.to).node);
+    const sameType=visualType(graphDebug.graph.byId.get(edge.from).node)===visualType(graphDebug.graph.byId.get(edge.to).node);
+    const style=relationStyle(edge,graphDebug.graph.byId), profile=strokeProfile(style);
     return {id:edge.id, from, to, expected:from===to ? layerPalette[from] : 0x6f7d8d,
-      color:paths.get(edge.id).color, semantic:semantic.get(edge.id)};
+      color:paths.get(edge.id).color, semantic:semantic.get(edge.id),
+      sameType, stroke:style.stroke, dash:style.dash, width:profile.width*style.width, mode:profile.mode};
   });
 }"""
 
@@ -110,11 +122,18 @@ def check_static(page, mode):
     assert rows, f"No rendered paths in {mode}"
     for row in rows:
         assert row["color"] == row["expected"], row
-        assert row["semantic"] == f'#{row["expected"]:06x}', row
+        assert row["semantic"]["color"] == f'#{row["expected"]:06x}', row
+        assert row["semantic"]["stroke"] == ("solid" if row["sameType"] else "dashed"), row
+        assert bool(row["dash"]) is not row["sameType"], row
+        assert row["semantic"]["strokeProfile"] == row["stroke"], row
     if mode == "3D":
-        expected = {row["id"]: row["expected"] for row in rows}
+        expected = {row["id"]: row for row in rows}
         for line in page.evaluate("edgeColorProbe.lines()"):
-            assert line["color"] == expected[line["id"]], line
+            row = expected[line["id"]]
+            assert line["color"] == row["expected"], line
+            assert line["mode"] == row["mode"], line
+            assert abs(line["width"] - row["width"]) < 1e-5, line
+            assert line["profiles"] == line["segments"], line
     return rows
 
 
@@ -180,6 +199,18 @@ def main():
             try:
                 page = browser.new_page(viewport={"width": 1600, "height": 1000})
                 page.on("pageerror", lambda error: errors.append(str(error)))
+                page.on(
+                    "console",
+                    lambda message: (
+                        errors.append(message.text)
+                        if message.type == "error"
+                        and any(
+                            word in message.text
+                            for word in ("Shader Error", "VALIDATE_STATUS", "THREE.WebGLProgram")
+                        )
+                        else None
+                    ),
+                )
                 # The live viewer polls every 400 ms, so networkidle never settles.
                 # Wait for its graph and workers explicitly after loading the DOM.
                 page.goto(server["url"] + "?lang=zh-CN", wait_until="domcontentloaded")
@@ -211,7 +242,9 @@ def main():
                     results["modes"][mode] = {"state_edges": static, "transfer": transfer}
                 # Expand the real graph to exercise cross-layer links too, then
                 # switch renderers without changing the underlying graph facts.
-                page.click("#show-all")
+                ruler = page.locator("#layer-controls canvas").bounding_box()
+                page.mouse.click(ruler["x"] + ruler["width"] - 15, ruler["y"] + 18)
+                settled(page)
                 page.click("#expand")
                 page.keyboard.press("Escape")
                 settled(page)
@@ -230,11 +263,13 @@ def main():
                     results["modes"][mode]["database_transfer"] = transfer
                     page.screenshot(path=str(output / f"expanded-{mode}.png"))
                 assert page.locator(".edge-color-key").inner_text() == "同层随层色 · 跨层灰色"
+                assert page.locator("[data-legend-types]").inner_text() == "不同类型节点"
                 page.goto(server["url"] + "?lang=en", wait_until="domcontentloaded")
                 settled(page)
                 assert (
                     page.locator(".edge-color-key").inner_text() == "Layer color · Cross-layer gray"
                 )
+                assert page.locator("[data-legend-types]").inner_text() == "Different node types"
                 assert not errors, errors
             finally:
                 browser.close()

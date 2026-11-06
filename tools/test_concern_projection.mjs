@@ -165,7 +165,13 @@ for (let mask = 0; mask < 512; mask++) {
 let reduced = layerSlice(graph, { visible: ["business", "data"] });
 assert.deepEqual(reduced.edges.find((e) => e.derived).witnesses[0].edges, ["af", "fr", "rd"]);
 assert.equal(reduced.edges.find((e) => e.derived).observed, false);
-assert.ok(relationStyle(reduced.edges.find((e) => e.derived)).dash.length);
+assert.equal(relationStyle(reduced.edges.find((e) => e.derived)).stroke, "bordered");
+assert.ok(
+  relationStyle(
+    reduced.edges.find((e) => e.derived),
+    graph.byId,
+  ).dash.length,
+);
 assert.deepEqual(
   transferEdges(
     {

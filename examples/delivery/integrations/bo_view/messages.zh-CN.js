@@ -47,6 +47,7 @@ export default {
   "Requires": "依赖条件",
   "Triggers": "触发事件",
   "Layer color · Cross-layer gray": "同层随层色 · 跨层灰色",
+  "Different node types": "不同类型节点",
   Workflow: "业务实例",
   Trace: "执行链",
   Span: "调用",

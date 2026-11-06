@@ -1,6 +1,9 @@
 /** Edge hue follows display layers without losing relation meaning or identity. */
 import assert from "node:assert/strict";
-import { relationFamilies } from "../skills/vibelens/assets/stategraph-viewer/relation-appearance.js";
+import {
+  relationFamilies,
+  differentTypeDash,
+} from "../skills/vibelens/assets/stategraph-viewer/relation-appearance.js";
 import {
   edgeColor,
   crossLayerColor,
@@ -49,7 +52,9 @@ for (const source of Object.keys(declarations)) {
       for (const index of [nodes, boxes]) {
         const style = relationStyle(edge, index);
         assert.equal(style.color, expected, edge.id);
-        assert.deepEqual(style.dash, relationStyles[type].dash);
+        assert.deepEqual(style.dash, source === target ? [] : differentTypeDash);
+        assert.equal(style.sameType, source === target);
+        assert.equal(style.stroke, relationStyles[type].stroke);
         assert.equal(style.arrow, relationStyles[type].arrow);
       }
       assert.equal(JSON.stringify(edge), before);
@@ -80,6 +85,7 @@ const capture = {
 assert.equal(relationStyle(capture, boxes).color, layerPalette.symbols);
 assert.equal(relationStyle(capture, boxes).label, "Recorded input");
 assert.deepEqual(relationStyle(capture, boxes).dash, relationFamilies.reference.dash);
+assert.equal(relationStyle(capture, boxes).stroke, "double");
 assert.deepEqual(
   relationStyle({ ...capture, members: [{ evidence_kind: "conceptual" }] }, boxes).dash,
   relationFamilies.reference.dash,
@@ -102,7 +108,8 @@ assert.equal(
   "Legend has no endpoint context",
 );
 assert.equal(relationStyle({ type: "call" }).dash.length, 0);
-assert.ok(relationStyle({ type: "guard" }).dash.length);
+assert.equal(relationStyle({ type: "guard" }).stroke, "bordered");
+assert.equal(relationStyle({ type: "guard" }).arrow, "diamond");
 assert.equal(relationStyle({ type: "contains" }).arrow, "none");
 console.log(
   `PASS: ${checked} layer/relation combinations; projection, reversal, missing endpoints and stable identities.`,

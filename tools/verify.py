@@ -42,6 +42,7 @@ def main():
     subprocess.run(["node", "tools/test_concept_flow_layout.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_transfer_glyph.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_edge_colors.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_relation_strokes.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_conversation_controls.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_control_projection.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_detail_panel.mjs"], cwd=ROOT, check=True)

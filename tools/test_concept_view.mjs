@@ -120,7 +120,8 @@ assert.equal(visualType(nodes.find((node) => node.id === "transition:grant")), "
 for (const relation of edges) {
   assert.equal(relationType(relation), relation.type);
   assert.ok(emptyFilters().edges.includes(relation.type));
-  assert.ok(relationStyle(relation).dash.length);
+  // Concepts retain their own relationship semantics, independently of dashes.
+  assert.notEqual(relationStyle(relation).family, "execution");
 }
 assert.ok(cleanFilters({ edges: ["other"] }).edges.includes("requests_transition"));
 assert.deepEqual(cleanFilters({ edges: ["call"] }).edges, ["call"]);

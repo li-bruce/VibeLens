@@ -1,6 +1,6 @@
 import { respondingNodes, transferDuration } from "./playback-appearance.js";
 import { SelectionMarquee, rectangleSelection, selectionRoots } from "./graph-selection.js";
-import { relationFamilies, relationFamily } from "./relation-appearance.js";
+import { relationFamilies, relationFamily, differentTypeDash } from "./relation-appearance.js";
 import {
   draftViewId,
   isPreset,
@@ -2600,6 +2600,13 @@ for (const [type, style] of Object.entries(nodeTypes)) {
 }
 const edgeLegend = document.querySelector(".relation-legend");
 edgeLegend.replaceChildren();
+const typeKey = document.createElement("span");
+typeKey.dataset.legendTypes = "different";
+typeKey.append(
+  legendRelation({ color: 0x6f7d8d, stroke: "single", dash: differentTypeDash, arrow: "open" }),
+  document.createTextNode(boTranslate("Different node types")),
+);
+edgeLegend.append(typeKey);
 for (const [type, pattern] of Object.entries(relationFamilies)) {
   const style = { ...pattern, color: 0x6f7d8d };
   const label = document.createElement("span");

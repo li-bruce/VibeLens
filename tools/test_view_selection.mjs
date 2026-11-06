@@ -106,8 +106,8 @@ assert.ok(
   }),
 );
 assert.notDeepEqual(
-  relationStyle({ type: "flow", evidence_kind: "conceptual" }).dash,
-  relationStyle({ type: "guard", evidence_kind: "conceptual" }).dash,
+  relationStyle({ type: "flow", evidence_kind: "conceptual" }).stroke,
+  relationStyle({ type: "guard", evidence_kind: "conceptual" }).stroke,
 );
 assert.deepEqual(relationStyle({ type: "call" }).dash, []);
 assert.equal(relationStyle({ type: "code-imports" }).family, "reference");
