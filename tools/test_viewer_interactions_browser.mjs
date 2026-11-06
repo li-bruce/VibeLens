@@ -486,6 +486,11 @@ try {
   }
   const toolbar = await page.locator(".toolbar").boundingBox();
   assert.ok(toolbar.height < 55, "One compact toolbar row");
+  assert.equal(
+    await page.locator("footer > #route-status").count(),
+    1,
+    "Routing progress belongs in the footer, outside the graph",
+  );
   const legend = await page.locator("[data-legend-edge]").evaluateAll((rows) =>
     rows.map((row) => ({
       family: row.dataset.legendEdge,

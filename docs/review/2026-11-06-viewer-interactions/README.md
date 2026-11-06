@@ -63,6 +63,8 @@ One existing host-dependent check was skipped: `test_filesystem_links_are_not_re
 
 Packaging also preserves the accepted raw-byte fingerprint of the new source-scope module across Git checkout. Maintained source whitespace checks remain enabled; archived command output keeps its original endings. The [staged-byte comparison](git-byte-parity.json) and [distribution retest](distribution-check.log) passed.
 
+After the complete gate, one final HTML/CSS adjustment moved routing progress into the footer. The [33 browser checks](browser/footer/result.json) and both managed example acceptance workflows were repeated for that adjustment; their logs use the `-footer` suffix.
+
 ## Preserved failures and retests
 
 | Attempt | Failure | Resolution |
