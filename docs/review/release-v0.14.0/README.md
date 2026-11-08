@@ -97,4 +97,14 @@ mobile adaptation to the graph application.
 
 The release preserves stable model identities, native business definitions,
 saved views and frozen example approvals. Database-vendor container suites and
-a new human dialogue trial are outside this release-check run.
+a new human dialogue trial are outside this local release-check run. The GitHub
+Actions database-vendor job passed separately, together with both source-quality
+jobs, Harness and all four OS/Python complete-gate combinations.
+
+The Linux color browser check timed out twice while collecting moving-arrow
+frames after switching the expanded recording back to 2D. Its [failure evidence](edge-colors-ci-failure/failure.json)
+is retained. The identical check [passed locally](edge-colors-local/result.json),
+including a separate software-renderer/CPU-throttled run. The check now preserves
+mode, paths, frame counts and animation state on timeout; its frame and exact-color
+requirements are unchanged. CI runs this short appearance check before the longer
+concept checks so any remaining failure produces diagnostics promptly.

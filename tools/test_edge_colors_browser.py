@@ -11,7 +11,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 RECORDING = "docs/review/spatial-workspace/replay-fixture.json"
@@ -150,11 +150,37 @@ def check_step(page, mode, index):
     # A previous paused step may still be looping while selection is applied.
     # Capture only the newly selected animation, never those earlier frames.
     page.evaluate("edgeColorProbe.reset()")
-    page.wait_for_function(
-        "[...edgeColorProbe.planar.values()].some(s=>s.poses.size>3)"
-        if mode == "2D"
-        else "edgeColorProbe.spatial.length>3"
-    )
+    try:
+        page.wait_for_function(
+            "[...edgeColorProbe.planar.values()].some(s=>s.poses.size>3)"
+            if mode == "2D"
+            else "edgeColorProbe.spatial.length>3"
+        )
+    except PlaywrightTimeoutError as error:
+        # Preserve the actual renderer state before the browser is closed. This
+        # distinguishes missing paths, mode changes and stopped animation clocks
+        # from a slow draw call without accepting fewer frames or guessed colors.
+        details = page.evaluate(
+            """() => ({
+              renderer: {...document.querySelector('#renderer').dataset},
+              spatial: graphDebug.layers.enabled,
+              hidden: document.hidden,
+              layoutBusy: graphDebug.layoutBusy,
+              geometryBusy: graphDebug.geometryBusy,
+              sourceBusy: graphDebug.sourceBusy,
+              replay: graphDebug.view.replay?.index,
+              capture: edgeColorProbe.capture,
+              planar: [...edgeColorProbe.planar.values()].map(sample => ({
+                colors:[...sample.colors], poses:sample.poses.size
+              })),
+              spatialFrames: edgeColorProbe.spatial.length,
+              transfers: graphDebug.transferPoints,
+              routes: graphDebug.planarPorts.map(route=>route.id)
+            })"""
+        )
+        raise AssertionError(
+            f"Missing moving-arrow frames in {mode}, step {index}: " + json.dumps(details)
+        ) from error
     painted = page.evaluate("edgeColorProbe.result()")
     ids = page.locator("#renderer").evaluate("el=>JSON.parse(el.dataset.animatedEdges)")
     rows = page.evaluate(STATIC_COLORS, mode)
