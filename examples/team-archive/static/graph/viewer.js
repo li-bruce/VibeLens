@@ -1,4 +1,4 @@
-import { respondingNodes, transferDuration } from "./playback-appearance.js";
+import { createTransferClock, respondingNodes, transferDuration } from "./playback-appearance.js";
 import { SelectionMarquee, rectangleSelection, selectionRoots } from "./graph-selection.js";
 import { relationFamilies, relationFamily, differentTypeDash } from "./relation-appearance.js";
 import {
@@ -184,7 +184,6 @@ let recording = null,
 const liveTrace = new LiveTrace();
 let liveTraceSource = null;
 let animationFrame = null,
-  animationUntil = 0,
   animatedIds = [],
   lastLiveEvent = null;
 let heldTimer = null,
@@ -2810,7 +2809,6 @@ function stopAnimation() {
   animationDot.clear();
   transferPoints = [];
   spatial?.stopAnimation();
-  animationUntil = 0;
   $("renderer").dataset.animationActive = "false";
   if (!disposed && !contextLost) app.renderer.render(app.stage);
 }
@@ -2837,25 +2835,17 @@ function animateEvent(event) {
     return;
   }
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const requested = performance.now();
+  const requested = performance.now(),
+    clock = createTransferClock();
   let started = null;
-  animationUntil = requested + transferDuration + 1800;
   const tick = (now) => {
-    if (
-      now >= animationUntil ||
-      disposed ||
-      document.hidden ||
-      contextLost ||
-      !graph ||
-      !presentation
-    ) {
+    if (clock.done || disposed || document.hidden || contextLost || !graph || !presentation) {
       stopAnimation();
       return;
     }
     const pathsReady = !animatedIds.length || animatedIds.some((id) => edgePaths.has(id));
     if (started === null && (pathsReady || now - requested > 1800)) {
       started = now;
-      animationUntil = started + transferDuration;
     }
     if (started === null) {
       animationFrame = requestAnimationFrame(tick);
@@ -2864,7 +2854,7 @@ function animateEvent(event) {
     animationLayer.position.set(pan.x, pan.y);
     animationLayer.scale.set(scale);
     animationDot.clear();
-    const t = (now - started) / transferDuration;
+    const t = clock.advance(now);
     transferPoints = [];
     for (const id of animatedIds) {
       const path = edgePaths.get(id);
@@ -3091,7 +3081,10 @@ function holdCurrentStep() {
   $("renderer").dataset.replayHeld = "true";
   const replay = () => {
     if (!recording || playTimer || disposed) return;
-    if (!document.hidden) animateEvent(replayItems[replayIndex]);
+    // A low-frame-rate render may take longer than the nominal duration. Let
+    // that cycle reach its endpoint before repeating the same recorded fact.
+    const running = spatialActive() ? spatial?.animation : animationFrame;
+    if (!document.hidden && !running) animateEvent(replayItems[replayIndex]);
     heldTimer = setTimeout(replay, transferDuration + 180);
   };
   replay();

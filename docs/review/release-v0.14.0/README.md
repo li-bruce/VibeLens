@@ -13,7 +13,7 @@ original versions and bytes.
 | --- | --- |
 | Complete default repository gate | Passed in 468.91 seconds; [receipt](full-gate.json), [output](full-gate.log) |
 | Maintained-source syntax, lint and formatting | Passed for 182 Python and 128 JavaScript modules; [receipt](source-quality-accepted.json), [output](source-quality-accepted.log) |
-| Clean staged Git export | Both accepted examples passed with their original frozen approvals; [report](clean-export.json) |
+| Clean staged Git export | Original [release baseline](clean-export.json) retained; the final viewer upgrade uses separately reviewed receipts and a [fresh export](clean-export-final.json) |
 | Extracted Harness plugin | Five checks passed against the real pinned registry/invocation runtime; [report](harness-runtime.json) |
 | Staged installation bytes | All 389 canonical Skill files match the tested archives and Git index; [report](staged-package-parity.json), [checksums](SHA256SUMS.txt) |
 | Concept networks and live capture | Seven checks passed: 34 concepts, 14 mappings, definitions, 2D/3D, recording and Timeline; [report](concept-browser-retest/run-d91f44e56978/result.json) |
@@ -108,3 +108,44 @@ including a separate software-renderer/CPU-throttled run. The check now preserve
 mode, paths, frame counts and animation state on timeout; its frame and exact-color
 requirements are unchanged. CI runs this short appearance check before the longer
 concept checks so any remaining failure produces diagnostics promptly.
+
+The [diagnostic run](edge-colors-ci-diagnostics/failure.json) confirmed a runtime
+bug: the route existed, but each paused cycle painted only its initial pose.
+Slow Linux software frames exceeded the wall-clock animation window, and the
+repeat timer restarted the cycle before it could advance. Both renderers now use
+one bounded presentation clock, retaining at least eight visible increments on
+slow frames. The repeat timer waits for the active cycle to finish. Recorded
+timestamps, event ordering and source facts are untouched.
+
+The transfer regression now checks frames slower than the entire nominal
+duration, normal-speed completion and a fresh cycle's independent start. The
+[real Chromium retest](edge-colors-clock-fixed/result.json) passed exact line and
+arrow colors, multiple moving poses, both renderers, folding/expansion and the
+bilingual legend. [Source quality](source-quality-clock-fixed.json) also passed.
+Earlier [pinned Chromium](edge-colors-chromium141/result.json) and
+[software/CPU-limited](edge-colors-chromium141-software/result.json) passes are
+retained to distinguish the Linux failure from a universally reproducible case.
+
+The [delayed-frame browser retest](edge-colors-slow-frames-retest/result.json)
+also passed with every captured frame delayed by 1.4 seconds, longer than the
+nominal 1.1-second cycle. The [repeatable helper](slow_frame_retest.py) changes
+only frame scheduling, including cancellation; geometry, observations and exact
+color assertions are unchanged. Its [first attempt](edge-colors-slow-frames/failure.json)
+revealed that the browser readiness helper waited for layout but not source and
+route workers. It now waits for all three before inspecting connections.
+
+The viewer change invalidated the two shipped examples' old dependency receipts,
+as expected; see the [clean-export rejection](clean-export-clock-fixed.json).
+A fresh-baseline attempt was also [rejected](delivery-begin.log), protecting the
+already changed dependency from being hidden. The [upgrade review](upgrade_examples.py)
+therefore continues the original baseline, verifies byte-identical business
+source and independent expectations, and compares the entire graph definition
+before and after. The original frozen approvals remain in place. New verified
+receipts are published separately as `release-v0.14.0-animation`.
+
+Both example upgrades passed `inspect → verify → accept → check`. The
+[upgrade summary](example-upgrades.json) records their candidate identities and
+the hashes of preserved application source and independent expectations. The
+[package check](package-parity-final.log) verifies that shipped runtime and viewer
+copies match the canonical Skill. Original failed exports and the old approvals
+remain available alongside the new evidence.

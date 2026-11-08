@@ -1,4 +1,4 @@
-import { transferDuration } from "./playback-appearance.js";
+import { createTransferClock, transferDuration } from "./playback-appearance.js";
 import { headSegments } from "./relation-appearance.js";
 import { strokeProfile } from "./relation-strokes.js";
 import { relationLineMaterial } from "./spatial-line-material.js";
@@ -1218,6 +1218,7 @@ export class SpatialRenderer {
       transfers,
       owners,
       start: null,
+      clock: createTransferClock(),
       requested: performance.now(),
     };
     this.clearPulses();
@@ -1292,10 +1293,7 @@ export class SpatialRenderer {
         now - this.animation.requested > 1800)
     )
       this.animation.start = now;
-    if (
-      !this.animation ||
-      (this.animation.start !== null && now - this.animation.start > transferDuration)
-    ) {
+    if (!this.animation || this.animation.clock.done) {
       this.clearPulses();
       this.animation = null;
       this.transferPoints = [];
@@ -1323,7 +1321,7 @@ export class SpatialRenderer {
     const matrix = new T.Object3D(),
       up = new T.Vector3(0, 1, 0),
       color = new T.Color(),
-      progress = (now - this.animation.start) / transferDuration;
+      progress = this.animation.clock.advance(now);
     for (const ring of this.pulseRings || []) {
       ring.scale.setScalar(ring.userData.radius * (1 + 0.2 * progress));
       ring.material.opacity = 0.4 + 0.55 * Math.sin(Math.PI * progress);

@@ -113,7 +113,11 @@ STATIC_COLORS = """async mode => {
 
 def settled(page):
     """Wait for workers and accepted routes instead of sleeping through rendering."""
-    page.wait_for_function("window.graphDebug?.graph && !graphDebug.layoutBusy", timeout=30000)
+    page.wait_for_function(
+        "window.graphDebug?.graph && !graphDebug.layoutBusy"
+        " && !graphDebug.geometryBusy && !graphDebug.sourceBusy",
+        timeout=30000,
+    )
 
 
 def check_static(page, mode):

@@ -29,6 +29,8 @@
   [repair and retest evidence](docs/review/2026-11-06-expansion-relations/README.md).
 - Update the walkthrough to the shared layer controls, retain saved custom views,
   and keep the selected chapter stable during native viewer interactions.
+- Keep transfer arrows moving under slow software rendering. Both renderers use
+  one presentation clock; paused replay completes a cycle before repeating it.
 - Publish complete Skill, SkillHub and DeepSeek Harness packages from the same
   canonical source. See [release notes](docs/releases/v0.14.0.md) and the
   [release checks](docs/review/release-v0.14.0/README.md).

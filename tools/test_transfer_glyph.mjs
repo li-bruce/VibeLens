@@ -3,6 +3,22 @@ import assert from "node:assert/strict";
 import {transferPose, transferPolygon} from "../skills/vibelens/assets/stategraph-viewer/transfer-glyph.js";
 import {transferGeometry} from "../skills/vibelens/assets/stategraph-viewer/spatial-geometry.js";
 import {bezierAt} from "../skills/vibelens/assets/stategraph-viewer/renderer.js";
+import {createTransferClock, transferDuration} from "../skills/vibelens/assets/stategraph-viewer/playback-appearance.js";
+
+// A frame slower than the whole nominal animation must still show its route.
+// These are presentation timestamps, independent of the recorded event time.
+const slow = createTransferClock(), phases = [];
+for (let frame = 0; frame <= 8; frame++) phases.push(slow.advance(frame * transferDuration * 2));
+assert.equal(phases[0], 0);
+assert.equal(phases.at(-1), 1);
+assert.equal(new Set(phases).size, 9);
+assert.equal(slow.done, true);
+const normal = createTransferClock();
+for (let now = 0; now <= transferDuration; now += 10) normal.advance(now);
+assert.equal(normal.done, true);
+const next = createTransferClock();
+assert.equal(next.advance(100000), 0);
+assert.equal(next.done, false);
 const paths = [
   {points: [{x: 0, y: 0}, {x: 80, y: 0}]},
   {points: [{x: 0, y: 0}, {x: 0, y: 40}, {x: 80, y: 40}]},
