@@ -56,7 +56,8 @@ def main():
 
                 def expand(key):
                     select(key)
-                    page.click("#selection-menu")
+                    page.locator("#viewport").focus()
+                    page.keyboard.press("Shift+F10")
                     page.click("#node-expand")
                     page.wait_for_function("!graphDebug.layoutBusy")
 
@@ -76,7 +77,8 @@ def main():
                 assert page.locator(f'#semantic [data-node-id="{identity("file", "src/routes.py")}"]').count() == 1
                 shot("02-files-and-dependencies")
                 select(identity("file", "src/routes.py"))
-                page.click("#selection-menu")
+                page.locator("#viewport").focus()
+                page.keyboard.press("Shift+F10")
                 page.click("#source")
                 page.wait_for_function("document.querySelector('#source-code').textContent.includes('def share')")
                 assert "from .access import allow" in page.locator("#source-code").inner_text()

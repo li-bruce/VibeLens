@@ -1,0 +1,2369 @@
+{
+  "candidate_id": "245edc23ee938cfd77ce6b28c2b4f917e9bd7c7ecd7d0217fc70c1588807440a",
+  "changed_files": [],
+  "changed_symbols": [],
+  "affected_callers": [],
+  "affected_nodes": [],
+  "unmapped_changed_symbols": [],
+  "unmapped_implementation_symbols": [
+    "bo_integration.py::BOConnection",
+    "bo_integration.py::BOConnection.__enter__",
+    "bo_integration.py::BOConnection.__exit__",
+    "bo_integration.py::BOConnection.__init__",
+    "bo_integration.py::BOConnection.execute",
+    "bo_integration.py::BOIntegration",
+    "bo_integration.py::BOIntegration.__init__",
+    "bo_integration.py::BOIntegration.__init__.receive",
+    "bo_integration.py::BOIntegration.__init__.unavailable",
+    "bo_integration.py::BOIntegration.bo_bind_flask",
+    "bo_integration.py::BOIntegration.bo_bind_flask.bo_request_finish",
+    "bo_integration.py::BOIntegration.bo_bind_flask.bo_request_start",
+    "bo_integration.py::BOIntegration.bo_policy_result",
+    "bo_integration.py::BOIntegration.bo_wrap_method",
+    "bo_integration.py::BOIntegration.bo_wrap_method.observed",
+    "bo_integration.py::BOIntegration.bo_wrap_predicates",
+    "bo_integration.py::BOIntegration.bo_wrap_predicates.observe",
+    "bo_integration.py::BOIntegration.bo_wrap_predicates.predicate",
+    "bo_integration.py::BOIntegration.close",
+    "bo_projection.py::bo_native_state",
+    "service.py::AccessDenied",
+    "service.py::AccessDenied.__init__",
+    "service.py::DatabaseConnection",
+    "service.py::DatabaseConnection.__exit__",
+    "service.py::FileService.__init__"
+  ],
+  "changed_requirements": [],
+  "unresolved_call_count": 148,
+  "meaning": "Potential impact plus authored abstraction mapping; semantic truth still needs contract and runtime checks.",
+  "errors": [],
+  "required_classification": [
+    "bo_integration.py::BOConnection",
+    "bo_integration.py::BOConnection.__enter__",
+    "bo_integration.py::BOConnection.__exit__",
+    "bo_integration.py::BOConnection.__init__",
+    "bo_integration.py::BOConnection.execute",
+    "bo_integration.py::BOIntegration",
+    "bo_integration.py::BOIntegration.__init__",
+    "bo_integration.py::BOIntegration.__init__.receive",
+    "bo_integration.py::BOIntegration.__init__.unavailable",
+    "bo_integration.py::BOIntegration.bo_bind_flask",
+    "bo_integration.py::BOIntegration.bo_bind_flask.bo_request_finish",
+    "bo_integration.py::BOIntegration.bo_bind_flask.bo_request_start",
+    "bo_integration.py::BOIntegration.bo_policy_result",
+    "bo_integration.py::BOIntegration.bo_wrap_method",
+    "bo_integration.py::BOIntegration.bo_wrap_method.observed",
+    "bo_integration.py::BOIntegration.bo_wrap_predicates",
+    "bo_integration.py::BOIntegration.bo_wrap_predicates.observe",
+    "bo_integration.py::BOIntegration.bo_wrap_predicates.predicate",
+    "bo_integration.py::BOIntegration.close",
+    "bo_projection.py::bo_native_state",
+    "service.py::AccessDenied",
+    "service.py::AccessDenied.__init__",
+    "service.py::DatabaseConnection",
+    "service.py::DatabaseConnection.__exit__",
+    "service.py::FileService.__init__"
+  ],
+  "review_errors": [],
+  "stategraph": {
+    "module": "bo_projection.py",
+    "development_mode": "observe",
+    "execution_mode": "observe",
+    "decision_source": "user",
+    "decision": "保留我自己的代码组织，只用图观察。"
+  },
+  "discovery": {
+    "valid": true,
+    "ready": true,
+    "errors": [],
+    "warnings": [],
+    "blocked": [],
+    "questions": [],
+    "awaiting_answers": [],
+    "concepts": {
+      "valid": true,
+      "ready": true,
+      "errors": [],
+      "warnings": [],
+      "blocked": [],
+      "compatibility": "business-discovery/v2",
+      "graph": {
+        "nodes": [
+          {
+            "id": "business-network:sharing",
+            "kind": "action",
+            "label": "File sharing",
+            "summary": "File sharing",
+            "layer": "business",
+            "concept_kind": "business_network",
+            "concept_definition": {
+              "actors": [
+                "Owner",
+                "Recipient"
+              ],
+              "trigger": "An owner chooses a file and recipient",
+              "outcome": "Each named recipient can read while their own grant is active"
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "upload",
+            "kind": "action",
+            "label": "Upload file",
+            "summary": "Upload file",
+            "layer": "business",
+            "concept_kind": "action",
+            "concept_definition": {
+              "kind": "action",
+              "meaning": "Store the uploaded file and its owner locally"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "parent": "business-network:sharing"
+          },
+          {
+            "id": "share",
+            "kind": "action",
+            "label": "Share file",
+            "summary": "Share file",
+            "layer": "business",
+            "concept_kind": "action",
+            "concept_definition": {
+              "kind": "action",
+              "meaning": "Activate one selected recipient grant while retaining all other grants"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "parent": "business-network:sharing"
+          },
+          {
+            "id": "read",
+            "kind": "action",
+            "label": "Read shared file",
+            "summary": "Read shared file",
+            "layer": "business",
+            "concept_kind": "action",
+            "concept_definition": {
+              "kind": "action",
+              "meaning": "Read only while the selected recipient has a current grant"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "parent": "business-network:sharing"
+          },
+          {
+            "id": "revoke",
+            "kind": "action",
+            "label": "Revoke access",
+            "summary": "Revoke access",
+            "layer": "business",
+            "concept_kind": "action",
+            "concept_definition": {
+              "kind": "action",
+              "meaning": "Deactivate only the selected recipient grant"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "parent": "business-network:sharing"
+          },
+          {
+            "id": "list",
+            "kind": "action",
+            "label": "See received files",
+            "summary": "See received files",
+            "layer": "business",
+            "concept_kind": "action",
+            "concept_definition": {
+              "kind": "action",
+              "meaning": "Show files currently shared to the selected colleague"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "parent": "business-network:sharing"
+          },
+          {
+            "id": "object:grant",
+            "kind": "data",
+            "label": "grant",
+            "summary": "grant",
+            "layer": "business",
+            "concept_kind": "object",
+            "concept_definition": {
+              "id": "grant",
+              "identity": {
+                "file_id": "string",
+                "recipient_id": "string"
+              },
+              "fields": {
+                "owner_id": "string",
+                "active": "boolean"
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "object:actor",
+            "kind": "data",
+            "label": "actor",
+            "summary": "actor",
+            "layer": "business",
+            "concept_kind": "object",
+            "concept_definition": {
+              "id": "actor",
+              "identity": {
+                "id": "string"
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "fact:actor-id",
+            "kind": "data",
+            "label": "actor-id",
+            "summary": "actor-id",
+            "layer": "rules",
+            "concept_kind": "fact",
+            "concept_definition": {
+              "id": "actor-id",
+              "object": "actor",
+              "field": "id",
+              "type": "string",
+              "read_basis": {
+                "timing": "before_effect",
+                "scope": "current_request"
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "fact:owner-id",
+            "kind": "data",
+            "label": "owner-id",
+            "summary": "owner-id",
+            "layer": "rules",
+            "concept_kind": "fact",
+            "concept_definition": {
+              "id": "owner-id",
+              "object": "grant",
+              "field": "owner_id",
+              "type": "string",
+              "read_basis": {
+                "timing": "before_effect",
+                "scope": "current_request"
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "fact:recipient-id",
+            "kind": "data",
+            "label": "recipient-id",
+            "summary": "recipient-id",
+            "layer": "rules",
+            "concept_kind": "fact",
+            "concept_definition": {
+              "id": "recipient-id",
+              "object": "grant",
+              "field": "recipient_id",
+              "type": "string",
+              "read_basis": {
+                "timing": "before_effect",
+                "scope": "current_request"
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "fact:active-grant",
+            "kind": "data",
+            "label": "active-grant",
+            "summary": "active-grant",
+            "layer": "rules",
+            "concept_kind": "fact",
+            "concept_definition": {
+              "id": "active-grant",
+              "object": "grant",
+              "field": "active",
+              "type": "boolean",
+              "read_basis": {
+                "timing": "before_effect",
+                "scope": "current_request"
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "state-model:grant",
+            "kind": "state",
+            "label": "Recipient grant",
+            "summary": "Recipient grant",
+            "layer": "state",
+            "concept_kind": "state_model",
+            "concept_definition": {
+              "id": "grant",
+              "subject": {
+                "object": "grant",
+                "identity": [
+                  "file_id",
+                  "recipient_id"
+                ]
+              },
+              "initial": "inactive",
+              "context": {},
+              "members": {
+                "states": [
+                  "inactive",
+                  "active"
+                ],
+                "events": [
+                  "share",
+                  "revoke"
+                ],
+                "guards": [
+                  "may_manage"
+                ],
+                "effects": [],
+                "transitions": [
+                  "grant-share",
+                  "grant-revoke",
+                  "grant-replace"
+                ]
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "state:grant:inactive",
+            "kind": "state",
+            "label": "inactive",
+            "summary": "inactive",
+            "layer": "state",
+            "concept_kind": "state",
+            "concept_definition": {
+              "name": "inactive"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "value": "inactive"
+          },
+          {
+            "id": "state:grant:active",
+            "kind": "state",
+            "label": "active",
+            "summary": "active",
+            "layer": "state",
+            "concept_kind": "state",
+            "concept_definition": {
+              "name": "active"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "value": "active"
+          },
+          {
+            "id": "event:grant:share",
+            "kind": "data",
+            "label": "share",
+            "summary": "share",
+            "layer": "state",
+            "concept_kind": "event",
+            "concept_definition": {
+              "payload": {
+                "recipient_id": {
+                  "type": "string"
+                }
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "event:grant:revoke",
+            "kind": "data",
+            "label": "revoke",
+            "summary": "revoke",
+            "layer": "state",
+            "concept_kind": "event",
+            "concept_definition": {
+              "payload": {
+                "recipient_id": {
+                  "type": "string"
+                }
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "guard:grant:may_manage",
+            "kind": "decision",
+            "label": "may_manage",
+            "summary": "may_manage",
+            "layer": "state",
+            "concept_kind": "guard",
+            "concept_definition": {
+              "decision": "policy:operation:manage"
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "transition:grant:grant-share",
+            "kind": "action",
+            "label": "grant-share",
+            "summary": "grant-share",
+            "layer": "state",
+            "concept_kind": "transition",
+            "concept_definition": {
+              "id": "grant-share",
+              "source": "inactive",
+              "dest": "active",
+              "trigger": "share",
+              "conditions": [
+                "may_manage"
+              ],
+              "priority": 0
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "transition:grant:grant-revoke",
+            "kind": "action",
+            "label": "grant-revoke",
+            "summary": "grant-revoke",
+            "layer": "state",
+            "concept_kind": "transition",
+            "concept_definition": {
+              "id": "grant-revoke",
+              "source": "active",
+              "dest": "inactive",
+              "trigger": "revoke",
+              "conditions": [
+                "may_manage"
+              ],
+              "priority": 1
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "transition:grant:grant-replace",
+            "kind": "action",
+            "label": "grant-replace",
+            "summary": "grant-replace",
+            "layer": "state",
+            "concept_kind": "transition",
+            "concept_definition": {
+              "id": "grant-replace",
+              "source": "active",
+              "dest": "active",
+              "trigger": "share",
+              "conditions": [
+                "may_manage"
+              ],
+              "priority": 2
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "policy-predicate:same_identity",
+            "kind": "decision",
+            "label": "policy-predicate:same_identity",
+            "summary": "policy-predicate:same_identity",
+            "layer": "rules",
+            "concept_kind": "rule_predicate",
+            "concept_definition": {
+              "id": "same_identity",
+              "parameters": {
+                "left": "string",
+                "right": "string"
+              }
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "policy:active",
+            "kind": "decision",
+            "label": "active",
+            "summary": "active",
+            "layer": "rules",
+            "concept_kind": "rule_expression",
+            "concept_definition": {
+              "id": "active",
+              "op": "input",
+              "name": "active",
+              "input_type": "boolean"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "operator": "input"
+          },
+          {
+            "id": "policy:actor",
+            "kind": "decision",
+            "label": "actor",
+            "summary": "actor",
+            "layer": "rules",
+            "concept_kind": "rule_expression",
+            "concept_definition": {
+              "id": "actor",
+              "op": "input",
+              "name": "actor",
+              "input_type": "string"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "operator": "input"
+          },
+          {
+            "id": "policy:is_owner",
+            "kind": "decision",
+            "label": "is_owner",
+            "summary": "is_owner",
+            "layer": "rules",
+            "concept_kind": "rule_expression",
+            "concept_definition": {
+              "id": "is_owner",
+              "op": "predicate",
+              "predicate": "same_identity",
+              "arguments": {
+                "left": "actor",
+                "right": "owner"
+              }
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "operator": "predicate"
+          },
+          {
+            "id": "policy:is_recipient",
+            "kind": "decision",
+            "label": "is_recipient",
+            "summary": "is_recipient",
+            "layer": "rules",
+            "concept_kind": "rule_expression",
+            "concept_definition": {
+              "id": "is_recipient",
+              "op": "predicate",
+              "predicate": "same_identity",
+              "arguments": {
+                "left": "actor",
+                "right": "recipient"
+              }
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "operator": "predicate"
+          },
+          {
+            "id": "policy:may_read",
+            "kind": "decision",
+            "label": "may_read",
+            "summary": "may_read",
+            "layer": "rules",
+            "concept_kind": "rule_expression",
+            "concept_definition": {
+              "id": "may_read",
+              "op": "all",
+              "inputs": [
+                "is_recipient",
+                "active"
+              ]
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "operator": "all"
+          },
+          {
+            "id": "policy:owner",
+            "kind": "decision",
+            "label": "owner",
+            "summary": "owner",
+            "layer": "rules",
+            "concept_kind": "rule_expression",
+            "concept_definition": {
+              "id": "owner",
+              "op": "input",
+              "name": "owner",
+              "input_type": "string"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "operator": "input"
+          },
+          {
+            "id": "policy:recipient",
+            "kind": "decision",
+            "label": "recipient",
+            "summary": "recipient",
+            "layer": "rules",
+            "concept_kind": "rule_expression",
+            "concept_definition": {
+              "id": "recipient",
+              "op": "input",
+              "name": "recipient",
+              "input_type": "string"
+            },
+            "origin": "concept-design",
+            "capture": {},
+            "operator": "input"
+          },
+          {
+            "id": "policy-operation:manage",
+            "kind": "decision",
+            "label": "policy-operation:manage",
+            "summary": "policy-operation:manage",
+            "layer": "rules",
+            "concept_kind": "rule_operation",
+            "concept_definition": {
+              "id": "manage",
+              "root": "is_owner"
+            },
+            "origin": "concept-design",
+            "capture": {}
+          },
+          {
+            "id": "policy-operation:read",
+            "kind": "decision",
+            "label": "policy-operation:read",
+            "summary": "policy-operation:read",
+            "layer": "rules",
+            "concept_kind": "rule_operation",
+            "concept_definition": {
+              "id": "read",
+              "root": "may_read"
+            },
+            "origin": "concept-design",
+            "capture": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "business-contains:sharing:upload",
+            "from": "business-network:sharing",
+            "to": "upload",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "business-contains:sharing:share",
+            "from": "business-network:sharing",
+            "to": "share",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "business-contains:sharing:read",
+            "from": "business-network:sharing",
+            "to": "read",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "business-contains:sharing:revoke",
+            "from": "business-network:sharing",
+            "to": "revoke",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "business-contains:sharing:list",
+            "from": "business-network:sharing",
+            "to": "list",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "upload-share",
+            "from": "upload",
+            "to": "share",
+            "type": "flow",
+            "label": "Choose recipient",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "share-list",
+            "from": "share",
+            "to": "list",
+            "type": "flow",
+            "label": "Recipient sees file",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "list-read",
+            "from": "list",
+            "to": "read",
+            "type": "flow",
+            "label": "Download file",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "share-revoke",
+            "from": "share",
+            "to": "revoke",
+            "type": "flow",
+            "label": "Owner withdraws access",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "object-fact:actor-id",
+            "from": "object:actor",
+            "to": "fact:actor-id",
+            "type": "describes_fact",
+            "label": "Describes",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "object-fact:owner-id",
+            "from": "object:grant",
+            "to": "fact:owner-id",
+            "type": "describes_fact",
+            "label": "Describes",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "object-fact:recipient-id",
+            "from": "object:grant",
+            "to": "fact:recipient-id",
+            "type": "describes_fact",
+            "label": "Describes",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "object-fact:active-grant",
+            "from": "object:grant",
+            "to": "fact:active-grant",
+            "type": "describes_fact",
+            "label": "Describes",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "state-subject:grant",
+            "from": "state-model:grant",
+            "to": "object:grant",
+            "type": "state_subject",
+            "label": "State of",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "state-contains:grant:inactive",
+            "from": "state-model:grant",
+            "to": "state:grant:inactive",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "containment_kind": "state_hierarchy"
+          },
+          {
+            "id": "state-contains:grant:active",
+            "from": "state-model:grant",
+            "to": "state:grant:active",
+            "type": "contains",
+            "label": "Contains",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "containment_kind": "state_hierarchy"
+          },
+          {
+            "id": "state-event:grant:share",
+            "from": "state-model:grant",
+            "to": "event:grant:share",
+            "type": "declares_event",
+            "label": "Event",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "state-event:grant:revoke",
+            "from": "state-model:grant",
+            "to": "event:grant:revoke",
+            "type": "declares_event",
+            "label": "Event",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "state-guard:grant:may_manage",
+            "from": "state-model:grant",
+            "to": "guard:grant:may_manage",
+            "type": "declares_guard",
+            "label": "Condition",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "event-trigger:grant:grant-share",
+            "from": "event:grant:share",
+            "to": "transition:grant:grant-share",
+            "type": "requests_transition",
+            "label": "Triggers",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "negated": false,
+            "id": "transition-guard:grant:grant-share:may_manage",
+            "from": "transition:grant:grant-share",
+            "to": "guard:grant:may_manage",
+            "type": "guarded_by",
+            "label": "Requires true",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "transition-target:grant:grant-share",
+            "from": "transition:grant:grant-share",
+            "to": "state:grant:active",
+            "type": "declares_target",
+            "label": "Enters",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "transition": "transition:grant:grant-share",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "unless": [],
+            "id": "state-transition:grant:grant-share:inactive",
+            "from": "state:grant:inactive",
+            "to": "state:grant:active",
+            "type": "transition",
+            "label": "share",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "event-trigger:grant:grant-revoke",
+            "from": "event:grant:revoke",
+            "to": "transition:grant:grant-revoke",
+            "type": "requests_transition",
+            "label": "Triggers",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "negated": false,
+            "id": "transition-guard:grant:grant-revoke:may_manage",
+            "from": "transition:grant:grant-revoke",
+            "to": "guard:grant:may_manage",
+            "type": "guarded_by",
+            "label": "Requires true",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "transition-target:grant:grant-revoke",
+            "from": "transition:grant:grant-revoke",
+            "to": "state:grant:inactive",
+            "type": "declares_target",
+            "label": "Enters",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "transition": "transition:grant:grant-revoke",
+            "trigger": "revoke",
+            "conditions": [
+              "may_manage"
+            ],
+            "unless": [],
+            "id": "state-transition:grant:grant-revoke:active",
+            "from": "state:grant:active",
+            "to": "state:grant:inactive",
+            "type": "transition",
+            "label": "revoke",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "event-trigger:grant:grant-replace",
+            "from": "event:grant:share",
+            "to": "transition:grant:grant-replace",
+            "type": "requests_transition",
+            "label": "Triggers",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "negated": false,
+            "id": "transition-guard:grant:grant-replace:may_manage",
+            "from": "transition:grant:grant-replace",
+            "to": "guard:grant:may_manage",
+            "type": "guarded_by",
+            "label": "Requires true",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "transition-target:grant:grant-replace",
+            "from": "transition:grant:grant-replace",
+            "to": "state:grant:active",
+            "type": "declares_target",
+            "label": "Enters",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "transition": "transition:grant:grant-replace",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "unless": [],
+            "id": "state-transition:grant:grant-replace:active",
+            "from": "state:grant:active",
+            "to": "state:grant:active",
+            "type": "transition",
+            "label": "share",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-dependency:is_owner:0",
+            "from": "policy-predicate:same_identity",
+            "to": "policy:is_owner",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-dependency:is_owner:1",
+            "from": "policy:actor",
+            "to": "policy:is_owner",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-dependency:is_owner:2",
+            "from": "policy:owner",
+            "to": "policy:is_owner",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-dependency:is_recipient:0",
+            "from": "policy-predicate:same_identity",
+            "to": "policy:is_recipient",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-dependency:is_recipient:1",
+            "from": "policy:actor",
+            "to": "policy:is_recipient",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-dependency:is_recipient:2",
+            "from": "policy:recipient",
+            "to": "policy:is_recipient",
+            "type": "data",
+            "label": "Input",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-dependency:may_read:0",
+            "from": "policy:is_recipient",
+            "to": "policy:may_read",
+            "type": "guard",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-dependency:may_read:1",
+            "from": "policy:active",
+            "to": "policy:may_read",
+            "type": "guard",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-result:manage",
+            "from": "policy:is_owner",
+            "to": "policy-operation:manage",
+            "type": "decision_result",
+            "label": "Result",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "policy-result:read",
+            "from": "policy:may_read",
+            "to": "policy-operation:read",
+            "type": "decision_result",
+            "label": "Result",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "guard-decision:guard%3Agrant%3Amay_manage",
+            "from": "guard:grant:may_manage",
+            "to": "policy-operation:manage",
+            "type": "guard_resolves_decision",
+            "label": "Evaluates",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "share-requests-event",
+            "from": "share",
+            "to": "event:grant:share",
+            "type": "action_requests_event",
+            "label": "Triggers",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ]
+          },
+          {
+            "id": "revoke-requests-event",
+            "from": "revoke",
+            "to": "event:grant:revoke",
+            "type": "action_requests_event",
+            "label": "Triggers",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ]
+          },
+          {
+            "id": "share-guard",
+            "from": "transition:grant:grant-share",
+            "to": "policy-operation:manage",
+            "type": "transition_guarded_by",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ]
+          },
+          {
+            "id": "revoke-guard",
+            "from": "transition:grant:grant-revoke",
+            "to": "policy-operation:manage",
+            "type": "transition_guarded_by",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ]
+          },
+          {
+            "id": "read-actor-id",
+            "from": "policy:actor",
+            "to": "fact:actor-id",
+            "type": "decision_reads_fact",
+            "label": "Reads",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ]
+          },
+          {
+            "id": "read-owner-id",
+            "from": "policy:owner",
+            "to": "fact:owner-id",
+            "type": "decision_reads_fact",
+            "label": "Reads",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ]
+          },
+          {
+            "id": "read-recipient-id",
+            "from": "policy:recipient",
+            "to": "fact:recipient-id",
+            "type": "decision_reads_fact",
+            "label": "Reads",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ]
+          },
+          {
+            "id": "read-active-grant",
+            "from": "policy:active",
+            "to": "fact:active-grant",
+            "type": "decision_reads_fact",
+            "label": "Reads",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U1"
+            ]
+          },
+          {
+            "id": "replace-guard",
+            "from": "transition:grant:grant-replace",
+            "to": "policy-operation:manage",
+            "type": "transition_guarded_by",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual",
+            "source_refs": [
+              "U2"
+            ]
+          },
+          {
+            "id": "operation-state:share:grant",
+            "from": "share",
+            "to": "state-model:grant",
+            "type": "changes_state",
+            "label": "Changes state",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "operation-rule:share:manage",
+            "from": "share",
+            "to": "policy-operation:manage",
+            "type": "requires_decision",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "operation-state:read:grant",
+            "from": "read",
+            "to": "state-model:grant",
+            "type": "reads_state",
+            "label": "Reads state",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "operation-rule:read:read",
+            "from": "read",
+            "to": "policy-operation:read",
+            "type": "requires_decision",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "operation-state:revoke:grant",
+            "from": "revoke",
+            "to": "state-model:grant",
+            "type": "changes_state",
+            "label": "Changes state",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "operation-rule:revoke:manage",
+            "from": "revoke",
+            "to": "policy-operation:manage",
+            "type": "requires_decision",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "operation-state:list:grant",
+            "from": "list",
+            "to": "state-model:grant",
+            "type": "reads_state",
+            "label": "Reads state",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          },
+          {
+            "id": "operation-rule:list:read",
+            "from": "list",
+            "to": "policy-operation:read",
+            "type": "requires_decision",
+            "label": "Requires",
+            "origin": "concept-design",
+            "evidence_kind": "conceptual"
+          }
+        ],
+        "graph_roots": [
+          "business-network:sharing",
+          "state-model:grant",
+          "policy-operation:manage",
+          "policy-operation:read"
+        ],
+        "machine": {
+          "values": [],
+          "transitions": [],
+          "labels": {}
+        }
+      },
+      "networks": {
+        "business": {
+          "nodes": 8,
+          "relations": 9,
+          "behavior_relations": 4,
+          "relation_types": {
+            "contains": 5,
+            "flow": 4
+          },
+          "components": [
+            [
+              "list",
+              "read",
+              "revoke",
+              "share",
+              "upload"
+            ]
+          ],
+          "unconnected": [],
+          "review_required": false
+        },
+        "state": {
+          "nodes": 9,
+          "relations": 17,
+          "behavior_relations": 6,
+          "relation_types": {
+            "contains": 2,
+            "declares_event": 2,
+            "declares_guard": 1,
+            "declares_target": 3,
+            "guarded_by": 3,
+            "requests_transition": 3,
+            "transition": 3
+          },
+          "components": [
+            [
+              "state:grant:active",
+              "state:grant:inactive"
+            ]
+          ],
+          "unconnected": [],
+          "review_required": false
+        },
+        "rules": {
+          "nodes": 14,
+          "relations": 14,
+          "behavior_relations": 10,
+          "relation_types": {
+            "data": 6,
+            "decision_reads_fact": 4,
+            "decision_result": 2,
+            "guard": 2
+          },
+          "components": [
+            [
+              "policy-operation:manage",
+              "policy-operation:read",
+              "policy:active",
+              "policy:actor",
+              "policy:is_owner",
+              "policy:is_recipient",
+              "policy:may_read",
+              "policy:owner",
+              "policy:recipient"
+            ]
+          ],
+          "unconnected": [],
+          "review_required": false
+        }
+      },
+      "index": {
+        "business-network:sharing": {
+          "kind": "business_network",
+          "aliases": [
+            "business-network:sharing"
+          ]
+        },
+        "upload": {
+          "kind": "action",
+          "aliases": [
+            "upload"
+          ]
+        },
+        "business-contains:sharing:upload": {
+          "kind": "relation",
+          "aliases": [
+            "business-contains:sharing:upload"
+          ]
+        },
+        "share": {
+          "kind": "action",
+          "aliases": [
+            "share"
+          ]
+        },
+        "business-contains:sharing:share": {
+          "kind": "relation",
+          "aliases": [
+            "business-contains:sharing:share"
+          ]
+        },
+        "read": {
+          "kind": "action",
+          "aliases": [
+            "read"
+          ]
+        },
+        "business-contains:sharing:read": {
+          "kind": "relation",
+          "aliases": [
+            "business-contains:sharing:read"
+          ]
+        },
+        "revoke": {
+          "kind": "action",
+          "aliases": [
+            "revoke"
+          ]
+        },
+        "business-contains:sharing:revoke": {
+          "kind": "relation",
+          "aliases": [
+            "business-contains:sharing:revoke"
+          ]
+        },
+        "list": {
+          "kind": "action",
+          "aliases": [
+            "list"
+          ]
+        },
+        "business-contains:sharing:list": {
+          "kind": "relation",
+          "aliases": [
+            "business-contains:sharing:list"
+          ]
+        },
+        "upload-share": {
+          "kind": "relation",
+          "aliases": [
+            "upload-share"
+          ]
+        },
+        "share-list": {
+          "kind": "relation",
+          "aliases": [
+            "share-list"
+          ]
+        },
+        "list-read": {
+          "kind": "relation",
+          "aliases": [
+            "list-read"
+          ]
+        },
+        "share-revoke": {
+          "kind": "relation",
+          "aliases": [
+            "share-revoke"
+          ]
+        },
+        "object:grant": {
+          "kind": "object",
+          "aliases": [
+            "grant",
+            "object:grant"
+          ]
+        },
+        "object:actor": {
+          "kind": "object",
+          "aliases": [
+            "actor",
+            "object:actor"
+          ]
+        },
+        "fact:actor-id": {
+          "kind": "fact",
+          "aliases": [
+            "actor-id",
+            "fact:actor-id"
+          ]
+        },
+        "object-fact:actor-id": {
+          "kind": "relation",
+          "aliases": [
+            "object-fact:actor-id"
+          ]
+        },
+        "fact:owner-id": {
+          "kind": "fact",
+          "aliases": [
+            "fact:owner-id",
+            "owner-id"
+          ]
+        },
+        "object-fact:owner-id": {
+          "kind": "relation",
+          "aliases": [
+            "object-fact:owner-id"
+          ]
+        },
+        "fact:recipient-id": {
+          "kind": "fact",
+          "aliases": [
+            "fact:recipient-id",
+            "recipient-id"
+          ]
+        },
+        "object-fact:recipient-id": {
+          "kind": "relation",
+          "aliases": [
+            "object-fact:recipient-id"
+          ]
+        },
+        "fact:active-grant": {
+          "kind": "fact",
+          "aliases": [
+            "active-grant",
+            "fact:active-grant"
+          ]
+        },
+        "object-fact:active-grant": {
+          "kind": "relation",
+          "aliases": [
+            "object-fact:active-grant"
+          ]
+        },
+        "state-model:grant": {
+          "kind": "state_model",
+          "aliases": [
+            "grant",
+            "state-model:grant"
+          ]
+        },
+        "state-subject:grant": {
+          "kind": "relation",
+          "aliases": [
+            "state-subject:grant"
+          ]
+        },
+        "state:grant:inactive": {
+          "kind": "state",
+          "aliases": [
+            "inactive",
+            "state:grant:inactive"
+          ]
+        },
+        "state-contains:grant:inactive": {
+          "kind": "relation",
+          "aliases": [
+            "state-contains:grant:inactive"
+          ]
+        },
+        "state:grant:active": {
+          "kind": "state",
+          "aliases": [
+            "active",
+            "state:grant:active"
+          ]
+        },
+        "state-contains:grant:active": {
+          "kind": "relation",
+          "aliases": [
+            "state-contains:grant:active"
+          ]
+        },
+        "event:grant:share": {
+          "kind": "event",
+          "aliases": [
+            "event:grant:share",
+            "share"
+          ]
+        },
+        "state-event:grant:share": {
+          "kind": "relation",
+          "aliases": [
+            "state-event:grant:share"
+          ]
+        },
+        "event:grant:revoke": {
+          "kind": "event",
+          "aliases": [
+            "event:grant:revoke",
+            "revoke"
+          ]
+        },
+        "state-event:grant:revoke": {
+          "kind": "relation",
+          "aliases": [
+            "state-event:grant:revoke"
+          ]
+        },
+        "guard:grant:may_manage": {
+          "kind": "guard",
+          "aliases": [
+            "guard:grant:may_manage",
+            "may_manage"
+          ]
+        },
+        "state-guard:grant:may_manage": {
+          "kind": "relation",
+          "aliases": [
+            "state-guard:grant:may_manage"
+          ]
+        },
+        "transition:grant:grant-share": {
+          "kind": "transition",
+          "aliases": [
+            "grant-share",
+            "transition:grant:grant-share"
+          ]
+        },
+        "event-trigger:grant:grant-share": {
+          "kind": "relation",
+          "aliases": [
+            "event-trigger:grant:grant-share"
+          ]
+        },
+        "transition-guard:grant:grant-share:may_manage": {
+          "kind": "relation",
+          "aliases": [
+            "transition-guard:grant:grant-share:may_manage"
+          ]
+        },
+        "transition-target:grant:grant-share": {
+          "kind": "relation",
+          "aliases": [
+            "transition-target:grant:grant-share"
+          ]
+        },
+        "state-transition:grant:grant-share:inactive": {
+          "kind": "relation",
+          "aliases": [
+            "state-transition:grant:grant-share:inactive"
+          ]
+        },
+        "transition:grant:grant-revoke": {
+          "kind": "transition",
+          "aliases": [
+            "grant-revoke",
+            "transition:grant:grant-revoke"
+          ]
+        },
+        "event-trigger:grant:grant-revoke": {
+          "kind": "relation",
+          "aliases": [
+            "event-trigger:grant:grant-revoke"
+          ]
+        },
+        "transition-guard:grant:grant-revoke:may_manage": {
+          "kind": "relation",
+          "aliases": [
+            "transition-guard:grant:grant-revoke:may_manage"
+          ]
+        },
+        "transition-target:grant:grant-revoke": {
+          "kind": "relation",
+          "aliases": [
+            "transition-target:grant:grant-revoke"
+          ]
+        },
+        "state-transition:grant:grant-revoke:active": {
+          "kind": "relation",
+          "aliases": [
+            "state-transition:grant:grant-revoke:active"
+          ]
+        },
+        "transition:grant:grant-replace": {
+          "kind": "transition",
+          "aliases": [
+            "grant-replace",
+            "transition:grant:grant-replace"
+          ]
+        },
+        "event-trigger:grant:grant-replace": {
+          "kind": "relation",
+          "aliases": [
+            "event-trigger:grant:grant-replace"
+          ]
+        },
+        "transition-guard:grant:grant-replace:may_manage": {
+          "kind": "relation",
+          "aliases": [
+            "transition-guard:grant:grant-replace:may_manage"
+          ]
+        },
+        "transition-target:grant:grant-replace": {
+          "kind": "relation",
+          "aliases": [
+            "transition-target:grant:grant-replace"
+          ]
+        },
+        "state-transition:grant:grant-replace:active": {
+          "kind": "relation",
+          "aliases": [
+            "state-transition:grant:grant-replace:active"
+          ]
+        },
+        "policy-predicate:same_identity": {
+          "kind": "rule_predicate",
+          "aliases": [
+            "policy-predicate:same_identity",
+            "same_identity"
+          ]
+        },
+        "policy:active": {
+          "kind": "rule_expression",
+          "aliases": [
+            "active",
+            "policy:active"
+          ]
+        },
+        "policy:actor": {
+          "kind": "rule_expression",
+          "aliases": [
+            "actor",
+            "policy:actor"
+          ]
+        },
+        "policy:is_owner": {
+          "kind": "rule_expression",
+          "aliases": [
+            "is_owner",
+            "policy:is_owner"
+          ]
+        },
+        "policy-dependency:is_owner:0": {
+          "kind": "relation",
+          "aliases": [
+            "policy-dependency:is_owner:0"
+          ]
+        },
+        "policy-dependency:is_owner:1": {
+          "kind": "relation",
+          "aliases": [
+            "policy-dependency:is_owner:1"
+          ]
+        },
+        "policy-dependency:is_owner:2": {
+          "kind": "relation",
+          "aliases": [
+            "policy-dependency:is_owner:2"
+          ]
+        },
+        "policy:is_recipient": {
+          "kind": "rule_expression",
+          "aliases": [
+            "is_recipient",
+            "policy:is_recipient"
+          ]
+        },
+        "policy-dependency:is_recipient:0": {
+          "kind": "relation",
+          "aliases": [
+            "policy-dependency:is_recipient:0"
+          ]
+        },
+        "policy-dependency:is_recipient:1": {
+          "kind": "relation",
+          "aliases": [
+            "policy-dependency:is_recipient:1"
+          ]
+        },
+        "policy-dependency:is_recipient:2": {
+          "kind": "relation",
+          "aliases": [
+            "policy-dependency:is_recipient:2"
+          ]
+        },
+        "policy:may_read": {
+          "kind": "rule_expression",
+          "aliases": [
+            "may_read",
+            "policy:may_read"
+          ]
+        },
+        "policy-dependency:may_read:0": {
+          "kind": "relation",
+          "aliases": [
+            "policy-dependency:may_read:0"
+          ]
+        },
+        "policy-dependency:may_read:1": {
+          "kind": "relation",
+          "aliases": [
+            "policy-dependency:may_read:1"
+          ]
+        },
+        "policy:owner": {
+          "kind": "rule_expression",
+          "aliases": [
+            "owner",
+            "policy:owner"
+          ]
+        },
+        "policy:recipient": {
+          "kind": "rule_expression",
+          "aliases": [
+            "policy:recipient",
+            "recipient"
+          ]
+        },
+        "policy-operation:manage": {
+          "kind": "rule_operation",
+          "aliases": [
+            "manage",
+            "policy-operation:manage",
+            "policy:operation:manage"
+          ]
+        },
+        "policy-result:manage": {
+          "kind": "relation",
+          "aliases": [
+            "policy-result:manage"
+          ]
+        },
+        "policy-operation:read": {
+          "kind": "rule_operation",
+          "aliases": [
+            "policy-operation:read",
+            "policy:operation:read",
+            "read"
+          ]
+        },
+        "policy-result:read": {
+          "kind": "relation",
+          "aliases": [
+            "policy-result:read"
+          ]
+        },
+        "guard-decision:guard%3Agrant%3Amay_manage": {
+          "kind": "relation",
+          "aliases": [
+            "guard-decision:guard%3Agrant%3Amay_manage"
+          ]
+        },
+        "share-requests-event": {
+          "kind": "relation",
+          "aliases": [
+            "share-requests-event"
+          ]
+        },
+        "revoke-requests-event": {
+          "kind": "relation",
+          "aliases": [
+            "revoke-requests-event"
+          ]
+        },
+        "share-guard": {
+          "kind": "relation",
+          "aliases": [
+            "share-guard"
+          ]
+        },
+        "revoke-guard": {
+          "kind": "relation",
+          "aliases": [
+            "revoke-guard"
+          ]
+        },
+        "read-actor-id": {
+          "kind": "relation",
+          "aliases": [
+            "read-actor-id"
+          ]
+        },
+        "read-owner-id": {
+          "kind": "relation",
+          "aliases": [
+            "read-owner-id"
+          ]
+        },
+        "read-recipient-id": {
+          "kind": "relation",
+          "aliases": [
+            "read-recipient-id"
+          ]
+        },
+        "read-active-grant": {
+          "kind": "relation",
+          "aliases": [
+            "read-active-grant"
+          ]
+        },
+        "replace-guard": {
+          "kind": "relation",
+          "aliases": [
+            "replace-guard"
+          ]
+        },
+        "operation-state:share:grant": {
+          "kind": "relation",
+          "aliases": [
+            "operation-state:share:grant"
+          ]
+        },
+        "operation-rule:share:manage": {
+          "kind": "relation",
+          "aliases": [
+            "operation-rule:share:manage"
+          ]
+        },
+        "applicability:share": {
+          "kind": "applicability",
+          "aliases": [
+            "applicability:share"
+          ]
+        },
+        "operation-state:read:grant": {
+          "kind": "relation",
+          "aliases": [
+            "operation-state:read:grant"
+          ]
+        },
+        "operation-rule:read:read": {
+          "kind": "relation",
+          "aliases": [
+            "operation-rule:read:read"
+          ]
+        },
+        "applicability:read": {
+          "kind": "applicability",
+          "aliases": [
+            "applicability:read"
+          ]
+        },
+        "operation-state:revoke:grant": {
+          "kind": "relation",
+          "aliases": [
+            "operation-state:revoke:grant"
+          ]
+        },
+        "operation-rule:revoke:manage": {
+          "kind": "relation",
+          "aliases": [
+            "operation-rule:revoke:manage"
+          ]
+        },
+        "applicability:revoke": {
+          "kind": "applicability",
+          "aliases": [
+            "applicability:revoke"
+          ]
+        },
+        "applicability:upload": {
+          "kind": "applicability",
+          "aliases": [
+            "applicability:upload"
+          ]
+        },
+        "operation-state:list:grant": {
+          "kind": "relation",
+          "aliases": [
+            "operation-state:list:grant"
+          ]
+        },
+        "operation-rule:list:read": {
+          "kind": "relation",
+          "aliases": [
+            "operation-rule:list:read"
+          ]
+        },
+        "applicability:list": {
+          "kind": "applicability",
+          "aliases": [
+            "applicability:list"
+          ]
+        },
+        "expectation:revoke-denies-old-link": {
+          "kind": "expectation",
+          "aliases": [
+            "expectation:revoke-denies-old-link",
+            "revoke-denies-old-link"
+          ]
+        },
+        "expectation:owner-only": {
+          "kind": "expectation",
+          "aliases": [
+            "expectation:owner-only",
+            "owner-only"
+          ]
+        },
+        "expectation:allowed-download": {
+          "kind": "expectation",
+          "aliases": [
+            "expectation:allowed-download",
+            "allowed-download"
+          ]
+        },
+        "expectation:other-recipient-retained": {
+          "kind": "expectation",
+          "aliases": [
+            "expectation:other-recipient-retained",
+            "other-recipient-retained"
+          ]
+        }
+      },
+      "semantic_revision": "5c180e9dc2234365538223b96b2787c2bd35aaad45b8b228302b5805cc47aa17",
+      "full_semantic_revision": "8accd9f58f6c6fb2e1ce3d63f73c7d5ef9c79475af7a9f7e1e83c763e4545f07",
+      "coverage_scope": [
+        "applicability:list",
+        "applicability:read",
+        "applicability:revoke",
+        "applicability:share",
+        "applicability:upload",
+        "business-contains:sharing:list",
+        "business-contains:sharing:read",
+        "business-contains:sharing:revoke",
+        "business-contains:sharing:share",
+        "business-contains:sharing:upload",
+        "business-network:sharing",
+        "event-trigger:grant:grant-replace",
+        "event-trigger:grant:grant-revoke",
+        "event-trigger:grant:grant-share",
+        "event:grant:revoke",
+        "event:grant:share",
+        "expectation:allowed-download",
+        "expectation:other-recipient-retained",
+        "expectation:owner-only",
+        "expectation:revoke-denies-old-link",
+        "fact:active-grant",
+        "fact:actor-id",
+        "fact:owner-id",
+        "fact:recipient-id",
+        "guard-decision:guard%3Agrant%3Amay_manage",
+        "guard:grant:may_manage",
+        "list",
+        "list-read",
+        "object-fact:active-grant",
+        "object-fact:actor-id",
+        "object-fact:owner-id",
+        "object-fact:recipient-id",
+        "object:actor",
+        "object:grant",
+        "operation-rule:list:read",
+        "operation-rule:read:read",
+        "operation-rule:revoke:manage",
+        "operation-rule:share:manage",
+        "operation-state:list:grant",
+        "operation-state:read:grant",
+        "operation-state:revoke:grant",
+        "operation-state:share:grant",
+        "policy-dependency:is_owner:0",
+        "policy-dependency:is_owner:1",
+        "policy-dependency:is_owner:2",
+        "policy-dependency:is_recipient:0",
+        "policy-dependency:is_recipient:1",
+        "policy-dependency:is_recipient:2",
+        "policy-dependency:may_read:0",
+        "policy-dependency:may_read:1",
+        "policy-operation:manage",
+        "policy-operation:read",
+        "policy-predicate:same_identity",
+        "policy-result:manage",
+        "policy-result:read",
+        "policy:active",
+        "policy:actor",
+        "policy:is_owner",
+        "policy:is_recipient",
+        "policy:may_read",
+        "policy:owner",
+        "policy:recipient",
+        "read",
+        "read-active-grant",
+        "read-actor-id",
+        "read-owner-id",
+        "read-recipient-id",
+        "replace-guard",
+        "revoke",
+        "revoke-guard",
+        "revoke-requests-event",
+        "share",
+        "share-guard",
+        "share-list",
+        "share-requests-event",
+        "share-revoke",
+        "state-contains:grant:active",
+        "state-contains:grant:inactive",
+        "state-event:grant:revoke",
+        "state-event:grant:share",
+        "state-guard:grant:may_manage",
+        "state-model:grant",
+        "state-subject:grant",
+        "state-transition:grant:grant-replace:active",
+        "state-transition:grant:grant-revoke:active",
+        "state-transition:grant:grant-share:inactive",
+        "state:grant:active",
+        "state:grant:inactive",
+        "transition-guard:grant:grant-replace:may_manage",
+        "transition-guard:grant:grant-revoke:may_manage",
+        "transition-guard:grant:grant-share:may_manage",
+        "transition-target:grant:grant-replace",
+        "transition-target:grant:grant-revoke",
+        "transition-target:grant:grant-share",
+        "transition:grant:grant-replace",
+        "transition:grant:grant-revoke",
+        "transition:grant:grant-share",
+        "upload",
+        "upload-share"
+      ],
+      "confirmation": {
+        "valid": true,
+        "ready": true,
+        "errors": [],
+        "blocked": [],
+        "coverage_scope": [
+          "applicability:list",
+          "applicability:read",
+          "applicability:revoke",
+          "applicability:share",
+          "applicability:upload",
+          "business-contains:sharing:list",
+          "business-contains:sharing:read",
+          "business-contains:sharing:revoke",
+          "business-contains:sharing:share",
+          "business-contains:sharing:upload",
+          "business-network:sharing",
+          "event-trigger:grant:grant-replace",
+          "event-trigger:grant:grant-revoke",
+          "event-trigger:grant:grant-share",
+          "event:grant:revoke",
+          "event:grant:share",
+          "expectation:allowed-download",
+          "expectation:other-recipient-retained",
+          "expectation:owner-only",
+          "expectation:revoke-denies-old-link",
+          "fact:active-grant",
+          "fact:actor-id",
+          "fact:owner-id",
+          "fact:recipient-id",
+          "guard-decision:guard%3Agrant%3Amay_manage",
+          "guard:grant:may_manage",
+          "list",
+          "list-read",
+          "object-fact:active-grant",
+          "object-fact:actor-id",
+          "object-fact:owner-id",
+          "object-fact:recipient-id",
+          "object:actor",
+          "object:grant",
+          "operation-rule:list:read",
+          "operation-rule:read:read",
+          "operation-rule:revoke:manage",
+          "operation-rule:share:manage",
+          "operation-state:list:grant",
+          "operation-state:read:grant",
+          "operation-state:revoke:grant",
+          "operation-state:share:grant",
+          "policy-dependency:is_owner:0",
+          "policy-dependency:is_owner:1",
+          "policy-dependency:is_owner:2",
+          "policy-dependency:is_recipient:0",
+          "policy-dependency:is_recipient:1",
+          "policy-dependency:is_recipient:2",
+          "policy-dependency:may_read:0",
+          "policy-dependency:may_read:1",
+          "policy-operation:manage",
+          "policy-operation:read",
+          "policy-predicate:same_identity",
+          "policy-result:manage",
+          "policy-result:read",
+          "policy:active",
+          "policy:actor",
+          "policy:is_owner",
+          "policy:is_recipient",
+          "policy:may_read",
+          "policy:owner",
+          "policy:recipient",
+          "read",
+          "read-active-grant",
+          "read-actor-id",
+          "read-owner-id",
+          "read-recipient-id",
+          "replace-guard",
+          "revoke",
+          "revoke-guard",
+          "revoke-requests-event",
+          "share",
+          "share-guard",
+          "share-list",
+          "share-requests-event",
+          "share-revoke",
+          "state-contains:grant:active",
+          "state-contains:grant:inactive",
+          "state-event:grant:revoke",
+          "state-event:grant:share",
+          "state-guard:grant:may_manage",
+          "state-model:grant",
+          "state-subject:grant",
+          "state-transition:grant:grant-replace:active",
+          "state-transition:grant:grant-revoke:active",
+          "state-transition:grant:grant-share:inactive",
+          "state:grant:active",
+          "state:grant:inactive",
+          "transition-guard:grant:grant-replace:may_manage",
+          "transition-guard:grant:grant-revoke:may_manage",
+          "transition-guard:grant:grant-share:may_manage",
+          "transition-target:grant:grant-replace",
+          "transition-target:grant:grant-revoke",
+          "transition-target:grant:grant-share",
+          "transition:grant:grant-replace",
+          "transition:grant:grant-revoke",
+          "transition:grant:grant-share",
+          "upload",
+          "upload-share"
+        ],
+        "retired": [],
+        "shared_dependents_requiring_review": [
+          "applicability:list",
+          "applicability:read",
+          "applicability:revoke",
+          "applicability:share",
+          "applicability:upload",
+          "business-contains:sharing:list",
+          "business-contains:sharing:read",
+          "business-contains:sharing:revoke",
+          "business-contains:sharing:share",
+          "business-contains:sharing:upload",
+          "business-network:sharing",
+          "event-trigger:grant:grant-replace",
+          "event-trigger:grant:grant-revoke",
+          "event-trigger:grant:grant-share",
+          "event:grant:revoke",
+          "event:grant:share",
+          "expectation:allowed-download",
+          "expectation:other-recipient-retained",
+          "expectation:owner-only",
+          "expectation:revoke-denies-old-link",
+          "fact:active-grant",
+          "fact:owner-id",
+          "fact:recipient-id",
+          "guard-decision:guard%3Agrant%3Amay_manage",
+          "guard:grant:may_manage",
+          "list",
+          "list-read",
+          "object-fact:active-grant",
+          "object-fact:owner-id",
+          "object-fact:recipient-id",
+          "object:grant",
+          "operation-rule:list:read",
+          "operation-rule:read:read",
+          "operation-rule:revoke:manage",
+          "operation-rule:share:manage",
+          "operation-state:list:grant",
+          "operation-state:read:grant",
+          "operation-state:revoke:grant",
+          "operation-state:share:grant",
+          "policy-dependency:is_owner:0",
+          "policy-dependency:is_owner:1",
+          "policy-dependency:is_owner:2",
+          "policy-dependency:is_recipient:0",
+          "policy-dependency:is_recipient:1",
+          "policy-dependency:is_recipient:2",
+          "policy-dependency:may_read:0",
+          "policy-dependency:may_read:1",
+          "policy-operation:manage",
+          "policy-operation:read",
+          "policy-result:manage",
+          "policy-result:read",
+          "policy:active",
+          "policy:is_owner",
+          "policy:is_recipient",
+          "policy:may_read",
+          "policy:owner",
+          "policy:recipient",
+          "read",
+          "read-active-grant",
+          "read-owner-id",
+          "read-recipient-id",
+          "replace-guard",
+          "revoke",
+          "revoke-guard",
+          "revoke-requests-event",
+          "share",
+          "share-guard",
+          "share-list",
+          "share-requests-event",
+          "share-revoke",
+          "state-contains:grant:active",
+          "state-contains:grant:inactive",
+          "state-event:grant:revoke",
+          "state-event:grant:share",
+          "state-guard:grant:may_manage",
+          "state-model:grant",
+          "state-subject:grant",
+          "state-transition:grant:grant-replace:active",
+          "state-transition:grant:grant-revoke:active",
+          "state-transition:grant:grant-share:inactive",
+          "state:grant:active",
+          "state:grant:inactive",
+          "transition-guard:grant:grant-replace:may_manage",
+          "transition-guard:grant:grant-revoke:may_manage",
+          "transition-guard:grant:grant-share:may_manage",
+          "transition-target:grant:grant-replace",
+          "transition-target:grant:grant-revoke",
+          "transition-target:grant:grant-share",
+          "transition:grant:grant-replace",
+          "transition:grant:grant-revoke",
+          "transition:grant:grant-share",
+          "upload",
+          "upload-share"
+        ]
+      },
+      "changes": {
+        "semantic_change": false,
+        "added": [],
+        "removed": [],
+        "changed": [],
+        "affected": []
+      },
+      "binding": {
+        "valid": true,
+        "errors": [],
+        "semantic_revision": "5c180e9dc2234365538223b96b2787c2bd35aaad45b8b228302b5805cc47aa17",
+        "bound_state_models": [
+          "grant"
+        ],
+        "scope": [
+          "applicability:list",
+          "applicability:read",
+          "applicability:revoke",
+          "applicability:share",
+          "applicability:upload",
+          "business-contains:sharing:list",
+          "business-contains:sharing:read",
+          "business-contains:sharing:revoke",
+          "business-contains:sharing:share",
+          "business-contains:sharing:upload",
+          "business-network:sharing",
+          "event-trigger:grant:grant-replace",
+          "event-trigger:grant:grant-revoke",
+          "event-trigger:grant:grant-share",
+          "event:grant:revoke",
+          "event:grant:share",
+          "expectation:allowed-download",
+          "expectation:other-recipient-retained",
+          "expectation:owner-only",
+          "expectation:revoke-denies-old-link",
+          "fact:active-grant",
+          "fact:actor-id",
+          "fact:owner-id",
+          "fact:recipient-id",
+          "guard-decision:guard%3Agrant%3Amay_manage",
+          "guard:grant:may_manage",
+          "list",
+          "list-read",
+          "object-fact:active-grant",
+          "object-fact:actor-id",
+          "object-fact:owner-id",
+          "object-fact:recipient-id",
+          "object:actor",
+          "object:grant",
+          "operation-rule:list:read",
+          "operation-rule:read:read",
+          "operation-rule:revoke:manage",
+          "operation-rule:share:manage",
+          "operation-state:list:grant",
+          "operation-state:read:grant",
+          "operation-state:revoke:grant",
+          "operation-state:share:grant",
+          "policy-dependency:is_owner:0",
+          "policy-dependency:is_owner:1",
+          "policy-dependency:is_owner:2",
+          "policy-dependency:is_recipient:0",
+          "policy-dependency:is_recipient:1",
+          "policy-dependency:is_recipient:2",
+          "policy-dependency:may_read:0",
+          "policy-dependency:may_read:1",
+          "policy-operation:manage",
+          "policy-operation:read",
+          "policy-predicate:same_identity",
+          "policy-result:manage",
+          "policy-result:read",
+          "policy:active",
+          "policy:actor",
+          "policy:is_owner",
+          "policy:is_recipient",
+          "policy:may_read",
+          "policy:owner",
+          "policy:recipient",
+          "read",
+          "read-active-grant",
+          "read-actor-id",
+          "read-owner-id",
+          "read-recipient-id",
+          "replace-guard",
+          "revoke",
+          "revoke-guard",
+          "revoke-requests-event",
+          "share",
+          "share-guard",
+          "share-list",
+          "share-requests-event",
+          "share-revoke",
+          "state-contains:grant:active",
+          "state-contains:grant:inactive",
+          "state-event:grant:revoke",
+          "state-event:grant:share",
+          "state-guard:grant:may_manage",
+          "state-model:grant",
+          "state-subject:grant",
+          "state-transition:grant:grant-replace:active",
+          "state-transition:grant:grant-revoke:active",
+          "state-transition:grant:grant-share:inactive",
+          "state:grant:active",
+          "state:grant:inactive",
+          "transition-guard:grant:grant-replace:may_manage",
+          "transition-guard:grant:grant-revoke:may_manage",
+          "transition-guard:grant:grant-share:may_manage",
+          "transition-target:grant:grant-replace",
+          "transition-target:grant:grant-revoke",
+          "transition-target:grant:grant-share",
+          "transition:grant:grant-replace",
+          "transition:grant:grant-revoke",
+          "transition:grant:grant-share",
+          "upload",
+          "upload-share"
+        ],
+        "limits": [
+          "Source/case/runtime evidence must also pass the existing independent gates."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,2465 @@
+{
+  "schema_version": 3,
+  "build_id": "85eefb2f4a3daf93a2f1a848155e3e7ee884d234bc3ffd312a3255905c4a3da8",
+  "files": {
+    "app.py": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac",
+    "bo_integration.py": "2ff1f9bab2b84d55408cba0ffdf31602b7d64154c0006cd01056a4935c38acea",
+    "bo_projection.py": "004d32ee4caa8b08509caad4b5dbbbda717c193e6672b3e255bd46f20a5ab453",
+    "bo_stategraph/database-catalog.json": "fb822d4a20b952d67be6666b3fbe8b0eb249fe496508643835470db077f4e472",
+    "bo_stategraph/databases.json": "07cbb68619cc0b97b7f43b0f0d0f81c0334e0308136c11a3f11485bad86a06dc",
+    "bo_stategraph/telemetry.json": "6aa1d6eccbdd9a01454510d4549331ed063ad56447fbb2fb3bbc59e3b190e1e6",
+    "service.py": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+  },
+  "model_hash": "672208dd1a0aef9dac3a3b3715d4eaac1d11631a1835f253c3d97f4fda465834",
+  "intent_hash": "5660450c47beebcf7da78fbc1e763fee4b1535af9ea84dfa617c691624359508",
+  "model_revision": "2",
+  "bindings": {
+    "upload": {
+      "path": "service.py",
+      "symbol": "FileService.upload",
+      "line": 82,
+      "end_line": 88,
+      "signature": "self, actor: str, name: str, content: bytes",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Store supplied bytes and persist their owner; return the new file identity.",
+        "description": "Store supplied bytes and persist their owner; return the new file identity.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.upload",
+          "line": 83,
+          "end_line": 83,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "85b1c2e9e719221d3ff28090416609e3a507ec66ec7715421005a7098bf98ebe",
+      "snippet": "    def upload(self, actor: str, name: str, content: bytes):\n        \"\"\"Store supplied bytes and persist their owner; return the new file identity.\"\"\"\n        file_id = uuid.uuid4().hex\n        (self.folder / file_id).write_bytes(content)\n        with self.connect() as connection:\n            connection.execute(\"INSERT INTO files VALUES (?, ?, ?)\", (file_id, actor, name))\n        return {\"file_id\": file_id, \"owner\": actor, \"name\": name}",
+      "calls": [
+        "(self.folder / file_id).write_bytes",
+        "connection.execute",
+        "self.connect",
+        "uuid.uuid4"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "share": {
+      "path": "service.py",
+      "symbol": "FileService.share",
+      "line": 117,
+      "end_line": 131,
+      "signature": "self, actor: str, file_id: str, recipient: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Activate this recipient's grant after checking the uploaded file's owner.",
+        "description": "Activate this recipient's grant after checking the uploaded file's owner.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.share",
+          "line": 118,
+          "end_line": 118,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "d1142e5c7da0f35610ea640127d3d886fc5afae7894510a059b606052734f148",
+      "snippet": "    def share(self, actor: str, file_id: str, recipient: str):\n        \"\"\"Activate this recipient's grant after checking the uploaded file's owner.\"\"\"\n        facts = self.facts(actor, file_id, recipient)\n        if not can_manage(actor, facts[\"owner\"]):\n            raise AccessDenied(facts)\n        with self.connect() as connection:\n            connection.execute(\n                \"INSERT INTO grants VALUES (?, ?, 1, 1) ON CONFLICT(file_id, recipient) DO UPDATE \"\n                \"SET active=1, revision=revision+1\",\n                (file_id, recipient),\n            )\n            revision = connection.execute(\n                \"SELECT revision FROM grants WHERE file_id=? AND recipient=?\", (file_id, recipient)\n            ).fetchone()[0]\n        return {\"file_id\": file_id, \"recipient\": recipient, \"state\": \"active\", \"revision\": revision}",
+      "calls": [
+        "AccessDenied",
+        "can_manage",
+        "connection.execute",
+        "connection.execute('SELECT revision FROM grants WHERE file_id=? AND recipient=?', (file_id, recipient)).fetchone",
+        "self.connect",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 120,
+          "expression": "not can_manage(actor, facts['owner'])"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "read": {
+      "path": "service.py",
+      "symbol": "FileService.download",
+      "line": 171,
+      "end_line": 176,
+      "signature": "self, actor: str, file_id: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Read the current grant for every download, including previously issued URLs.",
+        "description": "Read the current grant for every download, including previously issued URLs.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.download",
+          "line": 172,
+          "end_line": 172,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "f97a70c1f71bf7b2ed939343f2f69b9ca0029477c735c30da77056a8c6488bae",
+      "snippet": "    def download(self, actor: str, file_id: str):\n        \"\"\"Read the current grant for every download, including previously issued URLs.\"\"\"\n        facts = self.facts(actor, file_id)\n        if not can_read(actor, facts[\"recipient\"], facts[\"active\"]):\n            raise AccessDenied(facts)\n        return (self.folder / file_id).read_bytes()",
+      "calls": [
+        "(self.folder / file_id).read_bytes",
+        "AccessDenied",
+        "can_read",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 174,
+          "expression": "not can_read(actor, facts['recipient'], facts['active'])"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "revoke": {
+      "path": "service.py",
+      "symbol": "FileService.revoke",
+      "line": 133,
+      "end_line": 154,
+      "signature": "self, actor: str, file_id: str, recipient: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Deactivate only the selected recipient's grant; other grants remain intact.",
+        "description": "Deactivate only the selected recipient's grant; other grants remain intact.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.revoke",
+          "line": 134,
+          "end_line": 134,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "ab0e4cace45835356dcc6da541ca5fd0cfc352514e6b5426c06dc12decc5a8f4",
+      "snippet": "    def revoke(self, actor: str, file_id: str, recipient: str):\n        \"\"\"Deactivate only the selected recipient's grant; other grants remain intact.\"\"\"\n        facts = self.facts(actor, file_id, recipient)\n        if not can_manage(actor, facts[\"owner\"]):\n            raise AccessDenied(facts)\n        with self.connect() as connection:\n            connection.execute(\n                \"UPDATE grants SET active=0, revision=revision+1 WHERE file_id=? AND recipient=?\",\n                (file_id, recipient),\n            )\n            row = connection.execute(\n                \"SELECT recipient, revision FROM grants WHERE file_id=? AND recipient=?\",\n                (file_id, recipient),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"file_id\": file_id,\n            \"recipient\": row[\"recipient\"],\n            \"state\": \"inactive\",\n            \"revision\": row[\"revision\"],\n        }",
+      "calls": [
+        "AccessDenied",
+        "FileNotFoundError",
+        "can_manage",
+        "connection.execute",
+        "connection.execute('SELECT recipient, revision FROM grants WHERE file_id=? AND recipient=?', (file_id, recipient)).fetchone",
+        "self.connect",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 136,
+          "expression": "not can_manage(actor, facts['owner'])"
+        },
+        {
+          "line": 147,
+          "expression": "row is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "list": {
+      "path": "service.py",
+      "symbol": "FileService.received",
+      "line": 156,
+      "end_line": 169,
+      "signature": "self, actor: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "List files whose current active grant names this colleague.",
+        "description": "List files whose current active grant names this colleague.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.received",
+          "line": 157,
+          "end_line": 157,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "f68718b390ee182b84619724c9d406f052eec400828f3e30311d59d7a4f20c82",
+      "snippet": "    def received(self, actor: str):\n        \"\"\"List files whose current active grant names this colleague.\"\"\"\n        with self.connect() as connection:\n            rows = connection.execute(\n                \"SELECT f.id file_id, f.name, f.owner FROM files f JOIN grants g ON g.file_id=f.id \"\n                \"WHERE g.recipient=? ORDER BY f.name\",\n                (actor,),\n            ).fetchall()\n        received = []\n        for row in rows:\n            facts = self.facts(actor, row[\"file_id\"])\n            if can_read(actor, facts[\"recipient\"], facts[\"active\"]):\n                received.append(dict(row))\n        return received",
+      "calls": [
+        "can_read",
+        "connection.execute",
+        "connection.execute('SELECT f.id file_id, f.name, f.owner FROM files f JOIN grants g ON g.file_id=f.id WHERE g.recipient=? ORDER BY f.name', (actor,)).fetchall",
+        "dict",
+        "received.append",
+        "self.connect",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 167,
+          "expression": "can_read(actor, facts['recipient'], facts['active'])"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "facts": {
+      "path": "service.py",
+      "symbol": "FileService.facts",
+      "line": 90,
+      "end_line": 115,
+      "signature": "self, actor: str, file_id: str, recipient: str | None=None",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Read the selected recipient's grant before an authorization decision.",
+        "description": "Read the selected recipient's grant before an authorization decision.\n\nA read request selects its actor; owner operations explicitly select the\nrecipient whose grant they will change.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.facts",
+          "line": 91,
+          "end_line": 95,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "a6a8401b374389b5e3591bfc56402c2cecc1cf42993332863055017056a48404",
+      "snippet": "    def facts(self, actor: str, file_id: str, recipient: str | None = None):\n        \"\"\"Read the selected recipient's grant before an authorization decision.\n\n        A read request selects its actor; owner operations explicitly select the\n        recipient whose grant they will change.\n        \"\"\"\n        recipient = actor if recipient is None else recipient\n        with self.connect() as connection:\n            row = connection.execute(\n                \"SELECT f.owner, COALESCE(g.recipient, ?) recipient, \"\n                \"COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision \"\n                \"FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?\",\n                (recipient, recipient, file_id),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"actor\": actor,\n            \"owner\": row[\"owner\"],\n            \"recipient\": row[\"recipient\"],\n            \"active\": bool(row[\"active\"]),\n            \"revision\": row[\"revision\"],\n            \"file_id\": file_id,\n            \"timing\": \"before_effect\",\n            \"scope\": \"current_request\",\n        }",
+      "calls": [
+        "FileNotFoundError",
+        "bool",
+        "connection.execute",
+        "connection.execute('SELECT f.owner, COALESCE(g.recipient, ?) recipient, COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?', (recipient, recipient, file_id)).fetchone",
+        "self.connect"
+      ],
+      "guards": [
+        {
+          "line": 104,
+          "expression": "row is None"
+        },
+        {
+          "line": 96,
+          "expression": "recipient is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "http.home": {
+      "path": "app.py",
+      "symbol": "create_app.home",
+      "line": 21,
+      "end_line": 24,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Display upload, sharing and received-file controls.",
+        "description": "Display upload, sharing and received-file controls.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.home",
+          "line": 23,
+          "end_line": 23,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/",
+          "methods": [
+            "GET"
+          ],
+          "declaration": "app.get('/')",
+          "handler": "create_app.home",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.home",
+            "line": 21,
+            "column": 5,
+            "end_line": 21,
+            "end_column": 17
+          }
+        }
+      ],
+      "ast_sha256": "e62f10c7e630c4392a6e569883b2f80d4048755aef0aaa074adf382121d6f0ab",
+      "snippet": "    @app.get(\"/\")\n    def home():\n        \"\"\"Display upload, sharing and received-file controls.\"\"\"\n        return Path(__file__).with_name(\"index.html\").read_text(encoding=\"utf-8\")",
+      "calls": [
+        "Path",
+        "Path(__file__).with_name",
+        "Path(__file__).with_name('index.html').read_text",
+        "app.get"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "http.upload": {
+      "path": "app.py",
+      "symbol": "create_app.upload",
+      "line": 26,
+      "end_line": 30,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Upload one file for the current test user.",
+        "description": "Upload one file for the current test user.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.upload",
+          "line": 28,
+          "end_line": 28,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/files",
+          "methods": [
+            "POST"
+          ],
+          "declaration": "app.post('/api/files')",
+          "handler": "create_app.upload",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.upload",
+            "line": 26,
+            "column": 5,
+            "end_line": 26,
+            "end_column": 27
+          }
+        }
+      ],
+      "ast_sha256": "0966bbd16a7a3cb717bf3e99a69bf33d88a827e1b31b4b4a9a77af78edc6fd2f",
+      "snippet": "    @app.post(\"/api/files\")\n    def upload():\n        \"\"\"Upload one file for the current test user.\"\"\"\n        item = request.files[\"file\"]\n        return jsonify(files.upload(actor(), item.filename, item.read())), 201",
+      "calls": [
+        "actor",
+        "app.post",
+        "files.upload",
+        "item.read",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "http.share": {
+      "path": "app.py",
+      "symbol": "create_app.share",
+      "line": 32,
+      "end_line": 35,
+      "signature": "file_id: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Share the named file with the colleague supplied in the request.",
+        "description": "Share the named file with the colleague supplied in the request.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.share",
+          "line": 34,
+          "end_line": 34,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/files/<file_id>/share",
+          "methods": [
+            "POST"
+          ],
+          "declaration": "app.post('/api/files/<file_id>/share')",
+          "handler": "create_app.share",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.share",
+            "line": 32,
+            "column": 5,
+            "end_line": 32,
+            "end_column": 43
+          }
+        }
+      ],
+      "ast_sha256": "51f482a46c84d2c1d20d4bd3ca1986ecb10f59b1713a1ff658095a8235622ce6",
+      "snippet": "    @app.post(\"/api/files/<file_id>/share\")\n    def share(file_id: str):\n        \"\"\"Share the named file with the colleague supplied in the request.\"\"\"\n        return jsonify(files.share(actor(), file_id, request.json[\"recipient\"]))",
+      "calls": [
+        "actor",
+        "app.post",
+        "files.share",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "http.revoke": {
+      "path": "app.py",
+      "symbol": "create_app.revoke",
+      "line": 37,
+      "end_line": 40,
+      "signature": "file_id: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Revoke the selected colleague's access to the named file.",
+        "description": "Revoke the selected colleague's access to the named file.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.revoke",
+          "line": 39,
+          "end_line": 39,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/files/<file_id>/revoke",
+          "methods": [
+            "POST"
+          ],
+          "declaration": "app.post('/api/files/<file_id>/revoke')",
+          "handler": "create_app.revoke",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.revoke",
+            "line": 37,
+            "column": 5,
+            "end_line": 37,
+            "end_column": 44
+          }
+        }
+      ],
+      "ast_sha256": "f3ca5f2489200349ea9f41aae14299329bdb9e0e7e1738d3933828b2ddeee171",
+      "snippet": "    @app.post(\"/api/files/<file_id>/revoke\")\n    def revoke(file_id: str):\n        \"\"\"Revoke the selected colleague's access to the named file.\"\"\"\n        return jsonify(files.revoke(actor(), file_id, request.json[\"recipient\"]))",
+      "calls": [
+        "actor",
+        "app.post",
+        "files.revoke",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "http.received": {
+      "path": "app.py",
+      "symbol": "create_app.received",
+      "line": 42,
+      "end_line": 45,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "List files currently shared with the selected colleague.",
+        "description": "List files currently shared with the selected colleague.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.received",
+          "line": 44,
+          "end_line": 44,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/received",
+          "methods": [
+            "GET"
+          ],
+          "declaration": "app.get('/api/received')",
+          "handler": "create_app.received",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.received",
+            "line": 42,
+            "column": 5,
+            "end_line": 42,
+            "end_column": 29
+          }
+        }
+      ],
+      "ast_sha256": "b6a9ca580cf6695110ac10ba66f3738bb5bf9527ab25c35101701b39f99c33b1",
+      "snippet": "    @app.get(\"/api/received\")\n    def received():\n        \"\"\"List files currently shared with the selected colleague.\"\"\"\n        return jsonify(files.received(actor()))",
+      "calls": [
+        "actor",
+        "app.get",
+        "files.received",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "http.download": {
+      "path": "app.py",
+      "symbol": "create_app.download",
+      "line": 47,
+      "end_line": 50,
+      "signature": "file_id: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Return stored bytes only after the current recipient grant passes.",
+        "description": "Return stored bytes only after the current recipient grant passes.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.download",
+          "line": 49,
+          "end_line": 49,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/files/<file_id>/download",
+          "methods": [
+            "GET"
+          ],
+          "declaration": "app.get('/api/files/<file_id>/download')",
+          "handler": "create_app.download",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.download",
+            "line": 47,
+            "column": 5,
+            "end_line": 47,
+            "end_column": 45
+          }
+        }
+      ],
+      "ast_sha256": "054c0a6c7be3c77155d042c0f7939b5fc3bbae90df6495009ced84c1d4ebc276",
+      "snippet": "    @app.get(\"/api/files/<file_id>/download\")\n    def download(file_id: str):\n        \"\"\"Return stored bytes only after the current recipient grant passes.\"\"\"\n        return Response(files.download(actor(), file_id), mimetype=\"application/octet-stream\")",
+      "calls": [
+        "Response",
+        "actor",
+        "app.get",
+        "files.download"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "policy:function:same_identity": {
+      "path": "service.py",
+      "symbol": "same_identity",
+      "line": 26,
+      "end_line": 33,
+      "signature": "left: str, right: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Compare the current actor with an owner or recipient.",
+        "description": "Compare the current actor with an owner or recipient.\n\nArgs:\n    left: Current actor identity.\n    right: Identity required by this operation.",
+        "parameters": {
+          "left": {
+            "description": "Current actor identity.",
+            "line": 30
+          },
+          "right": {
+            "description": "Identity required by this operation.",
+            "line": 31
+          }
+        },
+        "source": {
+          "path": "service.py",
+          "symbol": "same_identity",
+          "line": 27,
+          "end_line": 32,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "0b12e51f164cb04d460a8e60056d0e312afbd287b2fd6fd3042f8a272cc2b69e",
+      "snippet": "def same_identity(left: str, right: str) -> bool:\n    \"\"\"Compare the current actor with an owner or recipient.\n\n    Args:\n        left: Current actor identity.\n        right: Identity required by this operation.\n    \"\"\"\n    return left == right",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "policy:is_owner": {
+      "path": "service.py",
+      "symbol": "same_identity",
+      "line": 26,
+      "end_line": 33,
+      "signature": "left: str, right: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Compare the current actor with an owner or recipient.",
+        "description": "Compare the current actor with an owner or recipient.\n\nArgs:\n    left: Current actor identity.\n    right: Identity required by this operation.",
+        "parameters": {
+          "left": {
+            "description": "Current actor identity.",
+            "line": 30
+          },
+          "right": {
+            "description": "Identity required by this operation.",
+            "line": 31
+          }
+        },
+        "source": {
+          "path": "service.py",
+          "symbol": "same_identity",
+          "line": 27,
+          "end_line": 32,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "0b12e51f164cb04d460a8e60056d0e312afbd287b2fd6fd3042f8a272cc2b69e",
+      "snippet": "def same_identity(left: str, right: str) -> bool:\n    \"\"\"Compare the current actor with an owner or recipient.\n\n    Args:\n        left: Current actor identity.\n        right: Identity required by this operation.\n    \"\"\"\n    return left == right",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "policy:is_recipient": {
+      "path": "service.py",
+      "symbol": "same_identity",
+      "line": 26,
+      "end_line": 33,
+      "signature": "left: str, right: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Compare the current actor with an owner or recipient.",
+        "description": "Compare the current actor with an owner or recipient.\n\nArgs:\n    left: Current actor identity.\n    right: Identity required by this operation.",
+        "parameters": {
+          "left": {
+            "description": "Current actor identity.",
+            "line": 30
+          },
+          "right": {
+            "description": "Identity required by this operation.",
+            "line": 31
+          }
+        },
+        "source": {
+          "path": "service.py",
+          "symbol": "same_identity",
+          "line": 27,
+          "end_line": 32,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "0b12e51f164cb04d460a8e60056d0e312afbd287b2fd6fd3042f8a272cc2b69e",
+      "snippet": "def same_identity(left: str, right: str) -> bool:\n    \"\"\"Compare the current actor with an owner or recipient.\n\n    Args:\n        left: Current actor identity.\n        right: Identity required by this operation.\n    \"\"\"\n    return left == right",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "db.upload": {
+      "path": "service.py",
+      "symbol": "FileService.upload",
+      "line": 82,
+      "end_line": 88,
+      "signature": "self, actor: str, name: str, content: bytes",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Store supplied bytes and persist their owner; return the new file identity.",
+        "description": "Store supplied bytes and persist their owner; return the new file identity.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.upload",
+          "line": 83,
+          "end_line": 83,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "85b1c2e9e719221d3ff28090416609e3a507ec66ec7715421005a7098bf98ebe",
+      "snippet": "    def upload(self, actor: str, name: str, content: bytes):\n        \"\"\"Store supplied bytes and persist their owner; return the new file identity.\"\"\"\n        file_id = uuid.uuid4().hex\n        (self.folder / file_id).write_bytes(content)\n        with self.connect() as connection:\n            connection.execute(\"INSERT INTO files VALUES (?, ?, ?)\", (file_id, actor, name))\n        return {\"file_id\": file_id, \"owner\": actor, \"name\": name}",
+      "calls": [
+        "(self.folder / file_id).write_bytes",
+        "connection.execute",
+        "self.connect",
+        "uuid.uuid4"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "db.share": {
+      "path": "service.py",
+      "symbol": "FileService.share",
+      "line": 117,
+      "end_line": 131,
+      "signature": "self, actor: str, file_id: str, recipient: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Activate this recipient's grant after checking the uploaded file's owner.",
+        "description": "Activate this recipient's grant after checking the uploaded file's owner.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.share",
+          "line": 118,
+          "end_line": 118,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "d1142e5c7da0f35610ea640127d3d886fc5afae7894510a059b606052734f148",
+      "snippet": "    def share(self, actor: str, file_id: str, recipient: str):\n        \"\"\"Activate this recipient's grant after checking the uploaded file's owner.\"\"\"\n        facts = self.facts(actor, file_id, recipient)\n        if not can_manage(actor, facts[\"owner\"]):\n            raise AccessDenied(facts)\n        with self.connect() as connection:\n            connection.execute(\n                \"INSERT INTO grants VALUES (?, ?, 1, 1) ON CONFLICT(file_id, recipient) DO UPDATE \"\n                \"SET active=1, revision=revision+1\",\n                (file_id, recipient),\n            )\n            revision = connection.execute(\n                \"SELECT revision FROM grants WHERE file_id=? AND recipient=?\", (file_id, recipient)\n            ).fetchone()[0]\n        return {\"file_id\": file_id, \"recipient\": recipient, \"state\": \"active\", \"revision\": revision}",
+      "calls": [
+        "AccessDenied",
+        "can_manage",
+        "connection.execute",
+        "connection.execute('SELECT revision FROM grants WHERE file_id=? AND recipient=?', (file_id, recipient)).fetchone",
+        "self.connect",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 120,
+          "expression": "not can_manage(actor, facts['owner'])"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "db.revoke": {
+      "path": "service.py",
+      "symbol": "FileService.revoke",
+      "line": 133,
+      "end_line": 154,
+      "signature": "self, actor: str, file_id: str, recipient: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Deactivate only the selected recipient's grant; other grants remain intact.",
+        "description": "Deactivate only the selected recipient's grant; other grants remain intact.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.revoke",
+          "line": 134,
+          "end_line": 134,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "ab0e4cace45835356dcc6da541ca5fd0cfc352514e6b5426c06dc12decc5a8f4",
+      "snippet": "    def revoke(self, actor: str, file_id: str, recipient: str):\n        \"\"\"Deactivate only the selected recipient's grant; other grants remain intact.\"\"\"\n        facts = self.facts(actor, file_id, recipient)\n        if not can_manage(actor, facts[\"owner\"]):\n            raise AccessDenied(facts)\n        with self.connect() as connection:\n            connection.execute(\n                \"UPDATE grants SET active=0, revision=revision+1 WHERE file_id=? AND recipient=?\",\n                (file_id, recipient),\n            )\n            row = connection.execute(\n                \"SELECT recipient, revision FROM grants WHERE file_id=? AND recipient=?\",\n                (file_id, recipient),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"file_id\": file_id,\n            \"recipient\": row[\"recipient\"],\n            \"state\": \"inactive\",\n            \"revision\": row[\"revision\"],\n        }",
+      "calls": [
+        "AccessDenied",
+        "FileNotFoundError",
+        "can_manage",
+        "connection.execute",
+        "connection.execute('SELECT recipient, revision FROM grants WHERE file_id=? AND recipient=?', (file_id, recipient)).fetchone",
+        "self.connect",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 136,
+          "expression": "not can_manage(actor, facts['owner'])"
+        },
+        {
+          "line": 147,
+          "expression": "row is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "db.list": {
+      "path": "service.py",
+      "symbol": "FileService.received",
+      "line": 156,
+      "end_line": 169,
+      "signature": "self, actor: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "List files whose current active grant names this colleague.",
+        "description": "List files whose current active grant names this colleague.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.received",
+          "line": 157,
+          "end_line": 157,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "f68718b390ee182b84619724c9d406f052eec400828f3e30311d59d7a4f20c82",
+      "snippet": "    def received(self, actor: str):\n        \"\"\"List files whose current active grant names this colleague.\"\"\"\n        with self.connect() as connection:\n            rows = connection.execute(\n                \"SELECT f.id file_id, f.name, f.owner FROM files f JOIN grants g ON g.file_id=f.id \"\n                \"WHERE g.recipient=? ORDER BY f.name\",\n                (actor,),\n            ).fetchall()\n        received = []\n        for row in rows:\n            facts = self.facts(actor, row[\"file_id\"])\n            if can_read(actor, facts[\"recipient\"], facts[\"active\"]):\n                received.append(dict(row))\n        return received",
+      "calls": [
+        "can_read",
+        "connection.execute",
+        "connection.execute('SELECT f.id file_id, f.name, f.owner FROM files f JOIN grants g ON g.file_id=f.id WHERE g.recipient=? ORDER BY f.name', (actor,)).fetchall",
+        "dict",
+        "received.append",
+        "self.connect",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 167,
+          "expression": "can_read(actor, facts['recipient'], facts['active'])"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "db.facts": {
+      "path": "service.py",
+      "symbol": "FileService.facts",
+      "line": 90,
+      "end_line": 115,
+      "signature": "self, actor: str, file_id: str, recipient: str | None=None",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Read the selected recipient's grant before an authorization decision.",
+        "description": "Read the selected recipient's grant before an authorization decision.\n\nA read request selects its actor; owner operations explicitly select the\nrecipient whose grant they will change.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.facts",
+          "line": 91,
+          "end_line": 95,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "a6a8401b374389b5e3591bfc56402c2cecc1cf42993332863055017056a48404",
+      "snippet": "    def facts(self, actor: str, file_id: str, recipient: str | None = None):\n        \"\"\"Read the selected recipient's grant before an authorization decision.\n\n        A read request selects its actor; owner operations explicitly select the\n        recipient whose grant they will change.\n        \"\"\"\n        recipient = actor if recipient is None else recipient\n        with self.connect() as connection:\n            row = connection.execute(\n                \"SELECT f.owner, COALESCE(g.recipient, ?) recipient, \"\n                \"COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision \"\n                \"FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?\",\n                (recipient, recipient, file_id),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"actor\": actor,\n            \"owner\": row[\"owner\"],\n            \"recipient\": row[\"recipient\"],\n            \"active\": bool(row[\"active\"]),\n            \"revision\": row[\"revision\"],\n            \"file_id\": file_id,\n            \"timing\": \"before_effect\",\n            \"scope\": \"current_request\",\n        }",
+      "calls": [
+        "FileNotFoundError",
+        "bool",
+        "connection.execute",
+        "connection.execute('SELECT f.owner, COALESCE(g.recipient, ?) recipient, COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?', (recipient, recipient, file_id)).fetchone",
+        "self.connect"
+      ],
+      "guards": [
+        {
+          "line": 104,
+          "expression": "row is None"
+        },
+        {
+          "line": 96,
+          "expression": "recipient is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "support:app.py::create_app.denied": {
+      "path": "app.py",
+      "symbol": "create_app.denied",
+      "line": 52,
+      "end_line": 55,
+      "signature": "error",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Preserve the real permission-denied HTTP status.",
+        "description": "Preserve the real permission-denied HTTP status.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.denied",
+          "line": 54,
+          "end_line": 54,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "f4d9a4e501346c4ff2c53f73c75b1132569a8ae77ae365d93d6931badbd38adc",
+      "snippet": "    @app.errorhandler(AccessDenied)\n    def denied(error):\n        \"\"\"Preserve the real permission-denied HTTP status.\"\"\"\n        return jsonify(error=str(error)), 403",
+      "calls": [
+        "app.errorhandler",
+        "jsonify",
+        "str"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "support:app.py::create_app.missing": {
+      "path": "app.py",
+      "symbol": "create_app.missing",
+      "line": 57,
+      "end_line": 60,
+      "signature": "error",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Return a missing-resource response for an unknown file identity.",
+        "description": "Return a missing-resource response for an unknown file identity.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.missing",
+          "line": 59,
+          "end_line": 59,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "cb3a30d369dad5821358170281e48c9206840977a562816784158e1563f82580",
+      "snippet": "    @app.errorhandler(FileNotFoundError)\n    def missing(error):\n        \"\"\"Return a missing-resource response for an unknown file identity.\"\"\"\n        return jsonify(error=\"File not found\"), 404",
+      "calls": [
+        "app.errorhandler",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code.6e677d1af4b037c9": {
+      "path": "service.py",
+      "symbol": "FileService.connect",
+      "line": 75,
+      "end_line": 80,
+      "signature": "self",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Open one application database connection with foreign keys enabled.",
+        "description": "Open one application database connection with foreign keys enabled.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.connect",
+          "line": 76,
+          "end_line": 76,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "7dd0d0c5cb783145e4f5996294524f4d11ec9d05d031a956a5d06a0640eaa0f8",
+      "snippet": "    def connect(self):\n        \"\"\"Open one application database connection with foreign keys enabled.\"\"\"\n        connection = sqlite3.connect(self.database, factory=DatabaseConnection)\n        connection.row_factory = sqlite3.Row\n        connection.execute(\"PRAGMA foreign_keys=ON\")\n        return connection",
+      "calls": [
+        "connection.execute",
+        "sqlite3.connect"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.24cdb96f0e01ca5e": {
+      "path": "service.py",
+      "symbol": "FileService.facts",
+      "line": 90,
+      "end_line": 115,
+      "signature": "self, actor: str, file_id: str, recipient: str | None=None",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Read the selected recipient's grant before an authorization decision.",
+        "description": "Read the selected recipient's grant before an authorization decision.\n\nA read request selects its actor; owner operations explicitly select the\nrecipient whose grant they will change.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.facts",
+          "line": 91,
+          "end_line": 95,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "a6a8401b374389b5e3591bfc56402c2cecc1cf42993332863055017056a48404",
+      "snippet": "    def facts(self, actor: str, file_id: str, recipient: str | None = None):\n        \"\"\"Read the selected recipient's grant before an authorization decision.\n\n        A read request selects its actor; owner operations explicitly select the\n        recipient whose grant they will change.\n        \"\"\"\n        recipient = actor if recipient is None else recipient\n        with self.connect() as connection:\n            row = connection.execute(\n                \"SELECT f.owner, COALESCE(g.recipient, ?) recipient, \"\n                \"COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision \"\n                \"FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?\",\n                (recipient, recipient, file_id),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"actor\": actor,\n            \"owner\": row[\"owner\"],\n            \"recipient\": row[\"recipient\"],\n            \"active\": bool(row[\"active\"]),\n            \"revision\": row[\"revision\"],\n            \"file_id\": file_id,\n            \"timing\": \"before_effect\",\n            \"scope\": \"current_request\",\n        }",
+      "calls": [
+        "FileNotFoundError",
+        "bool",
+        "connection.execute",
+        "connection.execute('SELECT f.owner, COALESCE(g.recipient, ?) recipient, COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?', (recipient, recipient, file_id)).fetchone",
+        "self.connect"
+      ],
+      "guards": [
+        {
+          "line": 104,
+          "expression": "row is None"
+        },
+        {
+          "line": 96,
+          "expression": "recipient is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.dd12587c6ebe1bb1": {
+      "path": "service.py",
+      "symbol": "can_manage",
+      "line": 36,
+      "end_line": 38,
+      "signature": "actor: str, owner: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Allow the uploaded file's owner to change its recipient grant.",
+        "description": "Allow the uploaded file's owner to change its recipient grant.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "can_manage",
+          "line": 37,
+          "end_line": 37,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "34b194e455675fc1ef32bf406c6c5618135e3f81893f03b1ec744d5a3278112b",
+      "snippet": "def can_manage(actor: str, owner: str) -> bool:\n    \"\"\"Allow the uploaded file's owner to change its recipient grant.\"\"\"\n    return same_identity(actor, owner)",
+      "calls": [
+        "same_identity"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.338b224b6f166a79": {
+      "path": "service.py",
+      "symbol": "FileService.connect",
+      "line": 75,
+      "end_line": 80,
+      "signature": "self",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Open one application database connection with foreign keys enabled.",
+        "description": "Open one application database connection with foreign keys enabled.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.connect",
+          "line": 76,
+          "end_line": 76,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "7dd0d0c5cb783145e4f5996294524f4d11ec9d05d031a956a5d06a0640eaa0f8",
+      "snippet": "    def connect(self):\n        \"\"\"Open one application database connection with foreign keys enabled.\"\"\"\n        connection = sqlite3.connect(self.database, factory=DatabaseConnection)\n        connection.row_factory = sqlite3.Row\n        connection.execute(\"PRAGMA foreign_keys=ON\")\n        return connection",
+      "calls": [
+        "connection.execute",
+        "sqlite3.connect"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.fdc882a96e26f912": {
+      "path": "service.py",
+      "symbol": "FileService.facts",
+      "line": 90,
+      "end_line": 115,
+      "signature": "self, actor: str, file_id: str, recipient: str | None=None",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Read the selected recipient's grant before an authorization decision.",
+        "description": "Read the selected recipient's grant before an authorization decision.\n\nA read request selects its actor; owner operations explicitly select the\nrecipient whose grant they will change.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.facts",
+          "line": 91,
+          "end_line": 95,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "a6a8401b374389b5e3591bfc56402c2cecc1cf42993332863055017056a48404",
+      "snippet": "    def facts(self, actor: str, file_id: str, recipient: str | None = None):\n        \"\"\"Read the selected recipient's grant before an authorization decision.\n\n        A read request selects its actor; owner operations explicitly select the\n        recipient whose grant they will change.\n        \"\"\"\n        recipient = actor if recipient is None else recipient\n        with self.connect() as connection:\n            row = connection.execute(\n                \"SELECT f.owner, COALESCE(g.recipient, ?) recipient, \"\n                \"COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision \"\n                \"FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?\",\n                (recipient, recipient, file_id),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"actor\": actor,\n            \"owner\": row[\"owner\"],\n            \"recipient\": row[\"recipient\"],\n            \"active\": bool(row[\"active\"]),\n            \"revision\": row[\"revision\"],\n            \"file_id\": file_id,\n            \"timing\": \"before_effect\",\n            \"scope\": \"current_request\",\n        }",
+      "calls": [
+        "FileNotFoundError",
+        "bool",
+        "connection.execute",
+        "connection.execute('SELECT f.owner, COALESCE(g.recipient, ?) recipient, COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?', (recipient, recipient, file_id)).fetchone",
+        "self.connect"
+      ],
+      "guards": [
+        {
+          "line": 104,
+          "expression": "row is None"
+        },
+        {
+          "line": 96,
+          "expression": "recipient is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.2d0fba968befe8e9": {
+      "path": "service.py",
+      "symbol": "can_read",
+      "line": 41,
+      "end_line": 43,
+      "signature": "actor: str, recipient: str, active: bool",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Allow the named recipient to read a currently active grant.",
+        "description": "Allow the named recipient to read a currently active grant.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "can_read",
+          "line": 42,
+          "end_line": 42,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "318422d32e026e6acf5329595e8d5733219e654f08f846ab368352605a28c1bd",
+      "snippet": "def can_read(actor: str, recipient: str, active: bool) -> bool:\n    \"\"\"Allow the named recipient to read a currently active grant.\"\"\"\n    return same_identity(actor, recipient) and active",
+      "calls": [
+        "same_identity"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.46c14661548922c3": {
+      "path": "service.py",
+      "symbol": "FileService.facts",
+      "line": 90,
+      "end_line": 115,
+      "signature": "self, actor: str, file_id: str, recipient: str | None=None",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Read the selected recipient's grant before an authorization decision.",
+        "description": "Read the selected recipient's grant before an authorization decision.\n\nA read request selects its actor; owner operations explicitly select the\nrecipient whose grant they will change.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.facts",
+          "line": 91,
+          "end_line": 95,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "a6a8401b374389b5e3591bfc56402c2cecc1cf42993332863055017056a48404",
+      "snippet": "    def facts(self, actor: str, file_id: str, recipient: str | None = None):\n        \"\"\"Read the selected recipient's grant before an authorization decision.\n\n        A read request selects its actor; owner operations explicitly select the\n        recipient whose grant they will change.\n        \"\"\"\n        recipient = actor if recipient is None else recipient\n        with self.connect() as connection:\n            row = connection.execute(\n                \"SELECT f.owner, COALESCE(g.recipient, ?) recipient, \"\n                \"COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision \"\n                \"FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?\",\n                (recipient, recipient, file_id),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"actor\": actor,\n            \"owner\": row[\"owner\"],\n            \"recipient\": row[\"recipient\"],\n            \"active\": bool(row[\"active\"]),\n            \"revision\": row[\"revision\"],\n            \"file_id\": file_id,\n            \"timing\": \"before_effect\",\n            \"scope\": \"current_request\",\n        }",
+      "calls": [
+        "FileNotFoundError",
+        "bool",
+        "connection.execute",
+        "connection.execute('SELECT f.owner, COALESCE(g.recipient, ?) recipient, COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?', (recipient, recipient, file_id)).fetchone",
+        "self.connect"
+      ],
+      "guards": [
+        {
+          "line": 104,
+          "expression": "row is None"
+        },
+        {
+          "line": 96,
+          "expression": "recipient is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.e7570fd6ab05f362": {
+      "path": "service.py",
+      "symbol": "can_manage",
+      "line": 36,
+      "end_line": 38,
+      "signature": "actor: str, owner: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Allow the uploaded file's owner to change its recipient grant.",
+        "description": "Allow the uploaded file's owner to change its recipient grant.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "can_manage",
+          "line": 37,
+          "end_line": 37,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "34b194e455675fc1ef32bf406c6c5618135e3f81893f03b1ec744d5a3278112b",
+      "snippet": "def can_manage(actor: str, owner: str) -> bool:\n    \"\"\"Allow the uploaded file's owner to change its recipient grant.\"\"\"\n    return same_identity(actor, owner)",
+      "calls": [
+        "same_identity"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.60b0d89a81c9e44a": {
+      "path": "service.py",
+      "symbol": "FileService.connect",
+      "line": 75,
+      "end_line": 80,
+      "signature": "self",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Open one application database connection with foreign keys enabled.",
+        "description": "Open one application database connection with foreign keys enabled.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.connect",
+          "line": 76,
+          "end_line": 76,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "7dd0d0c5cb783145e4f5996294524f4d11ec9d05d031a956a5d06a0640eaa0f8",
+      "snippet": "    def connect(self):\n        \"\"\"Open one application database connection with foreign keys enabled.\"\"\"\n        connection = sqlite3.connect(self.database, factory=DatabaseConnection)\n        connection.row_factory = sqlite3.Row\n        connection.execute(\"PRAGMA foreign_keys=ON\")\n        return connection",
+      "calls": [
+        "connection.execute",
+        "sqlite3.connect"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.d404af1fab7556b5": {
+      "path": "service.py",
+      "symbol": "FileService.connect",
+      "line": 75,
+      "end_line": 80,
+      "signature": "self",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Open one application database connection with foreign keys enabled.",
+        "description": "Open one application database connection with foreign keys enabled.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.connect",
+          "line": 76,
+          "end_line": 76,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "7dd0d0c5cb783145e4f5996294524f4d11ec9d05d031a956a5d06a0640eaa0f8",
+      "snippet": "    def connect(self):\n        \"\"\"Open one application database connection with foreign keys enabled.\"\"\"\n        connection = sqlite3.connect(self.database, factory=DatabaseConnection)\n        connection.row_factory = sqlite3.Row\n        connection.execute(\"PRAGMA foreign_keys=ON\")\n        return connection",
+      "calls": [
+        "connection.execute",
+        "sqlite3.connect"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.443b87aed036bffa": {
+      "path": "service.py",
+      "symbol": "FileService.facts",
+      "line": 90,
+      "end_line": 115,
+      "signature": "self, actor: str, file_id: str, recipient: str | None=None",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Read the selected recipient's grant before an authorization decision.",
+        "description": "Read the selected recipient's grant before an authorization decision.\n\nA read request selects its actor; owner operations explicitly select the\nrecipient whose grant they will change.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.facts",
+          "line": 91,
+          "end_line": 95,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "a6a8401b374389b5e3591bfc56402c2cecc1cf42993332863055017056a48404",
+      "snippet": "    def facts(self, actor: str, file_id: str, recipient: str | None = None):\n        \"\"\"Read the selected recipient's grant before an authorization decision.\n\n        A read request selects its actor; owner operations explicitly select the\n        recipient whose grant they will change.\n        \"\"\"\n        recipient = actor if recipient is None else recipient\n        with self.connect() as connection:\n            row = connection.execute(\n                \"SELECT f.owner, COALESCE(g.recipient, ?) recipient, \"\n                \"COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision \"\n                \"FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?\",\n                (recipient, recipient, file_id),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"actor\": actor,\n            \"owner\": row[\"owner\"],\n            \"recipient\": row[\"recipient\"],\n            \"active\": bool(row[\"active\"]),\n            \"revision\": row[\"revision\"],\n            \"file_id\": file_id,\n            \"timing\": \"before_effect\",\n            \"scope\": \"current_request\",\n        }",
+      "calls": [
+        "FileNotFoundError",
+        "bool",
+        "connection.execute",
+        "connection.execute('SELECT f.owner, COALESCE(g.recipient, ?) recipient, COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?', (recipient, recipient, file_id)).fetchone",
+        "self.connect"
+      ],
+      "guards": [
+        {
+          "line": 104,
+          "expression": "row is None"
+        },
+        {
+          "line": 96,
+          "expression": "recipient is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.9f57adb327d759ec": {
+      "path": "service.py",
+      "symbol": "can_read",
+      "line": 41,
+      "end_line": 43,
+      "signature": "actor: str, recipient: str, active: bool",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Allow the named recipient to read a currently active grant.",
+        "description": "Allow the named recipient to read a currently active grant.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "can_read",
+          "line": 42,
+          "end_line": 42,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "318422d32e026e6acf5329595e8d5733219e654f08f846ab368352605a28c1bd",
+      "snippet": "def can_read(actor: str, recipient: str, active: bool) -> bool:\n    \"\"\"Allow the named recipient to read a currently active grant.\"\"\"\n    return same_identity(actor, recipient) and active",
+      "calls": [
+        "same_identity"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.50ae654d4260e164": {
+      "path": "service.py",
+      "symbol": "FileService.connect",
+      "line": 75,
+      "end_line": 80,
+      "signature": "self",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Open one application database connection with foreign keys enabled.",
+        "description": "Open one application database connection with foreign keys enabled.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.connect",
+          "line": 76,
+          "end_line": 76,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "7dd0d0c5cb783145e4f5996294524f4d11ec9d05d031a956a5d06a0640eaa0f8",
+      "snippet": "    def connect(self):\n        \"\"\"Open one application database connection with foreign keys enabled.\"\"\"\n        connection = sqlite3.connect(self.database, factory=DatabaseConnection)\n        connection.row_factory = sqlite3.Row\n        connection.execute(\"PRAGMA foreign_keys=ON\")\n        return connection",
+      "calls": [
+        "connection.execute",
+        "sqlite3.connect"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code.759905501e184a8a": {
+      "path": "app.py",
+      "symbol": "create_app.actor",
+      "line": 14,
+      "end_line": 19,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Resolve an explicitly selected local test identity.",
+        "description": "Resolve an explicitly selected local test identity.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.actor",
+          "line": 15,
+          "end_line": 15,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "53937badb2f632b3edae3bdde1e8791b3afb0be3b259120421c1b610649f7813",
+      "snippet": "    def actor():\n        \"\"\"Resolve an explicitly selected local test identity.\"\"\"\n        value = request.headers.get(\"X-User\", request.args.get(\"user\", \"Alice\"))\n        if value not in {\"Alice\", \"Bob\", \"Carol\"}:\n            raise ValueError(\"Unknown test user\")\n        return value",
+      "calls": [
+        "ValueError",
+        "request.args.get",
+        "request.headers.get"
+      ],
+      "guards": [
+        {
+          "line": 17,
+          "expression": "value not in {'Alice', 'Bob', 'Carol'}"
+        }
+      ],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code.67cfd97725f287a9": {
+      "path": "app.py",
+      "symbol": "create_app.actor",
+      "line": 14,
+      "end_line": 19,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Resolve an explicitly selected local test identity.",
+        "description": "Resolve an explicitly selected local test identity.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.actor",
+          "line": 15,
+          "end_line": 15,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "53937badb2f632b3edae3bdde1e8791b3afb0be3b259120421c1b610649f7813",
+      "snippet": "    def actor():\n        \"\"\"Resolve an explicitly selected local test identity.\"\"\"\n        value = request.headers.get(\"X-User\", request.args.get(\"user\", \"Alice\"))\n        if value not in {\"Alice\", \"Bob\", \"Carol\"}:\n            raise ValueError(\"Unknown test user\")\n        return value",
+      "calls": [
+        "ValueError",
+        "request.args.get",
+        "request.headers.get"
+      ],
+      "guards": [
+        {
+          "line": 17,
+          "expression": "value not in {'Alice', 'Bob', 'Carol'}"
+        }
+      ],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code.c54383296a450071": {
+      "path": "app.py",
+      "symbol": "create_app.actor",
+      "line": 14,
+      "end_line": 19,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Resolve an explicitly selected local test identity.",
+        "description": "Resolve an explicitly selected local test identity.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.actor",
+          "line": 15,
+          "end_line": 15,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "53937badb2f632b3edae3bdde1e8791b3afb0be3b259120421c1b610649f7813",
+      "snippet": "    def actor():\n        \"\"\"Resolve an explicitly selected local test identity.\"\"\"\n        value = request.headers.get(\"X-User\", request.args.get(\"user\", \"Alice\"))\n        if value not in {\"Alice\", \"Bob\", \"Carol\"}:\n            raise ValueError(\"Unknown test user\")\n        return value",
+      "calls": [
+        "ValueError",
+        "request.args.get",
+        "request.headers.get"
+      ],
+      "guards": [
+        {
+          "line": 17,
+          "expression": "value not in {'Alice', 'Bob', 'Carol'}"
+        }
+      ],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code.a57b37d7cd8b013c": {
+      "path": "app.py",
+      "symbol": "create_app.actor",
+      "line": 14,
+      "end_line": 19,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Resolve an explicitly selected local test identity.",
+        "description": "Resolve an explicitly selected local test identity.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.actor",
+          "line": 15,
+          "end_line": 15,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "53937badb2f632b3edae3bdde1e8791b3afb0be3b259120421c1b610649f7813",
+      "snippet": "    def actor():\n        \"\"\"Resolve an explicitly selected local test identity.\"\"\"\n        value = request.headers.get(\"X-User\", request.args.get(\"user\", \"Alice\"))\n        if value not in {\"Alice\", \"Bob\", \"Carol\"}:\n            raise ValueError(\"Unknown test user\")\n        return value",
+      "calls": [
+        "ValueError",
+        "request.args.get",
+        "request.headers.get"
+      ],
+      "guards": [
+        {
+          "line": 17,
+          "expression": "value not in {'Alice', 'Bob', 'Carol'}"
+        }
+      ],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code.2f7251da638c0fb6": {
+      "path": "app.py",
+      "symbol": "create_app.actor",
+      "line": 14,
+      "end_line": 19,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Resolve an explicitly selected local test identity.",
+        "description": "Resolve an explicitly selected local test identity.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.actor",
+          "line": 15,
+          "end_line": 15,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "53937badb2f632b3edae3bdde1e8791b3afb0be3b259120421c1b610649f7813",
+      "snippet": "    def actor():\n        \"\"\"Resolve an explicitly selected local test identity.\"\"\"\n        value = request.headers.get(\"X-User\", request.args.get(\"user\", \"Alice\"))\n        if value not in {\"Alice\", \"Bob\", \"Carol\"}:\n            raise ValueError(\"Unknown test user\")\n        return value",
+      "calls": [
+        "ValueError",
+        "request.args.get",
+        "request.headers.get"
+      ],
+      "guards": [
+        {
+          "line": 17,
+          "expression": "value not in {'Alice', 'Bob', 'Carol'}"
+        }
+      ],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:3e14f884f4aa21d540f9ad3c": {
+      "path": "app.py",
+      "symbol": "create_app",
+      "line": 8,
+      "end_line": 62,
+      "signature": "service=None",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Construct the real Flask routes; callers may attach external observation.",
+        "description": "Construct the real Flask routes; callers may attach external observation.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app",
+          "line": 9,
+          "end_line": 9,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "22a651d3ad5af9331494eb13a77a8a6a8e9c4e0a18a11214846e37d08d145ad7",
+      "snippet": "def create_app(service=None):\n    \"\"\"Construct the real Flask routes; callers may attach external observation.\"\"\"\n    app = Flask(__name__)\n    app.config[\"MAX_CONTENT_LENGTH\"] = 1024 * 1024\n    files = service or FileService(Path(__file__).parent / \"var\")\n\n    def actor():\n        \"\"\"Resolve an explicitly selected local test identity.\"\"\"\n        value = request.headers.get(\"X-User\", request.args.get(\"user\", \"Alice\"))\n        if value not in {\"Alice\", \"Bob\", \"Carol\"}:\n            raise ValueError(\"Unknown test user\")\n        return value\n\n    @app.get(\"/\")\n    def home():\n        \"\"\"Display upload, sharing and received-file controls.\"\"\"\n        return Path(__file__).with_name(\"index.html\").read_text(encoding=\"utf-8\")\n\n    @app.post(\"/api/files\")\n    def upload():\n        \"\"\"Upload one file for the current test user.\"\"\"\n        item = request.files[\"file\"]\n        return jsonify(files.upload(actor(), item.filename, item.read())), 201\n\n    @app.post(\"/api/files/<file_id>/share\")\n    def share(file_id: str):\n        \"\"\"Share the named file with the colleague supplied in the request.\"\"\"\n        return jsonify(files.share(actor(), file_id, request.json[\"recipient\"]))\n\n    @app.post(\"/api/files/<file_id>/revoke\")\n    def revoke(file_id: str):\n        \"\"\"Revoke the selected colleague's access to the named file.\"\"\"\n        return jsonify(files.revoke(actor(), file_id, request.json[\"recipient\"]))\n\n    @app.get(\"/api/received\")\n    def received():\n        \"\"\"List files currently shared with the selected colleague.\"\"\"\n        return jsonify(files.received(actor()))\n\n    @app.get(\"/api/files/<file_id>/download\")\n    def download(file_id: str):\n        \"\"\"Return stored bytes only after the current recipient grant passes.\"\"\"\n        return Response(files.download(actor(), file_id), mimetype=\"application/octet-stream\")\n\n    @app.errorhandler(AccessDenied)\n    def denied(error):\n        \"\"\"Preserve the real permission-denied HTTP status.\"\"\"\n        return jsonify(error=str(error)), 403\n\n    @app.errorhandler(FileNotFoundError)\n    def missing(error):\n        \"\"\"Return a missing-resource response for an unknown file identity.\"\"\"\n        return jsonify(error=\"File not found\"), 404\n\n    return app",
+      "calls": [
+        "FileService",
+        "Flask",
+        "Path",
+        "Path(__file__).with_name",
+        "Path(__file__).with_name('index.html').read_text",
+        "Response",
+        "ValueError",
+        "actor",
+        "app.errorhandler",
+        "app.get",
+        "app.post",
+        "files.download",
+        "files.received",
+        "files.revoke",
+        "files.share",
+        "files.upload",
+        "item.read",
+        "jsonify",
+        "request.args.get",
+        "request.headers.get",
+        "str"
+      ],
+      "guards": [
+        {
+          "line": 17,
+          "expression": "value not in {'Alice', 'Bob', 'Carol'}"
+        }
+      ],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:01fc565dfb3ed18f6b561385": {
+      "path": "app.py",
+      "symbol": "create_app.actor",
+      "line": 14,
+      "end_line": 19,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Resolve an explicitly selected local test identity.",
+        "description": "Resolve an explicitly selected local test identity.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.actor",
+          "line": 15,
+          "end_line": 15,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "53937badb2f632b3edae3bdde1e8791b3afb0be3b259120421c1b610649f7813",
+      "snippet": "    def actor():\n        \"\"\"Resolve an explicitly selected local test identity.\"\"\"\n        value = request.headers.get(\"X-User\", request.args.get(\"user\", \"Alice\"))\n        if value not in {\"Alice\", \"Bob\", \"Carol\"}:\n            raise ValueError(\"Unknown test user\")\n        return value",
+      "calls": [
+        "ValueError",
+        "request.args.get",
+        "request.headers.get"
+      ],
+      "guards": [
+        {
+          "line": 17,
+          "expression": "value not in {'Alice', 'Bob', 'Carol'}"
+        }
+      ],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:b83e78f85bdfcb9ab7c937b8": {
+      "path": "app.py",
+      "symbol": "create_app.denied",
+      "line": 52,
+      "end_line": 55,
+      "signature": "error",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Preserve the real permission-denied HTTP status.",
+        "description": "Preserve the real permission-denied HTTP status.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.denied",
+          "line": 54,
+          "end_line": 54,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "f4d9a4e501346c4ff2c53f73c75b1132569a8ae77ae365d93d6931badbd38adc",
+      "snippet": "    @app.errorhandler(AccessDenied)\n    def denied(error):\n        \"\"\"Preserve the real permission-denied HTTP status.\"\"\"\n        return jsonify(error=str(error)), 403",
+      "calls": [
+        "app.errorhandler",
+        "jsonify",
+        "str"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:afad41df87cf69fb3c364df2": {
+      "path": "app.py",
+      "symbol": "create_app.download",
+      "line": 47,
+      "end_line": 50,
+      "signature": "file_id: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Return stored bytes only after the current recipient grant passes.",
+        "description": "Return stored bytes only after the current recipient grant passes.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.download",
+          "line": 49,
+          "end_line": 49,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/files/<file_id>/download",
+          "methods": [
+            "GET"
+          ],
+          "declaration": "app.get('/api/files/<file_id>/download')",
+          "handler": "create_app.download",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.download",
+            "line": 47,
+            "column": 5,
+            "end_line": 47,
+            "end_column": 45
+          }
+        }
+      ],
+      "ast_sha256": "054c0a6c7be3c77155d042c0f7939b5fc3bbae90df6495009ced84c1d4ebc276",
+      "snippet": "    @app.get(\"/api/files/<file_id>/download\")\n    def download(file_id: str):\n        \"\"\"Return stored bytes only after the current recipient grant passes.\"\"\"\n        return Response(files.download(actor(), file_id), mimetype=\"application/octet-stream\")",
+      "calls": [
+        "Response",
+        "actor",
+        "app.get",
+        "files.download"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:dff6661b3a8752219116bc36": {
+      "path": "app.py",
+      "symbol": "create_app.home",
+      "line": 21,
+      "end_line": 24,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Display upload, sharing and received-file controls.",
+        "description": "Display upload, sharing and received-file controls.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.home",
+          "line": 23,
+          "end_line": 23,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/",
+          "methods": [
+            "GET"
+          ],
+          "declaration": "app.get('/')",
+          "handler": "create_app.home",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.home",
+            "line": 21,
+            "column": 5,
+            "end_line": 21,
+            "end_column": 17
+          }
+        }
+      ],
+      "ast_sha256": "e62f10c7e630c4392a6e569883b2f80d4048755aef0aaa074adf382121d6f0ab",
+      "snippet": "    @app.get(\"/\")\n    def home():\n        \"\"\"Display upload, sharing and received-file controls.\"\"\"\n        return Path(__file__).with_name(\"index.html\").read_text(encoding=\"utf-8\")",
+      "calls": [
+        "Path",
+        "Path(__file__).with_name",
+        "Path(__file__).with_name('index.html').read_text",
+        "app.get"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:9a7db9663e1e9dcdca6ae0af": {
+      "path": "app.py",
+      "symbol": "create_app.missing",
+      "line": 57,
+      "end_line": 60,
+      "signature": "error",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Return a missing-resource response for an unknown file identity.",
+        "description": "Return a missing-resource response for an unknown file identity.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.missing",
+          "line": 59,
+          "end_line": 59,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "cb3a30d369dad5821358170281e48c9206840977a562816784158e1563f82580",
+      "snippet": "    @app.errorhandler(FileNotFoundError)\n    def missing(error):\n        \"\"\"Return a missing-resource response for an unknown file identity.\"\"\"\n        return jsonify(error=\"File not found\"), 404",
+      "calls": [
+        "app.errorhandler",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:8d8bc326cd203706736d4f35": {
+      "path": "app.py",
+      "symbol": "create_app.received",
+      "line": 42,
+      "end_line": 45,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "List files currently shared with the selected colleague.",
+        "description": "List files currently shared with the selected colleague.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.received",
+          "line": 44,
+          "end_line": 44,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/received",
+          "methods": [
+            "GET"
+          ],
+          "declaration": "app.get('/api/received')",
+          "handler": "create_app.received",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.received",
+            "line": 42,
+            "column": 5,
+            "end_line": 42,
+            "end_column": 29
+          }
+        }
+      ],
+      "ast_sha256": "b6a9ca580cf6695110ac10ba66f3738bb5bf9527ab25c35101701b39f99c33b1",
+      "snippet": "    @app.get(\"/api/received\")\n    def received():\n        \"\"\"List files currently shared with the selected colleague.\"\"\"\n        return jsonify(files.received(actor()))",
+      "calls": [
+        "actor",
+        "app.get",
+        "files.received",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:7870d81b99f5f658f55e34c5": {
+      "path": "app.py",
+      "symbol": "create_app.revoke",
+      "line": 37,
+      "end_line": 40,
+      "signature": "file_id: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Revoke the selected colleague's access to the named file.",
+        "description": "Revoke the selected colleague's access to the named file.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.revoke",
+          "line": 39,
+          "end_line": 39,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/files/<file_id>/revoke",
+          "methods": [
+            "POST"
+          ],
+          "declaration": "app.post('/api/files/<file_id>/revoke')",
+          "handler": "create_app.revoke",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.revoke",
+            "line": 37,
+            "column": 5,
+            "end_line": 37,
+            "end_column": 44
+          }
+        }
+      ],
+      "ast_sha256": "f3ca5f2489200349ea9f41aae14299329bdb9e0e7e1738d3933828b2ddeee171",
+      "snippet": "    @app.post(\"/api/files/<file_id>/revoke\")\n    def revoke(file_id: str):\n        \"\"\"Revoke the selected colleague's access to the named file.\"\"\"\n        return jsonify(files.revoke(actor(), file_id, request.json[\"recipient\"]))",
+      "calls": [
+        "actor",
+        "app.post",
+        "files.revoke",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:d1dfb9305dc76221c992ce89": {
+      "path": "app.py",
+      "symbol": "create_app.share",
+      "line": 32,
+      "end_line": 35,
+      "signature": "file_id: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Share the named file with the colleague supplied in the request.",
+        "description": "Share the named file with the colleague supplied in the request.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.share",
+          "line": 34,
+          "end_line": 34,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/files/<file_id>/share",
+          "methods": [
+            "POST"
+          ],
+          "declaration": "app.post('/api/files/<file_id>/share')",
+          "handler": "create_app.share",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.share",
+            "line": 32,
+            "column": 5,
+            "end_line": 32,
+            "end_column": 43
+          }
+        }
+      ],
+      "ast_sha256": "51f482a46c84d2c1d20d4bd3ca1986ecb10f59b1713a1ff658095a8235622ce6",
+      "snippet": "    @app.post(\"/api/files/<file_id>/share\")\n    def share(file_id: str):\n        \"\"\"Share the named file with the colleague supplied in the request.\"\"\"\n        return jsonify(files.share(actor(), file_id, request.json[\"recipient\"]))",
+      "calls": [
+        "actor",
+        "app.post",
+        "files.share",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:bf5f2cfce6ffbd28f1ef07a1": {
+      "path": "app.py",
+      "symbol": "create_app.upload",
+      "line": 26,
+      "end_line": 30,
+      "signature": "",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Upload one file for the current test user.",
+        "description": "Upload one file for the current test user.",
+        "parameters": {},
+        "source": {
+          "path": "app.py",
+          "symbol": "create_app.upload",
+          "line": 28,
+          "end_line": 28,
+          "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+        }
+      },
+      "api_routes": [
+        {
+          "path": "/api/files",
+          "methods": [
+            "POST"
+          ],
+          "declaration": "app.post('/api/files')",
+          "handler": "create_app.upload",
+          "handler_expression": "",
+          "registration_kind": "decorator",
+          "receiver": "app",
+          "framework": "flask.Flask",
+          "source": {
+            "path": "app.py",
+            "symbol": "create_app.upload",
+            "line": 26,
+            "column": 5,
+            "end_line": 26,
+            "end_column": 27
+          }
+        }
+      ],
+      "ast_sha256": "0966bbd16a7a3cb717bf3e99a69bf33d88a827e1b31b4b4a9a77af78edc6fd2f",
+      "snippet": "    @app.post(\"/api/files\")\n    def upload():\n        \"\"\"Upload one file for the current test user.\"\"\"\n        item = request.files[\"file\"]\n        return jsonify(files.upload(actor(), item.filename, item.read())), 201",
+      "calls": [
+        "actor",
+        "app.post",
+        "files.upload",
+        "item.read",
+        "jsonify"
+      ],
+      "guards": [],
+      "file_sha256": "034438100f21cdb7379b4365c51d02b01ef31df8110214e5c02d555f4eac43ac"
+    },
+    "code:symbol:b14be48ec016845bbf857512": {
+      "path": "service.py",
+      "symbol": "FileService",
+      "line": 46,
+      "end_line": 176,
+      "signature": "FileService",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Store local files and an independent grant for each selected recipient.",
+        "description": "Store local files and an independent grant for each selected recipient.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService",
+          "line": 47,
+          "end_line": 47,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "154e40e6246f8cc19e457b5875467b7d71cce1799531bfc4bd59f893164622da",
+      "snippet": "class FileService:\n    \"\"\"Store local files and an independent grant for each selected recipient.\"\"\"\n\n    def __init__(self, folder: Path):\n        self.folder = folder\n        self.folder.mkdir(parents=True, exist_ok=True)\n        self.database = folder / \"files.sqlite3\"\n        with self.connect() as connection:\n            connection.executescript(\n                \"CREATE TABLE IF NOT EXISTS files \"\n                \"(id TEXT PRIMARY KEY, owner TEXT NOT NULL, name TEXT NOT NULL);\"\n                \"CREATE TABLE IF NOT EXISTS grants \"\n                \"(file_id TEXT NOT NULL REFERENCES files(id), recipient TEXT NOT NULL, \"\n                \"active INTEGER NOT NULL, revision INTEGER NOT NULL, PRIMARY KEY(file_id, recipient));\"\n            )\n            primary_key = [\n                row[\"name\"] for row in connection.execute(\"PRAGMA table_info(grants)\") if row[\"pk\"]\n            ]\n            if primary_key == [\"file_id\"]:\n                # Preserve the real v1 grant and revision while adopting the\n                # confirmed v2 identity. The observer never performs migrations.\n                connection.executescript(\n                    \"CREATE TABLE grants_v2 (file_id TEXT NOT NULL REFERENCES files(id), \"\n                    \"recipient TEXT NOT NULL, active INTEGER NOT NULL, revision INTEGER NOT NULL, \"\n                    \"PRIMARY KEY(file_id, recipient));\"\n                    \"INSERT INTO grants_v2 SELECT file_id, recipient, active, revision FROM grants;\"\n                    \"DROP TABLE grants; ALTER TABLE grants_v2 RENAME TO grants;\"\n                )\n\n    def connect(self):\n        \"\"\"Open one application database connection with foreign keys enabled.\"\"\"\n        connection = sqlite3.connect(self.database, factory=DatabaseConnection)\n        connection.row_factory = sqlite3.Row\n        connection.execute(\"PRAGMA foreign_keys=ON\")\n        return connection\n\n    def upload(self, actor: str, name: str, content: bytes):\n        \"\"\"Store supplied bytes and persist their owner; return the new file identity.\"\"\"\n        file_id = uuid.uuid4().hex\n        (self.folder / file_id).write_bytes(content)\n        with self.connect() as connection:\n            connection.execute(\"INSERT INTO files VALUES (?, ?, ?)\", (file_id, actor, name))\n        return {\"file_id\": file_id, \"owner\": actor, \"name\": name}\n\n    def facts(self, actor: str, file_id: str, recipient: str | None = None):\n        \"\"\"Read the selected recipient's grant before an authorization decision.\n\n        A read request selects its actor; owner operations explicitly select the\n        recipient whose grant they will change.\n        \"\"\"\n        recipient = actor if recipient is None else recipient\n        with self.connect() as connection:\n            row = connection.execute(\n                \"SELECT f.owner, COALESCE(g.recipient, ?) recipient, \"\n                \"COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision \"\n                \"FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?\",\n                (recipient, recipient, file_id),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"actor\": actor,\n            \"owner\": row[\"owner\"],\n            \"recipient\": row[\"recipient\"],\n            \"active\": bool(row[\"active\"]),\n            \"revision\": row[\"revision\"],\n            \"file_id\": file_id,\n            \"timing\": \"before_effect\",\n            \"scope\": \"current_request\",\n        }\n\n    def share(self, actor: str, file_id: str, recipient: str):\n        \"\"\"Activate this recipient's grant after checking the uploaded file's owner.\"\"\"\n        facts = self.facts(actor, file_id, recipient)\n        if not can_manage(actor, facts[\"owner\"]):\n            raise AccessDenied(facts)\n        with self.connect() as connection:\n            connection.execute(\n                \"INSERT INTO grants VALUES (?, ?, 1, 1) ON CONFLICT(file_id, recipient) DO UPDATE \"\n                \"SET active=1, revision=revision+1\",\n                (file_id, recipient),\n            )\n            revision = connection.execute(\n                \"SELECT revision FROM grants WHERE file_id=? AND recipient=?\", (file_id, recipient)\n            ).fetchone()[0]\n        return {\"file_id\": file_id, \"recipient\": recipient, \"state\": \"active\", \"revision\": revision}\n\n    def revoke(self, actor: str, file_id: str, recipient: str):\n        \"\"\"Deactivate only the selected recipient's grant; other grants remain intact.\"\"\"\n        facts = self.facts(actor, file_id, recipient)\n        if not can_manage(actor, facts[\"owner\"]):\n            raise AccessDenied(facts)\n        with self.connect() as connection:\n            connection.execute(\n                \"UPDATE grants SET active=0, revision=revision+1 WHERE file_id=? AND recipient=?\",\n                (file_id, recipient),\n            )\n            row = connection.execute(\n                \"SELECT recipient, revision FROM grants WHERE file_id=? AND recipient=?\",\n                (file_id, recipient),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"file_id\": file_id,\n            \"recipient\": row[\"recipient\"],\n            \"state\": \"inactive\",\n            \"revision\": row[\"revision\"],\n        }\n\n    def received(self, actor: str):\n        \"\"\"List files whose current active grant names this colleague.\"\"\"\n        with self.connect() as connection:\n            rows = connection.execute(\n                \"SELECT f.id file_id, f.name, f.owner FROM files f JOIN grants g ON g.file_id=f.id \"\n                \"WHERE g.recipient=? ORDER BY f.name\",\n                (actor,),\n            ).fetchall()\n        received = []\n        for row in rows:\n            facts = self.facts(actor, row[\"file_id\"])\n            if can_read(actor, facts[\"recipient\"], facts[\"active\"]):\n                received.append(dict(row))\n        return received\n\n    def download(self, actor: str, file_id: str):\n        \"\"\"Read the current grant for every download, including previously issued URLs.\"\"\"\n        facts = self.facts(actor, file_id)\n        if not can_read(actor, facts[\"recipient\"], facts[\"active\"]):\n            raise AccessDenied(facts)\n        return (self.folder / file_id).read_bytes()",
+      "calls": [
+        "(self.folder / file_id).read_bytes",
+        "(self.folder / file_id).write_bytes",
+        "AccessDenied",
+        "FileNotFoundError",
+        "bool",
+        "can_manage",
+        "can_read",
+        "connection.execute",
+        "connection.execute('SELECT f.id file_id, f.name, f.owner FROM files f JOIN grants g ON g.file_id=f.id WHERE g.recipient=? ORDER BY f.name', (actor,)).fetchall",
+        "connection.execute('SELECT f.owner, COALESCE(g.recipient, ?) recipient, COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?', (recipient, recipient, file_id)).fetchone",
+        "connection.execute('SELECT recipient, revision FROM grants WHERE file_id=? AND recipient=?', (file_id, recipient)).fetchone",
+        "connection.execute('SELECT revision FROM grants WHERE file_id=? AND recipient=?', (file_id, recipient)).fetchone",
+        "connection.executescript",
+        "dict",
+        "received.append",
+        "self.connect",
+        "self.facts",
+        "self.folder.mkdir",
+        "sqlite3.connect",
+        "uuid.uuid4"
+      ],
+      "guards": [
+        {
+          "line": 104,
+          "expression": "row is None"
+        },
+        {
+          "line": 120,
+          "expression": "not can_manage(actor, facts['owner'])"
+        },
+        {
+          "line": 136,
+          "expression": "not can_manage(actor, facts['owner'])"
+        },
+        {
+          "line": 147,
+          "expression": "row is None"
+        },
+        {
+          "line": 174,
+          "expression": "not can_read(actor, facts['recipient'], facts['active'])"
+        },
+        {
+          "line": 64,
+          "expression": "primary_key == ['file_id']"
+        },
+        {
+          "line": 96,
+          "expression": "recipient is None"
+        },
+        {
+          "line": 167,
+          "expression": "can_read(actor, facts['recipient'], facts['active'])"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:b24de73e894f63be81ef8761": {
+      "path": "service.py",
+      "symbol": "FileService.connect",
+      "line": 75,
+      "end_line": 80,
+      "signature": "self",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Open one application database connection with foreign keys enabled.",
+        "description": "Open one application database connection with foreign keys enabled.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.connect",
+          "line": 76,
+          "end_line": 76,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "7dd0d0c5cb783145e4f5996294524f4d11ec9d05d031a956a5d06a0640eaa0f8",
+      "snippet": "    def connect(self):\n        \"\"\"Open one application database connection with foreign keys enabled.\"\"\"\n        connection = sqlite3.connect(self.database, factory=DatabaseConnection)\n        connection.row_factory = sqlite3.Row\n        connection.execute(\"PRAGMA foreign_keys=ON\")\n        return connection",
+      "calls": [
+        "connection.execute",
+        "sqlite3.connect"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:36cdad30cc5ad6e2b5af632e": {
+      "path": "service.py",
+      "symbol": "FileService.download",
+      "line": 171,
+      "end_line": 176,
+      "signature": "self, actor: str, file_id: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Read the current grant for every download, including previously issued URLs.",
+        "description": "Read the current grant for every download, including previously issued URLs.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.download",
+          "line": 172,
+          "end_line": 172,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "f97a70c1f71bf7b2ed939343f2f69b9ca0029477c735c30da77056a8c6488bae",
+      "snippet": "    def download(self, actor: str, file_id: str):\n        \"\"\"Read the current grant for every download, including previously issued URLs.\"\"\"\n        facts = self.facts(actor, file_id)\n        if not can_read(actor, facts[\"recipient\"], facts[\"active\"]):\n            raise AccessDenied(facts)\n        return (self.folder / file_id).read_bytes()",
+      "calls": [
+        "(self.folder / file_id).read_bytes",
+        "AccessDenied",
+        "can_read",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 174,
+          "expression": "not can_read(actor, facts['recipient'], facts['active'])"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:44ab87502dc49a335ee97acb": {
+      "path": "service.py",
+      "symbol": "FileService.facts",
+      "line": 90,
+      "end_line": 115,
+      "signature": "self, actor: str, file_id: str, recipient: str | None=None",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Read the selected recipient's grant before an authorization decision.",
+        "description": "Read the selected recipient's grant before an authorization decision.\n\nA read request selects its actor; owner operations explicitly select the\nrecipient whose grant they will change.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.facts",
+          "line": 91,
+          "end_line": 95,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "a6a8401b374389b5e3591bfc56402c2cecc1cf42993332863055017056a48404",
+      "snippet": "    def facts(self, actor: str, file_id: str, recipient: str | None = None):\n        \"\"\"Read the selected recipient's grant before an authorization decision.\n\n        A read request selects its actor; owner operations explicitly select the\n        recipient whose grant they will change.\n        \"\"\"\n        recipient = actor if recipient is None else recipient\n        with self.connect() as connection:\n            row = connection.execute(\n                \"SELECT f.owner, COALESCE(g.recipient, ?) recipient, \"\n                \"COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision \"\n                \"FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?\",\n                (recipient, recipient, file_id),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"actor\": actor,\n            \"owner\": row[\"owner\"],\n            \"recipient\": row[\"recipient\"],\n            \"active\": bool(row[\"active\"]),\n            \"revision\": row[\"revision\"],\n            \"file_id\": file_id,\n            \"timing\": \"before_effect\",\n            \"scope\": \"current_request\",\n        }",
+      "calls": [
+        "FileNotFoundError",
+        "bool",
+        "connection.execute",
+        "connection.execute('SELECT f.owner, COALESCE(g.recipient, ?) recipient, COALESCE(g.active, 0) active, COALESCE(g.revision, 0) revision FROM files f LEFT JOIN grants g ON g.file_id=f.id AND g.recipient=? WHERE f.id=?', (recipient, recipient, file_id)).fetchone",
+        "self.connect"
+      ],
+      "guards": [
+        {
+          "line": 104,
+          "expression": "row is None"
+        },
+        {
+          "line": 96,
+          "expression": "recipient is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:1ac4f1ecae4c9c1946d33785": {
+      "path": "service.py",
+      "symbol": "FileService.received",
+      "line": 156,
+      "end_line": 169,
+      "signature": "self, actor: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "List files whose current active grant names this colleague.",
+        "description": "List files whose current active grant names this colleague.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.received",
+          "line": 157,
+          "end_line": 157,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "f68718b390ee182b84619724c9d406f052eec400828f3e30311d59d7a4f20c82",
+      "snippet": "    def received(self, actor: str):\n        \"\"\"List files whose current active grant names this colleague.\"\"\"\n        with self.connect() as connection:\n            rows = connection.execute(\n                \"SELECT f.id file_id, f.name, f.owner FROM files f JOIN grants g ON g.file_id=f.id \"\n                \"WHERE g.recipient=? ORDER BY f.name\",\n                (actor,),\n            ).fetchall()\n        received = []\n        for row in rows:\n            facts = self.facts(actor, row[\"file_id\"])\n            if can_read(actor, facts[\"recipient\"], facts[\"active\"]):\n                received.append(dict(row))\n        return received",
+      "calls": [
+        "can_read",
+        "connection.execute",
+        "connection.execute('SELECT f.id file_id, f.name, f.owner FROM files f JOIN grants g ON g.file_id=f.id WHERE g.recipient=? ORDER BY f.name', (actor,)).fetchall",
+        "dict",
+        "received.append",
+        "self.connect",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 167,
+          "expression": "can_read(actor, facts['recipient'], facts['active'])"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:464843d79a8d87b1aec2a378": {
+      "path": "service.py",
+      "symbol": "FileService.revoke",
+      "line": 133,
+      "end_line": 154,
+      "signature": "self, actor: str, file_id: str, recipient: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Deactivate only the selected recipient's grant; other grants remain intact.",
+        "description": "Deactivate only the selected recipient's grant; other grants remain intact.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.revoke",
+          "line": 134,
+          "end_line": 134,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "ab0e4cace45835356dcc6da541ca5fd0cfc352514e6b5426c06dc12decc5a8f4",
+      "snippet": "    def revoke(self, actor: str, file_id: str, recipient: str):\n        \"\"\"Deactivate only the selected recipient's grant; other grants remain intact.\"\"\"\n        facts = self.facts(actor, file_id, recipient)\n        if not can_manage(actor, facts[\"owner\"]):\n            raise AccessDenied(facts)\n        with self.connect() as connection:\n            connection.execute(\n                \"UPDATE grants SET active=0, revision=revision+1 WHERE file_id=? AND recipient=?\",\n                (file_id, recipient),\n            )\n            row = connection.execute(\n                \"SELECT recipient, revision FROM grants WHERE file_id=? AND recipient=?\",\n                (file_id, recipient),\n            ).fetchone()\n        if row is None:\n            raise FileNotFoundError(file_id)\n        return {\n            \"file_id\": file_id,\n            \"recipient\": row[\"recipient\"],\n            \"state\": \"inactive\",\n            \"revision\": row[\"revision\"],\n        }",
+      "calls": [
+        "AccessDenied",
+        "FileNotFoundError",
+        "can_manage",
+        "connection.execute",
+        "connection.execute('SELECT recipient, revision FROM grants WHERE file_id=? AND recipient=?', (file_id, recipient)).fetchone",
+        "self.connect",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 136,
+          "expression": "not can_manage(actor, facts['owner'])"
+        },
+        {
+          "line": 147,
+          "expression": "row is None"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:f3a45c7bce1007a62d6bb0a8": {
+      "path": "service.py",
+      "symbol": "FileService.share",
+      "line": 117,
+      "end_line": 131,
+      "signature": "self, actor: str, file_id: str, recipient: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Activate this recipient's grant after checking the uploaded file's owner.",
+        "description": "Activate this recipient's grant after checking the uploaded file's owner.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.share",
+          "line": 118,
+          "end_line": 118,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "d1142e5c7da0f35610ea640127d3d886fc5afae7894510a059b606052734f148",
+      "snippet": "    def share(self, actor: str, file_id: str, recipient: str):\n        \"\"\"Activate this recipient's grant after checking the uploaded file's owner.\"\"\"\n        facts = self.facts(actor, file_id, recipient)\n        if not can_manage(actor, facts[\"owner\"]):\n            raise AccessDenied(facts)\n        with self.connect() as connection:\n            connection.execute(\n                \"INSERT INTO grants VALUES (?, ?, 1, 1) ON CONFLICT(file_id, recipient) DO UPDATE \"\n                \"SET active=1, revision=revision+1\",\n                (file_id, recipient),\n            )\n            revision = connection.execute(\n                \"SELECT revision FROM grants WHERE file_id=? AND recipient=?\", (file_id, recipient)\n            ).fetchone()[0]\n        return {\"file_id\": file_id, \"recipient\": recipient, \"state\": \"active\", \"revision\": revision}",
+      "calls": [
+        "AccessDenied",
+        "can_manage",
+        "connection.execute",
+        "connection.execute('SELECT revision FROM grants WHERE file_id=? AND recipient=?', (file_id, recipient)).fetchone",
+        "self.connect",
+        "self.facts"
+      ],
+      "guards": [
+        {
+          "line": 120,
+          "expression": "not can_manage(actor, facts['owner'])"
+        }
+      ],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:c6ca04471fb04066fcc4588e": {
+      "path": "service.py",
+      "symbol": "FileService.upload",
+      "line": 82,
+      "end_line": 88,
+      "signature": "self, actor: str, name: str, content: bytes",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Store supplied bytes and persist their owner; return the new file identity.",
+        "description": "Store supplied bytes and persist their owner; return the new file identity.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "FileService.upload",
+          "line": 83,
+          "end_line": 83,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "85b1c2e9e719221d3ff28090416609e3a507ec66ec7715421005a7098bf98ebe",
+      "snippet": "    def upload(self, actor: str, name: str, content: bytes):\n        \"\"\"Store supplied bytes and persist their owner; return the new file identity.\"\"\"\n        file_id = uuid.uuid4().hex\n        (self.folder / file_id).write_bytes(content)\n        with self.connect() as connection:\n            connection.execute(\"INSERT INTO files VALUES (?, ?, ?)\", (file_id, actor, name))\n        return {\"file_id\": file_id, \"owner\": actor, \"name\": name}",
+      "calls": [
+        "(self.folder / file_id).write_bytes",
+        "connection.execute",
+        "self.connect",
+        "uuid.uuid4"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:41305c6cc8e1b5e3ea7541a3": {
+      "path": "service.py",
+      "symbol": "can_manage",
+      "line": 36,
+      "end_line": 38,
+      "signature": "actor: str, owner: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Allow the uploaded file's owner to change its recipient grant.",
+        "description": "Allow the uploaded file's owner to change its recipient grant.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "can_manage",
+          "line": 37,
+          "end_line": 37,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "34b194e455675fc1ef32bf406c6c5618135e3f81893f03b1ec744d5a3278112b",
+      "snippet": "def can_manage(actor: str, owner: str) -> bool:\n    \"\"\"Allow the uploaded file's owner to change its recipient grant.\"\"\"\n    return same_identity(actor, owner)",
+      "calls": [
+        "same_identity"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:2d1baf22920362510869b0f6": {
+      "path": "service.py",
+      "symbol": "can_read",
+      "line": 41,
+      "end_line": 43,
+      "signature": "actor: str, recipient: str, active: bool",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Allow the named recipient to read a currently active grant.",
+        "description": "Allow the named recipient to read a currently active grant.",
+        "parameters": {},
+        "source": {
+          "path": "service.py",
+          "symbol": "can_read",
+          "line": 42,
+          "end_line": 42,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "318422d32e026e6acf5329595e8d5733219e654f08f846ab368352605a28c1bd",
+      "snippet": "def can_read(actor: str, recipient: str, active: bool) -> bool:\n    \"\"\"Allow the named recipient to read a currently active grant.\"\"\"\n    return same_identity(actor, recipient) and active",
+      "calls": [
+        "same_identity"
+      ],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    },
+    "code:symbol:6b3ba1f897f29f89bdf2fa38": {
+      "path": "service.py",
+      "symbol": "same_identity",
+      "line": 26,
+      "end_line": 33,
+      "signature": "left: str, right: str",
+      "documentation": {
+        "status": "documented",
+        "format": "python-docstring",
+        "summary": "Compare the current actor with an owner or recipient.",
+        "description": "Compare the current actor with an owner or recipient.\n\nArgs:\n    left: Current actor identity.\n    right: Identity required by this operation.",
+        "parameters": {
+          "left": {
+            "description": "Current actor identity.",
+            "line": 30
+          },
+          "right": {
+            "description": "Identity required by this operation.",
+            "line": 31
+          }
+        },
+        "source": {
+          "path": "service.py",
+          "symbol": "same_identity",
+          "line": 27,
+          "end_line": 32,
+          "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+        }
+      },
+      "api_routes": [],
+      "ast_sha256": "0b12e51f164cb04d460a8e60056d0e312afbd287b2fd6fd3042f8a272cc2b69e",
+      "snippet": "def same_identity(left: str, right: str) -> bool:\n    \"\"\"Compare the current actor with an owner or recipient.\n\n    Args:\n        left: Current actor identity.\n        right: Identity required by this operation.\n    \"\"\"\n    return left == right",
+      "calls": [],
+      "guards": [],
+      "file_sha256": "0f182c5451a78bb65814b5bdfbd525a2460e4b49819c32ede5b2ca14929faf9f"
+    }
+  },
+  "python": "3.13.13",
+  "unknowns": [
+    "AST evidence does not prove value flow, guard dominance or behavioral equivalence",
+    "External dependencies, interpreter, dynamic patching and omitted files are not attested"
+  ]
+}

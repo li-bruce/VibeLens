@@ -1,6 +1,21 @@
 # Changelog
 
-## Unreleased
+## 0.14.0 — 2026-11-08
+
+- Arrange business, state and rule networks with directional ELK layouts,
+  shared branches and preserved cycles. Both renderers share coordinates and
+  retain saved positions and pins.
+- Keep project-native state execution and probes separate from the installed
+  observer. Add a bounded capture-control bridge for native Python/JavaScript
+  producers, with scope and flush acknowledgements.
+- Preserve separate conceptual roles and their physical source mappings. Show
+  transitions, conditions and implementation references in node details, with
+  optional in-panel AI explanations tied to the current node and graph revision.
+- Localize semantic names to the selected interface language. Unify presets,
+  manual layer selection, camera gestures, selection and recorded playback.
+- Distinguish connections by visible endpoint type: same-type solid profiles,
+  different-type dashed profiles. Retain single, double and bordered relation
+  families; layer identity controls line and moving-arrow colors.
 
 - Keep saved node positions when expanding and collapsing in every display
   layer, in both 2D and 3D. Prevent hidden function calls from appearing as direct
@@ -12,6 +27,17 @@
 - Reject stale source projections after view/focus changes. Add a fresh-fixture,
   seven-layer browser regression to CI. See the
   [repair and retest evidence](docs/review/2026-11-06-expansion-relations/README.md).
+- Update the walkthrough to the shared layer controls, retain saved custom views,
+  and keep the selected chapter stable during native viewer interactions.
+- Publish complete Skill, SkillHub and DeepSeek Harness packages from the same
+  canonical source. See [release notes](docs/releases/v0.14.0.md) and the
+  [release checks](docs/review/release-v0.14.0/README.md).
+
+## 0.13.0 — 2026-11-05
+
+- Package the complete Skill as an explicitly invoked DeepSeek Harness plugin,
+  alongside the directly installable Skill and self-contained SkillHub archive.
+- Use directional transfer arrows and corresponding 2D/3D node symbols.
 - Separate implementation detail into entry points, project structure and code
   execution display planes. Preserve semantic identities, saved exclusions,
   cross-layer paths and Graph/Timeline correspondence.

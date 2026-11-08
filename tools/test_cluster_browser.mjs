@@ -87,7 +87,8 @@ try {
   }
   await page.screenshot({ path: path.join(output, "clusters-2d.png") });
   await page.locator('#semantic [data-node-id="cluster:4"]').evaluate((e) => e.click());
-  await page.click("#selection-menu");
+  await page.locator("#viewport").focus();
+  await page.keyboard.press("Shift+F10");
   await page.click("#pin");
   const pin = await page.evaluate(() => {
     const n = graphDebug.graph.byId.get("cluster:4");

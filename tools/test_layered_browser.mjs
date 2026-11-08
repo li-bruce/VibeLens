@@ -47,7 +47,8 @@ async function pick(id) {
 }
 async function expand(id) {
   await pick(id);
-  await page.click("#selection-menu");
+  await page.locator("#viewport").focus();
+  await page.keyboard.press("Shift+F10");
   await page.click("#node-expand");
   await page.waitForTimeout(180);
 }
@@ -149,7 +150,8 @@ try {
     state: "attached",
   });
   await pick("field:transaction:out:status");
-  await page.click("#selection-menu");
+  await page.locator("#viewport").focus();
+  await page.keyboard.press("Shift+F10");
   await page.click("#source");
   assert.match(await page.locator("#detail-rows").innerText(), /outputs.status/);
   assert.match(await page.locator("#detail-rows").innerText(), /collection owner/);
@@ -167,7 +169,8 @@ try {
     0,
   );
   await pick("field:save:out:status");
-  await page.click("#selection-menu");
+  await page.locator("#viewport").focus();
+  await page.keyboard.press("Shift+F10");
   await page.click("#source");
   assert.match(await page.locator("#source-code").innerText(), /def save_pictures/);
   assert.equal(await page.locator("#source-code mark").count(), 0);
@@ -413,7 +416,8 @@ try {
     .locator("#focus-selection")
     .click({ timeout: 300 })
     .catch(async () => {
-      await page.click("#selection-menu");
+      await page.locator("#viewport").focus();
+      await page.keyboard.press("Shift+F10");
       await page.click("#focus-selection");
     });
   await page.waitForTimeout(350);

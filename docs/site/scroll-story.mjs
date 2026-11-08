@@ -20,7 +20,15 @@ export function scrollStory({
     // The embedded graph can focus its own controls after a preview completes.
     // That asynchronous focus is not a reader leaving the parent editor.
     if (event.type === "focusin" && event.target.tagName === "IFRAME") return;
-    interaction = event.target.closest?.(interactionSelector) ? event.target : null;
+    const element = event.target.closest?.(interactionSelector);
+    const owner = element ? elements.findIndex((scene) => scene.contains(element)) : -1;
+    // A shared sticky viewer belongs to the chapter that opened its controls.
+    // Native iframe focus may scroll the parent without a navigation gesture.
+    interaction = element ? { element, owner: owner >= 0 ? owner : active } : null;
+    schedule();
+  }
+  function releaseInteraction() {
+    interaction = null;
     schedule();
   }
   function measure() {
@@ -49,12 +57,12 @@ export function scrollStory({
       }
     });
     if (interaction) {
-      const bounds = interaction.getBoundingClientRect();
-      const owner = elements.findIndex((element) => element.contains(interaction));
+      const { element, owner } = interaction;
+      const bounds = element.getBoundingClientRect();
       const x = bounds.left + bounds.width / 2;
       const y = bounds.top + bounds.height / 2;
       const visible = document.elementFromPoint(x, y)?.closest(interactionSelector);
-      if (owner >= 0 && visible === interaction.closest(interactionSelector)) next = owner;
+      if (owner >= 0 && visible === element) next = owner;
       else interaction = null;
     }
     if (next !== active) {
@@ -78,6 +86,10 @@ export function scrollStory({
   if (interactionSelector) {
     document.addEventListener("pointerdown", rememberInteraction);
     document.addEventListener("focusin", rememberInteraction);
+    // Wheel/touch in the iframe stay local. Deliberate page scrolling releases
+    // the chapter even when its sticky viewer is still visible.
+    document.addEventListener("wheel", releaseInteraction, { passive: true });
+    document.addEventListener("touchmove", releaseInteraction, { passive: true });
   }
   function go(index) {
     interaction = null;
@@ -105,6 +117,8 @@ export function scrollStory({
       removeEventListener("resize", schedule);
       document.removeEventListener("pointerdown", rememberInteraction);
       document.removeEventListener("focusin", rememberInteraction);
+      document.removeEventListener("wheel", releaseInteraction);
+      document.removeEventListener("touchmove", releaseInteraction);
     },
   };
 }

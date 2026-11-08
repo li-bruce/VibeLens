@@ -32,7 +32,12 @@ async function frame() {
 }
 async function go(id) {
   scene = id;
-  await page.locator("#" + id).scrollIntoViewIfNeeded();
+  // Use chapter navigation to leave any focused editor/viewer, then finish its
+  // native start alignment without spending the regression on scroll animation.
+  await page.locator(`#case-chapters a[href="#${id}"]`).click();
+  await page.locator("#" + id).evaluate((element) =>
+    element.scrollIntoView({ behavior: "instant", block: "start" }),
+  );
   await page.waitForFunction((id) => document.body.dataset.sceneReady === id, id, {
     timeout: 45000,
   });
@@ -165,15 +170,22 @@ try {
     assert.ok(app.y + app.height <= chat.y || chat.y + chat.height <= app.y);
     await page.click('[data-case-lens="states"]');
     await child.waitForFunction(
-      (ids) => ids.every((id) => graphDebug.graph.boxes.some((box) => box.id === id)),
+      (ids) =>
+        ids.every(
+          (id) => graphDebug.presentation.glyphs.has(id) || graphDebug.presentation.regions.has(id),
+        ),
       first.story.states,
     );
-    assert.ok(await child.evaluate(() => graphDebug.graph.edges.length > 0));
+    assert.ok(await child.evaluate(() => graphDebug.presentation.edges.length > 0));
     await page.click('[data-case-lens="business"]');
-    await child.waitForFunction(
-      (count) => graphDebug.graph.boxes.length === count,
-      first.story.business.length,
-    );
+    await child.waitForFunction((ids) => {
+      const visible = new Set([
+        ...graphDebug.presentation.glyphs,
+        ...graphDebug.presentation.regions,
+      ]);
+      return visible.size === ids.length && ids.every((id) => visible.has(id));
+    }, first.story.business);
+    assert.deepEqual(await boxIds(child), [...first.story.business].sort());
     await page.click("#case-3d");
     await child.waitForFunction(() => graphDebug.spatial?.perspective && !graphDebug.layoutBusy);
     await page.waitForTimeout(350);
@@ -203,7 +215,7 @@ try {
     await shot(language + "-camera");
     await page.click('[data-case-lens="implementation"]');
     await child.waitForFunction(
-      (id) => graphDebug.graph.boxes.some((box) => box.id === id),
+      (id) => graphDebug.presentation.glyphs.has(id) || graphDebug.presentation.regions.has(id),
       first.story.focus.inputs[0],
     );
     await page.click("#case-2d");
@@ -301,22 +313,22 @@ try {
     const effect = first.story.focus.effects[0];
     await page.locator('[data-watch="effects"]').check();
     await child.waitForFunction(
-      (id) => graphDebug.graph.boxes.some((box) => box.id === id),
+      (id) => graphDebug.presentation.glyphs.has(id) || graphDebug.presentation.regions.has(id),
       effect,
     );
     await page.locator('[data-watch="effects"]').uncheck();
     await child.waitForFunction(
-      (id) => !graphDebug.graph.boxes.some((box) => box.id === id),
+      (id) => !graphDebug.presentation.glyphs.has(id) && !graphDebug.presentation.regions.has(id),
       effect,
     );
     await page.locator('[data-watch="effects"]').check();
     await child.waitForFunction(
-      (id) => graphDebug.graph.boxes.some((box) => box.id === id),
+      (id) => graphDebug.presentation.glyphs.has(id) || graphDebug.presentation.regions.has(id),
       effect,
     );
     await page.locator('[data-watch="states"]').check();
     await child.waitForFunction(
-      (id) => graphDebug.graph.boxes.some((box) => box.id === id),
+      (id) => graphDebug.presentation.glyphs.has(id) || graphDebug.presentation.regions.has(id),
       first.story.states[0],
     );
     assert.equal(await page.getAttribute("body", "data-chapter"), "2");
@@ -427,6 +439,7 @@ try {
         await child.evaluate(() => graphDebug.graph.edges.length > 0),
         "Missing relations: " + profile,
       );
+      assert.equal(await page.getAttribute("body", "data-scene-ready"), "verify");
     }
     await page.click('[data-case-lens="all"]');
     await page.waitForFunction(() => document.body.dataset.lensReady === "all");

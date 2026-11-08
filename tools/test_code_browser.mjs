@@ -63,7 +63,8 @@ async function shot(name) {
   await page.screenshot({ path: path.join(output, name + ".png"), fullPage: true });
 }
 async function menuClick(selector) {
-  await page.click("#selection-menu");
+  await page.locator("#viewport").focus();
+  await page.keyboard.press("Shift+F10");
   await page.click(selector);
 }
 try {

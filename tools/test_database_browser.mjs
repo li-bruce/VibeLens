@@ -87,7 +87,8 @@ async function waitReady() {
   throw Error("Demo server did not become ready: " + logs);
 }
 async function menuClick(selector) {
-  await page.click('#selection-menu');
+  await page.locator("#viewport").focus();
+  await page.keyboard.press("Shift+F10");
   await page.click(selector);
 }
 

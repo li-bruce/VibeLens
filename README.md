@@ -67,10 +67,10 @@ Show the business, state and rule graphs before we implement it.
 
 ### DeepSeek Harness
 
-Install the packaged plugin from the [v0.13.0 release](https://github.com/li-bruce/VibeLens/releases/tag/v0.13.0):
+Install the packaged plugin from the [v0.14.0 release](https://github.com/li-bruce/VibeLens/releases/tag/v0.14.0):
 
 ```bash
-dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.13.0/dsh-vibelens-0.13.0.tgz
+dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.14.0/dsh-vibelens-0.14.0.tgz
 ```
 
 Open that profile and start a conversation with `/vibelens` followed by your project idea. [Harness setup and tested compatibility](docs/deepseek-harness.md).
@@ -81,6 +81,6 @@ Open that profile and start a conversation with `/vibelens` followed by your pro
 
 The source is open. Reproducible examples and retained checks let you inspect the implementation as well as the interface.
 
-[Architecture & source guide](docs/source-guide.en.md) · [Supported capabilities](docs/capabilities.md) · [Validation records](docs/review/harness-distribution-20261105/README.md) · [Release notes](docs/releases/v0.13.0.md) · [Distribution](docs/distribution.md)
+[Architecture & source guide](docs/source-guide.en.md) · [Supported capabilities](docs/capabilities.md) · [Validation records](docs/review/release-v0.14.0/README.md) · [Release notes](docs/releases/v0.14.0.md) · [Distribution](docs/distribution.md)
 
 [MIT](LICENSE) · [Third-party licenses](THIRD_PARTY_NOTICES.md)

@@ -145,6 +145,14 @@ try {
         id: box.id,
         layer: box.node.layer,
         origin: box.node.origin,
+        conceptId: box.node.concept_id,
+        definition: box.node.concept_definition,
+      })),
+      concepts: graphDebug.view.concept_structure.nodes.map((node) => ({
+        id: node.id,
+        conceptId: node.concept_id || node.id,
+        layer: node.layer,
+        definition: node.concept_definition,
       })),
       edges: graphDebug.presentation.edges.flatMap((edge) =>
         edge.members.map((member) => ({
@@ -154,10 +162,16 @@ try {
         })),
       ),
     }));
-    assert.ok(
-      facts.nodes.some((node) => node.origin === "concept-design" && node.layer === concern),
-      preset,
-    );
+    // A shared native/concept ID retains native capture authority. Require the
+    // exact confirmed definition, rather than assuming its origin is replaced.
+    const visibleConcepts = facts.nodes.filter((node) => node.definition && node.layer === concern);
+    assert.ok(visibleConcepts.length, preset + " retains its confirmed concepts");
+    for (const node of visibleConcepts) {
+      const declared = facts.concepts.find((concept) => concept.id === node.id);
+      assert.ok(declared, "Confirmed definition exists: " + node.id);
+      assert.equal(node.conceptId, declared.conceptId);
+      assert.deepEqual(node.definition, declared.definition, node.id);
+    }
     assert.ok(facts.edges.length, preset + " shows relationships as well as nodes");
     await page.screenshot({ path: path.join(output, `${concern}-2d.png`) });
     const inspectable = await page.evaluate(() =>
@@ -185,7 +199,8 @@ try {
           (elements, id) => elements.find((element) => element.dataset.nodeId === id).click(),
           node.id,
         );
-      await page.click("#selection-menu");
+      await page.locator("#viewport").focus();
+      await page.keyboard.press("Shift+F10");
       await page.click("#details");
       const disclosure = page.locator(".concept-definition");
       assert.equal(await disclosure.getAttribute("data-node-id"), node.id);
@@ -265,7 +280,10 @@ try {
     nodes: graphDebug.spatialPositions,
   }));
   const canvas = await page.locator("#viewport").boundingBox();
-  const drag = { x: canvas.x + canvas.width * 0.23, y: canvas.y + canvas.height * 0.82 };
+  const drag = {
+    x: canvas.x + canvas.width * 0.23,
+    y: canvas.y + canvas.height * 0.82,
+  };
   assert.ok(
     await page.evaluate(
       (point) => document.elementFromPoint(point.x, point.y)?.classList.contains("spatial-canvas"),
@@ -405,7 +423,9 @@ try {
     );
     if ((await page.locator("#replay-timeline").getAttribute("aria-pressed")) !== "true")
       await page.click("#replay-timeline");
-    await page.screenshot({ path: path.join(output, "focused-concept-recording.png") });
+    await page.screenshot({
+      path: path.join(output, "focused-concept-recording.png"),
+    });
     await writeFile(path.join(output, "focused-recording.json"), JSON.stringify(recorded, null, 2));
     checks.push({
       focusedConceptCapture: target,
@@ -430,7 +450,9 @@ try {
     for (let step = 0; step < 4; step++) await page.click(".trace-zoom-in");
     await page.waitForFunction(() => !graphDebug.timeline.zooming);
     await page.click("#fit");
-    await page.screenshot({ path: path.join(output, "focused-business-timeline.png") });
+    await page.screenshot({
+      path: path.join(output, "focused-business-timeline.png"),
+    });
     checks.push({
       realBusinessTimeline: true,
       lifecycles: businessTrace.lifecycles.filter((slice) => slice.node === "share"),

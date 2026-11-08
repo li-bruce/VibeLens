@@ -278,7 +278,8 @@ try {
   );
   await page.click(".trace-maximize");
   await page.locator('#semantic [data-node-id="advance"]').evaluate((element) => element.click());
-  await page.click("#selection-menu");
+  await page.locator("#viewport").focus();
+  await page.keyboard.press("Shift+F10");
   await page.click("#node-expand");
   await page.waitForFunction(() => !graphDebug.layoutBusy && graphDebug.planarPorts.length > 0);
   for (const mode of ["2D", "3D"]) {

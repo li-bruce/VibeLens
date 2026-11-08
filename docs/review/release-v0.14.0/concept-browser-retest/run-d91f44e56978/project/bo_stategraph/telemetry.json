@@ -1,0 +1,120 @@
+{
+  "protocol": "bo-telemetry/v1",
+  "backend": "opentelemetry",
+  "registrations": [
+    {
+      "node": "http.home",
+      "source": {
+        "path": "app.py",
+        "symbol": "create_app.home"
+      },
+      "match": {
+        "name": "GET /"
+      },
+      "capture": {
+        "in": {
+          "method": "http.request.method",
+          "route": "http.route"
+        },
+        "out": {
+          "status": "http.response.status_code"
+        }
+      }
+    },
+    {
+      "node": "http.upload",
+      "source": {
+        "path": "app.py",
+        "symbol": "create_app.upload"
+      },
+      "match": {
+        "name": "POST /api/files"
+      },
+      "capture": {
+        "in": {
+          "method": "http.request.method",
+          "route": "http.route"
+        },
+        "out": {
+          "status": "http.response.status_code"
+        }
+      }
+    },
+    {
+      "node": "http.share",
+      "source": {
+        "path": "app.py",
+        "symbol": "create_app.share"
+      },
+      "match": {
+        "name": "POST /api/files/<file_id>/share"
+      },
+      "capture": {
+        "in": {
+          "method": "http.request.method",
+          "route": "http.route"
+        },
+        "out": {
+          "status": "http.response.status_code"
+        }
+      }
+    },
+    {
+      "node": "http.revoke",
+      "source": {
+        "path": "app.py",
+        "symbol": "create_app.revoke"
+      },
+      "match": {
+        "name": "POST /api/files/<file_id>/revoke"
+      },
+      "capture": {
+        "in": {
+          "method": "http.request.method",
+          "route": "http.route"
+        },
+        "out": {
+          "status": "http.response.status_code"
+        }
+      }
+    },
+    {
+      "node": "http.received",
+      "source": {
+        "path": "app.py",
+        "symbol": "create_app.received"
+      },
+      "match": {
+        "name": "GET /api/received"
+      },
+      "capture": {
+        "in": {
+          "method": "http.request.method",
+          "route": "http.route"
+        },
+        "out": {
+          "status": "http.response.status_code"
+        }
+      }
+    },
+    {
+      "node": "http.download",
+      "source": {
+        "path": "app.py",
+        "symbol": "create_app.download"
+      },
+      "match": {
+        "name": "GET /api/files/<file_id>/download"
+      },
+      "capture": {
+        "in": {
+          "method": "http.request.method",
+          "route": "http.route"
+        },
+        "out": {
+          "status": "http.response.status_code"
+        }
+      }
+    }
+  ]
+}

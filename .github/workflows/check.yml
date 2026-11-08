@@ -20,7 +20,7 @@ jobs:
         env:
           DSH_HOME: ${{ runner.temp }}/vibelens-harness
         run: |
-          dsh plugin --profile trial add "$PWD/.validation/distribution/dsh-vibelens-0.13.0.tgz"
+          dsh plugin --profile trial add "$PWD/.validation/distribution/dsh-vibelens-0.14.0.tgz"
           dsh --profile trial --dump-config > .validation/harness-config.yml
           grep -q 'name: dsh-vibelens' .validation/harness-config.yml
           VIBELENS_PLUGIN="$DSH_HOME/profiles/trial/node_modules/dsh-vibelens" node tools/harness-tests/test.mjs

@@ -27,13 +27,15 @@ try {
       body: `
     <style>body{margin:0;font:16px sans-serif}header{position:fixed;top:0;height:120px;background:white;z-index:2;width:100%}
     section{height:850px;padding:140px 20px 20px;box-sizing:border-box}#first{display:flex;flex-direction:column;justify-content:flex-end}
-    .view-editor{width:260px;padding-bottom:30px}input,button{padding:10px}section:nth-of-type(2){background:#f4f7f5}</style>
+    .view-editor{width:260px;padding-bottom:30px}input,button{padding:10px}section:nth-of-type(2){background:#f4f7f5}
+    .shared-viewer{position:fixed;right:20px;bottom:20px;padding:25px;background:white;z-index:3}</style>
     <header id="navigation"><a data-chapter="0" href="#first">First</a> <a data-chapter="1" href="#second">Second</a></header>
     <section id="first"><details class="view-editor" open><summary>Edit view</summary><input id="name" aria-label="Name"><button id="save">Save</button></details></section>
     <section id="second">Next chapter</section>
+    <aside class="shared-viewer"><button id="viewer-tools">Viewer tools</button></aside>
     <script type="module">
       import {scrollStory} from './scroll-story.mjs';
-      scrollStory({scenes:document.querySelectorAll('section'),navigation:document.querySelector('header'),interactionSelector:'.view-editor',onChange:index=>document.body.dataset.active=String(index)});
+      scrollStory({scenes:document.querySelectorAll('section'),navigation:document.querySelector('header'),interactionSelector:'.view-editor, .shared-viewer',onChange:index=>document.body.dataset.active=String(index)});
       document.querySelector('#save').onclick=()=>document.body.dataset.saved='true';
     </script>`,
     }),
@@ -71,6 +73,17 @@ try {
   await page.fill("#name", "Second path");
   await page.locator('[data-chapter="1"]').click();
   await page.waitForFunction(() => document.body.dataset.active === "1");
+  // A sticky viewer has no containing section. Browser focus scrolling must
+  // preserve the chapter that owns it; a deliberate page wheel releases it.
+  await page.locator('[data-chapter="0"]').click();
+  await page.waitForFunction(() => document.body.dataset.active === "0");
+  await page.click("#viewer-tools");
+  await page.evaluate(() => scrollTo({ top: 850, behavior: "instant" }));
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  assert.equal(await page.getAttribute("body", "data-active"), "0");
+  await page.mouse.move(500, 450);
+  await page.mouse.wheel(0, 80);
+  await page.waitForFunction(() => document.body.dataset.active === "1");
   // The narrow walkthrough reserves half the viewport for its sticky graph.
   // Chapter selection must use those real CSS insets, including at tablet widths.
   await page.setViewportSize({ width: 758, height: 817 });
@@ -91,6 +104,8 @@ try {
         scroll_release: true,
         explicit_navigation: true,
         sticky_graph_insets: true,
+        shared_viewer_focus: true,
+        shared_viewer_scroll_release: true,
       },
       null,
       2,

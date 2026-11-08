@@ -97,9 +97,10 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     return locale === "zh-CN" ? "我的取消共享链路" : "My revocation path";
   }
   function findSaved() {
-    // Native saving appends the newly created or updated view to this list.
+    // Native saving appends stored views. The unsaved draft is a separate
+    // working selection and must never replace a previously saved story view.
     return [...$("analysis-view").options]
-      .filter((option) => option.value.startsWith("custom-"))
+      .filter((option) => option.value.startsWith("custom-") && option.value !== "custom-draft")
       .at(-1);
   }
   async function focus(options = {}, ticket, selectedIds = null) {
@@ -108,7 +109,9 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     // inventory; filtering the live inventory first can miss newly loaded nodes.
     if (!(await recording(ticket))) return;
     if (!(await until(() => window.graphDebug.graph?.boxes.length, ticket))) return;
-    $("show-all").click();
+    // Use the shared layer action before narrowing the custom view. Presets
+    // already restore their own filters and must retain their selected layers.
+    $("layers-all").click();
     filterGroup("nodes", story.focus.node_types || focusTypes);
     filterGroup("regions", story.focus.region_types || ["decision"]);
     filterGroup("edges", focusRelations);
@@ -280,6 +283,9 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     if (message.compact !== undefined) document.body.dataset.caseCompact = String(message.compact);
     if (message.mode && (window.graphDebug.layers.enabled ? "3d" : "2d") !== message.mode) {
       $("layered-toggle").click();
+      // The walkthrough advertises drag-to-orbit in 3D. Select that native tool
+      // explicitly; the application viewer defaults to marquee selection.
+      $(message.mode === "3d" ? "tool-orbit" : "tool-select").click();
       // The story may have expanded a larger region while in the other mode.
       // Fit after the native toggle has restored that mode's viewport geometry.
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -309,7 +315,6 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     if (message.action === "states") {
       leaveSource();
       control("analysis-view", "states");
-      $("show-all").click();
       await revealRegion(new Set(story.states), ticket);
       fit();
       return;
@@ -317,7 +322,6 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     if (message.action === "business") {
       leaveSource();
       control("analysis-view", "business");
-      $("show-all").click();
       $("collapse").click();
       await hideExcept(new Set(story.business), ticket);
       fit();
@@ -368,8 +372,8 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
         for (const input of inputs) input.checked = true;
         inputs[0].dispatchEvent(new Event("change", { bubbles: true }));
       }
+      $("layers-all").click();
       control("filter-scope", "all");
-      $("show-all").click();
       // Start from aggregate regions. The viewer retains every child and its
       // count; developers expand the part they want rather than a wall of code.
       $("collapse").click();

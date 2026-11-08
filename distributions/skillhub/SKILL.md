@@ -3,7 +3,7 @@ name: vibelens
 description: Help developers understand and debug AI-written applications through connected business, state, rule, code and runtime graphs. Use only when explicitly invoked by the user for the current conversation and project.
 license: MIT
 metadata:
-  version: "0.13.0"
+  version: "0.14.0"
 ---
 
 # VibeLens

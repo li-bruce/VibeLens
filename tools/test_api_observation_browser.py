@@ -160,7 +160,7 @@ def main():
             page.select_option("#analysis-view", "overview")
             # Cross-concern replay is an explicit detailed view. The normal
             # overview intentionally hides implementation internals.
-            page.click("#show-all")
+            page.locator("#layers-all").evaluate("button => button.click()")
             page.click("#expand")
             page.wait_for_function("() => !graphDebug.layoutBusy")
             page.select_option("#replay-events", "3")
