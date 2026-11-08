@@ -1,0 +1,315 @@
+{
+  "valid": true,
+  "errors": [],
+  "candidate_id": "245edc23ee938cfd77ce6b28c2b4f917e9bd7c7ecd7d0217fc70c1588807440a",
+  "reports": {
+    "mapping": {
+      "status": "passed",
+      "errors": [],
+      "database": {
+        "configured": true,
+        "valid": true,
+        "errors": [],
+        "changed": false,
+        "source_id": "07faea3cbd187a78152dc96fe62d08f787343cb91ed39d16069d266cb10cc65b",
+        "catalog_id": "adf8e25a513decab9be8f43e689dcb00aaed40b25dce774ceeeb801d26483422",
+        "stores": [
+          {
+            "id": "files",
+            "coverage": "complete",
+            "limitations": [
+              "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+            ]
+          }
+        ]
+      },
+      "code_structure": {
+        "enabled": false,
+        "valid": true,
+        "status": "not_enabled",
+        "errors": []
+      },
+      "api_observation": {
+        "configured": true,
+        "valid": true,
+        "status": "passed",
+        "issues": [],
+        "errors": [],
+        "coverage": "complete",
+        "strict": false,
+        "observed_routes": [
+          "code:endpoint:43b2043bda8d5c3c89a4d8bc",
+          "code:endpoint:a7b02ce1099441eaedf11342",
+          "code:endpoint:d75a64a39e86cdd7033e90e3",
+          "code:endpoint:81ea93d1601078137dc29352",
+          "code:endpoint:eeac761459e6208e1ec62861",
+          "code:endpoint:179a8ee56fbc7816ec075ec4"
+        ],
+        "unobserved_routes": [],
+        "incomplete_methods": [],
+        "missing_routes": [],
+        "revision": "ea59898d281a391417339ee9dc00e8978a25ad6c931621e4eb1e8325540aa8ab"
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+      "producer_health": {
+        "valid": true,
+        "checked_runs": 5,
+        "required": true,
+        "errors": []
+      },
+      "invocation_closure": {
+        "valid": true,
+        "closed_calls": 335,
+        "legacy_events": 0,
+        "errors": []
+      },
+      "layers": {
+        "business": {
+          "declared_nodes": 5,
+          "direct_observations": [
+            "list",
+            "read",
+            "revoke",
+            "share",
+            "upload"
+          ],
+          "required_cases": 10,
+          "boundary_observations": [],
+          "basis": "actual invocation and selected result"
+        },
+        "state": {
+          "declared_nodes": 2,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "actual transitions, residence and activity evidence"
+        },
+        "rules": {
+          "declared_nodes": 8,
+          "direct_observations": [
+            "policy:active",
+            "policy:actor",
+            "policy:is_owner",
+            "policy:is_recipient",
+            "policy:may_read",
+            "policy:owner",
+            "policy:recipient"
+          ],
+          "required_cases": 7,
+          "boundary_observations": [],
+          "basis": "evaluated/skipped conditions and actual enclosing invocation"
+        },
+        "implementation": {
+          "declared_nodes": 57,
+          "direct_observations": [
+            "db.facts",
+            "db.list",
+            "db.revoke",
+            "db.share",
+            "db.upload",
+            "facts",
+            "http.download",
+            "http.home",
+            "http.received",
+            "http.revoke",
+            "http.share",
+            "http.upload"
+          ],
+          "required_cases": 24,
+          "boundary_observations": [],
+          "basis": "actual calls, responses, selected values and native transaction boundaries; unobserved declarations remain static"
+        },
+        "data": {
+          "declared_nodes": 10,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "operation-linked structural projection"
+        },
+        "unknown": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "no inferred evidence"
+        }
+      },
+      "policy": {
+        "valid": true,
+        "errors": []
+      },
+      "concept_associations": {
+        "valid": true,
+        "errors": []
+      },
+      "stategraph_export": "checked",
+      "witnesses": 105,
+      "projection_checks": 105,
+      "implementation": {
+        "errors": [],
+        "events_checked": 180,
+        "features": 1
+      }
+    },
+    "state_rules": {
+      "status": "passed",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "passed",
+      "errors": [],
+      "semantic_names": {
+        "configured": false,
+        "valid": true,
+        "status": "not_configured",
+        "missing": [],
+        "stale": []
+      },
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "passed",
+      "errors": [],
+      "assertions": {
+        "required": 27,
+        "executed": 27
+      },
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    },
+    "concepts": {
+      "status": "passed",
+      "errors": [],
+      "blocked": [],
+      "semantic_revision": "5c180e9dc2234365538223b96b2787c2bd35aaad45b8b228302b5805cc47aa17",
+      "binding": {
+        "valid": true,
+        "errors": [],
+        "semantic_revision": "5c180e9dc2234365538223b96b2787c2bd35aaad45b8b228302b5805cc47aa17",
+        "bound_state_models": [
+          "grant"
+        ],
+        "scope": [
+          "applicability:list",
+          "applicability:read",
+          "applicability:revoke",
+          "applicability:share",
+          "applicability:upload",
+          "business-contains:sharing:list",
+          "business-contains:sharing:read",
+          "business-contains:sharing:revoke",
+          "business-contains:sharing:share",
+          "business-contains:sharing:upload",
+          "business-network:sharing",
+          "event-trigger:grant:grant-replace",
+          "event-trigger:grant:grant-revoke",
+          "event-trigger:grant:grant-share",
+          "event:grant:revoke",
+          "event:grant:share",
+          "expectation:allowed-download",
+          "expectation:other-recipient-retained",
+          "expectation:owner-only",
+          "expectation:revoke-denies-old-link",
+          "fact:active-grant",
+          "fact:actor-id",
+          "fact:owner-id",
+          "fact:recipient-id",
+          "guard-decision:guard%3Agrant%3Amay_manage",
+          "guard:grant:may_manage",
+          "list",
+          "list-read",
+          "object-fact:active-grant",
+          "object-fact:actor-id",
+          "object-fact:owner-id",
+          "object-fact:recipient-id",
+          "object:actor",
+          "object:grant",
+          "operation-rule:list:read",
+          "operation-rule:read:read",
+          "operation-rule:revoke:manage",
+          "operation-rule:share:manage",
+          "operation-state:list:grant",
+          "operation-state:read:grant",
+          "operation-state:revoke:grant",
+          "operation-state:share:grant",
+          "policy-dependency:is_owner:0",
+          "policy-dependency:is_owner:1",
+          "policy-dependency:is_owner:2",
+          "policy-dependency:is_recipient:0",
+          "policy-dependency:is_recipient:1",
+          "policy-dependency:is_recipient:2",
+          "policy-dependency:may_read:0",
+          "policy-dependency:may_read:1",
+          "policy-operation:manage",
+          "policy-operation:read",
+          "policy-predicate:same_identity",
+          "policy-result:manage",
+          "policy-result:read",
+          "policy:active",
+          "policy:actor",
+          "policy:is_owner",
+          "policy:is_recipient",
+          "policy:may_read",
+          "policy:owner",
+          "policy:recipient",
+          "read",
+          "read-active-grant",
+          "read-actor-id",
+          "read-owner-id",
+          "read-recipient-id",
+          "replace-guard",
+          "revoke",
+          "revoke-guard",
+          "revoke-requests-event",
+          "share",
+          "share-guard",
+          "share-list",
+          "share-requests-event",
+          "share-revoke",
+          "state-contains:grant:active",
+          "state-contains:grant:inactive",
+          "state-event:grant:revoke",
+          "state-event:grant:share",
+          "state-guard:grant:may_manage",
+          "state-model:grant",
+          "state-subject:grant",
+          "state-transition:grant:grant-replace:active",
+          "state-transition:grant:grant-revoke:active",
+          "state-transition:grant:grant-share:inactive",
+          "state:grant:active",
+          "state:grant:inactive",
+          "transition-guard:grant:grant-replace:may_manage",
+          "transition-guard:grant:grant-revoke:may_manage",
+          "transition-guard:grant:grant-share:may_manage",
+          "transition-target:grant:grant-replace",
+          "transition-target:grant:grant-revoke",
+          "transition-target:grant:grant-share",
+          "transition:grant:grant-replace",
+          "transition:grant:grant-revoke",
+          "transition:grant:grant-share",
+          "upload",
+          "upload-share"
+        ],
+        "limits": [
+          "Source/case/runtime evidence must also pass the existing independent gates."
+        ]
+      },
+      "scope": "Recorded semantic confirmation and actual declaration bindings"
+    }
+  },
+  "review_hash": "15c52bcd953c5ede2930ee7144d22bd646e7f351897c038fb0f974285184e998",
+  "observations_hash": "a6a296ce30cfb51c20f9047158d1e27be300bdb76d993b95221c4ec6df69adfd",
+  "tests": [
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "bo_checks.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "checked_at": "2026-11-08T07:19:28.474083+00:00",
+  "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+}

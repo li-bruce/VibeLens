@@ -17,6 +17,7 @@ original versions and bytes.
 | Extracted Harness plugin | Five checks passed against the real pinned registry/invocation runtime; [report](harness-runtime.json) |
 | Staged installation bytes | All 389 canonical Skill files match the tested archives and Git index; [report](staged-package-parity.json), [checksums](SHA256SUMS.txt) |
 | Concept networks and live capture | Seven checks passed: 34 concepts, 14 mappings, definitions, 2D/3D, recording and Timeline; [report](concept-browser-retest/run-d91f44e56978/result.json) |
+| Lazy-source identity comparison | Seven checks passed after checking the immutable server model separately from declared source projections; [report](concept-browser-source-pass/run-ca12a54f6004/result.json) |
 | Product home and walkthrough | English and Chinese, five scenes, custom-view persistence and 3D camera dragging passed; [report](pages-browser-final/result.json) |
 | Complete walkthrough regression | Both languages passed five stages, eight native presets, seven layers, 494 source nodes, saved-view restoration, real transfer animation and rotate/zoom/pan; no browser errors; [report](case-browser-pass/summary.json) |
 | API response observation | Three checks passed for exact GET/POST identities, recorded HTTP 403 and cross-layer causality; [report](api-browser/results.json) |
@@ -61,6 +62,16 @@ compares visible concept IDs and complete confirmed definitions exactly, and ope
 details using the current keyboard context-menu action. The [original failure](concept-browser-ci-failed.log)
 and [screenshot](concept-browser-ci-failed.png) are retained. No model, business
 expectation or acceptance gate was changed to pass these checks.
+
+The first main-branch Linux browser run exposed another timing-dependent test
+assumption: the initial UI inventory can contain a partial source slice, while
+opening all layers loads additional real declarations. Comparing the two raw
+arrays treated that documented loading behavior as a model mutation. The check
+now waits for source readiness, compares the independent server model before and
+after exactly, and requires the displayed model's IDs to equal the authored IDs
+plus declared source projections. Its [Linux failure](main-ci-browser-failure/browser.stderr)
+and [screenshot](main-ci-browser-failure/failure.png) remain available; the final
+local retest again passed all seven checks and actual upload/share capture.
 
 The first Harness invocation used the system Node 20 and missed the isolated
 pinned host packages. Its [failure](harness-runtime-missing-environment.log) is

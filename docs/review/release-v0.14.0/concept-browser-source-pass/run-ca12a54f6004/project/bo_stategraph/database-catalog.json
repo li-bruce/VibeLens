@@ -1,0 +1,121 @@
+{
+  "protocol": "bo-database-bundle/v1",
+  "source_id": "07faea3cbd187a78152dc96fe62d08f787343cb91ed39d16069d266cb10cc65b",
+  "catalog_id": "adf8e25a513decab9be8f43e689dcb00aaed40b25dce774ceeeb801d26483422",
+  "catalogs": [
+    {
+      "protocol": "bo-data-catalog/v1",
+      "store_id": "files",
+      "engine": "sqlalchemy",
+      "origin": "database",
+      "coverage": "complete",
+      "limitations": [
+        "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+      ],
+      "resources": [
+        {
+          "key": "table:files",
+          "kind": "table",
+          "name": "files",
+          "fields": [
+            {
+              "name": "id",
+              "native_type": "TEXT",
+              "nullable": true,
+              "primary_key": true,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "name",
+              "native_type": "TEXT",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "owner",
+              "native_type": "TEXT",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "id"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "table:grants",
+          "kind": "table",
+          "name": "grants",
+          "fields": [
+            {
+              "name": "active",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "file_id",
+              "native_type": "TEXT",
+              "nullable": false,
+              "primary_key": true,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "recipient",
+              "native_type": "TEXT",
+              "nullable": false,
+              "primary_key": true,
+              "default": null,
+              "generated": false
+            },
+            {
+              "name": "revision",
+              "native_type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "default": null,
+              "generated": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "foreign_key",
+              "name": "",
+              "fields": [
+                "file_id"
+              ],
+              "target": "table:files",
+              "target_fields": [
+                "id"
+              ],
+              "description": "{}"
+            },
+            {
+              "kind": "primary_key",
+              "name": "",
+              "fields": [
+                "file_id",
+                "recipient"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": []
+}

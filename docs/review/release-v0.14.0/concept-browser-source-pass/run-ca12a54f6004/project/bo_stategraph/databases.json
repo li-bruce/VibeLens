@@ -1,0 +1,134 @@
+{
+  "protocol": "bo-databases/v1",
+  "stores": [
+    {
+      "id": "files",
+      "label": "File storage",
+      "engine": "sqlalchemy",
+      "url_env": "BO_TRIAL_DATABASE_URL",
+      "selection": {
+        "source": "user",
+        "answer": "信息用SQLite吧。",
+        "locator": "Synthetic trial U2"
+      },
+      "model_layer": "Application-owned SQLite DDL",
+      "source_files": [
+        "service.py"
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "id": "db.upload",
+      "label": "Upload file",
+      "parent": "upload",
+      "source": {
+        "path": "service.py",
+        "symbol": "FileService.upload"
+      },
+      "store": "files",
+      "action": "write",
+      "targets": [
+        "table:files"
+      ],
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "required_cases": [
+        "allowed-download"
+      ]
+    },
+    {
+      "id": "db.share",
+      "label": "Share file",
+      "parent": "share",
+      "source": {
+        "path": "service.py",
+        "symbol": "FileService.share"
+      },
+      "store": "files",
+      "action": "write",
+      "targets": [
+        "table:files",
+        "table:grants"
+      ],
+      "target_actions": {
+        "table:files": "read",
+        "table:grants": "read_write"
+      },
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "required_cases": [
+        "allowed-download"
+      ]
+    },
+    {
+      "id": "db.revoke",
+      "label": "Revoke access",
+      "parent": "revoke",
+      "source": {
+        "path": "service.py",
+        "symbol": "FileService.revoke"
+      },
+      "store": "files",
+      "action": "write",
+      "targets": [
+        "table:files",
+        "table:grants"
+      ],
+      "target_actions": {
+        "table:files": "read",
+        "table:grants": "read_write"
+      },
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "required_cases": [
+        "allowed-download"
+      ]
+    },
+    {
+      "id": "db.list",
+      "label": "See received files",
+      "parent": "list",
+      "source": {
+        "path": "service.py",
+        "symbol": "FileService.received"
+      },
+      "store": "files",
+      "action": "read",
+      "targets": [
+        "table:files",
+        "table:grants"
+      ],
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "required_cases": [
+        "allowed-download"
+      ]
+    },
+    {
+      "id": "db.facts",
+      "label": "Read current grant",
+      "parent": "facts",
+      "source": {
+        "path": "service.py",
+        "symbol": "FileService.facts"
+      },
+      "store": "files",
+      "action": "read",
+      "targets": [
+        "table:files",
+        "table:grants"
+      ],
+      "parameters": {},
+      "before": {},
+      "after": {},
+      "required_cases": [
+        "allowed-download"
+      ]
+    }
+  ]
+}

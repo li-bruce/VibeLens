@@ -1,0 +1,2760 @@
+{
+  "schema": "business-discovery/v2",
+  "project_id": "colleague-files-trial",
+  "title": "Colleague files",
+  "goal": "Share a local file with named colleagues and revoke each recipient independently.",
+  "sources": [
+    {
+      "id": "U1",
+      "kind": "user",
+      "text": "我要做一个同事之间共享文件的小应用。我上传文件后能共享给指定同事，也能撤销共享；同事可以查看别人共享给自己的文件并下载。先做本地简洁网页。",
+      "locator": "Synthetic AI trial / initial request"
+    },
+    {
+      "id": "U2",
+      "kind": "user",
+      "text": "保留我自己的代码组织，只用图观察。文件就放本地，信息用SQLite吧。先固定Alice、Bob、Carol三个测试用户，用下拉框切换。第一版一个文件给一个人，换人共享就替换原来的。只有上传者能共享和撤回，撤回后旧链接的下一次下载必须拒绝。",
+      "locator": "Synthetic AI trial / clarification answer; not human acceptance"
+    },
+    {
+      "id": "U3",
+      "kind": "user",
+      "text": "对，就是这样。先按这个做。",
+      "locator": "Synthetic AI trial / after business, state and rule previews; not human acceptance"
+    },
+    {
+      "id": "U4",
+      "kind": "user",
+      "text": "共享给多个人后，我只想撤回其中一个人的权限，其他人的继续有效",
+      "locator": "Synthetic AI iteration request; not human acceptance"
+    },
+    {
+      "id": "U5",
+      "kind": "user",
+      "text": "图里的步骤没变，每个人的授权单独算，这样对。开始改吧。",
+      "locator": "Synthetic AI confirmation after iteration business/state previews; not human acceptance"
+    }
+  ],
+  "networks": [
+    {
+      "id": "sharing",
+      "title": "File sharing",
+      "actors": [
+        "Owner",
+        "Recipient"
+      ],
+      "trigger": "An owner chooses a file and recipient",
+      "outcome": "Each named recipient can read while their own grant is active",
+      "nodes": [
+        {
+          "id": "upload",
+          "kind": "action",
+          "label": "Upload file",
+          "meaning": "Store the uploaded file and its owner locally",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        },
+        {
+          "id": "share",
+          "kind": "action",
+          "label": "Share file",
+          "meaning": "Activate one selected recipient grant while retaining all other grants",
+          "source_refs": [
+            "U1",
+            "U4"
+          ]
+        },
+        {
+          "id": "read",
+          "kind": "action",
+          "label": "Read shared file",
+          "meaning": "Read only while the selected recipient has a current grant",
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "revoke",
+          "kind": "action",
+          "label": "Revoke access",
+          "meaning": "Deactivate only the selected recipient grant",
+          "source_refs": [
+            "U1",
+            "U4"
+          ]
+        },
+        {
+          "id": "list",
+          "kind": "action",
+          "label": "See received files",
+          "meaning": "Show files currently shared to the selected colleague",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "upload-share",
+          "from": "upload",
+          "to": "share",
+          "relation": "flow",
+          "label": "Choose recipient",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        },
+        {
+          "id": "share-list",
+          "from": "share",
+          "to": "list",
+          "relation": "flow",
+          "label": "Recipient sees file",
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "list-read",
+          "from": "list",
+          "to": "read",
+          "relation": "flow",
+          "label": "Download file",
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "share-revoke",
+          "from": "share",
+          "to": "revoke",
+          "relation": "flow",
+          "label": "Owner withdraws access",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      ]
+    }
+  ],
+  "decisions": [],
+  "objects": [
+    {
+      "id": "grant",
+      "identity": {
+        "file_id": "string",
+        "recipient_id": "string"
+      },
+      "fields": {
+        "owner_id": "string",
+        "active": "boolean"
+      },
+      "source_refs": [
+        "U1",
+        "U4"
+      ]
+    },
+    {
+      "id": "actor",
+      "identity": {
+        "id": "string"
+      },
+      "source_refs": [
+        "U1"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "actor-id",
+      "object": "actor",
+      "field": "id",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_effect",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "owner-id",
+      "object": "grant",
+      "field": "owner_id",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_effect",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "recipient-id",
+      "object": "grant",
+      "field": "recipient_id",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_effect",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "active-grant",
+      "object": "grant",
+      "field": "active",
+      "type": "boolean",
+      "read_basis": {
+        "timing": "before_effect",
+        "scope": "current_request"
+      },
+      "source_refs": [
+        "U1"
+      ]
+    }
+  ],
+  "state_models": [
+    {
+      "id": "grant",
+      "label": "Recipient grant",
+      "subject": {
+        "object": "grant",
+        "identity": [
+          "file_id",
+          "recipient_id"
+        ]
+      },
+      "states": [
+        "inactive",
+        "active"
+      ],
+      "initial": "inactive",
+      "events": {
+        "share": {
+          "payload": {
+            "recipient_id": {
+              "type": "string"
+            }
+          }
+        },
+        "revoke": {
+          "payload": {
+            "recipient_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "context": {},
+      "guards": {
+        "may_manage": {
+          "decision": "policy:operation:manage",
+          "source_refs": [
+            "U1"
+          ]
+        }
+      },
+      "effects": {},
+      "transitions": [
+        {
+          "id": "grant-share",
+          "source": "inactive",
+          "dest": "active",
+          "trigger": "share",
+          "conditions": [
+            "may_manage"
+          ],
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "grant-revoke",
+          "source": "active",
+          "dest": "inactive",
+          "trigger": "revoke",
+          "conditions": [
+            "may_manage"
+          ],
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "grant-replace",
+          "source": "active",
+          "dest": "active",
+          "trigger": "share",
+          "conditions": [
+            "may_manage"
+          ],
+          "source_refs": [
+            "U2"
+          ]
+        }
+      ],
+      "source_refs": [
+        "U1",
+        "U4"
+      ]
+    }
+  ],
+  "policy": {
+    "schema": "bo-policy/v1",
+    "revision": "draft-1",
+    "stage": "draft",
+    "inputs": {
+      "actor": "string",
+      "owner": "string",
+      "recipient": "string",
+      "active": "boolean"
+    },
+    "predicates": [
+      {
+        "id": "same_identity",
+        "parameters": {
+          "left": "string",
+          "right": "string"
+        },
+        "source_refs": [
+          "U1"
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "id": "actor",
+        "op": "input",
+        "name": "actor",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "owner",
+        "op": "input",
+        "name": "owner",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "recipient",
+        "op": "input",
+        "name": "recipient",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "active",
+        "op": "input",
+        "name": "active",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "is_owner",
+        "op": "predicate",
+        "predicate": "same_identity",
+        "arguments": {
+          "left": "actor",
+          "right": "owner"
+        },
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "is_recipient",
+        "op": "predicate",
+        "predicate": "same_identity",
+        "arguments": {
+          "left": "actor",
+          "right": "recipient"
+        },
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "may_read",
+        "op": "all",
+        "inputs": [
+          "is_recipient",
+          "active"
+        ],
+        "source_refs": [
+          "U1"
+        ]
+      }
+    ],
+    "operations": [
+      {
+        "id": "manage",
+        "root": "is_owner",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "read",
+        "root": "may_read",
+        "source_refs": [
+          "U1"
+        ]
+      }
+    ]
+  },
+  "crosslinks": [
+    {
+      "id": "share-requests-event",
+      "from": "share",
+      "to": "event:grant:share",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "revoke-requests-event",
+      "from": "revoke",
+      "to": "event:grant:revoke",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "share-guard",
+      "from": "transition:grant:grant-share",
+      "to": "policy:operation:manage",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "revoke-guard",
+      "from": "transition:grant:grant-revoke",
+      "to": "policy:operation:manage",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "read-actor-id",
+      "from": "policy:actor",
+      "to": "fact:actor-id",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "read-owner-id",
+      "from": "policy:owner",
+      "to": "fact:owner-id",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "read-recipient-id",
+      "from": "policy:recipient",
+      "to": "fact:recipient-id",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "read-active-grant",
+      "from": "policy:active",
+      "to": "fact:active-grant",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "replace-guard",
+      "from": "transition:grant:grant-replace",
+      "to": "policy:operation:manage",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U2"
+      ]
+    }
+  ],
+  "applicability": [
+    {
+      "operation": "share",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "grant"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "manage"
+        ]
+      },
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "operation": "read",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "grant"
+        ],
+        "mode": "read"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "read"
+        ]
+      },
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "operation": "revoke",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "grant"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "manage"
+        ]
+      },
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "operation": "upload",
+      "state": {
+        "status": "none",
+        "reason": "Upload creates a file before any grant exists"
+      },
+      "rules": {
+        "status": "none",
+        "reason": "Selected local test user owns their new file"
+      },
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "operation": "list",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "grant"
+        ],
+        "mode": "read"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "read"
+        ]
+      },
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    }
+  ],
+  "expectations": [
+    {
+      "id": "revoke-denies-old-link",
+      "scope": [
+        "read",
+        "revoke",
+        "state-model:grant"
+      ],
+      "given": {
+        "grant": "active"
+      },
+      "when": {
+        "actions": [
+          "revoke",
+          "read"
+        ]
+      },
+      "then": [
+        {
+          "path": [
+            "status"
+          ],
+          "equals": 403
+        }
+      ],
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "owner-only",
+      "scope": [
+        "share",
+        "revoke"
+      ],
+      "given": {
+        "actor": "not_owner"
+      },
+      "when": {
+        "action": "share"
+      },
+      "then": [
+        {
+          "path": [
+            "status"
+          ],
+          "equals": 403
+        }
+      ],
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "allowed-download",
+      "scope": [
+        "share",
+        "read"
+      ],
+      "given": {
+        "actor": "recipient"
+      },
+      "when": {
+        "actions": [
+          "share",
+          "read"
+        ]
+      },
+      "then": [
+        {
+          "path": [
+            "status"
+          ],
+          "equals": 200
+        }
+      ],
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "other-recipient-retained",
+      "scope": [
+        "share",
+        "revoke",
+        "read",
+        "object:grant",
+        "state-model:grant"
+      ],
+      "given": {
+        "recipients": [
+          "Bob",
+          "Carol"
+        ]
+      },
+      "when": {
+        "action": "revoke",
+        "recipient": "Bob"
+      },
+      "then": [
+        {
+          "path": [
+            "carol_status"
+          ],
+          "equals": 200
+        },
+        {
+          "path": [
+            "bob_status"
+          ],
+          "equals": 403
+        }
+      ],
+      "source_refs": [
+        "U4"
+      ]
+    }
+  ],
+  "confirmations": [
+    {
+      "id": "C1",
+      "scope": [
+        "applicability:list",
+        "applicability:read",
+        "applicability:revoke",
+        "applicability:share",
+        "applicability:upload",
+        "business-contains:sharing:list",
+        "business-contains:sharing:read",
+        "business-contains:sharing:revoke",
+        "business-contains:sharing:share",
+        "business-contains:sharing:upload",
+        "business-network:sharing",
+        "event-trigger:grant:grant-replace",
+        "event-trigger:grant:grant-revoke",
+        "event-trigger:grant:grant-share",
+        "event:grant:revoke",
+        "event:grant:share",
+        "expectation:allowed-download",
+        "expectation:owner-only",
+        "expectation:revoke-denies-old-link",
+        "fact:active-grant",
+        "fact:actor-id",
+        "fact:owner-id",
+        "fact:recipient-id",
+        "guard-decision:guard%3Agrant%3Amay_manage",
+        "guard:grant:may_manage",
+        "list",
+        "list-read",
+        "object-fact:active-grant",
+        "object-fact:actor-id",
+        "object-fact:owner-id",
+        "object-fact:recipient-id",
+        "object:actor",
+        "object:grant",
+        "operation-rule:list:read",
+        "operation-rule:read:read",
+        "operation-rule:revoke:manage",
+        "operation-rule:share:manage",
+        "operation-state:list:grant",
+        "operation-state:read:grant",
+        "operation-state:revoke:grant",
+        "operation-state:share:grant",
+        "policy-dependency:is_owner:0",
+        "policy-dependency:is_owner:1",
+        "policy-dependency:is_owner:2",
+        "policy-dependency:is_recipient:0",
+        "policy-dependency:is_recipient:1",
+        "policy-dependency:is_recipient:2",
+        "policy-dependency:may_read:0",
+        "policy-dependency:may_read:1",
+        "policy-operation:manage",
+        "policy-operation:read",
+        "policy-predicate:same_identity",
+        "policy-result:manage",
+        "policy-result:read",
+        "policy:active",
+        "policy:actor",
+        "policy:is_owner",
+        "policy:is_recipient",
+        "policy:may_read",
+        "policy:owner",
+        "policy:recipient",
+        "read",
+        "read-active-grant",
+        "read-actor-id",
+        "read-owner-id",
+        "read-recipient-id",
+        "replace-guard",
+        "revoke",
+        "revoke-guard",
+        "revoke-requests-event",
+        "share",
+        "share-guard",
+        "share-list",
+        "share-requests-event",
+        "share-revoke",
+        "state-contains:grant:active",
+        "state-contains:grant:inactive",
+        "state-event:grant:revoke",
+        "state-event:grant:share",
+        "state-guard:grant:may_manage",
+        "state-model:grant",
+        "state-subject:grant",
+        "state-transition:grant:grant-replace:active",
+        "state-transition:grant:grant-revoke:active",
+        "state-transition:grant:grant-share:inactive",
+        "state:grant:active",
+        "state:grant:inactive",
+        "transition-guard:grant:grant-replace:may_manage",
+        "transition-guard:grant:grant-revoke:may_manage",
+        "transition-guard:grant:grant-share:may_manage",
+        "transition-target:grant:grant-replace",
+        "transition-target:grant:grant-revoke",
+        "transition-target:grant:grant-share",
+        "transition:grant:grant-replace",
+        "transition:grant:grant-revoke",
+        "transition:grant:grant-share",
+        "upload",
+        "upload-share"
+      ],
+      "source_refs": [
+        "U3"
+      ],
+      "source_evidence": [
+        {
+          "id": "U3",
+          "kind": "user",
+          "text": "对，就是这样。先按这个做。",
+          "locator": "Synthetic AI trial / after business, state and rule previews; not human acceptance"
+        }
+      ],
+      "snapshot": {
+        "schema": "bo-concept-snapshot/v1",
+        "scope": [
+          "applicability:list",
+          "applicability:read",
+          "applicability:revoke",
+          "applicability:share",
+          "applicability:upload",
+          "business-contains:sharing:list",
+          "business-contains:sharing:read",
+          "business-contains:sharing:revoke",
+          "business-contains:sharing:share",
+          "business-contains:sharing:upload",
+          "business-network:sharing",
+          "event-trigger:grant:grant-replace",
+          "event-trigger:grant:grant-revoke",
+          "event-trigger:grant:grant-share",
+          "event:grant:revoke",
+          "event:grant:share",
+          "expectation:allowed-download",
+          "expectation:owner-only",
+          "expectation:revoke-denies-old-link",
+          "fact:active-grant",
+          "fact:actor-id",
+          "fact:owner-id",
+          "fact:recipient-id",
+          "guard-decision:guard%3Agrant%3Amay_manage",
+          "guard:grant:may_manage",
+          "list",
+          "list-read",
+          "object-fact:active-grant",
+          "object-fact:actor-id",
+          "object-fact:owner-id",
+          "object-fact:recipient-id",
+          "object:actor",
+          "object:grant",
+          "operation-rule:list:read",
+          "operation-rule:read:read",
+          "operation-rule:revoke:manage",
+          "operation-rule:share:manage",
+          "operation-state:list:grant",
+          "operation-state:read:grant",
+          "operation-state:revoke:grant",
+          "operation-state:share:grant",
+          "policy-dependency:is_owner:0",
+          "policy-dependency:is_owner:1",
+          "policy-dependency:is_owner:2",
+          "policy-dependency:is_recipient:0",
+          "policy-dependency:is_recipient:1",
+          "policy-dependency:is_recipient:2",
+          "policy-dependency:may_read:0",
+          "policy-dependency:may_read:1",
+          "policy-operation:manage",
+          "policy-operation:read",
+          "policy-predicate:same_identity",
+          "policy-result:manage",
+          "policy-result:read",
+          "policy:active",
+          "policy:actor",
+          "policy:is_owner",
+          "policy:is_recipient",
+          "policy:may_read",
+          "policy:owner",
+          "policy:recipient",
+          "read",
+          "read-active-grant",
+          "read-actor-id",
+          "read-owner-id",
+          "read-recipient-id",
+          "replace-guard",
+          "revoke",
+          "revoke-guard",
+          "revoke-requests-event",
+          "share",
+          "share-guard",
+          "share-list",
+          "share-requests-event",
+          "share-revoke",
+          "state-contains:grant:active",
+          "state-contains:grant:inactive",
+          "state-event:grant:revoke",
+          "state-event:grant:share",
+          "state-guard:grant:may_manage",
+          "state-model:grant",
+          "state-subject:grant",
+          "state-transition:grant:grant-replace:active",
+          "state-transition:grant:grant-revoke:active",
+          "state-transition:grant:grant-share:inactive",
+          "state:grant:active",
+          "state:grant:inactive",
+          "transition-guard:grant:grant-replace:may_manage",
+          "transition-guard:grant:grant-revoke:may_manage",
+          "transition-guard:grant:grant-share:may_manage",
+          "transition-target:grant:grant-replace",
+          "transition-target:grant:grant-revoke",
+          "transition-target:grant:grant-share",
+          "transition:grant:grant-replace",
+          "transition:grant:grant-revoke",
+          "transition:grant:grant-share",
+          "upload",
+          "upload-share"
+        ],
+        "records": {
+          "applicability:list": {
+            "kind": "applicability",
+            "operation": "list",
+            "state": {
+              "status": "applicable",
+              "models": [
+                "grant"
+              ],
+              "mode": "read"
+            },
+            "rules": {
+              "status": "applicable",
+              "operations": [
+                "read"
+              ]
+            }
+          },
+          "applicability:read": {
+            "kind": "applicability",
+            "operation": "read",
+            "state": {
+              "status": "applicable",
+              "models": [
+                "grant"
+              ],
+              "mode": "read"
+            },
+            "rules": {
+              "status": "applicable",
+              "operations": [
+                "read"
+              ]
+            }
+          },
+          "applicability:revoke": {
+            "kind": "applicability",
+            "operation": "revoke",
+            "state": {
+              "status": "applicable",
+              "models": [
+                "grant"
+              ],
+              "mode": "change"
+            },
+            "rules": {
+              "status": "applicable",
+              "operations": [
+                "manage"
+              ]
+            }
+          },
+          "applicability:share": {
+            "kind": "applicability",
+            "operation": "share",
+            "state": {
+              "status": "applicable",
+              "models": [
+                "grant"
+              ],
+              "mode": "change"
+            },
+            "rules": {
+              "status": "applicable",
+              "operations": [
+                "manage"
+              ]
+            }
+          },
+          "applicability:upload": {
+            "kind": "applicability",
+            "operation": "upload",
+            "state": {
+              "status": "none",
+              "reason": "Upload creates a file before any grant exists"
+            },
+            "rules": {
+              "status": "none",
+              "reason": "Selected local test user owns their new file"
+            }
+          },
+          "business-contains:sharing:list": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "list",
+            "relation": "contains"
+          },
+          "business-contains:sharing:read": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "read",
+            "relation": "contains"
+          },
+          "business-contains:sharing:revoke": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "revoke",
+            "relation": "contains"
+          },
+          "business-contains:sharing:share": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "share",
+            "relation": "contains"
+          },
+          "business-contains:sharing:upload": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "upload",
+            "relation": "contains"
+          },
+          "business-network:sharing": {
+            "kind": "business_network",
+            "actors": [
+              "Owner",
+              "Recipient"
+            ],
+            "trigger": "An owner chooses a file and recipient",
+            "outcome": "The current recipient can read while the grant is active"
+          },
+          "event-trigger:grant:grant-replace": {
+            "kind": "relation",
+            "from": "event:grant:share",
+            "to": "transition:grant:grant-replace",
+            "relation": "requests_transition"
+          },
+          "event-trigger:grant:grant-revoke": {
+            "kind": "relation",
+            "from": "event:grant:revoke",
+            "to": "transition:grant:grant-revoke",
+            "relation": "requests_transition"
+          },
+          "event-trigger:grant:grant-share": {
+            "kind": "relation",
+            "from": "event:grant:share",
+            "to": "transition:grant:grant-share",
+            "relation": "requests_transition"
+          },
+          "event:grant:revoke": {
+            "kind": "event",
+            "payload": {}
+          },
+          "event:grant:share": {
+            "kind": "event",
+            "payload": {}
+          },
+          "expectation:allowed-download": {
+            "kind": "expectation",
+            "id": "allowed-download",
+            "scope": [
+              "share",
+              "read"
+            ],
+            "given": {
+              "actor": "recipient"
+            },
+            "when": {
+              "actions": [
+                "share",
+                "read"
+              ]
+            },
+            "then": [
+              {
+                "path": [
+                  "status"
+                ],
+                "equals": 200
+              }
+            ]
+          },
+          "expectation:owner-only": {
+            "kind": "expectation",
+            "id": "owner-only",
+            "scope": [
+              "share",
+              "revoke"
+            ],
+            "given": {
+              "actor": "not_owner"
+            },
+            "when": {
+              "action": "share"
+            },
+            "then": [
+              {
+                "path": [
+                  "status"
+                ],
+                "equals": 403
+              }
+            ]
+          },
+          "expectation:revoke-denies-old-link": {
+            "kind": "expectation",
+            "id": "revoke-denies-old-link",
+            "scope": [
+              "read",
+              "revoke",
+              "state-model:grant"
+            ],
+            "given": {
+              "grant": "active"
+            },
+            "when": {
+              "actions": [
+                "revoke",
+                "read"
+              ]
+            },
+            "then": [
+              {
+                "path": [
+                  "status"
+                ],
+                "equals": 403
+              }
+            ]
+          },
+          "fact:active-grant": {
+            "kind": "fact",
+            "id": "active-grant",
+            "object": "grant",
+            "field": "active",
+            "type": "boolean",
+            "read_basis": {
+              "timing": "before_effect",
+              "scope": "current_request"
+            }
+          },
+          "fact:actor-id": {
+            "kind": "fact",
+            "id": "actor-id",
+            "object": "actor",
+            "field": "id",
+            "type": "string",
+            "read_basis": {
+              "timing": "before_effect",
+              "scope": "current_request"
+            }
+          },
+          "fact:owner-id": {
+            "kind": "fact",
+            "id": "owner-id",
+            "object": "grant",
+            "field": "owner_id",
+            "type": "string",
+            "read_basis": {
+              "timing": "before_effect",
+              "scope": "current_request"
+            }
+          },
+          "fact:recipient-id": {
+            "kind": "fact",
+            "id": "recipient-id",
+            "object": "grant",
+            "field": "recipient_id",
+            "type": "string",
+            "read_basis": {
+              "timing": "before_effect",
+              "scope": "current_request"
+            }
+          },
+          "guard-decision:guard%3Agrant%3Amay_manage": {
+            "kind": "relation",
+            "from": "guard:grant:may_manage",
+            "to": "policy-operation:manage",
+            "relation": "guard_resolves_decision"
+          },
+          "guard:grant:may_manage": {
+            "kind": "guard",
+            "decision": "policy-operation:manage"
+          },
+          "list": {
+            "kind": "action",
+            "meaning": "Show files currently shared to the selected colleague"
+          },
+          "list-read": {
+            "kind": "relation",
+            "from": "list",
+            "to": "read",
+            "relation": "flow"
+          },
+          "object-fact:active-grant": {
+            "kind": "relation",
+            "from": "object:grant",
+            "to": "fact:active-grant",
+            "relation": "describes_fact"
+          },
+          "object-fact:actor-id": {
+            "kind": "relation",
+            "from": "object:actor",
+            "to": "fact:actor-id",
+            "relation": "describes_fact"
+          },
+          "object-fact:owner-id": {
+            "kind": "relation",
+            "from": "object:grant",
+            "to": "fact:owner-id",
+            "relation": "describes_fact"
+          },
+          "object-fact:recipient-id": {
+            "kind": "relation",
+            "from": "object:grant",
+            "to": "fact:recipient-id",
+            "relation": "describes_fact"
+          },
+          "object:actor": {
+            "kind": "object",
+            "id": "actor",
+            "identity": {
+              "id": "string"
+            }
+          },
+          "object:grant": {
+            "kind": "object",
+            "id": "grant",
+            "identity": {
+              "file_id": "string"
+            },
+            "fields": {
+              "owner_id": "string",
+              "active": "boolean",
+              "recipient_id": "string"
+            }
+          },
+          "operation-rule:list:read": {
+            "kind": "relation",
+            "from": "list",
+            "to": "policy-operation:read",
+            "relation": "requires_decision"
+          },
+          "operation-rule:read:read": {
+            "kind": "relation",
+            "from": "read",
+            "to": "policy-operation:read",
+            "relation": "requires_decision"
+          },
+          "operation-rule:revoke:manage": {
+            "kind": "relation",
+            "from": "revoke",
+            "to": "policy-operation:manage",
+            "relation": "requires_decision"
+          },
+          "operation-rule:share:manage": {
+            "kind": "relation",
+            "from": "share",
+            "to": "policy-operation:manage",
+            "relation": "requires_decision"
+          },
+          "operation-state:list:grant": {
+            "kind": "relation",
+            "from": "list",
+            "to": "state-model:grant",
+            "relation": "reads_state"
+          },
+          "operation-state:read:grant": {
+            "kind": "relation",
+            "from": "read",
+            "to": "state-model:grant",
+            "relation": "reads_state"
+          },
+          "operation-state:revoke:grant": {
+            "kind": "relation",
+            "from": "revoke",
+            "to": "state-model:grant",
+            "relation": "changes_state"
+          },
+          "operation-state:share:grant": {
+            "kind": "relation",
+            "from": "share",
+            "to": "state-model:grant",
+            "relation": "changes_state"
+          },
+          "policy-dependency:is_owner:0": {
+            "kind": "relation",
+            "from": "policy-predicate:same_identity",
+            "to": "policy:is_owner",
+            "relation": "data"
+          },
+          "policy-dependency:is_owner:1": {
+            "kind": "relation",
+            "from": "policy:actor",
+            "to": "policy:is_owner",
+            "relation": "data"
+          },
+          "policy-dependency:is_owner:2": {
+            "kind": "relation",
+            "from": "policy:owner",
+            "to": "policy:is_owner",
+            "relation": "data"
+          },
+          "policy-dependency:is_recipient:0": {
+            "kind": "relation",
+            "from": "policy-predicate:same_identity",
+            "to": "policy:is_recipient",
+            "relation": "data"
+          },
+          "policy-dependency:is_recipient:1": {
+            "kind": "relation",
+            "from": "policy:actor",
+            "to": "policy:is_recipient",
+            "relation": "data"
+          },
+          "policy-dependency:is_recipient:2": {
+            "kind": "relation",
+            "from": "policy:recipient",
+            "to": "policy:is_recipient",
+            "relation": "data"
+          },
+          "policy-dependency:may_read:0": {
+            "kind": "relation",
+            "from": "policy:is_recipient",
+            "to": "policy:may_read",
+            "relation": "guard"
+          },
+          "policy-dependency:may_read:1": {
+            "kind": "relation",
+            "from": "policy:active",
+            "to": "policy:may_read",
+            "relation": "guard"
+          },
+          "policy-operation:manage": {
+            "kind": "rule_operation",
+            "id": "manage",
+            "root": "is_owner"
+          },
+          "policy-operation:read": {
+            "kind": "rule_operation",
+            "id": "read",
+            "root": "may_read"
+          },
+          "policy-predicate:same_identity": {
+            "kind": "rule_predicate",
+            "id": "same_identity",
+            "parameters": {
+              "left": "string",
+              "right": "string"
+            }
+          },
+          "policy-result:manage": {
+            "kind": "relation",
+            "from": "policy:is_owner",
+            "to": "policy-operation:manage",
+            "relation": "decision_result"
+          },
+          "policy-result:read": {
+            "kind": "relation",
+            "from": "policy:may_read",
+            "to": "policy-operation:read",
+            "relation": "decision_result"
+          },
+          "policy:active": {
+            "kind": "rule_expression",
+            "id": "active",
+            "op": "input",
+            "name": "active",
+            "input_type": "boolean"
+          },
+          "policy:actor": {
+            "kind": "rule_expression",
+            "id": "actor",
+            "op": "input",
+            "name": "actor",
+            "input_type": "string"
+          },
+          "policy:is_owner": {
+            "kind": "rule_expression",
+            "id": "is_owner",
+            "op": "predicate",
+            "predicate": "same_identity",
+            "arguments": {
+              "left": "actor",
+              "right": "owner"
+            }
+          },
+          "policy:is_recipient": {
+            "kind": "rule_expression",
+            "id": "is_recipient",
+            "op": "predicate",
+            "predicate": "same_identity",
+            "arguments": {
+              "left": "actor",
+              "right": "recipient"
+            }
+          },
+          "policy:may_read": {
+            "kind": "rule_expression",
+            "id": "may_read",
+            "op": "all",
+            "inputs": [
+              "is_recipient",
+              "active"
+            ]
+          },
+          "policy:owner": {
+            "kind": "rule_expression",
+            "id": "owner",
+            "op": "input",
+            "name": "owner",
+            "input_type": "string"
+          },
+          "policy:recipient": {
+            "kind": "rule_expression",
+            "id": "recipient",
+            "op": "input",
+            "name": "recipient",
+            "input_type": "string"
+          },
+          "read": {
+            "kind": "action",
+            "meaning": "Read only while the selected recipient has a current grant"
+          },
+          "read-active-grant": {
+            "kind": "relation",
+            "from": "policy:active",
+            "to": "fact:active-grant",
+            "relation": "decision_reads_fact"
+          },
+          "read-actor-id": {
+            "kind": "relation",
+            "from": "policy:actor",
+            "to": "fact:actor-id",
+            "relation": "decision_reads_fact"
+          },
+          "read-owner-id": {
+            "kind": "relation",
+            "from": "policy:owner",
+            "to": "fact:owner-id",
+            "relation": "decision_reads_fact"
+          },
+          "read-recipient-id": {
+            "kind": "relation",
+            "from": "policy:recipient",
+            "to": "fact:recipient-id",
+            "relation": "decision_reads_fact"
+          },
+          "replace-guard": {
+            "kind": "relation",
+            "from": "transition:grant:grant-replace",
+            "to": "policy-operation:manage",
+            "relation": "transition_guarded_by"
+          },
+          "revoke": {
+            "kind": "action",
+            "meaning": "Remove the current grant for the selected recipient"
+          },
+          "revoke-guard": {
+            "kind": "relation",
+            "from": "transition:grant:grant-revoke",
+            "to": "policy-operation:manage",
+            "relation": "transition_guarded_by"
+          },
+          "revoke-requests-event": {
+            "kind": "relation",
+            "from": "revoke",
+            "to": "event:grant:revoke",
+            "relation": "action_requests_event"
+          },
+          "share": {
+            "kind": "action",
+            "meaning": "Create a current grant for the selected file and recipient"
+          },
+          "share-guard": {
+            "kind": "relation",
+            "from": "transition:grant:grant-share",
+            "to": "policy-operation:manage",
+            "relation": "transition_guarded_by"
+          },
+          "share-list": {
+            "kind": "relation",
+            "from": "share",
+            "to": "list",
+            "relation": "flow"
+          },
+          "share-requests-event": {
+            "kind": "relation",
+            "from": "share",
+            "to": "event:grant:share",
+            "relation": "action_requests_event"
+          },
+          "share-revoke": {
+            "kind": "relation",
+            "from": "share",
+            "to": "revoke",
+            "relation": "flow"
+          },
+          "state-contains:grant:active": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "state:grant:active",
+            "relation": "contains"
+          },
+          "state-contains:grant:inactive": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "state:grant:inactive",
+            "relation": "contains"
+          },
+          "state-event:grant:revoke": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "event:grant:revoke",
+            "relation": "declares_event"
+          },
+          "state-event:grant:share": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "event:grant:share",
+            "relation": "declares_event"
+          },
+          "state-guard:grant:may_manage": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "guard:grant:may_manage",
+            "relation": "declares_guard"
+          },
+          "state-model:grant": {
+            "kind": "state_model",
+            "id": "grant",
+            "subject": {
+              "object": "grant",
+              "identity": [
+                "file_id"
+              ]
+            },
+            "initial": "inactive",
+            "context": {},
+            "members": {
+              "states": [
+                "inactive",
+                "active"
+              ],
+              "events": [
+                "share",
+                "revoke"
+              ],
+              "guards": [
+                "may_manage"
+              ],
+              "effects": [],
+              "transitions": [
+                "grant-share",
+                "grant-revoke",
+                "grant-replace"
+              ]
+            }
+          },
+          "state-subject:grant": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "object:grant",
+            "relation": "state_subject"
+          },
+          "state-transition:grant:grant-replace:active": {
+            "kind": "relation",
+            "from": "state:grant:active",
+            "to": "state:grant:active",
+            "relation": "transition",
+            "transition": "transition:grant:grant-replace",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "unless": []
+          },
+          "state-transition:grant:grant-revoke:active": {
+            "kind": "relation",
+            "from": "state:grant:active",
+            "to": "state:grant:inactive",
+            "relation": "transition",
+            "transition": "transition:grant:grant-revoke",
+            "trigger": "revoke",
+            "conditions": [
+              "may_manage"
+            ],
+            "unless": []
+          },
+          "state-transition:grant:grant-share:inactive": {
+            "kind": "relation",
+            "from": "state:grant:inactive",
+            "to": "state:grant:active",
+            "relation": "transition",
+            "transition": "transition:grant:grant-share",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "unless": []
+          },
+          "state:grant:active": {
+            "kind": "state",
+            "name": "active"
+          },
+          "state:grant:inactive": {
+            "kind": "state",
+            "name": "inactive"
+          },
+          "transition-guard:grant:grant-replace:may_manage": {
+            "kind": "relation",
+            "from": "transition:grant:grant-replace",
+            "to": "guard:grant:may_manage",
+            "relation": "guarded_by",
+            "negated": false
+          },
+          "transition-guard:grant:grant-revoke:may_manage": {
+            "kind": "relation",
+            "from": "transition:grant:grant-revoke",
+            "to": "guard:grant:may_manage",
+            "relation": "guarded_by",
+            "negated": false
+          },
+          "transition-guard:grant:grant-share:may_manage": {
+            "kind": "relation",
+            "from": "transition:grant:grant-share",
+            "to": "guard:grant:may_manage",
+            "relation": "guarded_by",
+            "negated": false
+          },
+          "transition-target:grant:grant-replace": {
+            "kind": "relation",
+            "from": "transition:grant:grant-replace",
+            "to": "state:grant:active",
+            "relation": "declares_target"
+          },
+          "transition-target:grant:grant-revoke": {
+            "kind": "relation",
+            "from": "transition:grant:grant-revoke",
+            "to": "state:grant:inactive",
+            "relation": "declares_target"
+          },
+          "transition-target:grant:grant-share": {
+            "kind": "relation",
+            "from": "transition:grant:grant-share",
+            "to": "state:grant:active",
+            "relation": "declares_target"
+          },
+          "transition:grant:grant-replace": {
+            "kind": "transition",
+            "id": "grant-replace",
+            "source": "active",
+            "dest": "active",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "priority": 2
+          },
+          "transition:grant:grant-revoke": {
+            "kind": "transition",
+            "id": "grant-revoke",
+            "source": "active",
+            "dest": "inactive",
+            "trigger": "revoke",
+            "conditions": [
+              "may_manage"
+            ],
+            "priority": 1
+          },
+          "transition:grant:grant-share": {
+            "kind": "transition",
+            "id": "grant-share",
+            "source": "inactive",
+            "dest": "active",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "priority": 0
+          },
+          "upload": {
+            "kind": "action",
+            "meaning": "Store the uploaded file and its owner locally"
+          },
+          "upload-share": {
+            "kind": "relation",
+            "from": "upload",
+            "to": "share",
+            "relation": "flow"
+          }
+        },
+        "semantic_revision": "c6836f281d6e290f5f70fa8f7aba2f97ea48a4514d754cfb2a5b207661389208"
+      }
+    },
+    {
+      "id": "C2",
+      "scope": [
+        "applicability:list",
+        "applicability:read",
+        "applicability:revoke",
+        "applicability:share",
+        "applicability:upload",
+        "business-contains:sharing:list",
+        "business-contains:sharing:read",
+        "business-contains:sharing:revoke",
+        "business-contains:sharing:share",
+        "business-contains:sharing:upload",
+        "business-network:sharing",
+        "event-trigger:grant:grant-replace",
+        "event-trigger:grant:grant-revoke",
+        "event-trigger:grant:grant-share",
+        "event:grant:revoke",
+        "event:grant:share",
+        "expectation:allowed-download",
+        "expectation:other-recipient-retained",
+        "expectation:owner-only",
+        "expectation:revoke-denies-old-link",
+        "fact:active-grant",
+        "fact:actor-id",
+        "fact:owner-id",
+        "fact:recipient-id",
+        "guard-decision:guard%3Agrant%3Amay_manage",
+        "guard:grant:may_manage",
+        "list",
+        "list-read",
+        "object-fact:active-grant",
+        "object-fact:actor-id",
+        "object-fact:owner-id",
+        "object-fact:recipient-id",
+        "object:actor",
+        "object:grant",
+        "operation-rule:list:read",
+        "operation-rule:read:read",
+        "operation-rule:revoke:manage",
+        "operation-rule:share:manage",
+        "operation-state:list:grant",
+        "operation-state:read:grant",
+        "operation-state:revoke:grant",
+        "operation-state:share:grant",
+        "policy-dependency:is_owner:0",
+        "policy-dependency:is_owner:1",
+        "policy-dependency:is_owner:2",
+        "policy-dependency:is_recipient:0",
+        "policy-dependency:is_recipient:1",
+        "policy-dependency:is_recipient:2",
+        "policy-dependency:may_read:0",
+        "policy-dependency:may_read:1",
+        "policy-operation:manage",
+        "policy-operation:read",
+        "policy-predicate:same_identity",
+        "policy-result:manage",
+        "policy-result:read",
+        "policy:active",
+        "policy:actor",
+        "policy:is_owner",
+        "policy:is_recipient",
+        "policy:may_read",
+        "policy:owner",
+        "policy:recipient",
+        "read",
+        "read-active-grant",
+        "read-actor-id",
+        "read-owner-id",
+        "read-recipient-id",
+        "replace-guard",
+        "revoke",
+        "revoke-guard",
+        "revoke-requests-event",
+        "share",
+        "share-guard",
+        "share-list",
+        "share-requests-event",
+        "share-revoke",
+        "state-contains:grant:active",
+        "state-contains:grant:inactive",
+        "state-event:grant:revoke",
+        "state-event:grant:share",
+        "state-guard:grant:may_manage",
+        "state-model:grant",
+        "state-subject:grant",
+        "state-transition:grant:grant-replace:active",
+        "state-transition:grant:grant-revoke:active",
+        "state-transition:grant:grant-share:inactive",
+        "state:grant:active",
+        "state:grant:inactive",
+        "transition-guard:grant:grant-replace:may_manage",
+        "transition-guard:grant:grant-revoke:may_manage",
+        "transition-guard:grant:grant-share:may_manage",
+        "transition-target:grant:grant-replace",
+        "transition-target:grant:grant-revoke",
+        "transition-target:grant:grant-share",
+        "transition:grant:grant-replace",
+        "transition:grant:grant-revoke",
+        "transition:grant:grant-share",
+        "upload",
+        "upload-share"
+      ],
+      "source_refs": [
+        "U5"
+      ],
+      "source_evidence": [
+        {
+          "id": "U5",
+          "kind": "user",
+          "text": "图里的步骤没变，每个人的授权单独算，这样对。开始改吧。",
+          "locator": "Synthetic AI confirmation after iteration business/state previews; not human acceptance"
+        }
+      ],
+      "snapshot": {
+        "schema": "bo-concept-snapshot/v1",
+        "scope": [
+          "applicability:list",
+          "applicability:read",
+          "applicability:revoke",
+          "applicability:share",
+          "applicability:upload",
+          "business-contains:sharing:list",
+          "business-contains:sharing:read",
+          "business-contains:sharing:revoke",
+          "business-contains:sharing:share",
+          "business-contains:sharing:upload",
+          "business-network:sharing",
+          "event-trigger:grant:grant-replace",
+          "event-trigger:grant:grant-revoke",
+          "event-trigger:grant:grant-share",
+          "event:grant:revoke",
+          "event:grant:share",
+          "expectation:allowed-download",
+          "expectation:other-recipient-retained",
+          "expectation:owner-only",
+          "expectation:revoke-denies-old-link",
+          "fact:active-grant",
+          "fact:actor-id",
+          "fact:owner-id",
+          "fact:recipient-id",
+          "guard-decision:guard%3Agrant%3Amay_manage",
+          "guard:grant:may_manage",
+          "list",
+          "list-read",
+          "object-fact:active-grant",
+          "object-fact:actor-id",
+          "object-fact:owner-id",
+          "object-fact:recipient-id",
+          "object:actor",
+          "object:grant",
+          "operation-rule:list:read",
+          "operation-rule:read:read",
+          "operation-rule:revoke:manage",
+          "operation-rule:share:manage",
+          "operation-state:list:grant",
+          "operation-state:read:grant",
+          "operation-state:revoke:grant",
+          "operation-state:share:grant",
+          "policy-dependency:is_owner:0",
+          "policy-dependency:is_owner:1",
+          "policy-dependency:is_owner:2",
+          "policy-dependency:is_recipient:0",
+          "policy-dependency:is_recipient:1",
+          "policy-dependency:is_recipient:2",
+          "policy-dependency:may_read:0",
+          "policy-dependency:may_read:1",
+          "policy-operation:manage",
+          "policy-operation:read",
+          "policy-predicate:same_identity",
+          "policy-result:manage",
+          "policy-result:read",
+          "policy:active",
+          "policy:actor",
+          "policy:is_owner",
+          "policy:is_recipient",
+          "policy:may_read",
+          "policy:owner",
+          "policy:recipient",
+          "read",
+          "read-active-grant",
+          "read-actor-id",
+          "read-owner-id",
+          "read-recipient-id",
+          "replace-guard",
+          "revoke",
+          "revoke-guard",
+          "revoke-requests-event",
+          "share",
+          "share-guard",
+          "share-list",
+          "share-requests-event",
+          "share-revoke",
+          "state-contains:grant:active",
+          "state-contains:grant:inactive",
+          "state-event:grant:revoke",
+          "state-event:grant:share",
+          "state-guard:grant:may_manage",
+          "state-model:grant",
+          "state-subject:grant",
+          "state-transition:grant:grant-replace:active",
+          "state-transition:grant:grant-revoke:active",
+          "state-transition:grant:grant-share:inactive",
+          "state:grant:active",
+          "state:grant:inactive",
+          "transition-guard:grant:grant-replace:may_manage",
+          "transition-guard:grant:grant-revoke:may_manage",
+          "transition-guard:grant:grant-share:may_manage",
+          "transition-target:grant:grant-replace",
+          "transition-target:grant:grant-revoke",
+          "transition-target:grant:grant-share",
+          "transition:grant:grant-replace",
+          "transition:grant:grant-revoke",
+          "transition:grant:grant-share",
+          "upload",
+          "upload-share"
+        ],
+        "records": {
+          "applicability:list": {
+            "kind": "applicability",
+            "operation": "list",
+            "state": {
+              "status": "applicable",
+              "models": [
+                "grant"
+              ],
+              "mode": "read"
+            },
+            "rules": {
+              "status": "applicable",
+              "operations": [
+                "read"
+              ]
+            }
+          },
+          "applicability:read": {
+            "kind": "applicability",
+            "operation": "read",
+            "state": {
+              "status": "applicable",
+              "models": [
+                "grant"
+              ],
+              "mode": "read"
+            },
+            "rules": {
+              "status": "applicable",
+              "operations": [
+                "read"
+              ]
+            }
+          },
+          "applicability:revoke": {
+            "kind": "applicability",
+            "operation": "revoke",
+            "state": {
+              "status": "applicable",
+              "models": [
+                "grant"
+              ],
+              "mode": "change"
+            },
+            "rules": {
+              "status": "applicable",
+              "operations": [
+                "manage"
+              ]
+            }
+          },
+          "applicability:share": {
+            "kind": "applicability",
+            "operation": "share",
+            "state": {
+              "status": "applicable",
+              "models": [
+                "grant"
+              ],
+              "mode": "change"
+            },
+            "rules": {
+              "status": "applicable",
+              "operations": [
+                "manage"
+              ]
+            }
+          },
+          "applicability:upload": {
+            "kind": "applicability",
+            "operation": "upload",
+            "state": {
+              "status": "none",
+              "reason": "Upload creates a file before any grant exists"
+            },
+            "rules": {
+              "status": "none",
+              "reason": "Selected local test user owns their new file"
+            }
+          },
+          "business-contains:sharing:list": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "list",
+            "relation": "contains"
+          },
+          "business-contains:sharing:read": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "read",
+            "relation": "contains"
+          },
+          "business-contains:sharing:revoke": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "revoke",
+            "relation": "contains"
+          },
+          "business-contains:sharing:share": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "share",
+            "relation": "contains"
+          },
+          "business-contains:sharing:upload": {
+            "kind": "relation",
+            "from": "business-network:sharing",
+            "to": "upload",
+            "relation": "contains"
+          },
+          "business-network:sharing": {
+            "kind": "business_network",
+            "actors": [
+              "Owner",
+              "Recipient"
+            ],
+            "trigger": "An owner chooses a file and recipient",
+            "outcome": "Each named recipient can read while their own grant is active"
+          },
+          "event-trigger:grant:grant-replace": {
+            "kind": "relation",
+            "from": "event:grant:share",
+            "to": "transition:grant:grant-replace",
+            "relation": "requests_transition"
+          },
+          "event-trigger:grant:grant-revoke": {
+            "kind": "relation",
+            "from": "event:grant:revoke",
+            "to": "transition:grant:grant-revoke",
+            "relation": "requests_transition"
+          },
+          "event-trigger:grant:grant-share": {
+            "kind": "relation",
+            "from": "event:grant:share",
+            "to": "transition:grant:grant-share",
+            "relation": "requests_transition"
+          },
+          "event:grant:revoke": {
+            "kind": "event",
+            "payload": {
+              "recipient_id": {
+                "type": "string"
+              }
+            }
+          },
+          "event:grant:share": {
+            "kind": "event",
+            "payload": {
+              "recipient_id": {
+                "type": "string"
+              }
+            }
+          },
+          "expectation:allowed-download": {
+            "kind": "expectation",
+            "id": "allowed-download",
+            "scope": [
+              "share",
+              "read"
+            ],
+            "given": {
+              "actor": "recipient"
+            },
+            "when": {
+              "actions": [
+                "share",
+                "read"
+              ]
+            },
+            "then": [
+              {
+                "path": [
+                  "status"
+                ],
+                "equals": 200
+              }
+            ]
+          },
+          "expectation:other-recipient-retained": {
+            "kind": "expectation",
+            "id": "other-recipient-retained",
+            "scope": [
+              "share",
+              "revoke",
+              "read",
+              "object:grant",
+              "state-model:grant"
+            ],
+            "given": {
+              "recipients": [
+                "Bob",
+                "Carol"
+              ]
+            },
+            "when": {
+              "action": "revoke",
+              "recipient": "Bob"
+            },
+            "then": [
+              {
+                "path": [
+                  "carol_status"
+                ],
+                "equals": 200
+              },
+              {
+                "path": [
+                  "bob_status"
+                ],
+                "equals": 403
+              }
+            ]
+          },
+          "expectation:owner-only": {
+            "kind": "expectation",
+            "id": "owner-only",
+            "scope": [
+              "share",
+              "revoke"
+            ],
+            "given": {
+              "actor": "not_owner"
+            },
+            "when": {
+              "action": "share"
+            },
+            "then": [
+              {
+                "path": [
+                  "status"
+                ],
+                "equals": 403
+              }
+            ]
+          },
+          "expectation:revoke-denies-old-link": {
+            "kind": "expectation",
+            "id": "revoke-denies-old-link",
+            "scope": [
+              "read",
+              "revoke",
+              "state-model:grant"
+            ],
+            "given": {
+              "grant": "active"
+            },
+            "when": {
+              "actions": [
+                "revoke",
+                "read"
+              ]
+            },
+            "then": [
+              {
+                "path": [
+                  "status"
+                ],
+                "equals": 403
+              }
+            ]
+          },
+          "fact:active-grant": {
+            "kind": "fact",
+            "id": "active-grant",
+            "object": "grant",
+            "field": "active",
+            "type": "boolean",
+            "read_basis": {
+              "timing": "before_effect",
+              "scope": "current_request"
+            }
+          },
+          "fact:actor-id": {
+            "kind": "fact",
+            "id": "actor-id",
+            "object": "actor",
+            "field": "id",
+            "type": "string",
+            "read_basis": {
+              "timing": "before_effect",
+              "scope": "current_request"
+            }
+          },
+          "fact:owner-id": {
+            "kind": "fact",
+            "id": "owner-id",
+            "object": "grant",
+            "field": "owner_id",
+            "type": "string",
+            "read_basis": {
+              "timing": "before_effect",
+              "scope": "current_request"
+            }
+          },
+          "fact:recipient-id": {
+            "kind": "fact",
+            "id": "recipient-id",
+            "object": "grant",
+            "field": "recipient_id",
+            "type": "string",
+            "read_basis": {
+              "timing": "before_effect",
+              "scope": "current_request"
+            }
+          },
+          "guard-decision:guard%3Agrant%3Amay_manage": {
+            "kind": "relation",
+            "from": "guard:grant:may_manage",
+            "to": "policy-operation:manage",
+            "relation": "guard_resolves_decision"
+          },
+          "guard:grant:may_manage": {
+            "kind": "guard",
+            "decision": "policy-operation:manage"
+          },
+          "list": {
+            "kind": "action",
+            "meaning": "Show files currently shared to the selected colleague"
+          },
+          "list-read": {
+            "kind": "relation",
+            "from": "list",
+            "to": "read",
+            "relation": "flow"
+          },
+          "object-fact:active-grant": {
+            "kind": "relation",
+            "from": "object:grant",
+            "to": "fact:active-grant",
+            "relation": "describes_fact"
+          },
+          "object-fact:actor-id": {
+            "kind": "relation",
+            "from": "object:actor",
+            "to": "fact:actor-id",
+            "relation": "describes_fact"
+          },
+          "object-fact:owner-id": {
+            "kind": "relation",
+            "from": "object:grant",
+            "to": "fact:owner-id",
+            "relation": "describes_fact"
+          },
+          "object-fact:recipient-id": {
+            "kind": "relation",
+            "from": "object:grant",
+            "to": "fact:recipient-id",
+            "relation": "describes_fact"
+          },
+          "object:actor": {
+            "kind": "object",
+            "id": "actor",
+            "identity": {
+              "id": "string"
+            }
+          },
+          "object:grant": {
+            "kind": "object",
+            "id": "grant",
+            "identity": {
+              "file_id": "string",
+              "recipient_id": "string"
+            },
+            "fields": {
+              "owner_id": "string",
+              "active": "boolean"
+            }
+          },
+          "operation-rule:list:read": {
+            "kind": "relation",
+            "from": "list",
+            "to": "policy-operation:read",
+            "relation": "requires_decision"
+          },
+          "operation-rule:read:read": {
+            "kind": "relation",
+            "from": "read",
+            "to": "policy-operation:read",
+            "relation": "requires_decision"
+          },
+          "operation-rule:revoke:manage": {
+            "kind": "relation",
+            "from": "revoke",
+            "to": "policy-operation:manage",
+            "relation": "requires_decision"
+          },
+          "operation-rule:share:manage": {
+            "kind": "relation",
+            "from": "share",
+            "to": "policy-operation:manage",
+            "relation": "requires_decision"
+          },
+          "operation-state:list:grant": {
+            "kind": "relation",
+            "from": "list",
+            "to": "state-model:grant",
+            "relation": "reads_state"
+          },
+          "operation-state:read:grant": {
+            "kind": "relation",
+            "from": "read",
+            "to": "state-model:grant",
+            "relation": "reads_state"
+          },
+          "operation-state:revoke:grant": {
+            "kind": "relation",
+            "from": "revoke",
+            "to": "state-model:grant",
+            "relation": "changes_state"
+          },
+          "operation-state:share:grant": {
+            "kind": "relation",
+            "from": "share",
+            "to": "state-model:grant",
+            "relation": "changes_state"
+          },
+          "policy-dependency:is_owner:0": {
+            "kind": "relation",
+            "from": "policy-predicate:same_identity",
+            "to": "policy:is_owner",
+            "relation": "data"
+          },
+          "policy-dependency:is_owner:1": {
+            "kind": "relation",
+            "from": "policy:actor",
+            "to": "policy:is_owner",
+            "relation": "data"
+          },
+          "policy-dependency:is_owner:2": {
+            "kind": "relation",
+            "from": "policy:owner",
+            "to": "policy:is_owner",
+            "relation": "data"
+          },
+          "policy-dependency:is_recipient:0": {
+            "kind": "relation",
+            "from": "policy-predicate:same_identity",
+            "to": "policy:is_recipient",
+            "relation": "data"
+          },
+          "policy-dependency:is_recipient:1": {
+            "kind": "relation",
+            "from": "policy:actor",
+            "to": "policy:is_recipient",
+            "relation": "data"
+          },
+          "policy-dependency:is_recipient:2": {
+            "kind": "relation",
+            "from": "policy:recipient",
+            "to": "policy:is_recipient",
+            "relation": "data"
+          },
+          "policy-dependency:may_read:0": {
+            "kind": "relation",
+            "from": "policy:is_recipient",
+            "to": "policy:may_read",
+            "relation": "guard"
+          },
+          "policy-dependency:may_read:1": {
+            "kind": "relation",
+            "from": "policy:active",
+            "to": "policy:may_read",
+            "relation": "guard"
+          },
+          "policy-operation:manage": {
+            "kind": "rule_operation",
+            "id": "manage",
+            "root": "is_owner"
+          },
+          "policy-operation:read": {
+            "kind": "rule_operation",
+            "id": "read",
+            "root": "may_read"
+          },
+          "policy-predicate:same_identity": {
+            "kind": "rule_predicate",
+            "id": "same_identity",
+            "parameters": {
+              "left": "string",
+              "right": "string"
+            }
+          },
+          "policy-result:manage": {
+            "kind": "relation",
+            "from": "policy:is_owner",
+            "to": "policy-operation:manage",
+            "relation": "decision_result"
+          },
+          "policy-result:read": {
+            "kind": "relation",
+            "from": "policy:may_read",
+            "to": "policy-operation:read",
+            "relation": "decision_result"
+          },
+          "policy:active": {
+            "kind": "rule_expression",
+            "id": "active",
+            "op": "input",
+            "name": "active",
+            "input_type": "boolean"
+          },
+          "policy:actor": {
+            "kind": "rule_expression",
+            "id": "actor",
+            "op": "input",
+            "name": "actor",
+            "input_type": "string"
+          },
+          "policy:is_owner": {
+            "kind": "rule_expression",
+            "id": "is_owner",
+            "op": "predicate",
+            "predicate": "same_identity",
+            "arguments": {
+              "left": "actor",
+              "right": "owner"
+            }
+          },
+          "policy:is_recipient": {
+            "kind": "rule_expression",
+            "id": "is_recipient",
+            "op": "predicate",
+            "predicate": "same_identity",
+            "arguments": {
+              "left": "actor",
+              "right": "recipient"
+            }
+          },
+          "policy:may_read": {
+            "kind": "rule_expression",
+            "id": "may_read",
+            "op": "all",
+            "inputs": [
+              "is_recipient",
+              "active"
+            ]
+          },
+          "policy:owner": {
+            "kind": "rule_expression",
+            "id": "owner",
+            "op": "input",
+            "name": "owner",
+            "input_type": "string"
+          },
+          "policy:recipient": {
+            "kind": "rule_expression",
+            "id": "recipient",
+            "op": "input",
+            "name": "recipient",
+            "input_type": "string"
+          },
+          "read": {
+            "kind": "action",
+            "meaning": "Read only while the selected recipient has a current grant"
+          },
+          "read-active-grant": {
+            "kind": "relation",
+            "from": "policy:active",
+            "to": "fact:active-grant",
+            "relation": "decision_reads_fact"
+          },
+          "read-actor-id": {
+            "kind": "relation",
+            "from": "policy:actor",
+            "to": "fact:actor-id",
+            "relation": "decision_reads_fact"
+          },
+          "read-owner-id": {
+            "kind": "relation",
+            "from": "policy:owner",
+            "to": "fact:owner-id",
+            "relation": "decision_reads_fact"
+          },
+          "read-recipient-id": {
+            "kind": "relation",
+            "from": "policy:recipient",
+            "to": "fact:recipient-id",
+            "relation": "decision_reads_fact"
+          },
+          "replace-guard": {
+            "kind": "relation",
+            "from": "transition:grant:grant-replace",
+            "to": "policy-operation:manage",
+            "relation": "transition_guarded_by"
+          },
+          "revoke": {
+            "kind": "action",
+            "meaning": "Deactivate only the selected recipient grant"
+          },
+          "revoke-guard": {
+            "kind": "relation",
+            "from": "transition:grant:grant-revoke",
+            "to": "policy-operation:manage",
+            "relation": "transition_guarded_by"
+          },
+          "revoke-requests-event": {
+            "kind": "relation",
+            "from": "revoke",
+            "to": "event:grant:revoke",
+            "relation": "action_requests_event"
+          },
+          "share": {
+            "kind": "action",
+            "meaning": "Activate one selected recipient grant while retaining all other grants"
+          },
+          "share-guard": {
+            "kind": "relation",
+            "from": "transition:grant:grant-share",
+            "to": "policy-operation:manage",
+            "relation": "transition_guarded_by"
+          },
+          "share-list": {
+            "kind": "relation",
+            "from": "share",
+            "to": "list",
+            "relation": "flow"
+          },
+          "share-requests-event": {
+            "kind": "relation",
+            "from": "share",
+            "to": "event:grant:share",
+            "relation": "action_requests_event"
+          },
+          "share-revoke": {
+            "kind": "relation",
+            "from": "share",
+            "to": "revoke",
+            "relation": "flow"
+          },
+          "state-contains:grant:active": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "state:grant:active",
+            "relation": "contains"
+          },
+          "state-contains:grant:inactive": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "state:grant:inactive",
+            "relation": "contains"
+          },
+          "state-event:grant:revoke": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "event:grant:revoke",
+            "relation": "declares_event"
+          },
+          "state-event:grant:share": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "event:grant:share",
+            "relation": "declares_event"
+          },
+          "state-guard:grant:may_manage": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "guard:grant:may_manage",
+            "relation": "declares_guard"
+          },
+          "state-model:grant": {
+            "kind": "state_model",
+            "id": "grant",
+            "subject": {
+              "object": "grant",
+              "identity": [
+                "file_id",
+                "recipient_id"
+              ]
+            },
+            "initial": "inactive",
+            "context": {},
+            "members": {
+              "states": [
+                "inactive",
+                "active"
+              ],
+              "events": [
+                "share",
+                "revoke"
+              ],
+              "guards": [
+                "may_manage"
+              ],
+              "effects": [],
+              "transitions": [
+                "grant-share",
+                "grant-revoke",
+                "grant-replace"
+              ]
+            }
+          },
+          "state-subject:grant": {
+            "kind": "relation",
+            "from": "state-model:grant",
+            "to": "object:grant",
+            "relation": "state_subject"
+          },
+          "state-transition:grant:grant-replace:active": {
+            "kind": "relation",
+            "from": "state:grant:active",
+            "to": "state:grant:active",
+            "relation": "transition",
+            "transition": "transition:grant:grant-replace",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "unless": []
+          },
+          "state-transition:grant:grant-revoke:active": {
+            "kind": "relation",
+            "from": "state:grant:active",
+            "to": "state:grant:inactive",
+            "relation": "transition",
+            "transition": "transition:grant:grant-revoke",
+            "trigger": "revoke",
+            "conditions": [
+              "may_manage"
+            ],
+            "unless": []
+          },
+          "state-transition:grant:grant-share:inactive": {
+            "kind": "relation",
+            "from": "state:grant:inactive",
+            "to": "state:grant:active",
+            "relation": "transition",
+            "transition": "transition:grant:grant-share",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "unless": []
+          },
+          "state:grant:active": {
+            "kind": "state",
+            "name": "active"
+          },
+          "state:grant:inactive": {
+            "kind": "state",
+            "name": "inactive"
+          },
+          "transition-guard:grant:grant-replace:may_manage": {
+            "kind": "relation",
+            "from": "transition:grant:grant-replace",
+            "to": "guard:grant:may_manage",
+            "relation": "guarded_by",
+            "negated": false
+          },
+          "transition-guard:grant:grant-revoke:may_manage": {
+            "kind": "relation",
+            "from": "transition:grant:grant-revoke",
+            "to": "guard:grant:may_manage",
+            "relation": "guarded_by",
+            "negated": false
+          },
+          "transition-guard:grant:grant-share:may_manage": {
+            "kind": "relation",
+            "from": "transition:grant:grant-share",
+            "to": "guard:grant:may_manage",
+            "relation": "guarded_by",
+            "negated": false
+          },
+          "transition-target:grant:grant-replace": {
+            "kind": "relation",
+            "from": "transition:grant:grant-replace",
+            "to": "state:grant:active",
+            "relation": "declares_target"
+          },
+          "transition-target:grant:grant-revoke": {
+            "kind": "relation",
+            "from": "transition:grant:grant-revoke",
+            "to": "state:grant:inactive",
+            "relation": "declares_target"
+          },
+          "transition-target:grant:grant-share": {
+            "kind": "relation",
+            "from": "transition:grant:grant-share",
+            "to": "state:grant:active",
+            "relation": "declares_target"
+          },
+          "transition:grant:grant-replace": {
+            "kind": "transition",
+            "id": "grant-replace",
+            "source": "active",
+            "dest": "active",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "priority": 2
+          },
+          "transition:grant:grant-revoke": {
+            "kind": "transition",
+            "id": "grant-revoke",
+            "source": "active",
+            "dest": "inactive",
+            "trigger": "revoke",
+            "conditions": [
+              "may_manage"
+            ],
+            "priority": 1
+          },
+          "transition:grant:grant-share": {
+            "kind": "transition",
+            "id": "grant-share",
+            "source": "inactive",
+            "dest": "active",
+            "trigger": "share",
+            "conditions": [
+              "may_manage"
+            ],
+            "priority": 0
+          },
+          "upload": {
+            "kind": "action",
+            "meaning": "Store the uploaded file and its owner locally"
+          },
+          "upload-share": {
+            "kind": "relation",
+            "from": "upload",
+            "to": "share",
+            "relation": "flow"
+          }
+        },
+        "semantic_revision": "5c180e9dc2234365538223b96b2787c2bd35aaad45b8b228302b5805cc47aa17"
+      }
+    }
+  ]
+}

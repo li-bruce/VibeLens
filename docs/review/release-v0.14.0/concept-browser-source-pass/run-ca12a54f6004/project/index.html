@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Colleague files</title>
+<style>body{font:16px system-ui;max-width:780px;margin:5vh auto;color:#243c42;background:#fafbfc}section{padding:20px 0;border-top:1px solid #d9e2e4}button,input,select{font:inherit;padding:8px;margin:4px}button{background:#176c57;color:white;border:0;border-radius:5px}li{padding:10px}#result{white-space:pre-wrap}</style>
+<h1>Colleague files</h1><label>Test user <select id="user"><option>Alice</option><option>Bob</option><option>Carol</option></select></label>
+<section><h2>Upload and share</h2><input id="file" type="file"><button id="upload">Upload</button><br>
+<label>File ID <input id="fileId" size="32"></label><label>Recipient <select id="recipient"><option>Bob</option><option>Carol</option><option>Alice</option></select></label><button id="share">Share</button><button id="revoke">Revoke</button></section>
+<section><h2>Shared with me</h2><button id="refresh">Refresh</button><ul id="received"></ul></section><p id="result"></p>
+<script>
+const $=id=>document.getElementById(id);
+async function send(path,options={}){const response=await fetch(path,{...options,headers:{'X-User':$('user').value,...options.headers}});const data=await response.json();$('result').textContent=response.status+' '+JSON.stringify(data);return data;}
+$('upload').onclick=async()=>{const form=new FormData();form.append('file',$('file').files[0]);const data=await send('/api/files',{method:'POST',body:form});$('fileId').value=data.file_id;};
+$('share').onclick=()=>send('/api/files/'+$('fileId').value+'/share',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({recipient:$('recipient').value})});
+$('revoke').onclick=()=>send('/api/files/'+$('fileId').value+'/revoke',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({recipient:$('recipient').value})});
+$('refresh').onclick=async()=>{const data=await send('/api/received');$('received').replaceChildren();for(const item of data){const row=document.createElement('li');const link=document.createElement('a');link.textContent=item.name+' · '+item.owner;link.href='/api/files/'+item.file_id+'/download?user='+$('user').value;row.append(link);$('received').append(row);}};
+</script></html>

@@ -29,6 +29,11 @@ try {
   await page.waitForFunction(
     () => window.graphDebug?.view?.concept_structure?.schema === "bo-concept-projection/v1",
   );
+  // Read the authored model independently of lazy source projections in the UI.
+  const modelURL = new URL("/api/view", url).href;
+  const modelResponse = await page.request.get(modelURL);
+  assert.equal(modelResponse.status(), 200);
+  const nativeModel = (await modelResponse.json()).model;
   const bound = await page.evaluate(() => {
     const view = graphDebug.view;
     return {
@@ -233,6 +238,7 @@ try {
       "Definition details must survive native identity merging: " + kind,
     );
   await page.locator("#layers-all").evaluate((button) => button.click());
+  await page.waitForFunction(() => !graphDebug.sourceBusy && !graphDebug.layoutBusy);
   await page.click("#expand");
   await page.waitForFunction(() => !graphDebug.layoutBusy);
   const shown = await page.evaluate(() =>
@@ -261,10 +267,24 @@ try {
     webgl: graphDebug.spatial.webgl,
     position: graphDebug.spatial.camera.position,
     native: graphDebug.view.model.nodes.map((node) => node.id),
+    source: [
+      graphDebug.view.project_structure,
+      graphDebug.view.api_structure,
+      graphDebug.view.code_structure,
+    ].flatMap((projection) => (projection?.nodes || []).map((node) => node.id)),
     bound: graphDebug.view.concept_structure.revision,
   }));
   assert.ok(spatial.webgl);
-  assert.deepEqual(spatial.native, bound.native);
+  const afterModel = await page.request.get(modelURL);
+  assert.equal(afterModel.status(), 200);
+  assert.deepEqual((await afterModel.json()).model, nativeModel);
+  // Opening all layers may load additional genuine source declarations. Require
+  // exactly the authored IDs plus those declared projections, never extra nodes
+  // invented by the renderer or missing original model identities.
+  assert.deepEqual(
+    spatial.native.slice().sort(),
+    [...new Set([...nativeModel.nodes.map((node) => node.id), ...spatial.source])].sort(),
+  );
   assert.equal(spatial.bound, bound.revision);
   assert.ok(spatial.planes.some((plane) => plane.id === "symbols"));
   // A saved focus may put an expanded region under the old fixed drag point.
