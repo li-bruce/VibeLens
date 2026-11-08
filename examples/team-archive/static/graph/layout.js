@@ -1495,6 +1495,7 @@ export function pickHit(hits, x, y) {
   return (
     under.find((h) => h.expand) ||
     under.filter((h) => h.id).sort((a, b) => distance(a) - distance(b))[0] ||
+    under.find((h) => h.region && !h.border) ||
     under[0] ||
     front.find((h) => h.border && Math.abs(distance(h) - h.radius) < 12) ||
     front.filter((h) => h.border && distance(h) < h.radius).sort((a, b) => a.radius - b.radius)[0]

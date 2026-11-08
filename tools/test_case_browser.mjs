@@ -35,9 +35,9 @@ async function go(id) {
   // Use chapter navigation to leave any focused editor/viewer, then finish its
   // native start alignment without spending the regression on scroll animation.
   await page.locator(`#case-chapters a[href="#${id}"]`).click();
-  await page.locator("#" + id).evaluate((element) =>
-    element.scrollIntoView({ behavior: "instant", block: "start" }),
-  );
+  await page
+    .locator("#" + id)
+    .evaluate((element) => element.scrollIntoView({ behavior: "instant", block: "start" }));
   await page.waitForFunction((id) => document.body.dataset.sceneReady === id, id, {
     timeout: 45000,
   });
@@ -119,6 +119,8 @@ try {
       : {}),
   });
   page = await browser.newPage({ viewport: { width: 1536, height: 1050 } });
+  // A missing scene condition must produce evidence instead of waiting forever.
+  page.setDefaultTimeout(45000);
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text());

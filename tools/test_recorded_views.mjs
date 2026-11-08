@@ -48,6 +48,10 @@ assert.equal(layout.pickHit(hits,10,0).region,'inner');
 assert.equal(layout.pickHit(hits,150,0),undefined);
 hits.push({id:'node',cx:10,cy:0,r:5,x:5,y:-5,w:10,h:10});
 assert.equal(layout.pickHit(hits,10,0).id,'node','glyph wins over circle body');
+const regionTitle = {region:'outer',x:40,y:95,w:40,h:20};
+const edgeLabel = {edge:{id:'crossing'},x:40,y:95,w:40,h:20};
+assert.equal(layout.pickHit([...hits,regionTitle,edgeLabel],60,105).region,'outer','region title wins over a crossing edge label');
+assert.equal(layout.pickHit([...hits,edgeLabel,regionTitle],60,105).region,'outer','title priority is independent of hit insertion order');
 const start='2026-01-01T00:00:00Z',event=(seq,node,outputs,extra={})=>({
   id:'p:'+seq,seq,run_id:'p',attempt:'a',node,phase:'return',inputs:{},outputs,
   basis:{param_version:1},observed_at:`2026-01-01T00:00:0${seq}Z`,...extra});

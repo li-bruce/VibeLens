@@ -185,7 +185,10 @@ export function createGraphRenderer({
       });
       labels.push({ r, owner, color, dim });
     }
-    // Draw titles after every enclosure so a child fill cannot cover its parent title.
+    return labels;
+  }
+  function drawRegionTitles(labels) {
+    // Titles are controls: keep them above enclosure fills and crossing links.
     const occupied = [];
     for (const { r, owner, color, dim } of labels) {
       scope("region-title:" + r.id);
@@ -673,10 +676,11 @@ export function createGraphRenderer({
     hits.length = 0;
     metrics.nodes = metrics.edges = metrics.texts = 0;
     const labelBoxes = [];
-    drawRegions();
+    const regionLabels = drawRegions();
     drawEdges(false, labelBoxes);
     // Inter-group links clear region fills, but every node body stays above links.
     drawEdges(true, labelBoxes);
+    drawRegionTitles(regionLabels);
     for (const box of graph.boxes) {
       const start = scene.children.length;
       drawNode(box);

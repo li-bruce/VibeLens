@@ -31,6 +31,8 @@
   and keep the selected chapter stable during native viewer interactions.
 - Keep transfer arrows moving under slow software rendering. Both renderers use
   one presentation clock; paused replay completes a cycle before repeating it.
+- Keep expanded-region titles above links and give their controls priority over
+  crossing edges, so double-click reliably closes the intended region.
 - Publish complete Skill, SkillHub and DeepSeek Harness packages from the same
   canonical source. See [release notes](docs/releases/v0.14.0.md) and the
   [release checks](docs/review/release-v0.14.0/README.md).

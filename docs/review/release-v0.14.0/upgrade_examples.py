@@ -5,6 +5,7 @@ Continue the existing change, retain its frozen release evidence, and publish
 the newly verified receipt under a separate release name.
 """
 
+import argparse
 import hashlib
 import json
 import os
@@ -48,6 +49,14 @@ def run(project, label, *args, inspect=False):
 
 
 def main():
+    global OUT, REASON
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--receipt", default="release-v0.14.0-animation")
+    parser.add_argument("--evidence-dir", type=Path, default=OUT)
+    parser.add_argument("--reason", default=REASON)
+    args = parser.parse_args()
+    OUT, REASON = args.evidence_dir.resolve(), args.reason
+    OUT.mkdir(parents=True, exist_ok=True)
     receipts = []
     for name, runtime, viewers in (
         ("delivery", "observer_generated/runtime", ["integrations/bo_view", "observer_generated/static"]),
@@ -66,11 +75,11 @@ def main():
         model = read(project / cfg["model"])
         write(OUT / "before-upgrade" / name / "review.json", previous)
         write(OUT / "before-upgrade" / name / "accepted.json", read(change / "accepted.json"))
-        args = ["--root", project, "--runtime", runtime]
+        upgrade_args = ["--root", project, "--runtime", runtime]
         for viewer in viewers:
-            args.extend(["--viewer", viewer])
-        run(project, "managed-plan", SCRIPTS / "bo_upgrade.py", "plan", *args)
-        run(project, "managed-apply", SCRIPTS / "bo_upgrade.py", "apply", *args)
+            upgrade_args.extend(["--viewer", viewer])
+        run(project, "managed-plan", SCRIPTS / "bo_upgrade.py", "plan", *upgrade_args)
+        run(project, "managed-apply", SCRIPTS / "bo_upgrade.py", "apply", *upgrade_args)
         if name == "delivery":
             run(project, "graph", "tooling/dev.py", "graph", "--reason", REASON)
         else:
@@ -93,7 +102,7 @@ def main():
         accepted = run(project, "accept", cli, "accept", "--root", ".")
         checked = run(project, "check", cli, "check", "--root", ".")
         assert verification["valid"] and accepted["valid"] and checked["valid"]
-        target = project / ".release/stategraph/release-v0.14.0-animation"
+        target = project / ".release/stategraph" / args.receipt
         shutil.copytree(change, target)
         write(project / ".release/stategraph/active.json", {"change": ".stategraph/" + target.name})
         for name_part in ("source-baseline.json", "maintenance.json"):

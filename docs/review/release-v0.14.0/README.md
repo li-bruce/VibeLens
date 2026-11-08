@@ -176,3 +176,29 @@ including executable filter callbacks. Its [failure](semantic-labels-retest/resu
 is retained. It now clones the actual spatial input data (boxes and declarations),
 and still requires refreshed labels without a new layout. All six original
 behavior checks passed in the [final naming retest](semantic-cache-retest/result.json).
+
+The subsequent Linux run passed every browser check except all-layer expansion.
+The [local reproduction](title-hit-failure/expansion-checks.json), using software
+rendering and a sixfold CPU slowdown, identified a shared hit-testing defect:
+an edge crossing a 2D enclosure title took priority over the title, so double-click
+opened edge details instead of closing the enclosure. Titles are now painted
+above edges and receive control priority, while links inside the empty enclosure
+body remain selectable. Node glyphs retain the highest priority.
+
+The same pointer-based test then passed [all 14 layer/mode cases](title-hit-retest/result.json)
+under the same slowdown, including dragging, saved coordinates, relation identity
+and double-click closing. The [reproduction helper](slow_expansion_retest.cjs),
+failure screenshots and retest screenshots are retained. Unit coverage also
+checks overlapping edge labels in either hit insertion order. The source-quality
+check [passed](source-quality-title-fixed.json).
+
+The examples use another managed viewer-only upgrade, preserved separately as
+`release-v0.14.0-region-titles`; earlier approvals and the animation-upgrade
+receipts remain available. Both upgrades [passed](title-upgrade/example-upgrades.json)
+with unchanged application code, expectations and graph definitions. The
+[package check](package-parity-title-fixed.log) also passed for all copied assets.
+The detailed walkthrough now bounds missing scene
+conditions so a regression reports evidence instead of waiting indefinitely.
+The final [English/Chinese walkthrough](story-final-retest/summary.json) passed
+all five chapters, eight view presets, actual source highlights, saved views
+across builds and reload, camera gestures and recorded arrow movement.

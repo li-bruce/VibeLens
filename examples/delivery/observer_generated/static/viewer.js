@@ -1245,7 +1245,9 @@ function hitAt(e) {
   const x = (e.clientX - r.left - pan.x) / scale,
     y = (e.clientY - r.top - pan.y) / scale;
   const hit = pickHit(hits, x, y);
-  if (hit?.id || hit?.expand) return hit;
+  // A title opens/closes its enclosure. Only the empty enclosure body yields
+  // to a crossing route, so links remain selectable inside an expanded group.
+  if (hit?.id || hit?.expand || (hit?.region && !hit.border)) return hit;
   const choices = pickRoutes(
     renderedEdges,
     (edge) => edgePaths.get(edge.id)?.points,

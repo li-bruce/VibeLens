@@ -1,0 +1,220 @@
+{
+  "valid": true,
+  "errors": [],
+  "candidate_id": "16d7db6712526847a93d60a9cc7cd17278c7839b77b20fd0133c8e96f0259134",
+  "reports": {
+    "mapping": {
+      "status": "passed",
+      "errors": [],
+      "database": {
+        "configured": false,
+        "valid": true,
+        "errors": [],
+        "changed": false
+      },
+      "code_structure": {
+        "enabled": true,
+        "valid": true,
+        "errors": [],
+        "status": "passed",
+        "revision": "51b447b430c690801f1b5685064434f624b202763e93bf404a51fca70f771739",
+        "nodes": 697,
+        "edges": 958,
+        "api_observation": {
+          "configured": false,
+          "valid": true,
+          "status": "not_applicable",
+          "issues": [],
+          "errors": [],
+          "coverage": "not_applicable",
+          "strict": false,
+          "observed_routes": [],
+          "unobserved_routes": [],
+          "incomplete_methods": [],
+          "missing_routes": [],
+          "revision": "51b447b430c690801f1b5685064434f624b202763e93bf404a51fca70f771739"
+        }
+      },
+      "api_observation": {
+        "configured": false,
+        "valid": true,
+        "status": "not_applicable",
+        "issues": [],
+        "errors": [],
+        "coverage": "not_applicable",
+        "strict": false,
+        "observed_routes": [],
+        "unobserved_routes": [],
+        "incomplete_methods": [],
+        "missing_routes": [],
+        "revision": "51b447b430c690801f1b5685064434f624b202763e93bf404a51fca70f771739"
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+      "producer_health": {
+        "valid": true,
+        "checked_runs": 0,
+        "required": false,
+        "errors": []
+      },
+      "invocation_closure": {
+        "valid": true,
+        "closed_calls": 0,
+        "legacy_events": 135,
+        "errors": []
+      },
+      "layers": {
+        "business": {
+          "declared_nodes": 6,
+          "direct_observations": [
+            "flow.checks",
+            "ui.command",
+            "ui.dirty",
+            "ui.validate"
+          ],
+          "required_cases": 4,
+          "boundary_observations": [],
+          "basis": "actual invocation and selected result"
+        },
+        "state": {
+          "declared_nodes": 12,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "actual transitions, residence and activity evidence"
+        },
+        "rules": {
+          "declared_nodes": 6,
+          "direct_observations": [
+            "approval_candidate",
+            "approval_check",
+            "archive_unique",
+            "commit_guard",
+            "scope_check",
+            "size_guard"
+          ],
+          "required_cases": 6,
+          "boundary_observations": [],
+          "basis": "evaluated/skipped conditions and actual enclosing invocation"
+        },
+        "implementation": {
+          "declared_nodes": 202,
+          "direct_observations": [
+            "approval_revoked",
+            "archive_commit",
+            "archive_request",
+            "authority_read",
+            "cancel_run",
+            "content_changed",
+            "content_check",
+            "index_check",
+            "issue_approval",
+            "move_folder",
+            "project_limit",
+            "resume_run",
+            "set_size_limit"
+          ],
+          "required_cases": 15,
+          "boundary_observations": [],
+          "basis": "actual calls, responses, selected values and native transaction boundaries; unobserved declarations remain static"
+        },
+        "data": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "operation-linked structural projection"
+        },
+        "unknown": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "no inferred evidence"
+        }
+      },
+      "stategraph_export": "checked",
+      "witnesses": 480,
+      "projection_checks": 1113,
+      "implementation": {
+        "errors": [],
+        "events_checked": 53,
+        "features": 22
+      }
+    },
+    "state_rules": {
+      "status": "passed",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "passed",
+      "errors": [],
+      "semantic_names": {
+        "configured": false,
+        "valid": true,
+        "status": "not_configured",
+        "missing": [],
+        "stale": []
+      },
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "passed",
+      "errors": [],
+      "assertions": {
+        "required": 189,
+        "executed": 189
+      },
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    }
+  },
+  "review_hash": "c6a09dcfcac188ffcc9c22ae9ea02c6659bb9024621cf551969c921c9becb553",
+  "observations_hash": "7e0cb6554e289485648e598f647f798b5f338200919f3d4f8e5ff05fd9ac0258",
+  "tests": [
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tooling/tests.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tooling/graph_tests.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tooling/test_recording.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tooling/test_recorded_views.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tooling/test_stategraph_module.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "checked_at": "2026-11-08T08:54:08.345042+00:00",
+  "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+}
