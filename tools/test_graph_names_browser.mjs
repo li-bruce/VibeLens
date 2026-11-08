@@ -120,7 +120,7 @@ try {
   }
   await page.goto(fixture.url + "?lang=en");
   await page.waitForFunction(() => window.graphDebug?.graph && !graphDebug.layoutBusy);
-  assert.equal(await page.locator("#name-mode").innerText(), "AI names");
+  assert.equal(await page.locator("#name-mode").innerText(), "Semantic labels");
   await page.selectOption("#analysis-view", "business");
   assert.equal(await node.innerText(), "Sign in");
   // White-box cache regression complements the native controls above: replacing
@@ -137,7 +137,13 @@ try {
       rendered = cached.model.nodes.map((n) => n.label);
     };
     const input = {
-      graph: structuredClone(graphDebug.displayGraph),
+      // Spatial projection reads declarations and boxes. The live graph also
+      // carries filter callbacks, which are not part of this data contract and
+      // cannot be structured-cloned with the labels under inspection.
+      graph: structuredClone({
+        boxes: graphDebug.displayGraph.boxes,
+        all: graphDebug.displayGraph.all,
+      }),
       presentation: graphDebug.presentation,
       scope: cached.scope,
       preferences: { annotations: {}, nameMode: "explained" },

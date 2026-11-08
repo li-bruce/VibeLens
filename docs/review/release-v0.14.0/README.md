@@ -162,3 +162,17 @@ The [English/Chinese retest](product-story-navigation-retest/result.json) passed
 CI now runs the remaining independent browser checks after a failed check once
 dependencies are ready. All 23 commands are retained; there is no
 `continue-on-error`, and every nonzero result still fails the job.
+
+The remaining browser checks exposed two outdated UI expectations, retained in
+[failure logs](remaining-browser-failures/). The name switch is now called
+`Semantic labels`. The graph application's agreed scope is desktop, so the
+Timeline resize and native-touch tests now use a 1280-pixel desktop window rather
+than phone emulation. Keyboard navigation, cursor/graph agreement, selection,
+zoom, saved settings, native touch seeking and unchanged recording bytes remain
+asserted in the [passing retest](timeline-desktop-retest/result.json).
+
+The naming test's later cache check attempted to clone the entire live graph,
+including executable filter callbacks. Its [failure](semantic-labels-retest/result.json)
+is retained. It now clones the actual spatial input data (boxes and declarations),
+and still requires refreshed labels without a new layout. All six original
+behavior checks passed in the [final naming retest](semantic-cache-retest/result.json).

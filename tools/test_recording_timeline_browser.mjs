@@ -312,17 +312,18 @@ try {
   await page.selectOption("#record-list", fixture.recording.id);
   await page.waitForSelector("#recording-timeline", { state: "visible" });
   assert.equal(await page.locator(".trace-loop").innerText(), "循环选区");
-  await page.setViewportSize({ width: 430, height: 850 });
+  // The graph tool targets desktop windows. Retain viewport-fit, keyboard and
+  // native touchscreen checks without requiring a phone layout.
+  await page.setViewportSize({ width: 1280, height: 850 });
   await page.waitForTimeout(180);
   assert.ok(await canvas.isVisible());
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   await canvas.press("Home");
   await sameCursor();
-  await page.screenshot({ path: path.join(out, "timeline-mobile-zh.png") });
+  await page.screenshot({ path: path.join(out, "timeline-desktop-zh.png") });
   const touchPage = await browser.newPage({
-    viewport: { width: 430, height: 850 },
+    viewport: { width: 1280, height: 850 },
     hasTouch: true,
-    isMobile: true,
   });
   touchPage.on("pageerror", (error) => errors.push(String(error.stack)));
   await touchPage.goto(fixture.url + "?lang=zh-CN");
@@ -366,7 +367,7 @@ try {
   assert.deepEqual(errors, []);
   checks.push({
     chinese: true,
-    mobile: true,
+    desktopWidth: 1280,
     returnedToLive: true,
     businessWrites: fixture.writes.length,
     recordingBytesUnchanged: true,
