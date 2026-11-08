@@ -149,3 +149,16 @@ the hashes of preserved application source and independent expectations. The
 [package check](package-parity-final.log) verifies that shipped runtime and viewer
 copies match the canonical Skill. Original failed exports and the old approvals
 remain available alongside the new evidence.
+
+The next Linux run passed the slow-frame repair, concept networks, all-layer
+expansion, graph geometry and API observation. Its product-story check then
+[timed out](product-story-ci-failure/browser.log) after interacting with the
+sticky graph: the helper used DOM-only scrolling, which did not release the
+chapter's interaction ownership. The helper now follows the actual chapter link
+before aligning the section, matching the detailed walkthrough test and the
+user's navigation. Source, camera, custom-view and all five scene assertions
+remain intact; the production scroll controller is unchanged.
+The [English/Chinese retest](product-story-navigation-retest/result.json) passed.
+CI now runs the remaining independent browser checks after a failed check once
+dependencies are ready. All 23 commands are retained; there is no
+`continue-on-error`, and every nonzero result still fails the job.

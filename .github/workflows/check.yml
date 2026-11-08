@@ -109,63 +109,87 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: python -m pip install playwright==1.56.0
       - run: python -m playwright install chromium
+      - run: python -m pip install -r docs/review/concept-models-20261104/trial/project/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt
+        id: browser-ready
       - run: python tools/test_design_browser.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_DESIGN_BROWSER_EVIDENCE: .validation/design-browser
-      - run: python -m pip install -r docs/review/concept-models-20261104/trial/project/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt
       - run: python tools/test_edge_colors_browser.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: python tools/test_concept_browser.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_CONCEPT_EVIDENCE: .validation/concept-browser
       - run: python tools/test_concept_browser.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_CONCEPT_BROWSER_SCRIPT: test_expansion_relations_browser.mjs
           BO_CONCEPT_EVIDENCE: .validation/expansion-relations-browser
       - run: node tools/test_concept_flow_browser.mjs docs/review/2026-11-06-coupling-flow/concept-browser/focused-recording.json .validation/concept-flow-browser
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: python tools/test_graph_quality_browser.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_GRAPH_QUALITY_EVIDENCE: .validation/graph-quality-browser
       - run: python tools/test_api_observation_browser.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_API_OBSERVATION_EVIDENCE: .validation/api-observation-browser
       - run: python tools/build_site_viewer.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: node tools/test_scroll_story_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: node tools/test_change_panel_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: node tools/test_glyph_design_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: node tools/test_demo_startup_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_DEMO_STARTUP_EVIDENCE: .validation/demo-startup-browser
       - run: python tools/test_product_story_browser.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: node tools/test_case_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_CASE_BROWSER_EVIDENCE: .validation/file-story/browser
       - run: node tools/test_recording_timeline_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_TIMELINE_EVIDENCE: .validation/timeline-browser
       - run: node tools/test_timeline_performance.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_TIMELINE_EVIDENCE: .validation/timeline-performance
       - run: node tools/test_graph_names_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_NAMES_EVIDENCE: .validation/semantic-names-browser
       - run: node tools/test_caption_bounds_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_CAPTION_EVIDENCE: .validation/caption-bounds
       - run: node tools/test_trace_lifecycle_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_LIFECYCLE_EVIDENCE: .validation/lifecycle-browser
       - run: node tools/test_trace_lifecycle_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_LIFECYCLE_EVIDENCE: .validation/lifecycle-midspan
           BO_RECORD_MIDSPAN: '1'
       - run: node tools/test_trace_lifecycle_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_LIFECYCLE_EVIDENCE: .validation/lifecycle-registered
           BO_REGISTERED_LIFECYCLE: '1'
       - run: node tools/test_execution_bands_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_EXECUTION_EVIDENCE: .validation/execution-bands
       - run: node tools/test_execution_bands_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_EXECUTION_EVIDENCE: .validation/execution-midspan
           BO_EXECUTION_MIDSPAN: '1'

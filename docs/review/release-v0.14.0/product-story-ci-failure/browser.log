@@ -1,0 +1,53 @@
+##[group]Run python tools/test_product_story_browser.py
+2026-11-08T08:17:54.8393037Z [36;1mpython tools/test_product_story_browser.py[0m
+2026-11-08T08:17:54.8413640Z shell: /usr/bin/bash -e {0}
+2026-11-08T08:17:54.8413891Z env:
+2026-11-08T08:17:54.8414148Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.18/x64
+2026-11-08T08:17:54.8414572Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.18/x64/lib/pkgconfig
+2026-11-08T08:17:54.8415192Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.18/x64
+2026-11-08T08:17:54.8415561Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.18/x64
+2026-11-08T08:17:54.8415934Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.18/x64
+2026-11-08T08:17:54.8416578Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.18/x64/lib
+2026-11-08T08:17:54.8416913Z ##[endgroup]
+2026-11-08T08:19:05.9573607Z Traceback (most recent call last):
+2026-11-08T08:19:05.9586120Z   File "/home/runner/work/VibeLens/VibeLens/tools/test_product_story_browser.py", line 181, in <module>
+2026-11-08T08:19:05.9587404Z     run(url.rstrip("/"), args.out, args.browser)
+2026-11-08T08:19:05.9588065Z     ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-08T08:19:05.9589061Z   File "/home/runner/work/VibeLens/VibeLens/tools/test_product_story_browser.py", line 102, in run
+2026-11-08T08:19:05.9589896Z     frame = scene("drill")
+2026-11-08T08:19:05.9590939Z   File "/home/runner/work/VibeLens/VibeLens/tools/test_product_story_browser.py", line 60, in scene
+2026-11-08T08:19:05.9591629Z     page.wait_for_function(
+2026-11-08T08:19:05.9591907Z     ~~~~~~~~~~~~~~~~~~~~~~^
+2026-11-08T08:19:05.9592373Z         "name => document.body.dataset.sceneReady === name", arg=name, timeout=45000
+2026-11-08T08:19:05.9592937Z         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-08T08:19:05.9593282Z     )
+2026-11-08T08:19:05.9593475Z     ^
+2026-11-08T08:19:05.9594246Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 11559, in wait_for_function
+2026-11-08T08:19:05.9594976Z     self._sync(
+2026-11-08T08:19:05.9595191Z     ~~~~~~~~~~^
+2026-11-08T08:19:05.9595455Z         self._impl_obj.wait_for_function(
+2026-11-08T08:19:05.9595759Z         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-08T08:19:05.9596008Z     ...<4 lines>...
+2026-11-08T08:19:05.9596203Z         )
+2026-11-08T08:19:05.9596748Z         ^
+2026-11-08T08:19:05.9596927Z     )
+2026-11-08T08:19:05.9597109Z     ^
+2026-11-08T08:19:05.9597697Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+2026-11-08T08:19:05.9598283Z     return task.result()
+2026-11-08T08:19:05.9598507Z            ~~~~~~~~~~~^^
+2026-11-08T08:19:05.9599149Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_page.py", line 1112, in wait_for_function
+2026-11-08T08:19:05.9599936Z     return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+2026-11-08T08:19:05.9600422Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-08T08:19:05.9601158Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 860, in wait_for_function
+2026-11-08T08:19:05.9601902Z     await self._channel.send("waitForFunction", self._timeout, params)
+2026-11-08T08:19:05.9602653Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 69, in send
+2026-11-08T08:19:05.9603295Z     return await self._connection.wrap_api_call(
+2026-11-08T08:19:05.9603630Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-08T08:19:05.9603889Z     ...<3 lines>...
+2026-11-08T08:19:05.9604091Z     )
+2026-11-08T08:19:05.9604262Z     ^
+2026-11-08T08:19:05.9604880Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+2026-11-08T08:19:05.9606116Z     raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+2026-11-08T08:19:05.9607167Z playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 45000ms exceeded.
+2026-11-08T08:19:05.9893805Z ##[error]Process completed with exit code 1.
+2026-11-08T08:19:06.0016175Z 

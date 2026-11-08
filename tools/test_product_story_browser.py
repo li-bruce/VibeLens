@@ -56,7 +56,13 @@ def run(base, output, browser_path):
                 page.goto(f"{base}/demo.html?lang={language}", wait_until="networkidle")
 
                 def scene(name):
-                    page.locator(f"#{name}").scroll_into_view_if_needed()
+                    # Leave a focused viewer through the real chapter control.
+                    # DOM-only scrolling can keep the sticky viewer's chapter
+                    # ownership active, correctly preventing an unwanted switch.
+                    page.locator(f'#case-chapters a[href="#{name}"]').click()
+                    page.locator(f"#{name}").evaluate(
+                        "element => element.scrollIntoView({behavior:'instant', block:'start'})"
+                    )
                     page.wait_for_function(
                         "name => document.body.dataset.sceneReady === name", arg=name, timeout=45000
                     )
