@@ -2,7 +2,13 @@
 
 AI maintains this contract. Configure `mapping_contract: "mapping.json"` and `require_mapping_witnesses: true` in sync.json. It defines the implementation evidence checked this stage; business expectations remain separate.
 
-`mapping.json` uses `schema: bo-mapping/v1`:
+Registry projects use `schema: bo-mapping/v2`, `state_models` containing every
+registered ID, and `actual_model_id` addressing the native row's model identity.
+Each field may declare `state_model_id` for model-specific context. Cases must
+exercise every model in each required mode. The join is `(model ID, instance ID)`;
+two independent objects may have the same local instance ID. See
+[model networks](model-networks.md). Legacy single-machine projects retain
+`schema: bo-mapping/v1` and the same required evidence:
 
 | Field | Meaning |
 |---|---|

@@ -51,7 +51,7 @@ Switch between **2D and 3D**, expand a region, filter relationships, and keep yo
 ## Install for DeepSeek Harness
 
 ```sh
-dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.14.0/dsh-vibelens-0.14.0.tgz
+dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.15.0/dsh-vibelens-0.15.0.tgz
 ```
 
 Tested host: DeepSeek Harness **0.2.2-rc.1**, Node.js **24.9+**. Python **3.11+** runs the shared observer.

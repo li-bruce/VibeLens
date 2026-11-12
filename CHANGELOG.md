@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.15.0 — 2026-11-12
+
+- Download pinned viewer dependencies from a CDN, falling back to immutable
+  GitHub URLs. Verify size and SHA-256 before atomic installation; reuse a shared
+  cache and preserve modified files unless restoration is explicitly requested.
+- Remove 37 tracked dependency copies (23.6 MB). Direct Skill, SkillHub and
+  Harness packages carry owned code and the lock; add an optional offline ZIP.
+  Keep licenses, build locks, provenance and corresponding-source access.
+- Prepare viewer resources at installation/first use and in repository/Pages
+  builds. Reject legacy viewer upgrades from an incomplete dependency set.
+
+- Register and bind multiple state models in one project. Keep independent
+  object instances, revisions and native execution ownership; validate every
+  model and reject missing or ambiguous bindings.
+- Support multiple named subnets in each display layer, shared members and
+  explicit cross-model connections. Apply network selection consistently to
+  2D/3D views, layout, node details and saved preferences.
+- Carry model identity through Python/JavaScript snapshot v2, exact recording,
+  export, replay and Timeline. Preserve legacy single-model records and IDs.
+- Include independent capabilities and object lifecycles in initial discovery,
+  and recall the model inventory on each coding iteration. Require per-model
+  mapping witnesses and independent scenarios.
+- Keep viewer dependencies within the local debugging tool and native adapters
+  in the application; downloaded resources do not enter business source.
+- Cover package imports, managed example upgrades, real collector traffic and
+  browser iteration in the [acceptance evidence](docs/review/model-networks-20261112/README.md).
+
 ## 0.14.0 — 2026-11-08
 
 - Arrange business, state and rule networks with directional ELK layouts,

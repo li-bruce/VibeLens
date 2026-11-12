@@ -496,6 +496,7 @@ class BOProbe:
         guards=None,
         payload=None,
         configuration=None,
+        state_model_id=None,
     ):
         """Queue a snapshot only when its source event was captured.
 
@@ -515,7 +516,10 @@ class BOProbe:
             return self.bo_put(
                 "snapshots",
                 {
-                    **self.bo_base("bo-snapshot/v1"),
+                    **self.bo_base(
+                        "bo-snapshot/v2" if state_model_id is not None else "bo-snapshot/v1"
+                    ),
+                    **({"state_model_id": state_model_id} if state_model_id is not None else {}),
                     "instance_id": instance_id,
                     "state": state,
                     "context": context,

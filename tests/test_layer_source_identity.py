@@ -46,6 +46,7 @@ class LayerSourceIdentityTests(unittest.TestCase):
         for source, target in (
             ("bo_stategraph.py", "__init__.py"),
             ("bo_contracts.py", "bo_contracts.py"),
+            ("bo_models.py", "bo_models.py"),
             ("execution_contract.py", "execution_contract.py"),
         ):
             shutil.copyfile(scripts / source, package / target)

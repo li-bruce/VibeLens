@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build complete Skill, SkillHub and Harness packages
-        run: python tools/build_distribution.py
+        run: python tools/build_distribution.py --offline
       - name: Publish reviewed notes and frozen trial archives
         env:
           GH_TOKEN: ${{ github.token }}

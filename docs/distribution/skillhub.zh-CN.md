@@ -56,10 +56,10 @@ npx skills add li-bruce/VibeLens --skill vibelens
 
 ### DeepSeek Harness
 
-安装 [v0.14.0 中的插件包](https://github.com/li-bruce/VibeLens/releases/tag/v0.14.0)：
+安装 [v0.15.0 中的插件包](https://github.com/li-bruce/VibeLens/releases/tag/v0.15.0)：
 
 ```bash
-dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.14.0/dsh-vibelens-0.14.0.tgz
+dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.15.0/dsh-vibelens-0.15.0.tgz
 ```
 
 打开该 profile，在对话中以 `/vibelens` 开头描述项目。[Harness 安装与已测试兼容范围](https://github.com/li-bruce/VibeLens/blob/main/docs/deepseek-harness.md)。
@@ -70,6 +70,6 @@ dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/downl
 
 完整源码、可运行示例和保留的检查材料，帮助你了解工具本身的实现与验证情况。
 
-[源码结构](https://github.com/li-bruce/VibeLens/blob/main/docs/source-guide.zh-CN.md) · [功能支持](https://github.com/li-bruce/VibeLens/blob/main/docs/capabilities.md) · [验收记录](https://github.com/li-bruce/VibeLens/blob/main/docs/review/release-v0.14.0/README.md) · [更新说明](https://github.com/li-bruce/VibeLens/blob/main/docs/releases/v0.14.0.md) · [发布渠道](https://github.com/li-bruce/VibeLens/blob/main/docs/distribution.md)
+[源码结构](https://github.com/li-bruce/VibeLens/blob/main/docs/source-guide.zh-CN.md) · [功能支持](https://github.com/li-bruce/VibeLens/blob/main/docs/capabilities.md) · [验收记录](https://github.com/li-bruce/VibeLens/blob/main/docs/review/release-v0.15.0/README.md) · [更新说明](https://github.com/li-bruce/VibeLens/blob/main/docs/releases/v0.15.0.md) · [发布渠道](https://github.com/li-bruce/VibeLens/blob/main/docs/distribution.md)
 
 [MIT 开源协议](https://github.com/li-bruce/VibeLens/blob/main/LICENSE) · [第三方许可](https://github.com/li-bruce/VibeLens/blob/main/THIRD_PARTY_NOTICES.md)

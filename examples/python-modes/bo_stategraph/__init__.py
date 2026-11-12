@@ -24,6 +24,7 @@ try:
         transition_states,
     )
     from .execution_contract import validate_execution_graph, validate_configuration
+    from .bo_models import machine_registry, machine_view, select_machine
 except ImportError:
     from bo_contracts import (
         value_errors as bo_value_errors,
@@ -34,6 +35,7 @@ except ImportError:
         transition_states,
     )
     from execution_contract import validate_execution_graph, validate_configuration
+    from bo_models import machine_registry, machine_view, select_machine
 
 
 BO_SCHEMA = "bo-stategraph/v1"
@@ -76,13 +78,24 @@ class BOStateGraph:
         self._provider = instance_provider
         self._lock = threading.RLock()
         self.bo_rejected = 0
+        self._machines = (
+            {
+                ident: BOStateGraph(machine_view(self._model, ident), build_id=build_id, mode=mode)
+                for ident in machine_registry(self._model)
+            }
+            if "machines" in self._model
+            else None
+        )
 
     def bo_bind_instances(self, provider):
         """Bind a consistent authoritative snapshot reader, not another state cache."""
         if not callable(provider):
             raise ValueError("instance provider must be callable")
         with self._lock:
-            if self._instances:
+            if self._instances or (
+                self._machines is not None
+                and any(child._instances for child in self._machines.values())
+            ):
                 raise ValueError("cannot mix stored observations and a live state provider")
             self._provider = provider
 
@@ -90,8 +103,13 @@ class BOStateGraph:
         validate_chart(self._model)
         bo_digest(self._model)
 
-    def bo_definition(self):
+    def bo_definition(self, state_model_id=None):
         """Return an independent copy for an engine adapter or external consumer."""
+        if self._machines is not None:
+            if state_model_id is not None:
+                ident, _ = select_machine(self._model, state_model_id)
+                return self._machines[ident].bo_definition()
+            return {"machines": deepcopy(machine_registry(self._model))}
         return deepcopy(self._chart)
 
     def bo_structure(self):
@@ -101,8 +119,8 @@ class BOStateGraph:
     def bo_check_definition(self, loaded_definition):
         """Compare the loaded executor definition with the declared machine by digest."""
         return {
-            "valid": bo_digest(loaded_definition) == bo_digest(self._chart),
-            "expected": bo_digest(self._chart),
+            "valid": bo_digest(loaded_definition) == bo_digest(self.bo_definition()),
+            "expected": bo_digest(self.bo_definition()),
             "loaded": bo_digest(loaded_definition),
         }
 
@@ -111,12 +129,17 @@ class BOStateGraph:
         validate_chart(self._model, loaded_definition)
         return self.bo_check_definition(loaded_definition)
 
-    def bo_candidates(self, state, event, *, guards=None, payload=None):
+    def bo_candidates(self, state, event, *, guards=None, payload=None, state_model_id=None):
         """Inspect declared transitions. Unknown guards remain unknown, not allowed.
 
         `matched` reports supplied Boolean facts only; it is not permission to act.
         This method does not query a database, call a guard or change any state.
         """
+        if self._machines is not None:
+            ident, _ = select_machine(self._model, state_model_id)
+            return self._machines[ident].bo_candidates(state, event, guards=guards, payload=payload)
+        if state_model_id is not None:
+            select_machine(self._model, state_model_id)
         active = active_states(self._chart, state)
         if event not in self._chart["events"]:
             raise ValueError("unknown event")
@@ -204,6 +227,7 @@ class BOStateGraph:
         event=None,
         guards=None,
         payload=None,
+        state_model_id=None,
     ):
         """Attach a complete actual snapshot after an application semantic boundary.
 
@@ -212,6 +236,30 @@ class BOStateGraph:
         states are retained as evidence with errors. Wrong builds and older or
         conflicting revisions cannot overwrite the current instance.
         """
+        if self._machines is not None:
+            ident, _ = select_machine(self._model, state_model_id)
+            with self._lock:
+                if self._provider is not None:
+                    raise ValueError("instances are owned by the bound state provider")
+                result = self._machines[ident].bo_observe(
+                    instance_id,
+                    state=state,
+                    context=context,
+                    revision=revision,
+                    evidence_id=evidence_id,
+                    build_id=build_id,
+                    configuration=configuration,
+                    event=event,
+                    guards=guards,
+                    payload=payload,
+                )
+                if not result["accepted"]:
+                    self.bo_rejected += 1
+                if "observed" in result:
+                    result["observed"]["state_model_id"] = ident
+                return result
+        if state_model_id is not None:
+            select_machine(self._model, state_model_id)
         with self._lock:
             if self._provider is not None:
                 raise ValueError("instances are owned by the bound state provider")
@@ -326,12 +374,31 @@ class BOStateGraph:
                     if provider is not self._provider:
                         raise ValueError("instance provider changed during snapshot read")
         with self._lock:
+            if self._machines is not None:
+                result = []
+                configurations = machine.get("configurations", []) if machine is not None else []
+                for cfg in configurations:
+                    select_machine(self._model, cfg.get("state_model_id"))
+                for ident, graph in self._machines.items():
+                    subset = (
+                        {
+                            "configurations": [
+                                cfg for cfg in configurations if cfg["state_model_id"] == ident
+                            ]
+                        }
+                        if machine is not None
+                        else None
+                    )
+                    for entry in graph.bo_instances(subset):
+                        entry["observed"]["state_model_id"] = ident
+                        result.append(entry)
+                return result
             if machine is not None:
                 result = []
                 identities = set()
                 for configuration in machine.get("configurations", []):
                     cfg = deepcopy(configuration)
-                    ident = cfg.get("attempt")
+                    ident = cfg.get("snapshot_instance") or cfg.get("attempt")
                     if not ident or ident in identities:
                         raise ValueError("missing or duplicate execution instance")
                     identities.add(ident)
@@ -403,7 +470,7 @@ class BOStateGraph:
                 "schema": BO_SCHEMA,
                 "execution_mode": self.mode,
                 "build_id": self.build_id,
-                "definition_sha256": bo_digest(self._chart),
+                "definition_sha256": bo_digest(self.bo_definition()),
                 "model": self.bo_structure(),
                 "instances": instances,
                 "binding": deepcopy(binding or {"status": "not_checked"}),
@@ -452,6 +519,15 @@ def bo_validate_export(value):
         raise ValueError("definition mismatch")
     if not isinstance(value.get("instances"), list):
         raise ValueError("export instances must be a list")
+    identities = set()
+    for entry in value["instances"]:
+        observed = entry.get("observed", {})
+        model_id = observed.get("state_model_id")
+        select_machine(value["model"], model_id)
+        identity = (model_id, observed.get("instance_id"))
+        if not isinstance(identity[1], str) or not identity[1] or identity in identities:
+            raise ValueError("missing or duplicate exported model instance")
+        identities.add(identity)
     runtime = value.get("runtime")
     if runtime is not None and "runtime_frames" in runtime:
         frames = runtime["runtime_frames"]
@@ -471,6 +547,13 @@ def bo_validate_export(value):
                 raise ValueError("runtime frame needs nonempty event/run/build identities")
             if not isinstance(frame.get("machine"), dict):
                 raise ValueError("runtime frame needs a machine snapshot")
+            if "machines" in value["model"]:
+                model_id, _ = select_machine(value["model"], frame["machine"].get("state_model_id"))
+                if any(
+                    cfg.get("state_model_id") != model_id
+                    for cfg in frame["machine"].get("configurations", [])
+                ):
+                    raise ValueError("runtime frame mixes model identities")
             event = events.get(frame.get("event_id"))
             if event is None or frame["event_id"] in seen:
                 raise ValueError("runtime frame needs a unique exported event")

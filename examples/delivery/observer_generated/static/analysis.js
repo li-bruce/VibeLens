@@ -1,3 +1,4 @@
+import { machinesOf, networkCatalog, networkViewId } from "./model-networks.js";
 import { t as boTranslate } from "./i18n.js";
 // View selection is a projection. It cannot add permission, call or runtime facts.
 import { viewTypes, relationType, stateNodeId } from "./graph-core.js";
@@ -237,6 +238,9 @@ export function cleanProfile(value) {
       ? value.scope
       : "all",
     query: typeof value?.query === "string" ? value.query.trim().slice(0, 100) : "",
+    networks: Array.isArray(value?.networks)
+      ? [...new Set(value.networks.filter((id) => typeof id === "string" && id))]
+      : [],
     hierarchical: value?.hierarchical === true,
   };
 }
@@ -248,10 +252,21 @@ export function profileFor(id, custom = []) {
       : custom.find((p) => p.id === id) || { ...presets[0], dataTypes: 2 },
   );
 }
+/** Each named subnetwork reuses the normal view/filter/layout pipeline. */
+export function networkProfiles(view) {
+  return networkCatalog(view).map((network) => ({
+    ...cleanProfile(),
+    id: networkViewId(network),
+    group: "Networks",
+    label: typeof network.label === "string" ? network.label : network.id,
+    layer: network.layer,
+    networks: [network.id],
+    hierarchical: true,
+  }));
+}
 export function matchingNodes(all, view, events, profile, statusOf, relations = view.model.edges) {
   const profileTypes = new Set(profile.nodes),
-    selected = new Set(),
-    execution = view.model.machine.execution || {};
+    selected = new Set();
   const scopeNodes = new Set(),
     raw = relations;
   if (profile.scope === "permission") {
@@ -267,13 +282,16 @@ export function matchingNodes(all, view, events, profile, statusOf, relations = 
   }
   if (profile.scope === "execution") {
     for (const n of all.values()) if (n.execution_role) scopeNodes.add(n.id);
-    for (const n of [
-      ...(execution.activities || []),
-      ...(execution.resources || []),
-      execution.join,
-    ].filter(Boolean))
-      scopeNodes.add(n.id);
-    if (execution.within) scopeNodes.add(stateNodeId(view.model, execution.within));
+    for (const [modelId, machine] of Object.entries(machinesOf(view.model))) {
+      const execution = machine.execution || {};
+      for (const n of [
+        ...(execution.activities || []),
+        ...(execution.resources || []),
+        execution.join,
+      ].filter(Boolean))
+        scopeNodes.add(n.id);
+      if (execution.within) scopeNodes.add(stateNodeId(view.model, execution.within, modelId));
+    }
   }
   const eventIds = new Set(events.map((e) => e.node));
   for (const n of all.values()) {
@@ -313,7 +331,15 @@ export function matchingNodes(all, view, events, profile, statusOf, relations = 
         .toLocaleLowerCase()
         .includes(query);
     const depthMatches = profile.depth === "all" || n.projection_depth === profile.depth;
-    if (viewTypes(n).some((type) => profileTypes.has(type)) && inScope && matches && depthMatches)
+    const inNetwork =
+      !profile.networks?.length || profile.networks.some((id) => n.network_ids?.includes(id));
+    if (
+      viewTypes(n).some((type) => profileTypes.has(type)) &&
+      inScope &&
+      matches &&
+      depthMatches &&
+      inNetwork
+    )
       selected.add(n.id);
   }
   for (const id of selected) {
@@ -340,21 +366,23 @@ export function matchingNodes(all, view, events, profile, statusOf, relations = 
   return selected;
 }
 export function sharedMemberships(model) {
-  const memberships = [...(model.presentation?.memberships || [])],
-    execution = model.machine.execution;
-  if (execution?.within) {
-    const group = stateNodeId(model, execution.within);
-    for (const n of [
-      ...(execution.activities || []),
-      ...(execution.resources || []),
-      execution.join,
-    ].filter(Boolean))
-      memberships.push({
-        group,
-        member: n.id,
-        reason: boTranslate("Internal execution configuration for this state"),
-        evidence: "machine.execution",
-      });
+  const memberships = [...(model.presentation?.memberships || [])];
+  for (const [modelId, machine] of Object.entries(machinesOf(model))) {
+    const execution = machine.execution;
+    if (execution?.within) {
+      const group = stateNodeId(model, execution.within, modelId);
+      for (const n of [
+        ...(execution.activities || []),
+        ...(execution.resources || []),
+        execution.join,
+      ].filter(Boolean))
+        memberships.push({
+          group,
+          member: n.id,
+          reason: boTranslate("Internal execution configuration for this state"),
+          evidence: "machine.execution",
+        });
+    }
   }
   const seen = new Set();
   return memberships.filter((m) => {

@@ -1,5 +1,7 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  Networks: "模型网络",
+  "State model": "状态模型",
   "Bundle curves": "曲线合束",
   "Semantic labels": "语义名",
   "Show concise names in the interface language": "按界面语言显示简明名称",

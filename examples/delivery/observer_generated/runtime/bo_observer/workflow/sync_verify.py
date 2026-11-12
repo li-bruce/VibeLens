@@ -62,7 +62,7 @@ def assess_observations(model, contract, payload, modes, required_probes=(), cou
         return ["probe_modes must include actual observation checks"]
     if not contract.get("checks"):
         return ["no acceptance assertions were configured"]
-    if model.get("machine"):
+    if model.get("machine") or "machines" in model:
         try:
             (
                 validate_chart(model, payload.get("machine"))
@@ -303,7 +303,7 @@ def verify(root, cfg, change, *, inspect, snapshot):
                 mapping_errors.append("runtime observations belong to another build")
             # Runtime declarations and probe identity are mapping questions.
             # The expected business outcome is checked independently below.
-            if current["model"].get("machine"):
+            if current["model"].get("machine") or "machines" in current["model"]:
                 validate_chart(current["model"], payload.get("machine") or {})
             if cfg.get("stategraph"):
                 exported = bo_validate_export(payload.get("stategraph_export") or {})
@@ -370,7 +370,12 @@ def verify(root, cfg, change, *, inspect, snapshot):
                     ):
                         raise ValueError("missing actual worknet snapshot: " + run["case"])
                     validate_net(current["model"]["worknet"], snapshot=run.get("worknet"))
-            if current["model"].get("machine", {}).get("execution"):
+            if any(
+                chart.get("execution")
+                for chart in current["model"]
+                .get("machines", {"default": current["model"].get("machine", {})})
+                .values()
+            ):
                 for run in payload.get("runs", []):
                     configurations = run.get("configurations", [])
                     if (
@@ -379,7 +384,8 @@ def verify(root, cfg, change, *, inspect, snapshot):
                     ):
                         raise ValueError("missing actual internal states: " + run["case"])
                     identities = [
-                        (c.get("attempt"), c.get("param_version")) for c in configurations
+                        (c.get("state_model_id"), c.get("attempt"), c.get("param_version"))
+                        for c in configurations
                     ]
                     if len(identities) != len(set(identities)):
                         raise ValueError("duplicate execution instance")

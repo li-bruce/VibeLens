@@ -115,7 +115,7 @@ def structural_errors(root, cfg, snap):
         module = cfg["stategraph"]["module"]
         if module not in snap["files"] or not snap["files"].get(module):
             errors.append("independent stategraph module is missing or not watched")
-        if not snap["model"].get("machine"):
+        if not snap["model"].get("machine") and "machines" not in snap["model"]:
             errors.append("stategraph declaration is required in both development modes")
     errors.extend({"missing_file": p} for p, sha in snap["files"].items() if sha is None)
     if not set(cfg["code_files"]) <= set(snap["model"]["source_files"]):
@@ -128,7 +128,7 @@ def structural_errors(root, cfg, snap):
         capture(
             root, snap["model"]
         )  # Resolve all declared source symbols; do not write a manifest.
-        if snap["model"].get("machine"):
+        if snap["model"].get("machine") or "machines" in snap["model"]:
             validate_chart(snap["model"])
         if snap["model"].get("worknet"):
             validate_net(snap["model"]["worknet"])

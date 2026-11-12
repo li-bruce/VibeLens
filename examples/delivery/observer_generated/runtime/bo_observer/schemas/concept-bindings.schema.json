@@ -6,7 +6,6 @@
   "required": [
     "schema",
     "semantic_revision",
-    "primary_state_model",
     "objects",
     "business",
     "facts",
@@ -15,7 +14,10 @@
   ],
   "properties": {
     "schema": {
-      "const": "bo-concept-bindings/v1"
+      "enum": [
+        "bo-concept-bindings/v1",
+        "bo-concept-bindings/v2"
+      ]
     },
     "semantic_revision": {
       "type": "string",
@@ -355,6 +357,44 @@
           }
         }
       }
+    },
+    "state_models": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema": {
+            "const": "bo-concept-bindings/v1"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "primary_state_model"
+        ],
+        "not": {
+          "required": [
+            "state_models"
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "state_models"
+        ],
+        "not": {
+          "required": [
+            "primary_state_model"
+          ]
+        }
+      }
+    }
+  ]
 }

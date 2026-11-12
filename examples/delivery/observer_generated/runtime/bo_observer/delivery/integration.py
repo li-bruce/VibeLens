@@ -20,6 +20,7 @@ PROTOCOLS = {
     "project": "bo-project/v1",
     "event": "bo-event/v1",
     "snapshot": "bo-snapshot/v1",
+    "snapshot_registry": "bo-snapshot/v2",
     "capture": "bo-capture-control/v1",
 }
 
@@ -50,6 +51,7 @@ def native_sources(language):
         return {
             "bo_stategraph/__init__.py": "bo_stategraph.py",
             "bo_stategraph/bo_contracts.py": "bo_contracts.py",
+            "bo_stategraph/bo_models.py": "bo_models.py",
             "bo_stategraph/execution_contract.py": "execution_contract.py",
             "bo_stategraph/bo_probe.py": "bo_observer/adapters/python/bo_probe.py",
             "bo_stategraph/bo_executor.py": "bo_observer/adapters/python/bo_executor.py",
@@ -78,7 +80,9 @@ def plan(root, language):
         raise ValueError("integration language/schema differs; migrate explicitly")
     sources = native_sources(language)
     canonical = canonical_scripts()
-    if previous and set(previous.get("files", {})) != set(sources):
+    previous_files = set(previous.get("files", {}))
+    additions = set(sources) - previous_files
+    if previous and (previous_files - set(sources) or additions - {"bo_stategraph/bo_models.py"}):
         raise ValueError("integration dependency set differs; retain and review the old receipt")
     files, changes, conflicts = {}, [], []
     for name, source in sources.items():

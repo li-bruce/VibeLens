@@ -15,6 +15,32 @@ def bo_list(value):
     return value if isinstance(value, list) else [] if value is None else [value]
 
 
+class BOExecutors:
+    """Register independent portable machines without combining their lifecycles.
+
+    The caller supplies each object's actual state and persists the returned result.
+    Cross-model decisions remain explicitly implemented application guards/effects.
+    """
+
+    def __init__(self, machines, guards=None):
+        if not isinstance(machines, dict) or any(
+            not isinstance(key, str) or not key for key in machines
+        ):
+            raise ValueError("machines require stable IDs")
+        guards = guards or {}
+        if set(guards) - set(machines):
+            raise ValueError("guards reference an unknown machine")
+        self.bo_executors = {
+            key: BOExecutor(chart, guards.get(key)) for key, chart in machines.items()
+        }
+
+    def step(self, state_model_id, state, event, context, payload=None):
+        """Evaluate the named definition only; never infer it from a state name."""
+        if state_model_id not in self.bo_executors:
+            raise ValueError("unknown state_model_id")
+        return self.bo_executors[state_model_id].step(state, event, context, payload)
+
+
 class BOExecutor:
     def __init__(self, machine, guards=None):
         """Validate the supported flat-state definition and every supplied guard before use."""

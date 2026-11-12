@@ -20,6 +20,20 @@ from bo_observer.control.scope import ControlScope
 
 
 class DistributionTests(unittest.TestCase):
+    def test_offline_package_adds_only_the_locked_assets(self):
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
+            output = Path(folder)
+            report = build(output, offline=True)
+            version = report["version"]
+            with zipfile.ZipFile(output / f"vibelens-offline-v{version}.zip") as archive:
+                expected = {"vibelens/" + name for name in report["skill_files"]}
+                for name, digest in report["downloaded_dependencies"].items():
+                    member = "vibelens/assets/stategraph-viewer/" + name
+                    expected.add(member)
+                    self.assertEqual(hashlib.sha256(archive.read(member)).hexdigest(), digest)
+                self.assertEqual(set(archive.namelist()), expected)
+                self.assertTrue(any(name.endswith("/libavoid-sources.zip") for name in expected))
+
     def test_other_hosts_require_an_explicit_identity_and_keep_namespaces_separate(self):
         with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
             scopes = [
@@ -57,6 +71,15 @@ class DistributionTests(unittest.TestCase):
                     self.assertIn("dsh", manifest["engines"])
                     self.assertTrue(all(member.isfile() for member in plugin.getmembers()))
                     self.assertIn("vibelens/README.md", archive.namelist())
+                    self.assertIn("vibelens/scripts/bo_dependencies.py", archive.namelist())
+                    self.assertIn(
+                        "vibelens/assets/stategraph-viewer/dependencies.lock.json",
+                        archive.namelist(),
+                    )
+                    for name in report["downloaded_dependencies"]:
+                        self.assertNotIn(
+                            "vibelens/assets/stategraph-viewer/" + name, archive.namelist()
+                        )
                     for name in archive.namelist():
                         self.assertNotIn("node_modules", name)
                         self.assertNotIn("__pycache__", name)

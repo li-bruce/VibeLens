@@ -1,3 +1,4 @@
+import { machineFor, sameStateModel } from "./model-networks.js";
 import { t as boTranslate } from "./i18n.js";
 import { observedDataTransfer } from "./data-layer.js";
 import { originalRelations } from "./edge-identities.js";
@@ -44,8 +45,19 @@ export function frame(recording, index, items = timeline(recording)) {
   }
   if (!known.length) return view;
   const last = known.at(-1),
-    parent = view.model.machine.execution?.parent;
+    parent = machineFor(view.model, last.node).execution?.parent;
   if (applyRuntimeFrame(recording, last, view)) return view;
+  // Registry snapshots are instance-qualified. An old attempt-only journal
+  // cannot prove a historical state for any one of these models.
+  if (view.model.machines) {
+    view.machine = { current: null, configurations: [], journal: [] };
+    view.authority.state = null;
+    view.replay.gaps = [
+      ...(view.replay.gaps || []),
+      boTranslate("No runtime snapshot recorded for this step; state has not been inferred."),
+    ];
+    return view;
+  }
   view.authority.parameters.attempt = last.attempt;
   view.authority.parameters.param_version = last.basis?.param_version;
   view.authority.basis = copy(last.basis || {});
@@ -171,6 +183,7 @@ export function transferEdges(event, events, edges, all, configuration = null) {
           const transition = configuration?.state_transition;
           if (edge.type === "transition" && transition?.evidence_id === event.id)
             return (
+              sameStateModel(all.get(source) || {}, transition) &&
               all.get(source)?.value === transition.source &&
               all.get(target)?.value === transition.target &&
               edge.event === transition.event

@@ -3,6 +3,11 @@
 from copy import deepcopy
 import json
 
+try:
+    from ...bo_models import select_machine
+except ImportError:
+    from bo_models import select_machine
+
 from ..graph.behavior_model import digest
 from ..graph.observation_scope import display_graph
 from .derived import resolve_derived
@@ -13,6 +18,8 @@ NODE_FIELDS = {
     "summary",
     "kind",
     "layer",
+    "state_model_id",
+    "network_ids",
     "concept_kind",
     "concept_id",
     "concept_definition",
@@ -88,10 +95,11 @@ def packet(view, identity, language="en"):
     # definition only for the evidence packet, mirroring the viewer overlay.
     selected = deepcopy(nodes[identity])
     if selected.get("kind") == "state" and selected.get("origin") != "concept-design":
+        _, chart = select_machine(graph, selected.get("state_model_id"))
         selected["concept_definition"] = {
-            "states": graph.get("machine", {}).get("states", []),
-            "values": graph.get("machine", {}).get("values", []),
-            "transitions": graph.get("machine", {}).get("transitions", []),
+            "states": chart.get("states", []),
+            "values": chart.get("values", []),
+            "transitions": chart.get("transitions", []),
         }
     for concept in view.get("concept_structure", {}).get("nodes", []):
         if concept["id"] == identity and concept.get("concept_definition") is not None:

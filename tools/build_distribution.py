@@ -15,8 +15,11 @@ import re
 import subprocess
 import tarfile
 import zipfile
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "skills/vibelens/scripts"))
+from bo_observer.delivery.dependencies import locked_assets, ensure_assets
 
 
 def owned_files(folder):
@@ -69,7 +72,7 @@ def write_npm_tarball(path, files):
                 archive.addfile(info, io.BytesIO(data))
 
 
-def build(output):
+def build(output, *, offline=False):
     """Return artifact identities and exact source hashes for later verification."""
     output.mkdir(parents=True, exist_ok=True)
     manifest = json.loads(
@@ -77,6 +80,14 @@ def build(output):
     )
     version = manifest["version"]
     skill = owned_files("skills/vibelens")
+    dependency_root = ROOT / "skills/vibelens/assets/stategraph-viewer"
+    dependencies = locked_assets(dependency_root)
+    # Never let a hydrated checkout accidentally enlarge the default packages.
+    # The optional offline archive carries the exact same owned source plus the
+    # verified assets and corresponding-source archive, once per installation.
+    for dependency in dependencies:
+        skill.pop("assets/stategraph-viewer/" + dependency["name"], None)
+    skill.pop("references/vendor/libavoid-sources.zip", None)
     if f'version: "{version}"' not in skill["SKILL.md"].decode("utf-8"):
         raise ValueError("Skill metadata and Harness version differ")
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
@@ -125,10 +136,21 @@ def build(output):
     )
     catalog_path = output / f"vibelens-skillhub-v{version}.zip"
     write_zip(catalog_path, {"vibelens/" + name: data for name, data in catalog.items()})
-    artifacts = {
-        path.name: hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in (zip_path, plugin_path, catalog_path)
-    }
+    paths = [zip_path, plugin_path, catalog_path]
+    if offline:
+        ensure_assets(dependency_root)
+        complete = dict(skill)
+        complete.update(
+            {
+                "assets/stategraph-viewer/"
+                + entry["name"]: (dependency_root / entry["name"]).read_bytes()
+                for entry in dependencies
+            }
+        )
+        offline_path = output / f"vibelens-offline-v{version}.zip"
+        write_zip(offline_path, {"vibelens/" + name: data for name, data in complete.items()})
+        paths.append(offline_path)
+    artifacts = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     (output / "SHA256SUMS").write_text(
         "".join(f"{digest}  {name}\n" for name, digest in artifacts.items()),
         encoding="utf-8",
@@ -138,6 +160,8 @@ def build(output):
         "version": version,
         "artifacts": artifacts,
         "skill_files": {name: hashlib.sha256(data).hexdigest() for name, data in skill.items()},
+        "downloaded_dependencies": {entry["name"]: entry["sha256"] for entry in dependencies},
+        "download_bytes": sum(entry["bytes"] for entry in dependencies),
     }
     (output / "manifest.json").write_text(
         json.dumps(report, indent=2) + "\n", encoding="utf-8", newline="\n"
@@ -148,8 +172,11 @@ def build(output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, default=ROOT / ".validation/distribution")
+    parser.add_argument(
+        "--offline", action="store_true", help="Also build the optional offline Skill ZIP"
+    )
     args = parser.parse_args()
-    result = build(args.out.resolve())
+    result = build(args.out.resolve(), offline=args.offline)
     print(
         json.dumps(
             {

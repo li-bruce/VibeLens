@@ -9,6 +9,11 @@ from .concept_review import concept_recall
 from ..graph.behavior_model import contained, read
 from .sync_io import write
 
+try:
+    from ...bo_models import model_inventory
+except ImportError:
+    from bo_models import model_inventory
+
 
 CONTEXT_MAPPING_PREVIEW = 12
 
@@ -73,6 +78,8 @@ def recall(root, cfg, current, previous=None):
             if cfg.get(key)
         },
         "concepts": concept_recall(current.get("discovery"), (previous or {}).get("discovery")),
+        "model_inventory": model_inventory(current["model"]),
+        "previous_model_inventory": model_inventory((previous or {}).get("model", {})),
         "observation_module": cfg.get("stategraph", {}).get("module"),
         "framework": current.get("source_inventory", {}).get("framework", {}),
         "observation_sources": [

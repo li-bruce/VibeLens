@@ -8,8 +8,10 @@ import json
 
 try:
     from ...bo_stategraph import BOStateGraph, bo_validate_export
+    from ...bo_models import machine_registry
 except ImportError:
     from bo_stategraph import BOStateGraph, bo_validate_export
+    from bo_models import machine_registry
 
 
 def at(value, path):
@@ -129,8 +131,17 @@ def context_pairs(run, field):
 
 def validate_plan(plan, model):
     """The project owns a protected list, not a list inferred from submitted checks."""
-    if not isinstance(plan, dict) or plan.get("schema") != "bo-mapping/v1":
-        raise ValueError("implementation mapping plan bo-mapping/v1 is required")
+    if not isinstance(plan, dict) or plan.get("schema") not in {"bo-mapping/v1", "bo-mapping/v2"}:
+        raise ValueError("implementation mapping plan is required")
+    registered = "machines" in model
+    machines = machine_registry(model)
+    if registered and (
+        plan["schema"] != "bo-mapping/v2"
+        or set(plan.get("state_models", [])) != set(machines)
+        or not isinstance(plan.get("actual_model_id"), list)
+        or not plan["actual_model_id"]
+    ):
+        raise ValueError("mapping plan must cover every state model and its actual identity")
     for name in ("cases", "modes", "fields"):
         if not isinstance(plan.get(name), list) or not plan[name]:
             raise ValueError("mapping plan needs " + name)
@@ -157,13 +168,26 @@ def validate_plan(plan, model):
         if "keys" in field and (not field["keys"] or len(set(field["keys"])) != len(field["keys"])):
             raise ValueError("mapping selected keys must be nonempty and unique")
         mapped.add(tuple(field["mapped"]))
+        if field.get("state_model_id") is not None and field["state_model_id"] not in machines:
+            raise ValueError("mapping field refers to unknown state model")
     if not {("state",), ("revision",), ("build_id",)} <= mapped:
         raise ValueError("mapping plan must cover state, complete revision and build identity")
-    for name in model["machine"]["context"]:
-        if ("context",) not in mapped and ("context", name) not in mapped:
-            raise ValueError("mapping plan omits context field: " + name)
-    if model["machine"].get("execution") and ("configuration",) not in mapped:
-        raise ValueError("mapping plan must cover the complete activity configuration")
+    for model_id, chart in machines.items():
+        covered = {
+            tuple(field["mapped"])
+            for field in plan["fields"]
+            if field.get("state_model_id", model_id) == model_id
+        }
+        required = {("state",), ("revision",), ("build_id",)}
+        if registered:
+            required.add(("state_model_id",))
+        if not required <= covered:
+            raise ValueError("mapping plan omits state/model/revision/build: " + model_id)
+        for name in chart["context"]:
+            if ("context",) not in covered and ("context", name) not in covered:
+                raise ValueError("mapping plan omits context field: " + model_id + ":" + name)
+        if chart.get("execution") and ("configuration",) not in covered:
+            raise ValueError("mapping plan must cover the complete activity configuration")
     selected = plan.get("export", {})
     if selected.get("case") not in plan["cases"] or selected.get("mode") not in plan["modes"]:
         raise ValueError("mapping plan must select the actual public export case and mode")
@@ -203,6 +227,12 @@ def protected_plan_errors(before, after):
     for name in ("source", "actual_collection", "actual_id", "export"):
         if before.get(name) != after.get(name):
             errors.append("mapping binding changed: " + name)
+    if before.get("actual_model_id") != after.get("actual_model_id"):
+        errors.append("mapping binding changed: actual_model_id")
+    if any(
+        model_id not in after.get("state_models", []) for model_id in before.get("state_models", [])
+    ):
+        errors.append("mapping coverage was removed or changed: state_models")
     return errors
 
 
@@ -302,6 +332,7 @@ def assess_projections(payload, plan, model, build_id):
     required = {(case, mode) for case in plan["cases"] for mode in plan["modes"]}
     if required != set(runs):
         raise ValueError("mapping scenario coverage differs from protected plan")
+    covered_models = {mode: set() for mode in plan["modes"]}
     for key in sorted(required):
         run = runs[key]
         sample = run["projection"]
@@ -320,9 +351,26 @@ def assess_projections(payload, plan, model, build_id):
                         "missing": item["missing"],
                     }
                 )
-        mapped = {item["observed"]["instance_id"]: item["observed"] for item in instances}
+        registered = "machines" in model
+        mapped = {
+            (
+                (item["observed"]["state_model_id"], item["observed"]["instance_id"])
+                if registered
+                else item["observed"]["instance_id"]
+            ): item["observed"]
+            for item in instances
+        }
         records = at(run, plan["actual_collection"])
-        actual = {at(item, plan["actual_id"]): item for item in records}
+        actual = {
+            (
+                (at(item, plan["actual_model_id"]), at(item, plan["actual_id"]))
+                if registered
+                else at(item, plan["actual_id"])
+            ): item
+            for item in records
+        }
+        if registered:
+            covered_models[key[1]].update(ident[0] for ident in actual)
         if len(actual) != len(records) or len(mapped) != len(instances):
             raise ValueError("duplicate actual or mapped instance")
         checks += 1
@@ -332,6 +380,8 @@ def assess_projections(payload, plan, model, build_id):
             if ident not in mapped:
                 continue
             for field in plan["fields"]:
+                if registered and field.get("state_model_id", ident[0]) != ident[0]:
+                    continue
                 checks += 1
                 a, b = at(raw, field["actual"]), at(mapped[ident], field["mapped"])
                 if "keys" in field:
@@ -349,6 +399,16 @@ def assess_projections(payload, plan, model, build_id):
                             "error": "actual value differs from exported projection",
                         }
                     )
+    if "machines" in model:
+        for mode, covered in covered_models.items():
+            if covered != set(machine_registry(model)):
+                errors.append(
+                    {
+                        "mode": mode,
+                        "error": "actual mapping cases omit or add state models",
+                        "models": sorted(covered),
+                    }
+                )
     selected = runs[(plan["export"]["case"], plan["export"]["mode"])]["projection"]
     if not equal(public["instances"], selected["instances"]) or not equal(
         public["runtime"]["machine"], selected["machine"]
@@ -359,7 +419,16 @@ def assess_projections(payload, plan, model, build_id):
 
 def instance_witnesses(instances, actual, *, case, source):
     """actual is read from the application's store by the scenario runner."""
-    mapped = {i["observed"]["instance_id"]: i["observed"] for i in instances}
+    mapped = {
+        (
+            (i["observed"]["state_model_id"], i["observed"]["instance_id"])
+            if "state_model_id" in i["observed"]
+            else i["observed"]["instance_id"]
+        ): i["observed"]
+        for i in instances
+    }
+    if len(mapped) != len(instances):
+        raise ValueError("duplicate mapping witness identity")
     result = [
         {
             "id": case + ":instances",

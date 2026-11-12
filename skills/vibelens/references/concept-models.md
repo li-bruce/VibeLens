@@ -43,25 +43,19 @@ Do not rewrite that meaning to match a coding error.
 
 ## Check implementation capabilities
 
-Compare the dependency-expanded scope with the installed native binding and
-executor before implementation confirmation. The current binding supports one
-state model through `primary_state_model` and `model.machine`; a draft can contain
-several independent object state models, but binding more than one in the same
-scope fails with `unsupported_multiple_bound_state_models`. An engine adapter
-alone does not remove that binding limit. Also check required hierarchy,
-concurrency and effect semantics against the selected executor.
+Compare every model in the dependency-expanded scope with its selected native
+engine before implementation confirmation. Use `model.machines` and
+`bo-concept-bindings/v2.state_models` to register and bind all applicable models.
+Several business flows, state machines and rule operation networks can coexist;
+independence is valid. Explicit crosslinks describe their actual interaction.
+See [model networks](model-networks.md) for identity, binding and replay.
 
-Preserve the unsupported draft, exact checker input and complete rejection report
-under `review/`. Explain the unavailable capability before coding. Continue with
-a tested canonical extension or an explicitly agreed scope revision. Keep each
-object's identity; silently dropping a model, merging unrelated lifecycles,
-excluding required dependencies or weakening checks is not a scope revision.
-
-A revised scope may use one formal state model and independently identified facts,
-rules and real observations for other objects. Record the user's agreement and
-the retained monitoring requirements. Those facts do not establish complete
-transition, guard or effect binding for the other objects. Keep that coverage
-boundary visible in delivery results and preserve the earlier draft as evidence.
+The registry removes the former single-primary binding limit. It does not expand
+an engine's semantics: native `bo.fsm/1` remains a strict flat subset. Hierarchy,
+concurrent activities, waits and resources need a supported native adapter.
+Preserve unsupported drafts and rejection evidence; obtain an explicit scope
+revision before changing business coverage. Do not merge unrelated lifecycles or
+replace a required model with unverified facts to pass a binding check.
 
 ## Validate, confirm, then bind
 
@@ -78,7 +72,7 @@ snapshot and its answer provenance; later snapshots do not overwrite earlier
 ones. The command checks recorded evidence, not the truth of arbitrary prose.
 Do not fabricate a user answer or turn a recommendation into agreement.
 
-Bind the confirmed scope to `model.concepts`, the existing native `model.machine`,
+Bind the confirmed scope to `model.concepts`, the native `model.machines` registry (legacy `model.machine` remains readable),
 `model.policy`, source nodes, cross-model relations and independent case IDs.
 Bindings add implementation detail without replacing the conceptual definitions.
 Pending or unsupported bindings fail the implementation gate.

@@ -2,6 +2,7 @@
 import { activeMachineStates } from "./machine-projection.js";
 import { runtimeFrame, runtimeConfigurations } from "./runtime-frames.js";
 import { conceptActivityIds } from "./concept-observation.js";
+import { machineFor, sameStateModel } from "./model-networks.js";
 export function stateResidencies(recording, items, changes, nodes, axis) {
   const states = [...nodes.values()].filter(
     (node) =>
@@ -13,11 +14,17 @@ export function stateResidencies(recording, items, changes, nodes, axis) {
     slices = [],
     links = [];
   const values = (value) => (Array.isArray(value) ? value : value == null ? [] : [value]);
-  const machine = recording.context.model?.machine;
-  const active = (value) =>
-    machine?.states && machine?.values ? [...activeMachineStates(machine, value)] : values(value);
-  const enter = (value, raw, scope) => {
-    for (const node of states.filter((node) => active(value).includes(node.value))) {
+  const active = (value, modelId) => {
+    const machine = machineFor(recording.context.model, modelId);
+    return machine?.states?.length && machine?.values
+      ? [...activeMachineStates(machine, value)]
+      : values(value);
+  };
+  const matches = (node, value, modelId) =>
+    sameStateModel(node, { state_model_id: modelId }) &&
+    active(value, modelId).includes(node.value);
+  const enter = (value, raw, scope, modelId) => {
+    for (const node of states.filter((node) => matches(node, value, modelId))) {
       const key = JSON.stringify([scope, node.id]);
       if (!opened.has(key))
         opened.set(key, { node: node.id, raw, scope, role: "residency", clippedStart: raw === 0 });
@@ -31,13 +38,13 @@ export function stateResidencies(recording, items, changes, nodes, axis) {
     unfinished,
     duration: !unfinished && axis.ordered ? axis.times[raw] - axis.times[slice.raw] : null,
   });
-  const visit = (value, raw, scope) => {
+  const visit = (value, raw, scope, modelId) => {
     for (const [key, slice] of opened) {
       if (slice.scope !== scope && (recording.runtime_frames || slice.scope !== "application"))
         continue;
       const node = nodes.get(slice.node);
-      if (!active(value).includes(node.value)) {
-        for (const target of states.filter((candidate) => active(value).includes(candidate.value)))
+      if (!matches(node, value, modelId)) {
+        for (const target of states.filter((candidate) => matches(candidate, value, modelId)))
           links.push({
             from: slice.raw,
             to: raw,
@@ -51,12 +58,13 @@ export function stateResidencies(recording, items, changes, nodes, axis) {
         opened.delete(key);
       }
     }
-    enter(value, raw, scope);
+    enter(value, raw, scope, modelId);
   };
   const initial = recording.context.machine || {};
   if (initial.configurations?.length) {
-    for (const [scope, cfg] of runtimeConfigurations(initial)) if (cfg) enter(cfg.phase, 0, scope);
-  } else enter(initial.current, 0, "application");
+    for (const [scope, cfg] of runtimeConfigurations(initial))
+      if (cfg) enter(cfg.phase, 0, scope, cfg.state_model_id);
+  } else enter(initial.current, 0, "application", initial.state_model_id);
   if (recording.runtime_frames) {
     // Snapshots witness occupancy even before the first transition. A caller's
     // attempt is not a machine identity when multiple configurations share it.
@@ -65,7 +73,8 @@ export function stateResidencies(recording, items, changes, nodes, axis) {
       const frame = runtimeFrame(recording, event);
       if (!frame) continue;
       for (const [scope, cfg] of runtimeConfigurations(frame.machine))
-        if (cfg && (cfg.snapshot_instance || legacy.get(scope))) visit(cfg.phase, raw, scope);
+        if (cfg && (cfg.snapshot_instance || legacy.get(scope)))
+          visit(cfg.phase, raw, scope, cfg.state_model_id);
     }
   } else {
     for (const [raw, list] of changes.entries())
@@ -75,6 +84,7 @@ export function stateResidencies(recording, items, changes, nodes, axis) {
           change.after,
           raw,
           change.instance || "attempt:" + (change.attempt || items[raw].attempt || "application"),
+          change.state_model_id,
         );
       }
   }

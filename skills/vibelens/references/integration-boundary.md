@@ -5,6 +5,17 @@ The application owns its business/state/rule definitions, native execution,
 selected probe wiring and tests. The Skill owns analysis, projection, recording,
 layout, viewer code and control validation.
 
+The renderer, routing libraries (including libavoid), layout engines and Web
+assets are local debugging-tool dependencies. New integrations do not copy them
+into the business project or its production bundle. Native state/probe adapters
+are separate, small project dependencies. Historical full-copy examples retain
+explicit viewer folders until a reviewed migration.
+
+This deployment boundary does not change third-party licenses. The intended use
+is local development/debugging; commercial application development is allowed by
+VibeLens's MIT license. Distributing an embedded viewer is a separate packaging
+choice. See [dependency distribution](dependency-distribution.md).
+
 ## New integrations
 
 ```bash
@@ -14,7 +25,7 @@ python SKILL/scripts/bo_integrate.py check --root PROJECT
 python SKILL/scripts/bo.py serve --root PROJECT --port 8830
 ```
 
-Use `--language javascript` for Node, React and Vue. Python copies six small
+Use `--language javascript` for Node, React and Vue. Python copies seven small
 standard-library native files; JavaScript copies two native modules. These are
 managed dependencies under `bo_stategraph/`, with `integration.json` recording
 their exact source and hashes. The independent state definition stays in
@@ -29,7 +40,7 @@ application imports behind the developer's back.
 
 ## Communicate through native adapters
 
-The existing `bo-event/v1` and `bo-snapshot/v1` contracts carry actual observations
+The `bo-event/v1` and model-qualified `bo-snapshot/v2` contracts carry actual observations (legacy single-model snapshots retain v1)
 to the external Python service. Native business effects and drive-mode state
 transitions execute locally, including when the service is unavailable.
 

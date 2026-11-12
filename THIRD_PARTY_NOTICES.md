@@ -3,6 +3,10 @@
 The project's original code and documentation use the MIT license. Third-party
 components keep their own copyright notices and licenses.
 
+Viewer/routing/layout bundles belong to the local VibeLens debugging tool. New
+application integrations do not copy those assets. This intended deployment does
+not change their licenses. See [dependency boundaries](skills/vibelens/references/dependency-distribution.md).
+
 The optional database feature installs SQLAlchemy (MIT), pg8000 (BSD-3-Clause),
 PyMongo (Apache-2.0), redis-py (MIT), the Neo4j Python driver (Apache-2.0 AND Python-2.0), SQLGlot
 (MIT), and Pygments (BSD-2-Clause). Versions are pinned in
@@ -19,7 +23,7 @@ dependencies, not bundled with the Skill.
 
 | Component | Version | License | Distribution |
 |---|---|---|---|
-| [PixiJS](https://github.com/pixijs/pixijs/tree/v8.22.0) | 8.22.0 | MIT | Browser bundle included with the Skill and example |
+| [PixiJS](https://github.com/pixijs/pixijs/tree/v8.22.0) | 8.22.0 | MIT | Pinned browser download; included in the optional offline package |
 | [ELK.js](https://github.com/kieler/elkjs) | 0.12.0 | EPL-2.0 | Unmodified browser bundle and worker from the npm release; license retained as `ELK-LICENSE.md` |
 | [Tabler Icons](https://github.com/tabler/tabler-icons) | 3.49.0 | MIT | Selected vectors sampled into planar icons; semantic 3D solids are original VibeLens geometry; `NODE-ICONS-LICENSE.txt` |
 | [libavoid-js](https://github.com/Aksem/libavoid-js) | 0.4.5 | LGPL-2.1-or-later | Unmodified, separately replaceable JS/Wasm; [source and replacement notes](skills/vibelens/references/vendor/README.md) |

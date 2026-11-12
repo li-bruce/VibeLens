@@ -1,3 +1,4 @@
+import { machineFor, configurationFor } from "./model-networks.js";
 import { codeRelations } from "./code-layer.js";
 import { typeColor } from "./layer-style.js";
 import { visualType as nodeType } from "./graph-classification.js";
@@ -39,9 +40,10 @@ export const stateLabels = {
   failed: boTranslate("Failed"),
   cancelled: boTranslate("Cancelled"),
 };
-export function phaseLabel(model, value) {
-  if (Array.isArray(value)) return value.map((state) => phaseLabel(model, state)).join(" · ");
-  const labels = model?.machine?.labels;
+export function phaseLabel(model, value, stateModelId) {
+  if (Array.isArray(value))
+    return value.map((state) => phaseLabel(model, state, stateModelId)).join(" · ");
+  const labels = machineFor(model, stateModelId).labels;
   return labels && Object.hasOwn(labels, value) ? labels[value] : String(value);
 }
 export function compact(v) {
@@ -60,24 +62,30 @@ export function configurations(view) {
 export function executionIds(view) {
   const runs = configurations(view);
   return runs.length
-    ? runs.map((x) => x.attempt)
+    ? [...new Set(runs.map((x) => (view.model.machines ? x.snapshot_instance : x.attempt)))]
     : [...new Set(view.events.filter((e) => e.node === "read").map((e) => e.attempt))];
 }
 export function currentAttempt(view, choice) {
   return choice === "latest"
-    ? view.authority.parameters.attempt || executionIds(view).at(-1)
+    ? (view.model.machines ? view.machine.current_instance : view.authority.parameters.attempt) ||
+        executionIds(view).at(-1)
     : choice;
 }
 export function selectedConfiguration(view, choice = "latest", step = "latest") {
-  const run = configurations(view).find((r) => r.attempt === currentAttempt(view, choice));
+  const run = configurations(view).find(
+    (r) => (view.model.machines ? r.snapshot_instance : r.attempt) === currentAttempt(view, choice),
+  );
   if (!run) return null;
   if (step === "latest") return run;
-  const entry = run.journal.find((e) => String(e.seq) === String(step));
+  const entry = (run.journal || []).find((e) => String(e.seq) === String(step));
   // Historical frames contain recorded state only, never the run's later
   // results, disposition or current qualification.
   return entry
     ? {
         attempt: run.attempt,
+        ...(run.state_model_id
+          ? { state_model_id: run.state_model_id, snapshot_instance: run.snapshot_instance }
+          : {}),
         param_version: run.param_version,
         ...entry.after,
         phase: entry.after.phase ?? entry.phase ?? null,
@@ -87,7 +95,8 @@ export function selectedConfiguration(view, choice = "latest", step = "latest") 
     : null;
 }
 export function selectedEvents(view, choice, step = "latest") {
-  const id = currentAttempt(view, choice);
+  const configuration = selectedConfiguration(view, choice, step);
+  const id = view.model.machines ? configuration?.attempt : currentAttempt(view, choice);
   let events = view.events.filter(
     (e) =>
       e.attempt === id ||
@@ -97,7 +106,8 @@ export function selectedEvents(view, choice, step = "latest") {
   if (step !== "latest") {
     // A later reevaluation may reuse an activity revision. Only its first exact
     // recorded boundary belongs to this frame; absent boundaries stay unknown.
-    const parent = view.model.machine.execution?.parent;
+    const parent = machineFor(view.model, selectedConfiguration(view, choice, step)).execution
+      ?.parent;
     const frame = events.find((e) => e.node === parent && e.outputs?.revision === Number(step));
     events = frame ? events.filter((e) => e.seq <= frame.seq) : [];
   }
@@ -172,6 +182,7 @@ function resourceOf(node, view, configuration) {
   return view.machine.shared_resources?.[node.id] || configuration?.resources?.[node.id];
 }
 function phaseValue(view, configuration, choice) {
+  if (view.model.machines) return configuration?.phase;
   return configuration?.selectedFrame
     ? configuration.phase
     : choice === "latest"
@@ -202,6 +213,7 @@ function staleBasis(node, view, last) {
   return fields.some((key) => last.basis?.[key] !== view.authority.basis?.[key]);
 }
 export function status(node, view, events, choice, configuration = null) {
+  configuration = configurationFor(view, node, configuration, choice);
   if (node.code_role && !activationFor(node, view, events)) return "declared";
   if (view.stage === "design") return "declared";
   if (node.origin === "concept-design") {
@@ -231,7 +243,7 @@ export function status(node, view, events, choice, configuration = null) {
   }
   if (
     configuration?.disposition === "interrupted" &&
-    (node.execution_role || node.id === view.model.machine.execution?.parent)
+    (node.execution_role || node.id === machineFor(view.model, node).execution?.parent)
   )
     return "historical";
   if (node.execution_role === "activity")
@@ -249,16 +261,17 @@ export function status(node, view, events, choice, configuration = null) {
         rejected: "blocked",
       }[configuration?.join?.state] || "declared"
     );
-  if (node.id === view.model.machine.execution?.parent && configuration)
+  if (node.id === machineFor(view.model, node).execution?.parent && configuration)
     return Object.values(configuration.activities || {}).includes("running")
       ? "active"
       : configuration.join?.state === "passed"
         ? "ok"
         : "blocked";
   if (node.layer === "state")
-    return activeMachineStates(view.model.machine, phaseValue(view, configuration, choice)).has(
-      node.value,
-    )
+    return activeMachineStates(
+      machineFor(view.model, node),
+      phaseValue(view, configuration, choice),
+    ).has(node.value)
       ? "active"
       : "declared";
   if (node.field) {
@@ -310,6 +323,7 @@ export function status(node, view, events, choice, configuration = null) {
   return last.phase === "enter" ? "active" : "ok";
 }
 export function lines(node, view, events, choice, configuration = null) {
+  configuration = configurationFor(view, node, configuration, choice);
   const content = baseLines(
     conceptFrameOwner(node, view) || node,
     view,
@@ -471,7 +485,7 @@ function baseLines(node, view, events, choice, configuration = null) {
           role: "muted",
         };
       result.push({
-        text: `state: ${view.model.machine.execution?.activity_state_type || "str"} = ${state ?? boTranslate("Not recorded")}`,
+        text: `state: ${machineFor(view.model, node).execution?.activity_state_type || "str"} = ${state ?? boTranslate("Not recorded")}`,
         role: "value",
       });
       if (node.summary) result.push({ text: node.summary, role: "muted" });
@@ -511,7 +525,7 @@ function baseLines(node, view, events, choice, configuration = null) {
     // Their declared summary and actual binding marks are sufficient.
     if (node.value === undefined) return result;
     const active = activeMachineStates(
-      view.model.machine,
+      machineFor(view.model, node),
       phaseValue(view, configuration, choice),
     ).has(node.value);
     result.push({ text: `phase: Phase = ${node.value}`, role: "value", definition: true });
@@ -520,7 +534,7 @@ function baseLines(node, view, events, choice, configuration = null) {
       role: "muted",
       definition: !active,
     });
-    if (node.value === view.model.machine.execution?.within && configuration) {
+    if (node.value === machineFor(view.model, node).execution?.within && configuration) {
       for (const [id, state] of Object.entries(configuration.activities || {}))
         result.push({
           text: activityName(view, id) + "：" + activityLabel(view, state),
@@ -530,7 +544,7 @@ function baseLines(node, view, events, choice, configuration = null) {
     return result;
   } else if (node.layer === "business") {
     result.push({ text: node.summary, role: "muted" });
-    if (node.id === view.model.machine.execution?.parent) {
+    if (node.id === machineFor(view.model, node).execution?.parent) {
       if (configuration) {
         if (configuration.disposition === "interrupted")
           result.push({

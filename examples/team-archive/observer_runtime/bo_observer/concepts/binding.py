@@ -5,9 +5,11 @@ from copy import deepcopy
 try:
     from ...bo_contracts import validate_runtime_definition
     from ...execution_contract import validate_execution_graph
+    from ...bo_models import binding_machines, machine_view
 except ImportError:
     from bo_contracts import validate_runtime_definition
     from execution_contract import validate_execution_graph
+    from bo_models import binding_machines, machine_view
 from ..policy.definition import validate as validate_policy
 from .common import canonical_id, without_display
 from .common import encoded
@@ -93,7 +95,10 @@ def check_binding(doc, model, bindings=None, *, scope=None, acceptance=None):
         {key: data["records"][key] for key in confirmation["coverage_scope"]}
     )
     binding = bindings if bindings is not None else model.get("concepts")
-    if not isinstance(binding, dict) or binding.get("schema") != "bo-concept-bindings/v1":
+    if not isinstance(binding, dict) or binding.get("schema") not in {
+        "bo-concept-bindings/v1",
+        "bo-concept-bindings/v2",
+    }:
         return {
             "valid": False,
             "errors": errors + [{"code": "missing_concept_bindings", "item": "model.concepts"}],
@@ -113,16 +118,23 @@ def check_binding(doc, model, bindings=None, *, scope=None, acceptance=None):
         for item in doc["state_models"]
         if canonical_id("state-model", item["id"]) in active
     }
-    primary = binding.get("primary_state_model")
-    if len(models) > 1:
-        error("unsupported_multiple_bound_state_models", ",".join(sorted(models)))
-    if models:
-        if primary not in models:
-            error("missing_primary_state_model", primary)
-        else:
-            designed = models[primary]
+    try:
+        machine_bindings = binding_machines(binding, model)
+    except ValueError as exc:
+        error("invalid_state_model_bindings", exc)
+        machine_bindings = {}
+    for missing in set(models) - set(machine_bindings):
+        error("unbound_state_model", missing)
+    for extra in set(machine_bindings) - set(models):
+        error("unexpected_bound_state_model", extra)
+    if scope is None and "machines" in model:
+        for native in set(model["machines"]) - set(machine_bindings.values()):
+            error("unbound_native_state_model", native)
+    for primary, designed in models.items():
+        if primary in machine_bindings:
+            native = machine_view(model, machine_bindings[primary])
             try:
-                validate_runtime_definition(model.get("machine"))
+                validate_runtime_definition(native.get("machine"))
                 designed_semantics = machine_semantics(designed)
                 if "execution" in designed_semantics:
                     owner = designed_semantics["execution"]["parent"]
@@ -131,16 +143,14 @@ def check_binding(doc, model, bindings=None, *, scope=None, acceptance=None):
                         error("ambiguous_activity_owner_binding", owner)
                     else:
                         designed_semantics["execution"]["parent"] = targets[0]
-                    validate_execution_graph(model)
-                if encoded(designed_semantics) != encoded(machine_semantics(model["machine"])):
+                    validate_execution_graph(native)
+                if encoded(designed_semantics) != encoded(machine_semantics(native["machine"])):
                     error("state_semantics_changed_during_binding", primary)
             except (KeyError, TypeError, ValueError) as exc:
                 error("invalid_native_machine", exc)
             expected_owner = designed["subject"]
             if binding.get("objects", {}).get(primary) != expected_owner:
                 error("state_object_identity_binding_differs", primary)
-    elif primary is not None:
-        error("unexpected_bound_state_model", primary)
     if doc.get("policy"):
         try:
             required_operations = {
@@ -176,7 +186,7 @@ def check_binding(doc, model, bindings=None, *, scope=None, acceptance=None):
         "valid": not errors,
         "errors": errors,
         "semantic_revision": expected["semantic_revision"],
-        "bound_state_models": [primary] if primary in models else [],
+        "bound_state_models": sorted(set(machine_bindings) & set(models)),
         "scope": expected["scope"],
         "limits": ["Source/case/runtime evidence must also pass the existing independent gates."],
     }

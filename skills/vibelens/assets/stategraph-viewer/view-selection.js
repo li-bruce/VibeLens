@@ -4,7 +4,7 @@
 import { cleanProfile, profileFor, presets } from "./analysis.js";
 import { cleanFilters } from "./layout.js";
 export const draftViewId = "custom-draft";
-export const isPreset = (id) => presets.some((view) => view.id === id);
+export const isPreset = (id) => id.startsWith("network-") || presets.some((view) => view.id === id);
 
 export function restoredFilters(id, custom, saved) {
   return isPreset(id) ? cleanFilters(profileFor(id, custom)) : cleanFilters(saved);
@@ -27,6 +27,7 @@ export function layerSelection(filters) {
 export function needsSource(id, settings) {
   return (
     ["project", "code", "api", "implementation"].includes(id) ||
+    id.startsWith("network-") ||
     !!settings.codeFocus ||
     (id.startsWith("custom-") &&
       settings.layers.visible.some((layer) => ["entry", "structure", "symbols"].includes(layer)))

@@ -8,6 +8,11 @@ import hashlib
 import math
 import json
 
+try:
+    from .bo_models import machine_registry, machine_view, network_registry
+except ImportError:
+    from bo_models import machine_registry, machine_view, network_registry
+
 
 def source_declaration_id(source):
     """Identify an exact source declaration using portable JSON and SHA-256.
@@ -617,8 +622,8 @@ def validate_graph(model):
             or not edge.get("evidence")
         ):
             raise ValueError("edge needs type and provenance")
-        if edge.get("type") in ("resource", "join") and not model.get("machine", {}).get(
-            "execution"
+        if edge.get("type") in ("resource", "join") and not any(
+            chart.get("execution") for chart in machine_registry(model).values()
         ):
             raise ValueError("resource and join edges need an executable activity declaration")
     for item in model.get("overview", []):
@@ -628,7 +633,52 @@ def validate_graph(model):
 
 
 def validate_chart(model, runtime_definition=None):
+    """Validate every registered definition and its own state projection.
+
+    No definition is chosen by insertion order or by a display selection. A legacy
+    single-machine declaration retains exactly the same validation and result.
+    """
     validate_graph(model)
+    network_registry(model)
+    if "machines" in model:
+        machines = machine_registry(model)
+        state_nodes = [node for node in model["nodes"] if node.get("layer") == "state"]
+        if any(node.get("state_model_id") not in machines for node in state_nodes):
+            raise ValueError("state projection requires a registered state_model_id")
+        if runtime_definition is not None and (
+            not isinstance(runtime_definition, dict)
+            or set(runtime_definition) != {"machines"}
+            or not isinstance(runtime_definition["machines"], dict)
+            or set(runtime_definition["machines"]) != set(machines)
+        ):
+            raise ValueError("loaded machine registry differs from declaration")
+        results = {}
+        for ident in machines:
+            results[ident] = validate_chart(
+                machine_view(model, ident),
+                runtime_definition["machines"][ident] if runtime_definition is not None else None,
+            )
+        # Resource relations must be owned by one declaration, not silently
+        # dropped by each isolated execution view.
+        owned = [
+            edge["id"]
+            for ident in machines
+            for edge in machine_view(model, ident)["edges"]
+            if edge.get("type") in {"resource", "join"}
+        ]
+        if len(owned) != len(set(owned)):
+            raise ValueError("resource/join relation has multiple execution owners")
+        covered = set(owned)
+        actual = {edge["id"] for edge in model["edges"] if edge.get("type") in {"resource", "join"}}
+        if covered != actual:
+            raise ValueError("resource/join relation lacks a machine owner")
+        return {
+            "valid": True,
+            "models": results,
+            "states": sum(v["states"] for v in results.values()),
+            "events": sum(v["events"] for v in results.values()),
+            "runtime_definition_compared": runtime_definition is not None,
+        }
     chart = model["machine"]
     # Compact models are explicit bo-model/v1 or legacy unversioned declarations.
     fields = ("states", "values", "transitions", "events", "initial", "context")

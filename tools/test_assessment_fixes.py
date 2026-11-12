@@ -11,6 +11,7 @@ import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
+from process_cleanup import stop_process_tree
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'skills/vibelens/scripts'))
@@ -295,7 +296,7 @@ class RuntimeTests(unittest.TestCase):
                     self.assertIsNone(proc.poll())
                 finally:
                     if handle is not None:kernel.CloseHandle(handle)
-                    proc.terminate();proc.wait(timeout=5)
+                    stop_process_tree(proc)
 
 
 def lock_probe():

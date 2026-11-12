@@ -1,0 +1,55 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+Package references and 201 copied runtime modules match.
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.141s
+
+OK
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 1.837s
+
+OK
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+E..
+======================================================================
+ERROR: test_complete_artifacts_preserve_canonical_bytes (__main__.DistributionTests.test_complete_artifacts_preserve_canonical_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_distribution.py", line 88, in test_complete_artifacts_preserve_canonical_bytes
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(link), str(installed)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpz2fo5i_4\\linked-install', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpz2fo5i_4\\installed\\vibelens']' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 3 tests in 9.905s
+
+FAILED (errors=1)
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tools\verify.py", line 232, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tools\verify.py", line 34, in main
+    run(ROOT, "tests/test_distribution.py")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tools\verify.py", line 17, in run
+    subprocess.run([sys.executable, "-B", "-X", "utf8", *map(str, args)], cwd=cwd, check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe', '-B', '-X', 'utf8', 'tests/test_distribution.py']' returned non-zero exit status 1.

@@ -67,10 +67,10 @@ Show the business, state and rule graphs before we implement it.
 
 ### DeepSeek Harness
 
-Install the packaged plugin from the [v0.14.0 release](https://github.com/li-bruce/VibeLens/releases/tag/v0.14.0):
+Install the packaged plugin from the [v0.15.0 release](https://github.com/li-bruce/VibeLens/releases/tag/v0.15.0):
 
 ```bash
-dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.14.0/dsh-vibelens-0.14.0.tgz
+dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.15.0/dsh-vibelens-0.15.0.tgz
 ```
 
 Open that profile and start a conversation with `/vibelens` followed by your project idea. [Harness setup and tested compatibility](https://github.com/li-bruce/VibeLens/blob/main/docs/deepseek-harness.md).
@@ -81,6 +81,6 @@ Open that profile and start a conversation with `/vibelens` followed by your pro
 
 The source is open. Reproducible examples and retained checks let you inspect the implementation as well as the interface.
 
-[Architecture & source guide](https://github.com/li-bruce/VibeLens/blob/main/docs/source-guide.en.md) · [Supported capabilities](https://github.com/li-bruce/VibeLens/blob/main/docs/capabilities.md) · [Validation records](https://github.com/li-bruce/VibeLens/blob/main/docs/review/release-v0.14.0/README.md) · [Release notes](https://github.com/li-bruce/VibeLens/blob/main/docs/releases/v0.14.0.md) · [Distribution](https://github.com/li-bruce/VibeLens/blob/main/docs/distribution.md)
+[Architecture & source guide](https://github.com/li-bruce/VibeLens/blob/main/docs/source-guide.en.md) · [Supported capabilities](https://github.com/li-bruce/VibeLens/blob/main/docs/capabilities.md) · [Validation records](https://github.com/li-bruce/VibeLens/blob/main/docs/review/release-v0.15.0/README.md) · [Release notes](https://github.com/li-bruce/VibeLens/blob/main/docs/releases/v0.15.0.md) · [Distribution](https://github.com/li-bruce/VibeLens/blob/main/docs/distribution.md)
 
 [MIT](https://github.com/li-bruce/VibeLens/blob/main/LICENSE) · [Third-party licenses](https://github.com/li-bruce/VibeLens/blob/main/THIRD_PARTY_NOTICES.md)

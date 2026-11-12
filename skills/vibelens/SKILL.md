@@ -2,7 +2,7 @@
 name: vibelens
 license: MIT
 metadata:
-  version: "0.14.0"
+  version: "0.15.0"
 description: Develop and inspect Python, Node.js, React, or Vue software through connected business, state and rule models. Preserve confirmed intent while mapping source, selected values and runtime evidence so developers can debug AI implementations.
 ---
 
@@ -24,11 +24,13 @@ Keep maintained source, identifiers, comments, and canonical documentation in En
 
 Use the scripts as interfaces and inspect focused results. Keep generated manifests, full source indexes, copied runtimes and recording payloads in files; read only the affected symbols or failed checks into the coding conversation.
 
+Before opening the first graph, run `python "<skill>/scripts/bo_dependencies.py" install` from the installed Skill. This fetches pinned viewer assets from a CDN, falls back to GitHub, and verifies every file; later launches reuse local files or cache. This setup writes only tool resources. See [dependency setup](references/dependency-distribution.md) for offline use and recovery. Viewer servers also perform this setup before accepting requests; do not continue after a failed checksum or missing-resource error.
+
 ## 1. Confirm intent and development mode
 
 Read the request, project conventions, and existing decisions. Use task, business, and state graphs to express the user's current intent. Clarifying questions and counterexamples resolve actual ambiguity; they do not recommend additional business rules. Do not repeat settled questions or treat silence as confirmation. Read [requirements dialogue](references/requirements-dialogue.md).
 
-Build the applicable business, state and rule models before implementing the affected feature. Use [concept models](references/concept-models.md) and `business-discovery/v2`: declare object identity, state transitions, shared rule meaning, typed cross-links and explicit applicability. Each model must be independently inspectable. Record scoped semantic confirmation from the actual conversation; source-free drafts stay separate from bound runtime declarations. Keep display labels outside semantic identity.
+Build the applicable business, state and rule models before implementing the affected feature. Use [concept models](references/concept-models.md) and `business-discovery/v2`: declare object identity, state transitions, shared rule meaning, typed cross-links and explicit applicability. Each model must be independently inspectable. Identify all business capabilities and state-owning object types in the affected scope: the application may contain independent networks. Confirm only ambiguous interactions; never force them into one flow or one machine. Use [model networks](references/model-networks.md). Record scoped semantic confirmation from the actual conversation; source-free drafts stay separate from bound runtime declarations. Keep display labels outside semantic identity.
 
 Before confirming the implementation scope, compare its state models and execution semantics with the installed binding and engine capabilities. A valid draft does not establish implementation support. Report an unsupported capability early, retain the draft and rejection evidence, and obtain an explicit scope revision before changing its coverage. Preserve independent object identities; see the [capability boundary](references/concept-models.md#check-implementation-capabilities).
 
@@ -55,7 +57,7 @@ Follow [integration ownership](references/integration-boundary.md): new projects
 
 For standard tracing, follow [telemetry integration](references/telemetry.md). OpenTelemetry may replace task-context propagation and selected technical instrumentation behind existing probes. Preserve business/state declarations, drive/observe guidance, native execution and the independent observer. Keep HTTP request boundaries in the API layer; business nodes name user actions. Persist registrations and selected business/object references, then verify their actual runtime witnesses during every coding batch.
 
-New projects store a `bo-project/v1` document in `bo_stategraph/project.json`, including the mode decision and complete model. `model.machine` is the state declaration; drive mode binds it to the selected executor. Bind functions through stable source references; do not embed executable function code in JSON. Existing Python projects may retain a v3 graph and a shared `bo_stategraph/machine.json` consumed by their real executor and graph generator. Never edit generated copies independently.
+New projects store a `bo-project/v1` document in `bo_stategraph/project.json`, including the mode decision and complete model. `model.machines` registers independent state declarations by stable model ID; drive mode binds each to its selected native executor. Snapshot v2 carries `state_model_id` alongside the actual instance identity. Legacy `model.machine` remains supported. Bind functions through stable source references; do not embed executable function code in JSON. Existing Python projects may retain a v3 graph and a shared `bo_stategraph/machine.json` consumed by their real executor and graph generator. Never edit generated copies independently.
 
 Carry confirmed rule identities into `model.policy`, bind native predicate functions and parameters, and register independent operation cases. `bo_policy.py sync` generates their nodes, shared dependencies and business/source links in the same graph. Drive may use the native evaluator; observe captures the application's actual evaluation. Record each check separately and retain skipped, unknown and error evidence. See the rule reference for the JSON and probe interfaces.
 
@@ -66,6 +68,8 @@ Bind the confirmed definitions through `model.concepts`; compare the full state/
 - **Both:** inventory source independently, retain the state network, capture required parameters, update mappings during development, and verify actual implementation. Business execution must survive the Python observer being unavailable. Hiding the Web UI must not remove the declaration or executor.
 
 Existing complete Python examples retain hierarchy validation, concurrent activities, waiting, resources, joins, and recovery. Native JS/Python `bo.fsm/1` executors support a strict flat subset. Complete instance queries must expose active activities and resources; advanced analysis can remain collapsed. See [independent module](references/independent-python.md), [model contract](references/behavior-model.md), and [integrated execution](references/integrated-execution.md).
+
+During each iteration, restore the complete model/network inventory and the affected crosslinks. Check every registered model and require per-model independent mapping witnesses; a new model must not replace an existing registration.
 
 Before implementation, define independent expectations for confirmed rules: success, rejection, boundaries, and applicable cancellation, recovery, or concurrency cases. Establish the [implementation inventory](references/implementation-coverage.md), [mapping contract](references/mapping-contract.md), and [whitebox expectations](references/validation-rules.md). Link each scenario to actual functions, parameters, reads, effects, and graph fields. Never copy graph values as independent expected results or weaken earlier checks to obtain a pass.
 

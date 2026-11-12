@@ -73,7 +73,8 @@ export function unitOrderEdges(units, ordering, parents) {
 export async function directionalUnits(elk, units, edges) {
   if (units.length < 2 || !edges.length) return null;
   const ordered = [...units].sort((a, b) => {
-    const key = (unit) => (unit.node?.layout_routes || []).join("\0");
+    const key = (unit) =>
+      [...(unit.node?.network_ids || []), ...(unit.node?.layout_routes || [])].join("\0");
     return key(a).localeCompare(key(b)) || a.id.localeCompare(b.id);
   });
   const output = await elk.layout({

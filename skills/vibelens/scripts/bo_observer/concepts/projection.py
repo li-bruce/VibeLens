@@ -2,6 +2,11 @@
 
 from copy import deepcopy
 
+try:
+    from ...bo_models import binding_machines
+except ImportError:
+    from bo_models import binding_machines
+
 from ..graph.relation_identity import relation_ids
 from .anchors import native_anchors
 from .binding import check_binding
@@ -39,6 +44,37 @@ def bind_projection(doc, model, bindings=None, *, acceptance=None, scope=None):
     # physical declaration with several explicit concept-to-implementation maps.
     graph["graph_roots"] = [key for key in graph["graph_roots"] if key in selected_nodes]
     aliases = separate_occurrences(graph, model)
+    machines = binding_machines(binding, model)
+    for node in graph["nodes"]:
+        for conceptual, native in machines.items():
+            if node.get("concept_kind") in {
+                "state",
+                "state_model",
+                "event",
+                "guard",
+                "logical_effect",
+                "transition",
+            } and (
+                node["id"] == canonical_id("state-model", conceptual)
+                or any(
+                    node["id"].startswith(canonical_id(kind, conceptual) + ":")
+                    for kind in ("state", "event", "guard", "effect", "transition")
+                )
+            ):
+                if "machines" in model:
+                    node["state_model_id"] = native
+    for network in graph.get("networks", []):
+        network["nodes"] = [
+            aliases.get(key, key)
+            for key in network["nodes"]
+            if aliases.get(key, key) in {node["id"] for node in graph["nodes"]}
+        ]
+        network["edges"] = [
+            edge["id"]
+            for edge in graph["edges"]
+            if edge["from"] in network["nodes"] and edge["to"] in network["nodes"]
+        ]
+    graph["networks"] = [network for network in graph.get("networks", []) if network["nodes"]]
     selected_nodes = {node["id"] for node in graph["nodes"]}
     for concept, targets in anchors.items():
         concept = aliases.get(concept, concept)
@@ -68,6 +104,7 @@ def bind_projection(doc, model, bindings=None, *, acceptance=None, scope=None):
         "schema": "bo-concept-projection/v1",
         "revision": checked["semantic_revision"],
         "nodes": graph["nodes"],
+        "networks": graph.get("networks", []),
         "edges": graph["edges"],
         "graph_roots": [key for key in graph["graph_roots"] if key in selected_nodes],
         "index": deepcopy(data["index"]),

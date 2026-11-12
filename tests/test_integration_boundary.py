@@ -39,9 +39,36 @@ class IntegrationBoundaryTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "installed Skill"):
                     integration.inspect(self.root)
 
+    def test_legacy_package_imports_without_the_skill_directory_on_sys_path(self):
+        """Copied observers must resolve the same model helpers as CLI entrypoints."""
+        from bo_upgrade import apply
+
+        apply(self.root, runtime="observer_runtime", viewers=[])
+        code = """
+import sys
+sys.path.insert(0, sys.argv[1])
+from observer_runtime import recording_session
+from observer_runtime.bo_observer.concepts import projection
+from observer_runtime.bo_observer.explanations import context
+from observer_runtime.bo_observer.web import semantic_names
+from observer_runtime.bo_observer.observation import runtime_frames
+from bo_stategraph.bo_models import machine_registry
+assert semantic_names.machine_registry is machine_registry
+assert recording_session.machine_registry is machine_registry
+"""
+        result = subprocess.run(
+            [sys.executable, "-I", "-B", "-c", code, str(self.root)],
+            cwd=self.root, capture_output=True, text=True, encoding="utf-8",
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_python_executes_without_observer_installation(self):
         result = integration.install(self.root, "python")
-        self.assertEqual(len(result["files"]), 6)
+        self.assertEqual(len(result["files"]), 7)
+        self.assertFalse(any(
+            p.suffix in {".wasm", ".html", ".css"} or p.name.endswith(".vendor.js")
+            for p in self.root.rglob("*")
+        ))
         self.assertFalse((self.root / "observer_runtime").exists())
         # The copied dependency set must execute a real waiting/resume sequence,
         # not merely import while the full observer happens to be on sys.path.
@@ -74,6 +101,25 @@ print(json.dumps(states))
         self.assertEqual(run.returncode, 0, run.stderr)
         self.assertEqual(json.loads(run.stdout), ["waiting", "running", "done"])
         self.assertTrue(integration.inspect(self.root)["valid"])
+
+    def test_registry_dependency_upgrade_preserves_local_configuration(self):
+        """The new native module can be added to a known six-file receipt."""
+        integration.install(self.root, "python")
+        receipt = self.root / integration.RECEIPT
+        prior = json.loads(receipt.read_text())
+        name = "bo_stategraph/bo_models.py"
+        prior["files"].pop(name)
+        prior["sources"].pop(name)
+        receipt.write_text(json.dumps(prior), encoding="utf-8")
+        (self.root / name).unlink()
+        settings = self.root / "bo_stategraph/config"
+        settings.mkdir()
+        personal = settings / "layout.json"
+        personal.write_text('{"position":[3,4]}', encoding="utf-8")
+        self.assertEqual(integration.plan(self.root, "python")["changes"], [name])
+        integration.install(self.root, "python")
+        self.assertTrue(integration.inspect(self.root)["valid"])
+        self.assertEqual(personal.read_text(), '{"position":[3,4]}')
 
     def test_javascript_adapter_loads_without_python_or_viewer(self):
         result = integration.install(self.root, "javascript")

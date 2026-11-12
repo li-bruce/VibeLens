@@ -16,6 +16,7 @@ import threading
 from urllib.parse import urlsplit, parse_qs
 from ..code_graph.service import CodeGraph
 from ..control.scope import ControlScope
+from ..delivery.dependencies import LOCK_NAME, ensure_assets
 
 try:
     from ...bo_design import BODesign
@@ -272,6 +273,10 @@ class BOWeb:
 
 def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
     web = BOWeb(root, assets=assets, discovery=discovery, graph_routes=("/", "/graph", "/graph/"))
+    # Prepare local tool assets before accepting browser traffic. Read-only model
+    # queries and disabled observation do not initiate dependency downloads.
+    if web.status()["enabled"] and (web.assets / LOCK_NAME).is_file():
+        ensure_assets(web.assets)
     root = web.root
     initial = web.design.view()  # Validate before listening; no fabricated business engine.
     web.control_view = web.design.view

@@ -9,7 +9,7 @@ Install that Harness version first, then add the prebuilt plugin to your profile
 
 ```sh
 npm install -g @deepseek-ai/dsh@0.2.2-rc.1
-dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.14.0/dsh-vibelens-0.14.0.tgz
+dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/download/v0.15.0/dsh-vibelens-0.15.0.tgz
 dsh web
 ```
 
@@ -56,7 +56,7 @@ dsh plugin --profile web remove dsh-vibelens
 ```sh
 python tools/build_distribution.py
 mkdir -p .validation/harness-package
-tar -xzf .validation/distribution/dsh-vibelens-0.14.0.tgz -C .validation/harness-package
+tar -xzf .validation/distribution/dsh-vibelens-0.15.0.tgz -C .validation/harness-package
 npm ci --prefix tools/harness-tests
 node tools/harness-tests/test.mjs
 ```

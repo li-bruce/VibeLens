@@ -6,11 +6,26 @@ capacity, atomic allocation, completion and ALL join. It does not infer hidden c
 
 from copy import deepcopy
 
+try:
+    from .bo_models import machine_registry, machine_view, select_machine
+except ImportError:
+    from bo_models import machine_registry, machine_view, select_machine
+
 TERMINAL = {"succeeded", "rejected", "failed", "cancelled"}
 
 
 def validate_execution_graph(model):
     """Validate activity, join, and resource declarations within the same state graph."""
+    if "machines" in model:
+        results = {
+            key: validate_execution_graph(machine_view(model, key))
+            for key in machine_registry(model)
+        }
+        return {
+            "valid": True,
+            "models": results,
+            "applicable": any(value.get("applicable", True) for value in results.values()),
+        }
     spec = model.get("machine", {}).get("execution")
     if not spec:
         return {"valid": True, "applicable": False}
@@ -90,6 +105,9 @@ def validate_execution_graph(model):
 
 def validate_configuration(model, snapshot):
     """Check a runtime activity/resource configuration against its declared capacities and states."""
+    if "machines" in model:
+        ident, _ = select_machine(model, snapshot.get("state_model_id"))
+        return validate_configuration(machine_view(model, ident), snapshot)
     spec = model["machine"]["execution"]
     activities = {a["id"]: a for a in spec["activities"]}
     resources = {r["id"]: r for r in spec["resources"]}

@@ -11,6 +11,7 @@ from pathlib import Path
 import shutil
 from build_control_preview import build as build_controls
 from build_case_preview import build as build_case
+from setup_viewer import setup
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "skills/vibelens/assets/stategraph-viewer"
@@ -19,6 +20,7 @@ TARGET = ROOT / "docs/site/viewer"
 
 def build(artifact_path=None):
     """Copy canonical files and retain their hashes for reproducibility checks."""
+    setup()
     TARGET.mkdir(parents=True, exist_ok=True)
     build_case()
     build_controls(artifact_path)
