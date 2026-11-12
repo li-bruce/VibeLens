@@ -28,8 +28,9 @@ Source installation also supports `tools/install_skill.py --defer-dependencies`
 and `--offline`. See [setup and recovery](../skills/vibelens/references/dependency-distribution.md).
 
 `SHA256SUMS` identifies the archives. `manifest.json` records their source files.
-[Build and verification records](review/harness-distribution-20261105/README.md)
-separate published versions from submissions waiting for catalog review.
+[v0.15.0 release verification](review/release-v0.15.0/README.md) records the
+published archives. [Catalog updates](review/catalog-v0.15.0/README.md) distinguish
+prepared material, submissions and publicly available versions.
 
 ## Maintaining the descriptions
 
@@ -47,9 +48,31 @@ Harness's official project supports tarball installation and recommends the
 marketplace listing. Skills.sh discovery is based on CLI usage; repository
 publication does not guarantee a ranking.
 
+The root `skills.sh.json` provides the directory's product grouping and short
+description. Its [documented refresh mechanism](https://skills.sh/docs/customize)
+uses a CLI installation with telemetry enabled; the directory also caches results.
+Verify the visible listing after refresh before reporting it as updated.
+
+## Release checklist
+
+1. Update the English/Chinese README, packaged Skill README, Harness README,
+   SkillHub overview and installation links together. Keep illustrations in the
+   overview and link to the current release notes.
+2. Publish versioned packages with their manifests and checksums. Existing release
+   artifacts keep their published bytes; later description edits go to the
+   repository and catalog overview.
+3. Upload the released SkillHub package and updated illustrated overview through
+   the author account. Record submission and public publication separately.
+4. Check the Harness download and run one isolated Skills CLI installation from
+   GitHub. Verify installed version and resources; leave personal/global installs
+   unchanged.
+5. Record channel URLs, verified versions, check results and pending platform
+   actions in `docs/review/`. A prepared package or pending review is not a
+   published catalog update.
+
 ## 中文
 
 通过 GitHub、产品网站、Skills CLI 或现有 SkillHub 条目获取 VibeLens。
 DeepSeek Harness 使用独立插件包，安装说明列出了已测试版本。
-SkillHub 包在首次使用时校验并解包完整资源；GitHub 完整包可直接安装。
+SkillHub 包在首次使用时校验并解包 Skill 源码，再下载查看器依赖；离线包已包含这些依赖。
 各渠道的发布状态记录在本轮验收材料中。

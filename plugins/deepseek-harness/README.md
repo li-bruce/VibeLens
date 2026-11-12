@@ -25,6 +25,8 @@ Your AI can build a working app quickly. Understanding its permissions, state ch
 
 VibeLens turns the conversation into connected **business, state and rule graphs**. Clarify the important details, see the graph, then build. Choose **Drive** to develop from executable state declarations, or **Observe** to inspect your application's own logic.
 
+Each workflow and stateful object can have its own model. Inspect independent capabilities separately, or follow their connections in the same graph. Shared functions keep one source identity across these models.
+
 ## Follow the evidence to the source
 
 Record an operation and replay its state and value changes. Keep the relevant chain in a custom view, expand a decision and its inputs, then open the highlighted source.
@@ -57,5 +59,7 @@ dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/downl
 Tested host: DeepSeek Harness **0.2.2-rc.1**, Node.js **24.9+**. Python **3.11+** runs the shared observer.
 
 Start with `/vibelens` followed by your project idea. The plugin registers a user-invoked skill with complete resources. [Setup, compatibility and checks](https://github.com/li-bruce/VibeLens/blob/main/docs/deepseek-harness.md).
+
+The **v0.15.0** plugin is about **0.74 MB**. First use downloads verified viewer resources from a CDN, with GitHub as a fallback. Later launches reuse the local cache. Viewer libraries stay in the local debugging tool; your application keeps its native state and probe adapters.
 
 [MIT](https://github.com/li-bruce/VibeLens/blob/main/LICENSE) · [Third-party licenses](https://github.com/li-bruce/VibeLens/blob/main/THIRD_PARTY_NOTICES.md)

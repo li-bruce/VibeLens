@@ -25,6 +25,8 @@ AI 可以很快写出一个应用。权限在哪里判断，状态为什么改�
 
 VibeLens 通过对话构建相互关联的**业务网、状态网和规则网**。确认关键细节、看清图，再进入开发。选择 **Drive**，基于可执行的状态声明开发；选择 **Observe**，观察项目自身的逻辑。
 
+不同业务流、不同对象的状态机可以各自建模。既能单独查看一项能力，也能沿着图看清它与其他能力的衔接。多个模型引用同一个函数时，可以追溯到同一处源码。
+
 ## 沿着运行，找到问题所在
 
 录下操作，回放状态和数值的变化。在自定义视图中保留相关链路，展开判定和输入参数，再打开高亮的源码。
@@ -58,6 +60,8 @@ VibeLens 通过对话构建相互关联的**业务网、状态网和规则网**�
 npx skills add li-bruce/VibeLens --skill vibelens
 ```
 
+**v0.15.0** 的 Skill ZIP 约 **0.92 MB**。首次使用时下载查看器资源，后续直接复用；离线环境可使用[完整安装包](https://github.com/li-bruce/VibeLens/releases/download/v0.15.0/vibelens-offline-v0.15.0.zip)。
+
 在项目对话中输入：
 
 ```text
@@ -76,6 +80,8 @@ dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/downl
 打开该 profile，在对话中以 `/vibelens` 开头描述项目。[Harness 安装与已测试兼容范围](docs/deepseek-harness.md)。
 
 **Python · Node.js · React · Vue**，界面支持中英文切换。共享观察器使用 Python 3.11+，项目沿用原生语言。[安装、依赖与固定版本下载](docs/usage.zh-CN.md)。
+
+也可通过 [SkillHub](https://skillhub.cn/skills/user_fbf26156/vibelens) 获取。
 
 ## 从界面到源码，都可以查看
 

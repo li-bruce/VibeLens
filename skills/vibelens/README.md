@@ -25,6 +25,8 @@ Your AI can build a working app quickly. Understanding its permissions, state ch
 
 VibeLens turns the conversation into connected **business, state and rule graphs**. Clarify the important details, see the graph, then build. Choose **Drive** to develop from executable state declarations, or **Observe** to inspect your application's own logic.
 
+Each workflow and stateful object can have its own model. Inspect independent capabilities separately, or follow their connections in the same graph. Shared functions keep one source identity across these models.
+
 ## Follow the evidence to the source
 
 Record an operation and replay its state and value changes. Keep the relevant chain in a custom view, expand a decision and its inputs, then open the highlighted source.
@@ -58,6 +60,8 @@ Install the complete skill into your project:
 npx skills add li-bruce/VibeLens --skill vibelens
 ```
 
+The **v0.15.0** Skill ZIP is about **0.92 MB**. First use downloads the viewer resources, then reuses them locally. An [offline package](https://github.com/li-bruce/VibeLens/releases/download/v0.15.0/vibelens-offline-v0.15.0.zip) is also available.
+
 Start a project conversation with:
 
 ```text
@@ -77,6 +81,8 @@ Open that profile and start a conversation with `/vibelens` followed by your pro
 
 **Python · Node.js · React · Vue** — English and Chinese interface. Python 3.11+ runs the shared observer; application adapters stay native. [Installation, dependencies and versioned downloads](https://github.com/li-bruce/VibeLens/blob/main/docs/usage.en.md).
 
+Also available through [SkillHub](https://skillhub.cn/skills/user_fbf26156/vibelens).
+
 ## Built for inspection
 
 The source is open. Reproducible examples and retained checks let you inspect the implementation as well as the interface.
@@ -84,3 +90,5 @@ The source is open. Reproducible examples and retained checks let you inspect th
 [Architecture & source guide](https://github.com/li-bruce/VibeLens/blob/main/docs/source-guide.en.md) · [Supported capabilities](https://github.com/li-bruce/VibeLens/blob/main/docs/capabilities.md) · [Validation records](https://github.com/li-bruce/VibeLens/blob/main/docs/review/release-v0.15.0/README.md) · [Release notes](https://github.com/li-bruce/VibeLens/blob/main/docs/releases/v0.15.0.md) · [Distribution](https://github.com/li-bruce/VibeLens/blob/main/docs/distribution.md)
 
 [MIT](https://github.com/li-bruce/VibeLens/blob/main/LICENSE) · [Third-party licenses](https://github.com/li-bruce/VibeLens/blob/main/THIRD_PARTY_NOTICES.md)
+
+The viewer, routing and layout libraries run in the local debugging tool. New integrations put only native state/probe adapters and project declarations in your application. [Dependency and packaging boundaries](https://github.com/li-bruce/VibeLens/blob/main/skills/vibelens/references/dependency-distribution.md).

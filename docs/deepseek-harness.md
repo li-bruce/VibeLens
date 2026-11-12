@@ -14,9 +14,11 @@ dsh web
 ```
 
 For an existing desktop installation of the supported Harness version, use
-`--profile desktop` instead. The tarball contains the full Skill, Python scripts,
-native adapters and Web assets. Python 3.11+ runs the observer; install its pinned
-`skill/requirements.txt` dependencies in the project environment when adopting it.
+`--profile desktop` instead. The tarball contains Skill instructions, Python scripts,
+native adapters, owned Web code and a dependency lock. First use downloads pinned
+viewer libraries from a CDN with GitHub fallback, verifies their checksums, and
+caches them locally. Python 3.11+ runs the observer; install its pinned
+`skill/requirements.txt` dependencies in the observer's Python environment.
 
 Start a project conversation:
 
