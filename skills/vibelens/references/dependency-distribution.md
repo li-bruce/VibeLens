@@ -1,51 +1,69 @@
 # Local tool dependencies
 
-The standard integration runs the viewer, layout engines, routing libraries and
-Python observer from the installed VibeLens package. They serve local debugging
-and are not copied into the user's business project or production application.
-`bo_integrate.py` installs only the native state/probe adapters (seven small
-standard-library Python files, or two JavaScript modules), with a hash receipt.
-Project-owned declarations, wiring, tests and private view configuration remain
-in the project. Optional database/telemetry integrations add their selected native
-dependencies explicitly.
+The viewer, layout engines, routing libraries and Python observer run from the
+installed VibeLens tool. They are not copied into the business project or its
+production application. `bo_integrate.py` installs only the native state/probe
+adapters: seven small standard-library Python files, or two JavaScript modules.
+Project declarations, wiring, tests and private views remain project-owned.
 
-Historical full-copy examples contain viewer assets as test fixtures. They retain
-their notices and require a reviewed migration; the lightweight installer does
-not silently delete them. Embedding and distributing the viewer in another product
-is a separate integration, outside this default boundary.
+## Setup
 
-## Downloading instead of bundling
+The normal Skill and Harness packages contain VibeLens source, licenses and
+`assets/stategraph-viewer/dependencies.lock.json`. Third-party viewer bundles
+are downloaded when needed:
 
-The Skill does **not** require whole third-party packages in its source tree.
-Python and parser dependencies already install from pinned requirements and npm
-lockfiles. Viewer packages can likewise be downloaded by exact version with
-integrity checks, then built or copied to the tool installation/cache. Install
-scripts should report missing assets clearly and keep an offline package option.
+```sh
+python <skill>/scripts/bo_dependencies.py install
+python <skill>/scripts/bo_dependencies.py check
+```
 
-This branch keeps the reviewed offline viewer bundles. It does not silently
-change existing installation requirements or claim a new automatic download hook.
-A generic Skill installer may only copy files; the supported setup is an explicit
-initialization command in the host workflow. Repository maintainers can reproduce
-bundles with `npm ci` followed by the checked-in build script in `tools/routing`
-or `tools/spatial`. Lockfiles fix dependency resolution; bundle hash checks in
-`tools/check_package.py` verify the distributed bytes. These steps run in the
-VibeLens repository, not the user's application.
+The source installer prepares them during installation. Generic Skill installers
+may only copy files; on explicit activation the Skill runs setup before sharing
+the first graph URL. Viewer servers also prepare resources before accepting
+traffic. Read-only model queries and disabled Web do not download assets.
 
-The [Agent Skills specification](https://agentskills.io/specification) defines
-files, scripts and compatibility metadata, without a universal installation
-hook. The exact-version installation behavior is described in
-[npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/).
+For each file, setup uses valid installed bytes, then a verified shared cache.
+Missing assets download from the pinned CDN URL first; network failure, partial
+content or a wrong checksum triggers the pinned GitHub fallback. SHA-256 and
+exact size must match before atomic publication. No downloaded code executes
+during setup. App source, project state and personal views are untouched.
 
-## License scope
+The default cache is `%LOCALAPPDATA%/VibeLens/dependencies` on Windows and
+`~/.cache/VibeLens/dependencies` elsewhere. Set `VIBELENS_DEPENDENCY_CACHE` or
+`--cache PATH` to choose another location. `--source github` selects the fallback
+directly when a network blocks the CDN. Setup uses four bounded download workers.
 
-VibeLens's original code uses MIT. Third-party components retain their own terms:
-libavoid-js uses LGPL-2.1-or-later and ELK uses EPL-2.0. Local debugging describes
-the intended deployment; it does not turn those libraries into MIT code or remove
-redistribution obligations. Commercial application development is not prohibited.
-Keep the existing notices and corresponding source/replacement materials when
-redistributing the viewer. Downloading at setup changes delivery, not licensing.
+## Offline use and recovery
 
-See [routing provenance and replacement](vendor/README.md) and the
-[LGPL 2.1 text](https://opensource.org/license/lgpl-2-1). The current upstream Wasm
-matches the reviewed package bytes; a byte-identical native rebuild remains
-unconfirmed. This branch does not relabel that evidence.
+- Existing verified assets require no network. `install --offline` may also
+  restore missing files from a populated cache.
+- For a disconnected computer, use `vibelens-offline-vVERSION.zip` from the
+  release. It includes the same source plus dependencies and corresponding source.
+- If both sources fail, setup exits with the failed filename and source errors.
+  Resolve connectivity or install the offline package before opening the graph.
+- A locally modified dependency is preserved and reported. `install --repair`
+  explicitly restores only locked dependency files; `check` never changes files.
+
+For source checkout, run `python tools/setup_viewer.py` before direct Node tests.
+It restores dependencies for the canonical viewer and historical full-copy
+examples. Normal verification and Pages builds call it automatically. Build the
+small packages with `python tools/build_distribution.py`; add `--offline` to
+produce the complete optional ZIP. Build tools and npm lockfiles remain in
+`tools/routing` and `tools/spatial` for reviewed dependency changes.
+
+## License and source
+
+Original VibeLens code uses MIT. Downloaded libraries retain their terms:
+libavoid-js uses LGPL-2.1-or-later; ELK uses EPL-2.0. Local debugging and
+download-on-use do not change those licenses. Commercial application development
+is not prohibited by VibeLens. Notices remain in source and every package.
+
+`libavoid-sources.zip` is also a pinned download beside the viewer, included in
+the offline package. See [source provenance and replacement](vendor/README.md).
+The Wasm matches the reviewed upstream bytes; a byte-identical native rebuild
+remains unconfirmed. These delivery changes do not change that evidence.
+
+All download URLs fix an npm version or the full retained Git commit
+`2f0833810969087df6a05f58c5bd876a72f5e85d`. No URL tracks a moving branch or `latest`.
+That commit remains the GitHub fallback for these reviewed dependency bytes;
+dependency updates require new pins and validation.

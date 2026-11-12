@@ -10,14 +10,22 @@
 
 ## Release packages
 
-Each release builds three artifacts from the same canonical Skill:
+Each release builds these artifacts from the same canonical Skill:
 
-- `vibelens-vVERSION.zip`: the complete directory for direct installation.
-- `dsh-vibelens-VERSION.tgz`: a prebuilt Harness plugin with the complete Skill.
+- `vibelens-vVERSION.zip`: owned code, instructions, notices and dependency lock.
+- `dsh-vibelens-VERSION.tgz`: a prebuilt Harness plugin with that same Skill.
 - `vibelens-skillhub-vVERSION.zip`: a compact catalog package. SkillHub limits
   uploads to 200 files, so this package contains the complete resource archive
   and a local Python bootstrap. It verifies every file and extracts the Skill on
-  first explicit use, without downloading another dependency bundle.
+  first explicit use. Viewer resources use the same dependency setup as direct installation.
+- `vibelens-offline-vVERSION.zip`: an optional complete Skill with verified
+  viewer dependencies and the libavoid corresponding-source archive.
+
+The normal packages download exact-version assets from a CDN on first use,
+then fall back to a pinned GitHub commit. Every file is checked by size and
+SHA-256. Installed files and a shared cache support subsequent offline use.
+Source installation also supports `tools/install_skill.py --defer-dependencies`
+and `--offline`. See [setup and recovery](../skills/vibelens/references/dependency-distribution.md).
 
 `SHA256SUMS` identifies the archives. `manifest.json` records their source files.
 [Build and verification records](review/harness-distribution-20261105/README.md)

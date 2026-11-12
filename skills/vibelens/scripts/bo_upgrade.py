@@ -15,12 +15,14 @@ try:
     from .behavior_model import contained, read
     from .sync_io import write
     from .bo_observer.delivery.files import framework_files
+    from .bo_observer.delivery.dependencies import LOCK_NAME, check_assets
 except ImportError:
     from behavior_model import contained, read
     from sync_io import write
     from bo_observer.delivery.files import framework_files
+    from bo_observer.delivery.dependencies import LOCK_NAME, check_assets
 
-RELEASE = "0.12.1"
+RELEASE = "0.15.0"
 PROTOCOLS = {
     "behavior": 3,
     "event": 3,
@@ -105,6 +107,15 @@ def plan(
     runtime = relative_name(runtime)
     viewers = [relative_name(viewer) for viewer in viewers]
     source = Path(source or Path(__file__).resolve().parent)
+    viewer_source = source.parent / "assets/stategraph-viewer"
+    if (
+        viewers
+        and (viewer_source / LOCK_NAME).is_file()
+        and not check_assets(viewer_source)["valid"]
+    ):
+        raise ValueError(
+            "Viewer dependencies are missing or modified; run bo_dependencies.py install before planning an upgrade"
+        )
     if not module.isidentifier():
         raise ValueError("module must be one Python package name")
     if not root.is_dir():

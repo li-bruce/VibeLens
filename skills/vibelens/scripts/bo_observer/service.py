@@ -15,6 +15,7 @@ from urllib.parse import urlsplit, parse_qs
 from .observation.session import GraphSession
 from .session_lifecycle import SessionHost
 from .web.bo_web import BOHTTPServer, bo_content_type
+from .delivery.dependencies import LOCK_NAME, ensure_assets
 
 try:
     from ..view_preferences import PreferenceConflict
@@ -36,6 +37,8 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
     ):
         raise ValueError("collector origins must be explicit local development origins")
     assets = Path(session.web.assets if assets == ASSETS else assets).resolve()
+    if session.web.status()["enabled"] and (assets / LOCK_NAME).is_file():
+        ensure_assets(assets)
     session.program_url = next(iter(origins)) if len(origins) == 1 else None
     host = SessionHost(
         session,

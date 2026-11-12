@@ -6,6 +6,11 @@
 
 Install the complete `vibelens` directory, not just `SKILL.md`. In a new conversation inside the target project, invoke `$vibelens` and describe the feature or change.
 
+First viewer use downloads pinned local-tool resources (about 6.75 MB), using
+CDN delivery with GitHub fallback and checksum verification. Later launches reuse
+installed files or cache. Choose the release's `vibelens-offline` ZIP for an
+offline computer. [Setup and recovery](../skills/vibelens/references/dependency-distribution.md).
+
 ```text
 Use $vibelens to add approval to file exports.
 Exports require authorization and content checks. Build a graph from this

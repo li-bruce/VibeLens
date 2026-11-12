@@ -11,6 +11,8 @@ SKILL = ROOT/'skills/vibelens'
 
 
 def check():
+    from setup_viewer import setup
+    setup()
     sys.path.insert(0, str(SKILL/'scripts'))
     from bo_upgrade import bridge_source, CORE
     from bo_observer.delivery.files import framework_files

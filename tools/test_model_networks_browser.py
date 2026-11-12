@@ -15,10 +15,11 @@ import threading
 from playwright.sync_api import sync_playwright, TimeoutError as BrowserTimeout
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(ROOT / "tests"), str(ROOT / "skills/vibelens/scripts")]
-from test_model_networks import write_project
+SKILL = Path(os.environ.get("VIBELENS_TEST_SKILL", ROOT / "skills/vibelens"))
+sys.path[:0] = [str(ROOT / "tests"), str(SKILL / "scripts")]
 from bo_observer.service import GraphSession, make_server
 from bo_observer.adapters.python.bo_probe import BOProbe
+from test_model_networks import write_project
 
 
 def main():
@@ -32,6 +33,7 @@ def main():
         project = write_project(root)
         native = runpy.run_path(str(root / "app.py"))
         session = GraphSession(root)
+        assert session.web.assets.resolve() == (SKILL / "assets/stategraph-viewer").resolve()
         probe = BOProbe(project, session.manifest["build_id"], sink=session.bo_sink)
         session.bo_bind_capture(
             scope_setter=probe.bo_set_scope,

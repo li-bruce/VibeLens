@@ -2,7 +2,7 @@
 name: vibelens
 license: MIT
 metadata:
-  version: "0.14.0"
+  version: "0.15.0"
 description: Develop and inspect Python, Node.js, React, or Vue software through connected business, state and rule models. Preserve confirmed intent while mapping source, selected values and runtime evidence so developers can debug AI implementations.
 ---
 
@@ -23,6 +23,8 @@ Read [conversation controls](references/conversation-controls.md) for the scoped
 Keep maintained source, identifiers, comments, and canonical documentation in English. Respond in the user's language; preserve their original answers as evidence. Localize display labels without changing IDs, protocol keys, state values, source bindings, or assertions. English is the UI fallback; allow an explicit language choice. Do not translate historical evidence in place. See [language policy](references/language-policy.md).
 
 Use the scripts as interfaces and inspect focused results. Keep generated manifests, full source indexes, copied runtimes and recording payloads in files; read only the affected symbols or failed checks into the coding conversation.
+
+Before opening the first graph, run `python "<skill>/scripts/bo_dependencies.py" install` from the installed Skill. This fetches pinned viewer assets from a CDN, falls back to GitHub, and verifies every file; later launches reuse local files or cache. This setup writes only tool resources. See [dependency setup](references/dependency-distribution.md) for offline use and recovery. Viewer servers also perform this setup before accepting requests; do not continue after a failed checksum or missing-resource error.
 
 ## 1. Confirm intent and development mode
 

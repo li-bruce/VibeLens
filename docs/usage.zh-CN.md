@@ -6,6 +6,8 @@
 
 按首页安装完整的 `vibelens` 目录，不要只复制 `SKILL.md`。安装后在项目的新对话中使用 `$vibelens`，并描述要实现或修改的功能。
 
+首次打开图时会下载约 6.75 MB 的本地工具资源，优先使用 CDN，失败时转到 GitHub，并逐个校验文件。后续启动复用已安装文件或缓存。离线电脑可以使用版本发布中的 `vibelens-offline` 完整包。参见[依赖安装与恢复](../skills/vibelens/references/dependency-distribution.md)。
+
 例如：
 
 ```text

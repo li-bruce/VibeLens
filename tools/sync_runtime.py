@@ -27,6 +27,8 @@ def verify_mode_bindings(modes):
 
 def sync():
     """Refresh reviewed runtime copies while retaining project-owned definitions."""
+    from setup_viewer import setup
+    setup()
     modes = ROOT / "examples/python-modes"
     verify_mode_bindings(modes)
     sys.path.insert(0, str(SKILL / "scripts"))

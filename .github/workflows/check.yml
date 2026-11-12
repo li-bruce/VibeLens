@@ -20,7 +20,7 @@ jobs:
         env:
           DSH_HOME: ${{ runner.temp }}/vibelens-harness
         run: |
-          dsh plugin --profile trial add "$PWD/.validation/distribution/dsh-vibelens-0.14.0.tgz"
+          dsh plugin --profile trial add "$PWD/.validation/distribution/dsh-vibelens-0.15.0.tgz"
           dsh --profile trial --dump-config > .validation/harness-config.yml
           grep -q 'name: dsh-vibelens' .validation/harness-config.yml
           VIBELENS_PLUGIN="$DSH_HOME/profiles/trial/node_modules/dsh-vibelens" node tools/harness-tests/test.mjs
@@ -45,6 +45,7 @@ jobs:
           node-version: '22'
       - run: python -m pip install -r tools/formatting/requirements.txt -r skills/vibelens/requirements.txt
       - run: npm ci --prefix tools/formatting
+      - run: python tools/setup_viewer.py
       - run: python tools/check_source.py --format
       - run: python tests/test_source_quality.py
       - run: node tools/test_detail_panel.mjs
@@ -68,6 +69,7 @@ jobs:
       - run: python -m pip install -r examples/file-sharing/requirements.txt
       - run: python -m pip install -r skills/vibelens/requirements.txt -r skills/vibelens/requirements-database.txt -r skills/vibelens/requirements-telemetry-test.txt
       - run: python tools/setup_adapters.py
+      - run: python tools/setup_viewer.py
       - run: npm ci --prefix examples/multilanguage
       - run: python tools/check_release_export.py
       - run: python -m unittest discover -s examples/exhibition-review -p test_domain.py
@@ -102,6 +104,7 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install -r skills/vibelens/requirements.txt
+      - run: python tools/setup_viewer.py
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -119,6 +122,8 @@ jobs:
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_MODEL_NETWORK_EVIDENCE: .validation/model-networks-browser
+      - run: python tools/test_dependency_install_browser.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: python tools/test_edge_colors_browser.py
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: python tools/test_concept_browser.py

@@ -23,7 +23,7 @@ dependencies, not bundled with the Skill.
 
 | Component | Version | License | Distribution |
 |---|---|---|---|
-| [PixiJS](https://github.com/pixijs/pixijs/tree/v8.22.0) | 8.22.0 | MIT | Browser bundle included with the Skill and example |
+| [PixiJS](https://github.com/pixijs/pixijs/tree/v8.22.0) | 8.22.0 | MIT | Pinned browser download; included in the optional offline package |
 | [ELK.js](https://github.com/kieler/elkjs) | 0.12.0 | EPL-2.0 | Unmodified browser bundle and worker from the npm release; license retained as `ELK-LICENSE.md` |
 | [Tabler Icons](https://github.com/tabler/tabler-icons) | 3.49.0 | MIT | Selected vectors sampled into planar icons; semantic 3D solids are original VibeLens geometry; `NODE-ICONS-LICENSE.txt` |
 | [libavoid-js](https://github.com/Aksem/libavoid-js) | 0.4.5 | LGPL-2.1-or-later | Unmodified, separately replaceable JS/Wasm; [source and replacement notes](skills/vibelens/references/vendor/README.md) |

@@ -10,6 +10,7 @@ import uuid
 import zipfile
 from demo import EXAMPLE, ROOT, prepare
 from setup_adapters import configure
+from setup_viewer import setup
 
 
 def run(cwd, *args):
@@ -26,12 +27,14 @@ def main():
         help="Include optional database-adapter checks",
     )
     args = parser.parse_args()
+    setup()
     configure()
     (ROOT / ".validation").mkdir(exist_ok=True)
     run(ROOT, "tools/check_package.py")
     run(ROOT, "tests/test_document_links.py")
     run(ROOT, "tests/test_conversation_controls.py")
     run(ROOT, "tests/test_distribution.py")
+    run(ROOT, "tests/test_viewer_dependencies.py")
     run(ROOT, "tests/test_integration_boundary.py")
     run(ROOT, "tests/test_capture_bridge.py")
     run(ROOT, "tests/test_concept_routes.py")

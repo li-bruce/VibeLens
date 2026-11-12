@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+from setup_viewer import setup_examples
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -49,6 +50,9 @@ def check_export(*, ref="HEAD", staged=False):
     ) as folder:
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
             archive.extractall(folder)
+        # Hydration restores locked dependency bytes, never generated application
+        # source or approvals. The same frozen gates run against the clean export.
+        setup_examples(Path(folder))
         for name, runtime, manifest in (
             (
                 "delivery",

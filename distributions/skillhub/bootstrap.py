@@ -1,8 +1,9 @@
-"""Verify and materialize the complete bundled Skill without network access.
+"""Verify and materialize bundled VibeLens source without network access.
 
 Catalogs can limit file counts. The transport archive preserves canonical files;
 this loader only expands that archive into a versioned directory beside itself.
 Existing extracted files are verified on every invocation, never overwritten.
+The canonical Skill separately prepares pinned viewer dependencies on first use.
 """
 
 import base64
