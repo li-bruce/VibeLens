@@ -24,7 +24,7 @@ their original checksums; the README additions are a documentation follow-up.
 | DeepSeek Harness | v0.15.0 plugin downloadable from GitHub; repository has the `dsh-plugin` topic |
 | Skills CLI | GitHub installation passed; all 387 installed files match the maintained Skill |
 | Skills directory | Grouping configuration published; the public listing is not yet verified |
-| SkillHub | v0.15.0 archive and three-image overview prepared; submission remains blocked by browser control |
+| SkillHub | v0.15.0 archive and three-image overview submitted; security review in progress |
 
 The SkillHub upload must use the published archive with SHA-256
 `9525ee92a6c897ddf0ded030810027e0f8f0905b1cfd603834f6389be2d7ca03`.
@@ -54,6 +54,15 @@ No author update was submitted and no current login state was inferred. Codex
 restart was requested. Continue the existing item update when browser control
 is restored; record its submitted version and review status before calling it
 published. The prepared archive and overview are unchanged.
+
+On 2026-11-12, the owner opened the author dashboard in the Codex in-app browser.
+The page became readable and the existing item update was submitted with the
+verified archive, prepared overview and version notes. The dashboard shows
+**v0.15.0 — security review in progress**; see [submission evidence](skillhub-submitted.png).
+The current upload form supports folders and ZIP files but still states **200
+files / 10 MB**. ZIP archives are expanded before counting. GitHub import is also
+offered, but its limits were not verified. The user chose to keep the compact
+distribution. See [upload-limit evidence](skillhub-upload-limits.png).
 
 References: [release download verification](../release-v0.15.0/published-verification.json),
 [Skills directory refresh](https://skills.sh/docs/customize),
