@@ -5,6 +5,7 @@ import { runtimeFrame, runtimeChanges, rememberRuntimeMachine } from "./runtime-
 import { phaseLabel, stateLabels } from "./graph-core.js";
 import { apiObservationIds, observesNode } from "./api-observation.js";
 import { conceptActivityIds } from "./concept-observation.js";
+import { machineFor, sameStateModel } from "./model-networks.js";
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const cached = new WeakMap();
 const boFieldKey = (event, direction, field) =>
@@ -47,7 +48,7 @@ export function boValue(value) {
 }
 export function boDisplayValue(value, model, row = {}) {
   if (row.kind === "business" && (typeof value === "string" || Array.isArray(value)))
-    return phaseLabel(model, value);
+    return phaseLabel(model, value, row.state_model_id);
   if (typeof value !== "string") return boValue(value);
   if (row.kind === "state" && row.field === boTranslate("Activity"))
     return model.presentation?.name_mode !== "source" && Object.hasOwn(stateLabels, value)
@@ -92,6 +93,7 @@ export function boFacts(recording, items) {
         kind = "value",
         direction = null,
         attempt = event.attempt,
+        stateModelId = undefined,
       ) => {
         if (
           !recording.runtime_frames &&
@@ -110,6 +112,7 @@ export function boFacts(recording, items) {
           direction,
           event: event.id,
           attempt,
+          ...(stateModelId === undefined ? {} : { state_model_id: stateModelId }),
         });
       };
     if (event.kind === "probe") {
@@ -123,7 +126,7 @@ export function boFacts(recording, items) {
           previous.set(key, value);
           if (
             ["revision", "activities", "resources", "join", "phase"].includes(field) &&
-            event.node === model.machine.execution?.parent
+            event.node === machineFor(model, event.node).execution?.parent
           )
             continue;
           put(
@@ -141,7 +144,9 @@ export function boFacts(recording, items) {
         runtimeChanges(
           priorMachine || {},
           exact.machine,
-          model.presentation?.runtime_owner || model.machine.execution?.parent || event.node,
+          model.presentation?.runtime_owner ||
+            machineFor(model, exact.machine).execution?.parent ||
+            event.node,
           put,
         );
         priorMachine = rememberRuntimeMachine(priorMachine || {}, exact.machine);
@@ -152,7 +157,7 @@ export function boFacts(recording, items) {
         priorMachine = null;
       if (
         !recording.runtime_frames &&
-        event.node === model.machine.execution?.parent &&
+        event.node === machineFor(model, event.node).execution?.parent &&
         Number.isInteger(event.outputs?.revision)
       ) {
         const entry = configurations
@@ -188,14 +193,15 @@ export function boFacts(recording, items) {
         runtimeChanges(
           priorMachine || {},
           recording.final.machine,
-          model.presentation?.runtime_owner || model.machine.execution?.parent,
+          model.presentation?.runtime_owner ||
+            machineFor(model, recording.final.machine).execution?.parent,
           put,
         );
       const attempt = recording.final.authority?.parameters?.attempt,
         phase = recording.final.machine.current;
       if (!recording.runtime_frames && attempt && phase !== undefined)
         put(
-          model.machine.execution?.parent,
+          machineFor(model, recording.final.machine).execution?.parent,
           boTranslate("Flow"),
           phaseByAttempt.get(attempt),
           phase,
@@ -262,7 +268,10 @@ export function boStepPlan(recording, items, all, visible, { mode = "view" } = {
       delta.some(
         (c) =>
           c.kind === "business" &&
-          stateNodes.some((b) => b.node.value === c.before || b.node.value === c.after),
+          stateNodes.some(
+            (b) =>
+              sameStateModel(b.node, c) && (b.node.value === c.before || b.node.value === c.after),
+          ),
       );
     const call =
       ["enter", "return", "error", "wait", "commit"].includes(event.phase) &&
@@ -295,7 +304,9 @@ export function boStepDetail(
       if (!targets.length && change.kind === "business")
         targets = visible.filter(
           (b) =>
-            b.type === "state" && (b.node.value === change.before || b.node.value === change.after),
+            b.type === "state" &&
+            sameStateModel(b.node, change) &&
+            (b.node.value === change.before || b.node.value === change.after),
         );
       targets = targets.filter((owner) => mode === "events" || boVisibleChange(change, owner, all));
       if (!targets.length) continue;

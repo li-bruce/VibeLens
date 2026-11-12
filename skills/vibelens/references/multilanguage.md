@@ -1,6 +1,6 @@
 # Shared graph and language adapters
 
-One graph has one logical source of truth. `bo_stategraph/project.json` uses `bo-project/v1` for project identity, the user's mode choice, and the current v3 graph. `model.machine` is the execution declaration. Business groups, static calls, data, and authorization relations remain in the same graph; ordinary edges are not executable transitions.
+One graph has one logical source of truth. `bo_stategraph/project.json` uses `bo-project/v1` for project identity, the user's mode choice, and the current v3 graph. `model.machines` is the registry of execution declarations; legacy `model.machine` remains readable. Each layer can hold several named subnetworks, including independent components. See [model networks](model-networks.md). Business groups, static calls, data, and authorization relations remain in the same graph; ordinary edges are not executable transitions.
 
 Existing Python projects may retain their v3 graph file and move execution declarations into `bo_stategraph/machine.json`, read by both generator and actual engine. Exported copies are generated artifacts, never independently maintained definitions.
 
@@ -103,3 +103,5 @@ python <skill>/scripts/bo.py serve --root <project> --port 8830 --origin http://
 Node and parser dependencies are required only for JS/TS/SFC analysis; native probes themselves have no third-party dependencies. Use locked versions; changing a compiler invalidates old source fingerprints. Service `validate` checks declarations, source inventory, bindings, and static implementation coverage, not project tests. Full acceptance still uses the connected gate; a running server is not acceptance evidence.
 
 Primary references: [TypeScript Compiler API](https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API), [Vue SFC compiler](https://github.com/vuejs/core/tree/main/packages/compiler-sfc). They supply syntax facts, not business ownership or complete dynamic-call proof.
+
+Multi-model projects send `bo-snapshot/v2` with `state_model_id`. Model, run and native instance identities jointly identify a snapshot. One state event supplies one model-qualified snapshot; effects on several models have separate state-change witnesses.

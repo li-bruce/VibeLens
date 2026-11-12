@@ -4,6 +4,7 @@
  */
 import { t } from "./i18n.js";
 import { machineParents } from "./machine-projection.js";
+import { machineFor } from "./model-networks.js";
 
 const list = (value) => (value == null ? [] : Array.isArray(value) ? value : [value]);
 const text = (value) => (typeof value === "string" ? value : JSON.stringify(value));
@@ -38,6 +39,8 @@ export function nodeFacts(node, view, all, edges = []) {
         })
         .map((e) => name(incoming ? e.from : e.to));
   add("Meaning", definition.meaning || node.documentation?.summary);
+  add("State model", node.state_model_id);
+  add("Networks", node.network_ids);
   if (node.concept_kind === "state_model") {
     add("Object", definition.subject?.object);
     add("Identity", definition.subject?.identity);
@@ -52,7 +55,7 @@ export function nodeFacts(node, view, all, edges = []) {
     add("State value", node.value);
     const conceptual = node.origin === "concept-design";
     const ancestors = new Set(),
-      parents = machineParents(view.model.machine || {});
+      parents = machineParents(machineFor(view.model, node));
     for (let value = node.value; value != null && !ancestors.has(value); value = parents.get(value))
       ancestors.add(value);
     const transitions = conceptual
@@ -64,7 +67,7 @@ export function nodeFacts(node, view, all, edges = []) {
             conditions: e.conditions,
             unless: e.unless,
           }))
-      : (view.model.machine?.transitions || []).filter((tr) =>
+      : (machineFor(view.model, node).transitions || []).filter((tr) =>
           list(tr.source).some((s) => s === "*" || ancestors.has(s)),
         );
     add(

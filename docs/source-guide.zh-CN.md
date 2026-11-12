@@ -1,5 +1,10 @@
 # 源码导览
 
+[bo_models.py](../skills/vibelens/scripts/bo_models.py) 统一模型身份、注册、按模型校验和子网成员。
+`concepts/networks.py` 生成业务、状态与规则的子网定义；`model-networks.js` 为二维、三维和
+Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码前恢复当前与上一轮的模型清单。
+图层负责展示分类，各个模型独立绑定和校验。
+
 [English](source-guide.en.md) · [使用说明](usage.zh-CN.md) · [架构说明](refactor-multilanguage.md)
 
 这份导览按实际执行路径介绍源码。维护中的实现位于 [skills/vibelens](../skills/vibelens/)，示例项目中的同名模块是安装副本，用于验证接入真实项目后的行为。

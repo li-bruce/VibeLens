@@ -43,5 +43,8 @@ def build(doc):
     add_applicability(graph, doc, sources, business, models, policy, crosslinks)
     add_expectations(graph, doc, sources)
     result = graph.result(sources)
+    from .networks import model_networks
+
+    result["graph"]["networks"] = model_networks(result["graph"], result["dependencies"])
     apply_routes(result, doc.get("presentation"), sources)
     return result

@@ -7,6 +7,11 @@ import json
 from pathlib import Path
 from .data.protocol import OPERATION_ROLES
 
+try:
+    from ..bo_models import machine_registry, select_machine
+except ImportError:
+    from bo_models import machine_registry, select_machine
+
 SCHEMAS = Path(__file__).parent / "schemas"
 
 
@@ -90,9 +95,9 @@ def validate_project(project):
     validate_relations(project["model"])
     if project["model"].get("project_id", project["project_id"]) != project["project_id"]:
         raise ValueError("project identity differs from graph")
-    if (
-        project["selection"]["mode"] == "drive"
-        and project["model"]["machine"]["engine"] == "python.explicit"
+    if project["selection"]["mode"] == "drive" and any(
+        chart["engine"] == "python.explicit"
+        for chart in machine_registry(project["model"]).values()
     ):
         raise ValueError(
             "drive mode requires an executable adapter, not an observation-only declaration"
@@ -158,7 +163,10 @@ def validate_snapshot(value, project, build_id):
         build_id,
     ):
         raise ValueError("snapshot belongs to a different project, revision or build")
-    if set(value["context"]) - set(project["model"]["machine"]["context"]):
+    if "machines" in project["model"] and value["protocol"] != "bo-snapshot/v2":
+        raise ValueError("machine registry requires a v2 snapshot with state_model_id")
+    _, chart = select_machine(project["model"], value.get("state_model_id"))
+    if set(value["context"]) - set(chart["context"]):
         raise ValueError("snapshot has undeclared context fields")
     # Actual invalid states remain facts. BOStateGraph diagnoses, never corrects them.
     return deepcopy(value)

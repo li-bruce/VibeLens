@@ -84,3 +84,5 @@ The source is open. Reproducible examples and retained checks let you inspect th
 [Architecture & source guide](docs/source-guide.en.md) · [Supported capabilities](docs/capabilities.md) · [Validation records](docs/review/release-v0.14.0/README.md) · [Release notes](docs/releases/v0.14.0.md) · [Distribution](docs/distribution.md)
 
 [MIT](LICENSE) · [Third-party licenses](THIRD_PARTY_NOTICES.md)
+
+The viewer, routing and layout libraries run in the local debugging tool. New integrations put only native state/probe adapters and project declarations in your application. [Dependency and packaging boundaries](skills/vibelens/references/dependency-distribution.md).

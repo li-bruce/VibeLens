@@ -2,6 +2,11 @@
 
 from .common import canonical_id
 
+try:
+    from ...bo_models import binding_machines, machine_view
+except ImportError:
+    from bo_models import binding_machines, machine_view
+
 
 def native_anchors(doc, model, bindings, data, error):
     """Check declared anchor meaning; labels and source proximity are never evidence."""
@@ -24,9 +29,16 @@ def native_anchors(doc, model, bindings, data, error):
     for item in policy.get("operations", []):
         key = "policy:" + item["root"]
         anchors[canonical_id("policy-operation", item["id"])] = [key] if key in nodes else []
-    primary = bindings.get("primary_state_model")
-    design = next((item for item in doc["state_models"] if item["id"] == primary), None)
-    if design:
+    try:
+        machines = binding_machines(bindings, model)
+    except ValueError as exc:
+        error("invalid_state_model_bindings", exc)
+        machines = {}
+    for primary, native_id in machines.items():
+        design = next((item for item in doc["state_models"] if item["id"] == primary), None)
+        if design is None:
+            continue
+        native = machine_view(model, native_id)
         for name in design["events"]:
             key = canonical_id("event", primary, name)
             item = bindings.get("events", {}).get(key)
@@ -45,7 +57,7 @@ def native_anchors(doc, model, bindings, data, error):
             anchors[key] = anchors.get(canonical_id("event", primary, transition["trigger"]), [])
         for name, logical in design["guards"].items():
             key = canonical_id("guard", primary, name)
-            source = model.get("machine", {}).get("guards", {}).get(name, {}).get("source")
+            source = native.get("machine", {}).get("guards", {}).get(name, {}).get("source")
             decision = data["records"][key].get("decision")
             item = bindings.get("guards", {}).get(key)
             if item is None and decision:
@@ -77,7 +89,9 @@ def native_anchors(doc, model, bindings, data, error):
                 error("native_guard_lacks_meaning", key)
             anchors[key] = [item["node"]]
         for state in data["index"]:
-            if data["index"][state]["kind"] == "state":
+            if data["index"][state]["kind"] == "state" and state.startswith(
+                canonical_id("state", primary) + ":"
+            ):
                 value = data["records"][state].get("name")
                 # Hierarchical state names are encoded in the canonical suffix.
                 from urllib.parse import unquote
@@ -86,7 +100,9 @@ def native_anchors(doc, model, bindings, data, error):
                 anchors[state] = [
                     key
                     for key, node in nodes.items()
-                    if node.get("kind") == "state" and node.get("value") == value
+                    if node.get("kind") == "state"
+                    and node.get("value") == value
+                    and ("machines" not in model or node.get("state_model_id") == native_id)
                 ]
         execution = design.get("execution")
         if execution:

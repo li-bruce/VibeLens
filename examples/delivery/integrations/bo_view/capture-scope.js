@@ -1,3 +1,4 @@
+import { machineFor } from "./model-networks.js";
 /** Resolve a selected declaration to actual capture owners.
  * Concept links are accepted only from the server's bound projection. Their
  * direction is concept -> native declaration; ordinary maps/flow edges cannot
@@ -81,6 +82,6 @@ export function captureRoots(view, selected) {
   // Generated machine-state markers retain the existing native execution owner.
   // An unbound concept must never fall through to this broad fallback.
   if (selected.origin === "concept-design") return [];
-  const parent = visualType(selected) === "state" && model.machine?.execution?.parent;
+  const parent = visualType(selected) === "state" && machineFor(model, selected).execution?.parent;
   return parent && native.has(parent) ? [parent] : [];
 }

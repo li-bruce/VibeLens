@@ -67,3 +67,17 @@ python SKILL/scripts/requirements_dialogue.py check --file discovery.json --inte
 Unresolved blocking questions, unsupported answers, missing business-node mappings, or missing requirement/check links fail delivery. Record and script changes invalidate old candidate evidence. Legacy projects without `discovery` retain compatibility behavior; disclose that this check is not connected.
 
 Compare the user's words and feedback to judge intent alignment. JSON validation cannot establish that alignment or exhaustive business coverage. Existing strict definition, source mapping, and runtime checks remain required.
+
+## Independent capabilities and multiple models
+
+During initial discovery and each affected iteration, identify the user's distinct
+business journeys, state-owning objects and shared decisions. Several networks
+may be independent; name their purpose and trigger without inventing a joining
+step. Ask only when an interaction is ambiguous, for example whether completing
+an approval changes the document state or merely records the review result.
+
+Use separate state model IDs for distinct object lifecycles, even when they share
+state words such as `ready`. Reuse shared rule predicates by identity and argument
+binding. Record real event/data/guard links between networks explicitly. Present
+the affected subnet and its boundary, while preserving unrelated networks. The
+coding assistant maintains the full registry and per-model checks automatically.

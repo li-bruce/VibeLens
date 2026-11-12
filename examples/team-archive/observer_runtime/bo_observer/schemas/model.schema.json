@@ -9,8 +9,7 @@
     "nodes",
     "edges",
     "overview",
-    "scope",
-    "machine"
+    "scope"
   ],
   "properties": {
     "schema_version": {
@@ -36,14 +35,26 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "kind", "label"],
+        "required": [
+          "id",
+          "kind",
+          "label"
+        ],
         "properties": {
           "id": {
             "type": "string",
             "minLength": 1
           },
           "kind": {
-            "enum": ["action", "function", "decision", "wait", "effect", "data", "state"]
+            "enum": [
+              "action",
+              "function",
+              "decision",
+              "wait",
+              "effect",
+              "data",
+              "state"
+            ]
           },
           "label": {
             "type": "string",
@@ -68,12 +79,19 @@
                 "minLength": 1
               }
             },
-            "required": ["path", "symbol"]
+            "required": [
+              "path",
+              "symbol"
+            ]
           },
           "represents": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["path", "symbol", "parameter"],
+            "required": [
+              "path",
+              "symbol",
+              "parameter"
+            ],
             "properties": {
               "path": {
                 "type": "string",
@@ -95,6 +113,10 @@
           },
           "lifecycle": {
             "$ref": "#/$defs/nodeLifecycle"
+          },
+          "state_model_id": {
+            "type": "string",
+            "minLength": 1
           }
         }
       },
@@ -104,7 +126,13 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "from", "to", "type", "evidence"],
+        "required": [
+          "id",
+          "from",
+          "to",
+          "type",
+          "evidence"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -119,7 +147,15 @@
             "minLength": 1
           },
           "type": {
-            "enum": ["flow", "data", "guard", "contains", "resource", "join", "maps"]
+            "enum": [
+              "flow",
+              "data",
+              "guard",
+              "contains",
+              "resource",
+              "join",
+              "maps"
+            ]
           },
           "evidence": {
             "type": "string",
@@ -130,7 +166,15 @@
     },
     "policy": {
       "type": "object",
-      "required": ["schema", "revision", "stage", "inputs", "predicates", "nodes", "operations"],
+      "required": [
+        "schema",
+        "revision",
+        "stage",
+        "inputs",
+        "predicates",
+        "nodes",
+        "operations"
+      ],
       "properties": {
         "schema": {
           "const": "bo-policy/v1"
@@ -303,6 +347,33 @@
           }
         }
       }
+    },
+    "machines": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "engine",
+          "version",
+          "states",
+          "values",
+          "initial",
+          "transitions",
+          "events",
+          "context"
+        ]
+      }
+    },
+    "networks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "layer",
+          "nodes"
+        ]
+      }
     }
   },
   "$id": "https://github.com/li-bruce/SoftwareStatusObserverSkill/protocol/model",
@@ -310,7 +381,10 @@
     "nodeLifecycle": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["states", "bindings"],
+      "required": [
+        "states",
+        "bindings"
+      ],
       "properties": {
         "states": {
           "type": "array",
@@ -319,7 +393,11 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["id", "label", "kind"],
+            "required": [
+              "id",
+              "label",
+              "kind"
+            ],
             "properties": {
               "id": {
                 "type": "string",
@@ -334,7 +412,11 @@
                 "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
               },
               "kind": {
-                "enum": ["active", "waiting", "ended"]
+                "enum": [
+                  "active",
+                  "waiting",
+                  "ended"
+                ]
               }
             }
           }
@@ -346,10 +428,23 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["phase", "state", "boundary"],
+            "required": [
+              "phase",
+              "state",
+              "boundary"
+            ],
             "properties": {
               "phase": {
-                "enum": ["enter", "return", "read", "decision", "wait", "commit", "change", "error"]
+                "enum": [
+                  "enter",
+                  "return",
+                  "read",
+                  "decision",
+                  "wait",
+                  "commit",
+                  "change",
+                  "error"
+                ]
               },
               "state": {
                 "type": "string",
@@ -358,22 +453,38 @@
                 "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
               },
               "boundary": {
-                "enum": ["start", "update", "end"]
+                "enum": [
+                  "start",
+                  "update",
+                  "end"
+                ]
               },
               "when": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["direction", "field", "equals"],
+                "required": [
+                  "direction",
+                  "field",
+                  "equals"
+                ],
                 "properties": {
                   "direction": {
-                    "enum": ["in", "out"]
+                    "enum": [
+                      "in",
+                      "out"
+                    ]
                   },
                   "field": {
                     "type": "string",
                     "minLength": 1
                   },
                   "equals": {
-                    "type": ["string", "number", "boolean", "null"],
+                    "type": [
+                      "string",
+                      "number",
+                      "boolean",
+                      "null"
+                    ],
                     "maxLength": 256,
                     "minimum": -9007199254740991,
                     "maximum": 9007199254740991
@@ -385,5 +496,27 @@
         }
       }
     }
-  }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "machine"
+      ],
+      "not": {
+        "required": [
+          "machines"
+        ]
+      }
+    },
+    {
+      "required": [
+        "machines"
+      ],
+      "not": {
+        "required": [
+          "machine"
+        ]
+      }
+    }
+  ]
 }

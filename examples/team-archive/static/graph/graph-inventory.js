@@ -6,9 +6,16 @@ import { annotateConcepts } from "./concept-observation.js";
 import { applyConceptContainment } from "./concept-containment.js";
 import { validateEquivalentRelations } from "./edge-identities.js";
 import { boundRelations } from "./bound-relations.js";
+import { networkMemberships } from "./model-networks.js";
 
-export function stateNodeId(model, value) {
-  return model.nodes.find((n) => n.kind === "state" && n.value === value)?.id || "state." + value;
+export function stateNodeId(model, value, stateModelId) {
+  const matches = model.nodes.filter(
+    (n) =>
+      n.kind === "state" &&
+      n.value === value &&
+      (!model.machines || n.state_model_id === stateModelId),
+  );
+  return matches.length === 1 ? matches[0].id : model.machines ? null : "state." + value;
 }
 
 /** Canonical ancestry for controls; display projections may detach containers. */
@@ -129,5 +136,6 @@ export function graphInventory(
           : explanation || boTranslate(edge.label || ""),
     };
   }
-  return { all, rawEdges };
+  const networks = networkMemberships(view, all);
+  return { all, rawEdges, networks };
 }

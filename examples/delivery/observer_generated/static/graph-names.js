@@ -1,3 +1,4 @@
+import { modelValueKey } from "./model-networks.js";
 /** Presentation-only names. Source identifiers and recorded facts remain unchanged.
  * AI authors concise labels during graph maintenance, never during a render.
  */
@@ -78,7 +79,11 @@ export function nameNode(node, model, bindings = {}) {
     explained =
       conceptLabel ||
       (node.kind === "state" && !conceptual
-        ? explainedName(model.presentation?.names?.states?.[node.value])
+        ? explainedName(
+            model.presentation?.names?.states?.[
+              modelValueKey(model, node.state_model_id, node.value)
+            ],
+          )
         : "") ||
       explainedName(model.presentation?.names?.nodes?.[node.referenceOf || node.id]) ||
       explainedName(node.concept_label) ||
@@ -125,14 +130,15 @@ export function namedView(view, explained = true) {
         ""
       : edge.event || edge.code_relation || edge.data_relation || edge.type,
   }));
-  const chart = original.machine;
-  model.machine = {
+  const nameMachine = (chart = {}, modelId) => ({
     ...chart,
     labels: Object.fromEntries(
       (chart.values || []).map((value) => [
         value,
         explained
-          ? explainedName(names.states?.[value]) || explainedName(chart.labels?.[value]) || value
+          ? explainedName(names.states?.[modelValueKey(original, modelId, value)]) ||
+            explainedName(chart.labels?.[value]) ||
+            value
           : value,
       ]),
     ),
@@ -140,13 +146,18 @@ export function namedView(view, explained = true) {
       Object.keys(chart.events || {}).map((event) => [
         event,
         explained
-          ? explainedName(names.events?.[event]) ||
+          ? explainedName(names.events?.[modelValueKey(original, modelId, event)]) ||
             explainedName(chart.event_labels?.[event]) ||
             event
           : event,
       ]),
     ),
-  };
+  });
+  if (original.machines)
+    model.machines = Object.fromEntries(
+      Object.entries(original.machines).map(([id, chart]) => [id, nameMachine(chart, id)]),
+    );
+  else model.machine = nameMachine(original.machine);
   originals.set(model, original);
   return { ...view, model };
 }

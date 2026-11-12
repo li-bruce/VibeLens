@@ -1,4 +1,5 @@
 import { t } from "./i18n.js";
+import { machinesOf } from "./model-networks.js";
 /** Actual nesting determines active ancestors; names alone never do. */
 export function machineParents(machine) {
   const parents = new Map();
@@ -36,7 +37,35 @@ export function machineProjection(
   snapshot,
   { attempt, choice = "latest", step = "latest" } = {},
 ) {
+  if (model.machines) {
+    const result = { nodes: [], edges: [] };
+    for (const [id, machine] of Object.entries(machinesOf(model))) {
+      const local = machineProjection(
+        {
+          ...model,
+          machines: undefined,
+          machine,
+          nodes: model.nodes.filter((node) => node.kind !== "state" || node.state_model_id === id),
+        },
+        {
+          ...snapshot,
+          journal: (snapshot.journal || []).filter((entry) => entry.state_model_id === id),
+        },
+        { attempt, choice, step },
+      );
+      result.nodes.push(...local.nodes.map((node) => ({ ...node, state_model_id: id })));
+      result.edges.push(
+        ...local.edges.map((edge) => ({
+          ...edge,
+          id: `machine:${encodeURIComponent(id)}:${edge.id}`,
+          state_model_id: id,
+        })),
+      );
+    }
+    return result;
+  }
   const machine = model.machine;
+  if (!machine) return { nodes: [], edges: [] };
   const parents = machineParents(machine);
   const childOf = (value, parent) => {
     const seen = new Set();

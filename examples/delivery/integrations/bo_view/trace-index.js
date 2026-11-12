@@ -155,7 +155,10 @@ export function buildTraceIndex(
       put(change.node, raw, change);
       if (change.kind === "business")
         for (const node of states)
-          if (node.value === change.before || node.value === change.after)
+          if (
+            sameStateModel(node, change) &&
+            (node.value === change.before || node.value === change.after)
+          )
             add(node, raw, false, change);
     }
   }
@@ -302,3 +305,4 @@ export function marksInWindow(row, start, end) {
   const last = lowerBound(row.marks, end, (mark) => mark.time);
   return row.marks.slice(first, last + 1);
 }
+import { sameStateModel } from "./model-networks.js";

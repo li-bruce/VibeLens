@@ -10,6 +10,11 @@ import json
 from pathlib import Path
 from urllib.parse import quote
 
+try:
+    from ...bo_models import machine_registry
+except ImportError:
+    from bo_models import machine_registry
+
 from ..graph.behavior_model import contained
 from ..workflow.sync_io import write
 
@@ -188,13 +193,26 @@ def inventory(view):
                     if key in edge
                 },
             )
-    chart = view.get("model", {}).get("machine", {})
-    for category, values, labels in (
-        ("states", chart.get("values", []), chart.get("labels", {})),
-        ("events", chart.get("events", {}), chart.get("event_labels", {})),
-    ):
-        for value in values:
-            add(category, value, {"layer": "state", "label": labels.get(value, value)})
+    model = view.get("model", {})
+    # Keep translation identity separate from local values: two objects may both
+    # be "ready" while requiring different business language and explanations.
+    for model_id, chart in (
+        machine_registry(model) if "machine" in model or "machines" in model else {}
+    ).items():
+        for category, values, labels in (
+            ("states", chart.get("values", []), chart.get("labels", {})),
+            ("events", chart.get("events", {}), chart.get("event_labels", {})),
+        ):
+            for value in values:
+                key = (
+                    json.dumps([model_id, value], ensure_ascii=False, separators=(",", ":"))
+                    if "machines" in model
+                    else value
+                )
+                context = {"layer": "state", "label": labels.get(value, value)}
+                if "machines" in model:
+                    context.update(state_model_id=model_id, value=value)
+                add(category, key, context)
     return sorted(items.values(), key=lambda item: (item["category"], item["id"]))
 
 

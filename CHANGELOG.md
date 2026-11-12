@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased — model networks
+
+- Register and bind multiple state models in one project. Keep independent
+  object instances, revisions and native execution ownership; validate every
+  model and reject missing or ambiguous bindings.
+- Support multiple named subnets in each display layer, shared members and
+  explicit cross-model connections. Apply network selection consistently to
+  2D/3D views, layout, node details and saved preferences.
+- Carry model identity through Python/JavaScript snapshot v2, exact recording,
+  export, replay and Timeline. Preserve legacy single-model records and IDs.
+- Include independent capabilities and object lifecycles in initial discovery,
+  and recall the model inventory on each coding iteration. Require per-model
+  mapping witnesses and independent scenarios.
+- Document local-tool dependency boundaries and pinned download alternatives.
+  Retain the existing offline bundles and third-party license notices.
+- Cover package imports, managed example upgrades, real collector traffic and
+  browser iteration in the [acceptance evidence](docs/review/model-networks-20261112/README.md).
+
 ## 0.14.0 — 2026-11-08
 
 - Arrange business, state and rule networks with directional ELK layouts,

@@ -115,7 +115,14 @@ import {
   renderRevision,
   elementCoverage,
 } from "./layout.js";
-import { presets, profileFor, cleanProfile, matchingNodes, sharedMemberships } from "./analysis.js";
+import {
+  presets,
+  profileFor,
+  cleanProfile,
+  matchingNodes,
+  sharedMemberships,
+  networkProfiles,
+} from "./analysis.js";
 import { legendGlyph, legendRelation, meanings } from "./glyphs.js";
 import { timeline, frame, eventLabel, transferEdges, recordingRequest } from "./recording.js";
 import { namedView } from "./graph-names.js";
@@ -170,6 +177,7 @@ let analysisId = "overview",
   analysisSettings = null,
   analysisKey = null,
   analysisOverride = null;
+let modelProfiles = [];
 let recording = null,
   replayReturnAnalysis = null,
   replayItems = [],
@@ -723,6 +731,7 @@ function project() {
     view = withCodeGraph(view, recording.transient ? codeLayer.slice : null);
   }
   view = namedView(view, analysisSettings?.explainedNames !== false);
+  refreshModelProfiles(view);
   preferences.nameMode = view.model.presentation.name_mode;
   $("name-mode").disabled = false;
   $("name-mode").setAttribute("aria-checked", String(preferences.nameMode !== "source"));
@@ -753,6 +762,7 @@ function project() {
     memberships: sharedMemberships(view.model),
     ...(!profile.hierarchical ||
     profile.scope !== "all" ||
+    profile.networks.length ||
     profile.query ||
     profile.nodes.length < 8 ||
     profile.depth !== "all"
@@ -1739,7 +1749,7 @@ $("filter-depth").onchange = (event) => {
 };
 $("filter-reset").onclick = () => {
   analysisOverride = null;
-  const profile = profileFor(analysisId, analysisSettings.custom);
+  const profile = profileFor(analysisId, availableProfiles());
   preferences.filters = cleanFilters(profile);
   applyFilters();
 };
@@ -1935,6 +1945,7 @@ async function poll() {
     if (!r.ok) throw Error("HTTP " + r.status);
     const next = await r.json();
     if (disposed || version !== requestedVersion || caseChoice !== requestedCase) return;
+    refreshModelProfiles(next);
     loadAnalysis(projectLayoutKey(next, storage));
     // A view/focus change may happen during either fetch. Never apply an old
     // source slice to the new selection, including its initial tree expansion.
@@ -2061,8 +2072,8 @@ async function poll() {
       storageKey = nextStorageKey;
       preferences.filters = restoredFilters(
         analysisId,
-        analysisSettings.custom,
-        restored.restored ? preferences.filters : profileFor(analysisId, analysisSettings.custom),
+        availableProfiles(),
+        restored.restored ? preferences.filters : profileFor(analysisId, availableProfiles()),
       );
       if (analysisSettings.annotations) preferences.annotations = analysisSettings.annotations;
       selected = preferences.focus;
@@ -2255,7 +2266,7 @@ function loadAnalysis(baseKey) {
       analysisSettings.annotations = saved.annotations;
     if (
       saved.selected === draftViewId ||
-      [...presets, ...analysisSettings.custom].some((p) => p.id === saved.selected)
+      [...presets, ...availableProfiles()].some((p) => p.id === saved.selected)
     )
       analysisSettings.selected = saved.selected;
   }
@@ -2284,7 +2295,7 @@ function loadAnalysis(baseKey) {
   }
   analysisSettings.layers = cleanLayers({
     ...analysisSettings.layers,
-    visible: visibilityForView(analysisSettings, analysisId),
+    visible: visibilityForSelection(analysisId),
     facets: [...implementationFacets],
   });
   updateLayerControls();
@@ -2320,7 +2331,7 @@ function customizeLayers(visible) {
   poller.run();
 }
 function currentProfile() {
-  const p = analysisOverride || profileFor(analysisId, analysisSettings?.custom);
+  const p = analysisOverride || profileFor(analysisId, availableProfiles());
   return cleanProfile({ ...p, ...preferences?.filters });
 }
 /** Rename the presentation in place; keep the camera, event cursor and selection. */
@@ -2417,11 +2428,33 @@ function saveAnalysis() {
     storage.setItem(analysisKey, JSON.stringify(analysisSettings));
   } catch {}
 }
+/** Generated model views share the same persistent positions as normal views. */
+function availableProfiles() {
+  return [...(analysisSettings?.custom || []), ...modelProfiles];
+}
+/** Refresh the catalog before restoring a saved view and after model revisions.
+ * The first response arrives before `view` exists; waiting for layout otherwise
+ * leaves the menu empty until an unrelated user action rebuilds it.
+ */
+function refreshModelProfiles(source) {
+  const next = networkProfiles(source);
+  if (JSON.stringify(next) === JSON.stringify(modelProfiles)) return;
+  modelProfiles = next;
+  if (analysisSettings) updateAnalysisOptions();
+}
+function visibilityForSelection(id) {
+  const network = availableProfiles().find(
+    (profile) => profile.id === id && profile.networks?.length,
+  );
+  return network
+    ? [network.layer === "implementation" ? "symbols" : network.layer]
+    : visibilityForView(analysisSettings, id);
+}
 function updateAnalysisOptions() {
   const groups = new Map();
   const draft =
     analysisId === draftViewId ? [{ id: draftViewId, label: boTranslate("Custom view") }] : [];
-  for (const p of [...presets, ...analysisSettings.custom, ...draft]) {
+  for (const p of [...presets, ...availableProfiles(), ...draft]) {
     const group = p.group || "Custom";
     if (!groups.has(group)) {
       const element = document.createElement("optgroup");
@@ -2457,7 +2490,7 @@ function changeAnalysis(id) {
   analysisId = id;
   analysisSettings.layers = cleanLayers({
     ...analysisSettings.layers,
-    visible: visibilityForView(analysisSettings, id),
+    visible: visibilityForSelection(id),
     facets: [...implementationFacets],
   });
   updateLayerControls();
@@ -2473,8 +2506,8 @@ function changeAnalysis(id) {
   storageKey = key;
   preferences.filters = restoredFilters(
     id,
-    analysisSettings.custom,
-    restored.restored ? preferences.filters : profileFor(id, analysisSettings.custom),
+    availableProfiles(),
+    restored.restored ? preferences.filters : profileFor(id, availableProfiles()),
   );
   if (analysisSettings.annotations) preferences.annotations = analysisSettings.annotations;
   expanded = new Set(restored.state.expanded);

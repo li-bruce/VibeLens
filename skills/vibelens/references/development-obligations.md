@@ -20,6 +20,12 @@ Maintain affected [conceptual route references](concept-flow-layout.md) when the
 confirmed graph changes. Dependency tampering is a framework failure, independent
 of business outcomes and graph coverage.
 
+Compare recalled `model_inventory` with `previous_model_inventory`. Retain every
+independent state model, its conceptual binding, and named layer network. A feature
+iteration may add or alter one network without replacing its peers. Check affected
+cross-network references and per-model native mapping witnesses. A disconnected
+capability is valid; do not create an edge merely to make the picture connected.
+
 Commands require the project `--root`; `begin` also needs `--change` and the actual request. Continue an active change instead of replacing its baseline to hide drift. See [continuous development](continuous-development.md).
 
 For an empty project, first use the [source-free concept workflow](concept-models.md)

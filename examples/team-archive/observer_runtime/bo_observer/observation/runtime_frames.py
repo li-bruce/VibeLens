@@ -8,6 +8,11 @@ state from event order, the final snapshot, or wall-clock time.
 from copy import deepcopy
 import json
 
+try:
+    from ...bo_models import select_machine
+except ImportError:
+    from bo_models import select_machine
+
 SCHEMA = "stategraph-runtime-frames/v1"
 
 
@@ -55,6 +60,13 @@ def merge_frames(recording, view, checkpoint):
             continue
         try:
             machine = frame["machine"]
+            if "machines" in view["model"]:
+                model_id, _ = select_machine(view["model"], machine.get("state_model_id"))
+                if any(
+                    cfg.get("state_model_id") != model_id
+                    for cfg in machine.get("configurations", [])
+                ):
+                    raise ValueError("frame mixes model identities")
             if (
                 type(machine.get("state_revision")) is not int
                 or machine.get("state_revision") != revision

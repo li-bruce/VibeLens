@@ -10,7 +10,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills/vibelens"
-CORE = ("bo_contracts.py", "execution_contract.py")
+CORE = ("bo_contracts.py", "bo_models.py", "execution_contract.py")
 
 
 def verify_mode_bindings(modes):
@@ -91,6 +91,7 @@ def sync():
         ("bo_observer/adapters/python/bo_probe.py", "bo_probe.py"),
         ("bo_observer/adapters/python/bo_executor.py", "bo_executor.py"),
         ("bo_contracts.py", "bo_contracts.py"),
+        ("bo_models.py", "bo_models.py"),
         ("execution_contract.py", "execution_contract.py"),
     ]:
         shutil.copyfile(

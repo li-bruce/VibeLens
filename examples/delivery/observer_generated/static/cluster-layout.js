@@ -11,7 +11,8 @@ import {
   forceY,
 } from "./spatial-force.vendor.js";
 import { proximitySeeds, proximityNeighbors } from "./proximity-layout.js";
-const groupOf = (unit) => JSON.stringify([unit.layer || "", unit.type]);
+const groupOf = (unit) =>
+  JSON.stringify([unit.layer || "", unit.node?.network_ids || unit.network_ids || [], unit.type]);
 
 /** Group whole containment footprints; layer identity takes precedence over glyph type. */
 export function clusterGroups(units) {

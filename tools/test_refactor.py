@@ -11,6 +11,7 @@ import time
 import unittest
 import zipfile
 from unittest.mock import patch
+from process_cleanup import stop_process_tree
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'skills/vibelens/scripts'))
@@ -312,7 +313,7 @@ class RefactorTests(unittest.TestCase):
                 (self.root/'.stategraph/source-baseline.json').write_text(json.dumps(source_inventory(self.root,cfg)))
                 wait_for(lambda v:v['status']=='current')
             finally:
-                process.terminate();process.wait(timeout=5)
+                stop_process_tree(process)
 
     def copy_project(self):
         project=self.root/'delivery'

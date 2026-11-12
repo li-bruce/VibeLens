@@ -60,6 +60,8 @@ def main():
     run(ROOT, "tests/test_engineering_structure.py")
     run(ROOT, "tests/test_state_projection.py")
     run(ROOT, "tests/test_snapshot_identity.py")
+    run(ROOT, "tests/test_model_networks.py")
+    subprocess.run(["node", "tools/test_model_networks.mjs"], cwd=ROOT, check=True)
     run(ROOT, "tests/test_snapshot_scope.py")
     subprocess.run(["node", "tools/test_runtime_instances.mjs"], cwd=ROOT, check=True)
     run(ROOT, "tests/test_lifecycle_definitions.py")

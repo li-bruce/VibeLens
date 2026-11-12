@@ -84,3 +84,5 @@ dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/downl
 [源码结构](docs/source-guide.zh-CN.md) · [功能支持](docs/capabilities.md) · [验收记录](docs/review/release-v0.14.0/README.md) · [更新说明](docs/releases/v0.14.0.md) · [发布渠道](docs/distribution.md)
 
 [MIT 开源协议](LICENSE) · [第三方许可](THIRD_PARTY_NOTICES.md)
+
+查看器、路由与布局库用于本地调试工具；新项目只接入原生状态与采集适配器、项目声明。业务项目无需携带查看器依赖。[依赖与打包范围](skills/vibelens/references/dependency-distribution.md)。

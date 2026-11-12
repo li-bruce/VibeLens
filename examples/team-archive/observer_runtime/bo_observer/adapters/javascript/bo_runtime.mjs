@@ -131,6 +131,31 @@ export function bo_value(value, spec) {
       if (Object.hasOwn(value, k)) bo_value(value[k], s);
   }
 }
+/** Registry of native machines. Model selection is explicit even when state names overlap. */
+export class BOExecutors {
+  constructor(machines, guards = {}) {
+    if (
+      !machines ||
+      typeof machines !== "object" ||
+      Array.isArray(machines) ||
+      Object.keys(machines).some((id) => !id.trim())
+    )
+      throw Error("Machines require stable IDs");
+    if (Object.keys(guards).some((id) => !Object.hasOwn(machines, id)))
+      throw Error("Guards reference unknown machine");
+    this.bo_executors = new Map(
+      Object.entries(machines).map(([id, machine]) => [
+        id,
+        new BOExecutor(machine, guards[id] || {}),
+      ]),
+    );
+  }
+  step(stateModelId, state, event, context, payload = {}) {
+    if (!this.bo_executors.has(stateModelId)) throw Error("Unknown state_model_id");
+    return this.bo_executors.get(stateModelId).step(state, event, context, payload);
+  }
+}
+
 export class BOExecutor {
   constructor(machine, guards = {}) {
     bo_validateMachine(machine, guards);
@@ -591,7 +616,7 @@ export class BOProbe {
     context,
     revision,
     evidenceId,
-    { event = null, guards = null, payload = null, configuration = null } = {},
+    { event = null, guards = null, payload = null, configuration = null, stateModelId = null } = {},
   ) {
     if (!this.bo_enabled) return false;
     // A filtered or failed record has no evidence to attach. Preserve existing
@@ -608,7 +633,8 @@ export class BOProbe {
         return false;
       }
       const body = {
-        protocol: "bo-snapshot/v1",
+        protocol: stateModelId === null ? "bo-snapshot/v1" : "bo-snapshot/v2",
+        ...(stateModelId === null ? {} : { state_model_id: stateModelId }),
         project_id: this.bo_project.project_id,
         model_revision: this.bo_project.model.revision,
         build_id: this.bo_build,

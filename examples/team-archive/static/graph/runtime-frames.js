@@ -60,7 +60,7 @@ export function runtimeConfigurations(machine) {
     const key = cfg.snapshot_instance
       ? `instance:${cfg.snapshot_instance}`
       : cfg.attempt
-        ? `attempt:${cfg.attempt}`
+        ? `attempt:${JSON.stringify([cfg.state_model_id || null, cfg.attempt])}`
         : null;
     if (key) result.set(key, result.has(key) ? null : cfg);
   }
@@ -83,9 +83,27 @@ export function runtimeChanges(before, after, owner, put) {
   for (const [key, cfg] of runtimeConfigurations(after)) {
     const old = previous.get(key);
     if (!cfg || !old) continue;
-    put(owner, boTranslate("Flow"), old.phase, cfg.phase, "business", null, cfg.attempt);
+    put(
+      owner,
+      boTranslate("Flow"),
+      old.phase,
+      cfg.phase,
+      "business",
+      null,
+      cfg.attempt,
+      cfg.state_model_id,
+    );
     for (const [node, value] of Object.entries(cfg.activities || {}))
-      put(node, boTranslate("Activity"), old.activities?.[node], value, "state", null, cfg.attempt);
+      put(
+        node,
+        boTranslate("Activity"),
+        old.activities?.[node],
+        value,
+        "state",
+        null,
+        cfg.attempt,
+        cfg.state_model_id,
+      );
   }
   // Global resources have a single node identity, never one copy per attempt.
   for (const node of new Set([

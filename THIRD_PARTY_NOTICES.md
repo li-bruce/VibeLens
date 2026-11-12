@@ -3,6 +3,10 @@
 The project's original code and documentation use the MIT license. Third-party
 components keep their own copyright notices and licenses.
 
+Viewer/routing/layout bundles belong to the local VibeLens debugging tool. New
+application integrations do not copy those assets. This intended deployment does
+not change their licenses. See [dependency boundaries](skills/vibelens/references/dependency-distribution.md).
+
 The optional database feature installs SQLAlchemy (MIT), pg8000 (BSD-3-Clause),
 PyMongo (Apache-2.0), redis-py (MIT), the Neo4j Python driver (Apache-2.0 AND Python-2.0), SQLGlot
 (MIT), and Pygments (BSD-2-Clause). Versions are pinned in

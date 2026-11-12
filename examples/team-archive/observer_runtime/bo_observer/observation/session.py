@@ -23,6 +23,7 @@ OPEN_CONTEXT_LIMIT = 10000
 try:
     from ...behavior_model import read, capture, check, contained, digest
     from ...bo_stategraph import BOStateGraph
+    from ...bo_models import machine_registry, instance_key
     from ...bo_retention import EventHistory
     from ...view_preferences import Preferences
     from ...recording_session import Recordings
@@ -30,6 +31,7 @@ try:
 except ImportError:
     from behavior_model import read, capture, check, contained, digest
     from bo_stategraph import BOStateGraph
+    from bo_models import machine_registry, instance_key
     from bo_retention import EventHistory
     from view_preferences import Preferences
     from recording_session import Recordings
@@ -235,7 +237,8 @@ class GraphSession:
                 raise ValueError("snapshot lacks a matching recorded event")
             if evidence["revision"] != value["revision"]:
                 raise ValueError("snapshot needs the same explicit state revision as its event")
-            ident = value["run_id"] + ":" + value["instance_id"]
+            model_id = value.get("state_model_id")
+            ident = instance_key(value["run_id"], value["instance_id"], model_id)
             owner = value["producer_id"]
             if ident in self.owners and self.owners[ident] != owner:
                 raise ValueError("instance already has another authoritative producer")
@@ -253,6 +256,7 @@ class GraphSession:
             )
             result = self.graph.bo_observe(
                 ident,
+                **({"state_model_id": model_id} if model_id is not None else {}),
                 **{
                     k: value[k]
                     for k in (
@@ -274,6 +278,7 @@ class GraphSession:
                     "entity": evidence["entity"],
                     "attempt": evidence["attempt"],
                     "native_instance_id": value["instance_id"],
+                    **({"state_model_id": model_id} if model_id is not None else {}),
                 }
                 self.current_instance = ident
                 evidence["snapshot_instance"] = ident
@@ -294,6 +299,13 @@ class GraphSession:
                     # configuration fields and never join instances by attempt.
                     cfg["snapshot_instance"] = ident
                     cfg["native_instance_id"] = value["instance_id"]
+                    cfg.update(
+                        context=deepcopy(value["context"]),
+                        state_revision=value["revision"],
+                        run_build_id=value["build_id"],
+                    )
+                    if model_id is not None:
+                        cfg["state_model_id"] = model_id
                     journal = []
                     if previous and value["event"]:
                         transition = {
@@ -304,6 +316,7 @@ class GraphSession:
                             "snapshot_instance": ident,
                             "evidence_id": value["evidence_id"],
                             "revision": value["revision"],
+                            **({"state_model_id": model_id} if model_id is not None else {}),
                         }
                         cfg["state_transition"] = transition
                         journal = [transition]
@@ -313,6 +326,7 @@ class GraphSession:
                         "build_id": value["build_id"],
                         "revision": value["revision"],
                         "machine": {
+                            **({"state_model_id": model_id} if model_id is not None else {}),
                             "current": value["state"],
                             "current_instance": ident,
                             "state_revision": value["revision"],
@@ -342,7 +356,8 @@ class GraphSession:
         """Copy presentation defaults while the caller holds the session lock."""
         model = deepcopy(self.model)
         model.setdefault("presentation", {}).setdefault("subject", self.project["project_id"])
-        model["machine"].setdefault("labels", {s: s for s in model["machine"]["values"]})
+        for chart in machine_registry(model).values():
+            chart.setdefault("labels", {s: s for s in chart["values"]})
         return model
 
     def recording_version_context(self):
@@ -420,6 +435,13 @@ class GraphSession:
                 )
                 cfg["snapshot_instance"] = o["instance_id"]
                 cfg["native_instance_id"] = self.identities[o["instance_id"]]["native_instance_id"]
+                cfg.update(
+                    context=deepcopy(o["context"]),
+                    state_revision=o["revision"],
+                    run_build_id=o["build_id"],
+                )
+                if o.get("state_model_id") is not None:
+                    cfg["state_model_id"] = o["state_model_id"]
                 configurations.append(cfg)
             from ..web.semantic_names import overlay_model
 
@@ -444,6 +466,11 @@ class GraphSession:
                 "open_invocations": deepcopy(list(self.bo_open_invocations.values())),
                 "database_status": self.data_status,
                 "machine": {
+                    **(
+                        {"state_model_id": current["state_model_id"]}
+                        if "state_model_id" in current
+                        else {}
+                    ),
                     "current": current.get("state"),
                     "current_instance": current.get("instance_id"),
                     "state_revision": current.get("revision"),

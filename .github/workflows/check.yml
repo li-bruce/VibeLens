@@ -115,6 +115,10 @@ jobs:
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_DESIGN_BROWSER_EVIDENCE: .validation/design-browser
+      - run: python tools/test_model_networks_browser.py
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
+        env:
+          BO_MODEL_NETWORK_EVIDENCE: .validation/model-networks-browser
       - run: python tools/test_edge_colors_browser.py
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: python tools/test_concept_browser.py
@@ -218,6 +222,7 @@ jobs:
             .validation/concept-flow-browser
             .validation/edge-colors
             .validation/design-browser
+            .validation/model-networks-browser
             .validation/clarity-story/browser
             .validation/file-story/browser
             .validation/story-scroll

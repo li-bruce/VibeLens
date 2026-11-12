@@ -33,6 +33,7 @@ PROTOCOLS = {
     "project": "bo-project/v1",
     "transport": "bo-event/v1",
     "snapshot": "bo-snapshot/v1",
+    "snapshot_registry": "bo-snapshot/v2",
     "source": "bo-source/v1",
     "database_config": "bo-databases/v1",
     "database_catalog": "bo-data-catalog/v1",
@@ -43,6 +44,7 @@ PROTOCOLS = {
 CORE = {
     "bo_stategraph.py": "__init__.py",
     "bo_contracts.py": "bo_contracts.py",
+    "bo_models.py": "bo_models.py",
     "execution_contract.py": "execution_contract.py",
 }
 

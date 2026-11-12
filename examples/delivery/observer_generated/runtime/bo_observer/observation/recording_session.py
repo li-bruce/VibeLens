@@ -17,9 +17,11 @@ from .capture_context import context_candidates, retain_scope
 from ..graph.observation_scope import capture_owners
 
 try:
+    from ...bo_models import machine_registry
     from ...runtime_frames import merge_frames
     from ...observation_scope import bo_internal
 except ImportError:
+    from bo_models import machine_registry
     from runtime_frames import merge_frames
     from observation_scope import bo_internal
 
@@ -54,7 +56,10 @@ def checkpoint(view, *, context=False):
     model = view.get("model", {})
     fields = model.get("presentation", {}).get("recording", {}).get("parameters")
     if fields is None:
-        fields = list(model.get("machine", {}).get("context", {}))
+        # Recording also accepts source-only/legacy views with no state model.
+        # Full project admission still validates every declared registry.
+        machines = machine_registry(model) if "machine" in model or "machines" in model else {}
+        fields = sorted({key for chart in machines.values() for key in chart.get("context", {})})
 
     value = {
         "authority": {
@@ -290,9 +295,10 @@ class Recordings:
                 seen.add(parent)
                 boundary.add(parent)
                 parent = nodes[parent].get("parent")
-        parent = model.get("machine", {}).get("execution", {}).get("parent")
-        if parent in nodes:
-            boundary.add(parent)  # Exact state revisions remain interpretable.
+        for chart in machine_registry(model).values():
+            parent = chart.get("execution", {}).get("parent")
+            if parent in nodes:
+                boundary.add(parent)  # Exact state revisions remain interpretable.
         return {
             "mode": "focused",
             "nodes": sorted(selected | boundary),

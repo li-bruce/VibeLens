@@ -6,6 +6,13 @@ Read this guide when you want to change the Skill, inspect a recorded value, or 
 
 ## Repository map
 
+[bo_models.py](../skills/vibelens/scripts/bo_models.py) owns model identities,
+registries, per-model validation views and subnet memberships. Execution and
+observation use the same definitions. `concepts/networks.py` publishes confirmed
+business/state/rule memberships; `model-networks.js` supplies their shared
+2D/3D/Timeline identity lookups. `workflow/iteration_recall.py` restores the current
+and previous inventories before coding. The layer does not select an executor.
+
 Application/framework ownership starts in
 [delivery/integration.py](../skills/vibelens/scripts/bo_observer/delivery/integration.py).
 It installs the native dependency set and compares its bytes with installed Skill

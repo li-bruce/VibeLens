@@ -53,6 +53,7 @@ export function emptyFilters() {
     promotedFields: [],
     hiddenNodes: [],
     hiddenEdges: [],
+    networks: [],
   };
 }
 export function cleanFilters(value) {
@@ -73,7 +74,7 @@ export function cleanFilters(value) {
       clean[kind] = [...new Set(value[kind].filter((type) => clean[kind].includes(type)))];
   if (Number.isInteger(value?.depth) && value.depth >= 0 && value.depth < 100)
     clean.depth = value.depth;
-  for (const field of ["hiddenNodes", "hiddenEdges"])
+  for (const field of ["hiddenNodes", "hiddenEdges", "networks"])
     if (Array.isArray(value?.[field]))
       clean[field] = [...new Set(value[field].filter((id) => typeof id === "string" && id.length))];
   return clean;
