@@ -32,7 +32,7 @@ let preferences = {
   revision: 1,
   entries: {},
 };
-const preferenceKey = `vibelens.case.${controlMode ? "controls-1" : "files-story-v014"}.${params.get("lang") || "en"}`;
+const preferenceKey = `vibelens.case.${controlMode ? "controls-1" : "files-guided-3"}.${params.get("lang") || "en"}`;
 const controlPlans = controlMode
   ? (await (await nativeFetch(new URL("./control-plans.json", import.meta.url))).json()).locales[
       params.get("lang") || "en"
@@ -150,6 +150,7 @@ window.fetch = async (input, init = {}) => {
 // presentation preferences; the exported model, sources and events stay intact.
 const { emptyLayout, layoutKey } = await import("./viewer/layout.js");
 const { profileFor } = await import("./viewer/analysis.js");
+const { investigationPositions } = await import("./case-guide-model.mjs?rev=guided-1");
 const chinese = params.get("lang") === "zh-CN";
 const captions = artifact.story.captions;
 const baseKey = layoutKey(view.model, preferences.project_id);
@@ -178,6 +179,8 @@ for (const id of [
     // Larger lenses use semantic clusters with directed conceptual routes.
     layout.algorithm = id === "overview" ? "layered" : "cluster";
     layout.filters = profileFor(id);
+    if (id === "functions")
+      layout.positions = investigationPositions(artifact.story, artifact.code.nodes);
     preferences.entries[key] = JSON.stringify(layout);
   }
 }
@@ -189,6 +192,14 @@ for (const [key, raw] of Object.entries(preferences.entries)) {
     const existing = state.annotations[id];
     if (!existing?.label || id === artifact.story.inspection_node)
       state.annotations[id] = { ...existing, label: pair[chinese ? 1 : 0] };
+  }
+  // A module's AST symbol is <file>; its useful display name is the filename.
+  for (const node of artifact.code.nodes) {
+    if (node.source?.symbol === "<file>")
+      state.annotations[node.id] = {
+        ...state.annotations[node.id],
+        label: node.source.path.split("/").at(-1),
+      };
   }
   preferences.entries[key] = JSON.stringify(state);
 }
@@ -206,7 +217,7 @@ if (!controlMode) {
 }
 post({ type: "vibelens-case-loading", phase: "graph" });
 await import("./viewer/viewer.js?rev=pages-20261112");
-const { scenePlayer } = await import("./case-scene-player.mjs?rev=pages-20261112");
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=guided-1");
 const runtimeView = structuredClone(view);
 const designView = {
   ...structuredClone(artifact.recording.context),
@@ -263,7 +274,7 @@ window.addEventListener("message", (event) => {
 });
 const style = document.createElement("link");
 style.rel = "stylesheet";
-style.href = new URL("./case-canvas.css?rev=pages-20261112", import.meta.url).href;
+style.href = new URL("./case-canvas.css?rev=guided-1", import.meta.url).href;
 document.head.append(style);
 document.body.dataset.caseCompact = "true";
 // Keep the captured provenance visible; recording and project-write controls are

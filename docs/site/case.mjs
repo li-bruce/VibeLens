@@ -1,9 +1,10 @@
 /** A scroll-led story: one actual viewer, progressively chosen native views. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
-import { messages, chapters } from "./case-messages.mjs?rev=pages-20261112";
+import { messages, chapters } from "./case-messages.mjs?rev=guided-1";
 import { loadJson } from "./case-data.mjs?rev=pages-20261112";
 import { scrollStory } from "./scroll-story.mjs?rev=0.14.0";
-import { companion } from "./case-companion.mjs?rev=clarity-2";
+import { companion } from "./case-companion.mjs?rev=guided-1";
+import { walkthroughGuide } from "./case-guide.mjs?rev=guided-1";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -13,7 +14,8 @@ let chapter = 0,
   ready = false,
   pending = null,
   story,
-  context;
+  context,
+  guide;
 let interacting = false,
   tools = false;
 let options = { inputs: true, effects: false, states: false };
@@ -42,7 +44,7 @@ async function loadStory() {
   $("story-status-text").textContent = t("case.loading.story");
   $("story-retry").hidden = true;
   try {
-    const summary = await loadJson("case-preview/story.json?rev=pages-20261112");
+    const summary = await loadJson("case-preview/story.json?rev=guided-1");
     if (summary.schema !== "vibelens-story-summary/v1") throw Error("Unsupported story summary");
     values = summary.versions;
     $("story-status").hidden = true;
@@ -77,9 +79,12 @@ function stage(index) {
   setInteraction(mode === "3d" || tools);
   context?.stage(index);
   const current = chapters[index];
+  guide?.stage(current.id);
   $("save-watch").disabled = true;
-  document.querySelector(".case-playback").hidden = !["run", "verify"].includes(current.id);
-  const lens = ["foundation", "run"].includes(current.id) ? "business" : "implementation";
+  document.querySelector(".case-playback").hidden = !guide?.replayEnabled;
+  const lens = ["foundation", "build", "run", "verify"].includes(current.id)
+    ? "overview"
+    : "implementation";
   document
     .querySelectorAll("[data-case-lens]")
     .forEach((button) =>
@@ -96,20 +101,41 @@ function stage(index) {
   };
   const key = version + ":" + locale();
   $("case-view-name").textContent = t(
-    ["foundation", "run"].includes(current.id)
+    ["foundation", "build", "run", "verify"].includes(current.id)
       ? "case.graph"
       : ["drill", "iterate", "verify"].includes(current.id)
         ? "case.viewName"
         : "case.core",
   );
   $("case-telemetry").replaceChildren();
+  const explanations = {
+    foundation: ["Business · States · Rules", "业务 · 状态 · 规则"],
+    build: [
+      "Business + file states · open a node to follow its implementation",
+      "业务与文件状态 · 展开节点可以继续追到实现",
+    ],
+    run: [
+      "A pulse marks activity · moving arrows follow the recorded path · values show the result",
+      "节点闪烁表示响应 · 箭头沿记录中的关系流动 · 数值显示实际结果",
+    ],
+    drill: ["Business → State → Function → Storage", "业务 → 状态 → 函数 → 存储"],
+    iterate: [
+      "Updated implementation · the confirmed requirement stays the same",
+      "实现已更新 · 继续核对同一条已确认的业务要求",
+    ],
+    verify: [
+      "Replay the same actions · compare the state and storage effects",
+      "重放同样的操作 · 对照状态与数据变化",
+    ],
+  };
+  $("case-scope").textContent = copy(explanations[current.id]);
   if (loaded !== key) {
     ready = false;
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
     loading("data", true);
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=pages-20261112`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=guided-1`;
   } else {
     loading("layout", !$("case-graph").hasAttribute("data-ready"));
     send(message);
@@ -136,6 +162,28 @@ function render() {
   const previousChapter = story ? chapter : null;
   story?.destroy();
   context?.destroy();
+  guide?.destroy();
+  guide = walkthroughGuide({
+    send,
+    onDepthChange: (depth) => {
+      options = { inputs: depth !== "operation", effects: depth === "data", states: true };
+      for (const [key, value] of Object.entries(options)) {
+        const input = document.querySelector(`[data-watch="${key}"]`);
+        if (input) input.checked = value;
+      }
+    },
+    onCaptureChange: ({ enabled, replay, phase }) => {
+      context?.enableActions(enabled);
+      document.querySelector(".case-playback").hidden = !replay;
+      document.body.dataset.capturePhase = phase;
+      $("case-capture-state").textContent =
+        phase === "recording"
+          ? copy(["● Recording demo", "● 演示录制中"])
+          : phase === "recorded"
+            ? copy(["Recorded sequence", "已录制的操作"])
+            : "";
+    },
+  });
   $("case-chapters").replaceChildren();
   $("case-foundation").replaceChildren();
   $("case-narrative").replaceChildren();
@@ -165,6 +213,9 @@ function render() {
       introduction.className = "scene-copy";
       introduction.append(kicker, title, body);
       section.append(introduction);
+      const models = document.createElement("div");
+      models.className = "scene-model-slot";
+      section.append(models);
     } else section.append(kicker, title, body);
     if (current.steps) {
       const steps = document.createElement("ol");
@@ -187,20 +238,14 @@ function render() {
     const appSlot = document.createElement("div");
     appSlot.className = "scene-app-slot";
     section.append(appSlot);
-    if (current.id === "run") button(section, "case.run", () => send({ action: "play" }));
+    guide.mount(section, current);
+    if (current.id === "build") {
+      const next = button(section, "case.run", () => story.go(2));
+      next.textContent = copy(["Try the app and observe →", "开始操作，观察运行 →"]);
+    }
     if (current.id === "drill") {
-      const trace = document.createElement("div");
-      trace.className = "source-trail";
-      const owner = values[0].view.model.nodes.find(
-        (node) => node.id === values[0].story.inspection_node,
-      );
-      for (const text of [owner.source.symbol + "()", owner.source.path]) {
-        const item = document.createElement("span");
-        item.textContent = text;
-        trace.append(item);
-      }
-      section.append(trace);
-      button(section, "case.drill", () => send({ action: "source" }));
+      const source = button(section, "case.drill", () => send({ action: "source" }));
+      source.textContent = copy(["Open the mapped source ↗", "按需查看对应源码 ↗"]);
     }
     if (current.id === "drill") {
       // Keep editing outside document flow. Preview acknowledgements can resize
@@ -240,10 +285,16 @@ function render() {
             $("save-watch").textContent = t("case.save");
             $("save-watch").disabled = true;
             delete document.body.dataset.sceneReady;
-            send({ action: "preview", options });
+            send({ action: "preview", options, guided: true });
           };
         }
-        label.append(input, document.createTextNode(t(key)));
+        const labelText =
+          prop === "inputs"
+            ? copy(["Inputs & return values", "参数与返回值"])
+            : prop === "effects"
+              ? copy(["Storage & source", "数据与源码"])
+              : t(key);
+        label.append(input, document.createTextNode(labelText));
         fieldset.append(label);
       }
       const name = document.createElement("input");
@@ -279,20 +330,20 @@ function render() {
       });
       section.append(editor);
     }
-    if (current.id === "iterate") {
-      button(section, "case.repair", () => send({ action: "source" }));
-    }
     if (current.id === "verify") {
       const change = document.createElement("p");
       change.className = "rule-change";
       change.textContent = t("case.change");
       section.append(change);
-      const check = document.createElement("div");
-      check.id = "case-check";
-      check.className = "scene-check passed";
-      check.textContent = t("case.check.pass");
-      section.append(check);
-      button(section, "case.retest", () => send({ action: "play" }));
+      const check = button(section, "case.retest", () => send({ action: "restore-watch" }));
+      check.textContent = copy(["Reopen my focused view", "再看保存的局部视图"]);
+      const note = document.createElement("p");
+      note.className = "iteration-note";
+      note.textContent = copy([
+        "One grant removed, state Private, recipient denied. The owner still has access. Repeat this observe–refine cycle for each new feature.",
+        "这次删除 1 条授权，状态变为仅自己可见，接收者访问被拒绝，所有者仍可下载。之后每次新增功能，都可以继续这样观察与迭代。",
+      ]);
+      section.append(note);
     }
     $(index === 0 ? "case-foundation" : "case-narrative").append(section);
   });
@@ -301,17 +352,22 @@ function render() {
     chapters,
     artifacts: values,
     send,
+    onAction: (action) => guide.application(action),
     begin: () => story.go(1),
   });
   if (previousChapter !== null) {
     context.stage(previousChapter);
-    $(chapters[previousChapter].id).scrollIntoView({ behavior: "instant", block: "start" });
+    $(chapters[previousChapter].id).scrollIntoView({
+      behavior: "instant",
+      block: "start",
+    });
   }
   story = scrollStory({
     scenes: document.querySelectorAll("[data-case-scene]"),
     navigation: $("case-chapters"),
     onChange: stage,
-    interactionSelector: ".view-editor, .case-visual",
+    interactionSelector:
+      ".view-editor, .case-visual, .case-conversation, .capture-guide, .case-application, .depth-controls",
   });
   setInteraction(interacting);
 }
@@ -324,6 +380,7 @@ window.addEventListener("message", (event) => {
   )
     return;
   const data = event.data;
+  guide?.update(data);
   if (data.type === "vibelens-case-loading") loading(data.phase, true);
   if (data.scene && data.scene !== chapters[chapter].id) return;
   if (data.type === "vibelens-case-ready") {
@@ -353,8 +410,7 @@ window.addEventListener("message", (event) => {
   }
   if (data.type === "vibelens-case-state") {
     context?.update(data.eventId);
-    document.querySelector(".case-playback").hidden =
-      !data.playing && !["run", "verify"].includes(chapters[chapter].id);
+    document.querySelector(".case-playback").hidden = !guide?.replayEnabled;
     $("case-position").value = data.progress || 0;
     $("case-play").innerHTML = data.playing
       ? '<span aria-hidden="true">Ⅱ</span>'
@@ -362,7 +418,9 @@ window.addEventListener("message", (event) => {
     $("case-play").setAttribute("aria-label", t(data.playing ? "case.pause" : "case.paused"));
     const model = values[chapters[chapter].version - 1].view.model;
     $("case-step").textContent = data.node
-      ? model.nodes.find((node) => node.id === data.node)?.label || data.node
+      ? values[chapters[chapter].version - 1].story.captions[data.node]
+        ? copy(values[chapters[chapter].version - 1].story.captions[data.node])
+        : model.nodes.find((node) => node.id === data.node)?.label || data.node
       : "";
     $("case-graph").dataset.visibleNodes = data.nodes;
     document.body.dataset.nativeView = data.viewId;
@@ -371,7 +429,7 @@ window.addEventListener("message", (event) => {
       data.viewId?.startsWith("custom-")
     )
       $("case-view-name").textContent = data.viewName;
-    if (["drill", "iterate"].includes(chapters[chapter].id)) {
+    if (["run", "drill", "iterate", "verify"].includes(chapters[chapter].id)) {
       const currentStory = values[chapters[chapter].version - 1].story,
         host = $("case-telemetry");
       host.replaceChildren();

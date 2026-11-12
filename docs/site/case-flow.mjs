@@ -61,7 +61,6 @@ export function proposedFlow(confirmed, artifact) {
         fill: "none",
         stroke: "#91a99c",
         "stroke-width": 1.5,
-        "stroke-dasharray": "4 4",
         "marker-end": "url(#intent-arrow)",
         "data-intent-edge": edge.witnesses.join(" "),
       });
@@ -84,12 +83,20 @@ export function proposedFlow(confirmed, artifact) {
       }
     }
     for (const node of graph.nodes) {
-      const group = element("g", { "data-intent-node": node.id, class: "intent-" + tab });
+      const group = element("g", {
+        "data-intent-node": node.id,
+        class: "intent-" + tab,
+      });
       group.append(element("circle", { cx: node.x, cy: node.y, r: 22 }));
       group.append(
         element(
           "text",
-          { x: node.x, y: node.y + 4, "text-anchor": "middle", class: "intent-symbol" },
+          {
+            x: node.x,
+            y: node.y + 4,
+            "text-anchor": "middle",
+            class: "intent-symbol",
+          },
           node.glyph,
         ),
       );
@@ -99,7 +106,21 @@ export function proposedFlow(confirmed, artifact) {
       svg.append(group);
     }
     const note = document.createElement("p");
-    note.textContent = graph.caption;
+    const meaning = {
+      business: [
+        "Actions are nodes; arrows show the business path.",
+        "节点表示业务动作，箭头表示它们的业务衔接。",
+      ],
+      states: [
+        "Nodes are file states; arrows are permitted changes.",
+        "节点表示文件状态，箭头表示允许发生的状态转换。",
+      ],
+      rules: [
+        "Conditions combine into a shared access decision.",
+        "条件通过组合形成判定，同一个判定可以被多个动作复用。",
+      ],
+    };
+    note.textContent = meaning[tab][locale() === "zh-CN" ? 1 : 0] + " " + graph.caption;
     panel.replaceChildren(svg, note);
     panel.setAttribute("aria-labelledby", "confirm-tab-" + tab);
     for (const button of buttons) {

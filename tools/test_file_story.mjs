@@ -23,7 +23,7 @@ assert.equal(applicationAt(artifact, "revoke", "zh-CN").image, "revoke.png");
 assert.equal(applicationAt(artifact, "upload").image, "upload.png");
 assert.deepEqual(
   chapters.map((chapter) => chapter.id),
-  ["foundation", "run", "drill", "iterate", "verify"],
+  ["foundation", "build", "run", "drill", "iterate", "verify"],
 );
 for (const chapter of chapters) {
   assert.equal(!!chapter.dialogue, chapter.surface === "codex");

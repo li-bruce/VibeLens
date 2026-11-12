@@ -1,92 +1,18 @@
-/* One investigation, two reading columns. App captures and conversation occupy
-   the narrative rail; the native graph keeps the remaining viewport width. */
-.story-status {
-  padding: 60px 24px;
-  text-align: center;
-  color: #65776e;
-}
-.story-status[hidden],
-.case-loading[hidden] {
-  display: none;
-}
-.case-loading {
-  position: absolute;
-  inset: 0;
-  z-index: 15;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 18px;
-  background: #f6f8f7;
-  color: #4e6559;
-  font-size: 13px;
-}
-.case-loading.is-compact {
-  inset: 12px 16px auto auto;
-  flex-direction: row;
-  gap: 10px;
-  padding: 10px 14px;
-  border: 1px solid #dce5df;
-  border-radius: 6px;
-  background: #fffffff0;
-  pointer-events: none;
-}
-.case-loading.is-compact > img,
-.case-loading.is-compact .loading-track {
-  display: none;
-}
-.case-loading button,
-.story-status button {
-  border: 0;
-  background: none;
-  color: #147766;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  cursor: pointer;
-  pointer-events: auto;
-}
-.loading-track {
-  width: 110px;
-  height: 2px;
-  overflow: hidden;
-  background: #dce5df;
-}
-.loading-track::after {
-  content: "";
-  display: block;
-  height: 100%;
-  width: 45%;
-  background: #147766;
-  animation: case-loading 1.4s ease-in-out infinite alternate;
-}
-.case-loading[data-phase="error"] .loading-track {
-  display: none;
-}
-@keyframes case-loading {
-  to {
-    transform: translateX(125%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .loading-track::after {
-    animation: none;
-  }
-}
-.demo-document {
-  /* Chapter scroll margins clear the sticky graph. Root scroll padding would
-     also exclude the header's own controls, making focus/scrollIntoView move
-     the document when its visible language button is already under the pointer. */
-  scroll-padding-top: 0;
-}
+/* Guided desktop walkthrough. The native graph renderer remains independent. */
 .demo-story {
-  --display: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --blue: #147766;
-  color: #18332f;
+  --story-ink: #193c35;
+  --story-muted: #667d75;
+  --story-accent: #147766;
+  --story-line: #dce7e1;
+  color: var(--story-ink);
+  background: #fbfcfa;
+}
+.demo-story [hidden] {
+  display: none !important;
 }
 .story-nav {
-  height: 72px;
-  border-color: #e2e8e4;
+  height: 64px;
+  border-color: var(--story-line);
 }
 .story-nav .brand {
   font-size: 21px;
@@ -96,368 +22,627 @@
   font-size: 12px;
 }
 .case-intro {
-  min-height: 65svh;
-  padding: 70px 24px 60px;
-  background: #f5f8f6;
+  min-height: 66svh;
+  padding: 72px 24px 56px;
+  background: radial-gradient(ellipse at 50% 95%, #e5f1e8 0, transparent 66%);
 }
 .case-intro .eyebrow {
-  color: #638476;
+  color: var(--story-accent);
 }
 .case-intro h1 {
-  font: 550 clamp(43px, 5.2vw, 76px) / 1.12 var(--display);
-  letter-spacing: -0.05em;
+  font: 520 clamp(46px, 5vw, 76px) / 1.12 var(--display);
+  letter-spacing: -0.045em;
 }
 .case-intro > p:not(.eyebrow) {
+  max-width: 660px;
   font-size: 17px;
-  color: #65776e;
-  max-width: 620px;
+  color: var(--story-muted);
 }
 .scroll-cue {
   margin-top: 32px;
-  color: #6d8879;
+  color: var(--story-accent);
 }
 .case-chapters {
-  top: 72px;
-  height: 48px;
-  gap: 38px;
-  border-color: #e2e8e4;
+  top: 64px;
+  height: 46px;
+  gap: 36px;
+  border-color: var(--story-line);
+}
+.case-chapters a {
+  color: var(--story-muted);
 }
 .case-chapters a[aria-current="step"] {
-  color: #147766;
+  color: var(--story-accent);
 }
-.case-chapters a[aria-current="step"]:after {
-  background: #147766;
+.case-chapters a[aria-current="step"]::after {
+  background: var(--story-accent);
 }
+
+/* Confirmation places a readable model beside the conversation, not inside it. */
 .foundation-scene {
-  max-width: 1280px;
-  padding: 55px 36px;
-  min-height: calc(100svh - 120px);
+  max-width: 1440px;
+  min-height: calc(100svh - 110px);
+  padding: 28px 44px 40px;
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 0 65px;
+  grid-template-columns: minmax(350px, 0.85fr) minmax(430px, 1.15fr);
+  gap: 20px 54px;
   align-content: center;
+  scroll-margin-top: 125px;
 }
 .foundation-scene .scene-copy {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: center;
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 70px;
+}
+.foundation-scene .scene-copy .eyebrow {
+  grid-column: 1/-1;
 }
 .foundation-scene h2 {
-  font-weight: 500;
+  font-weight: 520;
+  font-size: 36px;
   white-space: pre-line;
-  font-size: 34px;
 }
 .foundation-scene .scene-copy > p:not(.eyebrow) {
-  margin-top: 20px;
-  color: #6b7d73;
-  font-size: 14px;
-  line-height: 1.8;
+  margin: 5px 0 0;
+  color: var(--story-muted);
+  font-size: 15px;
+  line-height: 1.9;
+  max-width: 490px;
 }
 .foundation-scene .scene-companion-slot {
-  grid-column: 2;
-  grid-row: 1;
+  grid-column: 1;
+  grid-row: 2;
   margin: 0;
+}
+.foundation-scene .scene-model-slot {
+  grid-column: 2;
+  grid-row: 2;
   align-self: center;
+  min-height: 300px;
+}
+.model-preview-label {
+  color: var(--story-accent);
+  font-size: 12px;
+}
+.scene-model-slot > h3 {
+  white-space: pre-line;
+  font: 450 32px/1.8 var(--display);
+  margin: 12px 0;
+  color: #71988a;
+}
+.scene-model-slot > p {
+  font-size: 13px;
+  max-width: 360px;
+  line-height: 1.9;
+  color: var(--story-muted);
 }
 .foundation-scene .conversation-turns {
-  max-height: calc(100svh - 340px);
-  min-height: 190px;
-  padding: 20px;
+  padding: 18px;
+  min-height: 230px;
+  max-height: 460px;
 }
 .foundation-scene .conversation-turn {
   font-size: 14px;
 }
-.case-journey {
-  max-width: 1800px;
-  padding: 0 36px;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 34px;
+.case-conversation {
+  background: white;
+  border: 1px solid var(--story-line);
+  border-radius: 10px;
+  box-shadow: 0 14px 50px -35px #284d3e55;
 }
-.case-visual {
-  top: 142px;
-  height: calc(100svh - 166px);
-  min-height: 510px;
-  border-color: #dce5df;
-  border-radius: 8px;
-  box-shadow: 0 15px 50px -38px #203c3460;
-}
-.case-scene {
-  min-height: 105svh;
-  padding: 60px 0 85px;
-  scroll-margin-top: 142px;
-  opacity: 1;
-}
-.case-scene h2 {
-  font: 500 clamp(27px, 2.25vw, 36px) / 1.25 var(--display);
-  white-space: pre-line;
-  letter-spacing: -0.035em;
-}
-.case-scene > p:not(.eyebrow) {
-  color: #6a7b73;
-  font-size: 14px;
-}
-.scene-surface {
-  color: #147766;
+.conversation-toggle {
+  padding: 13px 17px !important;
   font-size: 11px;
+  color: var(--story-muted);
+  border-color: var(--story-line);
 }
-.scene-action {
-  color: #147766;
-  border-color: #b5d2c3;
-  font-size: 12px;
-}
-.scene-companion-slot {
-  margin: 14px 0;
-}
-.scene-app-slot {
-  margin-top: 12px;
-}
-.case-conversation,
-.case-application {
-  box-shadow: none;
-  border-color: #dfe7e2;
-  border-radius: 7px;
-}
-.conversation-turn.user p {
-  background: #f0f5f2;
-  color: #3e5b4e;
-}
-.conversation-turn.codex .conversation-speaker {
-  color: #147766;
+.conversation-toggle strong {
+  color: var(--story-ink);
 }
 .conversation-turn p {
-  color: #4e6559;
+  color: #38584d;
+  line-height: 1.8;
+}
+.conversation-turn.user p {
+  background: #eff5f0;
+}
+.conversation-turn.codex .conversation-speaker {
+  color: var(--story-accent);
 }
 .conversation-next,
 .watch-save {
-  background: #147766;
-  border-radius: 5px;
+  background: var(--story-accent);
+  border-radius: 6px;
 }
-.conversation-flow circle {
-  fill: #eef5f0;
-  stroke: #96b7a5;
+.conversation-flow {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.conversation-flow figcaption {
+  color: var(--story-accent);
+  font-size: 13px;
+  padding: 0;
+}
+.conversation-flow svg {
+  margin: 20px 0 0;
+  max-height: 240px;
 }
 .conversation-flow text {
-  fill: #52715f;
+  fill: #3e6755;
+  font-size: 12px;
+}
+.conversation-flow circle {
+  fill: #e9f3ed;
+  stroke: #74a28a;
 }
 .conversation-flow .intent-symbol {
   fill: #147766;
+  font-weight: 550;
 }
 .conversation-flow .intent-states circle {
-  fill: #f4edf8;
-  stroke: #9658b5;
+  fill: #f1eafa;
+  stroke: #9b78c4;
 }
 .conversation-flow .intent-states .intent-symbol {
-  fill: #9658b5;
+  fill: #8757ad;
 }
 .conversation-flow .intent-rules circle {
-  fill: #faf3e6;
-  stroke: #bb7a13;
+  fill: #fff2da;
+  stroke: #b99146;
 }
 .conversation-flow .intent-rules .intent-symbol {
-  fill: #bb7a13;
+  fill: #976c20;
+  font-size: 10px;
+}
+.conversation-flow .intent-edge-label {
+  font-size: 11px;
+  paint-order: stroke;
+  stroke: #fbfcfa;
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+.conversation-flow [role="tabpanel"] > p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--story-muted);
+  border-top: 1px solid var(--story-line);
+  padding-top: 14px;
 }
 .confirmation-tabs {
   display: flex;
-  gap: 18px;
-  padding: 14px 8px 0;
+  gap: 28px;
+  margin-top: 15px;
 }
 .confirmation-tabs button {
   border: 0;
   border-bottom: 2px solid transparent;
   background: none;
-  color: #7a8b82;
-  font: 12px var(--body);
-  padding: 6px 0;
+  color: var(--story-muted);
+  font: 13px var(--body);
+  padding: 9px 0;
+  cursor: pointer;
 }
 .confirmation-tabs button[aria-selected="true"] {
-  border-color: #147766;
-  color: #147766;
+  border-color: var(--story-accent);
+  color: var(--story-accent);
 }
-.conversation-flow .intent-edge-label {
-  font-size: 10px;
-  paint-order: stroke;
-  stroke: white;
-  stroke-width: 6px;
-  stroke-linejoin: round;
+
+/* A single stable canvas accompanies five concise narrative stations. */
+.case-journey {
+  max-width: 1800px;
+  grid-template-columns: minmax(310px, 360px) minmax(0, 1fr);
+  gap: 40px;
+  padding: 0 36px;
+}
+.case-visual {
+  top: 132px;
+  height: calc(100svh - 156px);
+  min-height: 470px;
+  max-height: 950px;
+  border-color: var(--story-line);
+  border-radius: 10px;
+  box-shadow: 0 14px 50px -36px #294a3f55;
+}
+.case-scene {
+  min-height: 108svh;
+  padding: 45px 0 80px;
+  scroll-margin-top: 132px;
+  opacity: 1;
+}
+.case-scene h2 {
+  font: 520 32px/1.3 var(--display);
+  white-space: pre-line;
+  letter-spacing: -0.035em;
+}
+.case-scene > p:not(.eyebrow) {
+  color: var(--story-muted);
+  font-size: 14px;
+  line-height: 1.85;
+  margin-bottom: 20px;
+}
+.scene-surface {
+  color: var(--story-accent);
+  font-size: 11px;
+}
+.scene-action {
+  color: var(--story-accent);
+  border-color: #b4cfc1;
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 12px;
+}
+.scene-companion-slot {
+  margin: 12px 0;
+}
+.scene-companion-slot:empty,
+.scene-app-slot:empty {
+  display: none;
+}
+.case-conversation .conversation-turns {
+  max-height: 365px;
+}
+.foundation-scene .case-conversation .conversation-turns {
+  max-height: clamp(220px, 33svh, 360px);
 }
 .case-view-heading {
-  padding: 14px 16px;
+  padding: 12px 15px;
+  border-color: var(--story-line);
+}
+.case-view-heading > div {
+  gap: 8px;
 }
 .case-mode button,
 .case-lenses button {
   font-size: 11px;
-  padding: 6px 9px;
+  padding: 7px 8px;
+  color: var(--story-muted);
 }
 .case-mode button[aria-pressed="true"],
 .case-lenses button[aria-pressed="true"] {
-  background: #edf4ef;
-  color: #147766;
+  color: var(--story-accent);
+  background: #eaf3ee;
+}
+.case-lenses {
+  padding: 5px 10px;
+  gap: 4px;
+  border-color: var(--story-line);
 }
 .view-dot {
-  background: #147766;
-  box-shadow: 0 0 0 3px #14776610;
+  background: var(--story-accent);
+  box-shadow: 0 0 0 3px #14776612;
 }
-#case-interact,
-.case-playback button,
-.case-telemetry strong {
-  color: #147766;
+#case-view-name {
+  color: var(--story-muted);
 }
-.case-playback input,
-.watch-options input {
-  accent-color: #147766;
+#case-interact {
+  color: var(--story-accent);
+}
+.case-scope-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  background: #f5f8f5;
+  color: #567366;
+  font-size: 11px;
+  line-height: 1.7;
+  border-bottom: 1px solid #e7eee8;
+}
+#case-capture-state {
+  color: #b24e42;
+  flex-shrink: 0;
+}
+.case-reading-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--story-line);
+  background: white;
+  color: var(--story-muted);
+  font-size: 10px;
+}
+.case-reading-key > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.case-reading-key i {
+  display: inline-block;
+  font-style: normal;
+}
+.key-node {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid #438c72;
+  border-radius: 50%;
+  background: #e2f0e7;
+}
+.key-edge {
+  color: #438c72;
+  font-size: 19px;
+  line-height: 8px;
+}
+.key-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #438c72;
+  box-shadow: 0 0 0 3px #dceee3;
+}
+.case-playback {
+  height: 48px;
+  border-color: var(--story-line);
+  gap: 12px;
+}
+.case-playback input {
+  flex: 1;
+  width: auto;
+  accent-color: var(--story-accent);
+}
+.case-playback button {
+  color: var(--story-accent);
+}
+#case-step {
+  max-width: 130px;
+  color: var(--story-muted);
+  font: 11px var(--body);
+}
+.replay-hint {
+  color: var(--story-muted);
+  font-size: 10px;
 }
 .case-telemetry {
+  bottom: 14px;
+  gap: 9px;
   font-size: 11px;
+}
+.case-telemetry strong {
+  color: var(--story-accent);
+}
+
+/* Recorder actions belong to VibeLens; application actions belong to its preview. */
+.capture-guide {
+  margin: 4px 0 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--story-line);
+  border-bottom: 1px solid var(--story-line);
+}
+.capture-button {
+  border: 0;
+  border-radius: 5px;
+  padding: 10px 14px;
+  color: white;
+  background: #1c4f42;
+  font: 500 12px var(--body);
+  cursor: pointer;
+}
+.capture-guide[data-capture="recording"] .capture-button {
+  background: #a8473e;
+}
+.capture-status {
+  color: var(--story-muted);
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 10px 0 3px;
+}
+.capture-count {
+  color: #81968a;
+  font-size: 10px;
+}
+.capture-result {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a4682b;
+  margin: 12px 0 0;
+}
+#verify .capture-result {
+  color: var(--story-accent);
+}
+.case-application {
+  border-radius: 8px;
+  border-color: var(--story-line);
+  box-shadow: none;
+}
+.app-heading {
+  padding: 10px 12px;
+}
+.app-heading strong {
+  font-size: 12px;
+  color: var(--story-ink);
 }
 .app-heading > span {
   display: none;
 }
-.app-heading {
-  padding: 11px 14px;
-}
-.case-application > .app-restart {
-  font-size: 11px;
-}
 .app-actions {
+  display: flex;
+  flex-wrap: nowrap;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 12px;
 }
-.app-status {
+.case-application .app-actions button {
+  flex: 1;
+  border: 1px solid #cfdfd5;
+  border-radius: 4px;
+  color: var(--story-accent);
   font-size: 11px;
+  padding: 7px 3px;
+}
+.case-application .app-actions button:disabled {
+  color: #899c92;
+  background: #f7f9f7;
+  border-color: #edf1ec;
+}
+.case-application .app-status {
+  color: var(--story-muted);
+  font-size: 10px;
+}
+.app-frame {
+  max-height: 220px;
+  object-fit: contain;
+  object-position: top;
+}
+.app-capture-dialog img {
+  max-height: 84svh;
+  object-fit: contain;
+}
+
+/* Drill-down reveals a smaller question before adding implementation detail. */
+.depth-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0 14px;
+  border-left: 1px solid #cbded2;
+}
+.depth-button {
+  padding: 12px 14px;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--story-muted);
+  font: 12px var(--body);
+  cursor: pointer;
+}
+.depth-button[aria-pressed="true"] {
+  color: var(--story-accent);
+  background: #eaf3ed;
+  box-shadow: -2px 0 #147766;
+}
+.depth-detail {
+  min-height: 128px;
+}
+.depth-detail h3 {
+  font: 550 15px/1.65 var(--body);
+  margin: 0 0 10px;
+}
+.depth-detail p {
+  color: var(--story-muted);
+  font-size: 12px;
+  line-height: 1.85;
+  margin: 0;
+}
+.watch-options input {
+  accent-color: var(--story-accent);
+}
+.view-editor {
+  border-color: var(--story-line);
+}
+.iteration-note {
+  border-left: 2px solid #73a48a;
+  padding-left: 14px;
+}
+.rule-change {
+  border-color: var(--story-line);
+  color: var(--story-accent);
+  font-size: 12px;
 }
 .case-end {
-  min-height: 44svh;
+  min-height: 46svh;
+}
+.case-end h2 {
+  font-weight: 520;
 }
 .case-end .button {
-  border-radius: 5px;
-  background: #18332f;
+  background: #1b483d;
+  border-radius: 6px;
   box-shadow: none;
 }
+.case-end > p {
+  font-size: 12px;
+  margin-top: 24px;
+  color: var(--story-muted);
+}
+.case-footer {
+  color: var(--story-muted);
+  border-color: var(--story-line);
+}
 .demo-story :focus-visible {
-  outline-color: #147766;
+  outline-color: var(--story-accent);
 }
-@media (max-width: 1100px) {
+@media (min-width: 900px) and (max-width: 1220px) {
   .case-journey {
-    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-columns: 300px minmax(0, 1fr);
     gap: 22px;
-    padding: 0 24px;
+    padding: 0 22px;
   }
   .foundation-scene {
-    grid-template-columns: 240px minmax(0, 1fr);
-    gap: 30px;
-    padding-inline: 24px;
+    gap: 24px;
+    padding-inline: 28px;
   }
-  .foundation-scene h2 {
-    font-size: 30px;
-  }
-}
-@media (max-width: 900px) {
-  .story-nav {
-    height: 56px;
-  }
-  .case-chapters {
-    top: 56px;
-    height: 44px;
-    gap: 22px;
-  }
-  .foundation-scene {
-    display: block;
-    padding: 50px 24px;
-  }
-  .foundation-scene > .scene-companion-slot {
-    margin-top: 26px;
-  }
-  .case-journey {
-    display: flex;
-    flex-direction: column;
-    padding: 0 18px;
-    gap: 0;
-  }
-  .case-visual {
-    order: -1;
-    position: sticky;
-    top: 110px;
-    width: 100%;
-    height: 50svh;
-    min-height: 330px;
-    z-index: 3;
-  }
-  .case-narrative {
-    width: 100%;
-  }
-  .case-scene {
-    min-height: 90svh;
-    padding: 35px 6px 45px;
-    scroll-margin-top: calc(50svh + 125px);
-  }
-  .case-scene h2 {
-    font-size: 29px;
-  }
-  .case-scene > p:not(.eyebrow) {
-    max-width: 580px;
-  }
-  .scene-app-slot {
-    max-width: 420px;
-  }
-  .scene-companion-slot {
-    max-width: 580px;
-  }
-  .case-intro {
-    min-height: 60svh;
-  }
-  .case-intro h1 {
-    font-size: 46px;
-  }
-  .case-mode button {
-    font-size: 10px;
-    padding: 5px;
-  }
-  .case-mode {
-    gap: 2px !important;
-  }
-  .case-telemetry {
-    font-size: 9px;
-  }
-  .case-playback {
-    height: 36px;
-  }
-}
-@media (max-width: 520px) {
-  .case-view-heading {
-    padding: 9px;
-  }
-  .case-lenses {
-    padding: 5px;
-    gap: 0;
-  }
+  .case-mode button,
   .case-lenses button {
     font-size: 10px;
     padding: 6px;
   }
-  .story-nav nav {
-    gap: 12px;
+  .case-visual {
+    min-height: 470px;
   }
-  .story-nav nav > a:first-child {
-    display: none;
+}
+/* Keep the current instructions, recorder and app actions together on laptops. */
+@media (min-width: 900px) and (max-height: 850px) {
+  .case-scene {
+    padding-top: 24px;
   }
-  .case-intro > p:not(.eyebrow) {
-    font-size: 15px;
+  .case-scene .eyebrow {
+    margin-bottom: 10px;
   }
-  .case-intro h1 {
-    font-size: 40px;
+  .case-scene h2 {
+    font-size: 28px;
+    line-height: 1.3;
+    margin-bottom: 16px;
   }
-  .foundation-scene .conversation-turns {
-    padding: 14px;
+  .case-scene > p:not(.eyebrow) {
+    font-size: 12px;
+    line-height: 1.75;
+    margin-bottom: 12px;
   }
-  .foundation-scene .conversation-turn {
+  .case-scene .scene-companion-slot {
+    margin-block: 8px;
+  }
+  .case-scene .conversation-turns {
+    max-height: 210px;
+    padding: 12px;
+  }
+  .case-scene .conversation-turn {
+    margin-bottom: 12px;
+  }
+  .case-scene .conversation-turn p {
+    font-size: 12px;
+  }
+  .capture-guide {
+    padding-block: 10px;
+    margin-bottom: 10px;
+  }
+  .capture-status {
+    margin-top: 7px;
+    font-size: 11px;
+  }
+  .capture-button {
+    padding: 8px 12px;
+  }
+  .app-frame {
+    max-height: 138px;
+  }
+  .app-actions {
+    padding: 8px;
+  }
+  .app-status {
+    padding-block: 5px;
+    margin: 0;
+  }
+  .foundation-scene h2 {
+    font-size: 30px;
+  }
+  .foundation-scene .scene-copy > p:not(.eyebrow) {
     font-size: 13px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .case-scene {
     transition: none;
-  }
-  html {
-    scroll-behavior: auto;
   }
 }

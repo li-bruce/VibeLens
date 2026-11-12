@@ -1,6 +1,6 @@
 /** Scripted development dialogue and a separate, event-bound application preview. */
 import { locale, t } from "./site-ui.mjs?rev=files-1";
-import { proposedFlow } from "./case-flow.mjs?rev=clarity-2";
+import { proposedFlow } from "./case-flow.mjs?rev=guided-1";
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
 function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -9,7 +9,7 @@ function node(tag, className, text) {
   return element;
 }
 import { applicationAt } from "./case-application.mjs?rev=files-1";
-export function companion({ host, chapters, artifacts, send, begin }) {
+export function companion({ host, chapters, artifacts, begin, onAction }) {
   let chapter = 0,
     source = 0,
     progress = 1,
@@ -43,17 +43,42 @@ export function companion({ host, chapters, artifacts, send, begin }) {
     const dialogue = chapters[source].dialogue;
     turns.replaceChildren();
     const visible = foundation ? dialogue.slice(0, progress) : dialogue;
-    visible.forEach(([role, text], index) => {
+    visible.forEach(([role, text]) => {
       const turn = node("div", "conversation-turn " + role);
       turn.dataset.speaker = role;
       turn.append(
         node("span", "conversation-speaker", role === "user" ? t("case.user") : "Codex"),
         node("p", "", copy(text)),
       );
-      if (foundation && index === 3)
-        turn.append(proposedFlow(progress >= dialogue.length, artifacts[0]));
       turns.append(turn);
     });
+    if (foundation) {
+      const modelSlot = document.querySelector("#foundation .scene-model-slot");
+      modelSlot.replaceChildren();
+      if (progress >= 4) modelSlot.append(proposedFlow(progress >= dialogue.length, artifacts[0]));
+      else {
+        modelSlot.append(
+          node(
+            "span",
+            "model-preview-label",
+            copy(["Your conversation becomes a model", "把想法整理成模型"]),
+          ),
+          node(
+            "h3",
+            "",
+            copy(["What happens?\nWhat changes?\nWho is allowed?", "做什么\n状态怎样变\n谁有权限"]),
+          ),
+          node(
+            "p",
+            "",
+            copy([
+              "Continue the conversation to see the three connected diagrams.",
+              "继续对话，看看这些回答如何形成业务图、状态图和规则图。",
+            ]),
+          ),
+        );
+      }
+    }
     next.hidden = !foundation;
     next.textContent = t(
       progress < 4
@@ -128,20 +153,12 @@ export function companion({ host, chapters, artifacts, send, begin }) {
       const selected = artifacts[chapters[chapter].version - 1].story.actions.find(
         (item) => item.id === action.id,
       );
-      send({
-        action: "application",
-        node: selected.node,
-        phase: selected.phase,
-        eventIds: selected.event_ids,
-      });
+      onAction(selected);
     };
     actions.append(button);
   }
   const status = node("p", "app-status");
-  const restart = node("button", "app-restart", t("case.app.replay"));
-  restart.type = "button";
-  restart.onclick = () => send({ action: "play" });
-  app.append(screenshot, empty, actions, status, restart);
+  app.append(screenshot, empty, actions, status);
   function place() {
     const current = document.getElementById(chapters[chapter].id);
     const target = current?.querySelector(".scene-companion-slot");
@@ -192,7 +209,6 @@ export function companion({ host, chapters, artifacts, send, begin }) {
       screenshot.removeAttribute("src");
       status.textContent = "";
     }
-    for (const button of actions.querySelectorAll("button")) button.disabled = chapter === 0;
   }
   function stage(index) {
     chapter = index;
@@ -203,7 +219,9 @@ export function companion({ host, chapters, artifacts, send, begin }) {
     open = !!chapters[index].dialogue;
     // App actions accompany recording and retesting; source investigation gets
     // the full viewing area. The developer's earlier conversation stays folded.
-    app.hidden = !["run", "verify"].includes(chapters[chapter].id);
+    app.hidden = !["build", "run", "verify"].includes(chapters[chapter].id);
+    actions.hidden = chapters[chapter].id === "build";
+    conversation.hidden = !chapters[chapter].dialogue;
     renderConversation();
     place();
     update(null);
@@ -211,6 +229,9 @@ export function companion({ host, chapters, artifacts, send, begin }) {
   return {
     stage,
     update,
+    enableActions(enabled) {
+      for (const button of actions.querySelectorAll("button")) button.disabled = !enabled;
+    },
     destroy() {
       conversation.remove();
       app.remove();

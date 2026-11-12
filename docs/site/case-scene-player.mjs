@@ -1,5 +1,11 @@
 /** Stage the real viewer through its public UI controls and original recording. */
 import { focusIds, focusTypes, focusRelations } from "./case-focus.mjs?rev=clarity-2";
+import {
+  guidedIds,
+  guidedViewIds,
+  recordingWindow,
+  eventAtProgress,
+} from "./case-guide-model.mjs?rev=guided-1";
 
 export function scenePlayer({ artifact, setDesign, locale, post }) {
   const story = artifact.story;
@@ -9,7 +15,9 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     current = "foundation",
     needsPlanarLayout = false,
     editing = false,
-    presenting = 0;
+    presenting = 0,
+    playbackEnd = null,
+    orderedEvents = [];
   const pause = (ms = 25) => new Promise((resolve) => setTimeout(resolve, ms));
   const paint = () =>
     new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -118,7 +126,9 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       .filter((option) => option.value.startsWith("custom-") && option.value !== "custom-draft")
       .at(-1);
   }
-  async function focus(options = {}, ticket, selectedIds = null, preset = "overview") {
+  async function focus(options = {}, ticket, selectedIds = null, preset = "functions") {
+    // The static transport already supplies the exported source neighborhood
+    // in this recording. Keep that revision rather than opening a live index.
     control("analysis-view", preset);
     // Load the recording before narrowing it. Its context supplies the final
     // inventory; filtering the live inventory first can miss newly loaded nodes.
@@ -128,7 +138,9 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     // already restore their own filters and must retain their selected layers.
     $("layers-all").click();
     filterGroup("nodes", story.focus.node_types || focusTypes);
-    filterGroup("regions", story.focus.region_types || ["decision"]);
+    // Keep the diagram flat at this scale. Exact code mappings connect the
+    // business operation, observed deletion and its implementing function.
+    filterGroup("regions", ["decision"]);
     filterGroup("edges", focusRelations);
     // Dispatch even if the value is already "all": the native scope action
     // also establishes the same flat projection used by saved custom views.
@@ -202,6 +214,10 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     $("close-detail").click();
   }
   async function recording(ticket) {
+    if (!orderedEvents.length) {
+      const { timeline } = await import("./viewer/recording.js");
+      orderedEvents = timeline(artifact.recording);
+    }
     if (
       $("record-list").value === artifact.recording.id &&
       window.graphDebug.view?.replay?.id === artifact.recording.id
@@ -257,17 +273,36 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     document.body.dataset.caseSource = "false";
     $("close-detail").click();
   }
+  function isPlaying() {
+    return !!$("replay-play")
+      .getAttribute("aria-label")
+      ?.match(/Pause|暂停/);
+  }
+  function stopPlayback() {
+    if (isPlaying()) $("replay-play").click();
+    playbackEnd = null;
+  }
+  /** Select a captured event using the native control; no parallel replay clock. */
+  function seekEvent(index) {
+    control("replay-grain", "events");
+    control("replay-events", String(index));
+  }
+  async function overview(ticket) {
+    leaveSource();
+    setDesign(false);
+    await focus({}, ticket, guidedIds(story), "overview");
+    seekEvent(recordingWindow(orderedEvents, story).start);
+    control("replay-grain", "view");
+  }
   async function play(ticket, fromStart = true) {
     if (!(await recording(ticket))) return;
+    const bounds = recordingWindow(orderedEvents, story);
+    if (fromStart) seekEvent(bounds.start);
     control("replay-grain", "view");
     // A transfer takes 650ms in the native renderer. Let it finish before the
     // next step replaces it, so a viewer can follow the complete edge path.
     control("replay-speed", "900");
-    if (fromStart) {
-      const range = $("replay-range");
-      range.value = 0;
-      range.dispatchEvent(new Event("input", { bubbles: true }));
-    }
+    playbackEnd = bounds.end;
     if (
       !$("replay-play")
         .getAttribute("aria-label")
@@ -320,18 +355,56 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       fit();
     }
     if (!message.scene && !message.action) return;
+    if (message.scene) stopPlayback();
+    if (message.action === "pause") {
+      stopPlayback();
+      return;
+    }
     if (message.action === "source") {
       await showSource(ticket);
       return;
     }
     if (message.action === "toggle-play") {
-      $("replay-play").click();
+      if (isPlaying()) stopPlayback();
+      else {
+        if (!(await recording(ticket))) return;
+        const bounds = recordingWindow(orderedEvents, story);
+        const index = orderedEvents.findIndex(
+          (event) => event.id === window.graphDebug.view?.replay?.event?.id,
+        );
+        await play(ticket, index < bounds.start || index >= bounds.end);
+      }
       return;
     }
     if (message.action === "seek") {
-      const range = $("replay-range");
-      range.value = (Number(message.progress) * Number(range.max)) / 100;
-      range.dispatchEvent(new Event("input", { bubbles: true }));
+      stopPlayback();
+      if (!(await recording(ticket))) return;
+      seekEvent(eventAtProgress(orderedEvents, story, message.progress));
+      return;
+    }
+    if (message.action === "overview") {
+      stopPlayback();
+      await overview(ticket);
+      post({ type: "vibelens-lens-ready", lens: "overview" });
+      return;
+    }
+    if (message.action === "depth") {
+      stopPlayback();
+      leaveSource();
+      await focus({}, ticket, guidedIds(story, message.depth));
+      await inspectEvent(ticket);
+      post({ type: "vibelens-scene-ready", scene: current });
+      return;
+    }
+    if (message.action === "restore-watch") {
+      stopPlayback();
+      leaveSource();
+      const saved = findSaved();
+      if (saved) control("analysis-view", saved.value);
+      else await focus({}, ticket, guidedIds(story, "data"));
+      await inspectEvent(ticket);
+      fit();
+      post({ type: "vibelens-scene-ready", scene: current });
       return;
     }
     if (message.action === "states") {
@@ -368,6 +441,7 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       return;
     }
     if (message.action === "application") {
+      stopPlayback();
       const currentId = window.graphDebug.view?.replay?.event?.id;
       if (!(await recording(ticket))) return;
       // The miniature app is a transport into this recording, not another
@@ -385,7 +459,14 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       if (next) {
         control("replay-grain", "events");
         control("replay-events", String(events.indexOf(next)));
-      }
+        await paint();
+        if (ticket === epoch)
+          post({
+            type: "vibelens-application-ready",
+            requestId: message.requestId,
+            eventId: next.id,
+          });
+      } else throw Error("This application action has no matching recorded event");
       return;
     }
     if (message.action === "all") {
@@ -427,53 +508,41 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     }
     if (message.action === "preview") {
       leaveSource();
-      await focus(message.options, ticket);
+      await focus(
+        message.options,
+        ticket,
+        message.guided ? guidedViewIds(story, message.options) : null,
+      );
       await inspectEvent(ticket);
-      if (current === "drill") await showSource(ticket);
       if (ticket === epoch) post({ type: "vibelens-scene-ready", scene: current });
       return;
     }
-    setDesign(["foundation", "build"].includes(current));
+    setDesign(current === "foundation");
     document.body.dataset.caseSource = "false";
     $("close-detail").click();
     $("replay-live").click();
-    if (["foundation", "build", "run"].includes(current)) {
-      if (current === "run" && story.playback_nodes) {
-        // Start from the native permission lens so the shared predicates form
-        // a directed cluster beside the business actions they constrain.
-        await focus({}, ticket, new Set(story.playback_nodes), "permission");
-        if (!matchMedia("(prefers-reduced-motion: reduce)").matches) await play(ticket);
-        if (ticket === epoch) post({ type: "vibelens-scene-ready", scene: current });
-        return;
-      }
+    if (current === "foundation") {
       control("analysis-view", "business");
       $("collapse").click();
       await until(
         () =>
-          window.graphDebug.graph?.boxes.length > 0 &&
-          window.graphDebug.view.stage === (current === "run" ? "runtime" : "design"),
+          window.graphDebug.graph?.boxes.length > 0 && window.graphDebug.view.stage === "design",
         ticket,
       );
       await hideExcept(new Set(story.business), ticket);
       await arrange(ticket);
-      if (current === "run" && !matchMedia("(prefers-reduced-motion: reduce)").matches)
-        await play(ticket);
+    } else if (["build", "run", "verify"].includes(current)) {
+      await overview(ticket);
     } else if (["drill", "watch"].includes(current)) {
-      await focus(message.options || { effects: current === "watch" }, ticket);
+      await focus({}, ticket, guidedIds(story, "operation"));
       await inspectEvent(ticket);
-      if (current === "drill") await showSource(ticket);
     } else {
       const saved = findSaved();
       if (saved) control("analysis-view", saved.value);
       else {
-        await focus(message.options, ticket);
-        save(message.name);
+        await focus({}, ticket, guidedIds(story, "data"));
       }
-      if (current === "iterate") {
-        await inspectEvent(ticket);
-      } else {
-        await inspectEvent(ticket);
-      }
+      await inspectEvent(ticket);
     }
     if (ticket === epoch) {
       fit();
@@ -490,6 +559,20 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
             (item) => item.call_id === event.call_id && item.phase === "enter",
           )
         : null;
+    const rawIndex = orderedEvents.findIndex((item) => item.id === event?.id);
+    const bounds = orderedEvents.length
+      ? recordingWindow(orderedEvents, story)
+      : { start: 0, end: 1 };
+    if (playbackEnd !== null && rawIndex >= playbackEnd) {
+      // A coarse view can skip an authorization event. End at the actual
+      // selected operation, rather than the next unrelated owner's download.
+      const end = playbackEnd;
+      stopPlayback();
+      if (rawIndex !== end) {
+        seekEvent(end);
+        return;
+      }
+    }
     const state = {
       type: "vibelens-case-state",
       scene: current,
@@ -499,8 +582,10 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       inputs: { ...entry?.inputs, ...event?.inputs },
       outputs: event?.outputs || {},
       replayIndex: view?.replay?.index,
-      progress:
-        (Number($("replay-range").value) / Math.max(1, Number($("replay-range").max))) * 100,
+      progress: Math.max(
+        0,
+        Math.min(100, ((rawIndex - bounds.start) / Math.max(1, bounds.end - bounds.start)) * 100),
+      ),
       playing: !!$("replay-play")
         .getAttribute("aria-label")
         ?.match(/Pause|暂停/),

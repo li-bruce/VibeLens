@@ -6,6 +6,7 @@ import { messages as caseMessages } from "../docs/site/case-messages.mjs";
 import { messages as homeMessages } from "../docs/site/home-messages.mjs";
 import { presentCase } from "../docs/site/case-copy.mjs";
 await import("./test_file_story.mjs");
+await import("./test_guided_story.mjs");
 await import("./test_case_artifacts.mjs");
 
 for (const version of [1, 2]) {

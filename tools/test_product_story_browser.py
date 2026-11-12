@@ -73,7 +73,7 @@ def run(base, output, browser_path):
                     return frame
 
                 frame = scene("foundation")
-                expect(page.locator("[data-case-scene]")).to_have_count(5)
+                expect(page.locator("[data-case-scene]")).to_have_count(6)
                 expect(page.locator("#case-conversation [data-speaker]")).to_have_count(1)
                 for _ in range(3):
                     page.locator("#conversation-next").click()
@@ -82,8 +82,26 @@ def run(base, output, browser_path):
                 page.locator("#conversation-next").click()
                 expect(page.locator('.conversation-flow[data-confirmed="true"]')).to_be_visible()
                 page.locator("#conversation-next").click()
+                frame = scene("build")
+                expect(page.locator("#case-application")).to_be_visible()
+                expect(page.locator(".app-actions")).to_be_hidden()
+                expect(page.locator(".case-playback")).to_be_hidden()
                 frame = scene("run")
                 expect(page.locator("#case-application")).to_be_visible()
+                expect(page.locator('[data-app-action="download-before"]')).to_be_disabled()
+                page.locator("#run [data-capture-action]").click()
+                for action in ("download-before", "revoke", "download-after"):
+                    page.locator(f'[data-app-action="{action}"]').click()
+                    expect(page.locator(f'[data-app-action="{action}"]')).to_be_enabled()
+                expect(page.locator("#run .capture-count")).to_contain_text("3 / 3")
+                page.locator("#run [data-capture-action]").click()
+                expect(page.locator(".case-playback")).to_be_visible()
+                page.locator("#case-position").press("Home")
+                expect(page.locator("#case-position")).to_have_value("0")
+                page.locator("#case-play").click()
+                expect(page.locator("#case-play")).to_have_attribute(
+                    "aria-label", "Pause" if language == "en" else "暂停"
+                )
                 frame.wait_for_function("graphDebug.view.replay?.event?.id")
                 page.screenshot(path=str(output / f"run-{language}.png"))
                 page.locator("#case-3d").click()
@@ -106,6 +124,16 @@ def run(base, output, browser_path):
                 page.locator("#case-2d").click()
                 frame.wait_for_function("!graphDebug.layers.enabled")
                 frame = scene("drill")
+                expect(frame.locator("#source-code")).to_be_hidden()
+                page.locator('[data-depth="inputs"]').click()
+                expect(page.locator("#case-scope")).to_contain_text(
+                    "Values" if language == "en" else "参数"
+                )
+                page.locator('[data-depth="data"]').click()
+                expect(page.locator("#case-scope")).to_contain_text(
+                    "Storage" if language == "en" else "存储"
+                )
+                page.locator('[data-scene-action="case.drill"]').click()
                 expect(frame.locator("#source-code")).to_contain_text(
                     "shares.c.recipient_id == actor"
                 )
@@ -120,19 +148,23 @@ def run(base, output, browser_path):
                 saved = page.get_attribute("body", "data-saved-view")
                 frame = scene("iterate")
                 expect(page.locator('#case-conversation[data-mode="current"]')).to_be_visible()
-                page.locator('[data-scene-action="case.repair"]').click()
-                expect(frame.locator("#source-code")).to_contain_text(
-                    "shares.c.recipient_id == recipient_id"
-                )
+                expect(frame.locator("#source-code")).to_be_hidden()
+                expect(page.locator("#case-telemetry")).to_contain_text("true")
                 page.screenshot(path=str(output / f"repair-{language}.png"))
                 frame = scene("verify")
-                expect(page.locator("#case-check")).to_be_visible()
+                expect(page.locator("#verify .iteration-note")).to_be_visible()
+                page.locator("#verify [data-capture-action]").click()
                 page.locator('[data-app-action="download-after"]').click()
                 page.wait_for_function(
                     "document.querySelector('#case-application').dataset.eventId"
                 )
                 page.screenshot(path=str(output / f"verify-{language}.png"))
-                results[-1].update(demo="passed", saved_view=saved, scenes=5, camera_drag="passed")
+                expect(page.locator("#case-application")).to_have_attribute(
+                    "data-status", "stale_download"
+                )
+                page.locator("#verify [data-capture-action]").click()
+                expect(page.locator(".case-playback")).to_be_visible()
+                results[-1].update(demo="passed", saved_view=saved, scenes=6, camera_drag="passed")
                 context.close()
 
             context = browser.new_context(

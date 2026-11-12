@@ -6,7 +6,12 @@ export function confirmationModel(artifact, tab, language = "en") {
   const text = (en, zh) => (chinese ? zh : en);
   const model = artifact.view.model;
   const node = (id, x, y, label, glyph) => ({ id, x, y, label, glyph });
-  const edge = (from, to, witnesses, label = "") => ({ from, to, witnesses, label });
+  const edge = (from, to, witnesses, label = "") => ({
+    from,
+    to,
+    witnesses,
+    label,
+  });
   if (tab === "states") {
     const labels = {
       empty: text("No file", "尚未上传"),
@@ -18,7 +23,15 @@ export function confirmationModel(artifact, tab, language = "en") {
     );
     const edges = model.machine.transitions.flatMap((transition, index) =>
       (Array.isArray(transition.source) ? transition.source : [transition.source]).map((from) => ({
-        ...edge(from, transition.dest, ["machine.transitions[" + index + "]"], transition.trigger),
+        ...edge(
+          from,
+          transition.dest,
+          ["machine.transitions[" + index + "]"],
+          chinese
+            ? { upload: "上传", share: "共享", revoke: "取消共享" }[transition.trigger] ||
+                transition.trigger
+            : transition.trigger,
+        ),
         condition: [
           ...(transition.conditions || []),
           ...(transition.unless || []).map((id) => "NOT " + id),
