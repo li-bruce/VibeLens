@@ -104,11 +104,27 @@ presets, source, original recording and 3D layers. Browser errors were empty.
 Its [machine-readable results](ci-browser.json) are retained independently of the
 core build failure described above.
 
+## Final acceptance and publication
+
+The [final full run](https://github.com/li-bruce/VibeLens/actions/runs/43239284079)
+passed all ten jobs on `ee3e9004`: public demo, Timeline browser, Python 3.11/3.13
+on Windows/Linux, source quality on both platforms, live databases and Harness.
+The published commit `ef530259` adds only acceptance documentation to that tested
+implementation. [Pages deployment](https://github.com/li-bruce/VibeLens/actions/runs/43240471289)
+succeeded.
+
+The live page was checked in the browser: confirmation and later state views show
+`state_empty`, `state_private` and `state_shared`; the later view has three nodes.
+The native-tool iframe remains `about:blank` until explicit entry. No browser
+errors occurred. See the [final CI and publication record](ci-final.json) and
+[published-page screenshot](06-published-states.png).
+
 ## Evidence
 
 - [Browser observations and measured handlers](browser.json)
 - [Default-journey request summary](requests.json)
 - [Automated browser results](ci-browser.json)
+- [Final full acceptance and published-page check](ci-final.json)
 - [Initial confirmation](01-confirmed-states.png)
 - [Later state view](02-later-states.png)
 - [Focused data inspection](03-focused-data.png)
