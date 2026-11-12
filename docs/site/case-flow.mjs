@@ -1,6 +1,7 @@
 /** Three concise confirmation views, all derived from the archived declaration. */
 import { t, locale } from "./site-ui.mjs?rev=files-1";
-import { confirmationModel } from "./case-confirmation-model.mjs";
+import { confirmationModel } from "./case-confirmation-model.mjs?rev=prepared-1";
+import { edgePoints, curvePath, midpoint } from "./case-graph-geometry.mjs";
 const namespace = "http://www.w3.org/2000/svg";
 function element(tag, attributes = {}, text) {
   const node = document.createElementNS(namespace, tag);
@@ -44,18 +45,9 @@ export function proposedFlow(confirmed, artifact) {
     defs.append(marker);
     svg.append(defs);
     const byId = new Map(graph.nodes.map((node) => [node.id, node]));
-    for (const [index, edge] of graph.edges.entries()) {
-      const a = byId.get(edge.from),
-        b = byId.get(edge.to);
-      const reverse = b.x < a.x;
-      const self = a.id === b.id;
-      const d = self
-        ? `M${a.x - 15},${a.y - 12}C${a.x - 70},${a.y - 82} ${a.x + 70},${a.y - 82} ${a.x + 15},${a.y - 12}`
-        : reverse
-          ? `M${a.x},${a.y + 22}C${a.x},${a.y + 90} ${b.x},${b.y + 90} ${b.x},${b.y + 22}`
-          : a.x === b.x
-            ? `M${a.x},${a.y + 22}L${b.x},${b.y - 22}`
-            : `M${a.x + 22},${a.y}C${(a.x + b.x) / 2},${a.y} ${(a.x + b.x) / 2},${b.y} ${b.x - 22},${b.y}`;
+    for (const edge of graph.edges) {
+      const points = edgePoints(edge, byId),
+        d = curvePath(points);
       const path = element("path", {
         d,
         fill: "none",
@@ -66,14 +58,14 @@ export function proposedFlow(confirmed, artifact) {
       });
       path.append(element("title", {}, [edge.label, edge.condition].filter(Boolean).join(" · ")));
       svg.append(path);
-      // Conditions on overlapping transitions remain in their accessible title.
-      if (edge.label && (tab === "business" || (tab === "states" && !self && index < 3))) {
+      if (edge.label) {
+        const center = midpoint(points);
         svg.append(
           element(
             "text",
             {
-              x: (a.x + b.x) / 2,
-              y: (a.y + b.y) / 2 + (reverse ? 76 : -10),
+              x: center[0],
+              y: center[1] - 10,
               "text-anchor": "middle",
               class: "intent-edge-label",
             },

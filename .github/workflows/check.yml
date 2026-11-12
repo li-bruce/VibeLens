@@ -3,6 +3,43 @@ on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
+  public-demo:
+    # Keep the guided story independent of the live observer acceptance suite.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python tools/build_site_viewer.py
+      - run: node tools/test_product_demo.mjs
+      - run: node tools/test_case_transport.mjs
+      - run: npm install --no-save --no-package-lock playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: python -m pip install playwright==1.56.0
+      - run: python -m playwright install chromium
+        id: demo-ready
+      - run: python tools/test_product_story_browser.py
+        if: ${{ !cancelled() && steps.demo-ready.conclusion == 'success' }}
+      - run: node tools/test_demo_loading_browser.mjs
+        if: ${{ !cancelled() && steps.demo-ready.conclusion == 'success' }}
+      - run: node tools/test_demo_startup_browser.mjs
+        if: ${{ !cancelled() && steps.demo-ready.conclusion == 'success' }}
+      - run: node tools/test_case_browser.mjs
+        if: ${{ !cancelled() && steps.demo-ready.conclusion == 'success' }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-demo-evidence
+          include-hidden-files: true
+          path: |
+            .validation/clarity-story/browser
+            .validation/demo-loading
+            .validation/demo-startup
+            .validation/file-story/browser
   harness:
     runs-on: ubuntu-latest
     steps:
@@ -147,28 +184,12 @@ jobs:
           BO_API_OBSERVATION_EVIDENCE: .validation/api-observation-browser
       - run: python tools/build_site_viewer.py
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
-      - run: node tools/test_case_transport.mjs
-        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
-      - run: node tools/test_demo_loading_browser.mjs
-        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
-        env:
-          BO_LOADING_EVIDENCE: .validation/demo-loading
       - run: node tools/test_scroll_story_browser.mjs
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: node tools/test_change_panel_browser.mjs
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: node tools/test_glyph_design_browser.mjs
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
-      - run: node tools/test_demo_startup_browser.mjs
-        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
-        env:
-          BO_DEMO_STARTUP_EVIDENCE: .validation/demo-startup-browser
-      - run: python tools/test_product_story_browser.py
-        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
-      - run: node tools/test_case_browser.mjs
-        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
-        env:
-          BO_CASE_BROWSER_EVIDENCE: .validation/file-story/browser
       - run: node tools/test_recording_timeline_browser.mjs
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:

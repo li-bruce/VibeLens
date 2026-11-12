@@ -1,12 +1,14 @@
 """Build small Pages transports from unchanged, archived execution evidence.
 
 The story shell needs captions and event IDs, not source indexes or event payloads.
-The embedded viewer receives the complete artifact with repeated JSON values stored
-once. Reconstruction is lossless; this is a transport optimization, not graph pruning.
+Prepared scenes contain just the selected nodes, fixed layouts and recorded values.
+The optional complete viewer receives a lossless transport of the original artifact,
+with repeated JSON values stored once and reconstructed before use.
 """
 
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,7 +50,11 @@ def summarize(artifact):
         "view": {
             "model": {
                 "nodes": [
-                    {key: node[key] for key in ("id", "label", "source") if key in node}
+                    {
+                        key: node[key]
+                        for key in ("id", "kind", "value", "label", "source")
+                        if key in node
+                    }
                     for node in model["nodes"]
                 ],
                 "edges": [
@@ -86,6 +92,7 @@ def build():
         )
     shell = encode({"schema": "vibelens-story-summary/v1", "versions": summaries})
     (target / "story.json").write_text(shell, encoding="utf-8", newline="\n")
+    subprocess.run(["node", str(ROOT / "tools/build_demo_scenes.mjs")], check=True)
     print(json.dumps({"story_bytes": len(shell.encode()), "artifacts": sizes}))
 
 

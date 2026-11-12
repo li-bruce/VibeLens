@@ -66,11 +66,9 @@ def run(base, output, browser_path):
                     page.wait_for_function(
                         "name => document.body.dataset.sceneReady === name", arg=name, timeout=45000
                     )
-                    frame = page.locator("#case-graph").element_handle().content_frame()
-                    frame.wait_for_function(
-                        "window.graphDebug?.graph?.boxes.length && !graphDebug.layoutBusy"
-                    )
-                    return frame
+                    expect(page.locator("#case-prepared")).to_have_attribute("data-ready", "true")
+                    expect(page.locator("#case-graph")).to_have_attribute("src", "about:blank")
+                    return page
 
                 frame = scene("foundation")
                 expect(page.locator("[data-case-scene]")).to_have_count(6)
@@ -102,12 +100,12 @@ def run(base, output, browser_path):
                 expect(page.locator("#case-play")).to_have_attribute(
                     "aria-label", "Pause" if language == "en" else "暂停"
                 )
-                frame.wait_for_function("graphDebug.view.replay?.event?.id")
+                page.wait_for_function("document.querySelector('#case-prepared').dataset.eventId")
                 page.screenshot(path=str(output / f"run-{language}.png"))
                 page.locator("#case-3d").click()
-                frame.wait_for_function("graphDebug.spatial?.perspective && !graphDebug.layoutBusy")
-                camera = frame.evaluate("graphDebug.spatial.camera.position")
-                viewport = frame.locator(".spatial-canvas").bounding_box()
+                expect(page.locator("#case-prepared")).to_have_attribute("data-mode", "3d")
+                camera = page.get_attribute("#case-prepared", "data-camera")
+                viewport = page.locator(".prepared-webgl").bounding_box()
                 # Use empty canvas near its corner. The middle of the graph can
                 # contain a draggable node, which correctly moves instead of orbiting.
                 x = viewport["x"] + viewport["width"] * 0.17
@@ -117,14 +115,14 @@ def run(base, output, browser_path):
                 page.mouse.move(x + 90, y - 45, steps=14)
                 page.mouse.up()
                 frame.wait_for_function(
-                    "old => JSON.stringify(graphDebug.spatial.camera.position) !== JSON.stringify(old)",
+                    "old => document.querySelector('#case-prepared').dataset.camera !== old",
                     arg=camera,
                 )
                 page.screenshot(path=str(output / f"run-3d-{language}.png"))
                 page.locator("#case-2d").click()
-                frame.wait_for_function("!graphDebug.layers.enabled")
+                expect(page.locator("#case-prepared")).to_have_attribute("data-mode", "2d")
                 frame = scene("drill")
-                expect(frame.locator("#source-code")).to_be_hidden()
+                expect(page.locator(".prepared-source")).to_be_hidden()
                 page.locator('[data-depth="inputs"]').click()
                 expect(page.locator("#case-scope")).to_contain_text(
                     "Values" if language == "en" else "参数"
@@ -134,7 +132,7 @@ def run(base, output, browser_path):
                     "Storage" if language == "en" else "存储"
                 )
                 page.locator('[data-scene-action="case.drill"]').click()
-                expect(frame.locator("#source-code")).to_contain_text(
+                expect(page.locator(".prepared-source")).to_contain_text(
                     "shares.c.recipient_id == actor"
                 )
                 expect(page.locator(".case-playback")).to_be_hidden()
@@ -148,7 +146,7 @@ def run(base, output, browser_path):
                 saved = page.get_attribute("body", "data-saved-view")
                 frame = scene("iterate")
                 expect(page.locator('#case-conversation[data-mode="current"]')).to_be_visible()
-                expect(frame.locator("#source-code")).to_be_hidden()
+                expect(page.locator(".prepared-source")).to_be_hidden()
                 expect(page.locator("#case-telemetry")).to_contain_text("true")
                 page.screenshot(path=str(output / f"repair-{language}.png"))
                 frame = scene("verify")

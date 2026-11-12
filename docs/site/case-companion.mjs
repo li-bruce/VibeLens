@@ -1,6 +1,6 @@
 /** Scripted development dialogue and a separate, event-bound application preview. */
 import { locale, t } from "./site-ui.mjs?rev=files-1";
-import { proposedFlow } from "./case-flow.mjs?rev=guided-1";
+import { proposedFlow } from "./case-flow.mjs?rev=prepared-1";
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
 function node(tag, className, text) {
   const element = document.createElement(tag);

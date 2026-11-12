@@ -21,7 +21,7 @@ for (const language of ["en", "zh-CN"]) {
   }
   const state = confirmationModel(artifact, "states", language);
   assert.deepEqual(
-    state.nodes.map((node) => node.id),
+    state.nodes.map((node) => node.value),
     artifact.view.model.machine.states,
   );
   const transitions = artifact.view.model.machine.transitions;
@@ -33,7 +33,12 @@ for (const language of ["en", "zh-CN"]) {
     ),
   );
   assert.ok(state.edges.some((edge) => edge.condition.includes("NOT has_recipients")));
-  assert.ok(state.edges.some((edge) => edge.from === "shared" && edge.to === "shared"));
+  assert.ok(
+    state.nodes.every((node) =>
+      artifact.view.model.nodes.some((item) => item.id === node.id && item.value === node.value),
+    ),
+  );
+  assert.ok(state.edges.some((edge) => edge.from === "state_shared" && edge.to === "state_shared"));
 }
 assert.equal(JSON.stringify(artifact), before, "Presentation must not mutate archived facts");
 console.log(

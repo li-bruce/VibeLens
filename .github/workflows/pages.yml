@@ -11,6 +11,7 @@ on:
       - 'skills/vibelens/scripts/bo_observer/delivery/dependencies.py'
       - 'tools/build_control_preview.py'
       - 'tools/build_case_preview.py'
+      - 'tools/build_demo_scenes.mjs'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -31,6 +32,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Assemble the real graph viewer for the recorded case

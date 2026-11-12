@@ -1,6 +1,7 @@
 /** A focused explanation of the archived model, with source witnesses per edge.
  * This is a confirmation overview, not a second executable or recorded graph.
  */
+import { routeEdges } from "./case-graph-geometry.mjs";
 export function confirmationModel(artifact, tab, language = "en") {
   const chinese = language === "zh-CN";
   const text = (en, zh) => (chinese ? zh : en);
@@ -18,20 +19,27 @@ export function confirmationModel(artifact, tab, language = "en") {
       private: text("Private", "仅自己可见"),
       shared: text("Shared", "已共享"),
     };
-    const nodes = model.machine.states.map((id, i) =>
-      node(id, 70 + i * 235, 110, labels[id] || id, "S"),
-    );
+    const stateId = (value) => {
+      const match = model.nodes.find((item) => item.kind === "state" && item.value === value);
+      if (!match) throw Error("Missing declared state node: " + value);
+      return match.id;
+    };
+    const nodes = model.machine.states.map((value, i) => ({
+      ...node(stateId(value), 70 + i * 235, 110, labels[value] || value, "S"),
+      value,
+    }));
     const edges = model.machine.transitions.flatMap((transition, index) =>
       (Array.isArray(transition.source) ? transition.source : [transition.source]).map((from) => ({
         ...edge(
-          from,
-          transition.dest,
+          stateId(from),
+          stateId(transition.dest),
           ["machine.transitions[" + index + "]"],
           chinese
             ? { upload: "上传", share: "共享", revoke: "取消共享" }[transition.trigger] ||
                 transition.trigger
             : transition.trigger,
         ),
+        event: transition.trigger,
         condition: [
           ...(transition.conditions || []),
           ...(transition.unless || []).map((id) => "NOT " + id),
@@ -40,7 +48,7 @@ export function confirmationModel(artifact, tab, language = "en") {
     );
     return {
       nodes,
-      edges,
+      edges: routeEdges(edges),
       caption: text("Revocation reads the remaining grants", "取消共享后，根据剩余授权确定状态"),
     };
   }

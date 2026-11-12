@@ -496,6 +496,7 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       await revealLayers(ticket);
       await arrange(ticket);
       post({ type: "vibelens-lens-ready", lens: "all" });
+      if (message.compact === false) post({ type: "vibelens-scene-ready", scene: current });
       return;
     }
     if (message.action === "play") {

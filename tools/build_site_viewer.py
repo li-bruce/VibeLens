@@ -33,7 +33,7 @@ def build(artifact_path=None):
         hashes[source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
     html = (SOURCE / "index.html").read_text(encoding="utf-8")
     html = html.replace('href="/', 'href="./').replace('src="/', 'src="./')
-    html = html.replace('src="./viewer.js"', 'src="../case-viewer.mjs?rev=guided-1"')
+    html = html.replace('src="./viewer.js"', 'src="../case-viewer.mjs?rev=prepared-1"')
     (TARGET / "index.html").write_text(html, encoding="utf-8")
     (TARGET / "asset-proof.json").write_text(json.dumps(hashes, indent=2) + "\n", encoding="utf-8")
     print(f"Built Pages case viewer from {len(hashes)} canonical files")

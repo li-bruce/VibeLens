@@ -99,6 +99,9 @@ try {
         assert.equal(response.status(), 200);
         await page.locator("#foundation").scrollIntoViewIfNeeded();
         await page.waitForFunction(() => document.body.dataset.chapter === "0");
+        await page.waitForFunction(() => document.body.dataset.sceneReady === "foundation");
+        assert.equal(result.navigations.length, 0, "The prepared demo does not start a viewer");
+        await page.click("#case-tools");
         let requestTimeout;
         try {
           await Promise.race([
@@ -129,6 +132,9 @@ try {
         }));
         await page.locator("#run").scrollIntoViewIfNeeded();
         await page.waitForFunction(() => document.body.dataset.sceneReady === "run");
+        await page.click("#run [data-capture-action]");
+        await page.locator('[data-app-action="revoke"]:enabled').waitFor();
+        await page.click('[data-app-action="revoke"]');
         frame = page.frame({ url: /viewer\/index.html\?case=/ });
         await frame.waitForFunction(
           () => graphDebug.view.replay?.event?.id && !graphDebug.layoutBusy,

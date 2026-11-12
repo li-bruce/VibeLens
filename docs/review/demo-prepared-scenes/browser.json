@@ -1,0 +1,121 @@
+{
+  "concepts": {
+    "business": [
+      {
+        "id": "upload",
+        "label": "上传文件"
+      },
+      {
+        "id": "share",
+        "label": "共享文件"
+      },
+      {
+        "id": "download",
+        "label": "下载文件"
+      },
+      {
+        "id": "revoke",
+        "label": "取消共享"
+      }
+    ],
+    "states": [
+      {
+        "id": "state_empty",
+        "label": "尚未上传"
+      },
+      {
+        "id": "state_private",
+        "label": "仅自己可见"
+      },
+      {
+        "id": "state_shared",
+        "label": "已共享"
+      }
+    ],
+    "rules": [
+      {
+        "id": "policy:signed_in",
+        "label": "已登录"
+      },
+      {
+        "id": "policy:is_owner",
+        "label": "所有者"
+      },
+      {
+        "id": "policy:received_share",
+        "label": "接收者"
+      },
+      {
+        "id": "policy:owned_session",
+        "label": "共享 · 取消共享"
+      },
+      {
+        "id": "policy:file_access",
+        "label": "访问资格"
+      },
+      {
+        "id": "policy:read_allowed",
+        "label": "查看 · 下载"
+      }
+    ]
+  },
+  "transitions": [
+    {
+      "handlerMs": 0.7,
+      "mode": "2d",
+      "nodes": 7,
+      "scene": "build",
+      "scope": "overview"
+    },
+    {
+      "handlerMs": 0.7,
+      "mode": "2d",
+      "nodes": 7,
+      "scene": "run",
+      "scope": "overview"
+    },
+    {
+      "handlerMs": 1.3,
+      "mode": "2d",
+      "nodes": 5,
+      "scene": "drill",
+      "scope": "operation"
+    },
+    {
+      "handlerMs": 1.7,
+      "mode": "2d",
+      "nodes": 10,
+      "scene": "iterate",
+      "scope": "custom"
+    },
+    {
+      "handlerMs": 1.1,
+      "mode": "2d",
+      "nodes": 7,
+      "scene": "verify",
+      "scope": "overview"
+    },
+    {
+      "handlerMs": 1.1,
+      "mode": "2d",
+      "nodes": 5,
+      "scene": "drill",
+      "scope": "operation"
+    },
+    {
+      "handlerMs": 0.6,
+      "mode": "2d",
+      "nodes": 7,
+      "scene": "run",
+      "scope": "overview"
+    }
+  ],
+  "checks": {
+    "confirmationMatchesLater": true,
+    "defaultFrame": "about:blank",
+    "recording": "已查看 3 / 3 个业务操作",
+    "correctedValues": "已移除true\n剩余接收者0\n状态private",
+    "retested3DFit": true,
+    "localConsoleErrors": []
+  }
+}

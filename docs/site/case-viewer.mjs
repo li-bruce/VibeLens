@@ -9,7 +9,7 @@ const post = (value) =>
   parent.postMessage({ ...value, version, locale: params.get("lang") || "en" }, location.origin);
 const { loadJson, unpackCase } = await import("./case-data.mjs?rev=pages-20261112");
 const { expandCodeSlice } = await import("./case-code.mjs?rev=files-1");
-const { presentCase } = await import("./case-copy.mjs?rev=pages-20261112");
+const { presentCase } = await import("./case-copy.mjs?rev=prepared-1");
 const nativeFetch = window.fetch.bind(window);
 post({ type: "vibelens-case-loading", phase: "data" });
 let captured;
@@ -217,7 +217,7 @@ if (!controlMode) {
 }
 post({ type: "vibelens-case-loading", phase: "graph" });
 await import("./viewer/viewer.js?rev=pages-20261112");
-const { scenePlayer } = await import("./case-scene-player.mjs?rev=guided-1");
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=prepared-1");
 const runtimeView = structuredClone(view);
 const designView = {
   ...structuredClone(artifact.recording.context),

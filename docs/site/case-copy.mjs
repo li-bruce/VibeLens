@@ -8,11 +8,19 @@ const boilerplate = new Set([
 
 export function presentCase(captured) {
   const artifact = structuredClone(captured);
+  // Keep every declared state, including states not visited in this recording.
+  artifact.story.states = artifact.view.model.machine.states.map((value) => {
+    const node = artifact.view.model.nodes.find(
+      (item) => item.kind === "state" && item.value === value,
+    );
+    if (!node) throw Error("Missing declared state node: " + value);
+    return node.id;
+  });
   // Short presentation aliases fit the native icons. Full definitions and
   // canonical identities remain available through the viewer's node details.
   artifact.story.captions = {
     ...artifact.story.captions,
-    state_private: ["Private", "私有"],
+    state_private: ["Private", "仅自己可见"],
     db_delete_share: ["Delete grant", "删除授权"],
     "field:revoke:in:recipient_id": ["Recipient", "接收者"],
     "policy:fact_is_recipient": ["Shared?", "拥有共享"],

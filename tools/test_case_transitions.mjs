@@ -57,9 +57,7 @@ try {
       await page.waitForFunction(() => document.body.dataset.sceneReady === "run");
       if (mode === "3d") {
         await page.click("#case-3d");
-        await page
-          .frame({ url: /viewer\/index.html/ })
-          .waitForFunction(() => graphDebug.spatial?.perspective);
+        await page.locator('#case-prepared[data-mode="3d"]').waitFor();
       }
       let stage = "run";
       const frames = [],
@@ -81,7 +79,7 @@ try {
         await page.locator("#" + id).scrollIntoViewIfNeeded();
         await page.waitForFunction((id) => document.body.dataset.sceneReady === id, id);
         await page.waitForTimeout(200);
-        sizes.push({ stage: id, ...(await page.locator("#case-graph").boundingBox()) });
+        sizes.push({ stage: id, ...(await page.locator("#case-prepared").boundingBox()) });
       }
       await client.send("Page.stopScreencast");
       const metrics = [];

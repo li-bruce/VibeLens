@@ -34,6 +34,10 @@ try {
         waitUntil: "domcontentloaded",
       });
       await page.locator("#foundation").waitFor();
+      await page.waitForFunction(() => document.body.dataset.sceneReady === "foundation");
+      assert.equal(await page.locator("#case-graph").getAttribute("src"), "about:blank");
+      assert.ok(!requests.some((r) => /case-preview\/v[12]\.json/.test(r.url)));
+      await page.locator("#case-tools").click();
       await started;
       const shellMs = await page.evaluate(() => performance.now());
       assert.equal(await page.locator("html").getAttribute("lang"), language);
@@ -85,6 +89,8 @@ try {
     } else await route.continue();
   });
   await page.goto(server.url + "/demo.html?lang=zh-CN#run", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => document.body.dataset.sceneReady === "run");
+  await page.locator("#case-tools").click();
   await page.waitForFunction(
     () => document.querySelector("#case-loading").dataset.phase === "error",
   );
@@ -99,6 +105,7 @@ try {
     "case-data/v1.json",
     "case-data/v2.json",
     "case-preview/story.json",
+    "case-preview/prepared.json",
     "case-preview/v1.json",
     "case-preview/v2.json",
   ])

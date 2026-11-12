@@ -167,6 +167,21 @@ export function walkthroughGuide({ send, onCaptureChange, onDepthChange }) {
       refresh();
     },
     update(data) {
+      if (data.type === "vibelens-depth-changed" && current === "drill") {
+        const step = depthGuide.find((item) => item.id === data.depth),
+          detail = details.get(current);
+        if (step && detail) {
+          detail.dataset.depth = step.id;
+          detail.querySelector("h3").textContent = copy(step.title);
+          detail.querySelector("p").textContent = copy(step.text);
+          document
+            .querySelectorAll("button[data-depth]")
+            .forEach((button) =>
+              button.setAttribute("aria-pressed", String(button.dataset.depth === step.id)),
+            );
+          onDepthChange(step.id);
+        }
+      }
       const state = session();
       if (
         data.type === "vibelens-lens-ready" &&

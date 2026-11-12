@@ -1,10 +1,11 @@
-/** A scroll-led story: one actual viewer, progressively chosen native views. */
+/** A scroll-led story with prepared scenes; the complete viewer loads on request. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
 import { messages, chapters } from "./case-messages.mjs?rev=guided-1";
 import { loadJson } from "./case-data.mjs?rev=pages-20261112";
 import { scrollStory } from "./scroll-story.mjs?rev=0.14.0";
-import { companion } from "./case-companion.mjs?rev=guided-1";
-import { walkthroughGuide } from "./case-guide.mjs?rev=guided-1";
+import { companion } from "./case-companion.mjs?rev=prepared-1";
+import { walkthroughGuide } from "./case-guide.mjs?rev=prepared-1";
+import { preparedPlayer } from "./case-prepared-player.mjs?rev=prepared-1";
 
 const $ = (id) => document.getElementById(id);
 const copy = (pair) => pair[locale() === "en" ? 0 : 1];
@@ -15,7 +16,8 @@ let chapter = 0,
   pending = null,
   story,
   context,
-  guide;
+  guide,
+  preview;
 let interacting = false,
   tools = false;
 let options = { inputs: true, effects: false, states: false };
@@ -44,9 +46,20 @@ async function loadStory() {
   $("story-status-text").textContent = t("case.loading.story");
   $("story-retry").hidden = true;
   try {
-    const summary = await loadJson("case-preview/story.json?rev=guided-1");
+    const [summary, prepared] = await Promise.all([
+      loadJson("case-preview/story.json?rev=prepared-1"),
+      loadJson("case-preview/prepared.json?rev=prepared-1"),
+    ]);
     if (summary.schema !== "vibelens-story-summary/v1") throw Error("Unsupported story summary");
     values = summary.versions;
+    if (prepared.schema !== "vibelens-prepared-scenes/v1")
+      throw Error("Unsupported prepared scenes");
+    preview?.destroy();
+    preview = preparedPlayer({
+      host: $("case-prepared"),
+      versions: prepared.versions,
+      onState: receive,
+    });
     $("story-status").hidden = true;
     render();
     // Direct chapter links are restored only after their translated DOM exists.
@@ -54,13 +67,19 @@ async function loadStory() {
       requestAnimationFrame(() =>
         document.querySelector(location.hash).scrollIntoView({ behavior: "instant" }),
       );
-  } catch {
+  } catch (error) {
+    console.error(error);
+    $("story-status").hidden = false;
     $("story-status-text").textContent = t("case.loading.error");
     $("story-retry").hidden = false;
   }
 }
 
 function send(value) {
+  if (!tools) {
+    preview?.send({ ...value, version: chapters[chapter].version, locale: locale() });
+    return;
+  }
   if (ready)
     $("case-graph").contentWindow.postMessage({ type: "vibelens-case", ...value }, location.origin);
   else pending = { ...pending, ...value };
@@ -69,6 +88,7 @@ function setInteraction(enabled) {
   interacting = enabled;
   document.querySelector(".case-visual").classList.toggle("is-interacting", enabled);
   $("case-graph").tabIndex = enabled ? 0 : -1;
+  preview?.interact(enabled);
   $("case-interact").setAttribute("aria-pressed", String(enabled));
   $("case-interact").textContent = t(enabled ? "case.browse" : "case.explore");
 }
@@ -98,6 +118,7 @@ function stage(index) {
     editing: !!$("view-editor")?.open,
     options,
     name: $("watch-name")?.value || t("case.viewName"),
+    ...(tools ? { action: "all" } : {}),
   };
   const key = version + ":" + locale();
   $("case-view-name").textContent = t(
@@ -129,13 +150,24 @@ function stage(index) {
     ],
   };
   $("case-scope").textContent = copy(explanations[current.id]);
+  if (!tools) {
+    $("case-prepared").hidden = false;
+    $("case-graph").hidden = true;
+    loading(null);
+    send(message);
+    document.body.dataset.chapter = String(index);
+    return;
+  }
+  preview?.pause();
+  $("case-graph").hidden = false;
+  $("case-prepared").hidden = true;
   if (loaded !== key) {
     ready = false;
     pending = message;
     loaded = key;
     $("case-graph").removeAttribute("data-ready");
     loading("data", true);
-    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=guided-1`;
+    $("case-graph").src = `viewer/index.html?case=${version}&lang=${locale()}&rev=prepared-1`;
   } else {
     loading("layout", !$("case-graph").hasAttribute("data-ready"));
     send(message);
@@ -373,13 +405,17 @@ function render() {
 }
 window.addEventListener("message", (event) => {
   if (
+    !tools ||
     event.origin !== location.origin ||
     event.source !== $("case-graph").contentWindow ||
     event.data.version !== chapters[chapter].version ||
     event.data.locale !== locale()
   )
     return;
-  const data = event.data;
+  receive(event.data);
+});
+/** Both presentations report the same original event identities to the story. */
+function receive(data) {
   guide?.update(data);
   if (data.type === "vibelens-case-loading") loading(data.phase, true);
   if (data.scene && data.scene !== chapters[chapter].id) return;
@@ -445,7 +481,7 @@ window.addEventListener("message", (event) => {
       }
     }
   }
-});
+}
 for (const dimension of ["2d", "3d"])
   $("case-" + dimension).onclick = () => {
     mode = dimension;
@@ -456,10 +492,11 @@ for (const dimension of ["2d", "3d"])
     send({ mode });
   };
 $("case-tools").onclick = () => {
+  if (tools) send({ action: "pause" });
   tools = !tools;
   $("case-tools").setAttribute("aria-pressed", String(tools));
   setInteraction(tools || mode === "3d");
-  send({ compact: !tools });
+  stage(chapter);
 };
 $("case-interact").onclick = () => setInteraction(!interacting);
 $("case-play").onclick = () => send({ action: "toggle-play" });
@@ -468,7 +505,7 @@ $("case-position").oninput = (event) =>
 document.querySelectorAll("[data-case-lens]").forEach((button) => {
   button.onclick = () => {
     delete document.body.dataset.lensReady;
-    loading("layout");
+    if (tools) loading("layout");
     document
       .querySelectorAll("[data-case-lens]")
       .forEach((other) => other.setAttribute("aria-pressed", String(other === button)));

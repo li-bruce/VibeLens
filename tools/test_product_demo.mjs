@@ -8,6 +8,7 @@ import { presentCase } from "../docs/site/case-copy.mjs";
 await import("./test_file_story.mjs");
 await import("./test_guided_story.mjs");
 await import("./test_case_artifacts.mjs");
+await import("./test_prepared_scenes.mjs");
 
 for (const version of [1, 2]) {
   const original = JSON.parse(
