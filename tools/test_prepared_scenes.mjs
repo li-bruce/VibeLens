@@ -1,8 +1,10 @@
 /** Presentation must be fast without changing the confirmed model or runtime facts. */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { createHash } from "node:crypto";
-import { compileScenes } from "./build_demo_scenes.mjs";
+import { compileScenes, writePreparedScenes } from "./build_demo_scenes.mjs";
 import { confirmationModel } from "../docs/site/case-confirmation-model.mjs";
 import { curvePath, edgePoints } from "../docs/site/case-graph-geometry.mjs";
 import { transferEdges } from "../skills/vibelens/assets/stategraph-viewer/recording.js";
@@ -10,6 +12,22 @@ import { presentCase } from "../docs/site/case-copy.mjs";
 
 const read = (name) => JSON.parse(readFileSync(new URL(`../docs/site/${name}`, import.meta.url)));
 const generated = read("case-preview/prepared.json");
+// CI builds scenes before assembling the native viewer. No output folder exists yet.
+const scratch = mkdtempSync(path.join(tmpdir(), "vibelens-prepared-"));
+try {
+  const output = path.join(scratch, "new-preview");
+  assert.deepEqual(writePreparedScenes(output), generated);
+  assert.deepEqual(JSON.parse(readFileSync(path.join(output, "prepared.json"))), generated);
+  for (const version of [1, 2]) {
+    const source = JSON.parse(readFileSync(path.join(output, `source-v${version}.json`)));
+    assert.equal(source.sha256, generated.versions[version - 1].source.sha256);
+  }
+} finally {
+  // Delete only the fresh directory created by this test under the system temp root.
+  assert.equal(path.dirname(path.resolve(scratch)), path.resolve(tmpdir()));
+  assert.ok(path.basename(scratch).startsWith("vibelens-prepared-"));
+  rmSync(scratch, { recursive: true, force: true });
+}
 let total = 0;
 for (const version of [1, 2]) {
   const original = read(`case-data/v${version}.json`),

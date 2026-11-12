@@ -90,6 +90,13 @@ overflow assertion: the confirmation section's two minimum-width columns exceede
 the viewport. Those introductory columns now stack at the existing page breakpoint;
 the desktop tool's interaction scope is unchanged.
 
+The third clean-checkout run reached the scene compiler and exposed a second
+build-order dependency: its output directory previously came from the full-viewer
+assembly. The compiler now creates its own destination. A regression exports all
+three files into a newly created temporary location and compares their content and
+source hashes with the published fixtures. The [build failure](ci-third-build.log)
+is retained; the original archives remain unchanged.
+
 ## Evidence
 
 - [Browser observations and measured handlers](browser.json)

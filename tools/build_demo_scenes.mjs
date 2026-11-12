@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import path from "node:path";
 import { confirmationModel } from "../docs/site/case-confirmation-model.mjs";
 import { transferEdges } from "../skills/vibelens/assets/stategraph-viewer/recording.js";
 
@@ -26,8 +27,6 @@ const kinds = {
   source: "code-function",
 };
 const digest = (value) => createHash("sha256").update(value).digest("hex");
-const write = (name, data) =>
-  fs.writeFileSync(new URL(`case-preview/${name}`, site), JSON.stringify(data));
 
 export function compileScenes(artifact) {
   const { model } = artifact.view;
@@ -324,7 +323,10 @@ export function compileScenes(artifact) {
   };
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+/** Also works from a clean checkout, before the full viewer has been assembled. */
+export function writePreparedScenes(output = fileURLToPath(new URL("case-preview/", site))) {
+  fs.mkdirSync(output, { recursive: true });
+  const write = (name, data) => fs.writeFileSync(path.join(output, name), JSON.stringify(data));
   const versions = [1, 2].map((version) => {
     const artifact = JSON.parse(fs.readFileSync(new URL(`case-data/v${version}.json`, site)));
     const compiled = compileScenes(artifact);
@@ -337,7 +339,12 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   });
   const payload = { schema: "vibelens-prepared-scenes/v1", versions };
   write("prepared.json", payload);
+  return payload;
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const payload = writePreparedScenes();
   console.log(
-    `Prepared ${versions.reduce((n, v) => n + Object.keys(v.scenes).length, 0)} scene graphs: ${JSON.stringify(payload).length} characters`,
+    `Prepared ${payload.versions.reduce((n, v) => n + Object.keys(v.scenes).length, 0)} scene graphs: ${JSON.stringify(payload).length} characters`,
   );
 }
