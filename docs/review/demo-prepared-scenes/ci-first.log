@@ -1,0 +1,166 @@
+##[group]Run python tools/test_product_story_browser.py
+2026-11-12T14:11:36.7568296Z [36;1mpython tools/test_product_story_browser.py[0m
+2026-11-12T14:11:36.7584943Z shell: /usr/bin/bash -e {0}
+2026-11-12T14:11:36.7585084Z env:
+2026-11-12T14:11:36.7586748Z ##[endgroup]
+2026-11-12T14:12:11.5226571Z Traceback (most recent call last):
+2026-11-12T14:12:11.5233131Z   File "/home/runner/work/VibeLens/VibeLens/tools/test_product_story_browser.py", line 217, in <module>
+2026-11-12T14:12:11.5233585Z     run(url.rstrip("/"), args.out, args.browser)
+2026-11-12T14:12:11.5233902Z     ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T14:12:11.5234401Z   File "/home/runner/work/VibeLens/VibeLens/tools/test_product_story_browser.py", line 90, in run
+2026-11-12T14:12:11.5234949Z     page.locator("#run [data-capture-action]").click()
+2026-11-12T14:12:11.5235298Z     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2026-11-12T14:12:11.5236029Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py", line 15573, in click
+2026-11-12T14:12:11.5237121Z     self._sync(
+2026-11-12T14:12:11.5237249Z     ~~~~~~~~~~^
+2026-11-12T14:12:11.5237398Z         self._impl_obj.click(
+2026-11-12T14:12:11.5237563Z         ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T14:12:11.5237715Z     ...<9 lines>...
+2026-11-12T14:12:11.5237855Z         )
+2026-11-12T14:12:11.5237972Z         ^
+2026-11-12T14:12:11.5238090Z     )
+2026-11-12T14:12:11.5238215Z     ^
+2026-11-12T14:12:11.5238589Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+2026-11-12T14:12:11.5238980Z     return task.result()
+2026-11-12T14:12:11.5239137Z            ~~~~~~~~~~~^^
+2026-11-12T14:12:11.5239518Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_locator.py", line 160, in click
+2026-11-12T14:12:11.5239973Z     return await self._frame.click(self._selector, strict=True, **params)
+2026-11-12T14:12:11.5240326Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T14:12:11.5240793Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 549, in click
+2026-11-12T14:12:11.5241197Z     await self._channel.send("click", self._timeout, locals_to_params(locals()))
+2026-11-12T14:12:11.5241649Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 69, in send
+2026-11-12T14:12:11.5242023Z     return await self._connection.wrap_api_call(
+2026-11-12T14:12:11.5242232Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T14:12:11.5242403Z     ...<3 lines>...
+2026-11-12T14:12:11.5242532Z     )
+2026-11-12T14:12:11.5242644Z     ^
+2026-11-12T14:12:11.5243024Z   File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+2026-11-12T14:12:11.5243486Z     raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+2026-11-12T14:12:11.5243866Z playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.
+2026-11-12T14:12:11.5244112Z Call log:
+2026-11-12T14:12:11.5244296Z   - waiting for locator("#run [data-capture-action]")
+2026-11-12T14:12:11.5244992Z     - locator resolved to <button type="button" class="capture-button" data-capture-action="run">● Try recording</button>
+2026-11-12T14:12:11.5245744Z   - attempting click action
+2026-11-12T14:12:11.5246035Z     2 × waiting for element to be visible, enabled and stable
+2026-11-12T14:12:11.5246280Z       - element is not stable
+2026-11-12T14:12:11.5246549Z     - retrying click action
+2026-11-12T14:12:11.5246782Z     - waiting 20ms
+2026-11-12T14:12:11.5247113Z     2 × waiting for element to be visible, enabled and stable
+2026-11-12T14:12:11.5247436Z       - element is not stable
+2026-11-12T14:12:11.5247675Z     - retrying click action
+2026-11-12T14:12:11.5247903Z       - waiting 100ms
+2026-11-12T14:12:11.5248275Z     56 × waiting for element to be visible, enabled and stable
+2026-11-12T14:12:11.5248615Z        - element is not stable
+2026-11-12T14:12:11.5248847Z      - retrying click action
+2026-11-12T14:12:11.5249083Z        - waiting 500ms
+2026-11-12T14:12:11.5249222Z
+2026-11-12T14:12:11.5550102Z ##[error]Process completed with exit code 1.
+2026-11-12T14:12:11.5586657Z ##[group]Run node tools/test_demo_loading_browser.mjs
+2026-11-12T14:12:11.5586891Z [36;1mnode tools/test_demo_loading_browser.mjs[0m
+2026-11-12T14:12:11.5603794Z shell: /usr/bin/bash -e {0}
+2026-11-12T14:12:11.5603941Z env:
+2026-11-12T14:12:11.5605785Z ##[endgroup]
+2026-11-12T14:12:58.4229585Z node:internal/modules/run_main:123
+2026-11-12T14:12:58.4230209Z     triggerUncaughtException(
+2026-11-12T14:12:58.4230748Z     ^
+2026-11-12T14:12:58.4230984Z
+2026-11-12T14:12:58.4231172Z locator.click: Timeout 45000ms exceeded.
+2026-11-12T14:12:58.4231453Z Call log:
+2026-11-12T14:12:58.4231732Z   - waiting for locator('#conversation-next')
+2026-11-12T14:12:58.4232334Z     - locator resolved to <button type="button" id="conversation-next" class="conversation-next">Next reply</button>
+2026-11-12T14:12:58.4232857Z   - attempting click action
+2026-11-12T14:12:58.4233544Z     2 × waiting for element to be visible, enabled and stable
+2026-11-12T14:12:58.4233908Z       - element is not stable
+2026-11-12T14:12:58.4234165Z     - retrying click action
+2026-11-12T14:12:58.4234397Z     - waiting 20ms
+2026-11-12T14:12:58.4234777Z     2 × waiting for element to be visible, enabled and stable
+2026-11-12T14:12:58.4235097Z       - element is not stable
+2026-11-12T14:12:58.4235321Z     - retrying click action
+2026-11-12T14:12:58.4235534Z       - waiting 100ms
+2026-11-12T14:12:58.4236044Z     - waiting for element to be visible, enabled and stable
+2026-11-12T14:12:58.4236344Z     - element is not stable
+2026-11-12T14:12:58.4236604Z   86 × retrying click action
+2026-11-12T14:12:58.4236823Z        - waiting 500ms
+2026-11-12T14:12:58.4237098Z        - waiting for element to be visible, enabled and stable
+2026-11-12T14:12:58.4237404Z        - element is not visible
+2026-11-12T14:12:58.4237627Z   - retrying click action
+2026-11-12T14:12:58.4237835Z     - waiting 500ms
+2026-11-12T14:12:58.4237948Z
+2026-11-12T14:12:58.4238212Z     at /home/runner/work/VibeLens/VibeLens/tools/test_demo_loading_browser.mjs:46:76 {
+2026-11-12T14:12:58.4238593Z   name: 'TimeoutError'
+2026-11-12T14:12:58.4238779Z }
+2026-11-12T14:12:58.4238875Z
+2026-11-12T14:12:58.4238950Z Node.js v22.23.4
+2026-11-12T14:12:58.4316232Z ##[error]Process completed with exit code 1.
+2026-11-12T14:12:58.4358658Z ##[group]Run node tools/test_demo_startup_browser.mjs
+2026-11-12T14:12:58.4358904Z [36;1mnode tools/test_demo_startup_browser.mjs[0m
+2026-11-12T14:12:58.4376112Z shell: /usr/bin/bash -e {0}
+2026-11-12T14:12:58.4376258Z env:
+2026-11-12T14:12:58.4377855Z ##[endgroup]
+2026-11-12T14:16:16.2610219Z {"valid":false,"cases":6,"output":"/home/runner/work/VibeLens/VibeLens/.validation/demo-startup"}
+2026-11-12T14:16:16.2615810Z node:internal/modules/run_main:123
+2026-11-12T14:16:16.2616686Z     triggerUncaughtException(
+2026-11-12T14:16:16.2616829Z     ^
+2026-11-12T14:16:16.2616957Z
+2026-11-12T14:16:16.2617669Z AssertionError [ERR_ASSERTION]: localized demo startup and native foundation/run transition must pass
+2026-11-12T14:16:16.2618296Z     at file:///home/runner/work/VibeLens/VibeLens/tools/test_demo_startup_browser.mjs:180:8 {
+2026-11-12T14:16:16.2618686Z   generatedMessage: false,
+2026-11-12T14:16:16.2618888Z   code: 'ERR_ASSERTION',
+2026-11-12T14:16:16.2619082Z   actual: false,
+2026-11-12T14:16:16.2619251Z   expected: true,
+2026-11-12T14:16:16.2619420Z   operator: '==',
+2026-11-12T14:16:16.2619583Z   diff: 'simple'
+2026-11-12T14:16:16.2619747Z }
+2026-11-12T14:16:16.2619831Z
+2026-11-12T14:16:16.2619900Z Node.js v22.23.4
+2026-11-12T14:16:16.2710759Z ##[error]Process completed with exit code 1.
+2026-11-12T14:16:16.2734202Z ##[group]Run node tools/test_case_browser.mjs
+2026-11-12T14:16:16.2734405Z [36;1mnode tools/test_case_browser.mjs[0m
+2026-11-12T14:16:16.2750197Z shell: /usr/bin/bash -e {0}
+2026-11-12T14:16:16.2750331Z env:
+2026-11-12T14:16:16.2751730Z ##[endgroup]
+2026-11-12T14:17:32.1927862Z PASS: explicit complete tool, eight native presets, complete states, code inventory, source, original recordings and 3D layers
+2026-11-12T14:17:32.2963777Z ##[group]Run actions/upload-artifact@v4
+2026-11-12T14:17:32.2964027Z with:
+2026-11-12T14:17:32.2964145Z   name: public-demo-evidence
+2026-11-12T14:17:32.2964283Z   include-hidden-files: true
+2026-11-12T14:17:32.2964563Z   path: .validation/clarity-story/browser
+.validation/demo-loading
+.validation/demo-startup
+.validation/file-story/browser
+
+2026-11-12T14:17:32.2964858Z   if-no-files-found: warn
+2026-11-12T14:17:32.2964982Z   compression-level: 6
+2026-11-12T14:17:32.2965159Z   overwrite: false
+2026-11-12T14:17:32.2965316Z env:
+2026-11-12T14:17:32.2967063Z ##[endgroup]
+2026-11-12T14:17:32.4128694Z (node:4982) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T14:17:32.4129148Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T14:17:32.4188036Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-12T14:17:32.4189735Z The least common ancestor is /home/runner/work/VibeLens/VibeLens/.validation. This will be the root directory of the artifact
+2026-11-12T14:17:32.4190435Z With the provided path, there will be 9 files uploaded
+2026-11-12T14:17:32.4193254Z Artifact name is valid!
+2026-11-12T14:17:32.4193780Z Root directory input is valid!
+2026-11-12T14:17:32.7544347Z Beginning upload of artifact content to blob storage
+2026-11-12T14:17:32.8093231Z (node:4982) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-12T14:17:33.3626676Z Uploaded bytes 1266781
+2026-11-12T14:17:33.4181529Z Finished uploading artifact content to blob storage!
+2026-11-12T14:17:33.4182725Z Finalizing artifact upload
+2026-11-12T14:17:34.0416335Z Artifact public-demo-evidence.zip successfully finalized. Artifact ID 13951563892
+2026-11-12T14:17:34.0416832Z Artifact public-demo-evidence has been successfully uploaded! Final size is 1266781 bytes. Artifact ID is 13951563892
+2026-11-12T14:17:34.0602084Z Post job cleanup.
+2026-11-12T14:17:34.1175656Z [command]/usr/bin/git version
+2026-11-12T14:17:34.1210326Z git version 2.56.0
+2026-11-12T14:17:34.1235864Z Temporarily overriding HOME='/home/runner/work/_temp/d4aa4a41-7cfb-413c-9f5a-2582aeb018ed' before making global git config changes
+2026-11-12T14:17:34.1236882Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T14:17:34.1239914Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/VibeLens/VibeLens
+2026-11-12T14:17:34.1275027Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T14:17:34.1304642Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T14:17:34.1532830Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T14:17:34.1560943Z http.https://github.com/.extraheader
+2026-11-12T14:17:34.1570418Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-12T14:17:34.1613920Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T14:17:34.1866196Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T14:17:34.1905787Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T14:17:34.2246450Z Cleaning up orphan processes
+2026-11-12T14:17:34.2472227Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

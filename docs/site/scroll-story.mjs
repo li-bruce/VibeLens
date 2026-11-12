@@ -10,7 +10,8 @@ export function scrollStory({
   let active = -1,
     scheduled = false,
     destroyed = false,
-    interaction = null;
+    interaction = null,
+    navigationTarget = null;
 
   // Editing a visible inline panel belongs to its chapter. Native focus scrolling
   // and asynchronously resized content must not replace that chapter mid-click.
@@ -21,6 +22,8 @@ export function scrollStory({
     // That asynchronous focus is not a reader leaving the parent editor.
     if (event.type === "focusin" && event.target.tagName === "IFRAME") return;
     const element = event.target.closest?.(interactionSelector);
+    if (event.type === "pointerdown" && !element && !navigation?.contains(event.target))
+      navigationTarget = null;
     const owner = element ? elements.findIndex((scene) => scene.contains(element)) : -1;
     // A shared sticky viewer belongs to the chapter that opened its controls.
     // Native iframe focus may scroll the parent without a navigation gesture.
@@ -29,7 +32,25 @@ export function scrollStory({
   }
   function releaseInteraction() {
     interaction = null;
+    navigationTarget = null;
     schedule();
+  }
+  function releaseKeyboard(event) {
+    if (
+      ["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key) &&
+      !event.target.closest?.("input, textarea, select, [contenteditable], button")
+    )
+      releaseInteraction();
+  }
+  function activate(next) {
+    if (next === active) return;
+    active = next;
+    elements.forEach((element, index) => element.classList.toggle("is-active", index === active));
+    navigation?.querySelectorAll("[data-chapter]").forEach((link) => {
+      if (Number(link.dataset.chapter) === active) link.setAttribute("aria-current", "step");
+      else link.removeAttribute("aria-current");
+    });
+    onChange(active);
   }
   function measure() {
     scheduled = false;
@@ -65,15 +86,7 @@ export function scrollStory({
       if (owner >= 0 && visible === element) next = owner;
       else interaction = null;
     }
-    if (next !== active) {
-      active = next;
-      elements.forEach((element, index) => element.classList.toggle("is-active", index === active));
-      navigation?.querySelectorAll("[data-chapter]").forEach((link) => {
-        if (Number(link.dataset.chapter) === active) link.setAttribute("aria-current", "step");
-        else link.removeAttribute("aria-current");
-      });
-      onChange(active);
-    }
+    activate(navigationTarget ?? next);
   }
   function schedule() {
     if (!scheduled) {
@@ -90,12 +103,22 @@ export function scrollStory({
     // the chapter even when its sticky viewer is still visible.
     document.addEventListener("wheel", releaseInteraction, { passive: true });
     document.addEventListener("touchmove", releaseInteraction, { passive: true });
+    document.addEventListener("keydown", releaseKeyboard);
   }
   function go(index) {
+    if (!elements[index]) return;
     interaction = null;
-    elements[index]?.scrollIntoView({
-      behavior: reduced.matches ? "instant" : "smooth",
-      block: "start",
+    // Activate before measuring the scroll destination. Moving the shared app
+    // or conversation changes chapter heights; geometry must not select the
+    // previous chapter again while the requested transition is still settling.
+    navigationTarget = index;
+    activate(index);
+    requestAnimationFrame(() => {
+      if (destroyed || navigationTarget !== index) return;
+      elements[index].scrollIntoView({
+        behavior: reduced.matches ? "instant" : "smooth",
+        block: "start",
+      });
     });
   }
   navigation?.querySelectorAll("[data-chapter]").forEach((link) =>
@@ -119,6 +142,7 @@ export function scrollStory({
       document.removeEventListener("focusin", rememberInteraction);
       document.removeEventListener("wheel", releaseInteraction);
       document.removeEventListener("touchmove", releaseInteraction);
+      document.removeEventListener("keydown", releaseKeyboard);
     },
   };
 }

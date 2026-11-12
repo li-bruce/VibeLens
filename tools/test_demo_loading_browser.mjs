@@ -57,7 +57,9 @@ try {
         !requests.some((r) => /case-preview\/v2\.json/.test(r.url)),
         "The repaired build is deferred",
       );
-      await page.locator("#run").evaluate((el) => el.scrollIntoView({ behavior: "instant" }));
+      // Full tools owns canvas gestures; the chapter control explicitly leaves
+      // that interaction scope, just as a visitor does.
+      await page.locator('#case-chapters a[href="#run"]').click();
       await page.screenshot({ path: path.join(output, language + "-loading.png") });
       release();
       await page.waitForFunction(() => document.body.dataset.sceneReady === "run");

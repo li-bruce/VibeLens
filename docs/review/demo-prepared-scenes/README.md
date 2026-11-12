@@ -69,6 +69,15 @@ deferred/failed HTTP responses and retry, startup ordering, full presets, source
 original recordings and 3D layers. Local browser evidence does not stand in for
 those automated results; their CI outcome is recorded separately after execution.
 
+The [first CI run](https://github.com/li-bruce/VibeLens/actions/runs/43234450125/job/131237966504)
+passed the complete-tool checks, but failed the guided journey, loading test and
+startup transition. Its [failure log](ci-first.log) is retained. The guided journey
+found continually moving buttons at a shorter viewport: reparenting the shared
+application/conversation changed chapter geometry and could select the preceding
+chapter again. Explicit navigation now activates and holds its selected chapter
+until intentional scrolling resumes; browser scroll anchoring no longer competes
+with that transition. Tests enter chapters through the real navigation controls.
+
 ## Evidence
 
 - [Browser observations and measured handlers](browser.json)

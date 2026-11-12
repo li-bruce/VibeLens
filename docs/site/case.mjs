@@ -2,7 +2,7 @@
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
 import { messages, chapters } from "./case-messages.mjs?rev=guided-1";
 import { loadJson } from "./case-data.mjs?rev=pages-20261112";
-import { scrollStory } from "./scroll-story.mjs?rev=0.14.0";
+import { scrollStory } from "./scroll-story.mjs?rev=prepared-1";
 import { companion } from "./case-companion.mjs?rev=prepared-1";
 import { walkthroughGuide } from "./case-guide.mjs?rev=prepared-1";
 import { preparedPlayer } from "./case-prepared-player.mjs?rev=prepared-1";
@@ -63,10 +63,8 @@ async function loadStory() {
     $("story-status").hidden = true;
     render();
     // Direct chapter links are restored only after their translated DOM exists.
-    if (chapters.some((item) => "#" + item.id === location.hash))
-      requestAnimationFrame(() =>
-        document.querySelector(location.hash).scrollIntoView({ behavior: "instant" }),
-      );
+    const linked = chapters.findIndex((item) => "#" + item.id === location.hash);
+    if (linked >= 0) story.go(linked);
   } catch (error) {
     console.error(error);
     $("story-status").hidden = false;

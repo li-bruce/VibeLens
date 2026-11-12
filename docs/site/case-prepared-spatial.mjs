@@ -7,8 +7,12 @@ export function spatialGraph(host) {
   const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.domElement.className = "prepared-webgl";
+  // A visitor can switch back to 2D while this lazy module is still loading.
+  // Keep new surfaces hidden until the current mode explicitly activates them.
+  renderer.domElement.hidden = true;
   const labels = document.createElement("div");
   labels.className = "prepared-spatial-labels";
+  labels.hidden = true;
   host.append(renderer.domElement, labels);
   const scene = new T.Scene();
   scene.add(new T.HemisphereLight(0xffffff, 0xb6c5cb, 2));

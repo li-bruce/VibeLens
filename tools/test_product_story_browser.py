@@ -185,6 +185,13 @@ def run(base, output, browser_path):
             )
             context.close()
             assert not errors, errors
+        except Exception:
+            # Preserve the actual failed page, not just the last successful step.
+            try:
+                page.screenshot(path=str(output / "failure.png"))
+            except Exception:
+                pass
+            raise
         finally:
             browser.close()
             (output / "result.json").write_text(

@@ -130,7 +130,7 @@ try {
           nodes: graphDebug.graph.boxes.length,
           edges: graphDebug.graph.edges.length,
         }));
-        await page.locator("#run").scrollIntoViewIfNeeded();
+        await page.locator('#case-chapters a[href="#run"]').click();
         await page.waitForFunction(() => document.body.dataset.sceneReady === "run");
         await page.click("#run [data-capture-action]");
         await page.locator('[data-app-action="revoke"]:enabled').waitFor();
