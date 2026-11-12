@@ -97,10 +97,18 @@ three files into a newly created temporary location and compares their content a
 source hashes with the published fixtures. The [build failure](ci-third-build.log)
 is retained; the original archives remain unchanged.
 
+The [third public-demo job](https://github.com/li-bruce/VibeLens/actions/runs/43237901697/job/131250129975)
+passed all four browser suites: the six-stage journey in both languages, slow and
+failed requests with retry, six fresh startup contexts, and the full tool's eight
+presets, source, original recording and 3D layers. Browser errors were empty.
+Its [machine-readable results](ci-browser.json) are retained independently of the
+core build failure described above.
+
 ## Evidence
 
 - [Browser observations and measured handlers](browser.json)
 - [Default-journey request summary](requests.json)
+- [Automated browser results](ci-browser.json)
 - [Initial confirmation](01-confirmed-states.png)
 - [Later state view](02-later-states.png)
 - [Focused data inspection](03-focused-data.png)
