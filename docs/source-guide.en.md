@@ -64,6 +64,13 @@ canonical relations and native ownership remain intact.
 
 The product story is separate from the runtime. [export_file_case.py](../tools/export_file_case.py) validates immutable trial recordings, sources and screenshots before producing static case data. [case-viewer.mjs](site/case-viewer.mjs) serves those exports to the unchanged canonical viewer; [case-scene-player.mjs](site/case-scene-player.mjs) selects native views and replay positions. [case-copy.mjs](site/case-copy.mjs) removes known authoring boilerplate in display-only clones while preserving archived facts. [case-companion.mjs](site/case-companion.mjs) keeps development dialogue and event-bound application screenshots separate. [export_trial_dialogue.py](../tools/export_trial_dialogue.py) exports visible dialogue and named-turn usage counters for review.
 
+[build_case_preview.py](../tools/build_case_preview.py) derives a small conversation
+summary and lossless, deduplicated transports from the archived case. The parent
+page loads the summary; the embedded viewer loads one complete build on demand.
+[case-data.mjs](site/case-data.mjs) restores independent copies before the native
+viewer reads them. `node tools/test_case_transport.mjs` verifies exact equality
+with both archives after `python tools/build_site_viewer.py`.
+
 | Location | What to read or change here |
 |---|---|
 | [SKILL.md](../skills/vibelens/SKILL.md) | The conversation and iteration workflow followed by the coding agent. |
@@ -198,8 +205,8 @@ stream lock is independent of JSON serialization; public views are detached.
 |---|---|
 | [layer-style.js](../skills/vibelens/assets/stategraph-viewer/layer-style.js) | One layer order/palette shared by 2D, 3D, regions and controls; shapes identify types. |
 | [edge-color.js](../skills/vibelens/assets/stategraph-viewer/edge-color.js) | Same-layer lines and moving arrows use the layer palette; cross-layer links use neutral gray. Shared by graph and Timeline. |
-| [relation-appearance.js](../skills/vibelens/assets/stategraph-viewer/relation-appearance.js) | Compare visible node types: same type uses solid strokes, different types use dashes. Relationship families select single, double or bordered lines and arrowheads. |
-| [relation-strokes.js](../skills/vibelens/assets/stategraph-viewer/relation-strokes.js) | Shared stroke dimensions; parallel-rail geometry for 2D and the legend. [spatial-line-material.js](../skills/vibelens/assets/stategraph-viewer/spatial-line-material.js) renders the same profiles in one screen-space GPU line batch. |
+| [relation-appearance.js](../skills/vibelens/assets/stategraph-viewer/relation-appearance.js) | Compare visible node types: same type uses solid strokes, different types use dashes. Relationship families select line weight, subtle borders and arrowheads. |
+| [relation-strokes.js](../skills/vibelens/assets/stategraph-viewer/relation-strokes.js) | One continuous centerline with shared border dimensions for 2D, 3D and the legend. [spatial-line-material.js](../skills/vibelens/assets/stategraph-viewer/spatial-line-material.js) renders these profiles in one screen-space GPU line batch. |
 | [trace-tracks.js](../skills/vibelens/assets/stategraph-viewer/trace-tracks.js) | Pack simultaneous lifetimes into nonoverlapping tracks within one layer row. |
 | [step-hierarchy.js](../skills/vibelens/assets/stategraph-viewer/step-hierarchy.js) | Derive recorded-step indentation from actual call references and apply layer colors. |
 | [viewer.js](../skills/vibelens/assets/stategraph-viewer/viewer.js) | Connect controls, graph data, live updates, and recording selection. Start here for UI wiring. |

@@ -74,7 +74,7 @@ try {
           scene: "watch",
           mode: "3d",
           compact: true,
-          options: { inputs: true, effects: false, states: true },
+          options: { inputs: true, effects: false, states: false },
         },
         location.origin,
       );
@@ -85,15 +85,32 @@ try {
         graphDebug.spatial?.perspective &&
         !graphDebug.layoutBusy,
     );
-    await page.mouse.move(520, 290);
+    // Use the actual Orbit tool after the saved view has restored its controls.
+    // Capture from empty canvas so a node label cannot intercept the gesture.
+    await page.waitForFunction(() => !document.body.inert);
+    assert.equal(await page.locator("#tool-orbit").getAttribute("aria-pressed"), "true");
+    const beforeOrbit = await page.evaluate(() => graphDebug.spatial.camera);
+    assert.equal(
+      await page.evaluate(() => document.elementFromPoint(100, 240).className),
+      "spatial-canvas",
+    );
+    await page.mouse.move(100, 240);
     await page.mouse.down();
-    await page.mouse.move(655, 195, { steps: 18 });
+    await page.mouse.move(140, 185, { steps: 18 });
     await page.mouse.up();
-    // Keep the chosen angle and leave room for the lower plane's labels.
+    // Show the same compact investigation across its actual planes. Additional
+    // state and rule views remain available in the interactive walkthrough.
     await page.mouse.move(550, 280);
-    await page.mouse.wheel(0, 180);
+    await page.mouse.wheel(0, 80);
     await page.mouse.move(5, 5);
     await page.waitForTimeout(500);
+    const afterOrbit = await page.evaluate(() => graphDebug.spatial.camera);
+    const offset = afterOrbit.position.map((value, i) => value - afterOrbit.target[i]);
+    assert.ok(
+      Math.hypot(offset[0], offset[2]) / Math.hypot(...offset) > 0.3,
+      "An oblique view separates the planes",
+    );
+    assert.notDeepEqual(afterOrbit.position, beforeOrbit.position);
     const three = `${output}/layers-${locale}.png`;
     await page.screenshot({ path: three });
     const evidence = await page.evaluate(() => ({

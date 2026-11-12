@@ -138,7 +138,7 @@ async function snapshot() {
   });
   for (const row of result.strokes) {
     assert.equal(row.stroke, row.sameType ? "solid" : "dashed", row.id);
-    assert.ok(["single", "double", "bordered"].includes(row.profile), row.id);
+    assert.ok(["single", "bordered"].includes(row.profile), row.id);
   }
   return result;
 }

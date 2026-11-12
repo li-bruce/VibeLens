@@ -138,6 +138,12 @@ jobs:
           BO_API_OBSERVATION_EVIDENCE: .validation/api-observation-browser
       - run: python tools/build_site_viewer.py
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
+      - run: node tools/test_case_transport.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
+      - run: node tools/test_demo_loading_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
+        env:
+          BO_LOADING_EVIDENCE: .validation/demo-loading
       - run: node tools/test_scroll_story_browser.mjs
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: node tools/test_change_panel_browser.mjs

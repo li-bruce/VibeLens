@@ -7,6 +7,7 @@ export function mountLayerExplorer(host, { locale, onLanguageChange }) {
     scene,
     loading = false;
   const nav = host.querySelector("[data-layer-tabs]");
+  const status = host.querySelector("[data-layer-status]");
   const buttons = layerContent.map((item, index) => {
     const button = document.createElement("button");
     button.type = "button";
@@ -44,6 +45,14 @@ export function mountLayerExplorer(host, { locale, onLanguageChange }) {
   function render() {
     const language = locale() === "zh-CN" ? 1 : 0,
       item = layerContent[selected];
+    status.textContent =
+      host.dataset.webgl === "unavailable"
+        ? language
+          ? "选择图层，查看内容"
+          : "Select a layer to explore"
+        : language
+          ? "正在准备图层…"
+          : "Preparing layers…";
     nav.setAttribute("aria-label", language ? "图的层级" : "Graph layers");
     buttons.forEach((button, index) => {
       button.querySelector("strong").textContent = layerContent[index].name[language];
@@ -76,11 +85,13 @@ export function mountLayerExplorer(host, { locale, onLanguageChange }) {
         scene.select(selected, locale() === "zh-CN" ? 1 : 0);
         scene.visible(entry.isIntersecting);
         host.dataset.webgl = "ready";
+        status.hidden = true;
       } catch {
         // The explanatory tabs are the fallback; never leave empty instructions.
         host.dataset.webgl = "unavailable";
         host.querySelector("[data-layer-hint]").hidden = true;
         host.querySelector("[data-layer-reset]").hidden = true;
+        render();
       }
     },
     { threshold: 0.08 },

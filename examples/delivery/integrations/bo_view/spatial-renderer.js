@@ -824,7 +824,7 @@ export class SpatialRenderer {
         const normal = Math.abs(tangent.y) > 0.95 ? new T.Vector3(0, 0, 1) : new T.Vector3(0, 1, 0);
         const side = new T.Vector3().crossVectors(tangent, normal).normalize();
         for (const segment of headSegments(style.arrow)) {
-          // Arrowheads keep a single stroke even on a double/bordered shaft.
+          // Arrowheads remain crisp when the shaft has a subtle border.
           profiles.push(1.4, 0);
           for (const [x, y] of segment) {
             const point = tip

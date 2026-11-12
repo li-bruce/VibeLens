@@ -74,7 +74,7 @@ try {
       const dataRequested = new Promise((resolve) => (signalData = resolve));
       // Keep the real child response in flight until the parent has selected its
       // first scene. This exercises startup ordering without synthetic events or sleeps.
-      await page.route("**/case-data/v1.json", async (route) => {
+      await page.route("**/case-preview/v1.json", async (route) => {
         if (route.request().frame() !== page.mainFrame()) {
           signalData();
           await heldData;

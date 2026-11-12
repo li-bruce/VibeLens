@@ -48,10 +48,7 @@ export function relationLineMaterial(options = {}) {
     `
     #include <color_fragment>
     float stripe = abs(vUv.x);
-    if (boStrokeMode > 0.5 && boStrokeMode < 1.5) {
-      // A genuine transparent gap; the layer or node below remains intact.
-      if (stripe < ${strokeProfiles.double.gap}) discard;
-    } else if (boStrokeMode > 1.5) {
+    if (boStrokeMode > 1.5) {
       float interior = 1.0 - smoothstep(${strokeProfiles.bordered.inset - 0.08}, ${strokeProfiles.bordered.inset + 0.08}, stripe);
       diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0), interior * ${strokeProfiles.bordered.tint});
     }

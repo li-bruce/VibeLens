@@ -21,20 +21,20 @@ export const relationFamilies = {
   },
   reference: {
     label: t("Mapping / reference"),
-    stroke: "double",
-    width: 1,
+    stroke: "single",
+    width: 0.9,
     dash: [],
     arrow: "open",
   },
   containment: { label: t("Containment"), stroke: "single", width: 0.8, dash: [], arrow: "none" },
   synchronization: {
     label: t("Join / resource"),
-    stroke: "double",
+    stroke: "bordered",
     width: 1,
     dash: [],
     arrow: "bar",
   },
-  indirect: { label: t("Indirect path"), stroke: "bordered", width: 1, dash: [], arrow: "open" },
+  indirect: { label: t("Indirect path"), stroke: "bordered", width: 0.8, dash: [], arrow: "open" },
 };
 
 export const differentTypeDash = [9, 5];

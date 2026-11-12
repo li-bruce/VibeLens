@@ -7,7 +7,6 @@ import {
 } from "../skills/vibelens/assets/stategraph-viewer/relation-appearance.js";
 import {
   strokePasses,
-  offsetPolyline,
   strokeProfile,
 } from "../skills/vibelens/assets/stategraph-viewer/relation-strokes.js";
 import { relationLineMaterial } from "../skills/vibelens/assets/stategraph-viewer/spatial-line-material.js";
@@ -48,46 +47,26 @@ for (const family of Object.values(relationFamilies)) {
   signatures.add(`${style.stroke}:${style.arrow}:${style.width}`);
   const passes = strokePasses(straight, style, 1);
   const profile = strokeProfile(style);
-  if (style.stroke === "double") {
-    assert.equal(passes.length, 2);
-    assert.equal(passes[0].points[0].y, -passes[1].points[0].y);
-    assert.ok(passes[1].points[0].y - passes[0].points[0].y > passes[0].width, "Open center gap");
-    assert.equal(passes[1].color, passes[0].color);
-  } else if (style.stroke === "bordered") {
+  assert.notEqual(style.stroke, "double", "Every relation uses one continuous route");
+  assert.ok(
+    passes.every((pass) => pass.points === straight),
+    "No offset rails",
+  );
+  if (style.stroke === "bordered") {
     assert.equal(passes.length, 2);
     assert.ok(passes[0].width > passes[1].width);
     assert.notEqual(passes[0].color, passes[1].color);
     assert.equal(passes[0].points, passes[1].points);
   } else assert.equal(passes.length, 1);
-  assert.equal(
-    passes[0].width +
-      (style.stroke === "double" ? passes[1].width + profile.width * profile.gap : 0),
-    style.width * profile.width,
-  );
+  assert.equal(passes[0].width, style.width * profile.width);
+  assert.ok(profile.width <= 1.8, "Borders must not dominate a dense graph");
 }
 assert.equal(signatures.size, 7);
-const bent = [
-  { x: 0, y: 0 },
-  { x: 40, y: 0 },
-  { x: 40, y: 0 },
-  { x: 40, y: 30 },
-  { x: 40, y: 0 },
-];
-const before = JSON.stringify(bent);
-for (const offset of [-2, 2]) {
-  const rail = offsetPolyline(bent, offset);
-  assert.equal(rail.length, 4);
-  assert.ok(rail.every((p) => Number.isFinite(p.x) && Number.isFinite(p.y)));
-  for (const point of rail)
-    assert.ok(bent.some((p) => Math.hypot(point.x - p.x, point.y - p.y) <= 4.001));
-}
-assert.equal(JSON.stringify(bent), before);
-assert.deepEqual(offsetPolyline([], 1), []);
 
 // Exercise the bundled shader API, not a replica: fail on incompatible upgrades.
 const material = relationLineMaterial({ vertexColors: true });
 assert.ok(material.vertexShader.includes("offset *= linewidth * boStrokeProfile.x;"));
-assert.ok(material.fragmentShader.includes("stripe < 0.36"));
+assert.ok(!material.fragmentShader.includes("if (stripe <"), "No transparent center gap");
 assert.equal(material.worldUnits, false);
 material.dispose();
 
@@ -140,7 +119,7 @@ for (const count of [1000, 20000]) {
       attributes.boStrokeProfile.getY(i),
     ),
   );
-  assert.deepEqual([...modes].sort(), [0, 1, 2]);
+  assert.deepEqual([...modes].sort(), [0, 2]);
   timings.push({
     edges: count,
     build_ms: Number(elapsed.toFixed(2)),
@@ -155,8 +134,7 @@ for (const count of [1000, 20000]) {
 console.log(
   JSON.stringify({
     valid: true,
-    checks:
-      "Types, layers, seven signatures, parallel rails, bounded joins and real Three.js buffers",
+    checks: "Types, layers, seven signatures, continuous centerlines and real Three.js buffers",
     timings,
   }),
 );

@@ -5,12 +5,22 @@
 const params = new URLSearchParams(location.search);
 const version = params.get("case") === "2" ? 2 : 1;
 const controlMode = params.get("controls") === "1";
+const post = (value) =>
+  parent.postMessage({ ...value, version, locale: params.get("lang") || "en" }, location.origin);
+const { loadJson, unpackCase } = await import("./case-data.mjs?rev=pages-20261112");
 const { expandCodeSlice } = await import("./case-code.mjs?rev=files-1");
-const { presentCase } = await import("./case-copy.mjs?rev=files-1");
+const { presentCase } = await import("./case-copy.mjs?rev=pages-20261112");
 const nativeFetch = window.fetch.bind(window);
-const captured = await (
-  await nativeFetch(new URL(`./case-data/v${version}.json`, import.meta.url))
-).json();
+post({ type: "vibelens-case-loading", phase: "data" });
+let captured;
+try {
+  captured = unpackCase(
+    await loadJson(new URL(`./case-preview/v${version}.json`, import.meta.url), nativeFetch),
+  );
+} catch (error) {
+  post({ type: "vibelens-case-error", error: error.message });
+  throw error;
+}
 // Only display summaries change. The exported record and source files stay original.
 const artifact = presentCase(captured);
 let view = structuredClone(artifact.view);
@@ -22,7 +32,7 @@ let preferences = {
   revision: 1,
   entries: {},
 };
-const preferenceKey = `vibelens.case.${controlMode ? "controls-1" : "files-story-clusters-2"}.${params.get("lang") || "en"}`;
+const preferenceKey = `vibelens.case.${controlMode ? "controls-1" : "files-story-v014"}.${params.get("lang") || "en"}`;
 const controlPlans = controlMode
   ? (await (await nativeFetch(new URL("./control-plans.json", import.meta.url))).json()).locales[
       params.get("lang") || "en"
@@ -164,8 +174,8 @@ for (const id of [
   const key = baseKey + (id === "overview" ? "" : ":view:" + id);
   if (!preferences.entries[key]) {
     const layout = emptyLayout();
-    // The overview becomes a small diagnostic path. A directed layout keeps
-    // that path readable beside source code; broader views retain clustering.
+    // Overview is the five-node source investigation: keep its path compact.
+    // Larger lenses use semantic clusters with directed conceptual routes.
     layout.algorithm = id === "overview" ? "layered" : "cluster";
     layout.filters = profileFor(id);
     preferences.entries[key] = JSON.stringify(layout);
@@ -194,8 +204,9 @@ if (!controlMode) {
   view.model = mergeGraph(view.model, sourceRegion);
   artifact.recording.context.model = mergeGraph(artifact.recording.context.model, sourceRegion);
 }
-await import("./viewer/viewer.js?rev=clarity-3");
-const { scenePlayer } = await import("./case-scene-player.mjs?rev=0.14.0");
+post({ type: "vibelens-case-loading", phase: "graph" });
+await import("./viewer/viewer.js?rev=pages-20261112");
+const { scenePlayer } = await import("./case-scene-player.mjs?rev=pages-20261112");
 const runtimeView = structuredClone(view);
 const designView = {
   ...structuredClone(artifact.recording.context),
@@ -207,8 +218,6 @@ const designView = {
   database_status: null,
 };
 for (const node of designView.model.nodes) node.summary = "";
-const post = (value) =>
-  parent.postMessage({ ...value, version, locale: params.get("lang") || "en" }, location.origin);
 const player = scenePlayer({
   artifact,
   locale: params.get("lang") || "en",
@@ -254,7 +263,7 @@ window.addEventListener("message", (event) => {
 });
 const style = document.createElement("link");
 style.rel = "stylesheet";
-style.href = new URL("./case-canvas.css?rev=clarity-2", import.meta.url).href;
+style.href = new URL("./case-canvas.css?rev=pages-20261112", import.meta.url).href;
 document.head.append(style);
 document.body.dataset.caseCompact = "true";
 // Keep the captured provenance visible; recording and project-write controls are
@@ -277,7 +286,9 @@ new MutationObserver(labelFinalState).observe(recordingChoice, {
 labelFinalState();
 for (let attempt = 0; attempt < 250 && !window.graphDebug.graph; attempt++)
   await new Promise((resolve) => setTimeout(resolve, 40));
-if (window.graphDebug.graph)
+if (!window.graphDebug.graph)
+  post({ type: "vibelens-case-error", error: "The graph did not initialize" });
+else
   parent.postMessage(
     {
       type: controlMode ? "vibelens-controls-ready" : "vibelens-case-ready",

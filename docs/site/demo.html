@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="site.css?rev=files-1" />
     <link rel="stylesheet" href="scroll-story.css?rev=files-1" />
     <link rel="stylesheet" href="case.css?rev=clarity-5" />
-    <link rel="stylesheet" href="case-editorial.css?rev=clarity-6" />
-    <script type="module" src="case.mjs?rev=0.14.0"></script>
+    <link rel="stylesheet" href="case-editorial.css?rev=pages-20261112" />
+    <script type="module" src="case.mjs?rev=pages-20261112"></script>
   </head>
   <body class="demo-story">
     <a class="skip" href="#foundation" data-i18n="skip">Skip to content</a>
@@ -54,6 +54,10 @@
         aria-label="Development stages"
         data-i18n-aria="case.nav"
       ></div>
+      <div id="story-status" class="story-status" role="status">
+        <span id="story-status-text" data-i18n="case.loading.story">Opening the walkthrough…</span>
+        <button id="story-retry" data-i18n="case.loading.retry" hidden>Retry</button>
+      </div>
       <div id="case-foundation"></div>
       <div class="case-journey">
         <div class="case-narrative" id="case-narrative"></div>
@@ -81,6 +85,9 @@
             <button data-case-lens="states" data-i18n="case.states" aria-pressed="false">
               States
             </button>
+            <button data-case-lens="rules" data-i18n="case.rules" aria-pressed="false">
+              Shared rules
+            </button>
             <button data-case-lens="implementation" data-i18n="case.logic" aria-pressed="false">
               Core logic
             </button>
@@ -89,6 +96,14 @@
             </button>
           </div>
           <div class="case-canvas">
+            <div class="case-loading" id="case-loading" role="status">
+              <img src="favicon.svg" width="36" height="36" alt="" />
+              <span id="case-loading-text" data-i18n="case.loading.graph"
+                >Preparing the graph…</span
+              >
+              <span class="loading-track" aria-hidden="true"></span>
+              <button id="case-retry" data-i18n="case.loading.retry" hidden>Retry</button>
+            </div>
             <iframe
               id="case-graph"
               title="VibeLens interactive graph"

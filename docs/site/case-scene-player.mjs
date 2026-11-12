@@ -61,6 +61,21 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       }
     }
   }
+  /** A scene becomes ready only after layout, routed edges and canvas paint agree. */
+  async function arrange(ticket) {
+    await until(() => !window.graphDebug.layoutBusy, ticket);
+    if (ticket !== epoch) return;
+    $("arrange").click();
+    await until(
+      () =>
+        !window.graphDebug.layoutBusy &&
+        !window.graphDebug.geometryBusy &&
+        !window.graphDebug.sourceBusy,
+      ticket,
+    );
+    await paint();
+    if (ticket === epoch) fit();
+  }
   async function hideExcept(keep, ticket) {
     // Projection updates precede the accessible buttons' next paint. Wait for
     // those real controls before selecting nodes that just entered the view.
@@ -103,8 +118,8 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       .filter((option) => option.value.startsWith("custom-") && option.value !== "custom-draft")
       .at(-1);
   }
-  async function focus(options = {}, ticket, selectedIds = null) {
-    control("analysis-view", "overview");
+  async function focus(options = {}, ticket, selectedIds = null, preset = "overview") {
+    control("analysis-view", preset);
     // Load the recording before narrowing it. Its context supplies the final
     // inventory; filtering the live inventory first can miss newly loaded nodes.
     if (!(await recording(ticket))) return;
@@ -152,9 +167,7 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     }
     await hideExcept(ancestors, ticket);
     $("close-detail").click();
-    $("arrange").click();
-    await until(() => !window.graphDebug.layoutBusy, ticket, "The focused layout did not settle");
-    fit();
+    await arrange(ticket);
   }
   function save(name) {
     $("custom-view-name").value = name || savedName();
@@ -275,6 +288,15 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     } finally {
       presenting--;
       document.body.inert = editing || presenting > 0;
+      // Loading a native preset restores its navigation preference. The compact
+      // walkthrough promises drag-to-orbit, so restore that tool after the view,
+      // not before it. Full tools preserves the developer's own selection mode.
+      if (
+        !presenting &&
+        document.body.dataset.caseCompact === "true" &&
+        window.graphDebug.layers.enabled
+      )
+        $("tool-orbit").click();
     }
   }
   async function present(message) {
@@ -317,6 +339,17 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       control("analysis-view", "states");
       await revealRegion(new Set(story.states), ticket);
       fit();
+      post({ type: "vibelens-lens-ready", lens: "states" });
+      return;
+    }
+    if (message.action === "rules") {
+      leaveSource();
+      control("analysis-view", "permission");
+      const ids = artifact.view.model.nodes
+        .filter((node) => node.id.startsWith("policy:"))
+        .map((node) => node.id);
+      await revealRegion(new Set(ids), ticket);
+      post({ type: "vibelens-lens-ready", lens: "rules" });
       return;
     }
     if (message.action === "business") {
@@ -324,12 +357,14 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       control("analysis-view", "business");
       $("collapse").click();
       await hideExcept(new Set(story.business), ticket);
-      fit();
+      await arrange(ticket);
+      post({ type: "vibelens-lens-ready", lens: "business" });
       return;
     }
     if (message.action === "implementation") {
       leaveSource();
       await focus({ effects: false }, ticket);
+      post({ type: "vibelens-lens-ready", lens: "implementation" });
       return;
     }
     if (message.action === "application") {
@@ -378,9 +413,7 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
       // count; developers expand the part they want rather than a wall of code.
       $("collapse").click();
       await revealLayers(ticket);
-      $("arrange").click();
-      await until(() => !window.graphDebug.layoutBusy, ticket);
-      fit();
+      await arrange(ticket);
       post({ type: "vibelens-lens-ready", lens: "all" });
       return;
     }
@@ -406,7 +439,9 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
     $("replay-live").click();
     if (["foundation", "build", "run"].includes(current)) {
       if (current === "run" && story.playback_nodes) {
-        await focus({}, ticket, new Set(story.playback_nodes));
+        // Start from the native permission lens so the shared predicates form
+        // a directed cluster beside the business actions they constrain.
+        await focus({}, ticket, new Set(story.playback_nodes), "permission");
         if (!matchMedia("(prefers-reduced-motion: reduce)").matches) await play(ticket);
         if (ticket === epoch) post({ type: "vibelens-scene-ready", scene: current });
         return;
@@ -420,8 +455,7 @@ export function scenePlayer({ artifact, setDesign, locale, post }) {
         ticket,
       );
       await hideExcept(new Set(story.business), ticket);
-      $("arrange").click();
-      fit();
+      await arrange(ticket);
       if (current === "run" && !matchMedia("(prefers-reduced-motion: reduce)").matches)
         await play(ticket);
     } else if (["drill", "watch"].includes(current)) {

@@ -1,7 +1,7 @@
 /** A short product overview; detailed native interactions live in demo.html. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
-import { messages } from "./home-messages.mjs?rev=0.14.0";
-import { mountLayerExplorer } from "./layer-explorer.mjs?rev=0.14.0";
+import { messages } from "./home-messages.mjs?rev=pages-20261112";
+import { mountLayerExplorer } from "./layer-explorer.mjs?rev=pages-20261112";
 function render() {
   document.title =
     locale() === "en"
@@ -10,7 +10,7 @@ function render() {
   document.getElementById("install-prompt").textContent = t("install.prompt");
   for (const image of document.querySelectorAll("[data-product-image]")) {
     const kind = image.dataset.productImage;
-    image.src = `images/${kind}-${locale()}.png?rev=0.14.0`;
+    image.src = `images/${kind}-${locale()}.png?rev=pages-20261112`;
     image.alt = t("home.image." + kind);
   }
 }

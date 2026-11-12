@@ -93,7 +93,7 @@ for (const type of ["guard", "flow", "transition", "maps", "references", "contai
 assert.equal(relationStyle({ type: "guard" }).stroke, "bordered");
 assert.equal(relationStyle({ type: "flow" }).arrow, "filled");
 assert.equal(relationStyle(fields.edges[0]).label, "Recorded input");
-assert.equal(relationStyle(fields.edges[0]).stroke, "double");
+assert.equal(relationStyle(fields.edges[0]).stroke, "single");
 
 const nodes = [
   { id: "publish", kind: "action", layer: "business", label: "Publish" },

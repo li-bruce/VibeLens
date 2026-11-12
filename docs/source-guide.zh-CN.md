@@ -74,6 +74,11 @@ Python 的 `graph/classification.py` 与前端 `graph-classification.js` 通过�
 | [docs/site](site/) | 产品介绍页和独立的浏览器示例演示。 |
 | [docs/review](review/) | 历次验收材料。历史记录保留原文。 |
 
+介绍页与观察器运行时分开。[build_case_preview.py](../tools/build_case_preview.py)
+从原始演示记录生成轻量的对话摘要，以及去除重复内容的传输文件。父页面只读取摘要，
+图视窗按当前步骤读取完整记录。[case-data.mjs](site/case-data.mjs) 在读取后还原独立副本。
+构建页面后运行 `node tools/test_case_transport.mjs`，可检查还原结果与原始记录逐项一致。
+
 scripts 根目录下多数小文件负责转发导入或命令调用。需要修改实现时，沿着导入进入 bo_observer。独立状态模块及两个约束文件可以脱离观测服务导入。
 
 ## 按三条路径阅读
@@ -113,8 +118,8 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 | 文件 | 阅读重点 |
 |---|---|
 | [edge-color.js](../skills/vibelens/assets/stategraph-viewer/edge-color.js) | 图与时间轴共用连线配色：同层使用层颜色，跨层使用灰色，流动箭头沿用所在连线的颜色。 |
-| [relation-appearance.js](../skills/vibelens/assets/stategraph-viewer/relation-appearance.js) | 按可见节点类型区分：同类型使用实线，不同类型使用虚线。关系含义决定单线、双线、描边和箭头形状。 |
-| [relation-strokes.js](../skills/vibelens/assets/stategraph-viewer/relation-strokes.js) | 共用线宽比例和二维双线几何，同时生成图例。[spatial-line-material.js](../skills/vibelens/assets/stategraph-viewer/spatial-line-material.js) 在一个 GPU 连线批次中绘制对应的三维线型，缩放后仍保持可辨认的宽度。 |
+| [relation-appearance.js](../skills/vibelens/assets/stategraph-viewer/relation-appearance.js) | 按可见节点类型区分：同类型使用实线，不同类型使用虚线。关系含义决定单线的粗细、细描边和箭头形状。 |
+| [relation-strokes.js](../skills/vibelens/assets/stategraph-viewer/relation-strokes.js) | 二维、三维和图例共用单线与描边比例。描边沿同一中心线绘制。[spatial-line-material.js](../skills/vibelens/assets/stategraph-viewer/spatial-line-material.js) 在一个 GPU 连线批次中绘制对应线型。 |
 | [viewer.js](../skills/vibelens/assets/stategraph-viewer/viewer.js) | 页面按钮、数据刷新和记录选择的连接入口。 |
 | [graph-core.js](../skills/vibelens/assets/stategraph-viewer/graph-core.js) | 节点值、源码关联、事件筛选与图内容。 |
 | [trace-lifecycles.js](../skills/vibelens/assets/stategraph-viewer/trace-lifecycles.js)、[graph-activation.js](../skills/vibelens/assets/stategraph-viewer/graph-activation.js) | 解析真实调用周期，呈现进入、等待、返回、异常退出及并发数量。 |

@@ -85,7 +85,7 @@ const capture = {
 assert.equal(relationStyle(capture, boxes).color, layerPalette.symbols);
 assert.equal(relationStyle(capture, boxes).label, "Recorded input");
 assert.deepEqual(relationStyle(capture, boxes).dash, relationFamilies.reference.dash);
-assert.equal(relationStyle(capture, boxes).stroke, "double");
+assert.equal(relationStyle(capture, boxes).stroke, "single");
 assert.deepEqual(
   relationStyle({ ...capture, members: [{ evidence_kind: "conceptual" }] }, boxes).dash,
   relationFamilies.reference.dash,

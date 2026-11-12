@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 import shutil
 from build_control_preview import build as build_controls
+from build_case_preview import build as build_case
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "skills/vibelens/assets/stategraph-viewer"
@@ -19,6 +20,7 @@ TARGET = ROOT / "docs/site/viewer"
 def build(artifact_path=None):
     """Copy canonical files and retain their hashes for reproducibility checks."""
     TARGET.mkdir(parents=True, exist_ok=True)
+    build_case()
     build_controls(artifact_path)
     hashes = {}
     for source in SOURCE.iterdir():
@@ -29,7 +31,7 @@ def build(artifact_path=None):
         hashes[source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
     html = (SOURCE / "index.html").read_text(encoding="utf-8")
     html = html.replace('href="/', 'href="./').replace('src="/', 'src="./')
-    html = html.replace('src="./viewer.js"', 'src="../case-viewer.mjs?rev=0.14.0"')
+    html = html.replace('src="./viewer.js"', 'src="../case-viewer.mjs?rev=pages-20261112"')
     (TARGET / "index.html").write_text(html, encoding="utf-8")
     (TARGET / "asset-proof.json").write_text(json.dumps(hashes, indent=2) + "\n", encoding="utf-8")
     print(f"Built Pages case viewer from {len(hashes)} canonical files")
