@@ -164,6 +164,9 @@ def main():
     subprocess.run(["node", "tools/test_web_colors.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_routing_controls.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_spatial_objects.mjs"], cwd=ROOT, check=True)
+    # Prepared demo exports are generated files, absent in a fresh checkout.
+    # Build them before the product assertions; no browser or vendor download is needed here.
+    subprocess.run(["node", "tools/build_demo_scenes.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_product_demo.mjs"], cwd=ROOT, check=True)
     run(ROOT, "tests/test_trial_dialogue_export.py")
     run(ROOT, "tests/test_trial_dialogue_links.py")

@@ -566,6 +566,24 @@
 .demo-story :focus-visible {
   outline-color: var(--story-accent);
 }
+/* The introduction keeps its existing narrow-page layout. This only stacks
+   the conversation and model illustration; it adds no mobile tool controls. */
+@media (max-width: 900px) {
+  .foundation-scene,
+  .foundation-scene .scene-copy {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .foundation-scene {
+    padding-inline: 20px;
+  }
+  .foundation-scene .scene-companion-slot,
+  .foundation-scene .scene-model-slot {
+    grid-column: 1;
+    grid-row: auto;
+    min-width: 0;
+  }
+}
 @media (min-width: 900px) and (max-width: 1220px) {
   .case-journey {
     grid-template-columns: 300px minmax(0, 1fr);

@@ -78,6 +78,18 @@ chapter again. Explicit navigation now activates and holds its selected chapter
 until intentional scrolling resumes; browser scroll anchoring no longer competes
 with that transition. Tests enter chapters through the real navigation controls.
 
+The clean-checkout core jobs also found that `tools/verify.py` invoked the new
+product assertions before generating their scene fixtures (`ENOENT` for
+`case-preview/prepared.json`). The verification runner now builds those exports
+explicitly before the assertions; no checks were removed.
+
+The [second browser run](https://github.com/li-bruce/VibeLens/actions/runs/43236717624/job/131245912608)
+passed both desktop languages, delayed/failed loading, six fresh startups and the
+complete native-tool checks. Its remaining failure was the existing narrow-page
+overflow assertion: the confirmation section's two minimum-width columns exceeded
+the viewport. Those introductory columns now stack at the existing page breakpoint;
+the desktop tool's interaction scope is unchanged.
+
 ## Evidence
 
 - [Browser observations and measured handlers](browser.json)
