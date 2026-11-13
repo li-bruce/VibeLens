@@ -10,8 +10,8 @@
     <title>VibeLens — See the logic behind your code</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="site.css?rev=0.15.0" />
-    <link rel="stylesheet" href="homepage.css?rev=pages-20261112" />
-    <script type="module" src="site.js?rev=pages-20261112"></script>
+    <link rel="stylesheet" href="homepage.css?rev=install-20261113" />
+    <script type="module" src="site.js?rev=install-20261113"></script>
   </head>
   <body class="landing">
     <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -229,20 +229,55 @@
       <section class="wrap home-install" id="install">
         <div>
           <p class="eyebrow" data-i18n="install.kicker">For your next project</p>
-          <h2 data-i18n="install.title">Start with a conversation</h2>
-          <p data-i18n="install.body">Install the Skill, then call $vibelens in Codex.</p>
-          <a
-            id="usage-link"
-            href="https://github.com/li-bruce/VibeLens/blob/main/docs/usage.en.md"
-            data-i18n="install.guide"
-            >Installation & usage ↗</a
-          >
+          <h2 data-i18n="install.title">Get VibeLens</h2>
+          <p data-i18n="install.body">
+            Choose your way to install, then start shaping your project.
+          </p>
         </div>
-        <div class="home-prompt">
-          <span class="prompt-label">You → Codex</span>
-          <pre id="install-prompt"></pre>
-          <button id="copy-prompt" data-i18n="install.copy">Copy prompt</button
-          ><span id="copy-status" role="status"></span>
+        <div class="install-options">
+          <div class="install-cli" data-install-channel="cli">
+            <h3>Skills CLI</h3>
+            <p data-i18n="install.cli">Run this command in your project.</p>
+            <div class="install-command">
+              <code id="install-command">npx skills add li-bruce/VibeLens --skill vibelens</code>
+              <button id="copy-install" data-i18n="install.command.copy">Copy command</button>
+            </div>
+            <span id="install-copy-status" role="status"></span>
+          </div>
+          <ul class="install-channels">
+            <li data-install-channel="github">
+              <a href="https://github.com/li-bruce/VibeLens/releases/latest">GitHub ↗</a>
+              <span data-i18n="install.github">Versioned downloads and source</span>
+            </li>
+            <li data-install-channel="skillhub">
+              <a href="https://skillhub.cn/skills/indiv-skii/vibelens">SkillHub ↗</a>
+              <span data-i18n="install.skillhub">Get the Skill from the catalog</span>
+            </li>
+            <li data-install-channel="harness">
+              <a href="https://github.com/li-bruce/VibeLens/blob/main/docs/deepseek-harness.md"
+                >DeepSeek Harness ↗</a
+              >
+              <span data-i18n="install.harness">Install the plugin, then invoke /vibelens</span>
+            </li>
+          </ul>
+        </div>
+        <div class="install-start">
+          <div>
+            <h3 data-i18n="install.start">Start your first conversation</h3>
+            <p data-i18n="install.invoke">In Codex, call $vibelens and describe your project.</p>
+            <a
+              id="usage-link"
+              href="https://github.com/li-bruce/VibeLens/blob/main/docs/usage.en.md"
+              data-i18n="install.guide"
+              >Installation & usage ↗</a
+            >
+          </div>
+          <div class="home-prompt">
+            <span class="prompt-label">You → Codex</span>
+            <pre id="install-prompt"></pre>
+            <button id="copy-prompt" data-i18n="install.copy">Copy prompt</button
+            ><span id="copy-status" role="status"></span>
+          </div>
         </div>
       </section>
     </main>

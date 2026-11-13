@@ -81,7 +81,7 @@ dsh plugin --profile web add https://github.com/li-bruce/VibeLens/releases/downl
 
 **Python · Node.js · React · Vue**，界面支持中英文切换。共享观察器使用 Python 3.11+，项目沿用原生语言。[安装、依赖与固定版本下载](docs/usage.zh-CN.md)。
 
-也可通过 [SkillHub](https://skillhub.cn/skills/user_fbf26156/vibelens) 获取。
+也可通过 [SkillHub](https://skillhub.cn/skills/indiv-skii/vibelens) 获取。
 
 ## 从界面到源码，都可以查看
 

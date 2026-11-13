@@ -1,6 +1,6 @@
 /** A short product overview; detailed native interactions live in demo.html. */
 import { initialize, t, locale, onLanguageChange } from "./site-ui.mjs?rev=files-1";
-import { messages } from "./home-messages.mjs?rev=pages-20261112";
+import { messages } from "./home-messages.mjs?rev=install-20261113";
 import { mountLayerExplorer } from "./layer-explorer.mjs?rev=pages-20261112";
 function render() {
   document.title =
@@ -8,6 +8,8 @@ function render() {
       ? "VibeLens — See the logic behind your code"
       : "VibeLens · 看懂 AI 写出的程序";
   document.getElementById("install-prompt").textContent = t("install.prompt");
+  for (const id of ["copy-status", "install-copy-status"])
+    document.getElementById(id).textContent = "";
   for (const image of document.querySelectorAll("[data-product-image]")) {
     const kind = image.dataset.productImage;
     image.src = `images/${kind}-${locale()}.png?rev=pages-20261112`;
@@ -21,14 +23,19 @@ for (const button of document.querySelectorAll("[data-capture]"))
       item.setAttribute("aria-pressed", String(item === button));
     render();
   });
-document.getElementById("copy-prompt").addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(t("install.prompt"));
-    document.getElementById("copy-status").textContent = t("copy.done");
-  } catch {
-    document.getElementById("copy-status").textContent = t("copy.failed");
-  }
-});
+// Copy the displayed text so the command and current-language prompt stay exact.
+for (const [button, content, status] of [
+  ["copy-install", "install-command", "install-copy-status"],
+  ["copy-prompt", "install-prompt", "copy-status"],
+])
+  document.getElementById(button).addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(document.getElementById(content).textContent);
+      document.getElementById(status).textContent = t("copy.done");
+    } catch {
+      document.getElementById(status).textContent = t("copy.failed");
+    }
+  });
 onLanguageChange(render);
 initialize(messages);
 mountLayerExplorer(document.getElementById("layer-explorer"), {

@@ -5,7 +5,7 @@
 | GitHub | [Source](https://github.com/li-bruce/VibeLens), [versioned downloads](https://github.com/li-bruce/VibeLens/releases/latest) |
 | Product website | [Features](https://liblog.vip/VibeLens/), [interactive walkthrough](https://liblog.vip/VibeLens/demo.html) |
 | Skills CLI | `npx skills add li-bruce/VibeLens --skill vibelens` |
-| SkillHub | [VibeLens by user_fbf26156](https://skillhub.cn/skills/user_fbf26156/vibelens) |
+| SkillHub | [VibeLens by indiv-skii](https://skillhub.cn/skills/indiv-skii/vibelens) |
 | DeepSeek Harness | [Plugin installation and compatibility](deepseek-harness.md) |
 
 ## Release packages

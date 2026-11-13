@@ -67,3 +67,11 @@ distribution. See [upload-limit evidence](skillhub-upload-limits.png).
 References: [release download verification](../release-v0.15.0/published-verification.json),
 [Skills directory refresh](https://skills.sh/docs/customize),
 [Harness packaging](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/develop/basic/publish.md).
+
+## Public listing verified on 2026-11-13
+
+The public [SkillHub entry](https://skillhub.cn/skills/indiv-skii/vibelens) now
+shows v0.15.0, installation instructions and its ZIP download. The previous
+`/skills/user_fbf26156/vibelens` URL returns **Skill Not Found**. Maintained
+installation links now use `/skills/indiv-skii/vibelens`; earlier submission
+evidence above remains unchanged.

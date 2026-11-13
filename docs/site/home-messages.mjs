@@ -100,10 +100,23 @@ export const messages = {
   ],
   "home.focus.caption": ["Choose the scope. Follow the changes.", "选好范围，跟随变化"],
   "install.kicker": ["For your next project", "从你的项目开始"],
-  "install.title": ["Start with a conversation", "从一句需求开始"],
+  "install.title": ["Get VibeLens", "安装 VibeLens"],
   "install.body": [
-    "Install the Skill, then call $vibelens in Codex.",
-    "安装 Skill 后，在 Codex 中使用 $vibelens。",
+    "Choose your way to install, then start shaping your project.",
+    "选择常用的安装方式，开始你的下一次开发。",
+  ],
+  "install.cli": ["Run this command in your project.", "在项目目录运行这条命令。"],
+  "install.command.copy": ["Copy command", "复制命令"],
+  "install.github": ["Versioned downloads and source", "获取发布版本与源码"],
+  "install.skillhub": ["Get the Skill from the catalog", "从平台获取 Skill"],
+  "install.harness": [
+    "Install the plugin, then invoke /vibelens",
+    "安装插件，以 /vibelens 开始对话",
+  ],
+  "install.start": ["Start your first conversation", "开始第一轮对话"],
+  "install.invoke": [
+    "In Codex, call $vibelens and describe your project.",
+    "在 Codex 中使用 $vibelens，描述你想做的项目。",
   ],
   "install.prompt": [
     "$vibelens\nHelp me map this project's flow, states and rules. Show me the graph before we start coding.",

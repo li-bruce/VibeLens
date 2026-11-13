@@ -81,7 +81,7 @@ Open that profile and start a conversation with `/vibelens` followed by your pro
 
 **Python · Node.js · React · Vue** — English and Chinese interface. Python 3.11+ runs the shared observer; application adapters stay native. [Installation, dependencies and versioned downloads](https://github.com/li-bruce/VibeLens/blob/main/docs/usage.en.md).
 
-Also available through [SkillHub](https://skillhub.cn/skills/user_fbf26156/vibelens).
+Also available through [SkillHub](https://skillhub.cn/skills/indiv-skii/vibelens).
 
 ## Built for inspection
 
