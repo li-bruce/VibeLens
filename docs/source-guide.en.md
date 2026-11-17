@@ -4,6 +4,10 @@
 
 Read this guide when you want to change the Skill, inspect a recorded value, or find the code behind a graph interaction. The maintained implementation lives in [skills/vibelens](../skills/vibelens/). Example projects contain installed copies to test real project integration.
 
+Planned development: [behavior contracts and guided verification](development/behavior-contracts/README.md)
+records the proposed protocol, question routing, module boundaries and acceptance
+plan. It is a development handoff, not a statement of current feature support.
+
 ## Repository map
 
 [bo_models.py](../skills/vibelens/scripts/bo_models.py) owns model identities,

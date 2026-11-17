@@ -9,6 +9,8 @@ Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码�
 
 这份导览按实际执行路径介绍源码。维护中的实现位于 [skills/vibelens](../skills/vibelens/)，示例项目中的同名模块是安装副本，用于验证接入真实项目后的行为。
 
+下一轮开发见[行为约束、分工提问与分层验证方案](development/behavior-contracts/README.zh-CN.md)，其中列出拟新增协议、模块职责、实施顺序和验收要求。这是后续开发指导，尚未作为当前功能交付。
+
 三维视窗与二维视窗使用同一份图和运行证据。`graph-inventory.js` 汇总各层内容，`graph-links.js` 连接明确的源码与运行锚点，`graph-layers.js` 管理层的分类；`spatial-model.js` 计算包含关系的跨层投影，`spatial-layout.js` 在后台线程布局，`spatial-renderer.js` 管理真实三维摄像机和绘制。`semantic-view.js` 统一键盘和辅助访问入口。模块边界与交互说明见[三维图说明](../skills/vibelens/references/spatial-graph.md)。
 
 [bound-relations.js](../skills/vibelens/assets/stategraph-viewer/bound-relations.js)
