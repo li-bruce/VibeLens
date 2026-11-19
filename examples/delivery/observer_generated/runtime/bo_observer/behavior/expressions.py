@@ -15,6 +15,8 @@ UNKNOWN = object()
 
 @dataclass(frozen=True)
 class ExpressionType:
+    """A checked value domain and the exact variable/phase reads it depends on."""
+
     domain: str
     reads: frozenset[tuple[str, str]] = frozenset()
 

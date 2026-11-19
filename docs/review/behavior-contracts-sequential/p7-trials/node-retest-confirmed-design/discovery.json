@@ -1,0 +1,2764 @@
+{
+  "schema": "business-discovery/v3",
+  "project_id": "node-retest-team-files",
+  "layout_id": "node-retest-team-files",
+  "title": "小团队文件共享 · 待确认设计",
+  "goal": "Confirm a Node.js file-sharing application with queued download preparation and an independent announcement board before implementing behavior.",
+  "sources": [
+    {
+      "id": "U1",
+      "kind": "user",
+      "text": "我想用 Node.js 做一个小团队文件共享应用：上传文件，分享给同事，也能撤销共享；下载可以排队准备，准备好后在页面领取。另外有一个独立的公告板。我是开发者，希望看清权限和后台任务的实际运行。应用沿用自身的业务逻辑，VibeLens 用 observe 模式。我希望先确认业务、状态和规则图，再开始实现。不清楚的地方先问我。用中文交流，源码和注释用英文。",
+      "locator": "Current chat: delegated user request, 2026-11-19, source chat 01a1439a-dceb-7ba2-bada-546619caf220"
+    },
+    {
+      "id": "I1",
+      "kind": "inference",
+      "text": "Candidate for discussion only: the uploader owns a file, names recipients, and alone manages grants; current owner or active recipient may request download. No user confirmation has been received.",
+      "locator": "Agent candidate based on U1; D_ACCESS remains open"
+    },
+    {
+      "id": "I2",
+      "kind": "inference",
+      "text": "Candidate for discussion only: collection rechecks current file access and task identity; revoked recipients cannot collect. This is not an accepted rule.",
+      "locator": "Agent candidate for D_REVOKE; no answer"
+    },
+    {
+      "id": "I3",
+      "kind": "inference",
+      "text": "Candidate for discussion only: team membership permits announcement publication and reading; announcement operations are independent of file permissions.",
+      "locator": "Agent candidate for D_BOARD; no answer"
+    },
+    {
+      "id": "A_Q1",
+      "kind": "assistant",
+      "text": "文件权限是否按这个规则：上传者指定具体同事；只有上传者可以分享或撤销；接收人只能查看、申请下载，不能继续转分享？\n同事申请下载后、领取前，共享被撤销时应怎样处理？\n独立公告板的权限是什么：谁可以发布、谁可以阅读？",
+      "locator": "Current chat: first asynchronous question batch delivered through request_user_input_async; delivery acknowledgement is not an answer"
+    },
+    {
+      "id": "U2",
+      "kind": "user",
+      "text": "文件权限按这个规则。上传者自己和被指定的同事能查看、下载，其他同事看不到；接收人不能再转分享。\n\n下载任务提交时已经获准，就让这一单继续准备并领取，后来撤销共享也不影响这一单。撤销以后不能再创建新的下载任务。\n\n公告板只给登录同事看。指定一个公告编辑员可以发布、修改和删除自己的公告；这个角色不增加管理别人文件的权限。",
+      "locator": "Current chat: user answer forwarded from source chat 01a1439a-dceb-7ba2-bada-546619caf220, 2026-11-19"
+    },
+    {
+      "id": "A_Q2",
+      "kind": "assistant",
+      "text": "存储建议使用 SQLite 保存成员、文件元数据、共享关系、任务和公告，文件内容放项目本地目录，部署时无需另起数据库服务。你接受这个选择，还是使用 PostgreSQL 等已有数据库？\n准备好的下载任务领取后，是否允许同一个申请人再次领取这一单？这会决定任务是否进入不可再次领取的终态。",
+      "locator": "Current chat: second asynchronous question batch delivered through request_user_input_async; awaiting actual answers"
+    },
+    {
+      "id": "U3",
+      "kind": "user",
+      "text": "用 SQLite，文件就放在项目本地目录。准备好以后，同一个申请人可以重复领取这一单，不需要因为领取过一次就把它关掉。",
+      "locator": "Current chat: second user answer forwarded from source chat 01a1439a-dceb-7ba2-bada-546619caf220, 2026-11-19"
+    }
+  ],
+  "networks": [
+    {
+      "id": "files",
+      "title": "文件共享",
+      "actors": [
+        "上传者",
+        "同事"
+      ],
+      "trigger": "成员上传文件或调整共享",
+      "outcome": "仅上传者和当前被指定同事能查看文件、申请下载；仅上传者能分享和撤销。",
+      "nodes": [
+        {
+          "id": "upload_file",
+          "label": "上传文件",
+          "meaning": "Store a new file and retain its uploader identity.",
+          "kind": "action",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        },
+        {
+          "id": "share_file",
+          "label": "分享给同事",
+          "meaning": "The uploader grants file access to a named colleague; recipients cannot re-share.",
+          "kind": "action",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        },
+        {
+          "id": "revoke_share",
+          "label": "撤销共享",
+          "meaning": "The uploader deactivates a recipient grant, preventing file visibility and new download requests for that colleague.",
+          "kind": "action",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        },
+        {
+          "id": "view_file",
+          "kind": "action",
+          "label": "查看文件",
+          "meaning": "Only the uploader or a currently designated recipient may view file metadata. Other colleagues cannot discover the file.",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "file-upload-share",
+          "from": "upload_file",
+          "to": "share_file",
+          "label": "选择已上传文件",
+          "relation": "data",
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "file-share-revoke",
+          "from": "share_file",
+          "to": "revoke_share",
+          "label": "按需撤销",
+          "relation": "flow",
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "file-upload-view",
+          "from": "upload_file",
+          "to": "view_file",
+          "relation": "data",
+          "label": "查看已上传文件",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "downloads",
+      "title": "下载准备与领取",
+      "actors": [
+        "申请人",
+        "后台任务"
+      ],
+      "trigger": "成员为一个文件申请准备下载",
+      "outcome": "提交时获准的任务继续准备；申请人可重复领取；撤销只拒绝新任务。",
+      "nodes": [
+        {
+          "id": "request_download",
+          "label": "申请下载",
+          "meaning": "Check current file access at submission, allocate a task, and commit its requester identity and submission authorization.",
+          "kind": "action",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        },
+        {
+          "id": "prepare_download",
+          "label": "后台准备",
+          "meaning": "The application worker starts preparation for one queued task.",
+          "kind": "action",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        },
+        {
+          "id": "mark_download_ready",
+          "label": "准备完成",
+          "meaning": "Mark the same task ready after the artifact is available.",
+          "kind": "action",
+          "source_refs": [
+            "U1",
+            "U2"
+          ]
+        },
+        {
+          "id": "collect_download",
+          "label": "页面领取",
+          "meaning": "The same authenticated requester may repeatedly collect the ready task authorized at submission. Share revocation never invalidates an already authorized task. Collection does not close or consume it.",
+          "kind": "action",
+          "source_refs": [
+            "U2",
+            "U3"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "download-enqueue",
+          "from": "request_download",
+          "to": "prepare_download",
+          "label": "排队后开始",
+          "relation": "flow",
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "download-prepared",
+          "from": "prepare_download",
+          "to": "mark_download_ready",
+          "label": "产物准备完成",
+          "relation": "flow",
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "download-collect",
+          "from": "mark_download_ready",
+          "to": "collect_download",
+          "label": "已获准任务可领取",
+          "relation": "flow",
+          "source_refs": [
+            "U2"
+          ]
+        },
+        {
+          "id": "download-repeat-collect",
+          "from": "collect_download",
+          "to": "collect_download",
+          "relation": "flow",
+          "label": "同一申请人可重复领取",
+          "source_refs": [
+            "U3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "announcements",
+      "title": "独立公告板",
+      "actors": [
+        "登录同事",
+        "公告编辑员"
+      ],
+      "trigger": "发布公告或打开公告板",
+      "outcome": "登录同事阅读公告；指定编辑员发布、修改和删除自己的公告；公告角色不改变文件权限。",
+      "nodes": [
+        {
+          "id": "publish_announcement",
+          "kind": "action",
+          "label": "发布公告",
+          "meaning": "The designated announcement editor may publish their own announcement.",
+          "source_refs": [
+            "U2"
+          ]
+        },
+        {
+          "id": "read_announcements",
+          "kind": "action",
+          "label": "阅读公告",
+          "meaning": "Authenticated colleagues may read published announcements without file access.",
+          "source_refs": [
+            "U2"
+          ]
+        },
+        {
+          "id": "edit_announcement",
+          "kind": "action",
+          "label": "修改自己的公告",
+          "meaning": "An authenticated announcement editor may edit only an announcement they authored.",
+          "source_refs": [
+            "U2"
+          ]
+        },
+        {
+          "id": "delete_announcement",
+          "kind": "action",
+          "label": "删除自己的公告",
+          "meaning": "An authenticated announcement editor may delete only an announcement they authored.",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "announcement-published-read",
+          "from": "publish_announcement",
+          "to": "read_announcements",
+          "relation": "data",
+          "label": "已发布内容",
+          "source_refs": [
+            "U2"
+          ]
+        },
+        {
+          "id": "announcement-edit",
+          "from": "publish_announcement",
+          "to": "edit_announcement",
+          "relation": "flow",
+          "label": "作者按需修改",
+          "source_refs": [
+            "U2"
+          ]
+        },
+        {
+          "id": "announcement-delete",
+          "from": "publish_announcement",
+          "to": "delete_announcement",
+          "relation": "flow",
+          "label": "作者按需删除",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "actor",
+      "identity": {
+        "id": "string"
+      },
+      "fields": {
+        "member": "boolean",
+        "editor": "boolean"
+      },
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "file",
+      "identity": {
+        "file_id": "string"
+      },
+      "fields": {
+        "owner_id": "string"
+      },
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "grant",
+      "identity": {
+        "file_id": "string",
+        "recipient_id": "string"
+      },
+      "fields": {
+        "active": "boolean"
+      },
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "download_task",
+      "identity": {
+        "task_id": "string"
+      },
+      "fields": {
+        "file_id": "string",
+        "requester_id": "string",
+        "status": "string",
+        "authorized_at_submission": "boolean"
+      },
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement",
+      "identity": {
+        "announcement_id": "string"
+      },
+      "fields": {
+        "author_id": "string",
+        "status": "string"
+      },
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "actor-id",
+      "object": "actor",
+      "field": "id",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_current_operation",
+        "scope": "current_authenticated_request",
+        "version": "session_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "actor-member",
+      "object": "actor",
+      "field": "member",
+      "type": "boolean",
+      "read_basis": {
+        "timing": "before_current_operation",
+        "scope": "current_authenticated_request",
+        "version": "session_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "actor-editor",
+      "object": "actor",
+      "field": "editor",
+      "type": "boolean",
+      "read_basis": {
+        "timing": "before_announcement_mutation",
+        "scope": "current_authenticated_request",
+        "version": "role_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "file-owner",
+      "object": "file",
+      "field": "owner_id",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_file_view_share_or_task_submission",
+        "scope": "current_file_operation",
+        "version": "file_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "grant-recipient",
+      "object": "grant",
+      "field": "recipient_id",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_file_view_or_task_submission",
+        "scope": "current_file_operation",
+        "version": "grant_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "grant-active",
+      "object": "grant",
+      "field": "active",
+      "type": "boolean",
+      "read_basis": {
+        "timing": "before_file_view_or_task_submission",
+        "scope": "current_file_operation",
+        "version": "grant_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "task-requester",
+      "object": "download_task",
+      "field": "requester_id",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_collection",
+        "scope": "selected_download_task",
+        "version": "task_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "task-submission-authorized",
+      "object": "download_task",
+      "field": "authorized_at_submission",
+      "type": "boolean",
+      "read_basis": {
+        "timing": "before_collection",
+        "scope": "persisted_submission_authorization",
+        "version": "task_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "task-state",
+      "object": "download_task",
+      "field": "status",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_collection",
+        "scope": "selected_download_task",
+        "version": "task_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement-author",
+      "object": "announcement",
+      "field": "author_id",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_announcement_mutation",
+        "scope": "selected_announcement",
+        "version": "announcement_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement-state",
+      "object": "announcement",
+      "field": "status",
+      "type": "string",
+      "read_basis": {
+        "timing": "before_announcement_read_or_mutation",
+        "scope": "selected_announcement",
+        "version": "announcement_revision"
+      },
+      "source_refs": [
+        "U2"
+      ]
+    }
+  ],
+  "state_models": [
+    {
+      "id": "grant",
+      "label": "逐人共享权限",
+      "subject": {
+        "object": "grant",
+        "identity": [
+          "file_id",
+          "recipient_id"
+        ]
+      },
+      "states": [
+        "inactive",
+        "active"
+      ],
+      "initial": "inactive",
+      "events": {
+        "share": {
+          "payload": {}
+        },
+        "revoke": {
+          "payload": {}
+        }
+      },
+      "context": {},
+      "guards": {
+        "may_manage": {
+          "decision": "policy:operation:manage_share",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      },
+      "effects": {},
+      "transitions": [
+        {
+          "id": "activate",
+          "source": "inactive",
+          "dest": "active",
+          "trigger": "share",
+          "conditions": [
+            "may_manage"
+          ],
+          "source_refs": [
+            "U2"
+          ]
+        },
+        {
+          "id": "deactivate",
+          "source": "active",
+          "dest": "inactive",
+          "trigger": "revoke",
+          "conditions": [
+            "may_manage"
+          ],
+          "source_refs": [
+            "U2"
+          ]
+        }
+      ],
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "download_task",
+      "label": "下载准备任务",
+      "subject": {
+        "object": "download_task",
+        "identity": [
+          "task_id"
+        ]
+      },
+      "states": [
+        "created",
+        "queued",
+        "preparing",
+        "ready"
+      ],
+      "initial": "created",
+      "events": {
+        "enqueue": {
+          "payload": {}
+        },
+        "start": {
+          "payload": {}
+        },
+        "finish": {
+          "payload": {}
+        }
+      },
+      "context": {
+        "authorized_at_submission": {
+          "type": "boolean"
+        },
+        "requester_id": {
+          "type": "string"
+        },
+        "file_id": {
+          "type": "string"
+        }
+      },
+      "guards": {
+        "may_request": {
+          "decision": "policy:operation:request_download",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      },
+      "effects": {
+        "persist_authorized_task": {
+          "meaning": "Persist this task and its submission-time authorization independently of later grant revocation.",
+          "completion": "Application transaction commits the queued task and its authorization together.",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "id": "enqueue",
+          "source": "created",
+          "dest": "queued",
+          "trigger": "enqueue",
+          "conditions": [
+            "may_request"
+          ],
+          "source_refs": [
+            "U2"
+          ],
+          "effects": [
+            "persist_authorized_task"
+          ]
+        },
+        {
+          "id": "start",
+          "source": "queued",
+          "dest": "preparing",
+          "trigger": "start",
+          "conditions": [],
+          "source_refs": [
+            "U1"
+          ]
+        },
+        {
+          "id": "finish",
+          "source": "preparing",
+          "dest": "ready",
+          "trigger": "finish",
+          "conditions": [],
+          "source_refs": [
+            "U1"
+          ]
+        }
+      ],
+      "source_refs": [
+        "U1",
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement",
+      "label": "公告",
+      "subject": {
+        "object": "announcement",
+        "identity": [
+          "announcement_id"
+        ]
+      },
+      "states": [
+        "absent",
+        "published",
+        "deleted"
+      ],
+      "initial": "absent",
+      "events": {
+        "publish": {
+          "payload": {}
+        },
+        "edit": {
+          "payload": {}
+        },
+        "delete": {
+          "payload": {}
+        }
+      },
+      "context": {
+        "author_id": {
+          "type": "string"
+        }
+      },
+      "guards": {
+        "may_publish": {
+          "decision": "policy:operation:publish_announcement",
+          "source_refs": [
+            "U2"
+          ]
+        },
+        "may_manage": {
+          "decision": "policy:operation:manage_announcement",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      },
+      "effects": {},
+      "transitions": [
+        {
+          "id": "publish",
+          "source": "absent",
+          "dest": "published",
+          "trigger": "publish",
+          "conditions": [
+            "may_publish"
+          ],
+          "source_refs": [
+            "U2"
+          ]
+        },
+        {
+          "id": "edit",
+          "source": "published",
+          "dest": "published",
+          "trigger": "edit",
+          "conditions": [
+            "may_manage"
+          ],
+          "source_refs": [
+            "U2"
+          ]
+        },
+        {
+          "id": "delete",
+          "source": "published",
+          "dest": "deleted",
+          "trigger": "delete",
+          "conditions": [
+            "may_manage"
+          ],
+          "source_refs": [
+            "U2"
+          ]
+        }
+      ],
+      "source_refs": [
+        "U2"
+      ]
+    }
+  ],
+  "crosslinks": [
+    {
+      "id": "share-event",
+      "from": "share_file",
+      "to": "event:grant:share",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "revoke-event",
+      "from": "revoke_share",
+      "to": "event:grant:revoke",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "request-enqueue",
+      "from": "request_download",
+      "to": "event:download_task:enqueue",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "worker-start",
+      "from": "prepare_download",
+      "to": "event:download_task:start",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "worker-finish",
+      "from": "mark_download_ready",
+      "to": "event:download_task:finish",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "share-guard",
+      "from": "transition:grant:activate",
+      "to": "policy:operation:manage_share",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "revoke-guard",
+      "from": "transition:grant:deactivate",
+      "to": "policy:operation:manage_share",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "enqueue-guard",
+      "from": "transition:download_task:enqueue",
+      "to": "policy:operation:request_download",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "enqueue-authorized-effect",
+      "from": "transition:download_task:enqueue",
+      "to": "effect:download_task:persist_authorized_task",
+      "relation": "transition_has_effect",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement-publish-event",
+      "from": "publish_announcement",
+      "to": "event:announcement:publish",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement-edit-event",
+      "from": "edit_announcement",
+      "to": "event:announcement:edit",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement-delete-event",
+      "from": "delete_announcement",
+      "to": "event:announcement:delete",
+      "relation": "action_requests_event",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement-publish-guard",
+      "from": "transition:announcement:publish",
+      "to": "policy:operation:publish_announcement",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement-edit-guard",
+      "from": "transition:announcement:edit",
+      "to": "policy:operation:manage_announcement",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "announcement-delete-guard",
+      "from": "transition:announcement:delete",
+      "to": "policy:operation:manage_announcement",
+      "relation": "transition_guarded_by",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-actor",
+      "from": "policy:actor",
+      "to": "fact:actor-id",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-member",
+      "from": "policy:member",
+      "to": "fact:actor-member",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-owner",
+      "from": "policy:owner",
+      "to": "fact:file-owner",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-recipient",
+      "from": "policy:recipient",
+      "to": "fact:grant-recipient",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-active",
+      "from": "policy:active",
+      "to": "fact:grant-active",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-requester",
+      "from": "policy:requester",
+      "to": "fact:task-requester",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-task_state",
+      "from": "policy:task_state",
+      "to": "fact:task-state",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-submission_authorized",
+      "from": "policy:submission_authorized",
+      "to": "fact:task-submission-authorized",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-editor",
+      "from": "policy:editor",
+      "to": "fact:actor-editor",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-author",
+      "from": "policy:author",
+      "to": "fact:announcement-author",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "read-announcement_state",
+      "from": "policy:announcement_state",
+      "to": "fact:announcement-state",
+      "relation": "decision_reads_fact",
+      "source_refs": [
+        "U2"
+      ]
+    }
+  ],
+  "applicability": [
+    {
+      "operation": "upload_file",
+      "state": {
+        "status": "none",
+        "reason": "Creates an immutable file object; no subsequent file lifecycle was requested."
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "upload"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "share_file",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "grant"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "manage_share"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "revoke_share",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "grant"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "manage_share"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "request_download",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "download_task"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "request_download"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "prepare_download",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "download_task"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "none",
+        "reason": "Internal worker step processes a task already authorized at submission; no new user authorization occurs."
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "mark_download_ready",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "download_task"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "none",
+        "reason": "Internal worker completion preserves the existing task authorization."
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "collect_download",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "download_task"
+        ],
+        "mode": "read"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "collect_download"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "publish_announcement",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "announcement"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "publish_announcement"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "read_announcements",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "announcement"
+        ],
+        "mode": "read"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "read_announcements"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "view_file",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "grant"
+        ],
+        "mode": "read"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "view_file"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "edit_announcement",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "announcement"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "manage_announcement"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "operation": "delete_announcement",
+      "state": {
+        "status": "applicable",
+        "models": [
+          "announcement"
+        ],
+        "mode": "change"
+      },
+      "rules": {
+        "status": "applicable",
+        "operations": [
+          "manage_announcement"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ]
+    }
+  ],
+  "expectations": [
+    {
+      "id": "download-prepared",
+      "scope": [
+        "state-model:download_task",
+        "prepare_download",
+        "mark_download_ready"
+      ],
+      "given": {
+        "task_state": "queued"
+      },
+      "when": {
+        "events": [
+          "start",
+          "finish"
+        ]
+      },
+      "then": [
+        {
+          "path": [
+            "task",
+            "status"
+          ],
+          "equals": "ready"
+        }
+      ],
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "announcement-independent",
+      "scope": [
+        "business-network:announcements"
+      ],
+      "given": {
+        "file_grant": "absent"
+      },
+      "when": {
+        "operation": "read_announcements"
+      },
+      "then": [
+        {
+          "path": [
+            "requires_file_grant"
+          ],
+          "equals": false
+        }
+      ],
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "approved-task-survives-revoke",
+      "scope": [
+        "request_download",
+        "revoke_share",
+        "collect_download"
+      ],
+      "given": {
+        "actor": "recipient",
+        "grant": "active"
+      },
+      "when": {
+        "events": [
+          "request_download",
+          "revoke_share",
+          "start",
+          "finish",
+          "collect_download"
+        ]
+      },
+      "then": [
+        {
+          "path": [
+            "existing_task_collect_allowed"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "new_task_allowed"
+          ],
+          "equals": false
+        }
+      ],
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "editor-has-no-file-power",
+      "scope": [
+        "policy-operation:manage_share",
+        "policy-operation:request_download",
+        "policy-operation:manage_announcement"
+      ],
+      "given": {
+        "editor": true,
+        "file_owner": false,
+        "file_grant": false
+      },
+      "when": {
+        "operations": [
+          "manage_share",
+          "request_download"
+        ]
+      },
+      "then": [
+        {
+          "path": [
+            "may_manage_file"
+          ],
+          "equals": false
+        },
+        {
+          "path": [
+            "may_request_file"
+          ],
+          "equals": false
+        }
+      ],
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "editor-own-announcement-only",
+      "scope": [
+        "edit_announcement",
+        "delete_announcement"
+      ],
+      "given": {
+        "editor": true,
+        "is_author": false
+      },
+      "when": {
+        "operations": [
+          "edit_announcement",
+          "delete_announcement"
+        ]
+      },
+      "then": [
+        {
+          "path": [
+            "allowed"
+          ],
+          "equals": false
+        }
+      ],
+      "source_refs": [
+        "U2"
+      ]
+    },
+    {
+      "id": "repeat-collection-keeps-ready",
+      "scope": [
+        "collect_download",
+        "state-model:download_task"
+      ],
+      "given": {
+        "task_state": "ready",
+        "authorized_at_submission": true,
+        "requester": "same_actor"
+      },
+      "when": {
+        "operations": [
+          "collect_download",
+          "collect_download"
+        ]
+      },
+      "then": [
+        {
+          "path": [
+            "collections",
+            "0",
+            "allowed"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "collections",
+            "1",
+            "allowed"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "task",
+            "status"
+          ],
+          "equals": "ready"
+        }
+      ],
+      "source_refs": [
+        "U3"
+      ]
+    }
+  ],
+  "confirmations": [],
+  "construction": {
+    "targets": [],
+    "obligations": [
+      {
+        "id": "O_FILES",
+        "kind": "model",
+        "target_ref": "business-network:files",
+        "target_kind": "business_network",
+        "meaning": "Represent upload, sharing and revocation.",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "O_DOWNLOADS",
+        "kind": "model",
+        "target_ref": "business-network:downloads",
+        "target_kind": "business_network",
+        "meaning": "Represent download requests, queued preparation and page collection.",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "O_BOARD",
+        "kind": "model",
+        "target_ref": "business-network:announcements",
+        "target_kind": "business_network",
+        "meaning": "Retain the independent announcement capability.",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "O_GRANT",
+        "kind": "model",
+        "target_ref": "state-model:grant",
+        "target_kind": "state_model",
+        "meaning": "Give each file/recipient grant its own state identity.",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "O_TASK",
+        "kind": "model",
+        "target_ref": "state-model:download_task",
+        "target_kind": "state_model",
+        "meaning": "Give each download preparation request its own task identity.",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "O_RULE_manage_share",
+        "kind": "model",
+        "target_ref": "policy-operation:manage_share",
+        "target_kind": "rule_operation",
+        "meaning": "Confirm and retain the manage_share rule.",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "O_RULE_request_download",
+        "kind": "model",
+        "target_ref": "policy-operation:request_download",
+        "target_kind": "rule_operation",
+        "meaning": "Confirm and retain the request_download rule.",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "O_RULE_collect_download",
+        "kind": "model",
+        "target_ref": "policy-operation:collect_download",
+        "target_kind": "rule_operation",
+        "meaning": "Confirm and retain the collect_download rule.",
+        "source_refs": [
+          "U2",
+          "U3"
+        ]
+      },
+      {
+        "id": "O_RULE_publish_announcement",
+        "kind": "model",
+        "target_ref": "policy-operation:publish_announcement",
+        "target_kind": "rule_operation",
+        "meaning": "Confirm and retain the publish_announcement rule.",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "O_RULE_read_announcements",
+        "kind": "model",
+        "target_ref": "policy-operation:read_announcements",
+        "target_kind": "rule_operation",
+        "meaning": "Confirm and retain the read_announcements rule.",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "O_TASK_OWNER",
+        "kind": "state_owner",
+        "object_ref": "object:download_task",
+        "meaning": "Task state belongs to a task instance, independently of the file and grant.",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "O_GRANT_OWNER",
+        "kind": "state_owner",
+        "object_ref": "object:grant",
+        "meaning": "Sharing status belongs to each recipient grant.",
+        "source_refs": [
+          "U1"
+        ]
+      },
+      {
+        "id": "O_ANNOUNCEMENT",
+        "kind": "model",
+        "target_ref": "state-model:announcement",
+        "target_kind": "state_model",
+        "meaning": "Keep the announcement lifecycle independent of files and download tasks.",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "O_ANNOUNCEMENT_OWNER",
+        "kind": "state_owner",
+        "object_ref": "object:announcement",
+        "meaning": "Each announcement has its own identity and author.",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "O_RULE_manage_announcement",
+        "kind": "model",
+        "target_ref": "policy-operation:manage_announcement",
+        "target_kind": "rule_operation",
+        "meaning": "Announcement editors may modify/delete only their own announcement.",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "O_TASK_EFFECT",
+        "kind": "relation",
+        "from_ref": "transition:download_task:enqueue",
+        "to_ref": "effect:download_task:persist_authorized_task",
+        "relation": "transition_has_effect",
+        "meaning": "Submission authorization is persisted with the task at a real commit boundary.",
+        "source_refs": [
+          "U2"
+        ]
+      }
+    ],
+    "presentations": []
+  },
+  "participation": {
+    "knowledge_domains": [
+      "development"
+    ],
+    "explanation_depth": "mixed",
+    "language": "zh-CN",
+    "preferred_participation": "questions",
+    "source_refs": [
+      "U1"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "D_ACCESS",
+      "topic": "authority",
+      "question": "文件权限是否按这个规则：上传者指定具体同事；只有上传者可以分享或撤销；接收人只能查看、申请下载，不能继续转分享？",
+      "why": "Determines grant ownership and whether recipients may manage sharing.",
+      "affects": [
+        "share_file",
+        "revoke_share",
+        "request_download",
+        "policy-operation:manage_share"
+      ],
+      "priority": 1,
+      "blocking": true,
+      "status": "resolved",
+      "source_refs": [
+        "U1"
+      ],
+      "routing": {
+        "kind": "business_intent",
+        "owner": "human",
+        "stage": "before_implementation",
+        "trigger": "The request leaves this meaning or implementation choice unspecified.",
+        "authority": {
+          "kind": "user",
+          "source_refs": [
+            "U1"
+          ],
+          "scope_refs": [
+            "share_file",
+            "revoke_share",
+            "request_download",
+            "policy-operation:manage_share"
+          ]
+        },
+        "obligation_refs": [
+          "O_GRANT",
+          "O_RULE_manage_share"
+        ],
+        "evidence_required": [
+          "conversation_answer"
+        ],
+        "invalidated_by": [
+          "meaning"
+        ]
+      },
+      "asked_in": [
+        "A_Q1"
+      ],
+      "resolution": {
+        "kind": "user_answer",
+        "text": "Only the uploader manages grants; uploader and designated recipients may view/download; recipients cannot re-share.",
+        "source_refs": [
+          "U2"
+        ]
+      }
+    },
+    {
+      "id": "D_REVOKE",
+      "topic": "cancellation",
+      "question": "同事申请下载后、领取前，共享被撤销时应怎样处理？",
+      "why": "Determines when file permission facts are read and whether an existing ready task survives revocation.",
+      "affects": [
+        "collect_download",
+        "policy-operation:collect_download"
+      ],
+      "priority": 2,
+      "blocking": true,
+      "status": "resolved",
+      "source_refs": [
+        "U1"
+      ],
+      "routing": {
+        "kind": "business_intent",
+        "owner": "human",
+        "stage": "before_implementation",
+        "trigger": "The request leaves this meaning or implementation choice unspecified.",
+        "authority": {
+          "kind": "user",
+          "source_refs": [
+            "U1"
+          ],
+          "scope_refs": [
+            "collect_download",
+            "policy-operation:collect_download"
+          ]
+        },
+        "obligation_refs": [
+          "O_RULE_collect_download"
+        ],
+        "evidence_required": [
+          "conversation_answer"
+        ],
+        "invalidated_by": [
+          "meaning"
+        ]
+      },
+      "asked_in": [
+        "A_Q1"
+      ],
+      "resolution": {
+        "kind": "user_answer",
+        "text": "Authorization is committed at task submission. The approved task remains preparable and collectible after share revocation; new task creation is denied.",
+        "source_refs": [
+          "U2"
+        ]
+      }
+    },
+    {
+      "id": "D_BOARD",
+      "topic": "authority",
+      "question": "独立公告板的权限是什么：谁可以发布、谁可以阅读？",
+      "why": "Determines the independent publication and readership predicates.",
+      "affects": [
+        "publish_announcement",
+        "read_announcements"
+      ],
+      "priority": 3,
+      "blocking": true,
+      "status": "resolved",
+      "source_refs": [
+        "U1"
+      ],
+      "routing": {
+        "kind": "business_intent",
+        "owner": "human",
+        "stage": "before_implementation",
+        "trigger": "The request leaves this meaning or implementation choice unspecified.",
+        "authority": {
+          "kind": "user",
+          "source_refs": [
+            "U1"
+          ],
+          "scope_refs": [
+            "publish_announcement",
+            "read_announcements"
+          ]
+        },
+        "obligation_refs": [
+          "O_BOARD",
+          "O_RULE_publish_announcement",
+          "O_RULE_read_announcements"
+        ],
+        "evidence_required": [
+          "conversation_answer"
+        ],
+        "invalidated_by": [
+          "meaning"
+        ]
+      },
+      "asked_in": [
+        "A_Q1"
+      ],
+      "resolution": {
+        "kind": "user_answer",
+        "text": "Authenticated colleagues read announcements. A designated editor publishes, edits and deletes only their own announcements. This role grants no file management rights.",
+        "source_refs": [
+          "U2"
+        ]
+      }
+    },
+    {
+      "id": "D_IDENTITY",
+      "topic": "authority",
+      "question": "成员通过用户名和密码登录，还是仅切换演示身份？",
+      "why": "Permission observations require an unambiguous actor identity.",
+      "affects": [
+        "object:actor"
+      ],
+      "priority": 3,
+      "blocking": true,
+      "status": "resolved",
+      "source_refs": [
+        "U1"
+      ],
+      "routing": {
+        "kind": "business_intent",
+        "owner": "human",
+        "stage": "before_implementation",
+        "trigger": "The request leaves this meaning or implementation choice unspecified.",
+        "authority": {
+          "kind": "user",
+          "source_refs": [
+            "U1"
+          ],
+          "scope_refs": [
+            "object:actor"
+          ]
+        },
+        "obligation_refs": [
+          "O_RULE_manage_share"
+        ],
+        "evidence_required": [
+          "conversation_answer"
+        ],
+        "invalidated_by": [
+          "meaning"
+        ]
+      },
+      "resolution": {
+        "kind": "user_answer",
+        "text": "The user explicitly requires logged-in colleagues, establishing authenticated actor identity.",
+        "source_refs": [
+          "U2"
+        ]
+      }
+    },
+    {
+      "id": "D_STORAGE",
+      "topic": "other",
+      "question": "是否用 SQLite 保存成员、文件元数据、共享关系、下载任务和公告，文件内容放项目本地目录？",
+      "why": "SQLite avoids a separate server for this small local application; PostgreSQL better fits a separately deployed shared database.",
+      "affects": [
+        "object:file",
+        "object:grant",
+        "object:download_task",
+        "object:announcement"
+      ],
+      "priority": 3,
+      "blocking": true,
+      "status": "resolved",
+      "source_refs": [
+        "U1"
+      ],
+      "routing": {
+        "kind": "technical_choice",
+        "owner": "human",
+        "stage": "before_implementation",
+        "trigger": "The request leaves this meaning or implementation choice unspecified.",
+        "authority": {
+          "kind": "user",
+          "source_refs": [
+            "U1"
+          ],
+          "scope_refs": [
+            "object:file",
+            "object:grant",
+            "object:download_task",
+            "object:announcement"
+          ]
+        },
+        "obligation_refs": [
+          "O_FILES",
+          "O_DOWNLOADS",
+          "O_BOARD"
+        ],
+        "evidence_required": [
+          "conversation_answer"
+        ],
+        "invalidated_by": [
+          "meaning"
+        ]
+      },
+      "asked_in": [
+        "A_Q2"
+      ],
+      "resolution": {
+        "kind": "user_answer",
+        "text": "Use SQLite and project-local file storage.",
+        "source_refs": [
+          "U3"
+        ]
+      }
+    },
+    {
+      "id": "D_COLLECTION",
+      "topic": "completion",
+      "question": "准备好的下载任务领取后，是否允许同一个申请人再次领取这一单？",
+      "why": "Determines whether collection reads ready state or consumes the task into a terminal state.",
+      "affects": [
+        "collect_download",
+        "state-model:download_task"
+      ],
+      "priority": 1,
+      "blocking": true,
+      "status": "resolved",
+      "source_refs": [
+        "U1",
+        "U2"
+      ],
+      "asked_in": [
+        "A_Q2"
+      ],
+      "routing": {
+        "kind": "business_intent",
+        "owner": "human",
+        "stage": "before_implementation",
+        "trigger": "Page collection is requested but repeat collection is unspecified.",
+        "authority": {
+          "kind": "user",
+          "source_refs": [
+            "U1",
+            "U2"
+          ],
+          "scope_refs": [
+            "collect_download",
+            "state-model:download_task"
+          ]
+        },
+        "obligation_refs": [
+          "O_TASK",
+          "O_RULE_collect_download"
+        ],
+        "evidence_required": [
+          "conversation_answer"
+        ],
+        "invalidated_by": [
+          "meaning"
+        ]
+      },
+      "resolution": {
+        "kind": "user_answer",
+        "text": "The same requester may collect the same ready task repeatedly; collection does not close the task.",
+        "source_refs": [
+          "U3"
+        ]
+      }
+    }
+  ],
+  "policy": {
+    "schema": "bo-policy/v1",
+    "revision": "requirements-2",
+    "stage": "draft",
+    "inputs": {
+      "actor": "string",
+      "member": "boolean",
+      "owner": "string",
+      "recipient": "string",
+      "active": "boolean",
+      "requester": "string",
+      "task_state": "string",
+      "submission_authorized": "boolean",
+      "editor": "boolean",
+      "author": "string",
+      "announcement_state": "string"
+    },
+    "predicates": [
+      {
+        "id": "same_identity",
+        "parameters": {
+          "left": "string",
+          "right": "string"
+        },
+        "source_refs": [
+          "U2"
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "id": "actor",
+        "op": "input",
+        "name": "actor",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "member",
+        "op": "input",
+        "name": "member",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "owner",
+        "op": "input",
+        "name": "owner",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "recipient",
+        "op": "input",
+        "name": "recipient",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "active",
+        "op": "input",
+        "name": "active",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "requester",
+        "op": "input",
+        "name": "requester",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "task_state",
+        "op": "input",
+        "name": "task_state",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "submission_authorized",
+        "op": "input",
+        "name": "submission_authorized",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "editor",
+        "op": "input",
+        "name": "editor",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "author",
+        "op": "input",
+        "name": "author",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "announcement_state",
+        "op": "input",
+        "name": "announcement_state",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "is_owner",
+        "op": "predicate",
+        "predicate": "same_identity",
+        "arguments": {
+          "left": "actor",
+          "right": "owner"
+        },
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "is_recipient",
+        "op": "predicate",
+        "predicate": "same_identity",
+        "arguments": {
+          "left": "actor",
+          "right": "recipient"
+        },
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "has_grant",
+        "op": "all",
+        "inputs": [
+          "is_recipient",
+          "active"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "file_access",
+        "op": "any",
+        "inputs": [
+          "is_owner",
+          "has_grant"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "may_manage",
+        "op": "all",
+        "inputs": [
+          "member",
+          "is_owner"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "may_access",
+        "op": "all",
+        "inputs": [
+          "member",
+          "file_access"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "task_is_mine",
+        "op": "predicate",
+        "predicate": "same_identity",
+        "arguments": {
+          "left": "actor",
+          "right": "requester"
+        },
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "ready_value",
+        "op": "constant",
+        "type": "string",
+        "value": "ready",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "task_is_ready",
+        "op": "predicate",
+        "predicate": "same_identity",
+        "arguments": {
+          "left": "task_state",
+          "right": "ready_value"
+        },
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "may_collect",
+        "op": "all",
+        "inputs": [
+          "member",
+          "task_is_mine",
+          "submission_authorized",
+          "task_is_ready"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "is_author",
+        "op": "predicate",
+        "predicate": "same_identity",
+        "arguments": {
+          "left": "actor",
+          "right": "author"
+        },
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "published_value",
+        "op": "constant",
+        "type": "string",
+        "value": "published",
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "announcement_is_published",
+        "op": "predicate",
+        "predicate": "same_identity",
+        "arguments": {
+          "left": "announcement_state",
+          "right": "published_value"
+        },
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "may_publish",
+        "op": "all",
+        "inputs": [
+          "member",
+          "editor"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "may_manage_announcement",
+        "op": "all",
+        "inputs": [
+          "member",
+          "editor",
+          "is_author",
+          "announcement_is_published"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      }
+    ],
+    "operations": [
+      {
+        "id": "upload",
+        "root": "member",
+        "business_nodes": [
+          "upload_file"
+        ],
+        "source_refs": [
+          "U1",
+          "U2"
+        ]
+      },
+      {
+        "id": "manage_share",
+        "root": "may_manage",
+        "business_nodes": [
+          "share_file",
+          "revoke_share"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "view_file",
+        "root": "may_access",
+        "business_nodes": [
+          "view_file"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "request_download",
+        "root": "may_access",
+        "business_nodes": [
+          "request_download"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "collect_download",
+        "root": "may_collect",
+        "business_nodes": [
+          "collect_download"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "publish_announcement",
+        "root": "may_publish",
+        "business_nodes": [
+          "publish_announcement"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "read_announcements",
+        "root": "member",
+        "business_nodes": [
+          "read_announcements"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      },
+      {
+        "id": "manage_announcement",
+        "root": "may_manage_announcement",
+        "business_nodes": [
+          "edit_announcement",
+          "delete_announcement"
+        ],
+        "source_refs": [
+          "U2"
+        ]
+      }
+    ]
+  },
+  "changes": [
+    {
+      "id": "CH_U2_D_ACCESS",
+      "decision": "D_ACCESS",
+      "previous": {
+        "id": "D_ACCESS",
+        "topic": "permissions",
+        "question": "文件权限是否按这个规则：上传者指定具体同事；只有上传者可以分享或撤销；接收人只能查看、申请下载，不能继续转分享？",
+        "why": "Determines grant ownership and whether recipients may manage sharing.",
+        "affects": [
+          "share_file",
+          "revoke_share",
+          "request_download",
+          "policy-operation:manage_share"
+        ],
+        "priority": 1,
+        "blocking": true,
+        "status": "open",
+        "source_refs": [
+          "U1"
+        ],
+        "routing": {
+          "kind": "business_intent",
+          "owner": "human",
+          "stage": "before_implementation",
+          "trigger": "The request leaves this meaning or implementation choice unspecified.",
+          "authority": {
+            "kind": "user",
+            "source_refs": [
+              "U1"
+            ],
+            "scope_refs": [
+              "share_file",
+              "revoke_share",
+              "request_download",
+              "policy-operation:manage_share"
+            ]
+          },
+          "obligation_refs": [
+            "O_GRANT",
+            "O_RULE_manage_share"
+          ],
+          "evidence_required": [
+            "conversation_answer"
+          ],
+          "invalidated_by": [
+            "meaning"
+          ]
+        },
+        "asked_in": [
+          "A_Q1"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ],
+      "reason": "Record the actual answer, preserve the prior candidate and use the canonical topic/priority vocabulary."
+    },
+    {
+      "id": "CH_U2_D_REVOKE",
+      "decision": "D_REVOKE",
+      "previous": {
+        "id": "D_REVOKE",
+        "topic": "revocation",
+        "question": "同事申请下载后、领取前，共享被撤销时应怎样处理？",
+        "why": "Determines when file permission facts are read and whether an existing ready task survives revocation.",
+        "affects": [
+          "collect_download",
+          "policy-operation:collect_download"
+        ],
+        "priority": 2,
+        "blocking": true,
+        "status": "open",
+        "source_refs": [
+          "U1"
+        ],
+        "routing": {
+          "kind": "business_intent",
+          "owner": "human",
+          "stage": "before_implementation",
+          "trigger": "The request leaves this meaning or implementation choice unspecified.",
+          "authority": {
+            "kind": "user",
+            "source_refs": [
+              "U1"
+            ],
+            "scope_refs": [
+              "collect_download",
+              "policy-operation:collect_download"
+            ]
+          },
+          "obligation_refs": [
+            "O_RULE_collect_download"
+          ],
+          "evidence_required": [
+            "conversation_answer"
+          ],
+          "invalidated_by": [
+            "meaning"
+          ]
+        },
+        "asked_in": [
+          "A_Q1"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ],
+      "reason": "Record the actual answer, preserve the prior candidate and use the canonical topic/priority vocabulary."
+    },
+    {
+      "id": "CH_U2_D_BOARD",
+      "decision": "D_BOARD",
+      "previous": {
+        "id": "D_BOARD",
+        "topic": "announcement permissions",
+        "question": "独立公告板的权限是什么：谁可以发布、谁可以阅读？",
+        "why": "Determines the independent publication and readership predicates.",
+        "affects": [
+          "publish_announcement",
+          "read_announcements"
+        ],
+        "priority": 3,
+        "blocking": true,
+        "status": "open",
+        "source_refs": [
+          "U1"
+        ],
+        "routing": {
+          "kind": "business_intent",
+          "owner": "human",
+          "stage": "before_implementation",
+          "trigger": "The request leaves this meaning or implementation choice unspecified.",
+          "authority": {
+            "kind": "user",
+            "source_refs": [
+              "U1"
+            ],
+            "scope_refs": [
+              "publish_announcement",
+              "read_announcements"
+            ]
+          },
+          "obligation_refs": [
+            "O_BOARD",
+            "O_RULE_publish_announcement",
+            "O_RULE_read_announcements"
+          ],
+          "evidence_required": [
+            "conversation_answer"
+          ],
+          "invalidated_by": [
+            "meaning"
+          ]
+        },
+        "asked_in": [
+          "A_Q1"
+        ]
+      },
+      "source_refs": [
+        "U2"
+      ],
+      "reason": "Record the actual answer, preserve the prior candidate and use the canonical topic/priority vocabulary."
+    },
+    {
+      "id": "CH_U2_D_IDENTITY",
+      "decision": "D_IDENTITY",
+      "previous": {
+        "id": "D_IDENTITY",
+        "topic": "identity",
+        "question": "成员通过用户名和密码登录，还是仅切换演示身份？",
+        "why": "Permission observations require an unambiguous actor identity.",
+        "affects": [
+          "object:actor"
+        ],
+        "priority": 4,
+        "blocking": true,
+        "status": "open",
+        "source_refs": [
+          "U1"
+        ],
+        "routing": {
+          "kind": "business_intent",
+          "owner": "human",
+          "stage": "before_implementation",
+          "trigger": "The request leaves this meaning or implementation choice unspecified.",
+          "authority": {
+            "kind": "user",
+            "source_refs": [
+              "U1"
+            ],
+            "scope_refs": [
+              "object:actor"
+            ]
+          },
+          "obligation_refs": [
+            "O_RULE_manage_share"
+          ],
+          "evidence_required": [
+            "conversation_answer"
+          ],
+          "invalidated_by": [
+            "meaning"
+          ]
+        }
+      },
+      "source_refs": [
+        "U2"
+      ],
+      "reason": "Record the actual answer, preserve the prior candidate and use the canonical topic/priority vocabulary."
+    },
+    {
+      "id": "CH_U2_D_STORAGE",
+      "decision": "D_STORAGE",
+      "previous": {
+        "id": "D_STORAGE",
+        "topic": "storage",
+        "question": "是否用 SQLite 保存成员、文件元数据、共享关系、下载任务和公告，文件内容放项目本地目录？",
+        "why": "SQLite avoids a separate server for this small local application; PostgreSQL better fits a separately deployed shared database.",
+        "affects": [
+          "object:file",
+          "object:grant",
+          "object:download_task",
+          "object:announcement"
+        ],
+        "priority": 5,
+        "blocking": true,
+        "status": "open",
+        "source_refs": [
+          "U1"
+        ],
+        "routing": {
+          "kind": "technical_choice",
+          "owner": "human",
+          "stage": "before_implementation",
+          "trigger": "The request leaves this meaning or implementation choice unspecified.",
+          "authority": {
+            "kind": "user",
+            "source_refs": [
+              "U1"
+            ],
+            "scope_refs": [
+              "object:file",
+              "object:grant",
+              "object:download_task",
+              "object:announcement"
+            ]
+          },
+          "obligation_refs": [
+            "O_FILES",
+            "O_DOWNLOADS",
+            "O_BOARD"
+          ],
+          "evidence_required": [
+            "conversation_answer"
+          ],
+          "invalidated_by": [
+            "meaning"
+          ]
+        }
+      },
+      "source_refs": [
+        "U2"
+      ],
+      "reason": "Record the actual answer, preserve the prior candidate and use the canonical topic/priority vocabulary."
+    },
+    {
+      "id": "CH_U3_D_IDENTITY",
+      "decision": "D_IDENTITY",
+      "previous": {
+        "id": "D_IDENTITY",
+        "topic": "authority",
+        "question": "成员通过用户名和密码登录，还是仅切换演示身份？",
+        "why": "Permission observations require an unambiguous actor identity.",
+        "affects": [
+          "object:actor"
+        ],
+        "priority": 3,
+        "blocking": true,
+        "status": "resolved",
+        "source_refs": [
+          "U1"
+        ],
+        "routing": {
+          "kind": "business_intent",
+          "owner": "human",
+          "stage": "before_implementation",
+          "trigger": "The request leaves this meaning or implementation choice unspecified.",
+          "authority": {
+            "kind": "user",
+            "source_refs": [
+              "U1"
+            ],
+            "scope_refs": [
+              "object:actor"
+            ]
+          },
+          "obligation_refs": [
+            "O_RULE_manage_share"
+          ],
+          "evidence_required": [
+            "conversation_answer"
+          ],
+          "invalidated_by": [
+            "meaning"
+          ]
+        },
+        "resolution": {
+          "kind": "existing_rule",
+          "text": "The user explicitly requires logged-in colleagues, establishing an authenticated actor rather than an unauthenticated identity selector.",
+          "source_refs": [
+            "U2"
+          ]
+        }
+      },
+      "source_refs": [
+        "U2"
+      ],
+      "reason": "Use actual user-answer provenance for the stated login requirement."
+    },
+    {
+      "id": "CH_U3_D_STORAGE",
+      "decision": "D_STORAGE",
+      "previous": {
+        "id": "D_STORAGE",
+        "topic": "other",
+        "question": "是否用 SQLite 保存成员、文件元数据、共享关系、下载任务和公告，文件内容放项目本地目录？",
+        "why": "SQLite avoids a separate server for this small local application; PostgreSQL better fits a separately deployed shared database.",
+        "affects": [
+          "object:file",
+          "object:grant",
+          "object:download_task",
+          "object:announcement"
+        ],
+        "priority": 3,
+        "blocking": true,
+        "status": "open",
+        "source_refs": [
+          "U1"
+        ],
+        "routing": {
+          "kind": "technical_choice",
+          "owner": "human",
+          "stage": "before_implementation",
+          "trigger": "The request leaves this meaning or implementation choice unspecified.",
+          "authority": {
+            "kind": "user",
+            "source_refs": [
+              "U1"
+            ],
+            "scope_refs": [
+              "object:file",
+              "object:grant",
+              "object:download_task",
+              "object:announcement"
+            ]
+          },
+          "obligation_refs": [
+            "O_FILES",
+            "O_DOWNLOADS",
+            "O_BOARD"
+          ],
+          "evidence_required": [
+            "conversation_answer"
+          ],
+          "invalidated_by": [
+            "meaning"
+          ]
+        },
+        "asked_in": [
+          "A_Q2"
+        ]
+      },
+      "source_refs": [
+        "U3"
+      ],
+      "reason": "Preserve the actual second-batch answer and the previous pending decision."
+    },
+    {
+      "id": "CH_U3_D_COLLECTION",
+      "decision": "D_COLLECTION",
+      "previous": {
+        "id": "D_COLLECTION",
+        "topic": "completion",
+        "question": "准备好的下载任务领取后，是否允许同一个申请人再次领取这一单？",
+        "why": "Determines whether collection reads ready state or consumes the task into a terminal state.",
+        "affects": [
+          "collect_download",
+          "state-model:download_task"
+        ],
+        "priority": 1,
+        "blocking": true,
+        "status": "open",
+        "source_refs": [
+          "U1",
+          "U2"
+        ],
+        "asked_in": [
+          "A_Q2"
+        ],
+        "routing": {
+          "kind": "business_intent",
+          "owner": "human",
+          "stage": "before_implementation",
+          "trigger": "Page collection is requested but repeat collection is unspecified.",
+          "authority": {
+            "kind": "user",
+            "source_refs": [
+              "U1",
+              "U2"
+            ],
+            "scope_refs": [
+              "collect_download",
+              "state-model:download_task"
+            ]
+          },
+          "obligation_refs": [
+            "O_TASK",
+            "O_RULE_collect_download"
+          ],
+          "evidence_required": [
+            "conversation_answer"
+          ],
+          "invalidated_by": [
+            "meaning"
+          ]
+        }
+      },
+      "source_refs": [
+        "U3"
+      ],
+      "reason": "Preserve the actual second-batch answer and the previous pending decision."
+    }
+  ]
+}

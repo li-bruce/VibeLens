@@ -12,10 +12,25 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "skills/vibelens/scripts"), str(ROOT / "tools")]
 from bo_observer.adapters.python.bo_probe import BOProbe
-from bo_observer.adapters.python.bo_otel import BOOpenTelemetry, BOOpenTelemetryProcessor
-from bo_observer.observation.provenance import trace_references, object_metadata, export_provenance
-from bo_observer.observation.telemetry import validate_registrations, business_layer_errors
-from bo_observer.observation.telemetry import load_registrations, runtime_errors, automatic_sites
+from bo_observer.adapters.python.bo_otel import (
+    BOOpenTelemetry,
+    BOOpenTelemetryProcessor,
+    bo_instrument_flask,
+)
+from bo_observer.observation.provenance import (
+    trace_references,
+    object_metadata,
+    export_provenance,
+)
+from bo_observer.observation.telemetry import (
+    validate_registrations,
+    business_layer_errors,
+)
+from bo_observer.observation.telemetry import (
+    load_registrations,
+    runtime_errors,
+    automatic_sites,
+)
 from bo_observer.workflow.observation_requirements import invocation_closure
 from bo_observer.protocol import schema_check, validate_event
 from bo_observer.observation.observation_scope import bo_internal
@@ -75,11 +90,76 @@ class TelemetryTests(unittest.TestCase):
         for event in events:
             validate_event(event, self.project, "build")
         result = invocation_closure(
-            {"runs": [{"mode": "on", "events": events}]}, required=True, model=self.project["model"]
+            {"runs": [{"mode": "on", "events": events}]},
+            required=True,
+            model=self.project["model"],
         )
         self.assertTrue(result["valid"], result)
         self.assertEqual(self.probe.bo_errors, 0, self.probe.bo_health())
         return result
+
+    def test_http_boundary_records_rejections_before_the_handler_runs(self):
+        """A routed HTTP response remains a fact when middleware skips business code."""
+        from flask import Flask, abort, request
+        from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+        app = Flask(__name__)
+        reached_handler = []
+
+        @app.before_request
+        def native_request_guard():
+            if request.headers.get("X-Test-Reject") == "yes":
+                abort(403)
+
+        @app.post("/files")
+        def files():
+            # Invalid JSON is rejected by Flask before the business operation.
+            request.get_json()
+            reached_handler.append(True)
+            return "stored", 201
+
+        configuration = {
+            "protocol": "bo-telemetry/v1",
+            "backend": "opentelemetry",
+            "registrations": [
+                {
+                    "node": "api",
+                    "source": self.project["model"]["nodes"][-1]["source"],
+                    "match": {"name": "POST /files"},
+                    "capture": {"out": {"status": "http.status_code"}},
+                }
+            ],
+        }
+        self.provider.add_span_processor(BOOpenTelemetryProcessor(self.backend, configuration))
+        previous_hooks = tuple(app.before_request_funcs[None])
+        bo_instrument_flask(app, tracer_provider=self.provider)
+        self.addCleanup(FlaskInstrumentor.uninstrument_app, app)
+        self.assertEqual(tuple(app.before_request_funcs[None][1:]), previous_hooks)
+        with app.test_client() as client:
+            statuses = [
+                client.post("/files", json={}, headers={"X-Test-Reject": "yes"}).status_code,
+                client.post("/files", data="{", content_type="application/json").status_code,
+                client.post("/files", json={}).status_code,
+            ]
+        self.assertEqual(statuses, [403, 400, 201])
+        self.assertEqual(reached_handler, [True])
+        self.check_events()
+        returned = [e for e in self.events if e["node"] == "api" and e["phase"] == "return"]
+        self.assertEqual([e["outputs"]["status"] for e in returned], statuses)
+        self.assertEqual(len({e["call_id"] for e in returned}), 3)
+
+    def test_flask_boundary_refuses_duplicate_instrumentation(self):
+        """Existing provider ownership is not silently replaced or doubled."""
+        from flask import Flask
+        from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+        app = Flask(__name__)
+        FlaskInstrumentor.instrument_app(app, tracer_provider=self.provider)
+        self.addCleanup(FlaskInstrumentor.uninstrument_app, app)
+        hooks = tuple(app.before_request_funcs[None])
+        with self.assertRaisesRegex(ValueError, "newly installed request boundary"):
+            bo_instrument_flask(app, tracer_provider=self.provider)
+        self.assertEqual(tuple(app.before_request_funcs[None]), hooks)
 
     def test_real_sdk_identity_preserves_call_ids_values_and_business_machine(self):
         machine = deepcopy(self.project["model"]["machine"])
@@ -92,7 +172,9 @@ class TelemetryTests(unittest.TestCase):
         self.assertEqual(len({e["trace"]["span_id"] for e in self.events}), 1)
         self.assertEqual(machine, self.project["model"]["machine"])
 
-    def test_detached_async_child_after_parent_ends_is_causal_not_temporally_nested(self):
+    def test_detached_async_child_after_parent_ends_is_causal_not_temporally_nested(
+        self,
+    ):
         async def operation():
             release = asyncio.Event()
 
@@ -110,7 +192,8 @@ class TelemetryTests(unittest.TestCase):
         asyncio.run(operation())
         self.check_events()
         self.assertEqual(
-            [e["phase"] for e in self.events], ["enter", "return", "enter", "decision", "return"]
+            [e["phase"] for e in self.events],
+            ["enter", "return", "enter", "decision", "return"],
         )
         parent, child = self.events[0], self.events[2]
         self.assertEqual(child["parent_event_id"], parent["id"])
@@ -131,7 +214,9 @@ class TelemetryTests(unittest.TestCase):
         roots = [e for e in self.events if e["phase"] == "enter" and not e["parent_event_id"]]
         self.assertEqual(len({e["trace"]["trace_id"] for e in roots}), 2)
 
-    def test_cross_producer_carrier_retains_business_reference_not_actor_authority(self):
+    def test_cross_producer_carrier_retains_business_reference_not_actor_authority(
+        self,
+    ):
         values = []
         remote = BOProbe(self.project, "build", sink=lambda body, kind: values.append(body))
         self.addCleanup(remote.close)
@@ -328,7 +413,8 @@ class TelemetryTests(unittest.TestCase):
         self.addCleanup(engine.dispose)
         runtime.attach_sqlalchemy(engine)
         with probe.span(
-            "advance", provenance={"objects": [{"id": "files", "type": "Dataset", "role": "input"}]}
+            "advance",
+            provenance={"objects": [{"id": "files", "type": "Dataset", "role": "input"}]},
         ):
             with runtime.operation("query"), engine.connect() as connection:
                 self.assertEqual(connection.exec_driver_sql("SELECT 1").scalar(), 1)
@@ -339,7 +425,9 @@ class TelemetryTests(unittest.TestCase):
         self.assertEqual(query["trace"]["parent_span_id"], values[0]["trace"]["span_id"])
         self.assertEqual(query["provenance"]["objects"][0]["type"], "Dataset")
 
-    def test_registration_iteration_changes_build_and_cannot_pass_with_native_health(self):
+    def test_registration_iteration_changes_build_and_cannot_pass_with_native_health(
+        self,
+    ):
         from bo_observer.graph.behavior_model import capture
         from bo_observer.sources import scan
 
@@ -370,7 +458,8 @@ class TelemetryTests(unittest.TestCase):
             automatic_sites(configuration, {"symbols": {}})
         self.assertTrue(
             runtime_errors(
-                configuration, {"runs": [{"mode": "on", "probe_health": {}, "events": []}]}
+                configuration,
+                {"runs": [{"mode": "on", "probe_health": {}, "events": []}]},
             )
         )
 
@@ -471,11 +560,14 @@ class TelemetryTests(unittest.TestCase):
             self.assertEqual(client.get("/files").status_code, 403)
         self.check_events()
         self.assertEqual(
-            [event["node"] for event in self.events], ["api", "advance", "advance", "api"]
+            [event["node"] for event in self.events],
+            ["api", "advance", "advance", "api"],
         )
         self.assertEqual(self.events[-1]["outputs"], {"status": 403})
 
-    def test_upstream_flask_closes_at_the_actual_500_response_after_a_native_exception(self):
+    def test_upstream_flask_closes_at_the_actual_500_response_after_a_native_exception(
+        self,
+    ):
         from flask import Flask
         from opentelemetry.instrumentation.flask import FlaskInstrumentor
 
@@ -508,7 +600,8 @@ class TelemetryTests(unittest.TestCase):
             self.assertEqual(response.status_code, 500)
         self.check_events()
         self.assertEqual(
-            [event["phase"] for event in self.events], ["enter", "enter", "error", "return"]
+            [event["phase"] for event in self.events],
+            ["enter", "enter", "error", "return"],
         )
         self.assertEqual(self.events[-1]["outputs"], {"status": response.status_code})
         self.assertEqual(self.events[2]["node"], "advance")
@@ -516,7 +609,9 @@ class TelemetryTests(unittest.TestCase):
         self.assertIn("RuntimeError", self.events[-1]["exception"]["type"])
         self.assertNotIn("native_storage_unavailable", json.dumps(self.events))
 
-    def test_browser_form_commands_capture_native_redirect_denial_and_error_responses(self):
+    def test_browser_form_commands_capture_native_redirect_denial_and_error_responses(
+        self,
+    ):
         from flask import Flask, abort, redirect, has_request_context, request
         from opentelemetry.instrumentation.flask import FlaskInstrumentor
 
@@ -588,7 +683,11 @@ class TelemetryTests(unittest.TestCase):
         self.addCleanup(FlaskInstrumentor.uninstrument_app, app)
         actual = []
         with app.test_client() as client:
-            for operation, expected in (("review", 303), ("denied", 403), ("broken", 500)):
+            for operation, expected in (
+                ("review", 303),
+                ("denied", 403),
+                ("broken", 500),
+            ):
                 response = client.post("/command/" + operation)
                 self.assertEqual(response.status_code, expected)
                 actual.append(response.status_code)
@@ -618,7 +717,9 @@ class TelemetryTests(unittest.TestCase):
         )
         self.assertNotIn("native_command_storage_unavailable", json.dumps(self.events))
 
-    def test_exception_class_is_physical_metadata_even_without_a_business_error_field(self):
+    def test_exception_class_is_physical_metadata_even_without_a_business_error_field(
+        self,
+    ):
         with self.assertRaisesRegex(ValueError, "selected-private-value"):
             with self.probe.span("advance"):
                 raise ValueError("selected-private-value")
@@ -629,7 +730,9 @@ class TelemetryTests(unittest.TestCase):
         self.assertEqual(sdk.attributes["error.type"], "ValueError")
         self.assertEqual(sdk.status.status_code, StatusCode.ERROR)
         self.assertEqual(
-            sdk.events, (), "native BO facts do not introduce deprecated exception span events"
+            sdk.events,
+            (),
+            "native BO facts do not introduce deprecated exception span events",
         )
         self.assertNotIn("selected-private-value", json.dumps(self.events))
         from bo_observer.observation.capture_context import minimal_boundary
@@ -763,7 +866,9 @@ class TelemetryTests(unittest.TestCase):
         old = source.bo_bind_tracing(BOOpenTelemetry(self.tracer))
         try:
             with source.span(
-                "advance", entity="old-entity", provenance={"workflow_id": "old-process"}
+                "advance",
+                entity="old-entity",
+                provenance={"workflow_id": "old-process"},
             ):
                 carrier = old.inject()
             with self.backend.receive(carrier, trusted=True):
@@ -794,7 +899,9 @@ class TelemetryTests(unittest.TestCase):
             value.update(build_id="previous-build", identity=identity)
             with self.assertRaises(ValueError):
                 with self.backend.receive(
-                    {**carrier, "vibelens-context": json.dumps(value)}, trusted=True, strict=True
+                    {**carrier, "vibelens-context": json.dumps(value)},
+                    trusted=True,
+                    strict=True,
                 ):
                     pass
         self.assertEqual(self.backend.health()["external_build_contexts"], 0)

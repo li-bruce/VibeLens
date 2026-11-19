@@ -13,11 +13,14 @@ from ..value_types import represents  # Public compatibility import for existing
 
 @dataclass(frozen=True)
 class SourceBinding:
+    """One owned callable, identified by its portable file path and symbol name."""
+
     path: str
     symbol: str
 
     @property
     def identity(self):
+        """Return the source-index key without creating another graph identity."""
         return self.path + "::" + self.symbol
 
 
@@ -31,6 +34,7 @@ class BindingSources:
         self.sources = set()
 
     def source(self, reference, path):
+        """Resolve a callable; report invalid bindings at the supplied JSON path."""
         native = SourceBinding(portable_path(reference["path"]), reference["symbol"])
         require(
             self.excluded.get(native.identity, {}).get("category") != "observer",
@@ -57,6 +61,7 @@ class BindingSources:
         return native
 
     def site(self, site, path):
+        """Check a capture site's node and source against the same owned inventory."""
         node = self.nodes.get(site["node"])
         require(node is not None, "binding_node_missing", path, site["node"])
         require(

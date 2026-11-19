@@ -22,6 +22,12 @@ Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码�
 
 验收仍由原有迭代流程统一协调。TLC 分析选定的设计定义；程序状态由项目自身执行，实际采集、映射和业务检查各自提供证据。
 
+Python 追踪适配器的 `bo_instrument_flask` 将上游请求采集入口放在应用守卫之前，
+让认证、CSRF 等检查提前返回时也能保留实际 HTTP 响应。业务守卫顺序及结果不变，
+被拒绝的请求不会因此获得虚构的业务调用。`tests/test_telemetry.py` 检查真实拒绝、
+解析错误、正常返回和重复安装；[P7 回归记录](review/behavior-contracts-sequential/p7-trials/http-boundary-review.md)
+保留了原始 403 漏采及修复后的证据。
+
 设计阶段的对话图由 `web/design_preview.py` 和 `workflow/construction_review.py` 生成，
 共用 `web/semantic_names.py` 读取当前语言的语义名称，保持节点身份与确认范围不变。
 查看器的 `view-selection.js` 选择新设计的初始视图；`viewer.js` 优先恢复用户保存的选择。

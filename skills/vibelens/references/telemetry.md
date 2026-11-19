@@ -84,6 +84,25 @@ framework that supplies route names only at the end needs a native entry hook or
 a stable initial selector, verified against that framework's actual behavior.
 Do not claim zero-code capture merely because a registration exists.
 
+For Flask, install the HTTP boundary during construction with
+`bo_instrument_flask(app, tracer_provider=bo_provider, excluded_urls=...)` from
+the managed `bo_otel` adapter, after registering the processor. This installs the
+upstream instrumentor ahead of existing request guards while preserving their
+order. Direct `FlaskInstrumentor.instrument_app` after a CSRF/auth hook can miss
+requests that hook rejects before the instrumentor starts. An already instrumented
+app needs an explicit integration with its existing boundary; do not install a
+second observer or a second global provider.
+
+In any framework, cover the actual HTTP boundary outside authorization, origin,
+CSRF and body-parser middleware. A probe inside a route handler cannot observe
+responses that bypass that handler. For Node/Express, either bootstrap upstream
+HTTP instrumentation before loading the application, or place the isolated native
+request observer before rejecting middleware and finish it on the actual response.
+Resolve a registered route against a concrete source declaration; unresolved
+routes remain unmapped instead of acquiring an invented business node. Verify
+real rejected requests and their captured final statuses in addition to normal
+handler calls. Keep authentication checks and response handling native.
+
 The processor excludes observer activity and VibeLens-created spans, avoiding
 duplicate capture. It does not map generic HTTP activity to business nodes.
 For example, **Share file** is business; its HTTP route is API; its permission

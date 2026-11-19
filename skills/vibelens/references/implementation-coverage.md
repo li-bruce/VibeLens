@@ -12,6 +12,13 @@ The generator reads `implementation.json`, embeds `implementation` in the model,
 
 This example assumes one note parameter; account for every actual feature parameter. Begin from the independent source inventory, not the already-authored graph. Inspect HTTP routes, message reads, background jobs, authorization, and persistence. Unresolved dispatch remains an explicit gap.
 
+For HTTP entrypoints, inspect middleware order as well as the handler. Include
+applicable authentication, CSRF/origin and parser rejections in independent
+response cases. Compare the real response status with its captured return event;
+an empty event list must fail that case. Preserve the distinction between a
+received HTTP request and a business operation that the guard never permitted.
+See the tested boundary wiring in [telemetry](telemetry.md).
+
 - `features`: entrypoint source identity, visible business node, capture nodes, real cases. Display names may differ from code.
 - `support`: assigns support symbols to a node, preserving searchable source nodes and resolvable calls. Unobserved helpers remain static, never marked executed.
 - `excluded`: only identifiable observer code or constructors with reasons. Ordinary utility/business routes cannot escape coverage. Inspect observer HTTP routes using [exclusion rules](observer-exclusion.md); source remains versioned even when no business node/event is generated.

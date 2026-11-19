@@ -184,6 +184,13 @@ validates trace identity and qualified business/object references. They suppleme
 existing events without changing state declarations or native execution. See the
 [integration contract](../skills/vibelens/references/telemetry.md).
 
+The Python adapter's `bo_instrument_flask` installs the upstream request boundary
+before native guards. This small framework integration preserves early rejected
+responses without creating a business call. `tests/test_telemetry.py` checks real
+guard/parser responses, closure, unchanged guard order and duplicate installation.
+The [P7 regression record](review/behavior-contracts-sequential/p7-trials/http-boundary-review.md)
+retains the original missed 403 and the repaired result.
+
 [observation/capture_context.py](../skills/vibelens/scripts/bo_observer/observation/capture_context.py)
 projects actual invocation boundaries to value-free headers and extracts the
 ancestors required by focused facts. `session.py` retains bounded open-call

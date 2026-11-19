@@ -17,12 +17,42 @@ from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapProp
 from opentelemetry.instrumentation.utils import suppress_instrumentation
 
 from ...observation.observation_scope import bo_is_internal
-from ...observation.provenance import trace_metadata, object_metadata, exception_metadata
+from ...observation.provenance import (
+    trace_metadata,
+    object_metadata,
+    exception_metadata,
+)
 from ...observation.telemetry import match_registration, validate_registrations
 
 _ACTIVATION = context.create_key("vibelens.activation")
 _LINKS = context.create_key("vibelens.links")
 _CARRIER = "vibelens-context"
+
+
+def bo_instrument_flask(app, *, tracer_provider, **options):
+    """Install the optional HTTP boundary before existing application guards.
+
+    Call during application construction, before serving requests. The pinned
+    upstream Flask instrumentor appends a request hook; an earlier CSRF/auth hook
+    can return before it runs. Move only the newly installed instrumentation hook
+    ahead of existing hooks, preserving their relative order and native responses.
+    Standard options (including excluded_urls) pass through to the instrumentor.
+    Registrations and the VibeLens span processor still belong to the caller.
+
+    An already instrumented application is an integration error: reuse its native
+    provider and configure its boundary explicitly instead of installing twice.
+    """
+    from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+    previous = tuple(app.before_request_funcs.get(None, ()))
+    FlaskInstrumentor.instrument_app(app, tracer_provider=tracer_provider, **options)
+    hooks = app.before_request_funcs.get(None, [])
+    added = [hook for hook in hooks if hook not in previous]
+    if len(added) != 1:
+        raise ValueError("Flask observation requires one newly installed request boundary")
+    # Flask dispatches this ordered hook registry before invoking the handler.
+    # Do not replace or wrap native guards: their return/error semantics survive.
+    hooks[:] = added + [hook for hook in hooks if hook not in added]
 
 
 def bo_span_metadata(span, parent=None, links=()):
@@ -372,7 +402,11 @@ class BOOpenTelemetryProcessor(SpanProcessor):
                 **identity,
             )
             activation = SimpleNamespace(
-                bo_probe=probe, bo_options=identity, call_id=call_id, entry_id=entry, bo_active=True
+                bo_probe=probe,
+                bo_options=identity,
+                call_id=call_id,
+                entry_id=entry,
+                bo_active=True,
             )
             with backend.lock:
                 backend.automatic[key] = activation

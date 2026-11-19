@@ -61,6 +61,10 @@ Follow [integration ownership](references/integration-boundary.md): new projects
 
 For standard tracing, follow [telemetry integration](references/telemetry.md). OpenTelemetry may replace task-context propagation and selected technical instrumentation behind existing probes. Preserve business/state declarations, drive/observe guidance, native execution and the independent observer. Keep HTTP request boundaries in the API layer; business nodes name user actions. Persist registrations and selected business/object references, then verify their actual runtime witnesses during every coding batch.
 
+Observe HTTP boundaries before rejecting middleware and parsers. Test actual early
+responses as well as handler results; a request rejected before business execution
+must retain its API response evidence without inventing a business invocation.
+
 Store the mode decision and complete model in `bo_stategraph/project.json`. Use `bo-project/v2` with pinned discovery and behavior artifacts for this modeling workflow; existing `bo-project/v1` projects retain their original checks until explicitly migrated. `model.machines` registers independent state declarations by stable model ID; drive mode binds each to its selected native executor. Snapshot v2 carries `state_model_id` alongside the actual instance identity. Legacy `model.machine` remains supported. Bind functions through stable source references; do not embed executable function code in JSON. Existing Python projects may retain a v3 graph and a shared `bo_stategraph/machine.json` consumed by their real executor and graph generator. Never edit generated copies independently.
 
 Carry confirmed rule identities into `model.policy`, bind native predicate functions and parameters, and register independent operation cases. `bo_policy.py sync` generates their nodes, shared dependencies and business/source links in the same graph. Drive may use the native evaluator; observe captures the application's actual evaluation. Record each check separately and retain skipped, unknown and error evidence. See the rule reference for the JSON and probe interfaces.
