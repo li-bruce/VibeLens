@@ -97,6 +97,8 @@ export function buildTraceIndex(
   all,
   edges = recording.context.model.edges || [],
 ) {
+  if (recording.origin === "model_analysis")
+    throw new Error("Model analysis uses the logical trace adapter, not runtime lifetimes");
   const axis = clock(items, recording.observed_until),
     calls = contextualLifecycles(recording, items, all),
     facts = boFacts(recording, items);

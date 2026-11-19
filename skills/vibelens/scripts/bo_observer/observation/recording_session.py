@@ -86,6 +86,8 @@ def checkpoint(view, *, context=False):
             value["api_structure"] = deepcopy(view["api_structure"])
         if view.get("concept_structure"):
             value["concept_structure"] = deepcopy(view["concept_structure"])
+        if view.get("behavior_context"):
+            value["behavior_context"] = deepcopy(view["behavior_context"])
         value.update(
             model=deepcopy(view["model"]),
             manifest=deepcopy(view["manifest"]),
@@ -374,6 +376,8 @@ class Recordings:
                     latest["api_structure"] = view["api_structure"]
                 if view.get("concept_structure"):
                     latest["concept_structure"] = view["concept_structure"]
+                if view.get("behavior_context"):
+                    latest["behavior_context"] = view["behavior_context"]
                 view = latest
             except Exception:
                 self.bo_restore_capture()

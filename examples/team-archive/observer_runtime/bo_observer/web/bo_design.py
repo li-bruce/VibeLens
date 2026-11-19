@@ -162,11 +162,13 @@ class BODesign:
             identities = {key: values[0] for key, values in self._identities(doc).items()}
             model = legacy_model(doc, identities, project)
         from .semantic_names import overlay_model
+        from ..observation.behavior_context import design_context
 
         return {
             "stage": "design",
             "layout_id": doc.get("layout_id", project),
             "model": overlay_model(self.root, model),
+            "behavior_context": design_context(self.root, doc),
             "manifest": {"build_id": bo_digest(doc), "bindings": {}},
             "binding_status": {"status": "design"},
             "events": [],

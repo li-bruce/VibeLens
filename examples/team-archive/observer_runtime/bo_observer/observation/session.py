@@ -17,6 +17,7 @@ from .event_batch import BOSessionSink
 from .capture_context import call_key, invocation_boundary, minimal_boundary
 from .concept_context import ConceptContext
 from .capture_bridge import CaptureBridge
+from .behavior_context import BehaviorContext
 
 OPEN_CONTEXT_LIMIT = 10000
 
@@ -45,9 +46,10 @@ class GraphSession:
         """Load one project/build and prepare its bounded event history and recording service."""
         self.root = Path(root).absolute().resolve()
         self.path = contained(self.root, project_path)
-        from ..project_artifacts import load_project
+        from ..project_artifacts import load_bundle
 
-        self.project = load_project(self.root, project_path)
+        self.project, documents = load_bundle(self.root, project_path)
+        self.bo_behavior_context = BehaviorContext(self.root, self.project, documents)
         self.project_hash = digest(self.project)
         self.bo_project_sources = SourceFiles(self.root)
         self.bo_project_content_hash = None
@@ -142,6 +144,9 @@ class GraphSession:
         changed_concepts = self.bo_concept_context.changed_inputs()
         if changed_concepts:
             status.update(status="stale", concept_inputs_changed=changed_concepts)
+        changed_behavior = self.bo_behavior_context.changed_inputs()
+        if changed_behavior:
+            status.update(status="stale", behavior_inputs_changed=changed_behavior)
         return status
 
     def event(self, event):
@@ -457,6 +462,9 @@ class GraphSession:
                 "program_url": self.program_url,
                 "layout_id": self.project["project_id"],
                 "model": model,
+                "behavior_context": (
+                    self.bo_behavior_context.view() if self.bo_project_context.get() else None
+                ),
                 "project_structure": project_structure,
                 "api_structure": api_structure,
                 "concept_structure": (

@@ -56,3 +56,16 @@ The integration uses explicit workflow commands in the activated conversation.
 It reports `automatic_host_hook: false`; no unsupported global editor hook or
 cross-conversation activation is assumed. An unreviewed source revision remains
 pending until the existing inspection, verification and acceptance gates pass.
+
+## Inspect the affected definitions
+
+Use the existing node details to show a variable's domain, an action's completion
+and changes, associated properties and actual source/probe bindings. Highlight
+dependencies in the current view without moving the camera or revealing every
+layer. Read the last verification with its candidate and date; a historical check
+does not certify newer source. Recordings retain their own definition context.
+
+Keep model-analysis traces separate from real observations. Logical steps and
+loop witnesses have no wall-clock duration; a real reproduction requires native
+events and its own recording. Neither viewing definitions nor inspecting analysis
+artifacts should emit business events.

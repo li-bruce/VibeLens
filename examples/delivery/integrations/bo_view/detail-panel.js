@@ -11,11 +11,18 @@ import { t as boTranslate } from "./i18n.js";
 import { conceptDefinitionElement } from "./concept-details.js";
 import { nodeFacts, nodeFactsElement, detailRows } from "./node-facts.js";
 import { createNodeExplanation } from "./node-explanation.js";
+import { behaviorDetailElement } from "./behavior-details.js";
 
-export function createDetailPanel({ read, point, element = (id) => document.getElementById(id) }) {
+export function createDetailPanel({
+  read,
+  point,
+  highlight,
+  element = (id) => document.getElementById(id),
+}) {
   const $ = element,
     sources = new Map(),
-    openDefinitions = new Set();
+    openDefinitions = new Set(),
+    openBehavior = new Set();
   let detailIdentity = null;
   const explanation = createNodeExplanation({
     read,
@@ -76,6 +83,12 @@ export function createDetailPanel({ read, point, element = (id) => document.getE
         onToggle: (open) => (open ? openDefinitions.add(b.id) : openDefinitions.delete(b.id)),
       });
       if (definition) $("detail-rows").append(definition);
+      const behavior = behaviorDetailElement(b.node, view, {
+        open: openBehavior,
+        onHighlight: highlight,
+        onToggle: (key, open) => (open ? openBehavior.add(key) : openBehavior.delete(key)),
+      });
+      if (behavior) $("detail-rows").append(behavior);
       explanation.update();
     }
     const binding = sourceBinding(view, graph.all, selected),

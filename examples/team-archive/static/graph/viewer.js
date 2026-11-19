@@ -210,6 +210,12 @@ let drawFrame = null,
 const hits = [],
   metrics = { nodes: 0, edges: 0, texts: 0 };
 const detailPanel = createDetailPanel({
+  // Definition highlighting reuses ordinary selection and typed projections.
+  // Keep the camera, filters and open detail panel unchanged.
+  highlight: (ids) => {
+    selectedNodes = new Set(ids.filter((id) => graph?.all.has(id)));
+    schedule();
+  },
   read: () => ({
     view,
     graph,
