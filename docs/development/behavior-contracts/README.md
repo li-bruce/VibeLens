@@ -10,6 +10,11 @@ Prepared on 2026-11-17 from `main` at `106fddb3`, on `feat/behavior-contracts`.
 This delivery establishes the branch, source audit, design and implementation
 instructions. Runtime, Skill behavior, public pages and release versions are unchanged.
 
+Implementation restarted from the complete planning commit `a8f569d7` on
+`feat/behavior-contracts-sequential` on 2026-11-19. Follow the
+[execution ledger](progress.json) and [retained evidence](../../review/behavior-contracts-sequential/README.md)
+for current phase status. The dated planning findings below remain unchanged.
+
 ## Outcome
 
 Help a developer describe the intended behavior, keep that description connected
