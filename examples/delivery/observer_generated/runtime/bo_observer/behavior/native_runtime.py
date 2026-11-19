@@ -8,6 +8,7 @@ required alongside these additional behavior-contract checks.
 from collections import defaultdict
 
 from ..concepts.runtime import InvocationEvidence
+from ..concepts.common import canonical_id
 from ..observation.ownership import parent_references
 from ..observation.provenance import trace_references
 from ..protocol import validate_event
@@ -94,15 +95,15 @@ def assess_runtime(contract, discovery, model, payload, *, index=None, case_ids=
         domain = domains[variable["domain"]]
         if item.get("refinement_ref"):
             domain = domains[refinements[item["refinement_ref"]]["concrete_domain"]]
-        value_scope("variable:" + ident, item, {variable["owner"]}, domain)
+        value_scope(canonical_id("variable", ident), item, {variable["owner"]}, domain)
     for ident, item in binding["actions"].items():
         owners = set(actions[ident]["model_refs"])
-        value_scope("completion:" + ident, item["completion_witness"], owners)
+        value_scope(canonical_id("completion", ident), item["completion_witness"], owners)
         for exit_ in item["exits"]:
-            value_scope("exit:" + ident + ":" + exit_["kind"], exit_["witness"], owners)
+            value_scope(canonical_id("exit", ident, exit_["kind"]), exit_["witness"], owners)
         for name, witness in item["parameters"].items():
             value_scope(
-                "parameter:" + ident + ":" + name,
+                canonical_id("parameter", ident, name),
                 witness,
                 owners,
                 domains[actions[ident]["parameters"][name]],

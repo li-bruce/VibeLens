@@ -4,6 +4,7 @@ import json
 import subprocess
 import sys
 from datetime import datetime, timezone
+from .behavior_iteration import finalize as finalize_behavior
 
 try:
     from ...sync_io import write, at_path
@@ -235,6 +236,7 @@ def verify(root, cfg, change, *, inspect, snapshot):
             "reports": reports,
             "candidate_id": current["id"],
         }
+        finalize_behavior(current, receipt)
         write(change / "verification.json", receipt)
         return receipt
     results = []
@@ -286,6 +288,11 @@ def verify(root, cfg, change, *, inspect, snapshot):
                 )
                 mapping_errors.extend(native["errors"])
                 reports["mapping"]["behavior"] = native
+                rule_errors.extend(
+                    {"behavior_domain": finding}
+                    for finding in native.get("domain_findings", [])
+                    if finding["status"] == "outside_application_domain"
+                )
             if current["model"].get("policy"):
                 from ..policy.evidence import runtime_errors as policy_runtime_errors
 
@@ -463,5 +470,6 @@ def verify(root, cfg, change, *, inspect, snapshot):
         "checked_at": datetime.now(timezone.utc).isoformat(),
         "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence.",
     }
+    finalize_behavior(current, receipt)
     write(change / "verification.json", receipt)
     return receipt

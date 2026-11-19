@@ -70,6 +70,8 @@ python SKILL/scripts/bo_behavior.py runtime --root PROJECT --sync-config sync.js
 
 These commands do not accept a batch. Continue through the existing
 `recall → begin → scan → inspect → verify → accept → check` workflow.
+Use [behavior iteration evidence](behavior-iterations.md) to review changed meaning,
+refresh bindings and interpret the separate coverage results.
 
 Report definition, intent, mapping, capture, native rules and business results
 separately. Faithfully captured invalid application values remain visible.

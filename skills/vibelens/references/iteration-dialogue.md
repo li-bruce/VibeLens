@@ -6,6 +6,9 @@ Use the actual stage when selecting questions. A source-only change routes to th
 agent/checkers; changed business meaning retains its human source and reviewed
 scope. Preserve unrelated pending work and partial-answer history across turns.
 
+For a pinned behavior contract, follow [behavior iteration evidence](behavior-iterations.md)
+for dependency impact, per-record change review and scoped evidence expiry.
+
 Use this for subsequent development turns in an explicitly activated VibeLens conversation. Keep the current project's drive/observe choice, confirmed decisions and stable graph identities. A normal business change request starts this workflow; `/vibelens` remains the prefix for manual viewer controls.
 
 ## Before changing behavior

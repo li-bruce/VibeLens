@@ -424,7 +424,8 @@
       "expected": "Independent scan detects each missing mapping/obligation. Existing-graph traversal alone cannot satisfy the case.",
       "status": "partial",
       "evidence": [
-        "docs/review/behavior-contracts-sequential/p3-native/results.json"
+        "docs/review/behavior-contracts-sequential/p3-native/results.json",
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
       ]
     },
     {
@@ -433,7 +434,8 @@
       "expected": "Protected checks fail for the relevant missing or wrong fact. Retain actual invalid runtime data and exact error path.",
       "status": "partial",
       "evidence": [
-        "docs/review/behavior-contracts-sequential/p3-native/results.json"
+        "docs/review/behavior-contracts-sequential/p3-native/results.json",
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
       ]
     },
     {
@@ -442,7 +444,8 @@
       "expected": "Technical rebind happens without redundant business questioning. Shared dependents are rechecked. No stale source/doc/probe references remain.",
       "status": "partial",
       "evidence": [
-        "docs/review/behavior-contracts-sequential/p3-native/results.json"
+        "docs/review/behavior-contracts-sequential/p3-native/results.json",
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
       ]
     },
     {
@@ -451,29 +454,36 @@
       "expected": "Persistent obligations remain discoverable and acceptance rejects unprocessed revisions or weakened scope. Explicit activation remains chat/project scoped.",
       "status": "partial",
       "evidence": [
-        "docs/review/behavior-contracts-sequential/p2-routing/results.json"
+        "docs/review/behavior-contracts-sequential/p2-routing/results.json",
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
       ]
     },
     {
       "id": "A18",
       "case": "Correct graph mapping of a real business bug, then incorrect mapping of correct business behavior",
       "expected": "Reports distinguish mapping, capture, state rules, business and project results. Neither outcome hides the other's failure.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
+      ]
     },
     {
       "id": "A19",
       "case": "Small manually understood finite model through actual TLC; a deliberately broken transition",
       "expected": "Expected property result and counterexample. Compare with independently authored TLA fixtures and hand-derived reachable states. Identify design versus implementation analysis; a correct design pass must not conceal a failing native implementation.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
+      ]
     },
     {
       "id": "A20",
       "case": "Timeout, unsupported expression, missing tool, stale profile, incomplete traversal and invariant used as a filter",
       "expected": "No false pass. Detect vacuous/filtered verification and preserve failed/partial runs. A changed compiler/profile/property invalidates the result.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
+      ]
     },
     {
       "id": "A21",
@@ -495,7 +505,8 @@
       "expected": "Existing gates preserved; mixed revisions rejected; IDs, accepted meaning, personal views and archived evidence survive.",
       "status": "partial",
       "evidence": [
-        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json",
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
       ]
     },
     {
@@ -578,8 +589,10 @@
       "id": "A33",
       "case": "Add an independent capability; split/retire a model; discover an unmodeled source behavior; change a shared rule",
       "expected": "Reconcile inventory and intent basis, review missing meaning and all affected consumers, refresh bindings/probes/cases, retain unrelated models/views. A source-only refactor does not trigger redundant intent questions.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
+      ]
     },
     {
       "id": "A34",
@@ -587,7 +600,8 @@
       "expected": "Every in-scope model/boundary has its applicable static and runtime evidence. Hidden networks retain obligations. Analysis includes relevant boundary assumptions; initial and later demo graphs use the same accepted definitions.",
       "status": "partial",
       "evidence": [
-        "docs/review/behavior-contracts-sequential/p3-native/results.json"
+        "docs/review/behavior-contracts-sequential/p3-native/results.json",
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
       ]
     }
   ],
@@ -641,12 +655,14 @@
     },
     {
       "id": "P4",
-      "status": "pending",
+      "status": "complete",
       "depends_on": [
         "P2",
         "P3"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
+      ]
     },
     {
       "id": "P5",

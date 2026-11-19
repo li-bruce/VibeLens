@@ -142,5 +142,8 @@ def recall(root, cfg, current, previous=None):
         },
         "next": "Preserve accepted obligations. Update affected layers and source bindings; run scan, inspect, verify, accept and check. Missing boundaries or values are mapping failures, independent of business results.",
     }
+    from ..behavior.iteration import recall as behavior_recall
+
+    value["behavior"] = behavior_recall(previous or {}, current)
     write(contained(root, ".stategraph/iteration-recall.json"), value)
     return value

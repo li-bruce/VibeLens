@@ -290,6 +290,9 @@ def review_errors(change, base, current, changes):
     if not path.exists():
         return ["missing review.json for this candidate"]
     review = read(path)
+    from ..behavior.iteration import protected_errors as protected_behavior_errors
+
+    errors.extend(protected_behavior_errors(base, current, review))
     from ..data.acceptance import protected_errors as protected_data_errors
 
     errors.extend(
@@ -402,6 +405,19 @@ def inspect(root, cfg, change):
     base = read(change / "baseline.json")
     current = snapshot(root, cfg, base)
     changes = impact(base, current)
+    from ..behavior.iteration import recall as behavior_recall
+    from .behavior_iteration import previous_evidence
+
+    changes["behavior"] = behavior_recall(base, current)
+    if current.get("behavior") is not None and changes["behavior"].get("status") != "invalid":
+        from ..behavior.dependencies import impact as behavior_impact
+
+        write(change / "behavior-impact.json", behavior_impact(base, current))
+        changes["behavior"]["impact_file"] = "behavior-impact.json"
+    if (change / "verification.json").is_file():
+        changes["previous_behavior_evidence"] = previous_evidence(
+            read(change / "verification.json"), current
+        )
     changes["errors"] = structural_errors(root, cfg, current)
     old_framework = base.get("source_inventory", {}).get("framework", {})
     new_framework = current.get("source_inventory", {}).get("framework", {})
@@ -421,6 +437,15 @@ def inspect(root, cfg, change):
         unmapped_symbols=changes["unmapped_implementation_symbols"],
         candidate_id=current["id"],
     )
+    if current.get("behavior") is not None:
+        # The same normal iteration command refreshes durable agent context even
+        # after a restart or a missing recall file. It does not assert that an LLM
+        # read it; freshness and acceptance remain enforceable checks below.
+        from .iteration_recall import recall
+
+        restored = recall(root, cfg, current, base)
+        task["behavior"] = restored["behavior"]
+        task["recall"] = ".stategraph/iteration-recall.json"
     write(contained(root, ".stategraph/maintenance.json"), task)
     if base.get("stategraph_contract") and not current.get("stategraph_contract"):
         changes["errors"].append(
@@ -445,6 +470,8 @@ def inspect(root, cfg, change):
         )
     if base.get("whitebox") and not current.get("whitebox"):
         changes["errors"].append("configured whitebox contract was removed")
+    if base.get("behavior") is not None and current.get("behavior") is None:
+        changes["errors"].append({"code": "behavior_contract_removed"})
     if cfg.get("discovery"):
         discovery = assess_discovery(
             current["discovery"],

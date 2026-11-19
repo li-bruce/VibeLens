@@ -89,6 +89,8 @@ Before each turn run `change_sync.py recall --root PROJECT`. It restores confirm
 
 The host or coding agent invokes this workflow. Persistent files and acceptance checks restore and enforce its obligations; they do not independently trigger another model turn. Report an omitted or unrun check as pending.
 
+For a configured behavior contract, use [iteration evidence](references/behavior-iterations.md). Inspect restores the compact model obligations and saves the full impact report. Rebind technical changes, retain per-record requirement evidence for changed meaning, and keep intent, mapping, capture, native rules, business checks and optional analysis results separate.
+
 ```text
 change_sync begin -> coding and local generation -> bo_sync scan -> change_sync inspect
 -> resolve confirmations and implementation review -> change_sync verify -> accept -> check

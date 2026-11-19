@@ -21,8 +21,8 @@ instructions.
 Check the actual branch and working tree. The complete plan is committed at
 `a8f569d7`, with production code from `106fddb3`. Implementation restarted on
 `feat/behavior-contracts-sequential`. Read [progress.json](progress.json) and each
-phase's evidence before choosing work. P0–P3 implementation and regression are
-complete; P4–P7 remain pending. Preserve the recovery stash and unrelated
+phase's evidence before choosing work. P0–P4 implementation and regression are
+complete; P5–P7 remain pending. Preserve the recovery stash and unrelated
 work. Do not use the abandoned draft or premature trial chats as acceptance.
 
 ## Protected product behavior

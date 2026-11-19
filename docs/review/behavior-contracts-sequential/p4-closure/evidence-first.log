@@ -1,0 +1,25 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+........E..
+======================================================================
+ERROR: test_shared_rule_change_reaches_all_consumers_through_typed_dependencies (__main__.BehaviorEvidenceTests.test_shared_rule_change_reaches_all_consumers_through_typed_dependencies)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_behavior_evidence.py", line 69, in test_shared_rule_change_reaches_all_consumers_through_typed_dependencies
+    result=impact(self.before,after)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\behavior\dependencies.py", line 161, in impact
+    old, new = dependency_index(before), dependency_index(after)
+                                         ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\behavior\dependencies.py", line 85, in dependency_index
+    data = build(snapshot["behavior_discovery"])
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\concepts\model.py", line 41, in build
+    policy = add_rules(graph, doc, sources)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\concepts\rules.py", line 30, in add_rules
+    policy = validate_policy(doc["policy"], bound=False)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\policy\definition.py", line 235, in validate
+    raise ValueError("unreachable policy expressions: " + ", ".join(sorted(set(nodes) - done)))
+ValueError: unreachable policy expressions: owner
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.254s
+
+FAILED (errors=1)
