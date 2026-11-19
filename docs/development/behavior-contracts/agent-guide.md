@@ -18,10 +18,12 @@ instructions.
    source audit and P0–P7 corrections. Apply this to the whole plan, not only the
    question wording or first-use preference prompt.
 
-Check the actual branch and working tree. The planning baseline is `106fddb3` and
-the intended branch is `feat/behavior-contracts`; later work may legitimately
-advance it. Preserve unrelated changes. The present planning delivery contains no
-new runtime capability; do not advertise its proposed schemas as supported.
+Check the actual branch and working tree. The complete plan is committed at
+`a8f569d7`, with production code from `106fddb3`. Implementation restarted on
+`feat/behavior-contracts-sequential`. Read [progress.json](progress.json) and each
+phase's evidence: P0 is complete; P1's definition slices are implemented, while
+the remainder of P1 and P2–P7 remain open. Preserve the recovery stash and unrelated
+work. Do not use the abandoned draft or premature trial chats as acceptance.
 
 ## Protected product behavior
 

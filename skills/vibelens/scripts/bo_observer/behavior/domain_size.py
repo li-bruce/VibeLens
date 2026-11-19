@@ -43,8 +43,16 @@ def collection_size(kind, size, element, key=None):
         if n == 1:
             count = size + 1
         else:
-            power = _power(n, size + 1)
-            count = None if power is None else (power - 1) // (n - 1)
+            # The geometric-series numerator can exceed JSON's safe range while
+            # the actual sum still fits. Summation stops after at most 54 terms
+            # for a non-singleton element domain, regardless of the length cap.
+            count, term = 1, 1
+            for _ in range(size):
+                term *= n
+                count += term
+                if count > SAFE_COUNT:
+                    count = None
+                    break
     elif kind == "set" and n is not None:
         limit = n if size is None else min(size, n)
         if limit == n:

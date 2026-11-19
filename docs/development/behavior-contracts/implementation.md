@@ -1,7 +1,9 @@
 # Ordered implementation plan
 
-Status: pending implementation. Follow this sequence on `feat/behavior-contracts`.
-The planning commit/diff does not satisfy any product acceptance phase below.
+Current implementation branch: `feat/behavior-contracts-sequential`, restored from
+the complete approved plan at `a8f569d7`. P0 is complete; P1 is in progress.
+Follow [progress.json](progress.json) and its linked evidence before starting the
+next phase. The planning commit alone satisfies no product acceptance phase.
 
 ## Module boundaries
 

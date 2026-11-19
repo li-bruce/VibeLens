@@ -88,6 +88,10 @@ class Domain:
 
     def value_key(self, value):
         """Preserve sequence order; normalize set order and map entry order."""
+        # JSON producers may emit the same numeric value as 1 or 1.0. Named
+        # enums prohibit floats; a number domain instead compares numeric values.
+        if self.kind == "number" and type(value) is float and value.is_integer():
+            return value_key(int(value))
         if self.kind in {"set", "sequence"}:
             parts = [self.element.value_key(item) for item in value]
             return value_key(sorted(parts) if self.kind == "set" else parts)

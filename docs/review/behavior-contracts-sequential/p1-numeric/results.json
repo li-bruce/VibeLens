@@ -1,0 +1,108 @@
+{
+  "scope": "P1 domain representation and canonical policy reference validation",
+  "valid": true,
+  "checks": [
+    {
+      "name": "domains",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_domains.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-numeric/domains.log",
+      "sha256": "35cb40be8bbca00b1aade2b924e7b21d865bc9da80a6138d4cd7cfecbb1135d7"
+    },
+    {
+      "name": "scalar",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_contract.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-numeric/scalar.log",
+      "sha256": "07408c61a8208740641eda9f80802e65626accec3e8fe047632a0eb348752e5a"
+    },
+    {
+      "name": "ledger",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_plan.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-numeric/ledger.log",
+      "sha256": "5d03a1fd2f5938a89ac8795b5bc2ce47557ca13af75521ded0c5f9da2e340fda"
+    },
+    {
+      "name": "forest",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_baseline.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-numeric/forest.log",
+      "sha256": "e3cdfb7ee72ea9444a493338383c2a664b7418dc5bbfa9a2102874fcb4d46e26"
+    },
+    {
+      "name": "source",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tools/check_source.py",
+        "--format"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-numeric/source.log",
+      "sha256": "ec8a932aec77e5f721c92ad7c2392a9d6046aaff30ff1c0224b3d428180a91a7"
+    },
+    {
+      "name": "package",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tools/check_package.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-numeric/package.log",
+      "sha256": "499433176f7fba89d536d405f4f89676e15a0b0caf3d381b8f04c656f139fbe7"
+    }
+  ],
+  "full_P1_complete": false,
+  "formal_analysis": "not_run",
+  "native_binding": "not_checked",
+  "source_sha256": {
+    "skills/vibelens/scripts/bo_observer/behavior/__init__.py": "f44ed1479a0daf66687aa70a5bb34b1765416ea1250921ded65e17d33fb9a47e",
+    "skills/vibelens/scripts/bo_observer/behavior/actions.py": "c359ee45c91b78c3f1f15eebe9d305b7a00d874820045ed626b103ded4d4c9df",
+    "skills/vibelens/scripts/bo_observer/behavior/capabilities.py": "77b46c0e3e11c12f6dce9edd62810b896d4132115f0a88eaf65fb1abe9acd46b",
+    "skills/vibelens/scripts/bo_observer/behavior/contract.py": "5945c60ce53a66a9a14df9c1c9bfe2d5eab17e2f57a6bc29dac4ef5090f293bb",
+    "skills/vibelens/scripts/bo_observer/behavior/diagnostics.py": "c83e2fefae3cd6b4b263560e815847e38c1e33b79a27fb3c867847fb098d8320",
+    "skills/vibelens/scripts/bo_observer/behavior/domain_size.py": "d439e9952ee9378d51c52c672c143ca39e03c0caa1661f85569f02c413ee0885",
+    "skills/vibelens/scripts/bo_observer/behavior/domains.py": "4408f1d1299cb3d2ad47c855d4a2f4d88804e40b06800e39ee8cbcae1986b79b",
+    "skills/vibelens/scripts/bo_observer/behavior/expressions.py": "a584d3a9054bb72c424afd675618f855d9694e57c7b181e6382e8d6fd83d8e05",
+    "skills/vibelens/scripts/bo_observer/behavior/policy_refs.py": "7291e583cb93f9f3e05b48132fd8e356d0bcc384c4e71ed3f153a5337e66d9eb",
+    "skills/vibelens/scripts/bo_observer/behavior/references.py": "b44546cc826ac1d439d0216f42ccefa0cc2cb9f2483564e30208ac04e257a875",
+    "skills/vibelens/scripts/bo_observer/schemas/behavior.schema.json": "9d83c4964305b3a30e04dfe69a64db91bc743acf24df37fec8b7c1900ede8ee0",
+    "tests/test_behavior_domains.py": "0d775921a628b62b4260d8a313bc96308e01088ba6a619df796d1942240fdb22"
+  },
+  "prior_failure": {
+    "commit": "22a34384",
+    "exit_code": 1,
+    "log": "docs/review/behavior-contracts-sequential/p1-numeric/before.log",
+    "sha256": "9780c3462e2cf560c5b47125aeb6379a97309f1a5eb20e52330860a6db9acf1f"
+  }
+}

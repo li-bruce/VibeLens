@@ -166,6 +166,33 @@ class DomainRepresentationTests(unittest.TestCase):
         self.assertTrue(result["supported"])
         self.assertIsNone(result["cardinality"])
 
+    def test_numeric_map_keys_are_values_not_json_lexical_spellings(self):
+        ds = domains(
+            record("number", "number"),
+            record("map", "map", element_domain="flag", key_domain="number"),
+        )
+        self.assertFalse(
+            ds["map"].accepts([{"key": 1, "value": True}, {"key": 1.0, "value": False}])
+        )
+
+    def test_numeric_equality_does_not_create_a_false_initial_contradiction(self):
+        checker = Expressions(domains(record("number", "number")), {})
+        condition = expr("eq", lit(1, "number"), lit(1.0, "number"))
+        checker.expect_boolean(condition, "/initial")
+        self.assertTrue(known_value(condition, {}, checker))
+
+    def test_finite_count_includes_the_exact_portable_boundary(self):
+        ds = domains(
+            record(
+                "bits",
+                "sequence",
+                element_domain="flag",
+                max_items=52,
+                bound_origin="analysis_bound",
+            )
+        )
+        self.assertEqual(ds["bits"].finite_capability()["cardinality"], 9007199254740991)
+
 
 class CollectionExpressionTests(unittest.TestCase):
     def setUp(self):
