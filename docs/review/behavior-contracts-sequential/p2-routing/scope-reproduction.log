@@ -1,0 +1,33 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+FFF
+======================================================================
+FAIL: test_later_question_uses_same_target_scope (__main__.GuidedConstructionScopeTests.test_later_question_uses_same_target_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_guided_construction.py", line 61, in test_later_question_uses_same_target_scope
+    self.assertNotIn('decision:D-later', report['blocked'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'decision:D-later' unexpectedly found in ['applicability:read', 'applicability:revoke', 'applicability:share', 'business-contains:sharing:read', 'business-contains:sharing:revoke', 'business-contains:sharing:share', 'business-network:sharing', 'event-trigger:grant:grant-revoke', 'event-trigger:grant:grant-share', 'event:grant:revoke', 'event:grant:share', 'expectation:grant-roundtrip', 'fact:active-grant', 'fact:actor-id', 'fact:owner-id', 'fact:recipient-id', 'guard-decision:guard%3Agrant%3Amay_manage', 'guard:grant:may_manage', 'object-fact:active-grant', 'object-fact:actor-id', 'object-fact:owner-id', 'object-fact:recipient-id', 'object:actor', 'object:grant', 'operation-rule:read:read', 'operation-rule:revoke:manage', 'operation-rule:share:manage', 'operation-state:read:grant', 'operation-state:revoke:grant', 'operation-state:share:grant', 'policy-dependency:is_owner:0', 'policy-dependency:is_owner:1', 'policy-dependency:is_owner:2', 'policy-dependency:is_recipient:0', 'policy-dependency:is_recipient:1', 'policy-dependency:is_recipient:2', 'policy-dependency:may_read:0', 'policy-dependency:may_read:1', 'policy-operation:manage', 'policy-operation:read', 'policy-predicate:same_identity', 'policy-result:manage', 'policy-result:read', 'policy:active', 'policy:actor', 'policy:is_owner', 'policy:is_recipient', 'policy:may_read', 'policy:owner', 'policy:recipient', 'read', 'read-active-grant', 'read-actor-id', 'read-owner-id', 'read-recipient-id', 'read-revoke', 'revoke', 'revoke-guard', 'revoke-requests-event', 'share', 'share-guard', 'share-read', 'share-requests-event', 'state-contains:grant:active', 'state-contains:grant:inactive', 'state-event:grant:revoke', 'state-event:grant:share', 'state-guard:grant:may_manage', 'state-model:grant', 'state-subject:grant', 'state-transition:grant:grant-revoke:active', 'state-transition:grant:grant-share:inactive', 'state:grant:active', 'state:grant:inactive', 'transition-guard:grant:grant-revoke:may_manage', 'transition-guard:grant:grant-share:may_manage', 'transition-target:grant:grant-revoke', 'transition-target:grant:grant-share', 'transition:grant:grant-revoke', 'transition:grant:grant-share', 'target:preferences-state', 'construction:review', 'decision:D-later']
+
+======================================================================
+FAIL: test_later_target_does_not_block_confirmed_independent_increment (__main__.GuidedConstructionScopeTests.test_later_target_does_not_block_confirmed_independent_increment)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_guided_construction.py", line 44, in test_later_target_does_not_block_confirmed_independent_increment
+    self.assertTrue(report['ready'], report['blocked'])
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : ['target:preferences-state']
+
+======================================================================
+FAIL: test_target_scope_cycles_are_rejected (__main__.GuidedConstructionScopeTests.test_target_scope_cycles_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_guided_construction.py", line 70, in test_target_scope_cycles_are_rejected
+    self.assertFalse(report['valid'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.259s
+
+FAILED (failures=3)

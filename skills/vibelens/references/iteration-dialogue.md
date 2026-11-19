@@ -1,5 +1,11 @@
 # Confirm a later change in the existing graph
 
+Restore the [model-construction workbook](model-construction.md) for the affected
+increment: its model roots, targets, typed relationship obligations and decisions.
+Use the actual stage when selecting questions. A source-only change routes to the
+agent/checkers; changed business meaning retains its human source and reviewed
+scope. Preserve unrelated pending work and partial-answer history across turns.
+
 Use this for subsequent development turns in an explicitly activated VibeLens conversation. Keep the current project's drive/observe choice, confirmed decisions and stable graph identities. A normal business change request starts this workflow; `/vibelens` remains the prefix for manual viewer controls.
 
 ## Before changing behavior

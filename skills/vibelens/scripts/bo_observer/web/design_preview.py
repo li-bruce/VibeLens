@@ -118,7 +118,11 @@ def markdown(view, document, url, concern, locale):
             if chinese
             else "Dashed links continue into related content outside this view. Open Web for the complete graph.\n\n"
         )
-    pending = [item for item in document["decisions"] if item["status"] != "resolved"]
+    from ..workflow.requirements_dialogue import assess
+
+    # A preview is a focused review round. Technical work and questions about
+    # later capabilities stay in the durable ledger rather than the user card.
+    pending = assess(document, scope=[node["id"] for node in view["nodes"]])["questions"]
     if pending:
         text += "待确认：\n\n" if chinese else "Still to confirm:\n\n"
         text += "\n".join("- " + item["question"].replace("\n", " ") for item in pending) + "\n\n"

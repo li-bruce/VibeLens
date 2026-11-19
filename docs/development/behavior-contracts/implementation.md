@@ -1,7 +1,7 @@
 # Ordered implementation plan
 
 Current implementation branch: `feat/behavior-contracts-sequential`, restored from
-the complete approved plan at `a8f569d7`. P0 and P1 are complete; P2 is next.
+the complete approved plan at `a8f569d7`. P0, P1 and P2 are complete; P3 is next.
 Follow [progress.json](progress.json) and its linked evidence before starting the
 next phase. The planning commit alone satisfies no product acceptance phase.
 

@@ -24,8 +24,29 @@ def affects_scope(reference, index, targets, coverage):
     # A not-yet-located target cannot silently disappear from the question list.
     # Known scopes can defer unrelated construction work to a later increment.
     return not item["scope_refs"] or any(
-        ref in targets or resolve_index(index, ref) in coverage for ref in item["scope_refs"]
+        affects_scope(ref, index, targets, coverage) for ref in item["scope_refs"]
     )
+
+
+def scoped(report, index, coverage):
+    """Keep unrelated construction work visible without blocking this increment.
+
+    Undefined scope remains relevant everywhere. Selection is a display/work
+    boundary; it never removes the original obligation or changes its meaning.
+    """
+    selected, deferred = [], []
+    for gap in report["gaps"]:
+        refs = gap.get("scope_refs", [])
+        relevant = not refs or any(
+            affects_scope(ref, index, report["targets"], coverage) for ref in refs
+        )
+        (selected if relevant else deferred).append(deepcopy(gap))
+    return {
+        **deepcopy(report),
+        "gaps": selected,
+        "deferred_gaps": deferred,
+        "ready": not selected and bool(coverage),
+    }
 
 
 def validate(doc, data):
@@ -80,6 +101,7 @@ def validate(doc, data):
                     "target": item["id"],
                     "source_refs": item["source_refs"],
                     "meaning": item["meaning"],
+                    "scope_refs": [item["id"]],
                 }
             )
     for position, item in enumerate(construction["obligations"]):
@@ -119,8 +141,30 @@ def validate(doc, data):
                     "kind": "missing_" + item["kind"],
                     "source_refs": item["source_refs"],
                     "meaning": item["meaning"],
+                    "scope_refs": [
+                        item[key]
+                        for key in ("target_ref", "object_ref", "from_ref", "to_ref")
+                        if key in item
+                    ],
                 }
             )
+    # Draft targets may refer to other targets, but a circular placement has no
+    # stable review scope. Reject it before recursive scheduling uses those refs.
+    done = set()
+
+    def visit(identity, stack):
+        require(
+            identity not in stack, "construction_scope_cycle", "/construction/targets", identity
+        )
+        if identity in done:
+            return
+        for ref in targets[identity]["scope_refs"]:
+            if ref in targets:
+                visit(ref, stack | {identity})
+        done.add(identity)
+
+    for identity in targets:
+        visit(identity, set())
     from .semantics import valid_snapshot
 
     for position, item in enumerate(construction["presentations"]):

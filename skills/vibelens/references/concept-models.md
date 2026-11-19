@@ -1,5 +1,10 @@
 # Confirm business, state and rules together
 
+New construction uses V3 and the [guided construction loop](model-construction.md).
+The V2 model semantics below remain authoritative: V3 adds source-backed targets,
+independent obligations, routing and exact presentation coverage. It does not
+replace the native state/rule declarations or turn draft targets into runtime nodes.
+
 Use this reference when adopting VibeLens or changing application behavior. The
 three models express the user's current intent and guide the chosen coding
 workflow. Each can be inspected on its own; explicit references connect them.
@@ -20,9 +25,10 @@ entry/return interval. Keep those meanings and identities distinct.
    drive/observe choice. For source adoption, inspect the declared application
    paths rather than dependencies, generated output or runtime storage.
 2. Build the applicable business, state and rule definitions in one
-   `business-discovery/v2` document. Start from
-   [the example](../assets/discovery.concepts.example.json); replace its synthetic
-   sources with the real conversation. State and rule drafts need no source code.
+   `business-discovery/v3` document with construction obligations. The
+   [V2 example](../assets/discovery.concepts.example.json) illustrates the shared
+   model fields; retain their semantics, add the V3 construction envelope and
+   replace synthetic sources with the actual conversation. Drafts need no source code.
 3. Ask about meaning-changing gaps. For example, “Does withdrawing this share stop
    the next download?” is relevant when withdrawal is requested. A generic list
    of expiry, approvals and notifications would expand the request.
@@ -63,7 +69,8 @@ replace a required model with unverified facts to pass a binding check.
 python SKILL/scripts/requirements_dialogue.py validate --file discovery.json
 python SKILL/scripts/bo_design.py preview --root PROJECT --view state --url ACTUAL_GRAPH_URL
 python SKILL/scripts/bo_concepts.py snapshot --root PROJECT --scope CONCEPT_ID
-python SKILL/scripts/bo_concepts.py confirm --root PROJECT --scope CONCEPT_ID --sources ANSWER_ID --id CONFIRMATION_ID
+python SKILL/scripts/bo_concepts.py present --root PROJECT --scope CONCEPT_ID --visible SHOWN_IDS --explained EXPLAINED_IDS --sources PRESENTATION_SOURCE --id PRESENTATION_ID
+python SKILL/scripts/bo_concepts.py confirm --root PROJECT --stage before_implementation --scope CONCEPT_ID --presentation PRESENTATION_ID --sources ANSWER_ID --id CONFIRMATION_ID
 python SKILL/scripts/bo_concepts.py check --root PROJECT
 ```
 

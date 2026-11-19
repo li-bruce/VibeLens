@@ -29,10 +29,24 @@ def execute(options):
     acceptance = read(contained(root, options.acceptance)) if options.acceptance else None
     with file_lock(path.with_suffix(".lock")):
         document = read(path)
-        dialogue = assess_dialogue(document)
+        dialogue = assess_dialogue(
+            document, previous=previous, scope=options.scope or None, stage=options.stage
+        )
         if not dialogue["valid"]:
             raise ValueError("Invalid dialogue: " + json.dumps(dialogue["errors"]))
         scope = options.scope or None
+        if options.action == "review":
+            from .construction_review import workbook, markdown
+
+            result = workbook(
+                document,
+                dialogue,
+                model_ref=options.review_model,
+                max_nodes=options.max_nodes,
+                locale=options.locale,
+                url=options.url,
+            )
+            return {**result, "markdown": markdown(result)}
         if options.action == "snapshot":
             return snapshot(document, scope)
         if options.action == "diff":
@@ -89,6 +103,7 @@ def execute(options):
                 # acknowledging the matching region.
                 selected = set(snapshot(document, scope)["scope"])
                 from ..concepts.construction import affects_scope
+                from ..concepts.decision_contract import condition_state, due_at
 
                 concepts = dialogue["concepts"]
                 pending = [
@@ -96,6 +111,14 @@ def execute(options):
                     for item in document.get("decisions", [])
                     if item.get("blocking")
                     and item.get("status") != "resolved"
+                    and (
+                        document["schema"] != "business-discovery/v3"
+                        or (
+                            due_at(item, options.stage)
+                            and condition_state(item, {d["id"]: d for d in document["decisions"]})
+                            != "inactive"
+                        )
+                    )
                     and any(
                         affects_scope(
                             ref,
@@ -128,18 +151,40 @@ def execute(options):
                     raise ValueError("Invalid confirmation: " + json.dumps(report["errors"]))
                 write(path, candidate)
             return {"valid": True, "confirmation": record}
-        return assess(document, previous=previous, model=model, scope=scope, acceptance=acceptance)
+        return assess(
+            document,
+            previous=previous,
+            model=model,
+            scope=scope,
+            acceptance=acceptance,
+            stage=options.stage,
+        )
 
 
 def main(argv=None):
     """Run a bounded project-relative operation and print machine-readable results."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "action", choices=("validate", "check", "snapshot", "present", "promote", "confirm", "diff")
+        "action",
+        choices=(
+            "validate",
+            "check",
+            "review",
+            "snapshot",
+            "present",
+            "promote",
+            "confirm",
+            "diff",
+        ),
     )
     parser.add_argument("--root", required=True)
     parser.add_argument("--discovery", default="discovery.json")
     parser.add_argument("--scope", nargs="+")
+    parser.add_argument(
+        "--stage",
+        choices=("before_implementation", "during_coding", "before_acceptance", "before_analysis"),
+        default="before_acceptance",
+    )
     parser.add_argument("--sources", nargs="+")
     parser.add_argument("--id")
     parser.add_argument("--presentation", help="Exact previously recorded presentation ID")
@@ -154,6 +199,10 @@ def main(argv=None):
     parser.add_argument("--model")
     parser.add_argument("--acceptance", help="Independent business assertions for bound case IDs")
     parser.add_argument("--out", help="Project-relative JSON report path")
+    parser.add_argument("--review-model", help="Canonical business, state or rule model to preview")
+    parser.add_argument("--max-nodes", type=int, default=12)
+    parser.add_argument("--locale", choices=("en", "zh-CN"))
+    parser.add_argument("--url", help="Verified viewer URL for the conversation link")
     parser.add_argument(
         "--full-report", action="store_true", help="Include the full assembled graph on stdout"
     )

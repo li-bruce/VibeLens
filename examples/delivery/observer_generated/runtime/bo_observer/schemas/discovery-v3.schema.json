@@ -58,7 +58,322 @@
     "decisions": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "routing": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "enum": [
+                  "business_intent",
+                  "technical_choice",
+                  "implementation_fact",
+                  "analysis_assumption",
+                  "verification_gap"
+                ]
+              },
+              "owner": {
+                "enum": [
+                  "human",
+                  "agent",
+                  "checker"
+                ]
+              },
+              "checker": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "stage": {
+                "enum": [
+                  "before_implementation",
+                  "during_coding",
+                  "before_acceptance",
+                  "before_analysis"
+                ]
+              },
+              "trigger": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "authority": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "user",
+                      "project_rule",
+                      "delegated",
+                      "engineering"
+                    ]
+                  },
+                  "source_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "\\S"
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                  },
+                  "scope_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "\\S"
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "kind",
+                  "source_refs",
+                  "scope_refs"
+                ]
+              },
+              "obligation_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "evidence_required": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "conversation_answer",
+                    "source_reference",
+                    "runtime_witness",
+                    "independent_assertion",
+                    "checker_receipt"
+                  ]
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "invalidated_by": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "meaning",
+                    "source",
+                    "environment",
+                    "adapter",
+                    "property",
+                    "build"
+                  ]
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "wording": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "en": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "business": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "\\S"
+                      },
+                      "technical": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "\\S"
+                      }
+                    },
+                    "required": [
+                      "business",
+                      "technical"
+                    ]
+                  },
+                  "zh-CN": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "business": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "\\S"
+                      },
+                      "technical": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "\\S"
+                      }
+                    },
+                    "required": [
+                      "business",
+                      "technical"
+                    ]
+                  }
+                },
+                "required": []
+              },
+              "when": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "decision": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "\\S"
+                    },
+                    "choice": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "\\S"
+                    }
+                  },
+                  "required": [
+                    "decision",
+                    "choice"
+                  ]
+                },
+                "minItems": 0,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "kind",
+              "owner",
+              "stage",
+              "trigger",
+              "authority",
+              "obligation_refs",
+              "evidence_required",
+              "invalidated_by"
+            ]
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "source_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "\\S"
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "affects": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "\\S"
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "reply_to": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "kind": {
+                  "enum": [
+                    "partial",
+                    "contradiction"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "text",
+                "source_refs",
+                "affects",
+                "kind"
+              ]
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "resolution": {
+            "type": "object",
+            "properties": {
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "source_reference",
+                        "runtime_witness",
+                        "independent_assertion",
+                        "checker_receipt"
+                      ]
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "\\S"
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    "scope_refs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "\\S"
+                      },
+                      "minItems": 1,
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "path",
+                    "sha256",
+                    "scope_refs"
+                  ]
+                },
+                "minItems": 0,
+                "uniqueItems": true
+              },
+              "choice": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
       }
     },
     "objects": {
@@ -522,6 +837,58 @@
         "targets",
         "obligations",
         "presentations"
+      ]
+    },
+    "participation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "knowledge_domains": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "product",
+              "business",
+              "architecture",
+              "development",
+              "testing"
+            ]
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "explanation_depth": {
+          "enum": [
+            "outcome",
+            "technical",
+            "mixed"
+          ]
+        },
+        "preferred_participation": {
+          "enum": [
+            "questions",
+            "review_groups"
+          ]
+        },
+        "language": {
+          "enum": [
+            "en",
+            "zh-CN"
+          ]
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "source_refs"
       ]
     }
   }

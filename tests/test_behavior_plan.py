@@ -35,6 +35,23 @@ class BehaviorPlanTests(unittest.TestCase):
         plan["cases"][0]["status"] = "passed"
         self.assertIn("A01: no executed acceptance evidence", check_inventory(plan))
 
+    def test_partial_or_other_case_receipts_cannot_close_this_case(self):
+        plan = deepcopy(self.plan)
+        plan["cases"][0].update(status="passed", evidence=["receipt.json"])
+        for results in (
+            {},
+            {"A01": {"status": "partial", "evidence": ["run.log"]}},
+            {"A02": {"status": "passed", "evidence": ["run.log"]}},
+        ):
+            errors = check_inventory(plan, load_evidence=lambda name: {"case_results": results})
+            self.assertIn("A01: no executed acceptance evidence", errors)
+
+    def test_explicit_executed_case_claim_is_recognized(self):
+        plan = deepcopy(self.plan)
+        plan["cases"][0].update(status="passed", evidence=["receipt.json"])
+        receipt = {"case_results": {"A01": {"status": "passed", "evidence": ["run.log"]}}}
+        self.assertEqual(check_inventory(plan, load_evidence=lambda name: receipt), [])
+
     def test_baseline_content_cannot_silently_change(self):
         def modified(revision, path):
             return baseline_blob(revision, path) if path == "tools/verify.py" else b"changed"

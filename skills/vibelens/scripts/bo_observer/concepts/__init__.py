@@ -38,7 +38,16 @@ def assemble(doc):
     return deepcopy(build(doc)["graph"])
 
 
-def assess(doc, previous=None, model=None, bindings=None, *, scope=None, acceptance=None):
+def assess(
+    doc,
+    previous=None,
+    model=None,
+    bindings=None,
+    *,
+    scope=None,
+    acceptance=None,
+    stage="before_acceptance",
+):
     """Report legality, scoped confirmation and binding separately as portable JSON."""
     if isinstance(doc, dict) and doc.get("schema") == "business-discovery/v1":
         return {
@@ -88,9 +97,14 @@ def assess(doc, previous=None, model=None, bindings=None, *, scope=None, accepta
             "changes": changes,
         }
         if "construction" in data:
-            report["construction"] = data["construction"]
-            report["ready"] = report["ready"] and data["construction"]["ready"]
-            report["blocked"].extend(item["id"] for item in data["construction"]["gaps"])
+            from .construction import scoped
+
+            construction = scoped(
+                data["construction"], data["index"], set(confirmation["coverage_scope"])
+            )
+            report["construction"] = construction
+            report["ready"] = report["ready"] and construction["ready"]
+            report["blocked"].extend(item["id"] for item in construction["gaps"])
             # A legacy semantic confirmation is retained, but it cannot certify
             # the new presentation/construction coverage merely by migration.
             reviewed = set()
@@ -117,24 +131,22 @@ def assess(doc, previous=None, model=None, bindings=None, *, scope=None, accepta
                 }
             )
         for decision in doc["decisions"]:
+            from .decision_contract import condition_state, due_at
+
+            if doc["schema"] == "business-discovery/v3" and (
+                not due_at(decision, stage)
+                or condition_state(decision, {d["id"]: d for d in doc["decisions"]}) == "inactive"
+            ):
+                continue
             if decision.get("blocking") and decision.get("status") != "resolved":
-                from .semantics import resolve_index
+                from .construction import affects_scope
 
                 targets = data.get("construction", {}).get("targets", {})
-                affected = [
-                    resolve_index(data["index"], ident)
-                    for ident in decision.get("affects", [])
-                    if ident not in targets
-                ]
-                unresolved_targets = [
-                    ident
-                    for ident in decision.get("affects", [])
-                    if ident in targets and not targets[ident].get("promoted_to")
-                ]
-                if (
-                    unresolved_targets
-                    or not affected
-                    or set(affected).intersection(confirmation["coverage_scope"])
+                if not decision.get("affects") or any(
+                    affects_scope(
+                        ident, data["index"], targets, set(confirmation["coverage_scope"])
+                    )
+                    for ident in decision["affects"]
                 ):
                     report["blocked"].append("decision:" + decision["id"])
                     report["ready"] = False

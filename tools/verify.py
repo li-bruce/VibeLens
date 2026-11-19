@@ -38,6 +38,7 @@ def main():
     run(ROOT, "tests/test_behavior_boundaries.py")
     run(ROOT, "tests/test_analysis_admission.py")
     run(ROOT, "tests/test_construction_contract.py")
+    run(ROOT, "tests/test_guided_construction.py")
     run(ROOT, "tests/test_project_artifact_migration.py")
     run(ROOT, "tools/check_package.py")
     run(ROOT, "tests/test_document_links.py")

@@ -10,6 +10,30 @@ from __future__ import annotations
 
 def compact_report(report):
     """Keep verdicts and scopes on stdout; complete graph data stays in artifacts."""
+    if report.get("schema") == "bo-construction-review/v1":
+        result = {key: value for key, value in report.items() if key != "preview"}
+        result["models"] = [
+            {
+                **{k: v for k, v in model.items() if k not in {"nodes", "edges"}},
+                "node_count": len(model["nodes"]),
+                "edge_count": len(model["edges"]),
+            }
+            for model in report["models"]
+        ]
+        preview = report.get("preview")
+        if preview:
+            result["preview"] = {
+                key: preview[key]
+                for key in (
+                    "model_ref",
+                    "visible_refs",
+                    "omitted_refs",
+                    "url",
+                    "presentation_recorded",
+                    "confirmation",
+                )
+            }
+        return result
     result = {key: value for key, value in report.items() if key not in {"graph", "index"}}
     graph = report.get("graph")
     if graph is not None:

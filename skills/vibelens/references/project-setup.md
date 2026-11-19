@@ -1,5 +1,11 @@
 # First project setup
 
+Begin with the [guided model construction](model-construction.md): record the
+requested business, state and rule networks before source binding. New discovery
+uses V3; retain existing V1/V2 checks and use explicit artifact migration. Show
+one relevant model and a verified Web link in chat, then preserve what was actually
+reviewed and confirmed. Optional role/depth preferences change presentation only.
+
 Use this sequence for a new project. The small runnable example in a repository
 checkout is `docs/review/concept-models-20261104/trial/project/`; its transcript
 records a synthetic developer/user trial, separate from human acceptance.

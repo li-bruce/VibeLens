@@ -30,7 +30,16 @@ def read(path):
     return json.loads(Path(path).read_text(encoding="utf-8-sig"))
 
 
-def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
+def _assess(
+    doc,
+    *,
+    intent=None,
+    model=None,
+    acceptance=None,
+    previous=None,
+    scope=None,
+    stage="before_acceptance",
+):
     """Check question, answer, decision, and graph references against the recorded conversation.
 
     Unanswered business ambiguities block confirmation. This validates the supplied
@@ -185,7 +194,9 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
     if doc.get("schema") in {"business-discovery/v2", "business-discovery/v3"}:
         from ..concepts import assess as assess_concepts
 
-        concepts = assess_concepts(doc, previous=previous, model=model, acceptance=acceptance)
+        concepts = assess_concepts(
+            doc, previous=previous, model=model, acceptance=acceptance, scope=scope, stage=stage
+        )
         errors.extend(concepts["errors"])
         warnings.extend(concepts.get("warnings", []))
         known.update(concepts.get("index", {}))
@@ -214,7 +225,10 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
             error("invalid_relation_registration", str(exc))
     decisions = records(doc.get("decisions"), "decisions")
     for did, d in decisions.items():
-        if d.get("topic") not in TOPICS or d.get("status") not in STATUSES:
+        statuses = STATUSES | (
+            {"partial", "contradicted"} if doc["schema"] == "business-discovery/v3" else set()
+        )
+        if d.get("topic") not in TOPICS or d.get("status") not in statuses:
             error("invalid_decision", did)
         if type(d.get("blocking")) is not bool:
             error("missing_blocking_flag", did)
@@ -263,6 +277,12 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
                     "existing_rule": {"project_rule"},
                     "delegated_choice": {"user"},
                 }.get(method)
+                if (
+                    doc["schema"] == "business-discovery/v3"
+                    and d.get("routing")
+                    and method in {"source_observation", "checker_result"}
+                ):
+                    allowed = {"inference", "assistant", "project_rule"}
                 if not allowed:
                     error("invalid_resolution_kind", did)
                 else:
@@ -275,6 +295,10 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
             error("missing_assumption_or_deferral", did)
         if d.get("status") == "assumed":
             warnings.append({"code": "explicit_assumption", "item": did})
+    if not errors and doc["schema"] == "business-discovery/v3":
+        from ..concepts.decision_contract import validate as validate_decisions
+
+        errors.extend(validate_decisions(doc, concepts, previous))
     if errors:
         return {
             "valid": False,
@@ -325,6 +349,10 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
                 for ref in decision["affects"]
             )
         }
+        from ..concepts.decision_contract import due_at
+
+        if doc["schema"] == "business-discovery/v3":
+            active_decisions = {did for did in active_decisions if due_at(decisions[did], stage)}
         pending_dependencies = list(active_decisions)
         while pending_dependencies:
             did = pending_dependencies.pop()
@@ -364,6 +392,10 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
                         for k in ("resolution", "affects", "topic", "blocking")
                     )
                 )
+                or new is not None
+                and bool(d.get("routing"))
+                and {k: v for k, v in d["routing"].items() if k != "wording"}
+                != {k: v for k, v in new.get("routing", {}).items() if k != "wording"}
             )
             if changed:
                 matching = [
@@ -375,7 +407,15 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
                     error("decision_changed_without_history", did)
                 else:
                     record = matching[-1]
-                    refs(record.get("source_refs"), did + ".change", {"user", "project_rule"})
+                    kinds = {"user", "project_rule"}
+                    if (
+                        d.get("routing", {}).get("kind")
+                        in {"implementation_fact", "verification_gap"}
+                        and new
+                        and new.get("routing") == d.get("routing")
+                    ):
+                        kinds |= {"inference", "assistant"}
+                    refs(record.get("source_refs"), did + ".change", kinds)
                     if not text(record.get("reason")):
                         error("missing_change_reason", did)
     if model is not None:
@@ -432,10 +472,17 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
                         "requirements", []
                     ):
                         error("test_for_different_requirement", did + "." + cid)
+    from ..concepts.decision_contract import condition_state, has_unanswered_prompt
+
     blocked = [
         d["id"]
         for d in decisions.values()
-        if d["id"] in active_decisions and d.get("blocking") and d.get("status") != "resolved"
+        if d["id"] in active_decisions
+        and d.get("blocking")
+        and d.get("status") != "resolved"
+        and (
+            doc["schema"] != "business-discovery/v3" or condition_state(d, decisions) != "inactive"
+        )
     ]
     if concepts is not None:
         blocked.extend(concepts.get("blocked", []))
@@ -457,6 +504,14 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
         if errors
         else sorted(ready, key=lambda d: (not d["blocking"], d.get("priority", 2), d["id"]))
     )
+    routing = None
+    if not errors and doc["schema"] == "business-discovery/v3":
+        from .question_routing import route
+
+        routing = route(doc, decisions, active_decisions)
+        routing["stage"] = stage
+        routing["deferred_decisions"] = sorted(set(decisions) - active_decisions)
+        ready = routing["questions"]
     if doc.get("schema") == "business-discovery/v1":
         warnings.append(
             {
@@ -474,9 +529,20 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
         "awaiting_answers": [
             d["id"]
             for d in decisions.values()
-            if d["id"] in active_decisions and d.get("status") == "open" and d.get("asked_in")
+            if d["id"] in active_decisions
+            and d.get("status") in {"open", "partial", "contradicted"}
+            and (
+                has_unanswered_prompt(d)
+                if doc["schema"] == "business-discovery/v3"
+                else d.get("asked_in")
+            )
+            and (
+                doc["schema"] != "business-discovery/v3"
+                or condition_state(d, decisions) != "inactive"
+            )
         ],
         **({"concepts": concepts} if concepts is not None else {}),
+        **({"routing": routing} if routing is not None else {}),
     }
 
 
@@ -500,6 +566,14 @@ def main():
     p.add_argument("action", choices=["validate", "questions", "check"])
     p.add_argument("--file", required=True)
     p.add_argument(
+        "--scope", nargs="+", help="Affected canonical model scope; unrelated work stays pending"
+    )
+    p.add_argument(
+        "--stage",
+        choices=("before_implementation", "during_coding", "before_acceptance", "before_analysis"),
+        default="before_acceptance",
+    )
+    p.add_argument(
         "--full-report", action="store_true", help="Include the conceptual graph and full index"
     )
     for name in ("intent", "model", "acceptance", "previous"):
@@ -513,7 +587,7 @@ def main():
         }
         if any(not isinstance(value, dict) for value in artifacts.values()):
             raise ValueError("linked records must be JSON objects")
-        result = assess(read(args.file), **artifacts)
+        result = assess(read(args.file), scope=args.scope, stage=args.stage, **artifacts)
     except (OSError, ValueError) as exc:
         result = {
             "valid": False,

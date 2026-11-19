@@ -25,7 +25,31 @@ def baseline_blob(revision, path):
     ).stdout
 
 
-def check_inventory(plan, read_blob=baseline_blob):
+def read_evidence(name):
+    """Read a repository-contained receipt, never a path outside this checkout."""
+    path = (ROOT / name).resolve()
+    path.relative_to(ROOT)
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def executed_case(case, load_evidence):
+    """A phase receipt or partial test result cannot promote an entire case.
+
+    The evidence producer must explicitly attest to this case and retain its
+    executed records. This checks the scope of the claim, not its semantic truth.
+    """
+    for name in case.get("evidence", []):
+        try:
+            receipt = load_evidence(name)
+            result = receipt.get("case_results", {}).get(case["id"], {})
+            if result.get("status") == "passed" and result.get("evidence"):
+                return True
+        except (OSError, ValueError, TypeError, AttributeError):
+            continue
+    return False
+
+
+def check_inventory(plan, read_blob=baseline_blob, load_evidence=read_evidence):
     """Find lost obligations, false completion and a changed baseline reference.
 
     Receipt files attest only to their stated scope. This check deliberately does
@@ -69,7 +93,7 @@ def check_inventory(plan, read_blob=baseline_blob):
     for case in cases:
         if case.get("status") not in {"pending", "partial", "passed"}:
             errors.append(f"{case['id']}: invalid status")
-        if case.get("status") == "passed" and not case.get("evidence"):
+        if case.get("status") == "passed" and not executed_case(case, load_evidence):
             errors.append(f"{case['id']}: no executed acceptance evidence")
     baseline = plan["baseline"]
     for item in baseline["files"]:

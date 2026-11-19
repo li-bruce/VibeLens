@@ -6,9 +6,10 @@ consumers. Preserve the protected boundaries in [the overview](README.md).
 
 Implementation status is tracked in [progress.json](progress.json). The
 [P1 contract reference](p1-contracts.md) specifies the implemented wire names,
-reader boundaries, capability admission and migration operations. Later routing,
-binding, iteration and analysis sections below remain the approved development
-design until their own implementation receipts are recorded.
+reader boundaries, capability admission and migration operations. The
+[P2 guided construction reference](p2-guided-construction.md) describes the routing
+and review implementation. Binding, iteration and analysis sections below remain
+the approved development design until their own implementation receipts are recorded.
 
 ## 1. Canonical artifacts and ownership
 

@@ -1,0 +1,47 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+FEF
+======================================================================
+ERROR: test_later_target_does_not_block_confirmed_independent_increment (__main__.GuidedConstructionScopeTests.test_later_target_does_not_block_confirmed_independent_increment)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\ƽ̨����\SoftwareStatusObserverSkill\tests\test_guided_construction.py", line 40, in test_later_target_does_not_block_confirmed_independent_increment
+    show_all(value)
+    ~~~~~~~~^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\ƽ̨����\SoftwareStatusObserverSkill\tests\test_construction_contract.py", line 35, in show_all
+    scope = snapshot(value, ["*"])["scope"]
+            ~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\ƽ̨����\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\concepts\semantics.py", line 82, in snapshot
+    selected = semantic_projection(doc, scope)
+  File "C:\Users\Lvi_P\Documents\Work\CF\ƽ̨����\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\concepts\semantics.py", line 75, in semantic_projection
+    data = build(doc)
+  File "C:\Users\Lvi_P\Documents\Work\CF\ƽ̨����\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\concepts\model.py", line 44, in build
+    add_applicability(graph, doc, sources, business, models, policy, crosslinks)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\ƽ̨����\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\concepts\obligations.py", line 77, in add_applicability
+    raise ValueError(
+        "operation needs explicit " + field + " applicability: " + operation
+    )
+ValueError: operation needs explicit state applicability: preferences
+
+======================================================================
+FAIL: test_later_question_uses_same_target_scope (__main__.GuidedConstructionScopeTests.test_later_question_uses_same_target_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\ƽ̨����\SoftwareStatusObserverSkill\tests\test_guided_construction.py", line 59, in test_later_question_uses_same_target_scope
+    self.assertTrue(report['valid'], report['errors'])
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : [{'code': 'invalid_concept_design', 'item': 'operation needs explicit state applicability: preferences'}, {'code': 'unknown_affected_behavior', 'item': 'D-later'}]
+
+======================================================================
+FAIL: test_target_scope_cycles_are_rejected (__main__.GuidedConstructionScopeTests.test_target_scope_cycles_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\ƽ̨����\SoftwareStatusObserverSkill\tests\test_guided_construction.py", line 70, in test_target_scope_cycles_are_rejected
+    self.assertFalse(report['valid'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.203s
+
+FAILED (failures=2, errors=1)
