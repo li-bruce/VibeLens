@@ -9,7 +9,18 @@ Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码�
 
 这份导览按实际执行路径介绍源码。维护中的实现位于 [skills/vibelens](../skills/vibelens/)，示例项目中的同名模块是安装副本，用于验证接入真实项目后的行为。
 
-下一轮开发见[行为约束、分工提问与分层验证方案](development/behavior-contracts/README.zh-CN.md)，其中列出拟新增协议、模块职责、实施顺序和验收要求。这是后续开发指导，尚未作为当前功能交付。
+[行为约束开发方案](development/behavior-contracts/README.zh-CN.md)的 P0–P6 已在顺序开发分支完成实现和回归，P7 正在独立试用。[开发工作表](development/behavior-contracts/progress.json)保留各阶段状态与证据。
+
+| 职责 | 源码与说明 |
+|---|---|
+| 版本化协议、类型和表达式 | `protocol.py`、`behavior/`；[定义与迁移](development/behavior-contracts/p1-contracts.md) |
+| 模型清单、问题分工和局部确认 | `concepts/`、`workflow/question_routing.py`；[模型构建](development/behavior-contracts/p2-guided-construction.md) |
+| 源码绑定与独立运行值核对 | `behavior/bindings.py`、`behavior/native_runtime.py`；[原生绑定](development/behavior-contracts/p3-native-bindings.md) |
+| 每轮回忆、检查和旧证据失效 | `workflow/behavior_iteration.py`、`behavior/{coverage,evidence,dependencies}.py`；[迭代检查](development/behavior-contracts/p4-iteration-evidence.md) |
+| 图上的定义详情与录制上下文 | `behavior-details.js`、`logical-trace.js`；[查看功能](development/behavior-contracts/p5-inspection.md) |
+| 可选的有限模型分析 | `analysis/`、`analysis/tla/`、`workflow/analysis_cli.py`；[分析模块](architecture/behavior-analysis.md) |
+
+验收仍由原有迭代流程统一协调。TLC 分析选定的设计定义；程序状态由项目自身执行，实际采集、映射和业务检查各自提供证据。
 
 三维视窗与二维视窗使用同一份图和运行证据。`graph-inventory.js` 汇总各层内容，`graph-links.js` 连接明确的源码与运行锚点，`graph-layers.js` 管理层的分类；`spatial-model.js` 计算包含关系的跨层投影，`spatial-layout.js` 在后台线程布局，`spatial-renderer.js` 管理真实三维摄像机和绘制。`semantic-view.js` 统一键盘和辅助访问入口。模块边界与交互说明见[三维图说明](../skills/vibelens/references/spatial-graph.md)。
 

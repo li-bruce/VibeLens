@@ -5,10 +5,10 @@
 [Model construction through dialogue](model-construction.md) ·
 [Acceptance](acceptance.md) · [AI development guide](agent-guide.md)
 
-**Status: proposed development baseline, not an implemented capability.**
-Prepared on 2026-11-17 from `main` at `106fddb3`, on `feat/behavior-contracts`.
-This delivery establishes the branch, source audit, design and implementation
-instructions. Runtime, Skill behavior, public pages and release versions are unchanged.
+**Current status: P0–P6 implemented and regressed; P7 independent trials in progress.**
+The original planning baseline was prepared on 2026-11-17 from `main` at
+`106fddb3`, on `feat/behavior-contracts`. That planning delivery changed no
+runtime behavior. The sequential implementation and its evidence are tracked below.
 
 Implementation restarted from the complete planning commit `a8f569d7` on
 `feat/behavior-contracts-sequential` on 2026-11-19. Follow the

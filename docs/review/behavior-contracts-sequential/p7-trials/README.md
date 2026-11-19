@@ -1,0 +1,47 @@
+# P7 — Independent candidate trials
+
+Status: in progress. P0–P6 were implemented, regressed and committed before
+creating either trial. Candidate: `87ab32d5` on
+`feat/behavior-contracts-sequential`. No merge, release or public deployment.
+
+Two fresh isolated installations were created with `tools/install_skill.py`.
+The coding chats receive only their candidate Skill, target directory and a
+natural application request. The evaluator's intended choices are not sent to
+them. Follow-ups answer actual questions; they are simulated user decisions,
+not statements of the repository owner's production policy.
+These are fresh chats on the same workstation, not memory-isolated experiments:
+the host supplies its normal project memory. Only explicitly answered trial
+requirements may become application policy.
+
+## Evaluator expectations
+
+Both apps: a small local file-sharing tool and a separate announcements board.
+Uploads belong to their uploader; shares identify individual recipients; only
+owners manage file grants. Announcement editors manage the independent board.
+Seeded synthetic accounts and local SQLite are sufficient. Keep identities of
+file grants, download jobs and announcements independent; reuse applicable
+authentication/ownership predicates rather than duplicating rule meanings.
+
+Python: choose drive mode when asked. A queued download checks current permission
+when work starts; revocation blocks work that has not started, while an already
+started transfer may finish. Node: choose observe mode, preserving native logic.
+For a distinct valid policy, a download accepted into the queue may finish after
+revocation; new requests must fail. Do not disclose these timing choices before
+the coding chat asks or shows its interpretation for review.
+
+The first Python answer clarified that the relevant boundary is the worker
+starting file preparation; a task already preparing may finish and its owner may
+retrieve that result. This clarification precedes implementation and must remain
+visible in the model/review history.
+
+Correct a material interpretation in the draft when needed, confirm its actual
+scope, implement and independently inspect runtime and every configured layer.
+Then request one business change and one source-only refactor, checking graph
+changes, retained unrelated models/views, scan/verification and original captures.
+Source facts stay with the coding process; unanswered questions and host approvals
+are not fabricated user confirmations.
+
+Framework failures are repaired in the maintained Skill first and tested again
+in a fresh trial. Retain dialogue, original failures, repair revisions, final
+source/model bundles, test outputs and desktop screenshots. Product content is
+updated only after the applicable trial evidence is accepted.

@@ -22,7 +22,7 @@ Check the actual branch and working tree. The complete plan is committed at
 `a8f569d7`, with production code from `106fddb3`. Implementation restarted on
 `feat/behavior-contracts-sequential`. Read [progress.json](progress.json) and each
 phase's evidence before choosing work. P0–P6 implementation and regression are
-complete; P7 remains pending. Preserve the recovery stash and unrelated
+complete; P7 is in progress. Preserve the recovery stash and unrelated
 work. Do not use the abandoned draft or premature trial chats as acceptance.
 
 ## Protected product behavior
@@ -52,7 +52,10 @@ work. Do not use the abandoned draft or premature trial chats as acceptance.
   outside production application bundles. Preserve explicit chat activation and
   `/vibelens` control allowlists.
 
-## Start with P0, then P1
+## Original start sequence: P0, then P1
+
+Resume from the first unfinished phase in the ledger. Preserve completed phase
+evidence and regressions rather than repeating the original initialization.
 
 1. Record the current implementation/test baseline and outstanding failures.
 2. Resolve protocol versioning and canonical ownership before creating consumers.

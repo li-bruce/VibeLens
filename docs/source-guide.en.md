@@ -4,15 +4,23 @@
 
 Read this guide when you want to change the Skill, inspect a recorded value, or find the code behind a graph interaction. The maintained implementation lives in [skills/vibelens](../skills/vibelens/). Example projects contain installed copies to test real project integration.
 
-Planned development: [behavior contracts and guided verification](development/behavior-contracts/README.md)
-records the proposed protocol, question routing, module boundaries and acceptance
-plan. It is a development handoff, not a statement of current feature support.
+The [behavior-contract plan](development/behavior-contracts/README.md) is tracked
+by its [phase ledger](development/behavior-contracts/progress.json). P0–P6 are
+implemented and regressed on the sequential branch; independent P7 trials are
+in progress. The main ownership boundaries are:
 
-The sequential branch adds [typed contracts and migration](development/behavior-contracts/p1-contracts.md),
-[scoped model construction](development/behavior-contracts/p2-guided-construction.md)
-and [native binding services](development/behavior-contracts/p3-native-bindings.md).
-Use the [phase ledger](development/behavior-contracts/progress.json) to distinguish
-completed implementation, current work and pending trial acceptance.
+| Responsibility | Source and guide |
+|---|---|
+| Versioned definitions and typed expressions | `protocol.py`, `behavior/`; [contracts and migration](development/behavior-contracts/p1-contracts.md) |
+| Model inventory, questions and scoped agreement | `concepts/`, `workflow/question_routing.py`; [model construction](development/behavior-contracts/p2-guided-construction.md) |
+| Source bindings and independent native witnesses | `behavior/bindings.py`, `behavior/native_runtime.py`; [native bindings](development/behavior-contracts/p3-native-bindings.md) |
+| Per-iteration obligations and evidence expiry | `workflow/behavior_iteration.py`, `behavior/{coverage,evidence,dependencies}.py`; [iteration evidence](development/behavior-contracts/p4-iteration-evidence.md) |
+| Pinned graph details and recorded definition context | `behavior-details.js`, `logical-trace.js`; [inspection](development/behavior-contracts/p5-inspection.md) |
+| Optional finite-model checking | `analysis/`, `analysis/tla/`, `workflow/analysis_cli.py`; [analysis architecture](architecture/behavior-analysis.md) |
+
+The existing iteration coordinator owns acceptance. Analysis reads selected
+definitions and executes a bounded, optional TLC process; it does not replace
+native state execution, runtime capture or independent business checks.
 
 ## Repository map
 

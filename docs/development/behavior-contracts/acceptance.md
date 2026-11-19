@@ -1,6 +1,7 @@
 # Acceptance and retained evidence
 
-Status: planned tests, not completed results. All existing strict checks remain.
+This is the acceptance specification. Current results are in the
+[execution ledger](progress.json) and its evidence links. All existing strict checks remain.
 Each new case needs an independent expected result, an actual execution or clearly
 identified model execution, and a candidate-bound receipt.
 
