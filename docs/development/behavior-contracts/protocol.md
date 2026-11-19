@@ -4,6 +4,10 @@ Status: proposed. Names and examples below are design inputs for P1, not formats
 accepted by the current release. Pin final schemas and fixtures before coding
 consumers. Preserve the protected boundaries in [the overview](README.md).
 
+Implementation status is tracked in [progress.json](progress.json). The first P1
+[scalar definition slice](p1-definition-slice.md) is available on the development
+branch; discovery/project migration and the remaining sections below are pending.
+
 ## 1. Canonical artifacts and ownership
 
 | Artifact | Owner and purpose | Update rule |

@@ -77,6 +77,29 @@ def schema_check(value, name):
     json.dumps(value, allow_nan=False)
 
 
+def schema_diagnostics(value, name):
+    """Expose strict schema failures with JSON pointers for new contract callers.
+
+    Existing throwing validators keep their original behavior. This read-only
+    interface adds stable structural codes; semantic callers supply their own
+    reference/ownership checks after it returns no errors.
+    """
+    issues = []
+    for error in sorted(
+        _validator(SCHEMAS, name).iter_errors(value), key=lambda e: str(list(e.path))
+    ):
+        pointer = "/" + "/".join(str(p).replace("~", "~0").replace("/", "~1") for p in error.path)
+        issues.append(
+            {"code": "schema_" + error.validator, "path": pointer, "message": error.message}
+        )
+    if not issues:
+        try:
+            schema_check(value, name)
+        except (ValueError, TypeError) as error:
+            issues.append({"code": "nonportable_json", "path": "/", "message": str(error)})
+    return issues
+
+
 def validate_project(project):
     """Check project identity, mode choice, and machine declaration; return a detached copy."""
     schema_check(project, "project")

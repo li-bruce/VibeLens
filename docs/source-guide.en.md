@@ -8,6 +8,11 @@ Planned development: [behavior contracts and guided verification](development/be
 records the proposed protocol, question routing, module boundaries and acceptance
 plan. It is a development handoff, not a statement of current feature support.
 
+The sequential branch's [first P1 slice](development/behavior-contracts/p1-definition-slice.md)
+adds read-only scalar definition checks in `bo_observer/behavior/`.
+`bo_behavior.py validate` uses the existing concept registry; automatic adoption,
+project migration and runtime evidence integration remain pending in that plan.
+
 ## Repository map
 
 [bo_models.py](../skills/vibelens/scripts/bo_models.py) owns model identities,

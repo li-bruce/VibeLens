@@ -1,0 +1,173 @@
+{
+  "schema": "bo-behavior/v1",
+  "project_id": "concept-sharing-example",
+  "revision": "first",
+  "scope": {
+    "model_refs": [
+      "state-model:grant",
+      "state-model:archive"
+    ],
+    "object_refs": [
+      "object:grant"
+    ],
+    "unresolved": [],
+    "exclusions": []
+  },
+  "domains": [
+    {
+      "id": "status",
+      "type": "enum",
+      "values": [
+        "inactive",
+        "active"
+      ],
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "flag",
+      "type": "boolean",
+      "source_refs": [
+        "U1"
+      ]
+    }
+  ],
+  "variables": [
+    {
+      "id": "grant-status",
+      "domain": "status",
+      "owner": "state-model:grant",
+      "concept_ref": "state-model:grant",
+      "persistence": "persistent",
+      "source_refs": [
+        "U1"
+      ]
+    },
+    {
+      "id": "archive-status",
+      "domain": "status",
+      "owner": "state-model:archive",
+      "concept_ref": "state-model:archive",
+      "persistence": "persistent",
+      "source_refs": [
+        "U1"
+      ]
+    }
+  ],
+  "initial": {
+    "op": "all",
+    "args": [
+      {
+        "op": "eq",
+        "args": [
+          {
+            "op": "var",
+            "id": "grant-status",
+            "phase": "before"
+          },
+          {
+            "op": "literal",
+            "domain": "status",
+            "value": "inactive"
+          }
+        ]
+      },
+      {
+        "op": "eq",
+        "args": [
+          {
+            "op": "var",
+            "id": "archive-status",
+            "phase": "before"
+          },
+          {
+            "op": "literal",
+            "domain": "status",
+            "value": "inactive"
+          }
+        ]
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "grant-share",
+      "model_refs": [
+        "state-model:grant"
+      ],
+      "transition_ref": "transition:grant:grant-share",
+      "parameters": {
+        "allowed": "flag"
+      },
+      "enabled": {
+        "op": "all",
+        "args": [
+          {
+            "op": "eq",
+            "args": [
+              {
+                "op": "var",
+                "id": "grant-status",
+                "phase": "before"
+              },
+              {
+                "op": "literal",
+                "domain": "status",
+                "value": "inactive"
+              }
+            ]
+          },
+          {
+            "op": "param",
+            "id": "allowed"
+          }
+        ]
+      },
+      "reads": [
+        "grant-status"
+      ],
+      "writes": [
+        "grant-status"
+      ],
+      "updates": {},
+      "unchanged": [
+        "archive-status"
+      ],
+      "completion": {
+        "kind": "commit",
+        "meaning": "The selected grant is committed"
+      },
+      "source_refs": [
+        "U1"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "id": "archive-unchanged",
+      "kind": "transition_constraint",
+      "action_refs": [
+        "grant-share"
+      ],
+      "expression": {
+        "op": "eq",
+        "args": [
+          {
+            "op": "var",
+            "id": "archive-status",
+            "phase": "before"
+          },
+          {
+            "op": "var",
+            "id": "archive-status",
+            "phase": "after"
+          }
+        ]
+      },
+      "source_refs": [
+        "U1"
+      ]
+    }
+  ]
+}

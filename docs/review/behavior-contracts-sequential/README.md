@@ -15,6 +15,7 @@ are not acceptance of any phase in this restart.
 - [Approved implementation sequence](../../development/behavior-contracts/implementation.md)
 - [P0 environment and installed-copy fingerprints](p0/environment.json)
 - [P0 baseline findings](p0/README.md)
+- [P1 scalar definition slice](p1-scalar/README.md)
 
 Each stage records its own implementation, failures and final checks. A case being
 listed in the ledger does not mean it has passed. P7 trials start only after the
