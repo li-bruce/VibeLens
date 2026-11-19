@@ -106,6 +106,28 @@
     },
     "required_for_acceptance": {
       "type": "boolean"
+    },
+    "termination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "$ref": "https://github.com/li-bruce/VibeLens/protocol/behavior/v1#/$defs/expression"
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "condition",
+        "source_refs"
+      ]
     }
   },
   "required": [

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 from ..project_artifacts import portable_path
 from .diagnostics import require
+from ..value_types import represents  # Public compatibility import for existing adapters.
 
 
 @dataclass(frozen=True)
@@ -115,30 +116,3 @@ class BindingSources:
             else:
                 require(False, "binding_capture_missing", path, str(route))
         return value
-
-
-def represents(spec, domain):
-    """Compare the capture representation; never apply analysis bounds at runtime."""
-    if domain.kind in {"set", "sequence", "map"}:
-        if not isinstance(spec, list) or len(spec) != 1:
-            return False
-        if domain.kind == "map":
-            entry = spec[0]
-            return (
-                isinstance(entry, dict)
-                and set(entry) == {"key", "value"}
-                and represents(entry["key"], domain.key)
-                and represents(entry["value"], domain.element)
-            )
-        return represents(spec[0], domain.element)
-    if not isinstance(spec, str):
-        return False
-    if domain.kind == "enum":
-        kinds = {
-            "boolean" if type(v) is bool else "number" if type(v) is int else "string"
-            for v in domain.values
-            if v is not None
-        }
-        return spec == "scalar" or kinds <= {spec}
-    primitive = {"integer": "number", "identity": "string"}.get(domain.kind, domain.kind)
-    return spec in {primitive, "scalar"}

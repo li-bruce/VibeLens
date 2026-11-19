@@ -1,5 +1,16 @@
 // Chinese presentation only. IDs, source, and user-authored labels remain unchanged.
 export default {
+  "Model trace": "模型轨迹",
+  Values: "数值",
+  "Open model counterexample": "打开模型反例",
+  "Model counterexample": "模型反例",
+  "Logical step": "逻辑步",
+  "Logical step {0}/{1}": "逻辑步 {0}/{1}",
+  "Logical model timeline": "模型逻辑时间轴",
+  "Model definition changed": "模型定义已变化，请重新分析",
+  "Model trace exceeds display limit": "模型轨迹超出显示范围",
+  "Loop to step {0}": "回到第 {0} 步",
+  "{0} references outside this view": "当前视图外还有 {0} 个关联",
   "Behavior details": "行为定义",
   Action: "动作",
   Binding: "绑定",

@@ -88,6 +88,27 @@ class Expressions:
             for number, arg in enumerate(expression["args"])
         ]
         reads = frozenset(read for arg in args for read in arg.reads)
+        if op in {"length", "append", "tail", "set_add", "set_remove"}:
+            domain = self.domains.get(args[0].domain)
+            kinds = (
+                {"set", "sequence", "map"}
+                if op == "length"
+                else ({"set"} if op.startswith("set_") else {"sequence"})
+            )
+            require(
+                domain is not None and domain.kind in kinds,
+                "expression_type",
+                path,
+                "Use the declared collection kind for " + op,
+            )
+            if len(args) > 1:
+                require(
+                    compatible(args[1].domain, domain.element.id, self.domains),
+                    "expression_type",
+                    path,
+                    "Payload differs from the element domain",
+                )
+            return ExpressionType("$integer" if op == "length" else domain.id, reads)
         if op in {"member", "select"}:
             return self._collection(op, args, reads, path)
         if op in {"all", "any", "not", "implies"}:
@@ -177,6 +198,22 @@ def known_value(expression, values, checker=None):
         return True
     if any(arg is UNKNOWN for arg in args):
         return UNKNOWN
+    if op == "length":
+        return len(args[0])
+    if op == "append":
+        return [*args[0], args[1]]
+    if op == "tail":
+        return args[0][1:]
+    if op in {"set_add", "set_remove"}:
+        if checker is None:
+            return UNKNOWN
+        domain = checker.domains[checker.check(expression["args"][0], "/initial").domain]
+        remaining = [
+            value
+            for value in args[0]
+            if domain.element.value_key(value) != domain.element.value_key(args[1])
+        ]
+        return [*remaining, args[1]] if op == "set_add" else remaining
     if op == "all":
         return all(args)
     if op == "any":

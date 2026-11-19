@@ -3,6 +3,7 @@
 from ..concepts.common import encoded
 from .diagnostics import index_records, require
 from .domains import compatible
+from ..value_types import represents
 
 
 def require_reference(registry, ident, kinds, path):
@@ -62,7 +63,12 @@ def load_variables(contract, registry, domains, discovery):
                 actual_owner,
             )
             require(
-                compatible(domain_id, "$" + record["type"], domains),
+                (
+                    compatible(domain_id, "$" + record["type"], domains)
+                    if isinstance(record["type"], str)
+                    and domains[domain_id].kind not in {"enum", "identity"}
+                    else represents(record["type"], domains[domain_id])
+                ),
                 "variable_type",
                 path + "/domain",
                 "Domain differs from the canonical fact type",

@@ -12,11 +12,11 @@ from ..concepts.common import digest, canonical_id
 from ..protocol import schema_diagnostics
 
 CAPABILITIES = {
-    "id": "finite-design-admission/1",
+    "id": "finite-design-admission/2",
     "subject": "design_model",
     "state_semantics": "flat_interleaving",
-    "domains": ["boolean", "enum", "integer", "identity"],
-    "property_kinds": ["state_invariant", "transition_constraint"],
+    "domains": ["boolean", "enum", "integer", "identity", "sequence", "set"],
+    "property_kinds": ["state_invariant", "transition_constraint", "progress_property"],
     "policy_nodes": ["input", "constant", "all", "any", "not"],
     "operators": [
         "literal",
@@ -33,9 +33,18 @@ CAPABILITIES = {
         "add",
         "sub",
         "policy_ref",
+        "length",
+        "append",
+        "tail",
+        "set_add",
+        "set_remove",
+        "member",
+        "select",
+        "forall",
+        "exists",
     ],
-    "exporter_available": False,
-    "runner_available": False,
+    "exporter_available": True,
+    "runner_available": True,
 }
 
 
@@ -102,6 +111,14 @@ def admit(contract, discovery, profile):
     for ident in profile["assumption_refs"]:
         if ident in assumptions and assumptions[ident]["status"] != "confirmed":
             issue("unconfirmed_assumption", "/assumption_refs", ident, "unresolved")
+        elif ident in assumptions and (
+            assumptions[ident]["kind"] != "scheduling" or not assumptions[ident]["action_refs"]
+        ):
+            issue(
+                "unsupported_assumption",
+                "/assumption_refs",
+                "Only explicit nonempty scheduling action sets are interpreted: " + ident,
+            )
     for name in contract["scope"]["unresolved"]:
         issue("unresolved_scope", "/scope/unresolved", name, "unresolved")
     for name in contract["scope"]["exclusions"]:
@@ -152,6 +169,39 @@ def admit(contract, discovery, profile):
                     "Include this property's assumptions",
                     "unresolved",
                 )
+    termination = profile.get("termination")
+    if termination:
+        from ..behavior.domains import load_domains
+        from ..behavior.expressions import Expressions
+        from ..behavior.policy_refs import PolicyReferences
+        from ..concepts.model import build
+
+        sources = {s["id"] for s in discovery["sources"]}
+        if not set(termination["source_refs"]) <= sources:
+            issue(
+                "unknown_source",
+                "/termination/source_refs",
+                "Termination needs recorded intent",
+                "invalid",
+            )
+        try:
+            checker = Expressions(
+                load_domains(candidate["domains"]),
+                {v["id"]: v for v in candidate["variables"]},
+                PolicyReferences(build(discovery)["records"], candidate["scope"]["model_refs"]),
+            )
+            checker.expect_boolean(termination["condition"], "/termination/condition")
+            visit(termination["condition"], "/termination/condition")
+        except ValueError as error:
+            issue("invalid_termination", "/termination", str(error), "invalid")
+    # A collection is finite only if every nested carrier is supported as well.
+    pending = list(required)
+    while pending:
+        item = domains[pending.pop()]
+        for ref in (item.get("element_domain"), item.get("key_domain")):
+            if ref and ref not in required:
+                required.add(ref)
+                pending.append(ref)
     for ident in sorted(required):
         if not definition["domain_capabilities"][ident]["supported"]:
             issue(
@@ -161,15 +211,37 @@ def admit(contract, discovery, profile):
             )
         elif domains[ident]["type"] not in CAPABILITIES["domains"]:
             issue("unsupported_domain", "/domains/" + ident, domains[ident]["type"])
+        elif (
+            domains[ident]["type"] == "enum"
+            and len({type(v).__name__ for v in domains[ident]["values"]}) > 1
+        ):
+            issue(
+                "unsupported_mixed_enum",
+                "/domains/" + ident,
+                "TLC comparisons require a homogeneous scalar carrier",
+            )
     for ident, value in definition["policy_references"].items():
         if value["opaque_predicates"]:
             issue(
                 "opaque_policy_predicate", "/policy/" + ident, ", ".join(value["opaque_predicates"])
             )
     for item in candidate.get("interactions", []):
-        issue("unsupported_interaction", "/interactions/" + item["id"], item["kind"])
+        if item["kind"] != "shared_read" or item["consistency"] != "independent":
+            issue("unsupported_interaction", "/interactions/" + item["id"], item["kind"])
+    if candidate.get("refinements"):
+        issue(
+            "unsupported_refinement",
+            "/refinements",
+            "Native abstraction correspondence is not implemented",
+        )
     for state in discovery.get("state_models", []):
         if canonical_id("state-model", state["id"]) in profile["model_refs"]:
+            if any(not isinstance(value, str) for value in state["states"]):
+                issue(
+                    "unsupported_state_hierarchy",
+                    "/state_models/" + state["id"],
+                    "This adapter admits flat string-valued states",
+                )
             if state.get("execution"):
                 issue(
                     "unsupported_activity_semantics",

@@ -1,0 +1,68 @@
+{
+  "schema": "bo-analysis-trace/v1",
+  "origin": "model_analysis",
+  "subject": "design_model",
+  "analysis_id": "c4903ddbb5ad4dc080bf7e5f594387fd",
+  "definition_sha256": "b3c414d5289700e92e981990ecf52fe37b2859f09c81874932a6acfc05533b30",
+  "property_refs": [
+    "archive-unchanged"
+  ],
+  "states": [
+    {
+      "archive-status": "inactive",
+      "grant-status": "inactive"
+    },
+    {
+      "archive-status": "inactive",
+      "grant-status": "active"
+    }
+  ],
+  "steps": [
+    {
+      "action": "grant-share",
+      "parameters": {
+        "allowed": true
+      }
+    }
+  ],
+  "loop_back": null,
+  "axis": "logical_step",
+  "projected_steps": [
+    {
+      "index": 0,
+      "action": "grant-share",
+      "parameters": {
+        "allowed": true
+      },
+      "nodes": [
+        "event:grant:share",
+        "share",
+        "state-model:grant",
+        "state:grant:active",
+        "state:grant:inactive",
+        "transition:grant:grant-share"
+      ],
+      "edges": [
+        "state-contains:grant:inactive",
+        "state-contains:grant:active",
+        "state-event:grant:share",
+        "event-trigger:grant:grant-share",
+        "transition-target:grant:grant-share",
+        "state-transition:grant:grant-share:inactive",
+        "state-transition:grant:grant-revoke:active",
+        "share-requests-event",
+        "operation-state:share:grant"
+      ],
+      "changes": [
+        {
+          "variable": "grant-status",
+          "before": "inactive",
+          "after": "active",
+          "concept_ref": "state-model:grant"
+        }
+      ]
+    }
+  ],
+  "domain_findings": [],
+  "execution_authority": false
+}

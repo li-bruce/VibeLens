@@ -45,6 +45,9 @@ def _validator(directory, name):
     path = directory / (name + ".schema.json")
     schema = json.loads(path.read_text(encoding="utf-8"))
     registry = Registry()
+    if name == "analysis-profile":
+        behavior = json.loads((directory / "behavior.schema.json").read_text(encoding="utf-8"))
+        registry = registry.with_resource(behavior["$id"], Resource.from_contents(behavior))
     if name in {"project", "project-v2"}:
         # Project envelopes reference the same model contract as standalone
         # models. Register the bundled resource; validation never fetches it.

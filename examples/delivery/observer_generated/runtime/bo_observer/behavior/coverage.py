@@ -213,9 +213,17 @@ def reports(snapshot, original, *, formal_results=(), analysis_tools=None):
             and r.get("subject") == "design_model"
             and subject == "design_model"
         ]
+        identities = (analysis_tools or {}).get(key)
+
+        # The artifact reader may verify several Java installations. Keep every
+        # current result; filesystem/UUID order must not hide conflicting proofs.
+        def expected_tool(receipt):
+            if isinstance(identities, list):
+                return receipt["tool_identity"] if receipt["tool_identity"] in identities else {}
+            return identities
+
         current = [
-            (r, applicability(r, snapshot, tool_identity=(analysis_tools or {}).get(key)))
-            for r in candidates
+            (r, applicability(r, snapshot, tool_identity=expected_tool(r))) for r in candidates
         ]
         outcomes = {r["outcome"] for r, fresh in current if fresh["current"]}
         passing = outcomes == {"pass"}

@@ -8,6 +8,7 @@ except ImportError:
     from bo_contracts import state_tree, entered_states, validate_value_spec
 from .common import fields, records, references, text
 from .activities import validate_activities
+from ..value_types import fact_type_valid
 
 SCALARS = {"string", "number", "integer", "boolean"}
 
@@ -31,7 +32,7 @@ def validate_objects(doc, sources):
             raise ValueError("object identity needs typed scalar fields: " + ident)
         properties = item.get("fields", {})
         if not isinstance(properties, dict) or any(
-            not text(k) or v not in SCALARS for k, v in properties.items()
+            not text(k) or not fact_type_valid(v) for k, v in properties.items()
         ):
             raise ValueError("invalid object fields: " + ident)
         if any(k in properties and properties[k] != v for k, v in identity.items()):

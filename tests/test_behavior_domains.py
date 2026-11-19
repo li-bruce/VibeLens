@@ -298,7 +298,8 @@ class PolicyReferenceTests(unittest.TestCase):
         )
         self.assertEqual((self.contract, self.discovery), before)
         self.assertEqual(result["analysis"], "not_run")
-        self.assertFalse(result["definition_capabilities"]["finite_export"]["runner_available"])
+        self.assertTrue(result["definition_capabilities"]["finite_export"]["runner_available"])
+        self.assertEqual(result["definition_capabilities"]["finite_export"]["status"], "optional_design_subset")
 
     def test_missing_extra_and_wrong_type_bindings_fail(self):
         for bindings, code in [

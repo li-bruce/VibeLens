@@ -471,35 +471,40 @@
       "id": "A19",
       "case": "Small manually understood finite model through actual TLC; a deliberately broken transition",
       "expected": "Expected property result and counterexample. Compare with independently authored TLA fixtures and hand-derived reachable states. Identify design versus implementation analysis; a correct design pass must not conceal a failing native implementation.",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
-        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json",
+        "docs/review/behavior-contracts-sequential/p6-analysis/results.json"
       ]
     },
     {
       "id": "A20",
       "case": "Timeout, unsupported expression, missing tool, stale profile, incomplete traversal and invariant used as a filter",
       "expected": "No false pass. Detect vacuous/filtered verification and preserve failed/partial runs. A changed compiler/profile/property invalidates the result.",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
-        "docs/review/behavior-contracts-sequential/p4-closure/results.json"
+        "docs/review/behavior-contracts-sequential/p4-closure/results.json",
+        "docs/review/behavior-contracts-sequential/p6-analysis/results.json"
       ]
     },
     {
       "id": "A21",
       "case": "Model counterexample and real reproduction shown in Graph/Timeline",
       "expected": "Distinct provenance; model uses logical steps, real run uses actual intervals. Stable IDs, values, cross-model paths and a liveness loop witness remain inspectable.",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
-        "docs/review/behavior-contracts-sequential/p5-viewer/results.json"
+        "docs/review/behavior-contracts-sequential/p5-viewer/results.json",
+        "docs/review/behavior-contracts-sequential/p6-analysis/results.json"
       ]
     },
     {
       "id": "A22",
       "case": "Progress property with/without supported fairness and an external outcome assumption",
       "expected": "Show exactly which assumption the result depends on. No automatic fairness insertion; unsupported temporal semantics are explicit.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p6-analysis/results.json"
+      ]
     },
     {
       "id": "A23",
@@ -684,12 +689,14 @@
     },
     {
       "id": "P6",
-      "status": "pending",
+      "status": "complete",
       "depends_on": [
         "P4",
         "P5"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p6-analysis/results.json"
+      ]
     },
     {
       "id": "P7",

@@ -114,6 +114,20 @@ class BehaviorCoverageTests(unittest.TestCase):
         self.assertNotEqual(key('value','variable:a/b','case'),key('value','variable:a','b/case'))
         self.assertNotEqual(canonical_id('parameter','a:b','c'),canonical_id('parameter','a','b:c'))
 
+    def test_two_verified_tool_identities_cannot_hide_a_conflicting_result(self):
+        self.snapshot['analysis_profiles']=[{'id':'small','model_refs':['state-model:grant'],
+            'property_refs':['archive-unchanged'],'required_for_acceptance':True}]
+        first={'java':'one'};second={'java':'two'}
+        passed=issue(self.snapshot,'design_model',['profile/small'],outcome='pass',
+            artifacts={'result':'a'*64},tool_identity=first)
+        failed=issue(self.snapshot,'design_model',['profile/small'],outcome='fail',
+            artifacts={'result':'b'*64},tool_identity=second)
+        for identities in ([first,second],[second,first]):
+            result=reports(self.snapshot,self.original,formal_results=[passed,failed],
+                analysis_tools={'small':identities})
+            self.assertEqual(result['categories']['formal_analysis']['profiles']['small']['status'],'failed')
+            self.assertIn('formal_analysis/small',result['blocking'])
+
 
 if __name__=='__main__':
     unittest.main()

@@ -7,7 +7,7 @@ declare a separate, usually smaller subset and perform its own admission check.
 from copy import deepcopy
 
 DEFINITION_CAPABILITIES = {
-    "id": "behavior-definition/2",
+    "id": "behavior-definition/3",
     "wire_schema": "bo-behavior/v1",
     "domains": [
         "boolean",
@@ -39,6 +39,11 @@ DEFINITION_CAPABILITIES = {
         "forall",
         "exists",
         "policy_ref",
+        "length",
+        "append",
+        "tail",
+        "set_add",
+        "set_remove",
     ],
     "policy": {
         "canonical_operations": True,
@@ -53,7 +58,7 @@ DEFINITION_CAPABILITIES = {
         "select": "zero_based_sequence_or_map_key_with_required_default",
     },
     "definition_checks": ["schema", "references", "ownership", "types", "frames"],
-    "finite_export": {"status": "not_implemented", "runner_available": False},
+    "finite_export": {"status": "optional_design_subset", "runner_available": True},
     "native_binding": "not_checked",
 }
 

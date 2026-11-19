@@ -72,6 +72,8 @@ def _record_refs(section, record):
             refs.update("variable/" + ref for ref in record.get(field, []))
         for value in record.get("updates", {}).values():
             refs.update(expression_refs(value))
+    if section == "profile":
+        refs.update(expression_refs(record.get("termination", {}).get("condition")))
     return refs
 
 
@@ -182,7 +184,10 @@ def dependency_index(snapshot):
         index["profile/" + profile["id"]]["requires"].extend(
             "action/" + a["id"]
             for a in contract.get("actions", [])
-            if set(a["model_refs"]) & set(profile["model_refs"])
+            if set(a["model_refs"]) & set(profile["model_refs"] + contract["scope"]["object_refs"])
+        )
+        index["profile/" + profile["id"]]["requires"].extend(
+            "variable/" + v["id"] for v in contract["variables"]
         )
     owned = snapshot.get("source_inventory", {}).get("files", {})
     source = {p: snapshot.get("files", {}).get(p) for p in owned}

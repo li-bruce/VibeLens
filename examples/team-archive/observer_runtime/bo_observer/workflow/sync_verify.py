@@ -236,7 +236,7 @@ def verify(root, cfg, change, *, inspect, snapshot):
             "reports": reports,
             "candidate_id": current["id"],
         }
-        finalize_behavior(current, receipt)
+        finalize_behavior(current, receipt, root=root)
         write(change / "verification.json", receipt)
         return receipt
     results = []
@@ -470,6 +470,6 @@ def verify(root, cfg, change, *, inspect, snapshot):
         "checked_at": datetime.now(timezone.utc).isoformat(),
         "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence.",
     }
-    finalize_behavior(current, receipt)
+    finalize_behavior(current, receipt, root=root)
     write(change / "verification.json", receipt)
     return receipt

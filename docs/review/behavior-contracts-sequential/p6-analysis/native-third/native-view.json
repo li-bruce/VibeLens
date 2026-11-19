@@ -1,0 +1,1434 @@
+{
+  "stage": "runtime",
+  "program_url": null,
+  "layout_id": "concept-sharing-example",
+  "model": {
+    "schema_version": 3,
+    "revision": "1",
+    "project_id": "concept-sharing-example",
+    "intent": "intent.json",
+    "source_files": [
+      "worker.py",
+      "application.py"
+    ],
+    "nodes": [
+      {
+        "id": "advance",
+        "kind": "action",
+        "layer": "business",
+        "label": "Process task",
+        "summary": "Actual calls and results",
+        "source": {
+          "path": "worker.py",
+          "symbol": "advance"
+        },
+        "capture": {
+          "in": {
+            "state": "string",
+            "event": "string",
+            "slots": "number"
+          },
+          "out": {
+            "state": "string"
+          }
+        },
+        "requirements": [
+          "R1"
+        ]
+      },
+      {
+        "id": "pending",
+        "kind": "state",
+        "layer": "state",
+        "value": "pending",
+        "label": "pending",
+        "summary": "Declared state"
+      },
+      {
+        "id": "waiting",
+        "kind": "state",
+        "layer": "state",
+        "value": "waiting",
+        "label": "waiting",
+        "summary": "Declared state"
+      },
+      {
+        "id": "running",
+        "kind": "state",
+        "layer": "state",
+        "value": "running",
+        "label": "running",
+        "summary": "Declared state"
+      },
+      {
+        "id": "done",
+        "kind": "state",
+        "layer": "state",
+        "value": "done",
+        "label": "done",
+        "summary": "Declared state"
+      },
+      {
+        "id": "grant",
+        "kind": "function",
+        "source": {
+          "path": "application.py",
+          "symbol": "share"
+        },
+        "capture": {
+          "in": {
+            "owner": "string",
+            "allowed": "boolean"
+          },
+          "out": {
+            "state": "string",
+            "transaction_id": "string"
+          }
+        },
+        "label": "grant",
+        "summary": "Native test boundary"
+      },
+      {
+        "id": "archive",
+        "kind": "function",
+        "source": {
+          "path": "application.py",
+          "symbol": "share"
+        },
+        "capture": {
+          "in": {
+            "owner": "string",
+            "allowed": "boolean"
+          },
+          "out": {
+            "state": "string",
+            "transaction_id": "string"
+          }
+        },
+        "label": "archive",
+        "summary": "Native test boundary"
+      },
+      {
+        "id": "share",
+        "kind": "function",
+        "source": {
+          "path": "application.py",
+          "symbol": "share"
+        },
+        "capture": {
+          "in": {
+            "owner": "string",
+            "allowed": "boolean"
+          },
+          "out": {
+            "state": "string",
+            "transaction_id": "string"
+          }
+        },
+        "label": "share",
+        "summary": "Native test boundary"
+      },
+      {
+        "id": "commit",
+        "kind": "function",
+        "source": {
+          "path": "application.py",
+          "symbol": "commit"
+        },
+        "capture": {
+          "in": {
+            "owner": "string",
+            "allowed": "boolean"
+          },
+          "out": {
+            "state": "string",
+            "transaction_id": "string"
+          }
+        },
+        "label": "commit",
+        "summary": "Native test boundary"
+      }
+    ],
+    "edges": [
+      {
+        "id": "finish",
+        "from": "advance",
+        "to": "done",
+        "type": "flow",
+        "label": "Complete",
+        "evidence": "confirmed definition"
+      }
+    ],
+    "overview": [
+      {
+        "node": "advance"
+      }
+    ],
+    "scope": {
+      "unknowns": []
+    },
+    "machine": {
+      "engine": "bo.fsm",
+      "version": "1",
+      "state_type": "enum",
+      "states": [
+        "pending",
+        "waiting",
+        "running",
+        "done"
+      ],
+      "values": [
+        "pending",
+        "waiting",
+        "running",
+        "done"
+      ],
+      "initial": "pending",
+      "transitions": [
+        {
+          "source": "pending",
+          "dest": "running",
+          "trigger": "start",
+          "conditions": "available"
+        },
+        {
+          "source": "pending",
+          "dest": "waiting",
+          "trigger": "start",
+          "unless": "available"
+        },
+        {
+          "source": "waiting",
+          "dest": "running",
+          "trigger": "resume",
+          "conditions": "available"
+        },
+        {
+          "source": "running",
+          "dest": "done",
+          "trigger": "finish"
+        }
+      ],
+      "events": {
+        "start": {
+          "payload": {}
+        },
+        "resume": {
+          "payload": {}
+        },
+        "finish": {
+          "payload": {}
+        }
+      },
+      "context": {
+        "slots": {
+          "type": "integer",
+          "min": 0
+        }
+      },
+      "guards": {
+        "available": "at least one slot"
+      },
+      "labels": {
+        "pending": "pending",
+        "waiting": "waiting",
+        "running": "running",
+        "done": "done"
+      }
+    },
+    "presentation": {
+      "subject": "concept-sharing-example"
+    }
+  },
+  "behavior_context": {
+    "schema": "bo-behavior-details/v1",
+    "definition_sha256": "b3c414d5289700e92e981990ecf52fe37b2859f09c81874932a6acfc05533b30",
+    "models": [
+      "state-model:grant",
+      "state-model:archive"
+    ],
+    "records": {
+      "variable/grant-status": {
+        "id": "grant-status",
+        "domain": {
+          "id": "status",
+          "type": "enum",
+          "values": [
+            "inactive",
+            "active"
+          ],
+          "source_refs": [
+            "U1"
+          ]
+        },
+        "owner": "state-model:grant",
+        "concept_ref": "state-model:grant",
+        "persistence": "persistent",
+        "source_refs": [
+          "U1"
+        ],
+        "kind": "variable",
+        "binding": null
+      },
+      "variable/archive-status": {
+        "id": "archive-status",
+        "domain": {
+          "id": "status",
+          "type": "enum",
+          "values": [
+            "inactive",
+            "active"
+          ],
+          "source_refs": [
+            "U1"
+          ]
+        },
+        "owner": "state-model:archive",
+        "concept_ref": "state-model:archive",
+        "persistence": "persistent",
+        "source_refs": [
+          "U1"
+        ],
+        "kind": "variable",
+        "binding": null
+      },
+      "action/grant-share": {
+        "id": "grant-share",
+        "model_refs": [
+          "state-model:grant"
+        ],
+        "transition_ref": "transition:grant:grant-share",
+        "parameters": {
+          "allowed": "flag"
+        },
+        "enabled": {
+          "op": "param",
+          "id": "allowed"
+        },
+        "reads": [
+          "grant-status"
+        ],
+        "writes": [
+          "grant-status"
+        ],
+        "updates": {},
+        "unchanged": [
+          "archive-status"
+        ],
+        "completion": {
+          "kind": "commit",
+          "meaning": "The selected grant is committed"
+        },
+        "source_refs": [
+          "U1"
+        ],
+        "kind": "action",
+        "binding": null,
+        "transition": {
+          "kind": "transition",
+          "id": "grant-share",
+          "source": "inactive",
+          "dest": "active",
+          "trigger": "share",
+          "conditions": [],
+          "priority": 0
+        },
+        "properties": []
+      },
+      "action/grant-revoke": {
+        "id": "grant-revoke",
+        "model_refs": [
+          "state-model:grant"
+        ],
+        "transition_ref": "transition:grant:grant-revoke",
+        "parameters": {
+          "allowed": "flag"
+        },
+        "enabled": {
+          "op": "literal",
+          "value": true,
+          "domain": "flag"
+        },
+        "reads": [
+          "grant-status"
+        ],
+        "writes": [
+          "grant-status"
+        ],
+        "updates": {},
+        "unchanged": [
+          "archive-status"
+        ],
+        "completion": {
+          "kind": "commit",
+          "meaning": "The selected grant is committed"
+        },
+        "source_refs": [
+          "U1"
+        ],
+        "kind": "action",
+        "binding": null,
+        "transition": {
+          "kind": "transition",
+          "id": "grant-revoke",
+          "source": "active",
+          "dest": "inactive",
+          "trigger": "revoke",
+          "conditions": [],
+          "priority": 1
+        },
+        "properties": []
+      },
+      "action/archive-share": {
+        "id": "archive-share",
+        "model_refs": [
+          "state-model:archive"
+        ],
+        "transition_ref": "transition:archive:grant-share",
+        "parameters": {
+          "allowed": "flag"
+        },
+        "enabled": {
+          "op": "literal",
+          "value": true,
+          "domain": "flag"
+        },
+        "reads": [
+          "archive-status"
+        ],
+        "writes": [
+          "archive-status"
+        ],
+        "updates": {},
+        "unchanged": [
+          "grant-status"
+        ],
+        "completion": {
+          "kind": "commit",
+          "meaning": "The selected grant is committed"
+        },
+        "source_refs": [
+          "U1"
+        ],
+        "kind": "action",
+        "binding": null,
+        "transition": {
+          "kind": "transition",
+          "id": "grant-share",
+          "source": "inactive",
+          "dest": "active",
+          "trigger": "share",
+          "conditions": [],
+          "priority": 0
+        },
+        "properties": []
+      },
+      "action/archive-revoke": {
+        "id": "archive-revoke",
+        "model_refs": [
+          "state-model:archive"
+        ],
+        "transition_ref": "transition:archive:grant-revoke",
+        "parameters": {
+          "allowed": "flag"
+        },
+        "enabled": {
+          "op": "literal",
+          "value": true,
+          "domain": "flag"
+        },
+        "reads": [
+          "archive-status"
+        ],
+        "writes": [
+          "archive-status"
+        ],
+        "updates": {},
+        "unchanged": [
+          "grant-status"
+        ],
+        "completion": {
+          "kind": "commit",
+          "meaning": "The selected grant is committed"
+        },
+        "source_refs": [
+          "U1"
+        ],
+        "kind": "action",
+        "binding": null,
+        "transition": {
+          "kind": "transition",
+          "id": "grant-revoke",
+          "source": "active",
+          "dest": "inactive",
+          "trigger": "revoke",
+          "conditions": [],
+          "priority": 1
+        },
+        "properties": []
+      },
+      "property/archive-unchanged": {
+        "id": "archive-unchanged",
+        "kind": "state_invariant",
+        "action_refs": [],
+        "expression": {
+          "op": "eq",
+          "args": [
+            {
+              "op": "var",
+              "id": "grant-status",
+              "phase": "before"
+            },
+            {
+              "op": "literal",
+              "domain": "status",
+              "value": "inactive"
+            }
+          ]
+        },
+        "source_refs": [
+          "U1"
+        ]
+      }
+    },
+    "nodes": {
+      "event:archive:revoke": [
+        "action/archive-revoke",
+        "action/archive-share",
+        "variable/archive-status"
+      ],
+      "event:archive:share": [
+        "action/archive-revoke",
+        "action/archive-share",
+        "variable/archive-status"
+      ],
+      "event:grant:revoke": [
+        "action/grant-revoke",
+        "action/grant-share",
+        "property/archive-unchanged",
+        "variable/grant-status"
+      ],
+      "event:grant:share": [
+        "action/grant-revoke",
+        "action/grant-share",
+        "property/archive-unchanged",
+        "variable/grant-status"
+      ],
+      "guard:archive:may_manage": [
+        "action/archive-revoke",
+        "action/archive-share",
+        "variable/archive-status"
+      ],
+      "guard:grant:may_manage": [
+        "action/grant-revoke",
+        "action/grant-share",
+        "property/archive-unchanged",
+        "variable/grant-status"
+      ],
+      "revoke": [
+        "action/grant-revoke"
+      ],
+      "share": [
+        "action/grant-share"
+      ],
+      "state-model:archive": [
+        "action/archive-revoke",
+        "action/archive-share",
+        "variable/archive-status"
+      ],
+      "state-model:grant": [
+        "action/grant-revoke",
+        "action/grant-share",
+        "property/archive-unchanged",
+        "variable/grant-status"
+      ],
+      "state:archive:active": [
+        "action/archive-revoke",
+        "action/archive-share",
+        "variable/archive-status"
+      ],
+      "state:archive:inactive": [
+        "action/archive-revoke",
+        "action/archive-share",
+        "variable/archive-status"
+      ],
+      "state:grant:active": [
+        "action/grant-revoke",
+        "action/grant-share",
+        "property/archive-unchanged",
+        "variable/grant-status"
+      ],
+      "state:grant:inactive": [
+        "action/grant-revoke",
+        "action/grant-share",
+        "property/archive-unchanged",
+        "variable/grant-status"
+      ],
+      "transition:archive:grant-revoke": [
+        "action/archive-revoke",
+        "action/archive-share",
+        "variable/archive-status"
+      ],
+      "transition:archive:grant-share": [
+        "action/archive-revoke",
+        "action/archive-share",
+        "variable/archive-status"
+      ],
+      "transition:grant:grant-revoke": [
+        "action/grant-revoke",
+        "action/grant-share",
+        "property/archive-unchanged",
+        "variable/grant-status"
+      ],
+      "transition:grant:grant-share": [
+        "action/grant-revoke",
+        "action/grant-share",
+        "property/archive-unchanged",
+        "variable/grant-status"
+      ]
+    },
+    "unresolved": [],
+    "exclusions": [],
+    "assumptions": [],
+    "origin": "definition",
+    "execution_authority": false,
+    "last_verification": null
+  },
+  "project_structure": {
+    "schema": "bo-code-graph/v1",
+    "revision": "e2afc0bab344f6a4ee104cb0d2da7a840d356c3f636b8efc82dc2900b91de7d0",
+    "nodes": [
+      {
+        "id": "code:directory:7299b59de0b5dad3b622afc3",
+        "label": "Project",
+        "kind": "data",
+        "code_role": "directory",
+        "origin": "code-index",
+        "layer": "project",
+        "project_path": ".",
+        "project_kind": "directory",
+        "summary": "",
+        "project_metrics": {
+          "files": 5
+        }
+      },
+      {
+        "id": "code:file:26f4a92550de89930119caaf",
+        "label": "application.py",
+        "kind": "data",
+        "layer": "project",
+        "code_role": "file",
+        "origin": "code-index",
+        "summary": "application.py",
+        "source": {
+          "path": "application.py",
+          "line": 1,
+          "symbol": "<file>"
+        },
+        "project_path": "application.py",
+        "project_kind": "file",
+        "file_bytes": 1399,
+        "parent": "code:directory:7299b59de0b5dad3b622afc3",
+        "project_metrics": {
+          "imports": 0,
+          "imported_by": 0
+        }
+      },
+      {
+        "id": "code:directory:b826df814ec6b3ac3a73a15c",
+        "label": "bo_stategraph",
+        "kind": "data",
+        "code_role": "directory",
+        "origin": "code-index",
+        "layer": "project",
+        "project_path": "bo_stategraph",
+        "project_kind": "directory",
+        "summary": "bo_stategraph",
+        "parent": "code:directory:7299b59de0b5dad3b622afc3",
+        "project_metrics": {
+          "files": 1
+        }
+      },
+      {
+        "id": "code:file:4c92b338f1c1178335802dd6",
+        "label": "behavior.json",
+        "kind": "data",
+        "layer": "project",
+        "code_role": "file",
+        "origin": "code-index",
+        "summary": "bo_stategraph/behavior.json",
+        "project_path": "bo_stategraph/behavior.json",
+        "project_kind": "file",
+        "file_bytes": 3053,
+        "parent": "code:directory:b826df814ec6b3ac3a73a15c",
+        "project_metrics": {
+          "imports": 0,
+          "imported_by": 0
+        }
+      },
+      {
+        "id": "code:file:416abf3901272b045ed72b29",
+        "label": "discovery.json",
+        "kind": "data",
+        "layer": "project",
+        "code_role": "file",
+        "origin": "code-index",
+        "summary": "discovery.json",
+        "project_path": "discovery.json",
+        "project_kind": "file",
+        "file_bytes": 7668,
+        "parent": "code:directory:7299b59de0b5dad3b622afc3",
+        "project_metrics": {
+          "imports": 0,
+          "imported_by": 0
+        }
+      },
+      {
+        "id": "code:file:dfe826d65bd8ebf4f8783d86",
+        "label": "intent.json",
+        "kind": "data",
+        "layer": "project",
+        "code_role": "file",
+        "origin": "code-index",
+        "summary": "intent.json",
+        "project_path": "intent.json",
+        "project_kind": "file",
+        "file_bytes": 160,
+        "parent": "code:directory:7299b59de0b5dad3b622afc3",
+        "project_metrics": {
+          "imports": 0,
+          "imported_by": 0
+        }
+      },
+      {
+        "id": "code:file:cb0f415d6be2595cbc9a1eda",
+        "label": "worker.py",
+        "kind": "data",
+        "layer": "project",
+        "code_role": "file",
+        "origin": "code-index",
+        "summary": "worker.py",
+        "source": {
+          "path": "worker.py",
+          "line": 1,
+          "symbol": "<file>"
+        },
+        "project_path": "worker.py",
+        "project_kind": "file",
+        "file_bytes": 100,
+        "parent": "code:directory:7299b59de0b5dad3b622afc3",
+        "project_metrics": {
+          "imports": 0,
+          "imported_by": 0
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "code:edge:3714df19c2a236b6529f35ec",
+        "from": "code:directory:7299b59de0b5dad3b622afc3",
+        "to": "code:file:26f4a92550de89930119caaf",
+        "type": "data",
+        "code_relation": "contains",
+        "label": "Contains",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:edge:b4265d7953a8a0a4d94bceb3",
+        "from": "code:directory:7299b59de0b5dad3b622afc3",
+        "to": "code:directory:b826df814ec6b3ac3a73a15c",
+        "type": "data",
+        "code_relation": "contains",
+        "label": "Contains",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:edge:d9887a5d4947b65c40428bc3",
+        "from": "code:directory:b826df814ec6b3ac3a73a15c",
+        "to": "code:file:4c92b338f1c1178335802dd6",
+        "type": "data",
+        "code_relation": "contains",
+        "label": "Contains",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:edge:9dec1e02803db959468a253e",
+        "from": "code:directory:7299b59de0b5dad3b622afc3",
+        "to": "code:file:416abf3901272b045ed72b29",
+        "type": "data",
+        "code_relation": "contains",
+        "label": "Contains",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:edge:0f2c993721c2dd2a1b6c8f4c",
+        "from": "code:directory:7299b59de0b5dad3b622afc3",
+        "to": "code:file:dfe826d65bd8ebf4f8783d86",
+        "type": "data",
+        "code_relation": "contains",
+        "label": "Contains",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:edge:509ba9d0ebe2062896fd1af2",
+        "from": "code:directory:7299b59de0b5dad3b622afc3",
+        "to": "code:file:cb0f415d6be2595cbc9a1eda",
+        "type": "data",
+        "code_relation": "contains",
+        "label": "Contains",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:binding:3ef6675292db880bc79e1ffd",
+        "from": "advance",
+        "to": "code:file:cb0f415d6be2595cbc9a1eda",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:binding:bfc73934e697e73204771c68",
+        "from": "grant",
+        "to": "code:file:26f4a92550de89930119caaf",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:binding:cfbb099cc8ca9539926ad77a",
+        "from": "archive",
+        "to": "code:file:26f4a92550de89930119caaf",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:binding:c70d167ec3f9dcf81a60ae95",
+        "from": "share",
+        "to": "code:file:26f4a92550de89930119caaf",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index"
+      },
+      {
+        "id": "code:binding:799a7a951ff96d0d041a824f",
+        "from": "commit",
+        "to": "code:file:26f4a92550de89930119caaf",
+        "type": "data",
+        "code_relation": "maps",
+        "mapping_role": "source-binding",
+        "label": "Source binding",
+        "origin": "code-index"
+      }
+    ],
+    "bindings": {
+      "code:file:26f4a92550de89930119caaf": {
+        "path": "application.py",
+        "line": 1,
+        "symbol": "<file>",
+        "code_revision": true
+      },
+      "code:file:cb0f415d6be2595cbc9a1eda": {
+        "path": "worker.py",
+        "line": 1,
+        "symbol": "<file>",
+        "code_revision": true
+      }
+    },
+    "endpoint_aliases": {},
+    "observation_issues": [],
+    "endpoint_migrations": [],
+    "focus": null,
+    "projection": "project",
+    "project": {
+      "entries": {
+        ".": {
+          "kind": "directory"
+        },
+        "application.py": {
+          "kind": "file",
+          "bytes": 1399,
+          "hash": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125"
+        },
+        "bo_stategraph": {
+          "kind": "directory"
+        },
+        "bo_stategraph/behavior.json": {
+          "kind": "file",
+          "bytes": 3053,
+          "hash": "5a724d6baeef470226e5b428a7f092d7c5c82af78862bafd4d15dee8f8a3ddb4"
+        },
+        "discovery.json": {
+          "kind": "file",
+          "bytes": 7668,
+          "hash": "a777d6d871ae7d53364f264183ae259cda964227a79b1e24014069903961d7e1"
+        },
+        "intent.json": {
+          "kind": "file",
+          "bytes": 160,
+          "hash": "b8f9d238d67ebcf6a56e536f2d5198749b9242f51a614ccb5374fb3fea5df1bd"
+        },
+        "worker.py": {
+          "kind": "file",
+          "bytes": 100,
+          "hash": "593e5196178b380f882a2cc35c6dad2841b792639eedf1003336ac1a460ecb31"
+        }
+      },
+      "total_entries": 7,
+      "omitted_entries": 0,
+      "file_dependencies": 0,
+      "file_cycles": [],
+      "omitted_file_cycles": 0
+    },
+    "depth": 1,
+    "total_nodes": 7,
+    "loaded_nodes": 7,
+    "boundary_nodes": 0,
+    "omitted_nodes": 0,
+    "total_edges": 6,
+    "loaded_edges": 11,
+    "omitted_edges": 0,
+    "errors": [],
+    "limits": [
+      "Static call candidates are not runtime calls or proven value flow.",
+      "Dynamic dispatch, callbacks, generated source and framework bindings require coding-side review and runtime evidence."
+    ],
+    "incremental": {
+      "parsed": [],
+      "reused": []
+    },
+    "status": "current",
+    "scope": {
+      "files": [
+        "application.py",
+        "worker.py"
+      ],
+      "excluded": {},
+      "project_excluded": {
+        "bo_stategraph/project.json": "Observer support (display only)"
+      },
+      "display_excluded": {
+        "bo_stategraph/project.json": "Observer support (display only)",
+        "bo_stategraph/manifest.json": "Observer support (display only)",
+        "bo_stategraph/telemetry.json": "Observer support (display only)",
+        "bo_stategraph/database-catalog.json": "Observer support (display only)",
+        "bo_stategraph/databases.json": "Observer support (display only)",
+        "bo_stategraph/runtime-version.json": "Observer support (display only)"
+      },
+      "pruned": [
+        {
+          "path": ".stategraph",
+          "category": "artifact",
+          "reason": "Generated output or repository metadata"
+        },
+        {
+          "path": "bo_stategraph/config",
+          "category": "artifact",
+          "reason": "Observer preferences and display configuration"
+        },
+        {
+          "path": "bo_stategraph/data",
+          "category": "artifact",
+          "reason": "Observer recordings and generated runtime data"
+        }
+      ],
+      "owned_overrides": [],
+      "scope_inputs": {
+        ".gitignore": null
+      },
+      "source_roots": [
+        "."
+      ],
+      "scope_id": "0babab37838e7e16ac943c7fa49ba24b01d479572e7450f2c0e6790b9fe9b762"
+    }
+  },
+  "api_structure": {
+    "schema": "bo-code-graph/v1",
+    "revision": "69774212f54df46cd46d438dcd8145ef0f4033af4b7f7320cfb4cec6ad12b35e",
+    "nodes": [],
+    "edges": [],
+    "bindings": {},
+    "endpoint_aliases": {},
+    "endpoint_migrations": [],
+    "observation_issues": [],
+    "errors": [],
+    "scope": {
+      "files": [
+        "application.py",
+        "worker.py"
+      ],
+      "excluded": {},
+      "project_excluded": {
+        "bo_stategraph/project.json": "Observer support (display only)"
+      },
+      "display_excluded": {
+        "bo_stategraph/project.json": "Observer support (display only)",
+        "bo_stategraph/manifest.json": "Observer support (display only)",
+        "bo_stategraph/telemetry.json": "Observer support (display only)",
+        "bo_stategraph/database-catalog.json": "Observer support (display only)",
+        "bo_stategraph/databases.json": "Observer support (display only)",
+        "bo_stategraph/runtime-version.json": "Observer support (display only)"
+      },
+      "pruned": [
+        {
+          "path": ".stategraph",
+          "category": "artifact",
+          "reason": "Generated output or repository metadata"
+        },
+        {
+          "path": "bo_stategraph/config",
+          "category": "artifact",
+          "reason": "Observer preferences and display configuration"
+        },
+        {
+          "path": "bo_stategraph/data",
+          "category": "artifact",
+          "reason": "Observer recordings and generated runtime data"
+        }
+      ],
+      "owned_overrides": [],
+      "scope_inputs": {
+        ".gitignore": null
+      },
+      "source_roots": [
+        "."
+      ],
+      "scope_id": "0babab37838e7e16ac943c7fa49ba24b01d479572e7450f2c0e6790b9fe9b762"
+    }
+  },
+  "concept_structure": null,
+  "manifest": {
+    "schema_version": 3,
+    "build_id": "354890e0507ce566779a7f529a14512a613679af3739261b64070dfe3b7f8287",
+    "files": {
+      "application.py": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125",
+      "worker.py": "593e5196178b380f882a2cc35c6dad2841b792639eedf1003336ac1a460ecb31"
+    },
+    "model_hash": "0d70f55c56e18d08b11f18ff2adcf6584636bb6da673f63876e5fdef627a80a4",
+    "intent_hash": "0e560b565cd199cfffcd7519252f4ded8248573a5206f57c936ca81c5c7108ab",
+    "model_revision": "1",
+    "bindings": {
+      "advance": {
+        "path": "worker.py",
+        "symbol": "advance",
+        "line": 1,
+        "end_line": 2,
+        "signature": "state: str, event: str, slots: int",
+        "documentation": {
+          "status": "missing",
+          "format": "python-docstring",
+          "summary": "",
+          "description": "",
+          "parameters": {},
+          "source": {
+            "path": "worker.py",
+            "symbol": "advance",
+            "line": 1,
+            "end_line": 1,
+            "file_sha256": "593e5196178b380f882a2cc35c6dad2841b792639eedf1003336ac1a460ecb31"
+          }
+        },
+        "api_routes": [],
+        "ast_sha256": "a1e464f676775dbc063f2a10eb055703a4296bf8e13e86c6e91ed8a3c4f45610",
+        "snippet": "def advance(state: str, event: str, slots: int):\n    return \"running\" if slots > 0 else \"waiting\"",
+        "calls": [],
+        "guards": [
+          {
+            "line": 2,
+            "expression": "slots > 0"
+          }
+        ],
+        "file_sha256": "593e5196178b380f882a2cc35c6dad2841b792639eedf1003336ac1a460ecb31"
+      },
+      "grant": {
+        "path": "application.py",
+        "symbol": "share",
+        "line": 4,
+        "end_line": 13,
+        "signature": "connection, allowed",
+        "documentation": {
+          "status": "documented",
+          "format": "python-docstring",
+          "summary": "Stage one grant change in the application's transaction.",
+          "description": "Stage one grant change in the application's transaction.\n\nArgs:\n    connection: Native SQLite connection owned by the caller.\n    allowed: Current permission decision for this invocation.",
+          "parameters": {
+            "connection": {
+              "description": "Native SQLite connection owned by the caller.",
+              "line": 8
+            },
+            "allowed": {
+              "description": "Current permission decision for this invocation.",
+              "line": 9
+            }
+          },
+          "source": {
+            "path": "application.py",
+            "symbol": "share",
+            "line": 5,
+            "end_line": 10,
+            "file_sha256": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125"
+          }
+        },
+        "api_routes": [],
+        "ast_sha256": "9cddb9e8504eb4464fb8820c9630e73f2e70f3cb4d9b14a1ecd58ca511344043",
+        "snippet": "def share(connection, allowed):\n    \"\"\"Stage one grant change in the application's transaction.\n\n    Args:\n        connection: Native SQLite connection owned by the caller.\n        allowed: Current permission decision for this invocation.\n    \"\"\"\n    if not allowed:\n        raise PermissionError(\"Sharing is not permitted\")\n    connection.execute(\"UPDATE states SET value = 'active' WHERE model = 'grant'\")",
+        "calls": [
+          "PermissionError",
+          "connection.execute"
+        ],
+        "guards": [
+          {
+            "line": 11,
+            "expression": "not allowed"
+          }
+        ],
+        "file_sha256": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125"
+      },
+      "archive": {
+        "path": "application.py",
+        "symbol": "share",
+        "line": 4,
+        "end_line": 13,
+        "signature": "connection, allowed",
+        "documentation": {
+          "status": "documented",
+          "format": "python-docstring",
+          "summary": "Stage one grant change in the application's transaction.",
+          "description": "Stage one grant change in the application's transaction.\n\nArgs:\n    connection: Native SQLite connection owned by the caller.\n    allowed: Current permission decision for this invocation.",
+          "parameters": {
+            "connection": {
+              "description": "Native SQLite connection owned by the caller.",
+              "line": 8
+            },
+            "allowed": {
+              "description": "Current permission decision for this invocation.",
+              "line": 9
+            }
+          },
+          "source": {
+            "path": "application.py",
+            "symbol": "share",
+            "line": 5,
+            "end_line": 10,
+            "file_sha256": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125"
+          }
+        },
+        "api_routes": [],
+        "ast_sha256": "9cddb9e8504eb4464fb8820c9630e73f2e70f3cb4d9b14a1ecd58ca511344043",
+        "snippet": "def share(connection, allowed):\n    \"\"\"Stage one grant change in the application's transaction.\n\n    Args:\n        connection: Native SQLite connection owned by the caller.\n        allowed: Current permission decision for this invocation.\n    \"\"\"\n    if not allowed:\n        raise PermissionError(\"Sharing is not permitted\")\n    connection.execute(\"UPDATE states SET value = 'active' WHERE model = 'grant'\")",
+        "calls": [
+          "PermissionError",
+          "connection.execute"
+        ],
+        "guards": [
+          {
+            "line": 11,
+            "expression": "not allowed"
+          }
+        ],
+        "file_sha256": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125"
+      },
+      "share": {
+        "path": "application.py",
+        "symbol": "share",
+        "line": 4,
+        "end_line": 13,
+        "signature": "connection, allowed",
+        "documentation": {
+          "status": "documented",
+          "format": "python-docstring",
+          "summary": "Stage one grant change in the application's transaction.",
+          "description": "Stage one grant change in the application's transaction.\n\nArgs:\n    connection: Native SQLite connection owned by the caller.\n    allowed: Current permission decision for this invocation.",
+          "parameters": {
+            "connection": {
+              "description": "Native SQLite connection owned by the caller.",
+              "line": 8
+            },
+            "allowed": {
+              "description": "Current permission decision for this invocation.",
+              "line": 9
+            }
+          },
+          "source": {
+            "path": "application.py",
+            "symbol": "share",
+            "line": 5,
+            "end_line": 10,
+            "file_sha256": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125"
+          }
+        },
+        "api_routes": [],
+        "ast_sha256": "9cddb9e8504eb4464fb8820c9630e73f2e70f3cb4d9b14a1ecd58ca511344043",
+        "snippet": "def share(connection, allowed):\n    \"\"\"Stage one grant change in the application's transaction.\n\n    Args:\n        connection: Native SQLite connection owned by the caller.\n        allowed: Current permission decision for this invocation.\n    \"\"\"\n    if not allowed:\n        raise PermissionError(\"Sharing is not permitted\")\n    connection.execute(\"UPDATE states SET value = 'active' WHERE model = 'grant'\")",
+        "calls": [
+          "PermissionError",
+          "connection.execute"
+        ],
+        "guards": [
+          {
+            "line": 11,
+            "expression": "not allowed"
+          }
+        ],
+        "file_sha256": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125"
+      },
+      "commit": {
+        "path": "application.py",
+        "symbol": "commit",
+        "line": 16,
+        "end_line": 18,
+        "signature": "connection",
+        "documentation": {
+          "status": "documented",
+          "format": "python-docstring",
+          "summary": "Commit the actual native transaction; propagate any database exception.",
+          "description": "Commit the actual native transaction; propagate any database exception.",
+          "parameters": {},
+          "source": {
+            "path": "application.py",
+            "symbol": "commit",
+            "line": 17,
+            "end_line": 17,
+            "file_sha256": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125"
+          }
+        },
+        "api_routes": [],
+        "ast_sha256": "5402a45cf7e0412ddbd2314e9e81cdeb25a7d2d31e222d71306f614badd24f3f",
+        "snippet": "def commit(connection):\n    \"\"\"Commit the actual native transaction; propagate any database exception.\"\"\"\n    connection.commit()",
+        "calls": [
+          "connection.commit"
+        ],
+        "guards": [],
+        "file_sha256": "719b2d9a2118e0f97176a36c61c0064bec17b6aa9071057027dae09baa454125"
+      }
+    },
+    "python": "3.13.13",
+    "unknowns": [
+      "AST evidence does not prove value flow, guard dominance or behavioral equivalence",
+      "External dependencies, interpreter, dynamic patching and omitted files are not attested"
+    ]
+  },
+  "binding_status": {
+    "status": "current",
+    "changed_files": [],
+    "model_changed": false,
+    "intent_changed": false,
+    "directly_affected": [],
+    "possibly_affected": []
+  },
+  "events": [
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "concept-sharing-example",
+      "model_revision": "1",
+      "build_id": "354890e0507ce566779a7f529a14512a613679af3739261b64070dfe3b7f8287",
+      "run_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9",
+      "producer_id": "680c85fafa054ebe84ce17c436883dfe",
+      "schema_version": 3,
+      "seq": 1,
+      "id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:1",
+      "node": "share",
+      "phase": "enter",
+      "entity": "1",
+      "attempt": "reproduction",
+      "scope": "application",
+      "basis": {},
+      "call_id": "a045d73a4a6f4d3f925538f5023f4224",
+      "parent_call_id": null,
+      "parent_event_id": null,
+      "inputs": {
+        "owner": "state-model:grant",
+        "allowed": true
+      },
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-11-19T13:02:29.004856+00:00",
+      "lifecycle": "span",
+      "source_seq": 1,
+      "stream_id": "6ebaf868913b6c1ac1cc9f2f"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "concept-sharing-example",
+      "model_revision": "1",
+      "build_id": "354890e0507ce566779a7f529a14512a613679af3739261b64070dfe3b7f8287",
+      "run_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9",
+      "producer_id": "680c85fafa054ebe84ce17c436883dfe",
+      "schema_version": 3,
+      "seq": 2,
+      "id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:2",
+      "node": "commit",
+      "phase": "commit",
+      "entity": "1",
+      "attempt": "reproduction",
+      "scope": "application",
+      "basis": {},
+      "call_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:2",
+      "parent_call_id": "a045d73a4a6f4d3f925538f5023f4224",
+      "parent_event_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:1",
+      "inputs": {},
+      "outputs": {
+        "transaction_id": "sqlite-commit-1"
+      },
+      "depends": [],
+      "observed_at": "2026-11-19T13:02:29.005129+00:00",
+      "source_seq": 2,
+      "stream_id": "6ebaf868913b6c1ac1cc9f2f"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "concept-sharing-example",
+      "model_revision": "1",
+      "build_id": "354890e0507ce566779a7f529a14512a613679af3739261b64070dfe3b7f8287",
+      "run_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9",
+      "producer_id": "680c85fafa054ebe84ce17c436883dfe",
+      "schema_version": 3,
+      "seq": 3,
+      "id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:3",
+      "node": "grant",
+      "phase": "read",
+      "entity": "1",
+      "attempt": "reproduction",
+      "scope": "application",
+      "basis": {},
+      "call_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:3",
+      "parent_call_id": "a045d73a4a6f4d3f925538f5023f4224",
+      "parent_event_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:1",
+      "inputs": {},
+      "outputs": {
+        "state": "active"
+      },
+      "depends": [],
+      "observed_at": "2026-11-19T13:02:29.005248+00:00",
+      "source_seq": 3,
+      "stream_id": "6ebaf868913b6c1ac1cc9f2f"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "concept-sharing-example",
+      "model_revision": "1",
+      "build_id": "354890e0507ce566779a7f529a14512a613679af3739261b64070dfe3b7f8287",
+      "run_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9",
+      "producer_id": "680c85fafa054ebe84ce17c436883dfe",
+      "schema_version": 3,
+      "seq": 4,
+      "id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:4",
+      "node": "archive",
+      "phase": "read",
+      "entity": "1",
+      "attempt": "reproduction",
+      "scope": "application",
+      "basis": {},
+      "call_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:4",
+      "parent_call_id": "a045d73a4a6f4d3f925538f5023f4224",
+      "parent_event_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:1",
+      "inputs": {},
+      "outputs": {
+        "state": "inactive"
+      },
+      "depends": [],
+      "observed_at": "2026-11-19T13:02:29.005286+00:00",
+      "source_seq": 4,
+      "stream_id": "6ebaf868913b6c1ac1cc9f2f"
+    },
+    {
+      "protocol": "bo-event/v1",
+      "project_id": "concept-sharing-example",
+      "model_revision": "1",
+      "build_id": "354890e0507ce566779a7f529a14512a613679af3739261b64070dfe3b7f8287",
+      "run_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9",
+      "producer_id": "680c85fafa054ebe84ce17c436883dfe",
+      "schema_version": 3,
+      "seq": 5,
+      "id": "0d72033f7bdf47bf9af5a54f1b9c6ee9:680c85fafa054ebe84ce17c436883dfe:5",
+      "node": "share",
+      "phase": "return",
+      "entity": "1",
+      "attempt": "reproduction",
+      "scope": "application",
+      "basis": {},
+      "call_id": "a045d73a4a6f4d3f925538f5023f4224",
+      "parent_call_id": null,
+      "parent_event_id": null,
+      "inputs": {},
+      "outputs": {},
+      "depends": [],
+      "observed_at": "2026-11-19T13:02:29.005314+00:00",
+      "lifecycle": "span",
+      "source_seq": 5,
+      "stream_id": "6ebaf868913b6c1ac1cc9f2f"
+    }
+  ],
+  "open_invocations": [],
+  "database_status": null,
+  "machine": {
+    "current": null,
+    "current_instance": null,
+    "state_revision": null,
+    "configurations": [],
+    "journal": []
+  },
+  "runtime_frames": {
+    "schema": "stategraph-runtime-frames/v1",
+    "partial": true,
+    "frames": []
+  },
+  "authority": {
+    "entity": null,
+    "state": null,
+    "basis": {},
+    "parameters": {
+      "attempt": null
+    }
+  },
+  "health": {
+    "errors": 0,
+    "dropped": 0,
+    "run_id": "6ebaf868913b6c1ac1cc9f2f",
+    "attempted": 5,
+    "written": 5,
+    "enabled": true,
+    "producer": {
+      "enabled": true,
+      "boundary_context": true,
+      "run_id": "0d72033f7bdf47bf9af5a54f1b9c6ee9",
+      "producer_id": "680c85fafa054ebe84ce17c436883dfe",
+      "enqueued": 5,
+      "pending": 0,
+      "queue_submitted": 5,
+      "queue_completed": 5,
+      "flush_target": 5,
+      "errors": 0,
+      "dropped": 0,
+      "filtered": 0,
+      "last_error": null
+    },
+    "runtime_frame_evictions": 0,
+    "context_evictions": 0,
+    "retained_events": 5,
+    "evicted_events": 0,
+    "history_start_seq": 1,
+    "log_errors": 0,
+    "listener_errors": 0,
+    "retention": {
+      "memory_events": 10000,
+      "memory_seconds": 1800,
+      "log_bytes": 8388608,
+      "log_backups": 2
+    }
+  },
+  "busy": false,
+  "historical": false,
+  "available_cases": [
+    "live"
+  ],
+  "instances": []
+}

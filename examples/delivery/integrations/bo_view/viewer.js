@@ -1,5 +1,6 @@
 import { createTransferClock, respondingNodes, transferDuration } from "./playback-appearance.js";
 import { SelectionMarquee, rectangleSelection, selectionRoots } from "./graph-selection.js";
+import { createAnalysisPanel } from "./analysis-panel.js";
 import { relationFamilies, relationFamily, differentTypeDash } from "./relation-appearance.js";
 import {
   draftViewId,
@@ -231,6 +232,23 @@ const detailPanel = createDetailPanel({
     screen: app.screen,
   }),
   point,
+});
+const analysisPanel = createAnalysisPanel({
+  read: () => ({
+    definition: view?.behavior_context?.definition_sha256,
+    all: graph?.all || new Map(),
+    edges: graph?.edges || [],
+    layers: cleanLayers(analysisSettings.layers).visible,
+    selection: selectedNodes,
+  }),
+  highlight: (ids) => {
+    selectedNodes = new Set(ids);
+    schedule();
+  },
+  pause: () => {
+    stopPlayback();
+    $("recording-timeline").hidden = true;
+  },
 });
 let legacyStorage;
 try {
@@ -1182,6 +1200,7 @@ $("close-edge").onclick = () => {
   $("viewport").focus({ preventScroll: true });
 };
 function updateDetail() {
+  analysisPanel.refresh();
   detailPanel.update();
 }
 function positionDetail() {
@@ -2854,6 +2873,7 @@ function stopAnimation() {
   if (!disposed && !contextLost) app.renderer.render(app.stage);
 }
 function animateEvent(event) {
+  if (analysisPanel.active) return;
   if (!graph || disposed || document.hidden || contextLost) return;
   stopAnimation();
   // The event projection is synchronous; draw it before reading the accepted

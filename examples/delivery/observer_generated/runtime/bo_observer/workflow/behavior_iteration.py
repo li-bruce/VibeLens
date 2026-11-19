@@ -17,10 +17,15 @@ def previous_evidence(receipt, current):
     }
 
 
-def finalize(current, receipt, *, formal_results=(), analysis_tools=None):
+def finalize(current, receipt, *, formal_results=(), analysis_tools=None, root=None):
     """Add mandatory gaps without converting any original failure into success."""
     if current.get("behavior") is None:
         return receipt
+    if root is not None:
+        from ..analysis.artifacts import collect
+
+        formal_results, analysis_tools, diagnostics = collect(root, current)
+        receipt["analysis_artifacts"] = diagnostics
     coverage = reports(
         current, receipt["reports"], formal_results=formal_results, analysis_tools=analysis_tools
     )
