@@ -83,7 +83,7 @@ def config(root, name):
 
 
 def snapshot(root, cfg, previous=None):
-    model = read_model(contained(root, cfg["model"]))
+    model = read_model(contained(root, cfg["model"]), project_root=root)
     intent = read(contained(root, model["intent"]))
     acceptance = read(contained(root, cfg["acceptance"]))
     paths = sorted(

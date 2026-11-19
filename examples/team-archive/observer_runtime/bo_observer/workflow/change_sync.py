@@ -75,7 +75,7 @@ def structural_errors(root, cfg, snap):
             reconciliation_errors(snap.get("reconciliation"), snap["structure"], snap["model"])
         )
     document = read(contained(root, cfg["model"]))
-    if document.get("protocol") == "bo-project/v1":
+    if document.get("protocol") in {"bo-project/v1", "bo-project/v2"}:
         selection = document["selection"]
         stategraph = cfg.get("stategraph", {})
         if selection["mode"] != stategraph.get("development_mode") or selection[
@@ -419,9 +419,14 @@ def inspect(root, cfg, change):
         changes["errors"].append(
             "configured discovery was removed; preserve its questions and decisions"
         )
-    if (base.get("discovery") or {}).get("schema") == "business-discovery/v2" and (
-        current.get("discovery") or {}
-    ).get("schema") != "business-discovery/v2":
+    discovery_versions = {
+        "business-discovery/v1": 1,
+        "business-discovery/v2": 2,
+        "business-discovery/v3": 3,
+    }
+    before_version = discovery_versions.get((base.get("discovery") or {}).get("schema"), 0)
+    after_version = discovery_versions.get((current.get("discovery") or {}).get("schema"), 0)
+    if before_version >= 2 and after_version < before_version:
         changes["errors"].append(
             "confirmed concept contract was downgraded; preserve its semantic checks and history"
         )

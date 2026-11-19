@@ -230,7 +230,7 @@ def project_inventory(root, model=None):
         from .bo_design import BODesign
 
         return inventory(BODesign(root).view())
-    model = model if model is not None else read_model(path)
+    model = model if model is not None else read_model(path, project_root=root)
     source = CodeGraph(root, persist=False)
     # The API inventory already scans the owned source. Reuse that complete
     # snapshot rather than a viewport slice with a 5000-node display cap.

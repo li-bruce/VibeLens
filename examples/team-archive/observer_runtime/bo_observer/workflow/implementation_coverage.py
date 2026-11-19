@@ -290,7 +290,7 @@ def main():
             "errors": index["errors"],
         }
     else:
-        model = read_model(contained(root, cfg["model"]))
+        model = read_model(contained(root, cfg["model"]), project_root=root)
         plan = model.get("implementation")
         errors = (
             inventory_errors(cfg, inventory) + index["errors"] + static_errors(plan, model, index)

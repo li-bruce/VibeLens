@@ -15,13 +15,14 @@ from .obligations import add_crosslinks, add_applicability, add_expectations
 from .presentation import apply_routes
 
 VERSION = "business-discovery/v2"
+SUPPORTED_VERSIONS = {VERSION, "business-discovery/v3"}
 
 
 def build(doc):
     """Validate the portable design and assemble display/semantic representations."""
-    if not isinstance(doc, dict) or doc.get("schema") != VERSION:
-        raise ValueError("expected " + VERSION)
-    schema_check(doc, "discovery")
+    if not isinstance(doc, dict) or doc.get("schema") not in SUPPORTED_VERSIONS:
+        raise ValueError("expected a supported business-discovery version")
+    schema_check(doc, "discovery-v3" if doc["schema"] == "business-discovery/v3" else "discovery")
     sources = records(doc["sources"], "sources", empty=False)
     for ident, source in sources.items():
         if (
@@ -47,4 +48,8 @@ def build(doc):
 
     result["graph"]["networks"] = model_networks(result["graph"], result["dependencies"])
     apply_routes(result, doc.get("presentation"), sources)
+    if doc["schema"] == "business-discovery/v3":
+        from .construction import validate
+
+        result["construction"] = validate(doc, result)
     return result

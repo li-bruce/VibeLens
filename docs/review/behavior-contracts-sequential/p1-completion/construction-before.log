@@ -1,0 +1,91 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+test_declared_missing_relation_cannot_be_closed_by_empty_question_list (test_construction_contract.ConstructionTests.test_declared_missing_relation_cannot_be_closed_by_empty_question_list) ... ok
+test_empty_source_backed_draft_can_retain_missing_models (test_construction_contract.ConstructionTests.test_empty_source_backed_draft_can_retain_missing_models) ... ok
+test_full_presentation_allows_scoped_confirmation (test_construction_contract.ConstructionTests.test_full_presentation_allows_scoped_confirmation) ... ok
+test_historical_presentations_cannot_be_rewritten (test_construction_contract.ConstructionTests.test_historical_presentations_cannot_be_rewritten) ... ok
+test_invalid_native_candidate_never_promotes (test_construction_contract.ConstructionTests.test_invalid_native_candidate_never_promotes) ... ok
+test_missing_presentation_is_not_implicit_assent (test_construction_contract.ConstructionTests.test_missing_presentation_is_not_implicit_assent) ... FAIL
+test_omitted_boundary_cannot_be_confirmed (test_construction_contract.ConstructionTests.test_omitted_boundary_cannot_be_confirmed) ... FAIL
+test_promote_is_atomic_and_keeps_identity (test_construction_contract.ConstructionTests.test_promote_is_atomic_and_keeps_identity) ... ERROR
+test_relation_obligation_uses_typed_link_not_containment (test_construction_contract.ConstructionTests.test_relation_obligation_uses_typed_link_not_containment) ... ok
+test_stale_presentation_cannot_confirm_new_meaning (test_construction_contract.ConstructionTests.test_stale_presentation_cannot_confirm_new_meaning) ... FAIL
+test_stale_promotion_is_rejected (test_construction_contract.ConstructionTests.test_stale_promotion_is_rejected) ... FAIL
+test_targets_remain_outside_graph_and_block_even_without_questions (test_construction_contract.ConstructionTests.test_targets_remain_outside_graph_and_block_even_without_questions) ... ok
+test_targets_require_known_sources (test_construction_contract.ConstructionTests.test_targets_require_known_sources) ... ok
+test_v2_confirmations_stay_readable_without_new_guarantees (test_construction_contract.ConstructionTests.test_v2_confirmations_stay_readable_without_new_guarantees) ... ok
+
+======================================================================
+ERROR: test_promote_is_atomic_and_keeps_identity (test_construction_contract.ConstructionTests.test_promote_is_atomic_and_keeps_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_construction_contract.py", line 79, in test_promote_is_atomic_and_keeps_identity
+    result = promote(value, "target:sharing", value, "business:sharing", digest(value))
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\concepts\construction.py", line 146, in promote
+    build(result)
+    ~~~~~^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\concepts\model.py", line 54, in build
+    result["construction"] = validate(doc, result)
+                             ~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\concepts\construction.py", line 39, in validate
+    require(promoted in registry, "unknown_promoted_concept", path + "/promoted_to", promoted)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\definition_errors.py", line 28, in require
+    raise ContractError(code, path, message)
+bo_observer.definition_errors.ContractError: business:sharing
+
+======================================================================
+FAIL: test_missing_presentation_is_not_implicit_assent (test_construction_contract.ConstructionTests.test_missing_presentation_is_not_implicit_assent)
+----------------------------------------------------------------------
+bo_observer.definition_errors.ContractError: None
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_construction_contract.py", line 127, in test_missing_presentation_is_not_implicit_assent
+    with self.assertRaisesRegex(ValueError, "missing_presentation"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "missing_presentation" does not match "None"
+
+======================================================================
+FAIL: test_omitted_boundary_cannot_be_confirmed (test_construction_contract.ConstructionTests.test_omitted_boundary_cannot_be_confirmed)
+----------------------------------------------------------------------
+bo_observer.definition_errors.ContractError: The confirmation includes omitted or unseen meaning
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_construction_contract.py", line 116, in test_omitted_boundary_cannot_be_confirmed
+    with self.assertRaisesRegex(ValueError, "unreviewed_boundary"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "unreviewed_boundary" does not match "The confirmation includes omitted or unseen meaning"
+
+======================================================================
+FAIL: test_stale_presentation_cannot_confirm_new_meaning (test_construction_contract.ConstructionTests.test_stale_presentation_cannot_confirm_new_meaning)
+----------------------------------------------------------------------
+bo_observer.definition_errors.ContractError: Review the changed meaning before confirming
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_construction_contract.py", line 123, in test_stale_presentation_cannot_confirm_new_meaning
+    with self.assertRaisesRegex(ValueError, "stale_presentation"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "stale_presentation" does not match "Review the changed meaning before confirming"
+
+======================================================================
+FAIL: test_stale_promotion_is_rejected (test_construction_contract.ConstructionTests.test_stale_promotion_is_rejected)
+----------------------------------------------------------------------
+bo_observer.definition_errors.ContractError: Reload the current draft
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_construction_contract.py", line 96, in test_stale_promotion_is_rejected
+    with self.assertRaisesRegex(ValueError, "stale_construction_revision"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "stale_construction_revision" does not match "Reload the current draft"
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.418s
+
+FAILED (failures=4, errors=1)

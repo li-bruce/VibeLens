@@ -128,11 +128,16 @@ def _synchronize(root, *, model_path, update, force):
             **payload,
         }
         document = read(contained(root, model_path))
-        base = document["model"] if document.get("protocol") == "bo-project/v1" else document
+        base = (
+            document["model"]
+            if document.get("protocol") in {"bo-project/v1", "bo-project/v2"}
+            else document
+        )
         model = project_model(base, config, bundle)
         candidate = (
             {**document, "model": model}
-            if "model" in document and document.get("protocol") == "bo-project/v1"
+            if "model" in document
+            and document.get("protocol") in {"bo-project/v1", "bo-project/v2"}
             else model
         )
         from ..protocol import validate_project
@@ -141,7 +146,7 @@ def _synchronize(root, *, model_path, update, force):
 
         validate_data_projection(model)
         validate_graph(model)
-        if candidate.get("protocol") == "bo-project/v1":
+        if candidate.get("protocol") in {"bo-project/v1", "bo-project/v2"}:
             validate_project(candidate)
         declared = {d["store_id"]: d for d in declarations}
         differences = [

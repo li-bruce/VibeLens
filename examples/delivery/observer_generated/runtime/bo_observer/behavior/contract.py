@@ -9,13 +9,16 @@ from copy import deepcopy
 from ..concepts.common import digest
 from ..concepts.model import build
 from ..protocol import schema_diagnostics
-from .diagnostics import ContractError, index_records, require
+from .diagnostics import ContractError, require
 from .domains import load_domains
 from .references import load_variables, require_reference
 from .actions import load_actions
 from .expressions import UNKNOWN, Expressions, known_value
 from .policy_refs import PolicyReferences
 from .capabilities import describe
+from .properties import load_assumptions, load_properties
+from .interactions import load_interactions
+from .refinement import initial_alternatives, load_refinements
 
 
 def _sources(refs, sources, path):
@@ -54,9 +57,18 @@ def assess(contract, discovery):
             )
         for position, ref in enumerate(scope["object_refs"]):
             require_reference(registry, ref, {"object"}, f"/scope/object_refs/{position}")
-        sources = {source["id"] for source in discovery["sources"]}
-        for section in ("domains", "variables", "actions", "properties"):
-            for position, item in enumerate(contract[section]):
+        sources = {source["id"]: source for source in discovery["sources"]}
+        for section in (
+            "domains",
+            "variables",
+            "actions",
+            "properties",
+            "assumptions",
+            "interactions",
+            "refinements",
+            "initial_alternatives",
+        ):
+            for position, item in enumerate(contract.get(section, [])):
                 _sources(item["source_refs"], sources, f"/{section}/{position}/source_refs")
         domains = load_domains(contract["domains"])
         for position, record in enumerate(contract["domains"]):
@@ -79,8 +91,9 @@ def assess(contract, discovery):
             if registry[value["concept_ref"]]["kind"] == "state_model"
         }
         initial_result = known_value(contract["initial"], initial_states, expressions)
+        recovery, recovery_checks = initial_alternatives(contract, variables, domains, expressions)
         require(
-            initial_result is not False,
+            initial_result is not False or bool(recovery),
             "empty_initial",
             "/initial",
             "Initial predicate contradicts the canonical initial state",
@@ -88,26 +101,12 @@ def assess(contract, discovery):
         actions, summaries = load_actions(
             contract, registry, domains, variables, owners, expressions, data["dependencies"]
         )
-        properties = index_records(contract["properties"], "/properties")
-        for position, prop in enumerate(contract["properties"]):
-            path = f"/properties/{position}"
-            require(
-                set(prop["action_refs"]) <= set(actions),
-                "unknown_action",
-                path + "/action_refs",
-                "Property action is not declared",
-            )
-            require(
-                bool(prop["action_refs"]) == (prop["kind"] == "transition_constraint"),
-                "property_scope",
-                path + "/action_refs",
-                "Transition constraints select actions; state invariants apply to the selected state",
-            )
-            expressions.expect_boolean(
-                prop["expression"],
-                path + "/expression",
-                allow_after=prop["kind"] == "transition_constraint",
-            )
+        assumptions = load_assumptions(contract, sources, actions)
+        properties = load_properties(contract, actions, assumptions, expressions)
+        interactions, interaction_definitions = load_interactions(
+            contract, registry, data["dependencies"], domains, variables, actions, assumptions
+        )
+        refinements = load_refinements(contract, variables, domains, actions, properties)
         return {
             "valid": True,
             "errors": [],
@@ -122,9 +121,22 @@ def assess(contract, discovery):
             "actions": sorted(actions),
             "action_definitions": summaries,
             "canonical_initial_states": initial_states,
-            "initial_consistency": "unresolved" if initial_result is UNKNOWN else "consistent",
+            "initial_consistency": (
+                "unresolved"
+                if initial_result is UNKNOWN
+                else "excluded" if initial_result is False else "consistent"
+            ),
+            "initial_alternatives": recovery_checks,
             "properties": sorted(properties),
             "policy_references": deepcopy(policy.uses),
+            "interactions": sorted(interactions),
+            "interaction_definitions": interaction_definitions,
+            "assumptions": deepcopy(assumptions),
+            "refinements": refinements,
+            "configuration": {
+                section: "configured" if section in contract else "not_configured"
+                for section in ("interactions", "assumptions", "refinements")
+            },
             "unresolved": deepcopy(scope["unresolved"]),
             "binding": "not_checked",
             "analysis": "not_run",

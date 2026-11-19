@@ -266,11 +266,25 @@ def apply(root, **options):
     }
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["plan", "apply"])
+    parser.add_argument("command", choices=["plan", "apply", "check", "recover"])
     parser.add_argument("--root", required=True)
-    parser.add_argument("--runtime", required=True)
+    parser.add_argument("--runtime")
+    parser.add_argument(
+        "--artifacts",
+        action="store_true",
+        help="Migrate project/discovery contracts, not framework files",
+    )
+    parser.add_argument(
+        "--plan-file", help="Project-relative saved artifact plan (required for apply)"
+    )
+    parser.add_argument("--project", default="bo_stategraph/project.json")
+    parser.add_argument(
+        "--refresh-contracts",
+        action="store_true",
+        help="Plan explicit v2 reference refresh after reviewed definition edits",
+    )
     parser.add_argument("--module", default="bo_stategraph")
     parser.add_argument("--viewer", action="append", default=[])
     parser.add_argument("--baseline", help="Preserved change_sync baseline for first migration")
@@ -283,7 +297,43 @@ def main():
     parser.add_argument(
         "--source", help="Canonical Skill scripts directory, if this is a copied tool"
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    if args.artifacts:
+        from bo_observer.delivery import artifact_migration
+
+        try:
+            if args.command == "plan":
+                result = artifact_migration.plan(
+                    args.root, project=args.project, refresh=args.refresh_contracts
+                )
+                if args.plan_file:
+                    target = contained(Path(args.root).resolve(), args.plan_file)
+                    protected = {item["path"] for item in result["changes"]} | set(result["inputs"])
+                    if target.relative_to(Path(args.root).resolve()).as_posix() in protected:
+                        raise ValueError("Plan output cannot overwrite a canonical input")
+                    # Exclusive creation preserves the reviewable plan.
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    with target.open("xb") as stream:
+                        stream.write(artifact_migration.encode(result))
+            elif args.command == "apply":
+                if not args.plan_file:
+                    raise ValueError("--plan-file is required for artifact apply")
+                result = artifact_migration.apply(
+                    args.root, read(contained(Path(args.root).resolve(), args.plan_file))
+                )
+            elif args.command == "recover":
+                result = artifact_migration.recover(args.root)
+            else:
+                result = artifact_migration.check(args.root, args.project)
+            print(json.dumps(result, ensure_ascii=False))
+            return 0
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            print(json.dumps({"valid": False, "error": str(error)}, ensure_ascii=False))
+            return 1
+    if not args.runtime or args.command not in {"plan", "apply"}:
+        parser.error(
+            "Runtime upgrades require --runtime and plan/apply; contract commands use --artifacts"
+        )
     options = dict(
         runtime=args.runtime,
         module=args.module,

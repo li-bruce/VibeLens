@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/li-bruce/VibeLens/protocol/analysis-profile/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "bo-analysis-profile/v1"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "subject": {
+      "enum": [
+        "design_model",
+        "implementation_model"
+      ]
+    },
+    "model_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "property_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "assumption_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "uniqueItems": true,
+      "minItems": 0
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "min": {
+            "type": "integer"
+          },
+          "max": {
+            "type": "integer"
+          },
+          "max_items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "max_live": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "origin": {
+            "enum": [
+              "analysis_bound",
+              "abstraction"
+            ]
+          }
+        },
+        "required": [
+          "origin"
+        ],
+        "minProperties": 2
+      }
+    },
+    "engine": {
+      "const": "tlc"
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wall_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600
+        },
+        "memory_mb": {
+          "type": "integer",
+          "minimum": 64,
+          "maximum": 32768
+        }
+      },
+      "required": [
+        "wall_seconds",
+        "memory_mb"
+      ]
+    },
+    "required_for_acceptance": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema",
+    "id",
+    "subject",
+    "model_refs",
+    "property_refs",
+    "assumption_refs",
+    "bounds",
+    "engine",
+    "budget",
+    "required_for_acceptance"
+  ]
+}

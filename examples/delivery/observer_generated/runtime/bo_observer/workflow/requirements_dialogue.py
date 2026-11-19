@@ -87,7 +87,11 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
             "questions": [],
             "awaiting_answers": [],
         }
-    if doc.get("schema") not in {"business-discovery/v1", "business-discovery/v2"}:
+    if doc.get("schema") not in {
+        "business-discovery/v1",
+        "business-discovery/v2",
+        "business-discovery/v3",
+    }:
         error("unknown_schema", "discovery")
     if not text(doc.get("goal")):
         error("missing_goal", "discovery")
@@ -143,7 +147,7 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
     networks = records(doc.get("networks"), "networks")
     nodes = {}
     edges = {}
-    if not networks:
+    if not networks and doc.get("schema") != "business-discovery/v3":
         error("missing_business_network", "networks")
     for nid, net in networks.items():
         for field in ("title", "trigger", "outcome"):
@@ -178,13 +182,14 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
     # implementation exists. Resolve these against the same design inventory
     # used by Web/preview, rather than only the business network's node list.
     concepts = None
-    if doc.get("schema") == "business-discovery/v2":
+    if doc.get("schema") in {"business-discovery/v2", "business-discovery/v3"}:
         from ..concepts import assess as assess_concepts
 
         concepts = assess_concepts(doc, previous=previous, model=model, acceptance=acceptance)
         errors.extend(concepts["errors"])
         warnings.extend(concepts.get("warnings", []))
         known.update(concepts.get("index", {}))
+        known.update(concepts.get("construction", {}).get("targets", {}))
         graph = concepts.get("graph") or {}
         known.update(item["id"] for item in graph.get("nodes", []))
         known.update(item["id"] for item in graph.get("edges", []))
@@ -308,13 +313,17 @@ def _assess(doc, *, intent=None, model=None, acceptance=None, previous=None):
     # Questions needed to answer an active question remain in scope as well.
     active_decisions = set(decisions)
     if concepts is not None:
-        from ..concepts.semantics import resolve_index
+        from ..concepts.construction import affects_scope
 
         coverage = set(concepts.get("coverage_scope", []))
+        targets = concepts.get("construction", {}).get("targets", {})
         active_decisions = {
             did
             for did, decision in decisions.items()
-            if any(resolve_index(concepts["index"], ref) in coverage for ref in decision["affects"])
+            if any(
+                affects_scope(ref, concepts["index"], targets, coverage)
+                for ref in decision["affects"]
+            )
         }
         pending_dependencies = list(active_decisions)
         while pending_dependencies:

@@ -355,7 +355,8 @@
           "kind": {
             "enum": [
               "state_invariant",
-              "transition_constraint"
+              "transition_constraint",
+              "progress_property"
             ]
           },
           "action_refs": {
@@ -379,6 +380,26 @@
             },
             "uniqueItems": true,
             "minItems": 1
+          },
+          "trigger": {
+            "$ref": "#/$defs/expression"
+          },
+          "fairness": {
+            "enum": [
+              "none",
+              "weak",
+              "strong"
+            ]
+          },
+          "assumption_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "uniqueItems": true
           }
         },
         "required": [
@@ -387,6 +408,297 @@
           "action_refs",
           "expression",
           "source_refs"
+        ]
+      }
+    },
+    "interactions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/interaction"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "kind": {
+            "enum": [
+              "environment",
+              "scheduling",
+              "fault",
+              "consistency"
+            ]
+          },
+          "model_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "action_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "invalidated_by": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "status": {
+            "enum": [
+              "unresolved",
+              "declared",
+              "confirmed"
+            ]
+          },
+          "review_source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "source_refs",
+          "kind",
+          "model_refs",
+          "action_refs",
+          "statement",
+          "rationale",
+          "invalidated_by",
+          "status",
+          "review_source_refs"
+        ]
+      }
+    },
+    "refinements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "variable_ref": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "concrete_domain": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "mapping": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "identity"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "table"
+                  },
+                  "entries": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "from": {},
+                        "to": {}
+                      },
+                      "required": [
+                        "from",
+                        "to"
+                      ]
+                    }
+                  },
+                  "unmapped": {
+                    "enum": [
+                      "unknown",
+                      "reject"
+                    ]
+                  }
+                },
+                "required": [
+                  "kind",
+                  "entries",
+                  "unmapped"
+                ]
+              }
+            ]
+          },
+          "property_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "completion_action": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "internal_actions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "justification": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "evidence_kind": {
+            "enum": [
+              "declared",
+              "source_bound",
+              "trace_checked",
+              "finite_model_checked",
+              "externally_proved"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "source_refs",
+          "variable_ref",
+          "concrete_domain",
+          "mapping",
+          "property_refs",
+          "completion_action",
+          "internal_actions",
+          "justification",
+          "evidence_kind",
+          "evidence_refs"
+        ]
+      }
+    },
+    "initial_alternatives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "values": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "condition": {
+            "$ref": "#/$defs/expression"
+          }
+        },
+        "required": [
+          "id",
+          "source_refs",
+          "values",
+          "condition"
         ]
       }
     }
@@ -797,6 +1109,519 @@
             "op",
             "id",
             "bindings"
+          ]
+        }
+      ]
+    },
+    "interaction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "model_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "action_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "source_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "kind": {
+              "const": "shared_read"
+            },
+            "variable_ref": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "reader_actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "consistency": {
+              "enum": [
+                "independent",
+                "revision",
+                "transaction"
+              ]
+            },
+            "timing": {
+              "enum": [
+                "at_entry",
+                "before_effect",
+                "snapshot"
+              ]
+            },
+            "revision_variable": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "completion_action": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "id",
+            "model_refs",
+            "action_refs",
+            "source_refs",
+            "kind",
+            "variable_ref",
+            "reader_actions",
+            "consistency",
+            "timing"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "model_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "action_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "source_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "kind": {
+              "const": "handoff"
+            },
+            "producer": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "consumer": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "payload_domain": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "queue_domain": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "correlation_domain": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "ordering": {
+              "enum": [
+                "fifo",
+                "unordered"
+              ]
+            },
+            "delivery": {
+              "enum": [
+                "at_most_once",
+                "at_least_once",
+                "exactly_once"
+              ]
+            },
+            "retry": {
+              "enum": [
+                "none",
+                "bounded",
+                "unbounded"
+              ]
+            },
+            "max_attempts": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "deduplication": {
+              "enum": [
+                "none",
+                "correlation"
+              ]
+            },
+            "acknowledgement_action": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "assumption_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "on_cancel": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "on_failure": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "id",
+            "model_refs",
+            "action_refs",
+            "source_refs",
+            "kind",
+            "producer",
+            "consumer",
+            "payload_domain",
+            "queue_domain",
+            "correlation_domain",
+            "ordering",
+            "delivery",
+            "retry",
+            "deduplication",
+            "assumption_refs",
+            "on_cancel",
+            "on_failure"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "model_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "action_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "source_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "kind": {
+              "const": "resource"
+            },
+            "resource_ref": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "acquire_actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "release_actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "holder_domain": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "on_cancel": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "on_restart": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "id",
+            "model_refs",
+            "action_refs",
+            "source_refs",
+            "kind",
+            "resource_ref",
+            "acquire_actions",
+            "release_actions",
+            "holder_domain",
+            "on_cancel",
+            "on_restart"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "model_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "action_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "source_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "kind": {
+              "const": "join"
+            },
+            "join_ref": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "arrival_actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "release_action": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "invocation_domain": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "id",
+            "model_refs",
+            "action_refs",
+            "source_refs",
+            "kind",
+            "join_ref",
+            "arrival_actions",
+            "release_action",
+            "invocation_domain"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "model_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "action_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "source_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "kind": {
+              "const": "transaction"
+            },
+            "member_actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "completion_action": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "atomicity": {
+              "enum": [
+                "single_process",
+                "database_transaction",
+                "external_protocol"
+              ]
+            },
+            "conflict": {
+              "enum": [
+                "abort",
+                "retry",
+                "external"
+              ]
+            },
+            "assumption_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "id",
+            "model_refs",
+            "action_refs",
+            "source_refs",
+            "kind",
+            "member_actions",
+            "completion_action",
+            "atomicity",
+            "conflict",
+            "assumption_refs"
           ]
         }
       ]

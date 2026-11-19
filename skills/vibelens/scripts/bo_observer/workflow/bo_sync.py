@@ -69,7 +69,7 @@ def source_inventory(root, cfg, *, inspection_cache=None, model=None, telemetry=
 
         path = contained(root, cfg.get("model", "bo_stategraph/project.json"))
         if path.is_file():
-            model = read_model(path)
+            model = read_model(path, project_root=root)
     if telemetry is None and model is not None:
         from ..observation.telemetry import load_registrations
 
@@ -275,7 +275,7 @@ def maintenance_task(root, cfg, previous=None):
     from ..model_io import read_model
 
     declaration = Path(root) / cfg.get("model", "bo_stategraph/project.json")
-    declared = read_model(declaration) if declaration.is_file() else {}
+    declared = read_model(declaration, project_root=root) if declaration.is_file() else {}
     if (Path(root) / ".stategraph/code-graph.json").is_file() or any(
         node.get("represents") for node in declared.get("nodes", [])
     ):
@@ -303,7 +303,7 @@ def maintenance_task(root, cfg, previous=None):
         path = (Path(root) / cfg["model"]).resolve()
         if not path.is_relative_to(Path(root).resolve()):
             raise ValueError("model escapes project")
-        model = read_model(path)
+        model = read_model(path, project_root=root)
         index = scan(root, current["files"])
         gaps = (
             index["errors"]

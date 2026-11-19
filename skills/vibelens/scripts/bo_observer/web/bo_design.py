@@ -96,7 +96,7 @@ class BODesign:
             nodes = item["affects"]
         resolved = set()
         for reference in nodes:
-            if doc.get("schema") == "business-discovery/v2":
+            if doc.get("schema") in {"business-discovery/v2", "business-discovery/v3"}:
                 from ..concepts import resolve
 
                 references = [resolve(doc, reference)]
@@ -114,7 +114,12 @@ class BODesign:
         if cfg.get("model"):
             from ..model_io import read_model
 
-            known.update(n["id"] for n in read_model(contained(self.root, cfg["model"]))["nodes"])
+            known.update(
+                n["id"]
+                for n in read_model(contained(self.root, cfg["model"]), project_root=self.root)[
+                    "nodes"
+                ]
+            )
         if set(ids) - known:
             raise ValueError("Focus nodes not found: " + ", ".join(sorted(set(ids) - known)))
         if len(ids) > 50 or not isinstance(label, str) or len(label) > 120:
@@ -146,7 +151,7 @@ class BODesign:
             or doc.get("project_id")
             or self.root.name
         )
-        if doc.get("schema") == "business-discovery/v2":
+        if doc.get("schema") in {"business-discovery/v2", "business-discovery/v3"}:
             from ..concepts import assemble
 
             model = assemble(doc)
@@ -193,7 +198,7 @@ class BODesign:
         model = {**envelope["model"], "revision": envelope["manifest"]["build_id"]}
         if view not in {"business", "state", "rules", "all"}:
             raise ValueError("Unknown conceptual view")
-        if nodes and document.get("schema") == "business-discovery/v2":
+        if nodes and document.get("schema") in {"business-discovery/v2", "business-discovery/v3"}:
             from ..concepts import resolve
 
             edges = relation_index(model["edges"])

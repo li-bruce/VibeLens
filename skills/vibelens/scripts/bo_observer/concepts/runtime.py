@@ -222,7 +222,10 @@ def runtime_errors(doc, model, payload):
     retain their existing validation. Completion cases come from independent
     expectations, so a denied request is not falsely required to execute effects.
     """
-    if not isinstance(doc, dict) or doc.get("schema") != "business-discovery/v2":
+    if not isinstance(doc, dict) or doc.get("schema") not in {
+        "business-discovery/v2",
+        "business-discovery/v3",
+    }:
         return []
     binding = model["concepts"]
     errors = []

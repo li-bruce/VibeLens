@@ -45,7 +45,9 @@ class GraphSession:
         """Load one project/build and prepare its bounded event history and recording service."""
         self.root = Path(root).absolute().resolve()
         self.path = contained(self.root, project_path)
-        self.project = validate_project(read(self.path))
+        from ..project_artifacts import load_project
+
+        self.project = load_project(self.root, project_path)
         self.project_hash = digest(self.project)
         self.bo_project_sources = SourceFiles(self.root)
         self.bo_project_content_hash = None

@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/li-bruce/SoftwareStatusObserverSkill/protocol/project-v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "protocol": {
+      "const": "bo-project/v2"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "selection": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://github.com/li-bruce/SoftwareStatusObserverSkill/protocol/selection",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "drive",
+            "observe"
+          ]
+        },
+        "source": {
+          "const": "user"
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "mode",
+        "source",
+        "answer",
+        "locator"
+      ]
+    },
+    "model": {
+      "$ref": "https://github.com/li-bruce/SoftwareStatusObserverSkill/protocol/model"
+    },
+    "contracts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "discovery",
+        "behavior",
+        "analysis_profiles"
+      ],
+      "properties": {
+        "discovery": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/artifact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "behavior": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/artifact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "analysis_profiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "protocol",
+    "project_id",
+    "selection",
+    "model",
+    "contracts"
+  ],
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "schema"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "schema": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

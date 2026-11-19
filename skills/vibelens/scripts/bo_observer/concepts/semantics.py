@@ -110,7 +110,7 @@ def valid_snapshot(value):
     )
 
 
-def confirm(doc, scope, source_refs, id):
+def confirm(doc, scope, source_refs, id, *, presentation_ref=None):
     """Return a proposed confirmation record from exact user evidence, without writes.
 
     The coding host must obtain the actual confirmation. This checks its recorded
@@ -132,12 +132,17 @@ def confirm(doc, scope, source_refs, id):
             raise ValueError("confirmation must cite actual recorded user sources")
         evidence.append(deepcopy(value))
     snap = snapshot(doc, scope)
+    if doc["schema"] == "business-discovery/v3":
+        from .construction import check_presentation
+
+        check_presentation(doc, snap, presentation_ref, current=True)
     return {
         "id": id,
         "scope": snap["scope"],
         "source_refs": list(source_refs),
         "source_evidence": evidence,
         "snapshot": snap,
+        **({"presentation_ref": presentation_ref} if presentation_ref is not None else {}),
     }
 
 
@@ -167,7 +172,7 @@ def check_confirmations(doc, previous=None, *, scope=None):
             for key, value in snap["records"].items()
             if encoded(data["records"].get(key)) != encoded(value)
         )
-    if previous and previous.get("schema") == "business-discovery/v2":
+    if previous and previous.get("schema") in {"business-discovery/v2", "business-discovery/v3"}:
         changed.update(diff(previous, doc)["affected"])
     impacted = set(changed)
     growing = True
@@ -182,12 +187,22 @@ def check_confirmations(doc, previous=None, *, scope=None):
     source_meanings = {}
     for ident, item in confirmations.items():
         if (
-            set(item) != {"id", "scope", "source_refs", "source_evidence", "snapshot"}
+            set(item)
+            - ({"presentation_ref"} if doc["schema"] == "business-discovery/v3" else set())
+            != {"id", "scope", "source_refs", "source_evidence", "snapshot"}
             or not valid_snapshot(item.get("snapshot"))
             or item.get("scope") != item["snapshot"]["scope"]
         ):
             errors.append({"code": "invalid_confirmation_snapshot", "item": ident})
             continue
+        if doc["schema"] == "business-discovery/v3" and "presentation_ref" in item:
+            from .construction import check_presentation
+
+            try:
+                check_presentation(doc, item["snapshot"], item["presentation_ref"])
+            except ValueError as error:
+                errors.append({"code": "invalid_confirmation_presentation", "item": str(error)})
+                continue
         refs, evidence = item.get("source_refs"), item.get("source_evidence")
         if (
             not isinstance(refs, list)

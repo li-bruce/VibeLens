@@ -45,7 +45,7 @@ def _validator(directory, name):
     path = directory / (name + ".schema.json")
     schema = json.loads(path.read_text(encoding="utf-8"))
     registry = Registry()
-    if name == "project":
+    if name in {"project", "project-v2"}:
         # Project envelopes reference the same model contract as standalone
         # models. Register the bundled resource; validation never fetches it.
         model = json.loads((directory / "model.schema.json").read_text(encoding="utf-8"))
@@ -102,7 +102,11 @@ def schema_diagnostics(value, name):
 
 def validate_project(project):
     """Check project identity, mode choice, and machine declaration; return a detached copy."""
-    schema_check(project, "project")
+    schema_check(project, "project-v2" if project.get("protocol") == "bo-project/v2" else "project")
+    if project.get("protocol") == "bo-project/v2":
+        from .project_artifacts import validate_references
+
+        validate_references(project)
     from .policy.projection import projection_errors
 
     policy_errors = projection_errors(project["model"])

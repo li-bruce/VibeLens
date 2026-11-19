@@ -1,0 +1,72 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+FFF..FFF.
+======================================================================
+FAIL: test_hiding_an_independent_model_cannot_remove_its_scope (__main__.AdmissionTests.test_hiding_an_independent_model_cannot_remove_its_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_analysis_admission.py", line 32, in test_hiding_an_independent_model_cannot_remove_its_scope
+    self.assertIn("partial_model_scope", [i["code"] for i in self.result()["diagnostics"]])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'partial_model_scope' not found in ['invalid_concept_definition']
+
+======================================================================
+FAIL: test_implementation_model_is_not_silently_relabelled_design (__main__.AdmissionTests.test_implementation_model_is_not_silently_relabelled_design)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_analysis_admission.py", line 48, in test_implementation_model_is_not_silently_relabelled_design
+    self.assertEqual(self.result()["status"], "unsupported")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'invalid' != 'unsupported'
+- invalid
++ unsupported
+
+
+======================================================================
+FAIL: test_live_identity_cap_does_not_make_the_domain_finite (__main__.AdmissionTests.test_live_identity_cap_does_not_make_the_domain_finite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_analysis_admission.py", line 65, in test_live_identity_cap_does_not_make_the_domain_finite
+    self.assertEqual(self.result()["status"], "unsupported")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'invalid' != 'unsupported'
+- invalid
++ unsupported
+
+
+======================================================================
+FAIL: test_profile_bound_changes_only_the_detached_representation (__main__.AdmissionTests.test_profile_bound_changes_only_the_detached_representation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_analysis_admission.py", line 53, in test_profile_bound_changes_only_the_detached_representation
+    self.assertEqual(self.result()["status"], "unsupported")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'invalid' != 'unsupported'
+- invalid
++ unsupported
+
+
+======================================================================
+FAIL: test_supported_design_is_eligible_but_analysis_has_not_run (__main__.AdmissionTests.test_supported_design_is_eligible_but_analysis_has_not_run)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_analysis_admission.py", line 26, in test_supported_design_is_eligible_but_analysis_has_not_run
+    self.assertTrue(result["eligible"], result)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : {'status': 'invalid', 'eligible': False, 'diagnostics': [{'code': 'invalid_concept_definition', 'path': '/discovery', 'message': 'transition crosslink differs from its logical guard: share-guard'}], 'capabilities': {'id': 'finite-design-admission/1', 'subject': 'design_model', 'state_semantics': 'flat_interleaving', 'domains': ['boolean', 'enum', 'integer', 'identity'], 'property_kinds': ['state_invariant', 'transition_constraint'], 'policy_nodes': ['input', 'constant', 'all', 'any', 'not'], 'operators': ['literal', 'var', 'param', 'all', 'any', 'not', 'implies', 'eq', 'ne', 'lt', 'le', 'add', 'sub', 'policy_ref'], 'exporter_available': False, 'runner_available': False}}
+
+======================================================================
+FAIL: test_unconfigured_boundary_does_not_become_a_pass (__main__.AdmissionTests.test_unconfigured_boundary_does_not_become_a_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_analysis_admission.py", line 36, in test_unconfigured_boundary_does_not_become_a_pass
+    self.assertEqual(self.result()["status"], "unresolved")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'invalid' != 'unresolved'
+- invalid
++ unresolved
+
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.521s
+
+FAILED (failures=6)

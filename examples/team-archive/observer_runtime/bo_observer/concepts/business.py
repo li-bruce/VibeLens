@@ -6,7 +6,8 @@ from .common import canonical_id as cid, records, references, text
 def add_business(graph, doc, sources):
     """Validate business operation scope and preserve explicit business routes."""
     add, relation = graph.add, graph.relation
-    networks = records(doc["networks"], "networks", empty=False)
+    # An unresolved v3 construction target is not an executable dummy network.
+    networks = records(doc["networks"], "networks", empty=doc["schema"] == "business-discovery/v3")
     business = {}
     for netid, net in networks.items():
         root = cid("business-network", netid)

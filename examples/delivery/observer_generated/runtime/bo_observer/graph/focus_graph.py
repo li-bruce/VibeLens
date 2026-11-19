@@ -271,7 +271,7 @@ def main():
     from ..model_io import read_model
 
     result = extract(
-        read_model(contained(root, a.model)),
+        read_model(contained(root, a.model), project_root=root),
         a.nodes,
         depth=a.depth,
         max_nodes=a.max_nodes,

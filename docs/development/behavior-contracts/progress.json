@@ -322,50 +322,64 @@
       "id": "A04",
       "case": "Unknown fields/versions, missing refs, type errors, conflicting owners, missing frame conditions",
       "expected": "Strict schema/semantic rejection with stable codes/paths. A source-free draft stays inspectable; invalid bound definitions do not load.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A05",
       "case": "Unbounded IDs, strings, queues, collection contents, clocks and counters",
       "expected": "Finite admission finds each unbounded dimension. Numeric bounds alone do not certify arbitrary numbers; live-instance limits do not bound generated identity history.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A06",
       "case": "Analysis cap differs from application capacity; sampled and abstracted values",
       "expected": "Application behavior stays unchanged. Result records bound origin and abstraction justification. Do not generalize under-approximated exploration.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A07",
       "case": "Several independent models with identical local names/instance IDs",
       "expected": "No identity collision or fabricated joining edges. Every model remains queryable, bound and covered after an unrelated model changes.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A08",
       "case": "Grant revocation interleaves with a queued download",
       "expected": "Check the trial's confirmed rule at its declared native boundary. Wrong read timing produces a business/property failure even if mapping is accurate.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A09",
       "case": "Shared capacity, waiting, join, cancel, retry and resource release",
       "expected": "Real barriers expose competing invocations. Capacity and join membership remain scoped correctly; leaked resources/early joins are detected. Unsupported engine semantics fail admission.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A10",
       "case": "Restart/initial-state alternatives, duplicate/lost/reordered messages and external failures when applicable",
       "expected": "Each selected environmental behavior is explicit. An impossible/empty initial model fails; service quiescence and intended termination are not misreported as defects.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A11",
@@ -455,8 +469,10 @@
       "id": "A23",
       "case": "Legacy migration, interrupted writes, rollback, overlapping IDs, stale writers and export/import",
       "expected": "Existing gates preserved; mixed revisions rejected; IDs, accepted meaning, personal views and archived evidence survive.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A24",
@@ -497,15 +513,19 @@
       "id": "A29",
       "case": "Source-free request containing several capabilities, state-owning objects and shared decisions",
       "expected": "Inventory and independent business/state/rule network views match the stated scope. Preserve legitimate independent components, loops and shared predicate identity; no forced common route.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A30",
       "case": "Omit a stated capability, state owner, branch or applicable cross-model effect before authoring any question",
       "expected": "Source-backed modeling obligations expose the omission. Missing-model construction targets survive until valid drafts exist; executable validation stays strict. An empty question list or containment-only graph cannot close the gap.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A31",
@@ -518,8 +538,10 @@
       "id": "A32",
       "case": "Show only part of a model, hide a shared rule dependency, then change the draft before receiving an answer",
       "expected": "Confirmation applies only to actually reviewed matching meaning. Omitted boundaries stay explicit; stale presentation cannot confirm a newer semantic snapshot. Clear overview and boundary views use the same graph IDs.",
-      "status": "pending",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
+      ]
     },
     {
       "id": "A33",
@@ -547,19 +569,21 @@
     },
     {
       "id": "P1",
-      "status": "in_progress",
+      "status": "complete",
       "depends_on": [
         "P0"
       ],
       "evidence": [
         "docs/review/behavior-contracts-sequential/p1-scalar/results.json",
         "docs/review/behavior-contracts-sequential/p1-domains/results.json",
-        "docs/review/behavior-contracts-sequential/p1-numeric/results.json"
+        "docs/review/behavior-contracts-sequential/p1-numeric/results.json",
+        "docs/review/behavior-contracts-sequential/p1-completion/results.json"
       ],
       "completed_slices": [
         "Scalar definition validator; P1 overall remains incomplete",
         "Collection and identity representations, canonical policy references, definition capability data; P1 remains incomplete",
-        "Numeric JSON identity and finite-count boundary regression repaired; P1 remains incomplete"
+        "Numeric JSON identity and finite-count boundary regression repaired; P1 remains incomplete",
+        "Interactions, properties, construction V3, project V2 readers, finite admission and recoverable migration; full regression and clean export passed"
       ]
     },
     {

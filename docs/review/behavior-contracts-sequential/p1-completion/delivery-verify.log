@@ -1,0 +1,254 @@
+{
+  "valid": false,
+  "errors": [
+    "project test failed: ['{python}', '-B', '-X', 'utf8', 'observer_generated/runtime/architecture_guard.py', 'check', '--root', '.']"
+  ],
+  "candidate_id": "174eba614e4711239277299d1318b04e9486176e772c068cb8af931be3f80b4e",
+  "reports": {
+    "mapping": {
+      "status": "passed",
+      "errors": [],
+      "database": {
+        "configured": false,
+        "valid": true,
+        "errors": [],
+        "changed": false
+      },
+      "code_structure": {
+        "enabled": true,
+        "valid": true,
+        "errors": [],
+        "status": "passed",
+        "revision": "bfad045d9b11ae00b71605cee66b3c1a9bf3f6898b36df4c7670ecfcf1fda028",
+        "nodes": 378,
+        "edges": 517,
+        "api_observation": {
+          "configured": false,
+          "valid": true,
+          "status": "not_applicable",
+          "issues": [],
+          "errors": [],
+          "coverage": "not_applicable",
+          "strict": false,
+          "observed_routes": [],
+          "unobserved_routes": [],
+          "incomplete_methods": [],
+          "missing_routes": [],
+          "revision": "bfad045d9b11ae00b71605cee66b3c1a9bf3f6898b36df4c7670ecfcf1fda028"
+        }
+      },
+      "api_observation": {
+        "configured": false,
+        "valid": true,
+        "status": "not_applicable",
+        "issues": [],
+        "errors": [],
+        "coverage": "not_applicable",
+        "strict": false,
+        "observed_routes": [],
+        "unobserved_routes": [],
+        "incomplete_methods": [],
+        "missing_routes": [],
+        "revision": "bfad045d9b11ae00b71605cee66b3c1a9bf3f6898b36df4c7670ecfcf1fda028"
+      },
+      "scope": "Inventoried source, classified symbols, loaded declaration, required probes and actual value witnesses",
+      "producer_health": {
+        "valid": true,
+        "checked_runs": 0,
+        "required": false,
+        "errors": []
+      },
+      "invocation_closure": {
+        "valid": true,
+        "closed_calls": 0,
+        "legacy_events": 147,
+        "errors": []
+      },
+      "layers": {
+        "business": {
+          "declared_nodes": 5,
+          "direct_observations": [
+            "flow.checks"
+          ],
+          "required_cases": 1,
+          "boundary_observations": [],
+          "basis": "actual invocation and selected result"
+        },
+        "state": {
+          "declared_nodes": 10,
+          "direct_observations": [
+            "join",
+            "wait"
+          ],
+          "required_cases": 2,
+          "boundary_observations": [],
+          "basis": "actual transitions, residence and activity evidence"
+        },
+        "rules": {
+          "declared_nodes": 3,
+          "direct_observations": [
+            "authorize",
+            "grant",
+            "recheck"
+          ],
+          "required_cases": 3,
+          "boundary_observations": [],
+          "basis": "evaluated/skipped conditions and actual enclosing invocation"
+        },
+        "implementation": {
+          "declared_nodes": 99,
+          "direct_observations": [
+            "change",
+            "checksum",
+            "commit",
+            "execute",
+            "privacy",
+            "read"
+          ],
+          "required_cases": 8,
+          "boundary_observations": [],
+          "basis": "actual calls, responses, selected values and native transaction boundaries; unobserved declarations remain static"
+        },
+        "data": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "operation-linked structural projection"
+        },
+        "unknown": {
+          "declared_nodes": 0,
+          "direct_observations": [],
+          "required_cases": 0,
+          "boundary_observations": [],
+          "basis": "no inferred evidence"
+        }
+      },
+      "stategraph_export": "checked",
+      "witnesses": 201,
+      "projection_checks": 303,
+      "implementation": {
+        "errors": [],
+        "events_checked": 19,
+        "features": 10
+      }
+    },
+    "state_rules": {
+      "status": "passed",
+      "errors": []
+    },
+    "project_checks": {
+      "status": "failed",
+      "errors": [
+        "project test failed: ['{python}', '-B', '-X', 'utf8', 'observer_generated/runtime/architecture_guard.py', 'check', '--root', '.']"
+      ],
+      "semantic_names": {
+        "configured": false,
+        "valid": true,
+        "status": "not_configured",
+        "missing": [],
+        "stale": []
+      },
+      "scope": "Configured project tests, architecture and viewer checks"
+    },
+    "business": {
+      "status": "passed",
+      "errors": [],
+      "assertions": {
+        "required": 96,
+        "executed": 96
+      },
+      "scope": "Authored business and whitebox expectations; this does not prove all user intent"
+    }
+  },
+  "review_hash": "a78a5ef3f7b9362e11caaad072824f3685d958cc59d2d4111591671003a2736b",
+  "observations_hash": "3af961de0b9bbff81ee4084bd4e63fcdc3ec6119aef96fe56cc0aa5125d3e1c2",
+  "tests": [
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_business.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "observer_generated/runtime/architecture_guard.py",
+        "check",
+        "--root",
+        "."
+      ],
+      "exit_code": 1
+    },
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_execution.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tooling/graph_fixture.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tests/test_graph_projection.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tests/test_graph_layout.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tests/test_recording.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tests/test_recorded_views.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-X",
+        "utf8",
+        "-B",
+        "tests/test_stategraph_module.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "checked_at": "2026-11-19T08:47:56.940638+00:00",
+  "meaning": "Selected structural consistency and explicit observed requirements; not arbitrary semantic equivalence."
+}

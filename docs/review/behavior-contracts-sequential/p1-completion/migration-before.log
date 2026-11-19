@@ -1,0 +1,151 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+test_forged_plan_cannot_overwrite_personal_files (test_project_artifact_migration.ProjectArtifactTests.test_forged_plan_cannot_overwrite_personal_files) ... ERROR
+test_legacy_project_without_discovery_does_not_invent_models (test_project_artifact_migration.ProjectArtifactTests.test_legacy_project_without_discovery_does_not_invent_models) ... ok
+test_migrate_keeps_models_ids_history_and_views (test_project_artifact_migration.ProjectArtifactTests.test_migrate_keeps_models_ids_history_and_views) ... ERROR
+test_mixed_revision_is_rejected_by_both_readers (test_project_artifact_migration.ProjectArtifactTests.test_mixed_revision_is_rejected_by_both_readers) ... ERROR
+test_plan_is_read_only_and_leaves_personal_files_outside_changes (test_project_artifact_migration.ProjectArtifactTests.test_plan_is_read_only_and_leaves_personal_files_outside_changes) ... ERROR
+test_process_interruption_blocks_reads_then_restores_exact_bytes (test_project_artifact_migration.ProjectArtifactTests.test_process_interruption_blocks_reads_then_restores_exact_bytes) ... ERROR
+test_recovery_preserves_external_edit_and_pending_marker (test_project_artifact_migration.ProjectArtifactTests.test_recovery_preserves_external_edit_and_pending_marker) ... ERROR
+test_regular_io_error_rolls_back_before_propagating (test_project_artifact_migration.ProjectArtifactTests.test_regular_io_error_rolls_back_before_propagating) ... ERROR
+test_repeated_plan_keeps_v2_references_unchanged (test_project_artifact_migration.ProjectArtifactTests.test_repeated_plan_keeps_v2_references_unchanged) ... ERROR
+test_stale_plan_changes_no_files (test_project_artifact_migration.ProjectArtifactTests.test_stale_plan_changes_no_files) ... ERROR
+test_wrong_reference_version_and_path_are_rejected (test_project_artifact_migration.ProjectArtifactTests.test_wrong_reference_version_and_path_are_rejected) ... ERROR
+
+======================================================================
+ERROR: test_forged_plan_cannot_overwrite_personal_files (test_project_artifact_migration.ProjectArtifactTests.test_forged_plan_cannot_overwrite_personal_files)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 79, in test_forged_plan_cannot_overwrite_personal_files
+    proposal = migration.plan(self.root)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+======================================================================
+ERROR: test_migrate_keeps_models_ids_history_and_views (test_project_artifact_migration.ProjectArtifactTests.test_migrate_keeps_models_ids_history_and_views)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 56, in test_migrate_keeps_models_ids_history_and_views
+    proposal = migration.plan(self.root)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+======================================================================
+ERROR: test_mixed_revision_is_rejected_by_both_readers (test_project_artifact_migration.ProjectArtifactTests.test_mixed_revision_is_rejected_by_both_readers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 118, in test_mixed_revision_is_rejected_by_both_readers
+    migration.apply(self.root, migration.plan(self.root))
+                               ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+======================================================================
+ERROR: test_plan_is_read_only_and_leaves_personal_files_outside_changes (test_project_artifact_migration.ProjectArtifactTests.test_plan_is_read_only_and_leaves_personal_files_outside_changes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 47, in test_plan_is_read_only_and_leaves_personal_files_outside_changes
+    proposal = migration.plan(self.root)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+======================================================================
+ERROR: test_process_interruption_blocks_reads_then_restores_exact_bytes (test_project_artifact_migration.ProjectArtifactTests.test_process_interruption_blocks_reads_then_restores_exact_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 86, in test_process_interruption_blocks_reads_then_restores_exact_bytes
+    proposal = migration.plan(self.root)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+======================================================================
+ERROR: test_recovery_preserves_external_edit_and_pending_marker (test_project_artifact_migration.ProjectArtifactTests.test_recovery_preserves_external_edit_and_pending_marker)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 102, in test_recovery_preserves_external_edit_and_pending_marker
+    proposal = migration.plan(self.root)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+======================================================================
+ERROR: test_regular_io_error_rolls_back_before_propagating (test_project_artifact_migration.ProjectArtifactTests.test_regular_io_error_rolls_back_before_propagating)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 159, in test_regular_io_error_rolls_back_before_propagating
+    migration.apply(self.root, migration.plan(self.root))
+                               ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+======================================================================
+ERROR: test_repeated_plan_keeps_v2_references_unchanged (test_project_artifact_migration.ProjectArtifactTests.test_repeated_plan_keeps_v2_references_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 138, in test_repeated_plan_keeps_v2_references_unchanged
+    migration.apply(self.root, migration.plan(self.root))
+                               ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+======================================================================
+ERROR: test_stale_plan_changes_no_files (test_project_artifact_migration.ProjectArtifactTests.test_stale_plan_changes_no_files)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 72, in test_stale_plan_changes_no_files
+    proposal = migration.plan(self.root)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+======================================================================
+ERROR: test_wrong_reference_version_and_path_are_rejected (test_project_artifact_migration.ProjectArtifactTests.test_wrong_reference_version_and_path_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 127, in test_wrong_reference_version_and_path_are_rejected
+    migration.apply(self.root, migration.plan(self.root))
+                               ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\artifact_migration.py", line 77, in plan
+    validate_documents(upgraded, documents)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\project_artifacts.py", line 80, in validate_documents
+    from .workflow.requirements_dialogue import assess_dialogue
+ImportError: cannot import name 'assess_dialogue' from 'bo_observer.workflow.requirements_dialogue' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\requirements_dialogue.py)
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.817s
+
+FAILED (errors=10)

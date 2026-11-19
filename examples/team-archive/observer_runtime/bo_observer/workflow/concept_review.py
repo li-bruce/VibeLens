@@ -44,7 +44,7 @@ def concept_recall(document, previous=None):
     """
     if document is None:
         return {"status": "not_configured", "ready": False}
-    if document.get("schema") != "business-discovery/v2":
+    if document.get("schema") not in {"business-discovery/v2", "business-discovery/v3"}:
         return {
             "status": "legacy",
             "ready": False,

@@ -1,8 +1,9 @@
 # P1 implementation: definition checks
 
-These are the first P1 slices on `feat/behavior-contracts-sequential`. P1 remains in
-progress. The full [protocol proposal](protocol.md) and its acceptance obligations
-remain the target; this slice does not replace them with a smaller release scope.
+This records the first P1 slices on `feat/behavior-contracts-sequential`.
+The subsequent [complete P1 contract reference](p1-contracts.md) supersedes the
+remaining-work list below. Consult [progress.json](progress.json) for the tested
+phase verdict; this historical slice does not define a smaller release scope.
 
 ## Implemented wire format
 
@@ -99,7 +100,7 @@ Additional modules are `domain_size.py` (bounded cardinality arithmetic),
 (implemented capability declaration). Scalar-only facts in discovery v2 remain
 scalar: collection parameters/literals do not silently widen that schema.
 
-## Still required to complete P1
+## Remaining work recorded after the numeric slice
 
 1. Formal-export admission data, supported predicate semantics and any required
    richer canonical fact mapping. The parser capabilities above do not establish
@@ -113,5 +114,7 @@ scalar: collection parameters/literals do not silently widen that schema.
 6. Remaining A04–A10/A23/A29/A30 cases. Passing this slice's unit tests does not
    mark any whole A case or P1 complete.
 
+These items are addressed by the [P1 completion candidate](p1-contracts.md), with
+[separate failure and retest evidence](../../review/behavior-contracts-sequential/p1-completion/README.md).
 P2 routing, P3 bindings, P4 iteration closure, P5 presentation, P6 analysis and P7
-independent dialogue trials remain pending until their prerequisites are complete.
+independent dialogue trials retain their own phase gates.

@@ -18,6 +18,7 @@ are not acceptance of any phase in this restart.
 - [P1 scalar definition slice](p1-scalar/README.md)
 - [P1 collection, identity and shared-rule definitions](p1-domains/README.md)
 - [P1 numeric representation failure and repair](p1-numeric/README.md)
+- [P1 contracts, construction and migration completion](p1-completion/README.md)
 
 Each stage records its own implementation, failures and final checks. A case being
 listed in the ledger does not mean it has passed. P7 trials start only after the

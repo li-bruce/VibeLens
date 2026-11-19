@@ -1,6 +1,7 @@
 """Versioned concept-first design interfaces; never an application authority."""
 
 from copy import deepcopy
+from ..definition_errors import ContractError
 
 from .binding import check_binding
 from .common import digest
@@ -76,7 +77,7 @@ def assess(doc, previous=None, model=None, bindings=None, *, scope=None, accepta
             "errors": confirmation["errors"],
             "warnings": [],
             "blocked": confirmation["blocked"],
-            "compatibility": VERSION,
+            "compatibility": doc["schema"],
             "graph": data["graph"],
             "networks": network_review(data["graph"]),
             "index": data["index"],
@@ -86,6 +87,28 @@ def assess(doc, previous=None, model=None, bindings=None, *, scope=None, accepta
             "confirmation": confirmation,
             "changes": changes,
         }
+        if "construction" in data:
+            report["construction"] = data["construction"]
+            report["ready"] = report["ready"] and data["construction"]["ready"]
+            report["blocked"].extend(item["id"] for item in data["construction"]["gaps"])
+            # A legacy semantic confirmation is retained, but it cannot certify
+            # the new presentation/construction coverage merely by migration.
+            reviewed = set()
+            for item in doc["confirmations"]:
+                if "presentation_ref" in item:
+                    reviewed.update(item.get("scope", []))
+            if set(confirmation["coverage_scope"]) - reviewed:
+                report["ready"] = False
+                report["blocked"].append("construction:review")
+            if previous and previous.get("construction"):
+                old_presentations = {p["id"]: p for p in previous["construction"]["presentations"]}
+                current = {p["id"]: p for p in doc["construction"]["presentations"]}
+                for ident, original in old_presentations.items():
+                    if current.get(ident) != original:
+                        report["errors"].append(
+                            {"code": "immutable_presentation_changed", "item": ident}
+                        )
+                        report["valid"] = report["ready"] = False
         if previous and previous.get("schema") == "business-discovery/v1":
             report["warnings"].append(
                 {
@@ -97,10 +120,22 @@ def assess(doc, previous=None, model=None, bindings=None, *, scope=None, accepta
             if decision.get("blocking") and decision.get("status") != "resolved":
                 from .semantics import resolve_index
 
+                targets = data.get("construction", {}).get("targets", {})
                 affected = [
-                    resolve_index(data["index"], ident) for ident in decision.get("affects", [])
+                    resolve_index(data["index"], ident)
+                    for ident in decision.get("affects", [])
+                    if ident not in targets
                 ]
-                if not affected or set(affected).intersection(confirmation["coverage_scope"]):
+                unresolved_targets = [
+                    ident
+                    for ident in decision.get("affects", [])
+                    if ident in targets and not targets[ident].get("promoted_to")
+                ]
+                if (
+                    unresolved_targets
+                    or not affected
+                    or set(affected).intersection(confirmation["coverage_scope"])
+                ):
                     report["blocked"].append("decision:" + decision["id"])
                     report["ready"] = False
         if model is not None:
@@ -111,6 +146,18 @@ def assess(doc, previous=None, model=None, bindings=None, *, scope=None, accepta
             report["valid"] = report["valid"] and report["binding"]["valid"]
             report["ready"] = report["ready"] and report["binding"]["valid"]
         return report
+    except ContractError as exc:
+        return {
+            "valid": False,
+            "ready": False,
+            "errors": [exc.diagnostic.as_dict()],
+            "warnings": [],
+            "blocked": [],
+            "compatibility": doc.get("schema"),
+            "index": {},
+            "graph": None,
+            "semantic_revision": None,
+        }
     except (ValueError, KeyError, TypeError, RecursionError) as exc:
         return {
             "valid": False,

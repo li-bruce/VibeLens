@@ -14,7 +14,7 @@ from .model import attach, construct, validate
 def operate(document, action, payload=None, *, expected_revision=None):
     """Return a detached document; failed validation never publishes a partial edit."""
     value = deepcopy(document)
-    model = value["model"] if value.get("protocol") == "bo-project/v1" else value
+    model = value["model"] if value.get("protocol") in {"bo-project/v1", "bo-project/v2"} else value
     index = validate(model)
     if action == "init":
         if index is not None:
@@ -61,7 +61,7 @@ def operate(document, action, payload=None, *, expected_revision=None):
                 )
             index.apply(operations, expected_revision=expected_revision)
             model = attach(model, index)
-    if value.get("protocol") == "bo-project/v1":
+    if value.get("protocol") in {"bo-project/v1", "bo-project/v2"}:
         value["model"] = model
         from ...protocol import validate_project
 
@@ -99,7 +99,11 @@ def main(argv=None):
             )
             if args.action != "check":
                 write(target, result)
-        model = result["model"] if result.get("protocol") == "bo-project/v1" else result
+        model = (
+            result["model"]
+            if result.get("protocol") in {"bo-project/v1", "bo-project/v2"}
+            else result
+        )
         saved = model["relation_registry"]
         counts = {
             status: sum(item["status"] == status for item in saved["decisions"].values())

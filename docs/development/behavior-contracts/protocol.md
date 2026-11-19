@@ -4,9 +4,11 @@ Status: proposed. Names and examples below are design inputs for P1, not formats
 accepted by the current release. Pin final schemas and fixtures before coding
 consumers. Preserve the protected boundaries in [the overview](README.md).
 
-Implementation status is tracked in [progress.json](progress.json). The first P1
-[scalar definition slice](p1-definition-slice.md) is available on the development
-branch; discovery/project migration and the remaining sections below are pending.
+Implementation status is tracked in [progress.json](progress.json). The
+[P1 contract reference](p1-contracts.md) specifies the implemented wire names,
+reader boundaries, capability admission and migration operations. Later routing,
+binding, iteration and analysis sections below remain the approved development
+design until their own implementation receipts are recorded.
 
 ## 1. Canonical artifacts and ownership
 

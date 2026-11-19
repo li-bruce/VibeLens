@@ -286,7 +286,10 @@ def verify(root, cfg, change, *, inspect, snapshot):
                     "valid": not policy_errors,
                     "errors": policy_errors,
                 }
-            if (current.get("discovery") or {}).get("schema") == "business-discovery/v2":
+            if (current.get("discovery") or {}).get("schema") in {
+                "business-discovery/v2",
+                "business-discovery/v3",
+            }:
                 from ..concepts.runtime import runtime_errors as concept_runtime_errors
 
                 association_errors = concept_runtime_errors(

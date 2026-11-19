@@ -20,12 +20,12 @@ from .sync_io import write
 
 def execute(options):
     """Validate before writing and keep already recorded confirmations immutable."""
-    from ..concepts import assess, confirm, diff, resolve, snapshot
+    from ..concepts import assess, confirm, diff, snapshot
 
     root = Path(options.root).resolve()
     path = contained(root, options.discovery)
     previous = read(contained(root, options.previous)) if options.previous else None
-    model = read_model(contained(root, options.model)) if options.model else None
+    model = read_model(contained(root, options.model), project_root=root) if options.model else None
     acceptance = read(contained(root, options.acceptance)) if options.acceptance else None
     with file_lock(path.with_suffix(".lock")):
         document = read(path)
@@ -39,6 +39,47 @@ def execute(options):
             if previous is None:
                 raise ValueError("diff requires --previous")
             return diff(previous, document, scope=scope)
+        if options.action == "present":
+            from ..concepts.construction import present
+
+            if not options.id or not options.sources or not scope:
+                raise ValueError("present requires --id, --scope and --sources")
+            record = present(
+                document,
+                scope,
+                options.visible or [],
+                options.explained or [],
+                options.sources,
+                options.id,
+                options.targets or [],
+            )
+            existing = next(
+                (p for p in document["construction"]["presentations"] if p["id"] == options.id),
+                None,
+            )
+            if existing is not None and existing != record:
+                raise ValueError("Presentation identity already exists")
+            if existing is None:
+                document["construction"]["presentations"].append(record)
+                if not assess(document)["valid"]:
+                    raise ValueError("Invalid presentation")
+                write(path, document)
+            return {"valid": True, "presentation": record}
+        if options.action == "promote":
+            from ..concepts.construction import promote
+
+            if not all(
+                (options.target, options.candidate, options.concept, options.expected_revision)
+            ):
+                raise ValueError(
+                    "promote requires target, candidate, concept and expected revision"
+                )
+            candidate = read(contained(root, options.candidate))
+            replacement = promote(
+                document, options.target, candidate, options.concept, options.expected_revision
+            )
+            write(path, replacement)
+            return {"valid": True, "target": options.target, "concept": options.concept}
         if options.action == "confirm":
             if not options.id or not options.sources or not scope:
                 raise ValueError("confirm requires --id, --scope and --sources")
@@ -47,16 +88,29 @@ def execute(options):
                 # question. Only recorded blocking business questions prevent
                 # acknowledging the matching region.
                 selected = set(snapshot(document, scope)["scope"])
+                from ..concepts.construction import affects_scope
+
+                concepts = dialogue["concepts"]
                 pending = [
                     item["id"]
                     for item in document.get("decisions", [])
                     if item.get("blocking")
                     and item.get("status") != "resolved"
-                    and {resolve(document, ref) for ref in item.get("affects", [])} & selected
+                    and any(
+                        affects_scope(
+                            ref,
+                            concepts["index"],
+                            concepts.get("construction", {}).get("targets", {}),
+                            selected,
+                        )
+                        for ref in item.get("affects", [])
+                    )
                 ]
                 if pending:
                     raise ValueError("Unanswered questions: " + ", ".join(pending))
-            record = confirm(document, scope, options.sources, options.id)
+            record = confirm(
+                document, scope, options.sources, options.id, presentation_ref=options.presentation
+            )
             existing = next(
                 (item for item in document.get("confirmations", []) if item["id"] == options.id),
                 None,
@@ -80,12 +134,22 @@ def execute(options):
 def main(argv=None):
     """Run a bounded project-relative operation and print machine-readable results."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("validate", "check", "snapshot", "confirm", "diff"))
+    parser.add_argument(
+        "action", choices=("validate", "check", "snapshot", "present", "promote", "confirm", "diff")
+    )
     parser.add_argument("--root", required=True)
     parser.add_argument("--discovery", default="discovery.json")
     parser.add_argument("--scope", nargs="+")
     parser.add_argument("--sources", nargs="+")
     parser.add_argument("--id")
+    parser.add_argument("--presentation", help="Exact previously recorded presentation ID")
+    parser.add_argument("--visible", nargs="+")
+    parser.add_argument("--explained", nargs="+")
+    parser.add_argument("--targets", nargs="+")
+    parser.add_argument("--target")
+    parser.add_argument("--candidate")
+    parser.add_argument("--concept")
+    parser.add_argument("--expected-revision")
     parser.add_argument("--previous")
     parser.add_argument("--model")
     parser.add_argument("--acceptance", help="Independent business assertions for bound case IDs")
