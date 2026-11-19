@@ -15,9 +15,35 @@ from bo_observer.graph.focus_graph import extract
 from bo_observer.web.bo_design import BODesign
 from bo_observer.web.design_preview import diagram
 from bo_observer.web.interface_language import set_language
+from bo_observer.web import semantic_names
+from test_semantic_names import document as names_document
 
 
 class DesignPreviewTests(unittest.TestCase):
+    def test_preview_reads_installed_localized_names_without_renaming_definitions(self):
+        """The Web and chat must explain the same state IDs in the requested language."""
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
+            root = Path(folder)
+            source = root / "discovery.json"
+            source.write_bytes(
+                (ROOT / "skills/vibelens/assets/discovery.concepts.example.json").read_bytes()
+            )
+            design = BODesign(root)
+            items = semantic_names.inventory(design.view())
+            names = names_document(items)
+            self.assertTrue(semantic_names.install(root, names, items)["valid"])
+            before = source.read_bytes()
+            zh = design.preview(
+                "http://localhost:8000/graph", view="state", max_nodes=100, locale="zh-CN"
+            )
+            en = design.preview(
+                "http://localhost:8000/graph", view="state", max_nodes=100, locale="en"
+            )
+            self.assertIn("示例名称", zh["markdown"])
+            self.assertNotIn("示例名称", en["markdown"])
+            self.assertEqual(zh["focus"], en["focus"])
+            self.assertEqual(source.read_bytes(), before)
+
     def test_shared_boundary_has_one_glyph_and_every_original_relation(self):
         graph = {
             "revision": "design-1",

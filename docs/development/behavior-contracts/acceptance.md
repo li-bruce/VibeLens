@@ -174,6 +174,8 @@ node tools/test_case_transport.mjs
 python tools/test_product_story_browser.py
 node tools/test_demo_loading_browser.mjs
 node tools/test_demo_startup_browser.mjs
+python tools/test_design_browser.py
+python tools/test_design_entry_browser.py --project .validation/design-browser/project --out .validation/design-entry-browser
 ```
 
 Add new contract, routing, invalidation, native-witness, exporter and trace cases

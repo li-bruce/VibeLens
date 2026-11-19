@@ -22,6 +22,11 @@ Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码�
 
 验收仍由原有迭代流程统一协调。TLC 分析选定的设计定义；程序状态由项目自身执行，实际采集、映射和业务检查各自提供证据。
 
+设计阶段的对话图由 `web/design_preview.py` 和 `workflow/construction_review.py` 生成，
+共用 `web/semantic_names.py` 读取当前语言的语义名称，保持节点身份与确认范围不变。
+查看器的 `view-selection.js` 选择新设计的初始视图；`viewer.js` 优先恢复用户保存的选择。
+`tools/test_design_entry_browser.py` 使用真实服务检查中英文、二维/三维和刷新后的视图恢复。
+
 三维视窗与二维视窗使用同一份图和运行证据。`graph-inventory.js` 汇总各层内容，`graph-links.js` 连接明确的源码与运行锚点，`graph-layers.js` 管理层的分类；`spatial-model.js` 计算包含关系的跨层投影，`spatial-layout.js` 在后台线程布局，`spatial-renderer.js` 管理真实三维摄像机和绘制。`semantic-view.js` 统一键盘和辅助访问入口。模块边界与交互说明见[三维图说明](../skills/vibelens/references/spatial-graph.md)。
 
 [bound-relations.js](../skills/vibelens/assets/stategraph-viewer/bound-relations.js)

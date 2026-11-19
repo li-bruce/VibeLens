@@ -247,7 +247,9 @@ class BODesign:
         # Display language and reused boundary glyphs do not alter the focus
         # identity, its dependency records, or the user's confirmed meaning.
         locale = locale or read_language(self.root)["conversation_locale"]
-        text = markdown(focused, document, url, view, locale)
+        from .semantic_names import display_captions
+
+        text = markdown(focused, document, url, view, locale, display_captions(model, locale))
         return {
             "markdown": text,
             "focus": focused,

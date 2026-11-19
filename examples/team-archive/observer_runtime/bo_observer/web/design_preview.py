@@ -66,18 +66,26 @@ def _relation_label(edge, locale):
     return label
 
 
-def diagram(view, locale):
+def diagram(view, locale, captions=None):
     """Render a focus without duplicating external objects or rewriting evidence."""
     if locale not in LOCALES:
         raise ValueError("Preview language must be en or zh-CN")
     aliases = {node["id"]: "n" + str(index) for index, node in enumerate(view["nodes"])}
+    captions = captions or {}
+
+    def node_label(node):
+        return captions.get("nodes", {}).get(node["id"], node["label"])
+
+    def edge_label(edge):
+        return captions.get("edges", {}).get(edge["id"]) or _relation_label(edge, locale)
+
     lines = ["flowchart LR"]
     for node in view["nodes"]:
         operator = " · " + node["operator"] if node.get("operator") else ""
-        lines.append(f'  {aliases[node["id"]]}["{_escape(node["label"] + operator)}"]')
+        lines.append(f'  {aliases[node["id"]]}["{_escape(node_label(node) + operator)}"]')
     for edge in view["edges"]:
         lines.append(
-            f'  {aliases[edge["from"]]} -->|"{_escape(_relation_label(edge, locale))}"| '
+            f'  {aliases[edge["from"]]} -->|"{_escape(edge_label(edge))}"| '
             f'{aliases[edge["to"]]}'
         )
 
@@ -88,18 +96,18 @@ def diagram(view, locale):
                 alias = "b" + str(len(external))
                 external[node["id"]] = alias
                 suffix = "关联" if locale == "zh-CN" else "related"
-                lines.append(f'  {alias}["{_escape(node["label"])} · {suffix}"]')
+                lines.append(f'  {alias}["{_escape(node_label(node))} · {suffix}"]')
         if boundary["outside"]:
             endpoints = {**aliases, **external}
             edge = boundary["relation"]
             lines.append(
                 f'  {endpoints[boundary["from"]]} -.->|"'
-                f'{_escape(_relation_label(edge, locale))}"| {endpoints[boundary["to"]]}'
+                f'{_escape(edge_label(edge))}"| {endpoints[boundary["to"]]}'
             )
     return "\n".join(lines)
 
 
-def markdown(view, document, url, concern, locale):
+def markdown(view, document, url, concern, locale, captions=None):
     """Keep the conversation preview limited to the diagram and actual questions."""
     titles = {
         "business": ("Business network", "业务网"),
@@ -109,7 +117,7 @@ def markdown(view, document, url, concern, locale):
     }
     chinese = locale == "zh-CN"
     title = titles[concern][int(chinese)]
-    text = f"# {title}\n\n```mermaid\n{diagram(view, locale)}\n```\n\n"
+    text = f"# {title}\n\n```mermaid\n{diagram(view, locale, captions)}\n```\n\n"
     link = "打开动态图" if chinese else "Open the live graph"
     text += f"[{link}]({url})\n\n"
     if view["coverage"]["crossing_or_omitted_edges"]:

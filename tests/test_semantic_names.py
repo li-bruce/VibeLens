@@ -71,6 +71,21 @@ def document(items):
 
 
 class SemanticNamesTests(unittest.TestCase):
+    def test_conversation_captions_preserve_concept_scope_and_missing_locale(self):
+        model = fixture()["concept_structure"]
+        original = deepcopy(model)
+        captions = {
+            "concepts": {"grant:active": {"zh-CN": "授权有效", "en": "Granted"}},
+            "nodes": {"state:active": {"zh-CN": "变量名称"}, "rule:active": {"en": "Check grant"}},
+        }
+        zh = names.display_captions(model, "zh-CN", captions)
+        en = names.display_captions(model, "en", captions)
+        self.assertEqual(zh["nodes"]["state:active"], "授权有效")
+        self.assertEqual(en["nodes"]["state:active"], "Granted")
+        self.assertEqual(zh["nodes"]["rule:active"], "Grant is active")
+        self.assertEqual(en["nodes"]["rule:active"], "Check grant")
+        self.assertEqual(model, original)
+
     @classmethod
     def setUpClass(cls):
         (ROOT / ".validation").mkdir(exist_ok=True)

@@ -84,6 +84,13 @@ Record prompts in `asked_in`. Partial replies add immutable `answers` fragments:
 Keep status `partial` or `contradicted` until an actual resolution. Silence leaves
 the sent prompt pending. Follow up only on the unanswered part.
 
+An asynchronous question tool acknowledges delivery before the user answers.
+Record the sent questions and continue independent work or yield; do not send
+the same batch again because no answer has arrived. Restore `awaiting_answers`
+after an interruption. Keep independent choices separate: sample account data,
+authentication behavior and account administration are different decisions.
+Offer alternatives only when they actually exclude one another.
+
 Preserve the complete old decision in `changes` when meaning/authority/routing
 changes. Keep prior answer fragments and presentations. Changing/removing a
 modeling obligation also uses `changes` with `obligation`, exact `previous`, sources

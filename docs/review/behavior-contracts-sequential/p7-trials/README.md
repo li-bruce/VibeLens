@@ -4,6 +4,11 @@ Status: in progress. P0–P6 were implemented, regressed and committed before
 creating either trial. Candidate: `87ab32d5` on
 `feat/behavior-contracts-sequential`. No merge, release or public deployment.
 
+The first design attempts exposed shared viewer/preview issues before any native
+application implementation. See [initial review and repair](design-review.md).
+Those attempts and screenshots remain separate from the subsequent clean-install
+retest. The full P7 acceptance remains open.
+
 Two fresh isolated installations were created with `tools/install_skill.py`.
 The coding chats receive only their candidate Skill, target directory and a
 natural application request. The evaluator's intended choices are not sent to
@@ -45,3 +50,8 @@ Framework failures are repaired in the maintained Skill first and tested again
 in a fresh trial. Retain dialogue, original failures, repair revisions, final
 source/model bundles, test outputs and desktop screenshots. Product content is
 updated only after the applicable trial evidence is accepted.
+
+The first canonical repair passed its full regression, selected TLC checks and
+clean-export gates: [repair receipt](repair-01/results.json). P7 remains open;
+clean-install retests use Python drive and Node observe, as explicitly confirmed
+by the repository owner. Initial attempts were stopped before native coding.

@@ -14,10 +14,11 @@ from ..concepts.semantics import snapshot_records, selection
 from ..graph.focus_graph import extract
 from ..graph.relation_identity import relation_ids
 from ..web.design_preview import diagram
+from ..web.semantic_names import display_captions
 from .question_routing import present_question
 
 
-def workbook(document, report, *, model_ref=None, max_nodes=12, locale=None, url=None):
+def workbook(document, report, *, model_ref=None, max_nodes=12, locale=None, url=None, names=None):
     """Return the inventory, pending work and one inspectable network per round.
 
     All current gaps stay in the report. A small preview identifies its omitted
@@ -47,6 +48,7 @@ def workbook(document, report, *, model_ref=None, max_nodes=12, locale=None, url
         "revision": snapshot_records(records)["semantic_revision"],
         "project_id": document.get("project_id", "project"),
     }
+    captions = display_captions(graph, locale, names)
     concepts = report["concepts"]
     coverage = set(concepts["coverage_scope"])
     pending = set(concepts["confirmation"]["blocked"])
@@ -84,7 +86,7 @@ def workbook(document, report, *, model_ref=None, max_nodes=12, locale=None, url
                 "model_ref": root,
                 "network_id": network["id"],
                 "kind": records[root]["kind"],
-                "label": nodes[root]["label"],
+                "label": captions["nodes"][root],
                 "nodes": network["nodes"],
                 "edges": network["edges"],
                 "in_scope": bool(members & coverage),
@@ -136,7 +138,7 @@ def workbook(document, report, *, model_ref=None, max_nodes=12, locale=None, url
             "visible_refs": sorted(shown),
             "omitted_refs": sorted(set(snap["scope"]) - shown),
             "focus": view,
-            "diagram": diagram(view, locale),
+            "diagram": diagram(view, locale, captions),
             "url": url,
             "presentation_recorded": False,
             "confirmation": "not_recorded",

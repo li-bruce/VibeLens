@@ -89,6 +89,37 @@ def overlay_model(root, model):
     return result
 
 
+def display_captions(model, locale, names=None):
+    """Resolve locale-specific concept captions without modifying model facts.
+
+    Conversation diagrams use the same concept-before-physical naming precedence
+    as the viewer. Missing translations retain the authored caption; they never
+    borrow a different concept's or language's explanation.
+    """
+    if locale not in {"en", "zh-CN"}:
+        raise ValueError("Caption language must be en or zh-CN")
+    names = names if names is not None else model.get("presentation", {}).get("names", {})
+
+    def translated(value):
+        return value.get(locale, "").strip() if isinstance(value, dict) else ""
+
+    nodes = {}
+    for node in model.get("nodes", []):
+        identity = node.get("concept_id") or node["id"]
+        concept = (
+            translated(names.get("concepts", {}).get(identity)) if node.get("concept_kind") else ""
+        )
+        nodes[node["id"]] = (
+            concept or translated(names.get("nodes", {}).get(node["id"])) or node["label"]
+        )
+    edges = {
+        edge["id"]: label
+        for edge in model.get("edges", [])
+        if (label := translated(names.get("edges", {}).get(edge["id"])))
+    }
+    return {"nodes": nodes, "edges": edges}
+
+
 def inventory(view):
     """Describe actual graph items for the coding assistant, including generated fields."""
     items, nodes, edges = {}, {}, {}

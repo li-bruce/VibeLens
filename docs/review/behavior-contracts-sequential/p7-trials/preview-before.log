@@ -1,0 +1,16 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+..F..
+======================================================================
+FAIL: test_preview_reads_installed_localized_names_without_renaming_definitions (test_design_preview.DesignPreviewTests.test_preview_reads_installed_localized_names_without_renaming_definitions)
+The Web and chat must explain the same state IDs in the requested language.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_design_preview.py", line 38, in test_preview_reads_installed_localized_names_without_renaming_definitions
+    self.assertIn("示例名称", zh["markdown"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '示例名称' not found in '# 状态网\n\n```mermaid\nflowchart LR\n  n0["revoke"]\n  n1["share"]\n  n2["may_manage"]\n  n3["Recipient grant"]\n  n4["active"]\n  n5["inactive"]\n  n6["grant-revoke"]\n  n7["grant-share"]\n  n0 -->|"触发"| n6\n  n1 -->|"触发"| n7\n  n3 -->|"包含"| n4\n  n3 -->|"包含"| n5\n  n3 -->|"事件"| n0\n  n3 -->|"事件"| n1\n  n3 -->|"条件"| n2\n  n4 -->|"revoke"| n5\n  n5 -->|"share"| n4\n  n6 -->|"条件成立"| n2\n  n7 -->|"条件成立"| n2\n  n6 -->|"进入"| n5\n  n7 -->|"进入"| n4\n  b0["policy-operation:manage · 关联"]\n  n2 -.->|"判断"| b0\n  b1["Read shared file · 关联"]\n  b1 -.->|"读取状态"| n3\n  b2["Revoke access · 关联"]\n  b2 -.->|"改变状态"| n3\n  b3["Share file · 关联"]\n  b3 -.->|"改变状态"| n3\n  n6 -.->|"条件成立"| b0\n  b2 -.->|"触发"| n0\n  n7 -.->|"条件成立"| b0\n  b3 -.->|"触发"| n1\n  b4["grant · 关联"]\n  n3 -.->|"所属对象"| b4\n```\n\n[打开动态图](http://localhost:8000/graph)\n\n虚线连接当前范围外的关联内容，完整关系可在网页中查看。\n\n请在对话中确认这份理解，或说明需要调整的地方。\n'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.425s
+
+FAILED (failures=1)

@@ -518,6 +518,26 @@ class GuidedConstructionScopeTests(unittest.TestCase):
 
 
 class ConstructionReviewTests(unittest.TestCase):
+    def test_review_translations_leave_snapshot_and_visible_scope_unchanged(self):
+        from bo_observer.workflow.construction_review import workbook
+        from bo_observer.web.semantic_names import inventory as name_inventory
+        from test_semantic_names import document as names_document
+
+        value = inventory()
+        original = deepcopy(value)
+        names = names_document(name_inventory({"model": build(value)["graph"]}))["names"]
+        results = [
+            workbook(
+                value, dialogue(value), model_ref="state-model:grant", locale=locale, names=names
+            )
+            for locale in ("en", "zh-CN")
+        ]
+        self.assertIn("示例名称", results[1]["preview"]["diagram"])
+        self.assertNotIn("示例名称", results[0]["preview"]["diagram"])
+        for key in ("snapshot", "focus", "visible_refs", "omitted_refs"):
+            self.assertEqual(results[0]["preview"][key], results[1]["preview"][key])
+        self.assertEqual(value, original)
+
     def test_inventory_and_single_model_preview_share_canonical_ids(self):
         from bo_observer.workflow.construction_review import workbook
 

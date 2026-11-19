@@ -24,6 +24,14 @@ native state execution, runtime capture or independent business checks.
 
 ## Repository map
 
+First-design presentation uses `web/design_preview.py` and
+`workflow/construction_review.py`. Both resolve semantic captions through
+`web/semantic_names.py` without changing focus identities or confirmation scope.
+The viewer's `view-selection.js` supplies a readable first concern for a new
+design; `viewer.js` restores existing personal selections before using that default.
+`tools/test_design_entry_browser.py` checks this boundary with the actual server,
+both locales, 2D/3D controls and a saved-view reload.
+
 [bo_models.py](../skills/vibelens/scripts/bo_models.py) owns model identities,
 registries, per-model validation views and subnet memberships. Execution and
 observation use the same definitions. `concepts/networks.py` publishes confirmed

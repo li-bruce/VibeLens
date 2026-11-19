@@ -1,0 +1,128 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Shared design-preview and trial-guidance repair before native trial implementation; not complete P7 acceptance",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "9b864cbe35e6bbd2ebe747ef187fd0fe391fa37b",
+  "gates": {
+    "full_regression": {
+      "exit_code": 0,
+      "log": "full-verify-retest.log",
+      "unittest_reported_tests": 1094,
+      "unittest_suites": 95,
+      "default_skips": 24,
+      "skip_breakdown": {
+        "optional_tlc_not_selected": 23,
+        "host_file_symlink_privilege": 1
+      }
+    },
+    "selected_tlc_retest": {
+      "exit_code": 0,
+      "tests": 27,
+      "skips": 0,
+      "log": "tlc-selected-retest.log"
+    },
+    "source": {
+      "valid": true,
+      "receipt": "source.json"
+    },
+    "browser": {
+      "valid": true,
+      "receipt": "../design-browser-fix-second/result.json"
+    },
+    "existing_design_browser": {
+      "valid": true,
+      "receipt": "../design-existing-regression/result.json"
+    },
+    "related_tests": {
+      "log": "related-tests.log",
+      "reported": 154,
+      "passed_in_first_run": 153,
+      "host_junction_denial": 1,
+      "unchanged_host_retest": "junction-retest.log"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json",
+      "tree": "b61526b61a9e57af017610083caaea1478e2d53c"
+    }
+  },
+  "retained_failures": [
+    "../preview-before.log",
+    "../default-view-before.log",
+    "../design-node-first/failure.json",
+    "full-verify.log",
+    "related-tests.log"
+  ],
+  "candidate_files": [
+    {
+      "path": "skills/vibelens/SKILL.md",
+      "sha256": "e74e3594838c2b1394a80661048486a98da01b2434ce72f19dba4b1338b5984b"
+    },
+    {
+      "path": "skills/vibelens/assets/stategraph-viewer/view-selection.js",
+      "sha256": "164d713cb2d61859a58b2965bb85490f299812a2a88afc4a7b9b77bd2a926a79"
+    },
+    {
+      "path": "skills/vibelens/assets/stategraph-viewer/viewer.js",
+      "sha256": "2e50813389bfdd64661e263ec2ceb26240f2b8515470ed49af74ad07d5600f69"
+    },
+    {
+      "path": "skills/vibelens/references/model-construction.md",
+      "sha256": "a4f6cfb87a0d3e5a0a353a77ec62324515b0b6125910388c7ca8ac7f7d1f8434"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/behavior/__init__.py",
+      "sha256": "3b081a2bb5c76fb644a5cd8a7aa84551fade67b3e50664253e6cdeb0a9956471"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/behavior/capabilities.py",
+      "sha256": "bf9c0612174a57ea0d514ffd6d7e3229b125c1c4d0cb25254a70acaac18e1eb2"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/web/bo_design.py",
+      "sha256": "aa96dcc815990b34baf7397ae021d3259022376fc800b4fff6fba3616dc3f513"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/web/design_preview.py",
+      "sha256": "49348438e89a9573150e412fbbe1ec02d65580db4dbaa2841c36041e4576d95c"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/web/semantic_names.py",
+      "sha256": "d2ac9d84159d68c5da4c9b115572716a06dce35949a2c7e7d247cbecb9c60794"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/workflow/concept_cli.py",
+      "sha256": "5bd5494d2abe002e58155a44f5896a7e11169a184082b7277cebea04ba9e3e59"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/workflow/construction_review.py",
+      "sha256": "f9d32f29ace75f58358feb65703f6b2031682e332c1ba106382ae6bdd7ccc1cb"
+    },
+    {
+      "path": "tests/test_behavior_plan.py",
+      "sha256": "30e1f643c3e398927d45016e41b6eb4c2ccfa3f74c55bd156f7c4a105f6856c8"
+    },
+    {
+      "path": "tests/test_design_preview.py",
+      "sha256": "b36d10f8436948801735bc196f138a2dfc1da42b4b8b97cebd278ae6d19c74fb"
+    },
+    {
+      "path": "tests/test_guided_construction.py",
+      "sha256": "5ce12280a80b99411fc76a0ff5710469d1ba7f2168b6b208718bc462c5a2f8b3"
+    },
+    {
+      "path": "tests/test_semantic_names.py",
+      "sha256": "4dddb401b146e822c3945a465619a3747eb58cd606bd4760f16d9f9ff576bffc"
+    },
+    {
+      "path": "tools/test_design_entry_browser.py",
+      "sha256": "dc91833207f315ca1f17c2bd7bb5d8ab543b2c9a3568972fede5767257d63aa6"
+    },
+    {
+      "path": "tools/test_view_selection.mjs",
+      "sha256": "772db47e744068c7f313d66a3b0328aee68676942e38a276eeabfaf07c27b2bf"
+    }
+  ]
+}

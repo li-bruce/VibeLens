@@ -34,6 +34,8 @@ Build the applicable business, state and rule models before implementing the aff
 
 Ask only about unclear intent. Route source facts to the coding agent/checkers, and defer optional analysis assumptions to analysis. If helpful, ask one optional preference about explanation depth; reuse the conversation language and known preferences. A role changes wording, not decision authority. Show one relevant model region and at most three ready human questions per round; retain partial answers and unrelated pending work in the same discovery record.
 
+After sending a question batch, record it as awaiting an answer. An asynchronous tool's delivery acknowledgement is not a reply; do not resend that batch while waiting. Keep independent choices separate when proposing answer options.
+
 Before confirming the implementation scope, compare its state models and execution semantics with the installed binding and engine capabilities. A valid draft does not establish implementation support. Report an unsupported capability early, retain the draft and rejection evidence, and obtain an explicit scope revision before changing its coverage. Preserve independent object identities; see the [capability boundary](references/concept-models.md#check-implementation-capabilities).
 
 At adoption, identify the project-owned source paths and the dependency, build and runtime-data paths from the tree, manifests and `.gitignore`; confirm only unclear ownership. Record one shared scope before source scanning. Keep local modules discoverable, and classify unrelated storage before descending into it. Read [source scope](references/source-scope.md).

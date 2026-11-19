@@ -1,7 +1,7 @@
 """Versioned definition capabilities, independent of executors and optional tools.
 
-This is an implemented parser/type-checking contract. A future exporter must
-declare a separate, usually smaller subset and perform its own admission check.
+This parser/type-checking contract is broader than the optional analysis adapter.
+Each exporter declares its own supported subset and performs separate admission.
 """
 
 from copy import deepcopy

@@ -11,6 +11,7 @@ import {
   layerSelection,
   needsSource,
   layoutSelection,
+  initialView,
 } from "../skills/vibelens/assets/stategraph-viewer/view-selection.js";
 import {
   relationStyle,
@@ -24,6 +25,20 @@ import {
 import { setLocale } from "../skills/vibelens/assets/stategraph-viewer/i18n.js";
 import { transferEdges } from "../skills/vibelens/assets/stategraph-viewer/recording.js";
 import { respondingNodes } from "../skills/vibelens/assets/stategraph-viewer/playback-appearance.js";
+
+// Initial discovery should be readable before the user chooses a deeper view.
+// Only the unsaved default changes; saved views are restored by loadAnalysis.
+assert.equal(
+  initialView({ stage: "design", model: { nodes: [{ layer: "business" }] } }),
+  "business",
+);
+assert.equal(
+  initialView({ stage: "runtime", model: { nodes: [{ layer: "business" }] } }),
+  "overview",
+);
+assert.equal(initialView({ stage: "design", model: { nodes: [{ layer: "state" }] } }), "states");
+assert.equal(initialView({ stage: "design", model: { nodes: [{ layer: "rules" }] } }), "rules");
+assert.equal(initialView({ stage: "design", model: { nodes: [] } }), "overview");
 
 for (const layer of ["business", "state", "rules", "entry", "structure", "symbols", "data"]) {
   const nodes = [

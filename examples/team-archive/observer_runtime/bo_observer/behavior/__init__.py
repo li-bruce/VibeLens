@@ -1,7 +1,8 @@
 """Behavior definition checks, separate from native execution and observation.
 
-The first P1 slice validates a source-free contract against existing concepts.
-It does not migrate projects, execute actions or certify finite exploration.
+Definition, binding, native-witness and iteration services share typed concepts.
+This entry point assesses definitions only. Native execution remains with the
+application; optional finite-model exploration is owned by the analysis package.
 """
 
 from .contract import assess

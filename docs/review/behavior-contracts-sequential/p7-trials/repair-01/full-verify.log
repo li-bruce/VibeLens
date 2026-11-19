@@ -1,0 +1,48 @@
+{"valid": true, "errors": [], "scope": "development ledger"}
+..FF....
+======================================================================
+FAIL: test_explicit_executed_case_claim_is_recognized (__main__.BehaviorPlanTests.test_explicit_executed_case_claim_is_recognized)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_behavior_plan.py", line 53, in test_explicit_executed_case_claim_is_recognized
+    self.assertEqual(check_inventory(plan, load_evidence=lambda name: receipt), [])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['A19: no executed acceptance evidence', '[113 chars]nce'] != []
+
+First list contains 4 additional elements.
+First extra element 0:
+'A19: no executed acceptance evidence'
+
++ []
+- ['A19: no executed acceptance evidence',
+-  'A20: no executed acceptance evidence',
+-  'A21: no executed acceptance evidence',
+-  'A22: no executed acceptance evidence']
+
+======================================================================
+FAIL: test_future_phase_cannot_skip_a_dependency (__main__.BehaviorPlanTests.test_future_phase_cannot_skip_a_dependency)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_behavior_plan.py", line 31, in test_future_phase_cannot_skip_a_dependency
+    self.assertIn("P7: prerequisite not complete", check_inventory(plan))
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'P7: prerequisite not complete' not found in []
+
+----------------------------------------------------------------------
+Ran 8 tests in 9.660s
+
+FAILED (failures=2)
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tools\verify.py", line 265, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tools\verify.py", line 34, in main
+    run(ROOT, "tests/test_behavior_plan.py")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tools\verify.py", line 18, in run
+    subprocess.run([sys.executable, "-B", "-X", "utf8", *map(str, args)], cwd=cwd, check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe', '-B', '-X', 'utf8', 'tests/test_behavior_plan.py']' returned non-zero exit status 1.

@@ -6,6 +6,21 @@ import { cleanFilters } from "./layout.js";
 export const draftViewId = "custom-draft";
 export const isPreset = (id) => id.startsWith("network-") || presets.some((view) => view.id === id);
 
+/** Start a new design with one readable concern; saved personal views take precedence.
+ * The full inventory remains available through the ordinary view/layer controls.
+ */
+export function initialView(view) {
+  if (view?.stage !== "design") return "overview";
+  const layers = new Set((view.model?.nodes || []).map((node) => node.layer));
+  for (const [layer, preset] of [
+    ["business", "business"],
+    ["state", "states"],
+    ["rules", "rules"],
+  ])
+    if (layers.has(layer)) return preset;
+  return "overview";
+}
+
 export function restoredFilters(id, custom, saved) {
   return isPreset(id) ? cleanFilters(profileFor(id, custom)) : cleanFilters(saved);
 }

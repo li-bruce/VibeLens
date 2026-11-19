@@ -9,6 +9,7 @@ import {
   layerSelection,
   needsSource,
   layoutSelection,
+  initialView,
 } from "./view-selection.js";
 import { stepHierarchy } from "./step-hierarchy.js";
 import { transferPose, transferPolygon } from "./transfer-glyph.js";
@@ -1971,7 +1972,7 @@ async function poll() {
     const next = await r.json();
     if (disposed || version !== requestedVersion || caseChoice !== requestedCase) return;
     refreshModelProfiles(next);
-    loadAnalysis(projectLayoutKey(next, storage));
+    loadAnalysis(projectLayoutKey(next, storage), initialView(next));
     // A view/focus change may happen during either fetch. Never apply an old
     // source slice to the new selection, including its initial tree expansion.
     const requestedAnalysis = analysisId,
@@ -2088,7 +2089,7 @@ async function poll() {
       view.model.presentation?.subject || view.model.project_id || boTranslate("Application");
     document.title = "VibeLens · " + $("project-title").textContent;
     const baseKey = projectLayoutKey(next, storage);
-    loadAnalysis(baseKey);
+    loadAnalysis(baseKey, initialView(next));
     const nextStorageKey = baseKey + (analysisId === "overview" ? "" : ":view:" + analysisId);
     if (nextStorageKey !== storageKey) {
       cancelLayout();
@@ -2232,7 +2233,7 @@ $("case").onchange = (e) => {
   caseChoice = e.target.value;
   changeView();
 };
-function loadAnalysis(baseKey) {
+function loadAnalysis(baseKey, defaultView = "overview") {
   const key = baseKey + ":analysis";
   if (analysisKey === key) return;
   analysisKey = key;
@@ -2247,7 +2248,7 @@ function loadAnalysis(baseKey) {
     explainedNames: saved?.explainedNames !== false,
     custom: [],
     overrides: Object.create(null),
-    selected: "overview",
+    selected: defaultView,
     annotations: null,
     layers: cleanLayers(saved?.layers),
     layerVisibility: cleanLayerVisibility(saved?.layerVisibility, saved?.layers),

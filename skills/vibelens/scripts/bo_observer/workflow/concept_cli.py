@@ -37,6 +37,7 @@ def execute(options):
         scope = options.scope or None
         if options.action == "review":
             from .construction_review import workbook, markdown
+            from ..web.semantic_names import read_names
 
             result = workbook(
                 document,
@@ -45,6 +46,7 @@ def execute(options):
                 max_nodes=options.max_nodes,
                 locale=options.locale,
                 url=options.url,
+                names=(read_names(root) or {}).get("names"),
             )
             return {**result, "markdown": markdown(result)}
         if options.action == "snapshot":
