@@ -26,7 +26,7 @@ python SKILL/scripts/bo.py serve --root PROJECT --port 8830
 ```
 
 Use `--language javascript` for Node, React and Vue. Python copies seven small
-standard-library native files; JavaScript copies two native modules. These are
+standard-library native files; JavaScript copies three native modules. These are
 managed dependencies under `bo_stategraph/`, with `integration.json` recording
 their exact source and hashes. The independent state definition stays in
 `project.json` or the project's established `machine.json`. Choose optional
@@ -37,6 +37,15 @@ Do not automatically migrate an existing full-copy installation. Keep its
 working contract and use `bo_upgrade plan/apply`; then run normal acceptance.
 The new lightweight path does not delete legacy runtime folders or change
 application imports behind the developer's back.
+
+For an existing lightweight integration, run the same `plan`, `apply`, and `check`
+commands from the updated installed Skill. Known six-to-seven Python and
+two-to-three JavaScript dependency upgrades retain the original receipt under
+`bo_stategraph/migrations/`. The Node addition provides the HTTP boundary adapter;
+wire it before application guards as described in [telemetry](telemetry.md).
+Upgrading files alone does not move an existing probe. Local dependency edits,
+unknown inventories and incompatible source/protocol maps require review.
+Application declarations, business code and personal layouts stay unchanged.
 
 ## Communicate through native adapters
 

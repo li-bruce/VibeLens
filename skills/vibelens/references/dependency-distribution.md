@@ -3,7 +3,7 @@
 The viewer, layout engines, routing libraries and Python observer run from the
 installed VibeLens tool. They are not copied into the business project or its
 production application. `bo_integrate.py` installs only the native state/probe
-adapters: seven small standard-library Python files, or two JavaScript modules.
+adapters: seven small standard-library Python files, or three JavaScript modules.
 Project declarations, wiring, tests and private views remain project-owned.
 
 ## Setup

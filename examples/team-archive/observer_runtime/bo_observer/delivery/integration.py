@@ -70,21 +70,59 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def dependency_migration(previous, sources, language, receipt):
+    """Recognize released inventories without accepting arbitrary ownership claims.
+
+    File hashes may differ from this release, but the old source map and wire
+    protocols must match a released contract. The old receipt remains auditable after apply;
+    planning and inspection never repair it implicitly.
+    """
+    if not isinstance(previous.get("files"), dict):
+        raise ValueError("integration files must be an object")
+    previous_files = set(previous["files"])
+    known_addition = {
+        "python": "bo_stategraph/bo_models.py",
+        "javascript": "bo_stategraph/bo_http.mjs",
+    }[language]
+    supported_sets = (set(sources), set(sources) - {known_addition})
+    if previous_files not in supported_sets:
+        raise ValueError("integration dependency set differs; retain and review the old receipt")
+    expected_sources = {name: sources[name] for name in previous_files}
+    # Release 03c3488a preceded the model registry. Its smaller inventory used
+    # the same wire contracts, except that snapshot_registry was not declared.
+    # Accept exactly that additive upgrade, never arbitrary protocol rewrites.
+    pre_registry = {key: value for key, value in PROTOCOLS.items() if key != "snapshot_registry"}
+    supported_protocols = [PROTOCOLS]
+    if previous_files != set(sources):
+        supported_protocols.append(pre_registry)
+    if (
+        previous.get("sources") != expected_sources
+        or previous.get("protocols") not in supported_protocols
+    ):
+        raise ValueError("integration source map/protocols differ; migrate explicitly")
+    if previous_files == set(sources):
+        return None
+    return {
+        "id": "add-native-model-registry" if language == "python" else "add-node-http-boundary",
+        "added": [known_addition],
+        "receipt_backup": f"bo_stategraph/migrations/{sha(receipt)}/integration.json",
+    }
+
+
 def plan(root, language):
     """Refuse unknown local edits before writing any native dependency."""
     root = Path(root).resolve()
     receipt = contained(root, RECEIPT)
     previous = read(receipt) if receipt.exists() else {}
-    if previous and (
+    if not isinstance(previous, dict):
+        raise ValueError("integration receipt must be an object")
+    if receipt.exists() and (
         previous.get("schema") != "vibelens-integration/v1" or previous.get("language") != language
     ):
         raise ValueError("integration language/schema differs; migrate explicitly")
     sources = native_sources(language)
     canonical = canonical_scripts()
-    previous_files = set(previous.get("files", {}))
-    additions = set(sources) - previous_files
-    if previous and (previous_files - set(sources) or additions - {"bo_stategraph/bo_models.py"}):
-        raise ValueError("integration dependency set differs; retain and review the old receipt")
+    migration = dependency_migration(previous, sources, language, receipt) if previous else None
     files, changes, conflicts = {}, [], []
     for name, source in sources.items():
         expected = sha(canonical / source)
@@ -105,6 +143,7 @@ def plan(root, language):
         "files": files,
         "changes": changes,
         "conflicts": conflicts,
+        "migration": migration,
     }
 
 
@@ -119,6 +158,16 @@ def install(root, language):
         raise ValueError(
             "native dependency edits require review: " + ", ".join(result["conflicts"])
         )
+    if result["migration"]:
+        # Archive exact bytes before replacing dependencies. Never overwrite an
+        # unrelated archive, and retain this record even if copying later fails.
+        receipt = contained(root, RECEIPT)
+        backup = contained(root, result["migration"]["receipt_backup"])
+        if backup.exists() and backup.read_bytes() != receipt.read_bytes():
+            raise ValueError("integration migration archive differs; retain and review it")
+        if not backup.exists():
+            backup.parent.mkdir(parents=True, exist_ok=True)
+            replace_copy(receipt, backup)
     originals = {}
     try:
         for name in result["changes"]:

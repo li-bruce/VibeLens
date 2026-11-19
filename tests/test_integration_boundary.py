@@ -170,6 +170,169 @@ console.log(JSON.stringify(states));
         self.assertEqual(run.returncode, 0, run.stderr)
         self.assertEqual(json.loads(run.stdout), ["waiting", "running", "done"])
 
+    def legacy_javascript_receipt(self):
+        """Retain the previous two-member ownership contract in an isolated project."""
+        integration.install(self.root, "javascript")
+        receipt = self.root / integration.RECEIPT
+        prior = json.loads(receipt.read_text(encoding="utf-8"))
+        name = "bo_stategraph/bo_http.mjs"
+        prior["files"].pop(name)
+        prior["sources"].pop(name)
+        (self.root / name).unlink()
+        receipt.write_text(json.dumps(prior), encoding="utf-8")
+        return receipt.read_bytes()
+
+    def test_known_http_dependency_upgrade_preserves_receipt_and_personal_files(self):
+        before = self.legacy_javascript_receipt()
+        personal = self.root / "bo_stategraph/config/layout.json"
+        personal.parent.mkdir()
+        personal.write_text('{"position":[3,4]}', encoding="utf-8")
+        project = self.root / "bo_stategraph/project.json"
+        project.write_text('{"project":"unchanged"}', encoding="utf-8")
+        planned = integration.plan(self.root, "javascript")
+        self.assertEqual(planned["changes"], ["bo_stategraph/bo_http.mjs"])
+        self.assertFalse(integration.inspect(self.root)["valid"])
+        self.assertEqual((self.root / integration.RECEIPT).read_bytes(), before)
+        result = integration.install(self.root, "javascript")
+        self.assertEqual((self.root / result["migration"]["receipt_backup"]).read_bytes(), before)
+        self.assertTrue(integration.inspect(self.root)["valid"])
+        self.assertEqual(personal.read_text(), '{"position":[3,4]}')
+        self.assertEqual(project.read_text(), '{"project":"unchanged"}')
+        self.assertEqual(integration.plan(self.root, "javascript")["changes"], [])
+
+    def test_http_upgrade_refuses_unknown_old_members_and_source_maps(self):
+        before = self.legacy_javascript_receipt()
+        receipt = self.root / integration.RECEIPT
+        for kind in ("missing", "extra", "source", "protocol"):
+            with self.subTest(kind=kind):
+                value = json.loads(before)
+                if kind == "missing":
+                    value["files"].pop("bo_stategraph/bo_capture.mjs")
+                    value["sources"].pop("bo_stategraph/bo_capture.mjs")
+                elif kind == "extra":
+                    value["files"]["app.mjs"] = "0" * 64
+                    value["sources"]["app.mjs"] = "other.mjs"
+                elif kind == "source":
+                    value["sources"]["bo_stategraph/bo_runtime.mjs"] = "other.mjs"
+                else:
+                    value["protocols"]["event"] = "unsupported"
+                raw = json.dumps(value).encode()
+                receipt.write_bytes(raw)
+                with self.assertRaises(ValueError):
+                    integration.install(self.root, "javascript")
+                self.assertEqual(receipt.read_bytes(), raw)
+                self.assertFalse((self.root / "bo_stategraph/bo_http.mjs").exists())
+
+    def test_released_pre_registry_protocol_inventory_upgrades(self):
+        """The released pre-registry receipt lacks only snapshot_registry.
+
+        Commit 03c3488a shipped this protocol map with six Python or two Node
+        modules. Rejecting it would regress the previously supported upgrade.
+        """
+        for language, addition in (
+            ("python", "bo_stategraph/bo_models.py"),
+            ("javascript", "bo_stategraph/bo_http.mjs"),
+        ):
+            with self.subTest(language=language):
+                root = self.root / language
+                integration.install(root, language)
+                receipt = root / integration.RECEIPT
+                prior = json.loads(receipt.read_text(encoding="utf-8"))
+                prior["files"].pop(addition)
+                prior["sources"].pop(addition)
+                prior["protocols"].pop("snapshot_registry")
+                (root / addition).unlink()
+                receipt.write_text(json.dumps(prior), encoding="utf-8")
+                before = receipt.read_bytes()
+                result = integration.install(root, language)
+                self.assertEqual(
+                    (root / result["migration"]["receipt_backup"]).read_bytes(), before
+                )
+                self.assertTrue(integration.inspect(root)["valid"])
+                self.assertEqual(
+                    json.loads(receipt.read_text())["protocols"], integration.PROTOCOLS
+                )
+
+    def test_http_upgrade_refuses_local_edits_and_unowned_new_target(self):
+        before = self.legacy_javascript_receipt()
+        for name in ("bo_runtime.mjs", "bo_http.mjs"):
+            with self.subTest(name=name):
+                target = self.root / "bo_stategraph" / name
+                old = target.read_bytes() if target.exists() else None
+                target.write_bytes(b"// project-owned change\n")
+                with self.assertRaisesRegex(ValueError, "edits require review"):
+                    integration.install(self.root, "javascript")
+                self.assertEqual(target.read_bytes(), b"// project-owned change\n")
+                self.assertEqual((self.root / integration.RECEIPT).read_bytes(), before)
+                if old is None:
+                    target.unlink()
+                else:
+                    target.write_bytes(old)
+
+    def test_http_upgrade_copy_failure_restores_all_old_bytes(self):
+        self.legacy_javascript_receipt()
+        receipt = self.root / integration.RECEIPT
+        runtime = self.root / "bo_stategraph/bo_runtime.mjs"
+        runtime.write_bytes(runtime.read_bytes() + b"\n// previous managed revision\n")
+        prior = json.loads(receipt.read_text(encoding="utf-8"))
+        prior["files"]["bo_stategraph/bo_runtime.mjs"] = hashlib.sha256(
+            runtime.read_bytes()
+        ).hexdigest()
+        receipt.write_text(json.dumps(prior), encoding="utf-8")
+        before, old_runtime = receipt.read_bytes(), runtime.read_bytes()
+        from bo_upgrade import replace_copy
+
+        def broken_copy(source, target):
+            if target.name == "bo_http.mjs":
+                raise OSError("simulated write failure")
+            return replace_copy(source, target)
+
+        with patch("bo_upgrade.replace_copy", side_effect=broken_copy):
+            with self.assertRaisesRegex(OSError, "simulated write failure"):
+                integration.install(self.root, "javascript")
+        self.assertEqual(receipt.read_bytes(), before)
+        self.assertEqual(runtime.read_bytes(), old_runtime)
+        self.assertFalse((self.root / "bo_stategraph/bo_http.mjs").exists())
+
+    def test_http_upgrade_refuses_changed_archive_without_writing_dependencies(self):
+        before = self.legacy_javascript_receipt()
+        planned = integration.plan(self.root, "javascript")
+        backup = self.root / planned["migration"]["receipt_backup"]
+        backup.parent.mkdir(parents=True)
+        backup.write_bytes(b"unrelated archive")
+        with self.assertRaisesRegex(ValueError, "archive differs"):
+            integration.install(self.root, "javascript")
+        self.assertEqual(backup.read_bytes(), b"unrelated archive")
+        self.assertEqual((self.root / integration.RECEIPT).read_bytes(), before)
+        self.assertFalse((self.root / "bo_stategraph/bo_http.mjs").exists())
+
+    def test_http_upgrade_receipt_failure_restores_old_inventory(self):
+        before = self.legacy_javascript_receipt()
+        planned = integration.plan(self.root, "javascript")
+        with patch.object(integration, "write", side_effect=OSError("receipt unavailable")):
+            with self.assertRaisesRegex(OSError, "receipt unavailable"):
+                integration.install(self.root, "javascript")
+        self.assertEqual((self.root / integration.RECEIPT).read_bytes(), before)
+        self.assertEqual((self.root / planned["migration"]["receipt_backup"]).read_bytes(), before)
+        self.assertFalse((self.root / "bo_stategraph/bo_http.mjs").exists())
+
+    def test_malformed_existing_receipt_cannot_be_treated_as_a_fresh_install(self):
+        receipt = self.root / integration.RECEIPT
+        receipt.parent.mkdir(parents=True)
+        for value in (
+            {},
+            [],
+            None,
+            {"schema": "vibelens-integration/v1", "language": "javascript"},
+        ):
+            with self.subTest(value=value):
+                raw = json.dumps(value).encode()
+                receipt.write_bytes(raw)
+                with self.assertRaises(ValueError):
+                    integration.install(self.root, "javascript")
+                self.assertEqual(receipt.read_bytes(), raw)
+                self.assertFalse((self.root / "bo_stategraph/bo_http.mjs").exists())
+
     def test_editing_receipt_does_not_authorize_adapter_modification(self):
         integration.install(self.root, "python")
         name = "bo_stategraph/bo_probe.py"

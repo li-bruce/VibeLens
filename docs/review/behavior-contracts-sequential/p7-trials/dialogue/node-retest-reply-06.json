@@ -1,0 +1,6 @@
+{
+  "role": "scripted-user",
+  "kind": "framework-repair-followup",
+  "text": "Node 继续 observe，已经确认的业务规则保持不变。\n\n受管升级入口已在 VibeLens 主工程修复，17 项迁移回归及源码、Skill 检查已通过；两个随包示例和完整回归仍在运行，本轮尚未最终验收。请改用这份新的独立安装：REPOSITORY/.validation/p7-trials/node-migration-repair-skills/vibelens。此前安装和失败快照保留。\n\n从新安装调用 bo_integrate.py plan / apply / check，正常升级即可；入口会保留原 integration.json，不要手工修改受管文件或清单。随后完成 HTTP 边界接入与原生复现，核对来源拒绝、解析失败、未登录等实际响应的采集，保留业务未进入时没有虚构业务事件的情况。继续完成这一版的源码映射、原生运行和桌面浏览器验收，不添加新业务，也先不做下一轮语义修改。请保留失败、修复、复测和图的证据，并在完成后给出各项实际结果。",
+  "purpose": "Continue the explicit observe trial through the managed upgrade; business policy unchanged."
+}

@@ -71,6 +71,10 @@ requests also exposed a missing origin-rejection return in the Node trial;
 adapter checks. Observer health being clear does not prove every response was
 captured: actual response outcomes must be compared with recorded boundaries.
 
+The Node retest then refused the known two-to-three-file dependency upgrade.
+[Repair 04](repair-04/README.md) preserves that failure and adds an explicit
+receipt-preserving migration. The trial's business definitions stay unchanged.
+
 Before closing P7, both retests must use the repaired canonical installation,
 pass independent source/runtime/browser checks, complete a business iteration
 and a source-only refactor, and preserve their resulting graph changes and

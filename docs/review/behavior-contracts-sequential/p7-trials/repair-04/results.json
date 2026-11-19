@@ -1,0 +1,81 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Known native dependency migration; isolated trial acceptance remains open.",
+  "branch": "feat/behavior-contracts-sequential",
+  "gates": {
+    "integration": {
+      "tests": 18,
+      "exit_code": 0,
+      "log": "integration-final-v2.log"
+    },
+    "source": {
+      "valid": true,
+      "receipt": "source.json"
+    },
+    "native_http_retest": {
+      "valid": true,
+      "receipt": "native-origin-result.json",
+      "scope": "Independent in-progress native request check, not complete trial acceptance",
+      "requests": 3
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "log": "full-verify-retest.log",
+      "unittest_suites": 95,
+      "unittest_reported_tests": 1105,
+      "skips": 1,
+      "skip_reason": "Windows file-symlink privilege",
+      "tlc": "Pinned TLC 1.7.4 and Java 17 enabled during the complete runner"
+    },
+    "managed_examples": {
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ],
+      "business_source_unchanged": true,
+      "frozen_round": "behavior-contracts-p7-repair04-20261120"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json",
+      "revision": "1aa69b792fb16e27d144b9baedcbc43fd9724037"
+    },
+    "isolated_installations": {
+      "receipt": "installations-final.json",
+      "tracked_files_equal_per_installation": 452
+    }
+  },
+  "retained_failures": [
+    "native-upgrade-first.log",
+    "migration-first.log",
+    "pre-registry-first.log",
+    "prior-candidate/team-archive-verify.log"
+  ],
+  "remaining": [
+    "Python drive host approval and native acceptance",
+    "Both trials use the final independent installation for subsequent checks",
+    "Business iteration, source-only refactor and all-layer desktop acceptance in both modes",
+    "Accepted product scenes and final P7 closure"
+  ],
+  "basis_commit": "b0441540d27ea08695449fc5f6a2e555b5a01e40",
+  "candidate_files": [
+    {
+      "path": "skills/vibelens/scripts/bo_observer/delivery/integration.py",
+      "sha256": "d93fe97ea28a859d0a1d397e4de9e5325780badba89b3db15906754b0fcc0123"
+    },
+    {
+      "path": "skills/vibelens/references/integration-boundary.md",
+      "sha256": "8c8bf0a3230261ef6de41ff897a539c68031f6962bde4329967db0aae3425cdd"
+    },
+    {
+      "path": "skills/vibelens/references/dependency-distribution.md",
+      "sha256": "f10751d978e107606edd64a82712caa76baaa4f3e28debf9a88b0857c4fd7e62"
+    },
+    {
+      "path": "tests/test_integration_boundary.py",
+      "sha256": "7b6228505bcd35f6e2c099a5d7b80302035c36d50189e60e799bdebeb1b09b0a"
+    }
+  ]
+}

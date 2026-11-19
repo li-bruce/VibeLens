@@ -1,0 +1,98 @@
+{
+  "scope": "Independent in-progress native trial diagnostic; not final trial acceptance",
+  "valid": true,
+  "source_unchanged": true,
+  "before": {
+    "src/http.mjs": "482fd68ff2f27cbcf160afdf5283e3198f1d217422d12c78cf6d97aae53a94b4",
+    "src/service.mjs": "2a103a9cb3b7db045626174d2f5ea48c9955bb9dc4bb52b6dad5cc4020a6b708",
+    "src/store.mjs": "5b69d55d058c5a85a6b599d3626f056b09aa2702b6271c273805a6fb81ad2cb4",
+    "integrations/bo_observe.mjs": "2a91590481282397616a2fa817a48f5ca85486d864de9409a747ae1cc5a551f3",
+    "bo_stategraph/project.json": "2a04eafb0abd16e7dc407248caadb806d64720437c26d0a995feee95ab4fc052"
+  },
+  "after": {
+    "src/http.mjs": "482fd68ff2f27cbcf160afdf5283e3198f1d217422d12c78cf6d97aae53a94b4",
+    "src/service.mjs": "2a103a9cb3b7db045626174d2f5ea48c9955bb9dc4bb52b6dad5cc4020a6b708",
+    "src/store.mjs": "5b69d55d058c5a85a6b599d3626f056b09aa2702b6271c273805a6fb81ad2cb4",
+    "integrations/bo_observe.mjs": "2a91590481282397616a2fa817a48f5ca85486d864de9409a747ae1cc5a551f3",
+    "bo_stategraph/project.json": "2a04eafb0abd16e7dc407248caadb806d64720437c26d0a995feee95ab4fc052"
+  },
+  "build_id": "77c8a57060b1231b73c79eb9091796e1529ad0a1316a1a07eeeff1cab3e5e3ff",
+  "requests": [
+    {
+      "name": "origin-rejection",
+      "actual_status": 403,
+      "expected_status": 403,
+      "captured": [
+        {
+          "id": "68912fee-4046-45ca-874a-ad0c3d2e9505:d29146e1-fe04-45a6-ad6d-40bcfe992bca:2",
+          "call_id": "c948dece-aa53-46a5-b701-48aaa68edce5",
+          "outputs": {
+            "status": 403,
+            "duration_ms": 6.357999999999947,
+            "completed": true
+          }
+        }
+      ],
+      "valid": true
+    },
+    {
+      "name": "malformed-json",
+      "actual_status": 400,
+      "expected_status": 400,
+      "captured": [
+        {
+          "id": "68912fee-4046-45ca-874a-ad0c3d2e9505:d29146e1-fe04-45a6-ad6d-40bcfe992bca:4",
+          "call_id": "07115f78-4bfa-43d0-8cc9-0d6dd7288ae3",
+          "outputs": {
+            "status": 400,
+            "duration_ms": 15.126300000000015,
+            "completed": true
+          }
+        }
+      ],
+      "valid": true
+    },
+    {
+      "name": "anonymous-request",
+      "actual_status": 401,
+      "expected_status": 401,
+      "captured": [
+        {
+          "id": "68912fee-4046-45ca-874a-ad0c3d2e9505:d29146e1-fe04-45a6-ad6d-40bcfe992bca:6",
+          "call_id": "88889116-5dfa-4244-890f-b903451fe68a",
+          "outputs": {
+            "status": 401,
+            "duration_ms": 1.3893000000000484,
+            "completed": true
+          }
+        }
+      ],
+      "valid": true
+    }
+  ],
+  "health": {
+    "enabled": true,
+    "boundary_context": true,
+    "run_id": "68912fee-4046-45ca-874a-ad0c3d2e9505",
+    "producer_id": "d29146e1-fe04-45a6-ad6d-40bcfe992bca",
+    "enqueued": 6,
+    "pending": 0,
+    "queue_submitted": 6,
+    "queue_completed": 6,
+    "flush_target": 6,
+    "errors": 0,
+    "dropped": 0,
+    "filtered": 0,
+    "last_error": null,
+    "tracing": {
+      "backend": "opentelemetry",
+      "open_spans": 0,
+      "automatic_open": 0,
+      "automatic_errors": 0,
+      "ignored": 0,
+      "external_build_contexts": 0
+    },
+    "data_errors": 0,
+    "capture_control_errors": 0
+  }
+}
