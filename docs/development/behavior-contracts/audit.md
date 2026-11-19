@@ -3,6 +3,10 @@
 Baseline: `106fddb3`. Inspected on 2026-11-17. This is a source/document audit;
 existing tests were inspected, not rerun as a new product acceptance exercise.
 
+The 2026-11-18 [whole-plan modeling review](model-construction.md) adds current
+source findings, four focused suite results and planned A29–A34 cases. The dated
+2026-11-17 baseline and document-check counts below are retained as history.
+
 ## Existing capability, gap and reuse point
 
 Paths below are relative to the repository. References describe the inspected

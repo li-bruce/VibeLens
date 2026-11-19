@@ -36,6 +36,12 @@ identified model execution, and a candidate-bound receipt.
 | A26 | Homepage/demo story and loading | Concise benefit-led copy; matching first/last graph definitions; focused prepared scenes; no prolonged full-graph filtering between scenes. Existing loading/browser regressions pass. |
 | A27 | Python drive and Node observe, plus existing reverse-mode adapter coverage and React/Vue entry fixtures | Same JSON meaning and evidence requirements. Actual async handoff, database completion and API errors work; unsupported framework paths remain explicit. |
 | A28 | Fresh dialogue trial, business iteration, source-only refactor and clean exported package | Full question/design/build/observe/change/retest record; framework fixes retested from a fresh installation; complete final run after the last fix. |
+| A29 | Source-free request containing several capabilities, state-owning objects and shared decisions | Inventory and independent business/state/rule network views match the stated scope. Preserve legitimate independent components, loops and shared predicate identity; no forced common route. |
+| A30 | Omit a stated capability, state owner, branch or applicable cross-model effect before authoring any question | Source-backed modeling obligations expose the omission. Missing-model construction targets survive until valid drafts exist; executable validation stays strict. An empty question list or containment-only graph cannot close the gap. |
+| A31 | Review the same model scope with product, architecture and development respondents; use grouped cards and ordinary chat | Equivalent confirmed semantics, stable IDs and complete applicable obligations. Conditional answers, partial responses, role changes and restart preserve one decision history; the agent resolves implementation facts. |
+| A32 | Show only part of a model, hide a shared rule dependency, then change the draft before receiving an answer | Confirmation applies only to actually reviewed matching meaning. Omitted boundaries stay explicit; stale presentation cannot confirm a newer semantic snapshot. Clear overview and boundary views use the same graph IDs. |
+| A33 | Add an independent capability; split/retire a model; discover an unmodeled source behavior; change a shared rule | Reconcile inventory and intent basis, review missing meaning and all affected consumers, refresh bindings/probes/cases, retain unrelated models/views. A source-only refactor does not trigger redundant intent questions. |
+| A34 | Complete multi-network trial through model review, native binding, observation, iteration and product scene export | Every in-scope model/boundary has its applicable static and runtime evidence. Hidden networks retain obligations. Analysis includes relevant boundary assumptions; initial and later demo graphs use the same accepted definitions. |
 
 ## Trial story and dialogue discipline
 
@@ -65,13 +71,21 @@ claim exhaustive browser application semantics.
 
 Each primary trial includes:
 
-1. Initial request, appropriate clarifications and confirmed three-model views.
+1. Initial request, model inventory, purposeful construction clarifications and
+   confirmed business/state/rule network views, including their boundaries.
 2. Source-free design, implementation, strict checks and actual live observation.
 3. A controlled concurrency scenario and deliberate omission/wrong-value case.
 4. Diagnosis of whether the defect belongs to the Skill, framework or application.
 5. A semantic iteration confirmed in ordinary language, then graph/code update.
 6. A source-only refactor without unnecessary repeated business questions.
 7. Full retest after the last framework/Skill repair and preserved screenshots.
+
+Include a small secondary fixture with an explicitly independent capability when
+the main sharing story does not naturally contain one. Keep this requirement in the
+trial setup; do not teach the Skill to add capabilities to ordinary user projects.
+For A29–A34, retain the source statement, modeled interpretation, exact question,
+answer, model change and confirmation scope. Assess unnecessary questions and
+missing model obligations separately; low question count alone is not success.
 
 Create/message new chats only when the user authorizes those trials. If the host
 cannot provide an independent chat or usage counters, disclose that limitation;

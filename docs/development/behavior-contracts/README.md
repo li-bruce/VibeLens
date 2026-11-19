@@ -2,6 +2,7 @@
 
 [中文审阅](README.zh-CN.md) · [Current implementation](audit.md) ·
 [Protocol proposal](protocol.md) · [Implementation plan](implementation.md) ·
+[Model construction through dialogue](model-construction.md) ·
 [Acceptance](acceptance.md) · [AI development guide](agent-guide.md)
 
 **Status: proposed development baseline, not an implemented capability.**
@@ -19,6 +20,12 @@ The existing business, state and rule networks remain peer models. The applicati
 owns execution and state. VibeLens owns observation, graph projection and checks.
 Drive and observe remain independent development choices.
 
+The 2026-11-18 refinement makes guided model construction explicit across P0–P7.
+Dialogue produces and confirms multiple business networks, object state models,
+shared rule networks and their interactions. Role-aware question wording supports
+that modeling work. See [the source-grounded review](model-construction.md) for
+current support, remaining gaps, grouped model review and implementation seams.
+
 ## Five discussions carried into this plan
 
 | Input | User's question | Required design response |
@@ -35,16 +42,16 @@ Drive and observe remain independent development choices.
 |---|---|---|---|
 | BC-01 | Explicit system scope, domains, instances, environment and build identity | P1, P3 | A04–A06, A10 |
 | BC-02 | Separate actual application limits, analysis bounds and abstraction | P1, P6 | A05, A06, A20 |
-| BC-03 | Multiple business/state/rule networks with explicit interactions | P1, P3 | A07–A10 |
-| BC-04 | Question ownership, authority, timing, evidence and invalidation | P2 | A01–A03, A17 |
-| BC-05 | Recalled obligations and automatic reconciliation in each coding batch | P4 | A14–A17 |
+| BC-03 | Construct and confirm multiple business/state/rule networks with explicit interactions | P1–P3 | A07–A10, A29, A30, A34 |
+| BC-04 | Model-driven questions, role-aware review, authority, evidence and invalidation | P1, P2 | A01–A03, A17, A29–A32 |
+| BC-05 | Recalled modeling obligations and automatic reconciliation in each coding batch | P4 | A14–A17, A33 |
 | BC-06 | Strict versioned JSON and one canonical owner for every definition | P1 | A04, A23 |
 | BC-07 | Source, probe and state/action correspondence across languages | P3, P4 | A11–A16, A27 |
 | BC-08 | Separate intent, mapping, capture, business, model and project reports | P4 | A18–A21 |
 | BC-09 | Optional finite analysis and source-linked counterexamples | P6 | A19–A22 |
 | BC-10 | Readable, isolated modules and minimal application coupling | P0–P7 | A12, A24, A27 |
-| BC-11 | Progressive graph inspection, truthful replay and preserved views | P5 | A21, A25 |
-| BC-12 | Evidence-backed, concise English/Chinese product story | P7 | A26, A28 |
+| BC-11 | Model overview, progressive graph inspection, truthful replay and preserved views | P5 | A21, A25, A32, A34 |
+| BC-12 | Evidence-backed, concise English/Chinese product story | P7 | A26, A28, A34 |
 
 ## Three levels of coverage
 
@@ -115,7 +122,7 @@ and observations within that scope.
 |---|---|---|
 | P0 | Baseline fixtures, source map and compatibility tests | None |
 | P1 | Versioned contracts, references, semantic validation and migration | P0 |
-| P2 | Question routing, participation preferences and concise recall | P1 |
+| P2 | Guided model construction, question routing, model review and participation preferences | P1 |
 | P3 | Native bindings, cross-model interactions and actual witnesses | P1 |
 | P4 | Batch reconciliation, invalidation and separate verification results | P2, P3 |
 | P5 | Graph/Timeline inspection of contracts, boundaries and evidence | P4 |

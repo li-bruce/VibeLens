@@ -14,6 +14,9 @@ instructions.
 5. [Acceptance cases](acceptance.md).
 6. Existing [Skill](../../../skills/vibelens/SKILL.md),
    [source guide](../../source-guide.en.md) and focused references for your change.
+7. [Model construction through dialogue](model-construction.md), including its
+   source audit and P0–P7 corrections. Apply this to the whole plan, not only the
+   question wording or first-use preference prompt.
 
 Check the actual branch and working tree. The planning baseline is `106fddb3` and
 the intended branch is `feat/behavior-contracts`; later work may legitimately
@@ -31,6 +34,12 @@ new runtime capability; do not advertise its proposed schemas as supported.
   authority, technical knowledge and participation preference are separate.
 - Questions about source facts belong to the coding process. Back answers with
   current source and executed cases. Silence and AI prose are not user approval.
+- The guided dialogue constructs and confirms the applicable model collections,
+  their internal relationships and boundaries. Restore a model inventory, identify
+  modeling gaps, review the affected network and bind its obligations. A list of
+  answered requirements questions is insufficient evidence of model construction.
+- Preserve loops, shared rules and independent capabilities. The user's "forest"
+  does not impose tree topology or require one state model per application/layer.
 - Observe invalid behavior faithfully. Never replace actual values with modeled
   values to obtain a pass. Mapping and business correctness remain separate.
 - Treat analysis bounds, production limits and abstractions as different inputs.
@@ -65,6 +74,8 @@ phases become available; do not claim not-yet-implemented hooks already ran.
 Before editing, identify:
 
 - affected requirement/model/action/property IDs and cross-model dependents;
+- additions, retirements, splits/merges and unresolved construction targets in the
+  model inventory, with their source basis and review status;
 - whether meaning changes or only source/bindings change;
 - source files, probe/reader owners and supported native capabilities;
 - existing evidence that will become stale;

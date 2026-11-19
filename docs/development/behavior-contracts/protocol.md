@@ -185,6 +185,14 @@ state read needs its own evidence; clock ordering is insufficient.
 
 Extend discovery's existing decisions. Keep current source validation and history.
 
+Questions serve [model construction](model-construction.md): their targets include
+capability boundaries, business relations, state ownership/transitions, shared rules
+and cross-model interactions. Existing `affects` IDs locate valid concepts. P1 must
+also specify strict source-backed construction targets for an omitted/not-yet-valid
+model, without allowing dangling executable references. Modeling obligations and
+question records remain distinct: the absence of authored questions cannot establish
+that the requested model scope is complete.
+
 | Field | Purpose |
 |---|---|
 | `kind` | `business_intent`, `technical_choice`, `implementation_fact`, `analysis_assumption`, or `verification_gap` |
@@ -196,6 +204,8 @@ Extend discovery's existing decisions. Keep current source validation and histor
 | `evidence_required` | Conversation confirmation, source reference, runtime witness, independent assertion or checker receipt |
 | `invalidated_by` | Meaning, source, environment, adapter, property or build changes that reopen/recheck it |
 | `resolution` | Answer, source, rationale where delegated, and exact evidence version |
+| Proposed modeling target/reference | Existing model/member/link or source-backed construction target, plus the obligation the answer resolves; final encoding is fixed in P1 |
+| Proposed review reference | Model scope, semantic revision, presentation source and omitted boundary shown before confirmation; not a replacement for semantic snapshots |
 
 Separate a decision's human status from its implementation verification status.
 A confirmed requirement may remain confirmed while its implementation evidence
@@ -235,6 +245,12 @@ Every round selects relevant ready human issues only; the three-question budget
 is not a total cap. A partial answer resolves only its addressed scope. Silence,
 a viewed graph and an agent-authored answer are not human confirmation. Questions
 can be clarified later without deleting the original answer/history.
+
+Group answers by their model or interaction boundary. A host may render question
+cards or ordinary conversation from the same records. Preserve branching history,
+partial answers and return/change across sessions. Derived readiness reports retain
+separate intent, definition, support, binding and evidence dimensions per model.
+Role adaptation changes wording/depth; all applicable modeling obligations remain.
 
 ## 6. Analysis profiles and result receipts
 

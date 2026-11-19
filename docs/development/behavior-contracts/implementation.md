@@ -11,7 +11,7 @@ paths are marked **new** and must not be confused with existing APIs.
 | Responsibility | Existing integration point | Proposed implementation |
 |---|---|---|
 | JSON and pure semantic validation | `bo_observer/protocol.py`, `schemas/`, `bo_contracts.py`, `concepts/`, `policy/` | **New** `bo_observer/behavior/{contract,domains,expressions,actions,interactions,properties,refinement}.py` |
-| Question routing and preferences | `workflow/requirements_dialogue.py`, `concept_review.py` | **New** focused `workflow/question_routing.py`; keep decision storage/history in discovery |
+| Guided model construction and review | `concepts/model.py`, `networks.py`, `network_review.py`, `workflow/requirements_dialogue.py`, `concept_review.py` | Extend concept review with modeling obligations and scoped presentations; **new** focused `workflow/question_routing.py` handles ownership/presentation. Keep canonical models and decisions in discovery |
 | Recalled obligations and impact | `workflow/iteration_recall.py`, `bo_sync.py`, `change_sync.py` | Reuse these entrypoints; add behavior-specific helpers, not a second iteration coordinator |
 | Source and actual native witnesses | Language adapters, `observation_requirements.py`, `mapping_contract.py`, `concepts/runtime.py` | Extend bindings/capabilities and narrow observation hooks; keep native execution authoritative |
 | Evidence coverage and expiry | `workflow/sync_verify.py`, existing receipts | **New** `behavior/coverage.py` and `behavior/evidence.py` for scoped reports and dependency fingerprints |
@@ -39,6 +39,10 @@ Priority: required before semantic changes.
 - Freeze representative existing fixtures: source-free draft; drive and observe;
   multiple models sharing state/instance names; shared policy; native activity /
   resources / joins; API error capture; retained personal views.
+- Include multiple business roots, independent state owners and a shared rule
+  dependency. Retain a legitimate disconnected capability and a known omitted
+  behavioral link so network review cannot confuse them. Resolve the focused
+  baseline test error recorded in [model-construction.md](model-construction.md).
 - Establish readable ownership/dependency notes and record existing failures
   independently. Do not clean an unrelated working tree to create a baseline.
 - Carry BC-01–BC-12 into a machine-checkable requirement/case inventory in the
@@ -64,14 +68,27 @@ Priority: core. Depends on P0.
   snapshots. Read old project/discovery versions without inventing new guarantees.
 - Define the initial finite-export subset as capability data even before a runner
   exists. A structurally valid contract can remain unsupported for analysis.
+- Define source-backed construction targets for models not yet valid enough to
+  enter the concept registry, modeling obligations and scoped presentation records.
+  Promote targets atomically to valid concepts; retain strict executable validation.
+  Derive the model overview from existing registries rather than maintaining a
+  second editable forest. Follow [model construction](model-construction.md).
 
-**Exit:** positive, invalid and legacy fixtures cover A04–A10/A23. Unsupported
+**Exit:** positive, invalid and legacy fixtures cover A04–A10/A23/A29/A30. Unsupported
 semantics are distinguishable from invalid definitions and unbound drafts.
 
-## P2 — Human and agent question routing
+## P2 — Guided model construction and question routing
 
 Priority: core. Depends on P1.
 
+- Implement the [construction loop](model-construction.md): restore the full model
+  inventory, build candidate business/state/rule networks, identify source-backed
+  modeling gaps, route questions, review the affected models and retain confirmation.
+  Derive obligations independently of authored questions; an empty question list
+  does not establish complete modeling of the declared scope.
+- Review each model's actual semantics and the relevant connections between models.
+  Business routes, object lifecycles and shared rule dependencies retain distinct
+  meanings. Legitimate independence is allowed; containment is not a behavioral link.
 - Extend existing discovery decisions, scheduling and source-history validation.
   Add kind, owner, stage, authority, evidence requirements and invalidation.
 - Offer one short participation preference when useful. Do not make a job title
@@ -86,13 +103,23 @@ Priority: core. Depends on P1.
 - Keep 1–3 ready human questions per round; allow any number of necessary rounds.
   Continue independent implementation work when an unrelated scope is waiting.
 - Preview the affected business/state/rule region and its boundary using existing
-  conversation/Web projection. Confirmation remains in chat, not a Web form.
+  conversation/Web projection. Record the reviewed semantic revision and omitted
+  boundary. Confirmation remains in chat; host question cards can collect answers.
+  Web remains the viewer, with no new answer form required by this plan.
+- For many questions, provide a short model index and focused review groups. Support
+  conditional questions, explanation, free text, partial answers, return/change and
+  interruption recovery through the same decision history. Review statuses describe
+  intent separately from binding, engine support and runtime verification.
+
+Initial construction review must work in P2 through existing previews and compact
+model summaries. Do not postpone the user's first model review until P5; that phase
+extends the runtime/analysis presentation after binding and iteration integration.
 
 Update `SKILL.md` with a short routing decision and links to focused references.
 Update `requirements-dialogue.md`, `iteration-dialogue.md`, `concept-models.md` and
 `project-setup.md`. Avoid embedding the full protocol in the Skill's entrypoint.
 
-**Exit:** A01–A03/A17 pass, including a product respondent, technical respondent,
+**Exit:** A01–A03/A17/A29–A32 pass, including a product respondent, technical respondent,
 mixed role, skipped preference, partial answer and role change without authority change.
 
 ## P3 — Native bindings and cross-model observation
@@ -101,6 +128,9 @@ Priority: core. Depends on P1.
 
 - Bind model variables to actual fields/functions and independent readers. Bind
   each action to its entry, actual completion and relevant error/cancel paths.
+- Expand each confirmed model and cross-model obligation into source/probe/case
+  requirements. Every registered model and shared-rule consumer retains identity
+  and coverage; one successful business route cannot stand for the entire forest.
 - Identify all application-owned entrypoints and relevant state/effect writers
   independently of authored nodes. Keep helpers and static-only symbols classified
   without pretending that every statement requires a probe.
@@ -119,7 +149,7 @@ Priority: core. Depends on P1.
 - Require concise English docstrings/JSDoc on mapped API handlers, functions and
   important parameters. Extract names into locale-specific display overlays.
 
-**Exit:** A07–A16/A27 pass in real Python and Node fixtures. React/Vue coverage
+**Exit:** A07–A16/A27/A34 pass in real Python and Node fixtures. React/Vue coverage
 reuses the language adapters and includes a real frontend entrypoint; it does not
 claim that a static callback relation proves a runtime call.
 
@@ -146,6 +176,7 @@ Full artifacts remain in files; avoid copying complete source graphs into prompt
 | Domain, queue bound, environment or fairness changes | Invalidate affected property/analysis evidence and reassess assumptions |
 | Engine, adapter, compiler, property or analysis profile changes | Invalidate receipts keyed to those semantics/tools |
 | Label, color, layout or locale changes only | Preserve semantic confirmation and analysis; test display identity/interaction only |
+| Capability/model added, retired, split or merged; an unmodeled source feature discovered | Reconcile the model inventory, record the intent basis and affected scope, update crosslinks/bindings and review any new interpretation; preserve unrelated models |
 
 Compute impact through actual typed dependencies, including consumers of shared
 rules/facts and interaction boundaries. Start conservatively; optimize reuse only
@@ -168,7 +199,7 @@ scope, coverage denominator, current evidence and missing items. A required gap
 blocks acceptance; optional unavailable analysis is reported without stopping
 native execution. Check removal and scope narrowing against the protected baseline.
 
-**Exit:** A14–A20/A23 pass, including deliberately omitted recall/probe/model update
+**Exit:** A14–A20/A23/A33/A34 pass, including deliberately omitted recall/probe/model update
 and invalidated evidence. Existing acceptance cannot be bypassed by the new report.
 
 ## P5 — Progressive graph and Timeline inspection
@@ -177,6 +208,9 @@ Priority: core UI. Depends on P4.
 
 - Preserve the initial compact business view. State/rule subnets remain separately
   inspectable and connected by typed mappings. Do not add a mandatory formal layer.
+- Reuse model memberships for a compact overview, per-network review and selected
+  boundary views. Show independent capabilities without a fabricated common path.
+  Shared rule dependencies keep their IDs across views and review scopes.
 - Add concise on-demand details: meaning, possible states, action changes,
   properties, source bindings, latest evidence and unresolved boundary.
 - Highlight a selected property/path across hidden layers using existing typed
@@ -193,7 +227,7 @@ Priority: core UI. Depends on P4.
   graph command. Analysis launch, if added, accepts a validated profile ID and
   bounded options, never arbitrary shell text.
 
-**Exit:** A21/A25 pass in desktop 2D/3D and Timeline, in English and Chinese.
+**Exit:** A21/A25/A32/A34 pass in desktop 2D/3D and Timeline, in English and Chinese.
 Viewer operation remains usable without the optional analysis dependency.
 
 ## P6 — Optional TLA+/TLC adapter
@@ -215,6 +249,9 @@ thread, callback, database or distributed-system equivalence.
   progress/fairness subset only with separate supported and rejected fixtures.
 - Check model admission before starting TLC: initialization, domains, environment,
   frame conditions, property applicability and unsupported callbacks/operators.
+- Select models with their interaction/environment dependencies. A missing related
+  network must remain an explicit boundary or unresolved gap, not silently disappear
+  from a "complete" analysis because its view was hidden or its questions were skipped.
 - Pin a tested TLC distribution/checksum and supported Java runtime. Resolve it
   as a tool dependency using the current download/cache/fallback convention.
   Retain notices; do not copy tools or Java into the user's application bundle.
@@ -246,6 +283,9 @@ Depends on the phases included in the intended release.
   corrections, confirmations, source snapshots and usage counters when available.
 - Complete initial design, implementation, real observation, one semantic change
   and one source-only refactor. Inspect every configured layer and interaction.
+- Inspect the initial model inventory and construction dialogue, including independent
+  capabilities, different state owners, shared rules and an interpretation corrected
+  by the simulated user. Retain graph revisions and the exact confirmed boundaries.
 - Diagnose framework/Skill failures at their source; repair the maintained
   package, then repeat in a clean trial. Do not teach only the sample app a workaround.
 - Retain failures, fixes and the final complete retest, with screenshots of initial
@@ -257,7 +297,7 @@ Depends on the phases included in the intended release.
 - Update the source guide, capability inventory, Skill references and release
   notes. Product pages follow accepted evidence, as specified below.
 
-**Exit:** A24–A28 pass. Merge/tag/publish only when the release is requested; this
+**Exit:** A24–A34 pass. Merge/tag/publish only when the release is requested; this
 planning task does not authorize a release or a new public feature claim.
 
 ## Readability and implementation standards
@@ -284,7 +324,7 @@ planning task does not authorize a release or a new public feature claim.
 | Risk | Planned control | Decision owner |
 |---|---|---|
 | A second description drifts away from the native models | Reference existing definitions, generate derived artifacts, compare confirmed/native semantics | Protocol and binding implementation |
-| Role-aware dialogue becomes an onboarding questionnaire | Optional single preference prompt, then scoped questions; measure avoidable questions in trials | Skill workflow implementation |
+| Role-aware dialogue collects answers without constructing models | Model inventory and obligations first; grouped graph review, optional preference and scoped questions; measure redundant questions and unresolved model obligations separately | Skill workflow implementation |
 | Formal export silently drops unsupported code or behavior | Capability admission, explicit unknowns, translation fixtures and separate analysis subject | Analysis adapter implementation |
 | State explosion | Estimate profile size, set time/memory limits and report incomplete; preserve the original model | Analysis runner; user only if business meaning must change |
 | More checks make each coding batch noisy or expensive | Focused recall, dependency-based selection, measured cold/warm scan and receipt reuse | Workflow implementation |
@@ -304,7 +344,7 @@ Publish this story after the corresponding acceptance gates:
 | Product section | Message | Visual/evidence |
 |---|---|---|
 | Opening | See the logic behind AI-written code / 看懂 AI 写出的程序 | A clean, focused product graph |
-| Establish intent | Shape the flow together / 先把业务说清楚 | Short dialogue and matching business/state/rule views |
+| Establish intent | Shape the application's flows, states and rules / 一起理清流程、状态与规则 | Short dialogue, model overview and matching individual business/state/rule networks |
 | Inspect execution | Follow a change through the system / 沿着变化逐层查看 | Macro replay followed by one code/data drilldown |
 | Iterate | Check what changed / 修改后，核对变化 | One changed region, preserved layout and actual rerun |
 | Optional analysis detail | Explore difficult sequences / 检查难遇到的执行顺序 | A clearly identified model counterexample, only after P6 passes |
@@ -315,8 +355,8 @@ result details. Keep headlines short, screenshots legible and English/Chinese
 consistent. Avoid generic defensive slogans, implementation checklists and demo-
 specific feature lists in the main product pitch.
 
-Demo outline: request a small file-sharing app → confirm its three connected
-models → run and record → inspect a revoked-but-queued download problem → drill
+Demo outline: request a small file-sharing app → construct and confirm its applicable
+business networks, state models and shared rules → run and record → inspect a revoked-but-queued download problem → drill
 to the actual permission read/start boundary → describe the problem to the coding
 AI → update code and graphs → rerun. The chosen revocation semantics must be
 confirmed in that trial; they are not a default business rule imposed by the Skill.
