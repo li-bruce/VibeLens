@@ -1,6 +1,6 @@
-# P1 implementation: scalar definition checks
+# P1 implementation: definition checks
 
-This is the first P1 slice on `feat/behavior-contracts-sequential`. P1 remains in
+These are the first P1 slices on `feat/behavior-contracts-sequential`. P1 remains in
 progress. The full [protocol proposal](protocol.md) and its acceptance obligations
 remain the target; this slice does not replace them with a smaller release scope.
 
@@ -68,9 +68,42 @@ The semantic modules do not import a native executor, browser, application packa
 or external analysis tool. New modules are copied to fixtures only through the
 existing managed synchronization command.
 
+## Collection, identity and rule reference extension
+
+The second definition slice adds sets, sequences and maps of named domains.
+Sets use unique arrays, sequences retain order and duplicates, and maps use unique
+typed key/value entries. Nested domains are resolved once; cycles and unknown
+dependencies fail. Lookup specifies its fallback and uses zero-based sequence
+indices. Bounded quantifiers have typed local parameters and reject unbounded
+domains. Their general evaluation belongs to the later analysis adapter.
+
+Representation counts inspect keys and payloads as well as container length.
+Large finite counts are reported without materializing the state space. A finite
+set of values differs from a sequence of arbitrary length. A cap on live object
+count does not make growing object identities finite; a fixed identity pool is
+an explicit, model-qualified representation choice. These declarations never
+change the application's limits or collected values.
+
+`policy_ref` selects a canonical rule operation and binds exactly its reachable
+inputs. Shared expressions retain their IDs. Native predicates stay opaque,
+including a predicate whose name appears to describe a familiar operation. The
+validator does not execute them or infer their truth. Input reads participate in
+the action's existing read checks.
+
+`definition_capabilities` is versioned, machine-readable parser/type-checker
+capability data. Finite export and a model-checking runner remain unimplemented;
+the domain cardinalities are not exporter admission or runtime verification.
+
+Additional modules are `domain_size.py` (bounded cardinality arithmetic),
+`policy_refs.py` (canonical dependency/input resolution), and `capabilities.py`
+(implemented capability declaration). Scalar-only facts in discovery v2 remain
+scalar: collection parameters/literals do not silently widen that schema.
+
 ## Still required to complete P1
 
-1. Collection/identity domains, supported policy references and capability data.
+1. Formal-export admission data, supported predicate semantics and any required
+   richer canonical fact mapping. The parser capabilities above do not establish
+   these analysis/native capabilities.
 2. Cross-model interactions, assumptions and refinement contracts with precise refs.
 3. `business-discovery/v3` construction targets, independent modeling obligations,
    scoped review records and strict promotion into existing concepts.

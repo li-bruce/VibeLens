@@ -1,0 +1,102 @@
+{
+  "scope": "P1 domain representation and canonical policy reference validation",
+  "valid": true,
+  "checks": [
+    {
+      "name": "domains",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_domains.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-domains/domains.log",
+      "sha256": "8d88d0d1786a2a856e83d356117cfc9285ea78e62e10d0a2d25ebb0f75f340ad"
+    },
+    {
+      "name": "scalar",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_contract.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-domains/scalar.log",
+      "sha256": "e9cc50e3543867b371e617c42da37fca1192c85c80b0606f088b7cfa5110c709"
+    },
+    {
+      "name": "ledger",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_plan.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-domains/ledger.log",
+      "sha256": "fd933ad1324e6655a3bf85878e6d4771d209f9743a869b0f9a32db142acb6f53"
+    },
+    {
+      "name": "forest",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_baseline.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-domains/forest.log",
+      "sha256": "d4bb3642168b4104bbc76d83d0562c7dc91e9ee8e843484438c8c05391b5279a"
+    },
+    {
+      "name": "source",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tools/check_source.py",
+        "--format"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-domains/source.log",
+      "sha256": "ec8a932aec77e5f721c92ad7c2392a9d6046aaff30ff1c0224b3d428180a91a7"
+    },
+    {
+      "name": "package",
+      "command": [
+        "python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tools/check_package.py"
+      ],
+      "exit_code": 0,
+      "log": "docs/review/behavior-contracts-sequential/p1-domains/package.log",
+      "sha256": "499433176f7fba89d536d405f4f89676e15a0b0caf3d381b8f04c656f139fbe7"
+    }
+  ],
+  "full_P1_complete": false,
+  "formal_analysis": "not_run",
+  "native_binding": "not_checked",
+  "source_sha256": {
+    "skills/vibelens/scripts/bo_observer/behavior/__init__.py": "f44ed1479a0daf66687aa70a5bb34b1765416ea1250921ded65e17d33fb9a47e",
+    "skills/vibelens/scripts/bo_observer/behavior/actions.py": "c359ee45c91b78c3f1f15eebe9d305b7a00d874820045ed626b103ded4d4c9df",
+    "skills/vibelens/scripts/bo_observer/behavior/capabilities.py": "77b46c0e3e11c12f6dce9edd62810b896d4132115f0a88eaf65fb1abe9acd46b",
+    "skills/vibelens/scripts/bo_observer/behavior/contract.py": "5945c60ce53a66a9a14df9c1c9bfe2d5eab17e2f57a6bc29dac4ef5090f293bb",
+    "skills/vibelens/scripts/bo_observer/behavior/diagnostics.py": "c83e2fefae3cd6b4b263560e815847e38c1e33b79a27fb3c867847fb098d8320",
+    "skills/vibelens/scripts/bo_observer/behavior/domain_size.py": "0e7fea8547f0353ff7afe8aab7fcbdfbaa07de671769218af6e23019d4fb4264",
+    "skills/vibelens/scripts/bo_observer/behavior/domains.py": "d72455bf923ea0861cc01538099dc71300dce3876dac527cd89823b24e86be89",
+    "skills/vibelens/scripts/bo_observer/behavior/expressions.py": "a584d3a9054bb72c424afd675618f855d9694e57c7b181e6382e8d6fd83d8e05",
+    "skills/vibelens/scripts/bo_observer/behavior/policy_refs.py": "7291e583cb93f9f3e05b48132fd8e356d0bcc384c4e71ed3f153a5337e66d9eb",
+    "skills/vibelens/scripts/bo_observer/behavior/references.py": "b44546cc826ac1d439d0216f42ccefa0cc2cb9f2483564e30208ac04e257a875",
+    "skills/vibelens/scripts/bo_observer/schemas/behavior.schema.json": "9d83c4964305b3a30e04dfe69a64db91bc743acf24df37fec8b7c1900ede8ee0",
+    "tests/test_behavior_domains.py": "910d913afd0beb48e2af6b59378c34ac27f1aeb43640b32a6d8fc76f15f3b605"
+  }
+}

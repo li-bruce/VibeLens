@@ -22,9 +22,10 @@ class ExpressionType:
 class Expressions:
     """One contract's typed environment; no file access, native calls or side effects."""
 
-    def __init__(self, domains, variables):
+    def __init__(self, domains, variables, policy=None):
         self.domains = domains
         self.variables = variables
+        self.policy = policy
 
     def check(self, expression, path, *, parameters=None, allow_after=False, depth=0):
         """Return a type and read set, or a diagnostic with the exact JSON path."""
@@ -55,6 +56,27 @@ class Expressions:
             ident = expression["id"]
             require(ident in parameters, "unknown_parameter", path + "/id", ident)
             return ExpressionType(parameters[ident])
+        options = {"parameters": parameters, "allow_after": allow_after, "depth": depth + 1}
+        if op in {"forall", "exists"}:
+            domain, symbol = expression["domain"], expression["bind"]
+            require(domain in self.domains, "unknown_domain", path + "/domain", domain)
+            require(
+                self.domains[domain].finite_capability()["supported"],
+                "unsupported_quantifier_domain",
+                path + "/domain",
+                "Quantification needs a finite value domain",
+            )
+            require(
+                symbol not in parameters,
+                "parameter_shadowing",
+                path + "/bind",
+                "Use a distinct quantified parameter name",
+            )
+            options["parameters"] = {**parameters, symbol: domain}
+            return self.expect_boolean(expression["body"], path + "/body", **options)
+        if op == "policy_ref":
+            require(self.policy is not None, "unknown_policy", path, "No canonical policy registry")
+            return ExpressionType("$boolean", self.policy.check(expression, path, self, options))
         args = [
             self.check(
                 arg,
@@ -66,6 +88,8 @@ class Expressions:
             for number, arg in enumerate(expression["args"])
         ]
         reads = frozenset(read for arg in args for read in arg.reads)
+        if op in {"member", "select"}:
+            return self._collection(op, args, reads, path)
         if op in {"all", "any", "not", "implies"}:
             require(
                 all(compatible(arg.domain, "$boolean", self.domains) for arg in args),
@@ -90,6 +114,36 @@ class Expressions:
         )
         return ExpressionType("$boolean" if op in {"lt", "le"} else "$integer", reads)
 
+    def _collection(self, op, args, reads, path):
+        """Membership keeps duplicate/order rules; select has an explicit default."""
+        ident = args[1].domain if op == "member" else args[0].domain
+        domain = self.domains.get(ident)
+        kinds = {"set", "sequence"} if op == "member" else {"map", "sequence"}
+        require(
+            domain is not None and domain.kind in kinds,
+            "expression_type",
+            path,
+            "The operation requires " + "/".join(sorted(kinds)),
+        )
+        if op == "member":
+            expected, actual = domain.element.id, args[0].domain
+        else:
+            expected = domain.key.id if domain.kind == "map" else "$integer"
+            actual = args[1].domain
+            require(
+                compatible(args[2].domain, domain.element.id, self.domains),
+                "expression_type",
+                path,
+                "Select default must match the value domain",
+            )
+        require(
+            compatible(actual, expected, self.domains),
+            "expression_type",
+            path,
+            "Collection operand type differs",
+        )
+        return ExpressionType("$boolean" if op == "member" else domain.element.id, reads)
+
     def expect_boolean(self, expression, path, **options):
         result = self.check(expression, path, **options)
         require(
@@ -101,7 +155,7 @@ class Expressions:
         return result
 
 
-def known_value(expression, values):
+def known_value(expression, values, checker=None):
     """Partially evaluate a checked initial predicate using canonical start values.
 
     Unspecified facts stay unknown. This only finds definite contradictions; it
@@ -112,9 +166,9 @@ def known_value(expression, values):
         return expression["value"]
     if op == "var":
         return values.get(expression["id"], UNKNOWN)
-    if op == "param":
+    if op in {"param", "policy_ref", "forall", "exists"}:
         return UNKNOWN
-    args = [known_value(arg, values) for arg in expression["args"]]
+    args = [known_value(arg, values, checker) for arg in expression["args"]]
     if op == "all" and any(arg is False for arg in args):
         return False
     if op == "any" and any(arg is True for arg in args):
@@ -134,8 +188,33 @@ def known_value(expression, values):
     if op in {"eq", "ne"}:
         from .domains import value_key
 
-        equal = value_key(args[0]) == value_key(args[1])
+        domain = (
+            checker.domains.get(checker.check(expression["args"][0], "/initial").domain)
+            if checker
+            else None
+        )
+        key = domain.value_key if domain else value_key
+        equal = key(args[0]) == key(args[1])
         return equal if op == "eq" else not equal
+    if op in {"member", "select"}:
+        if checker is None:
+            return UNKNOWN
+        pos = 1 if op == "member" else 0
+        domain = checker.domains[checker.check(expression["args"][pos], "/initial").domain]
+        if op == "member":
+            return any(
+                domain.element.value_key(args[0]) == domain.element.value_key(v) for v in args[1]
+            )
+        if domain.kind == "sequence":
+            return args[0][args[1]] if 0 <= args[1] < len(args[0]) else args[2]
+        return next(
+            (
+                item["value"]
+                for item in args[0]
+                if domain.key.value_key(item["key"]) == domain.key.value_key(args[1])
+            ),
+            args[2],
+        )
     if op == "lt":
         return args[0] < args[1]
     if op == "le":

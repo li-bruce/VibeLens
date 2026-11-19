@@ -34,6 +34,7 @@ def main():
     run(ROOT, "tests/test_behavior_plan.py")
     run(ROOT, "tests/test_behavior_baseline.py")
     run(ROOT, "tests/test_behavior_contract.py")
+    run(ROOT, "tests/test_behavior_domains.py")
     run(ROOT, "tools/check_package.py")
     run(ROOT, "tests/test_document_links.py")
     run(ROOT, "tests/test_conversation_controls.py")

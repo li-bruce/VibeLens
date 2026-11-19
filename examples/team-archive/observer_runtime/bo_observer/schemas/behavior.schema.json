@@ -84,7 +84,11 @@
               "enum",
               "integer",
               "number",
-              "string"
+              "string",
+              "set",
+              "sequence",
+              "map",
+              "identity"
             ]
           },
           "values": {
@@ -121,6 +125,38 @@
             },
             "uniqueItems": true,
             "minItems": 1
+          },
+          "element_domain": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "key_domain": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "object_ref": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "max_items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "max_live": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "identity_policy": {
+            "enum": [
+              "fixed_pool",
+              "monotonic",
+              "opaque"
+            ]
           }
         },
         "required": [
@@ -381,14 +417,7 @@
               "minLength": 1,
               "pattern": "\\S"
             },
-            "value": {
-              "type": [
-                "string",
-                "number",
-                "boolean",
-                "null"
-              ]
-            }
+            "value": {}
           },
           "required": [
             "op",
@@ -645,6 +674,129 @@
           "required": [
             "op",
             "args"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "member"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/expression"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "required": [
+            "op",
+            "args"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "select"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/expression"
+              },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          },
+          "required": [
+            "op",
+            "args"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "forall"
+            },
+            "domain": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "bind": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "body": {
+              "$ref": "#/$defs/expression"
+            }
+          },
+          "required": [
+            "op",
+            "domain",
+            "bind",
+            "body"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "exists"
+            },
+            "domain": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "bind": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "body": {
+              "$ref": "#/$defs/expression"
+            }
+          },
+          "required": [
+            "op",
+            "domain",
+            "bind",
+            "body"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "policy_ref"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "bindings": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/expression"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "id",
+            "bindings"
           ]
         }
       ]
