@@ -367,13 +367,25 @@ export class BOProbe {
     };
     let closed = false,
       completionBuilder = null;
+    // Callback-based transports finish after their request listener returns.
+    // This explicit scope stays active until the physical finish/fail boundary.
+    const callbackScope = {
+      probe: this,
+      node,
+      callId: context.callId,
+      identity: context,
+      entryId: null,
+      active: true,
+    };
     const record = (phase, values = () => ({})) => this.record(node, phase, values, context);
     const finish = (phase, values) => {
       if (closed) return null;
       closed = true;
+      callbackScope.active = false;
       return record(phase, values);
     };
     const entryId = record("enter", builder);
+    callbackScope.entryId = entryId;
     return {
       entryId,
       callId: context.callId,
@@ -385,6 +397,11 @@ export class BOProbe {
       fail: (values) => finish("error", values),
       run: (operation) =>
         this.bo_call_context_async(node, context.callId, { ...context, entryId }, operation),
+      // Preserve synchronous return/throw behavior and native async descendants.
+      runUntilEnd: (operation) => {
+        const runner = this.bo_tracing || bo_invocation_store;
+        return runner ? runner.run(callbackScope, operation) : operation();
+      },
       child: (child, operation, settings = {}) =>
         this.span(child, operation, {
           ...Object.fromEntries(

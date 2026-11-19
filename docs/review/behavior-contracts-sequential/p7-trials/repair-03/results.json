@@ -1,0 +1,114 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Shared Node HTTP boundary, context lifetime and portable dialogue export repair. Fresh trial acceptance remains open.",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "9d03525e397202f56c257a885cd296fdd5882458",
+  "gates": {
+    "full_regression": {
+      "exit_code": 0,
+      "log": "full-verify-retest.log",
+      "unittest_reported_tests": 1097,
+      "unittest_suites": 95,
+      "skips": 1,
+      "skip_reason": "Windows file-symlink privilege",
+      "selected_tlc_tests": 27,
+      "selected_tlc_skips": 0
+    },
+    "node_http": {
+      "valid": true,
+      "results": [
+        {
+          "mode": "native",
+          "valid": true,
+          "native_calls": 2,
+          "recorded_events": 18
+        },
+        {
+          "mode": "otel",
+          "valid": true,
+          "native_calls": 2,
+          "recorded_events": 18
+        },
+        {
+          "mode": "disabled",
+          "valid": true,
+          "native_calls": 2,
+          "recorded_events": 0
+        },
+        {
+          "mode": "transport-fault",
+          "valid": true,
+          "native_calls": 2,
+          "recorded_events": 0
+        }
+      ]
+    },
+    "source": {
+      "valid": true,
+      "receipt": "source.json"
+    },
+    "managed_examples": {
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ],
+      "business_source_unchanged": true
+    },
+    "clean_export": {
+      "receipt": "clean-export.json"
+    }
+  },
+  "retained_failures": [
+    "native-origin-result.json",
+    "http-boundary-first.log",
+    "http-boundary-diagnostic.log",
+    "integration-first.log",
+    "full-verify-first.log"
+  ],
+  "candidate_files": [
+    {
+      "path": "skills/vibelens/scripts/bo_observer/adapters/javascript/bo_http.mjs",
+      "sha256": "91ff72f050d12d2f8183f7fa3b07072e9158b6f68bcaca351df55ad77dcae172"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs",
+      "sha256": "98b01fb931ebd6d2e165db47a2b70b1d5d45fab18ba877f9d69e1f34e64654e9"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/delivery/integration.py",
+      "sha256": "facc1fb389896b38174604c3fb435e00d61f03120ccdd939a1eb9020b12816b0"
+    },
+    {
+      "path": "skills/vibelens/references/telemetry.md",
+      "sha256": "bce301a7f07e06675859dfa6c73429969310fe06d54e793f51e967c2918acad8"
+    },
+    {
+      "path": "tools/test_http_boundary_node.mjs",
+      "sha256": "0fc0f2a9c26a0a728936617c8841dd7484cafc3211d7e7e68219cb998a00e46f"
+    },
+    {
+      "path": "tools/export_trial_dialogue.py",
+      "sha256": "dee4a82bc9b51444e0fb2b722b216b3ae3d1e60a595c11ea8f639711c144382f"
+    },
+    {
+      "path": "tests/test_trial_dialogue_links.py",
+      "sha256": "407aad9e2f0b9a62ac66976c3dcb85db88c90cbfb964acdf590fe10b2cf7bf58"
+    },
+    {
+      "path": "tests/test_integration_boundary.py",
+      "sha256": "debc80674816765dee2b520569d8a9a992a1a685c2fe9fd75ca3d145f7ef8549"
+    },
+    {
+      "path": "tools/verify.py",
+      "sha256": "da213a86670b2e2675e8b909b6ef5422e16ab5e585075052cd15d8ea65317e6f"
+    }
+  ],
+  "remaining": [
+    "Python drive host approval and native acceptance",
+    "Adopt this independently installed package in both trials and repeat actual rejected-request checks",
+    "Business iteration, source-only refactor and all-layer desktop acceptance in both modes",
+    "Accepted product scenes and final P7 closure"
+  ]
+}

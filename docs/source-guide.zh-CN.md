@@ -28,6 +28,14 @@ Python 追踪适配器的 `bo_instrument_flask` 将上游请求采集入口放�
 解析错误、正常返回和重复安装；[P7 回归记录](review/behavior-contracts-sequential/p7-trials/http-boundary-review.md)
 保留了原始 403 漏采及修复后的证据。
 
+Node 的 [bo_http.mjs](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_http.mjs)
+在原生请求入口外层采集，路由和权限仍由项目定义。`BOProbe.runUntilEnd`
+将异步子调用关联到实际请求，直到响应结束，同时保留原生返回和异常。
+`tools/test_http_boundary_node.mjs` 检查并发归属、提前返回、断线、异常、
+SDK 与原生上下文，以及观察器关闭或传输失败时的业务结果。
+[Node 修复记录](review/behavior-contracts-sequential/p7-trials/repair-03/README.md)
+分别保留试用工程中的真实遗漏和通用适配器回归。
+
 设计阶段的对话图由 `web/design_preview.py` 和 `workflow/construction_review.py` 生成，
 共用 `web/semantic_names.py` 读取当前语言的语义名称，保持节点身份与确认范围不变。
 查看器的 `view-selection.js` 选择新设计的初始视图；`viewer.js` 优先恢复用户保存的选择。

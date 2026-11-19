@@ -98,6 +98,34 @@ CSRF and body-parser middleware. A probe inside a route handler cannot observe
 responses that bypass that handler. For Node/Express, either bootstrap upstream
 HTTP instrumentation before loading the application, or place the isolated native
 request observer before rejecting middleware and finish it on the actual response.
+For a Node request listener (including an Express application), the managed
+`bo_http.mjs` adapter supplies this boundary without another framework dependency:
+
+```javascript
+import { createServer } from "node:http";
+import { bo_observeHttp } from "./bo_stategraph/bo_http.mjs";
+
+const bo_handler = bo_observeHttp(app, {
+  probe: bo_probe,
+  resolve: request => bo_registeredRoute(request),
+});
+createServer(bo_handler).listen(port);
+```
+
+The project-owned resolver returns `{node, inputs?, context?}` for a real,
+source-bound route, and `null` for observer endpoints or unselected routes. Reuse
+the native route declarations; do not maintain a second guessed routing policy.
+It runs before parsing, consumes no body, and must not collect credentials or raw
+query strings. Declare selected output fields `status`, `completed` and
+`duration_ms` on the API node. Completion follows Node's response `finish` or
+`close` event: an interrupted response has `completed: false`, and no `status`
+when headers were never sent. HTTP completion does not assert business success
+or receipt by the client. Retain the application's own OTel provider if present.
+Use one boundary per registered request, rather than combining this wrapper with
+a second capture of the same upstream HTTP span. Internal functions keep their
+own probes. `runUntilEnd` preserves asynchronous request ownership until the
+response ends, while keeping the native listener's return and exception behavior.
+
 Resolve a registered route against a concrete source declaration; unresolved
 routes remain unmapped instead of acquiring an invented business node. Verify
 real rejected requests and their captured final statuses in addition to normal

@@ -191,6 +191,15 @@ guard/parser responses, closure, unchanged guard order and duplicate installatio
 The [P7 regression record](review/behavior-contracts-sequential/p7-trials/http-boundary-review.md)
 retains the original missed 403 and the repaired result.
 
+The Node adapter [bo_http.mjs](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_http.mjs)
+wraps a native request listener before guards and parsing. Source-bound routing
+stays in the application. Its callback scope ends on the real response boundary;
+`runUntilEnd` in `BOProbe` preserves asynchronous child ownership without changing
+native returns or throws. `tools/test_http_boundary_node.mjs` checks concurrent
+requests, early exits, disconnects, exceptions, SDK/native context and disabled or
+failed observation. The [Node repair record](review/behavior-contracts-sequential/p7-trials/repair-03/README.md)
+separates the actual trial failure from the reusable adapter regression.
+
 [observation/capture_context.py](../skills/vibelens/scripts/bo_observer/observation/capture_context.py)
 projects actual invocation boundaries to value-free headers and extracts the
 ancestors required by focused facts. `session.py` retains bounded open-call

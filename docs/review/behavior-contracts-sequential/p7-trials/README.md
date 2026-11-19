@@ -1,7 +1,7 @@
 # P7 — Independent candidate trials
 
 Status: in progress. P0–P6 were implemented, regressed and committed before
-creating either trial. Candidate: `87ab32d5` on
+creating either trial. Initial candidate: `87ab32d5` on
 `feat/behavior-contracts-sequential`. No merge, release or public deployment.
 
 The first design attempts exposed shared viewer/preview issues before any native
@@ -55,3 +55,24 @@ The first canonical repair passed its full regression, selected TLC checks and
 clean-export gates: [repair receipt](repair-01/results.json). P7 remains open;
 clean-install retests use Python drive and Node observe, as explicitly confirmed
 by the repository owner. Initial attempts were stopped before native coding.
+
+## Native trial findings and next gate
+
+The fresh retests use candidate `e9d8ee50`. Python drive is chat
+`01a1f415-d28c-72b1-ae26-0c89f9b4aed0`; Node observe is chat
+`01a1f415-e2a9-7171-86f8-ec87707ead07`. Public dialogue snapshots and simulated
+answers are in `dialogue/`. The first native source archives are explicitly
+in-progress snapshots, not accepted application releases.
+
+The shared Flask boundary repair was committed as `9d03525e` with its
+[full regression and export receipt](repair-02/results.json). Independent native
+requests also exposed a missing origin-rejection return in the Node trial;
+[repair 03](repair-03/README.md) records the actual failure and reusable Node
+adapter checks. Observer health being clear does not prove every response was
+captured: actual response outcomes must be compared with recorded boundaries.
+
+Before closing P7, both retests must use the repaired canonical installation,
+pass independent source/runtime/browser checks, complete a business iteration
+and a source-only refactor, and preserve their resulting graph changes and
+captures. Product scenes and their final export follow those gates. The ledger
+retains P7 as `in_progress` until that complete evidence exists.

@@ -1,0 +1,85 @@
+{
+  "scope": "Independent in-progress native trial diagnostic; not final trial acceptance",
+  "valid": false,
+  "source_unchanged": true,
+  "before": {
+    "src/http.mjs": "9c67ba72ca84ba9be9017f98c9162b2f4796d02c9f6bd339902cf63f6dcc5b1d",
+    "src/service.mjs": "94241852281a9b003efd3bb18386e08280c287f896d48557cd3735c77439c128",
+    "src/store.mjs": "133cd971e5a21573df5e3b5bf3dff84fe26ed6e3be59a49b80f3186fd0b59324",
+    "integrations/bo_observe.mjs": "6e3093b0d4b928218e2fd8daac30291ffe72614b9a4df7b82b8a8717baf3658e",
+    "bo_stategraph/project.json": "5b157e553d3229d993889d19bd33475fe800e95cf766ebced2bfea3d9539debc"
+  },
+  "after": {
+    "src/http.mjs": "9c67ba72ca84ba9be9017f98c9162b2f4796d02c9f6bd339902cf63f6dcc5b1d",
+    "src/service.mjs": "94241852281a9b003efd3bb18386e08280c287f896d48557cd3735c77439c128",
+    "src/store.mjs": "133cd971e5a21573df5e3b5bf3dff84fe26ed6e3be59a49b80f3186fd0b59324",
+    "integrations/bo_observe.mjs": "6e3093b0d4b928218e2fd8daac30291ffe72614b9a4df7b82b8a8717baf3658e",
+    "bo_stategraph/project.json": "5b157e553d3229d993889d19bd33475fe800e95cf766ebced2bfea3d9539debc"
+  },
+  "build_id": "d05a53458c998659db0ab565cbcb6c4347d3ae2e6683ff63da9d0060b7de9923",
+  "requests": [
+    {
+      "name": "origin-rejection",
+      "actual_status": 403,
+      "expected_status": 403,
+      "captured": [],
+      "valid": false
+    },
+    {
+      "name": "malformed-json",
+      "actual_status": 400,
+      "expected_status": 400,
+      "captured": [
+        {
+          "id": "e1b1c298-cf9d-4c38-a7d5-b170806884b6:822372a0-90c9-4816-ab1d-a70669ff23f6:2",
+          "call_id": "4c741a02-6689-4971-8276-31f8467f3350",
+          "outputs": {
+            "status": 400,
+            "duration_ms": 14.421499999999924
+          }
+        }
+      ],
+      "valid": true
+    },
+    {
+      "name": "anonymous-request",
+      "actual_status": 401,
+      "expected_status": 401,
+      "captured": [
+        {
+          "id": "e1b1c298-cf9d-4c38-a7d5-b170806884b6:822372a0-90c9-4816-ab1d-a70669ff23f6:4",
+          "call_id": "5456a8d7-af15-4c66-84a4-6709c8fe6063",
+          "outputs": {
+            "status": 401,
+            "duration_ms": 0.9722999999999047
+          }
+        }
+      ],
+      "valid": true
+    }
+  ],
+  "health": {
+    "enabled": true,
+    "boundary_context": true,
+    "run_id": "e1b1c298-cf9d-4c38-a7d5-b170806884b6",
+    "producer_id": "822372a0-90c9-4816-ab1d-a70669ff23f6",
+    "enqueued": 4,
+    "pending": 0,
+    "queue_submitted": 4,
+    "queue_completed": 4,
+    "flush_target": 4,
+    "errors": 0,
+    "dropped": 0,
+    "filtered": 0,
+    "last_error": null,
+    "tracing": {
+      "backend": "opentelemetry",
+      "open_spans": 0,
+      "automatic_open": 0,
+      "automatic_errors": 0,
+      "ignored": 0,
+      "external_build_contexts": 0
+    },
+    "capture_control_errors": 0
+  }
+}

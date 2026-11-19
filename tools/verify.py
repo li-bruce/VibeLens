@@ -108,6 +108,7 @@ def main():
     run(ROOT, "tests/test_telemetry.py")
     run(ROOT, "tests/test_context_mapping.py")
     subprocess.run(["node", "tools/test_telemetry_node.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_http_boundary_node.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_telemetry_view.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_capture_scope.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_lifecycle_definitions.mjs"], cwd=ROOT, check=True)

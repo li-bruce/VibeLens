@@ -58,17 +58,22 @@ assert recording_session.machine_registry is machine_registry
 """
         result = subprocess.run(
             [sys.executable, "-I", "-B", "-c", code, str(self.root)],
-            cwd=self.root, capture_output=True, text=True, encoding="utf-8",
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_python_executes_without_observer_installation(self):
         result = integration.install(self.root, "python")
         self.assertEqual(len(result["files"]), 7)
-        self.assertFalse(any(
-            p.suffix in {".wasm", ".html", ".css"} or p.name.endswith(".vendor.js")
-            for p in self.root.rglob("*")
-        ))
+        self.assertFalse(
+            any(
+                p.suffix in {".wasm", ".html", ".css"} or p.name.endswith(".vendor.js")
+                for p in self.root.rglob("*")
+            )
+        )
         self.assertFalse((self.root / "observer_runtime").exists())
         # The copied dependency set must execute a real waiting/resume sequence,
         # not merely import while the full observer happens to be on sys.path.
@@ -123,13 +128,22 @@ print(json.dumps(states))
 
     def test_javascript_adapter_loads_without_python_or_viewer(self):
         result = integration.install(self.root, "javascript")
-        self.assertEqual(len(result["files"]), 2)
+        self.assertEqual(
+            set(result["files"]),
+            {
+                "bo_stategraph/bo_runtime.mjs",
+                "bo_stategraph/bo_capture.mjs",
+                "bo_stategraph/bo_http.mjs",
+            },
+        )
         adapter = (self.root / "bo_stategraph/bo_runtime.mjs").as_uri()
+        http_adapter = (self.root / "bo_stategraph/bo_http.mjs").as_uri()
         machine = json.loads(
             (ROOT / "examples/multilanguage/bo_stategraph/project.json").read_text(encoding="utf-8")
         )["model"]["machine"]
         code = (
             f"import {{BOProbe, BOExecutor}} from {json.dumps(adapter)};"
+            + f"import {{bo_observeHttp}} from {json.dumps(http_adapter)};"
             + """
 import fs from 'node:fs';
 const engine = new BOExecutor(JSON.parse(fs.readFileSync(0, 'utf8')), {available: context => context.slots > 0});
@@ -138,7 +152,7 @@ const states = [['start', 0], ['resume', 1], ['finish', 1]].map(([event, slots])
   state = engine.step(state, event, {slots}).state;
   return state;
 });
-if (!BOProbe) process.exit(1);
+if (!BOProbe || typeof bo_observeHttp !== 'function') process.exit(1);
 console.log(JSON.stringify(states));
 """
         )

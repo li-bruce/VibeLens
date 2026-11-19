@@ -107,7 +107,7 @@ flowchart LR
 
 登录同事可读公告；公告编辑员可发布、修改和删除自己的公告。文件权限仍按上表判断。
 
-你要求先理解业务；[这份 Skill](REPOSITORY/.validation/p7-trials/python-retest-skills/vibelens/SKILL.md) 也要求“continue once that scope is confirmed”。因此，下一轮先确认这份理解，再确定登录和存储方式。
+你要求先理解业务；这份 Skill (`REPOSITORY/.validation/p7-trials/python-retest-skills/vibelens/SKILL.md`) 也要求“continue once that scope is confirmed”。因此，下一轮先确认这份理解，再确定登录和存储方式。
 
 ## 13 · assistant-question · 2026-11-19T14:09:13.812Z
 

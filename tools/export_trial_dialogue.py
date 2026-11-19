@@ -44,13 +44,36 @@ def public_record(record):
     return {"role": role, "text": text, "phase": item.get("phase")}
 
 
-def readable_text(text):
+def readable_text(text, aliases=("WORKSPACE",)):
     """Keep captured local paths readable without making dead repository links."""
+    names = "|".join(re.escape(name.rstrip("/\\")) for name in aliases if name.rstrip("/\\"))
+    roots = rf"/?(?:{names})[/\\]|" if names else ""
     return re.sub(
-        r"!?\[([^\]]*)\]\((<?(?:/?WORKSPACE[/\\]|/?[A-Za-z]:[/\\])[^)\n]*>?)\)",
+        rf"!?\[([^\]]*)\]\((<?(?:{roots}/?[A-Za-z]:[/\\])[^)\n]*>?)\)",
         lambda match: match[1] + " (`" + match[2].strip("<>") + "`)",
         text,
     )
+
+
+def render_report(report):
+    """Render preserved JSON without turning declared local aliases into links."""
+    aliases = {"WORKSPACE", *(replacement for _, replacement in report["path_normalization"])}
+    lines = [
+        "# " + report["title"],
+        "",
+        report["provenance"],
+        "",
+        "Local paths are normalized as listed in dialogue.json. Original trial answers and checks are archived separately.",
+        "",
+    ]
+    for index, item in enumerate(report["dialogue"], 1):
+        lines += [
+            f"## {index:02d} · {item['role']} · {item['timestamp']}",
+            "",
+            readable_text(item["text"], aliases),
+            "",
+        ]
+    return "\n".join(lines)
 
 
 def export(sessions, destination, title, replacements=()):
@@ -98,22 +121,7 @@ def export(sessions, destination, title, replacements=()):
         encoding="utf-8",
         newline="\n",
     )
-    lines = [
-        "# " + title,
-        "",
-        report["provenance"],
-        "",
-        "Local paths are normalized as listed in dialogue.json. Original trial answers and checks are archived separately.",
-        "",
-    ]
-    for index, item in enumerate(records, 1):
-        lines += [
-            f"## {index:02d} · {item['role']} · {item['timestamp']}",
-            "",
-            readable_text(item["text"]),
-            "",
-        ]
-    (destination / "dialogue.md").write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    (destination / "dialogue.md").write_text(render_report(report), encoding="utf-8", newline="\n")
     return {
         "messages": len(records),
         "usage_samples": len(counters),

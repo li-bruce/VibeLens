@@ -61,6 +61,7 @@ def native_sources(language):
         return {
             "bo_stategraph/bo_runtime.mjs": "bo_observer/adapters/javascript/bo_runtime.mjs",
             "bo_stategraph/bo_capture.mjs": "bo_observer/adapters/javascript/bo_capture.mjs",
+            "bo_stategraph/bo_http.mjs": "bo_observer/adapters/javascript/bo_http.mjs",
         }
     raise ValueError("language must be python or javascript (including React/Vue)")
 

@@ -29,6 +29,16 @@ class TrialDialogueExportTests(unittest.TestCase):
         text = "[Guide](guide.md) and [Source](https://example.org/source)"
         self.assertEqual(readable_text(text), text)
 
+    def test_declared_custom_path_aliases_are_not_repository_links(self):
+        for alias in ("REPOSITORY", "TRIAL[1]", "应用"):
+            target = f"{alias}/review/design.md"
+            self.assertEqual(
+                readable_text(f"[Review]({target})", aliases=(alias,)),
+                f"Review (`{target}`)",
+            )
+        text = "[Project](REPOSITORY/guide.md)"
+        self.assertEqual(readable_text(text, aliases=()), text)
+
     def test_export_preserves_public_source_and_excludes_private_items(self):
         public = "Read [Review](/C:/trial/review/handoff.json)"
         rows = [
@@ -67,14 +77,19 @@ class TrialDialogueExportTests(unittest.TestCase):
             base = Path(directory)
             session = base / "session.jsonl"
             session.write_text("\n".join(json.dumps(row) for row in rows), encoding="utf-8")
-            result = export([session], base / "out", "Visible trial", [("C:/trial", "WORKSPACE")])
-            self.assertEqual(result["messages"], 1)
-            report = json.loads((base / "out/dialogue.json").read_text(encoding="utf-8"))
-            self.assertEqual(report["dialogue"][0]["text"], public.replace("C:/trial", "WORKSPACE"))
-            markdown = (base / "out/dialogue.md").read_text(encoding="utf-8")
-            self.assertIn("Review (`/WORKSPACE/review/handoff.json`)", markdown)
-            self.assertNotIn("](/WORKSPACE", markdown)
-            self.assertNotIn("private", markdown)
+            for alias in ("WORKSPACE", "REPOSITORY"):
+                with self.subTest(alias=alias):
+                    output = base / alias
+                    result = export([session], output, "Visible trial", [("C:/trial", alias)])
+                    self.assertEqual(result["messages"], 1)
+                    report = json.loads((output / "dialogue.json").read_text(encoding="utf-8"))
+                    self.assertEqual(
+                        report["dialogue"][0]["text"], public.replace("C:/trial", alias)
+                    )
+                    markdown = (output / "dialogue.md").read_text(encoding="utf-8")
+                    self.assertIn(f"Review (`/{alias}/review/handoff.json`)", markdown)
+                    self.assertNotIn(f"](/{alias}", markdown)
+                    self.assertNotIn("private", markdown)
 
 
 if __name__ == "__main__":

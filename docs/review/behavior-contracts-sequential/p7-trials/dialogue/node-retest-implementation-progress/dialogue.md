@@ -158,7 +158,7 @@ flowchart LR
 - 登录同事可读公告；指定编辑员可发布、修改和删除自己的公告，该角色不增加文件权限。
 - 应用负责权限判断和后台任务，VibeLens 观察实际结果。
 
-[完整设计记录](REPOSITORY/.validation/p7-trials/node-retest-app/review/design-review.md)已保存。
+完整设计记录 (`REPOSITORY/.validation/p7-trials/node-retest-app/review/design-review.md`)已保存。
 
 请确认这份业务、状态和规则图是否准确；确认后我再开始实现。
 
