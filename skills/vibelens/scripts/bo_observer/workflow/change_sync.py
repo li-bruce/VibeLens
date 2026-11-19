@@ -50,6 +50,19 @@ def verify(root, cfg, change):
 def structural_errors(root, cfg, snap):
     """Check source scope, model bindings, probes, declarations, and test contracts together."""
     errors = list(snap["structure"]["errors"])
+    if snap.get("behavior") is not None:
+        from ..behavior.bindings import assess_bindings
+
+        native = assess_bindings(
+            snap["behavior"],
+            snap["behavior_discovery"],
+            snap["model"],
+            index=snap["structure"],
+            case_ids={c["case"] for c in snap["acceptance"].get("checks", [])},
+        )
+        errors.extend({"behavior_binding": error} for error in native["errors"])
+        if snap.get("discovery") != snap.get("behavior_discovery"):
+            errors.append("sync discovery differs from the pinned behavior discovery")
     if not cfg.get("stategraph"):
         errors.extend(snap.get("source_inventory", {}).get("framework", {}).get("errors", []))
     from .observation_requirements import deferred_builder_errors

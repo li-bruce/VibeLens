@@ -112,6 +112,16 @@ def validate_documents(project, documents):
 
         result = assess(behavior, discovery)
         require(result["valid"], "invalid_behavior", "/contracts/behavior", str(result["errors"]))
+        if "behavior_bindings" in project["model"]:
+            from .behavior.bindings import assess_bindings
+
+            result = assess_bindings(behavior, discovery, project["model"])
+            require(
+                result["valid"],
+                "invalid_behavior_binding",
+                "/model/behavior_bindings",
+                str(result["errors"]),
+            )
     for profile in documents.get("analysis_profiles", []):
         schema_check(profile, "analysis-profile")
         require(
@@ -132,7 +142,7 @@ def validate_documents(project, documents):
     return documents
 
 
-def load_project(root, project_path="bo_stategraph/project.json"):
+def load_bundle(root, project_path="bo_stategraph/project.json"):
     """Fail closed on interrupted migrations, stale files or mixed revisions."""
     from .protocol import validate_project
 
@@ -181,4 +191,9 @@ def load_project(root, project_path="bo_stategraph/project.json"):
         "/",
         "A migration started during the read",
     )
-    return project
+    return project, loaded
+
+
+def load_project(root, project_path="bo_stategraph/project.json"):
+    """Read the public project envelope through the same atomic bundle reader."""
+    return load_bundle(root, project_path)[0]

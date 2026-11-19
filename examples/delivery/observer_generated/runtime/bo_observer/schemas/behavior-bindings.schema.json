@@ -1,0 +1,419 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/li-bruce/VibeLens/protocol/behavior-bindings",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "bo-behavior-bindings/v1"
+    },
+    "definition_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "variables": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/value"
+      }
+    },
+    "actions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/action"
+      }
+    },
+    "interactions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/interaction"
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "definition_sha256",
+    "variables",
+    "actions",
+    "interactions"
+  ],
+  "$defs": {
+    "path": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          {
+            "type": "integer",
+            "minimum": 0
+          }
+        ]
+      },
+      "minItems": 1
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "symbol": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "path",
+        "symbol"
+      ]
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "site": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "node": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "phase": {
+          "enum": [
+            "enter",
+            "return",
+            "read",
+            "decision",
+            "wait",
+            "commit",
+            "change",
+            "error"
+          ]
+        },
+        "when": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/path"
+              },
+              "equals": {}
+            },
+            "required": [
+              "path",
+              "equals"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "node",
+        "phase"
+      ]
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "node": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "phase": {
+          "enum": [
+            "enter",
+            "return",
+            "read",
+            "decision",
+            "wait",
+            "commit",
+            "change",
+            "error"
+          ]
+        },
+        "when": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/path"
+              },
+              "equals": {}
+            },
+            "required": [
+              "path",
+              "equals"
+            ]
+          },
+          "minItems": 1
+        },
+        "path": {
+          "$ref": "#/$defs/path"
+        }
+      },
+      "required": [
+        "node",
+        "phase",
+        "path"
+      ]
+    },
+    "value": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reader": {
+          "$ref": "#/$defs/source"
+        },
+        "writers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          },
+          "minItems": 0
+        },
+        "observation": {
+          "$ref": "#/$defs/field"
+        },
+        "native": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "collection": {
+              "$ref": "#/$defs/path"
+            },
+            "value": {
+              "$ref": "#/$defs/path"
+            },
+            "keys": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "enum": [
+                      "model",
+                      "instance",
+                      "invocation",
+                      "attempt",
+                      "build",
+                      "sample"
+                    ]
+                  },
+                  "actual": {
+                    "$ref": "#/$defs/path"
+                  },
+                  "observed": {
+                    "$ref": "#/$defs/path"
+                  }
+                },
+                "required": [
+                  "name",
+                  "actual",
+                  "observed"
+                ]
+              },
+              "minItems": 5
+            }
+          },
+          "required": [
+            "collection",
+            "value",
+            "keys"
+          ]
+        },
+        "cases": {
+          "$ref": "#/$defs/cases"
+        },
+        "refinement_ref": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "source_parameter": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "reader",
+        "writers",
+        "observation",
+        "native",
+        "cases"
+      ]
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "$ref": "#/$defs/site"
+        },
+        "completion": {
+          "$ref": "#/$defs/site"
+        },
+        "completion_witness": {
+          "$ref": "#/$defs/value"
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/value"
+          }
+        },
+        "exits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "enum": [
+                  "return",
+                  "exception",
+                  "cancel",
+                  "rollback"
+                ]
+              },
+              "site": {
+                "$ref": "#/$defs/site"
+              },
+              "witness": {
+                "$ref": "#/$defs/value"
+              }
+            },
+            "required": [
+              "kind",
+              "site",
+              "witness"
+            ]
+          },
+          "minItems": 0
+        },
+        "cases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "boundaries": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "complete",
+                    "return",
+                    "exception",
+                    "cancel",
+                    "rollback"
+                  ]
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "id",
+              "boundaries"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "entry",
+        "completion",
+        "completion_witness",
+        "parameters",
+        "exits",
+        "cases"
+      ]
+    },
+    "interaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "witnesses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "role": {
+                "enum": [
+                  "read",
+                  "send",
+                  "receive",
+                  "commit",
+                  "rollback",
+                  "acquire",
+                  "release",
+                  "arrive",
+                  "join",
+                  "member",
+                  "acknowledge"
+                ]
+              },
+              "action": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "site": {
+                "$ref": "#/$defs/site"
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/$defs/value"
+                }
+              },
+              "cases": {
+                "$ref": "#/$defs/cases"
+              }
+            },
+            "required": [
+              "role",
+              "action",
+              "site",
+              "fields",
+              "cases"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "witnesses"
+      ]
+    }
+  }
+}

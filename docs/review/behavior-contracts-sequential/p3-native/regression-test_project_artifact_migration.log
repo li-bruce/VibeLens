@@ -1,0 +1,60 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+F....FF.F.....F.
+======================================================================
+FAIL: test_duplicate_keys_are_rejected_in_python_and_node (__main__.ProjectArtifactTests.test_duplicate_keys_are_rejected_in_python_and_node)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 174, in test_duplicate_keys_are_rejected_in_python_and_node
+    self.assertEqual(self.node()[1]["error"], "duplicate_json_key")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "EPERM: operation not permitted, realpath[97 chars]os3'" != 'duplicate_json_key'
+- EPERM: operation not permitted, realpath 'C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.validation\tmpu_pv2os3'
++ duplicate_json_key
+
+
+======================================================================
+FAIL: test_migrate_keeps_models_ids_history_and_views (__main__.ProjectArtifactTests.test_migrate_keeps_models_ids_history_and_views)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 67, in test_migrate_keeps_models_ids_history_and_views
+    self.assertEqual(code, 0, node)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : {'error': "EPERM: operation not permitted, realpath 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmppesdcspy'"}
+
+======================================================================
+FAIL: test_mixed_revision_is_rejected_by_both_readers (__main__.ProjectArtifactTests.test_mixed_revision_is_rejected_by_both_readers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 124, in test_mixed_revision_is_rejected_by_both_readers
+    self.assertEqual(result["error"], "artifact_revision_mismatch")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "EPERM: operation not permitted, realpath[97 chars]ogp'" != 'artifact_revision_mismatch'
+- EPERM: operation not permitted, realpath 'C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.validation\tmp52tlhogp'
++ artifact_revision_mismatch
+
+
+======================================================================
+FAIL: test_process_interruption_blocks_reads_then_restores_exact_bytes (__main__.ProjectArtifactTests.test_process_interruption_blocks_reads_then_restores_exact_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 96, in test_process_interruption_blocks_reads_then_restores_exact_bytes
+    self.assertEqual(self.node()[1]["error"], "migration_pending")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "EPERM: operation not permitted, realpath[97 chars]0p2'" != 'migration_pending'
+- EPERM: operation not permitted, realpath 'C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.validation\tmpe_sie0p2'
++ migration_pending
+
+
+======================================================================
+FAIL: test_v1_discovery_remains_legacy_without_manufactured_identity_or_confirmation (__main__.ProjectArtifactTests.test_v1_discovery_remains_legacy_without_manufactured_identity_or_confirmation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_project_artifact_migration.py", line 198, in test_v1_discovery_remains_legacy_without_manufactured_identity_or_confirmation
+    self.assertEqual(self.node()[0], 0)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0
+
+----------------------------------------------------------------------
+Ran 16 tests in 3.836s
+
+FAILED (failures=5)

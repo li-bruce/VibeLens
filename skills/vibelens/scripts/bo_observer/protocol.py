@@ -103,6 +103,10 @@ def schema_diagnostics(value, name):
 def validate_project(project):
     """Check project identity, mode choice, and machine declaration; return a detached copy."""
     schema_check(project, "project-v2" if project.get("protocol") == "bo-project/v2" else "project")
+    if "behavior_bindings" in project["model"]:
+        schema_check(project["model"]["behavior_bindings"], "behavior-bindings")
+        if not (project.get("contracts") or {}).get("behavior"):
+            raise ValueError("Native behavior bindings require a pinned behavior artifact")
     if project.get("protocol") == "bo-project/v2":
         from .project_artifacts import validate_references
 

@@ -273,6 +273,19 @@ def verify(root, cfg, change, *, inspect, snapshot):
             mapping_errors.extend(closure["errors"])
             reports["mapping"]["invocation_closure"] = closure
             reports["mapping"]["layers"] = layer_evidence(current["model"], payload)
+            if current.get("behavior") is not None:
+                from ..behavior.native_runtime import assess_runtime
+
+                native = assess_runtime(
+                    current["behavior"],
+                    current["behavior_discovery"],
+                    current["model"],
+                    payload,
+                    index=current["structure"],
+                    case_ids={c["case"] for c in current["acceptance"].get("checks", [])},
+                )
+                mapping_errors.extend(native["errors"])
+                reports["mapping"]["behavior"] = native
             if current["model"].get("policy"):
                 from ..policy.evidence import runtime_errors as policy_runtime_errors
 

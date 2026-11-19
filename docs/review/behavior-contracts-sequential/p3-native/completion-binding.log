@@ -1,0 +1,18 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+........F.
+======================================================================
+FAIL: test_unknown_fields_and_unknown_cases_fail (__main__.NativeBindingTests.test_unknown_fields_and_unknown_cases_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_native_behavior_bindings.py", line 145, in test_unknown_fields_and_unknown_cases_fail
+    self.reject("binding_case_missing")
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_native_behavior_bindings.py", line 106, in reject
+    self.assertIn(code, {error["code"] for error in result["errors"]}, result)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'binding_case_missing' not found in {'completion_witness_cases'} : {'valid': False, 'status': 'invalid_binding', 'errors': [{'code': 'completion_witness_cases', 'path': '/actions/grant-share/completion_witness', 'message': 'Every case for this physical boundary needs an independent native read'}]}
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.105s
+
+FAILED (failures=1)

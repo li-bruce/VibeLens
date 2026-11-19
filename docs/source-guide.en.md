@@ -8,10 +8,11 @@ Planned development: [behavior contracts and guided verification](development/be
 records the proposed protocol, question routing, module boundaries and acceptance
 plan. It is a development handoff, not a statement of current feature support.
 
-The sequential branch's [first P1 slice](development/behavior-contracts/p1-definition-slice.md)
-adds read-only scalar definition checks in `bo_observer/behavior/`.
-`bo_behavior.py validate` uses the existing concept registry; automatic adoption,
-project migration and runtime evidence integration remain pending in that plan.
+The sequential branch adds [typed contracts and migration](development/behavior-contracts/p1-contracts.md),
+[scoped model construction](development/behavior-contracts/p2-guided-construction.md)
+and [native binding services](development/behavior-contracts/p3-native-bindings.md).
+Use the [phase ledger](development/behavior-contracts/progress.json) to distinguish
+completed implementation, current work and pending trial acceptance.
 
 ## Repository map
 

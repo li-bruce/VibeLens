@@ -84,6 +84,14 @@ def config(root, name):
 
 def snapshot(root, cfg, previous=None):
     model = read_model(contained(root, cfg["model"]), project_root=root)
+    from ..project_artifacts import load_bundle, parse, references
+
+    envelope = parse(contained(root, cfg["model"]).read_bytes())
+    documents, contract_paths = {}, []
+    if envelope.get("protocol") == "bo-project/v2":
+        envelope, documents = load_bundle(root, cfg["model"])
+        model = envelope["model"]
+        contract_paths = [ref["path"] for _, ref in references(envelope)]
     intent = read(contained(root, model["intent"]))
     acceptance = read(contained(root, cfg["acceptance"]))
     paths = sorted(
@@ -96,6 +104,7 @@ def snapshot(root, cfg, previous=None):
                 *model["source_files"],
                 *cfg["code_files"],
                 *cfg["watch_files"],
+                *contract_paths,
                 *([cfg["discovery"]] if cfg.get("discovery") else []),
                 *([cfg["whitebox"]] if cfg.get("whitebox") else []),
                 *([cfg["mapping_contract"]] if cfg.get("mapping_contract") else []),
@@ -134,6 +143,9 @@ def snapshot(root, cfg, previous=None):
         "files": files,
         "tools": tools,
         "model": model,
+        "behavior": documents.get("behavior"),
+        "behavior_discovery": documents.get("discovery"),
+        "analysis_profiles": documents.get("analysis_profiles", []),
         "intent": intent,
         "acceptance": acceptance,
         "structure": index,

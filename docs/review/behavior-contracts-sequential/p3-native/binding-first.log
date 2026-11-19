@@ -1,0 +1,18 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+..F.......
+======================================================================
+FAIL: test_model_and_attempt_keys_are_mandatory (__main__.NativeBindingTests.test_model_and_attempt_keys_are_mandatory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_native_behavior_bindings.py", line 145, in test_model_and_attempt_keys_are_mandatory
+    self.reject("native_identity_incomplete")
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_native_behavior_bindings.py", line 97, in reject
+    self.assertIn(code, {error["code"] for error in result["errors"]}, result)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'native_identity_incomplete' not found in {'schema_minItems'} : {'valid': False, 'status': 'invalid_binding', 'errors': [{'code': 'schema_minItems', 'path': '/variables/grant-status/native/keys', 'message': "[{'name': 'instance', 'actual': ['instance'], 'observed': ['entity']}, {'name': 'invocation', 'actual': ['invocation'], 'observed': ['call_id']}, {'name': 'attempt', 'actual': ['attempt'], 'observed': ['attempt']}, {'name': 'build', 'actual': ['build'], 'observed': ['build_id']}] is too short"}]}
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.060s
+
+FAILED (failures=1)

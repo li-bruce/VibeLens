@@ -1,5 +1,9 @@
 # First project setup
 
+For a pinned behavior contract, add [native behavior bindings](native-behavior.md)
+inside the canonical model. The existing iteration commands check them; the
+native executor and external observation module retain their responsibilities.
+
 Begin with the [guided model construction](model-construction.md): record the
 requested business, state and rule networks before source binding. New discovery
 uses V3; retain existing V1/V2 checks and use explicit artifact migration. Show

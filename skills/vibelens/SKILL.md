@@ -73,6 +73,8 @@ Existing complete Python examples retain hierarchy validation, concurrent activi
 
 During each iteration, restore the complete model/network inventory and the affected crosslinks. Check every registered model and require per-model independent mapping witnesses; a new model must not replace an existing registration.
 
+For a pinned behavior contract, follow [native behavior bindings](references/native-behavior.md). Bind every variable, action parameter, completion/exit and cross-model boundary to documented source and independent native reads. Preserve model, instance, invocation, attempt and build identity; the existing inspection and verification gates check these alongside native semantics and business cases.
+
 Before implementation, define independent expectations for confirmed rules: success, rejection, boundaries, and applicable cancellation, recovery, or concurrency cases. Establish the [implementation inventory](references/implementation-coverage.md), [mapping contract](references/mapping-contract.md), and [whitebox expectations](references/validation-rules.md). Link each scenario to actual functions, parameters, reads, effects, and graph fields. Never copy graph values as independent expected results or weaken earlier checks to obtain a pass.
 
 For data access, configure `bo_stategraph/databases.json`, a native ORM/ODM or explicit data model, its JSON exporter, and `BODataRuntime` wiring in an isolated `bo_` module. Map actual reads, writes, commits/rollbacks, and selected data transformations to source and required cases. Distinguish application model rules, database-enforced structure, and observed samples. The observer reads metadata; the application's migration workflow changes the database.
