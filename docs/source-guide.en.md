@@ -17,6 +17,12 @@ uses `data/projection_validation.py` to remember one successfully validated JSON
 candidate; every tick still reads source bytes and collects current metadata.
 Independent and forced checks always run the original validators.
 
+`graph/source_files.py` checks current bytes and physical containment in the
+calling thread. Admission does not delegate small file reads to a worker pool,
+which competes with active viewer computations. It retains no content or file
+attribute cache. `observation/event_batch.py` applies the unchanged pre/post source
+checks around a group; state snapshots remain separately validated barriers.
+
 The [behavior-contract plan](development/behavior-contracts/README.md) is tracked
 by its [phase ledger](development/behavior-contracts/progress.json). P0–P6 are
 implemented and regressed on the sequential branch; independent P7 trials are

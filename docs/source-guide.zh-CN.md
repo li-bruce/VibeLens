@@ -2,6 +2,8 @@
 
 `observation/session.py` 在采集锁之外复制当前构建的静态定义，锁仅保护运行事件与状态的可变数据。数据库监视通过 `data/projection_validation.py` 复用上一份相同 JSON 的校验结果；每轮仍读取源码字节和当前数据库结构。独立检查和强制检查始终执行原有校验。
 
+`graph/source_files.py` 在当前线程中读取实际源码字节并检查路径边界，避免把小文件读取分派给线程池后，与正在计算的视图争用执行时间。它不缓存文件内容或属性。`observation/event_batch.py` 仍在批量事件接收前后分别检查源码；状态快照仍经过独立校验。
+
 [bo_models.py](../skills/vibelens/scripts/bo_models.py) 统一模型身份、注册、按模型校验和子网成员。
 `concepts/networks.py` 生成业务、状态与规则的子网定义；`model-networks.js` 为二维、三维和
 Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码前恢复当前与上一轮的模型清单。

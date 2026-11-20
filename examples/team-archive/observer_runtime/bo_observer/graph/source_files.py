@@ -7,12 +7,7 @@ any content is read.
 """
 
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, wait
-from contextvars import copy_context
-import os
 import stat
-
-_readers = ThreadPoolExecutor(max_workers=4, thread_name_prefix="bo-source-reader")
 
 
 class SourceFiles:
@@ -70,16 +65,12 @@ class SourceFiles:
             return None
 
     def read_all(self, names):
-        """Read a bounded parallel group without caching any bytes or attributes.
+        """Read every current file in the caller's observation context.
 
-        Windows path checks perform several filesystem calls. Four shared I/O
-        workers overlap that latency; each still executes the exact secure reader.
-        Context propagation keeps observer work excluded from instrumentation.
-        Small scopes and other platforms retain the direct path.
+        Admission holds a short consistency boundary. Dispatching these small
+        reads to a shared thread pool makes that boundary wait for worker
+        scheduling while the live viewer also processes Python data. Sequential
+        reads avoid that contention and retain the same byte and containment
+        checks, including edits with unchanged size or modification time.
         """
-        names = list(names)
-        if os.name != "nt" or len(names) < 8:
-            return {name: self.read(name) for name in names}
-        futures = {name: _readers.submit(copy_context().run, self.read, name) for name in names}
-        wait(futures.values())
-        return {name: future.result() for name, future in futures.items()}
+        return {name: self.read(name) for name in names}

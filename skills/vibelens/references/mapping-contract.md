@@ -59,6 +59,9 @@ no capture loss. Inspect each producer's error type and transport retry count wh
 it fails. Repair the shared transport or mapping before repeating the trial; keep
 the original failed recording. A recovered retry retains the original IDs and
 does not count as another business execution.
+Keep the actual viewer open and the application's normal workers active during
+this check. Offline sink tests and detached envelope replays help diagnose load;
+they do not establish that an ordinary interactive recording completes.
 
 When events record `provenance`, protect native comparisons in `context_fields`
 for each exercised case, node and phase. Compare the complete `actor`,
