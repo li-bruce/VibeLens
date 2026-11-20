@@ -14,6 +14,7 @@ from test_multilanguage import project_fixture
 from bo_observer.observation.recording_session import checkpoint
 from bo_observer.service import GraphSession
 from bo_observer.workflow.sync_verify import verify
+from bo_observer.code_graph.service import CodeGraph
 
 
 class ApiSnapshotTests(unittest.TestCase):
@@ -69,6 +70,40 @@ class ApiSnapshotTests(unittest.TestCase):
             side_effect=AssertionError("Runtime checkpoint rescanned API source"),
         ):
             self.assertIsNone(self.session.recording_view()["api_structure"])
+
+    def test_api_revision_ignores_unrelated_project_files_and_restarts(self):
+        """A project-tree update cannot expire a recording with the same API."""
+        service = self.session.web.bo_api_graph
+        first = self.session.view()
+        initial_index, _ = service.refresh()
+        initial_revision = initial_index["revision"]
+        (self.root / "README.md").write_text("Project notes.\n", encoding="utf-8")
+        changed_index, _ = service.refresh()
+        self.assertNotEqual(initial_revision, changed_index["revision"])
+        current = self.session.view()
+        self.assertEqual(first["manifest"]["build_id"], current["manifest"]["build_id"])
+        self.assertEqual(first["api_structure"]["nodes"], current["api_structure"]["nodes"])
+        self.assertEqual(first["api_structure"]["revision"], current["api_structure"]["revision"])
+        restarted = CodeGraph(self.root, persist=False).api_snapshot()
+        self.assertEqual(current["api_structure"]["revision"], restarted["revision"])
+
+    def test_api_revision_changes_for_actual_registration_and_source_binding(self):
+        """Route, method, handler and documentation updates retain invalidation."""
+        service = self.session.web.bo_api_graph
+        before = service.api_snapshot()
+        source = self.root / "routes.py"
+        text = source.read_text(encoding="utf-8")
+        for old, new in (
+            ('@app.get("/files")', '@app.post("/files")'),
+            ('"/files"', '"/uploads"'),
+            ("def list_files():", "def create_upload():"),
+            ("List files visible to the signed-in user.", "Create an upload for the current user."),
+        ):
+            text = text.replace(old, new)
+            source.write_text(text, encoding="utf-8")
+            after = service.api_snapshot()
+            self.assertNotEqual(before["revision"], after["revision"], (old, new))
+            before = after
 
     def test_context_freezes_api_projection_without_mutable_aliases(self):
         view = self.session.view()

@@ -153,3 +153,12 @@ Node and parser dependencies are required only for JS/TS/SFC analysis; native pr
 Primary references: [TypeScript Compiler API](https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API), [Vue SFC compiler](https://github.com/vuejs/core/tree/main/packages/compiler-sfc). They supply syntax facts, not business ownership or complete dynamic-call proof.
 
 Multi-model projects send `bo-snapshot/v2` with `state_model_id`. Model, run and native instance identities jointly identify a snapshot. One state event supplies one model-qualified snapshot; effects on several models have separate state-change witnesses.
+
+## Recording version checks
+
+A saved recording is tied to its source build, model and API/concept structures.
+If replay reports an older graph after a restart, compare these identities before
+discarding evidence. An unrelated file-tree update is not an API change. Preserve
+the original recording and report a framework mismatch when the API structure is
+equal but its revision differs. Never bypass the version check or rewrite the
+recording's identity to make playback succeed.

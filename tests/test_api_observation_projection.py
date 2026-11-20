@@ -103,6 +103,32 @@ class APIObservationProjectionTests(unittest.TestCase):
         )
         self.assertEqual(snapshot["nodes"][0]["id"], endpoint["id"])
 
+    def test_api_revision_tracks_capture_contract_and_selector_changes(self):
+        """Projection-local hashing must retain native HTTP observation meaning."""
+        service = self.configure(
+            "from flask import Flask\napp=Flask(__name__)\n@app.get('/files')\ndef files(): return []\n",
+            [self.registration("api_files", "GET /files")],
+        )
+        before = service.api_snapshot()
+        owner = next(node for node in self.project["model"]["nodes"] if node["id"] == "api_files")
+        owner["capture"]["in"]["method"] = "string"
+        configuration_path = self.root / "bo_stategraph/telemetry.json"
+        configuration = json.loads(configuration_path.read_text(encoding="utf-8"))
+        configuration["registrations"][0]["capture"]["in"]["method"] = "http.method"
+        configuration_path.write_text(json.dumps(configuration), encoding="utf-8")
+        (self.root / "bo_stategraph/project.json").write_text(
+            json.dumps(self.project), encoding="utf-8"
+        )
+        captured = service.api_snapshot()
+        self.assertNotEqual(before["revision"], captured["revision"])
+        self.assertFalse(captured["observation_issues"])
+        configuration["registrations"][0]["match"]["name"] = "POST /files"
+        configuration_path.write_text(json.dumps(configuration), encoding="utf-8")
+        unmatched = service.api_snapshot()
+        self.assertNotEqual(captured["revision"], unmatched["revision"])
+        self.assertTrue(unmatched["observation_issues"])
+        self.assertFalse(unmatched["edges"])
+
     def test_same_handler_different_routes_do_not_share_observations(self):
         service = self.configure(
             "from flask import Flask\napp=Flask(__name__)\n@app.get('/files')\n@app.get('/archive')\ndef files(): return []\n",

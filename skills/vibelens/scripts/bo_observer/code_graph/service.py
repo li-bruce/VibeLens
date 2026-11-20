@@ -189,9 +189,8 @@ class CodeGraph:
                             "evidence": deepcopy(source),
                         }
                     )
-            return {
+            snapshot = {
                 "schema": graph["schema"],
-                "revision": graph["revision"],
                 "nodes": endpoints,
                 "edges": links,
                 "bindings": {
@@ -209,6 +208,16 @@ class CodeGraph:
                 "errors": deepcopy(graph["errors"]),
                 "scope": graph["scope"],
             }
+            # Recording compatibility depends on this exact API projection, not
+            # the full project tree. Notes, personal views and unrelated files
+            # can change the code-index revision while every endpoint is equal.
+            # Keep selectors, captures, bindings, migrations and diagnostics in
+            # this identity so real API changes still invalidate old recordings.
+            # Scope is a discovery report for the whole project, not an endpoint.
+            snapshot["revision"] = digest(
+                {key: value for key, value in snapshot.items() if key != "scope"}
+            )
+            return snapshot
 
     def api_observation_check(self, *, require_complete=False):
         """Report exact selected HTTP mapping gaps independently of code-cache use."""

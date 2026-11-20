@@ -395,6 +395,9 @@ qualifies API observation sources by handler, method and route;
 shares those exact sources across graph values, lifecycle display, replay and
 Timeline. `GraphSession` retains a minimal API snapshot independently of the
 optional full symbol cache. Recordings freeze it once at their start boundary.
+Its revision covers endpoints, bindings, observation links and diagnostics;
+unrelated project-tree changes do not expire the recording. Real API changes
+and the independent source/model version checks still invalidate old recordings.
 
 [containment-geometry.js](../skills/vibelens/assets/stategraph-viewer/containment-geometry.js)
 fits visible labels, glyphs and nested disks with D3;

@@ -247,6 +247,8 @@ Canvas 图层工具的排序和显隐交互集中在 `layer-ruler.js`，统一�
 [code_graph/observation.py](../skills/vibelens/scripts/bo_observer/code_graph/observation.py)
 按处理函数、方法和路由确认观测来源；`api-observation.js` 为运行图、回放和时间轴共用这些精确关联。
 API 最小结构独立于完整代码索引，录制开始时冻结保存，运行检查点不重复扫描源码。
+它的版本号只依据端点、绑定、观测关联及诊断；无关文件树的变化不会使录制误判为旧版。
+真实接口变化以及源码、模型版本检查仍会使旧录制失效。
 
 [containment-geometry.js](../skills/vibelens/assets/stategraph-viewer/containment-geometry.js)
 拟合可见文字、图标及子圈，`containment-view.js` 在筛选后重建可见包含关系。

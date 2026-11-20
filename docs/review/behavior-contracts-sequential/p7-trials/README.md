@@ -150,3 +150,5 @@ the subsequently failed full verification. It adds explicit native-evidence
 export, original snapshot retention and per-producer tracing health. The trial's
 stale live policy fingerprint is a separate bootstrap defect; old records remain
 unchanged. Complete trial acceptance is still pending.
+
+[Repair 20](repair-20/README.md) retains passed Node native captures and the subsequent independent Timeline rejection. API replay identity now follows the actual API projection, while real source/model/interface changes still invalidate old recordings. A fresh package passed complete regression; the projects must upgrade and recapture before final acceptance.

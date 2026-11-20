@@ -62,6 +62,12 @@ Name a state's condition, not one possible cause: use "Preparation rejected" for
 the rejected state and show an actual revocation reason in that invocation's
 decision details. Missing current authorization alone does not prove revocation.
 
+Review the `states` and `events` inventory categories for every model, using the
+exact model-qualified keys. Their labels take precedence in native state-machine
+views; updating a matching entry in `nodes` alone leaves a copied source value
+in those categories visible. Check both the collapsed model and its expanded
+states/transitions before treating the naming review as complete.
+
 `bo_sync scan` lists missing/stale translations after the artifact is enabled.
 `change_sync verify` reports them under project checks. Review the affected meaning
 before renewing its fingerprint. A new translation cannot authorize behavior drift.
