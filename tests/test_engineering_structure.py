@@ -260,13 +260,17 @@ class EngineeringStructureTests(unittest.TestCase):
                     writes.append(raw)
                     if len(writes) == failing_write:
                         raise ConnectionAbortedError("Source request cancelled")
-                handler = SimpleNamespace(
+                # Exercise the real shared connection policy while replacing
+                # only socket writes with deterministic cancellation points.
+                handler = server.RequestHandlerClass.__new__(server.RequestHandlerClass)
+                handler.__dict__.update(
+                    command="GET", request_version="HTTP/1.1",
                     headers={}, close_connection=False,
                     send_response=lambda code: None,
                     send_header=lambda key, value: None,
                     end_headers=lambda: write(b"headers"),
                     wfile=SimpleNamespace(write=write))
-                server.RequestHandlerClass.reply(handler, 200, {"source": "def read(): pass"})
+                handler.reply(200, {"source": "def read(): pass"})
                 self.assertTrue(handler.close_connection)
                 self.assertEqual(len(writes), failing_write)
             self.assertEqual(session.sequence, 0)

@@ -128,3 +128,9 @@ retains commits and rollbacks with their actual owners, and clarifies custom
 native policy event contracts. Original Node diagnostics and the controlled
 adapter repair comparison remain archived. Its full regression, fresh install
 and clean export passed; the remaining native trials and iterations stay open.
+
+[Repair 17](repair-17/README.md) retains the complete Python native recording and
+the subsequent viewer startup failure. Design and runtime viewers now share
+bounded static-asset connection reuse. Independent desktop checks pass against
+the original recording; final native capture still requires both applications
+to upgrade normally, with nonempty live history for observer-exclusion checks.

@@ -22,8 +22,9 @@ requests with rolled-back transactions and failed owning business invocations.
 ## Shared repair
 
 Effect completion checks now have their own module. They compare identities from
-either selected entry direction and reject contradictory captures. Every effect
-still needs exactly one applicable terminal belonging to that exact invocation.
+either selected entry direction and reject contradictory captures. Every related
+invocation of the declared completion node still needs exactly one applicable
+terminal belonging to that exact invocation.
 An error can close an aborted attempt only with matching failed business owners,
 the same native identity and no contradictory success value. It never satisfies
 the successful completion expectation: at least one real successful completion

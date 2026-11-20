@@ -258,6 +258,12 @@ last request. The short host lock protects ownership only. Parsing source and
 writing an HTTP response do not hold it, so a slow code view can coexist with
 event ingestion and a build reload.
 
+`web/http_assets.py` shares the design/runtime viewer's connection policy.
+Successful bodyless asset GETs reuse HTTP/1.1 connections with a five-second idle
+limit. JSON, controls, ingestion and rejected requests close the connection as
+before; model admission and recording deadlines are unchanged. The transport
+tests check nested imports on one socket and keep rejected bodies isolated.
+
 The HTTP adapter in `service.py` handles request authorization, routes and session borrowing. `observation/session.py` admits events and provides consistent state frames. Existing imports of `service.GraphSession` remain supported. Database shape comparison lives in [data/schema_compare.py](../skills/vibelens/scripts/bo_observer/data/schema_compare.py); `data/projection.py` assembles the graph and reexports the comparator.
 
 The recorder separates current version metadata (`control_context`), runtime

@@ -6,7 +6,6 @@ finish. No route invokes an application business command.
 """
 
 from functools import wraps
-from http.server import BaseHTTPRequestHandler
 import json
 import mimetypes
 from pathlib import Path
@@ -18,6 +17,7 @@ from .session_lifecycle import SessionHost
 from .web.bo_web import BOHTTPServer, bo_content_type
 from .delivery.dependencies import LOCK_NAME, ensure_assets
 from .web.http_close import reject_unread_body
+from .web.http_assets import AssetHTTPHandler
 
 try:
     from ..view_preferences import PreferenceConflict
@@ -63,7 +63,7 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
 
         return handle
 
-    class Handler(BaseHTTPRequestHandler):
+    class Handler(AssetHTTPHandler):
         def log_message(self, *_):
             pass
 
@@ -98,7 +98,7 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                 ("Content-Length", str(len(raw))),
                 ("Cache-Control", "no-store"),
                 ("X-Content-Type-Options", "nosniff"),
-                ("Connection", "close"),
+                ("Connection", self.response_connection(code, body)),
             ]:
                 self.send_header(k, v)
             origin = self.headers.get("Origin")
@@ -123,6 +123,9 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
             self.send_header("Access-Control-Allow-Methods", "POST")
             self.send_header("Access-Control-Allow-Headers", "Content-Type,X-BO-Token")
             self.send_header("Vary", "Origin")
+            self.send_header("Content-Length", "0")
+            self.send_header("Connection", "close")
+            self.close_connection = True
             self.end_headers()
 
         @consistent_request

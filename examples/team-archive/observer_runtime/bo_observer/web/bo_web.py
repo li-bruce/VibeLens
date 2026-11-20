@@ -6,7 +6,7 @@ collection, Python state queries and executable state definitions.
 
 import argparse
 from copy import deepcopy
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import ThreadingHTTPServer
 import json
 import mimetypes
 from pathlib import Path
@@ -17,6 +17,7 @@ from urllib.parse import urlsplit, parse_qs
 from ..code_graph.service import CodeGraph
 from ..control.scope import ControlScope
 from ..delivery.dependencies import LOCK_NAME, ensure_assets
+from .http_assets import AssetHTTPHandler
 
 try:
     from ...bo_design import BODesign
@@ -287,7 +288,7 @@ def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
         root, initial["layout_id"], legacy_project_ids=cfg.get("view_preferences_legacy_ids", [])
     )
 
-    class Handler(BaseHTTPRequestHandler):
+    class Handler(AssetHTTPHandler):
         def log_message(self, *_):
             pass
 
@@ -299,6 +300,7 @@ def bo_serve(root, *, port=8830, discovery=None, assets=ASSETS):
                 ("Content-Length", str(len(raw))),
                 ("Cache-Control", "no-store"),
                 ("X-Content-Type-Options", "nosniff"),
+                ("Connection", self.response_connection(code, body)),
             ]:
                 self.send_header(key, value)
             self.end_headers()
