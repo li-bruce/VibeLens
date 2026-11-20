@@ -731,6 +731,69 @@ class CodeGraphTests(unittest.TestCase):
             thread.join()
             session.close()
 
+    def test_slow_display_metadata_does_not_block_actual_event_ingestion(self):
+        """A delayed caption or verification-file read must not own the capture lock."""
+        from bo_observer.adapters.python.bo_probe import BOProbe
+        from bo_observer.web import semantic_names
+
+        for reader in ("captions", "verification"):
+            with self.subTest(reader=reader):
+                session = GraphSession(self.root)
+                initial = session.view()  # Warm discovery and retain the pre-admission boundary.
+                server = make_server(session, port=0, token="display-concurrency-test")
+                thread = threading.Thread(target=server.serve_forever, daemon=True)
+                thread.start()
+                url = f"http://127.0.0.1:{server.server_port}"
+                entered, release, delivered = threading.Event(), threading.Event(), threading.Event()
+                target = semantic_names if reader == "captions" else session.bo_behavior_context
+                name = "overlay_model" if reader == "captions" else "view"
+                original = getattr(target, name)
+
+                def slow(*args, **kwargs):
+                    entered.set()
+                    if not release.wait(10):
+                        raise RuntimeError("Test failed to release metadata reading")
+                    return original(*args, **kwargs)
+
+                probe = BOProbe(self.project, session.manifest["build_id"], endpoint=url,
+                                token="display-concurrency-test", timeout=10)
+
+                def read_view():
+                    with urlopen(url + "/api/view", timeout=15) as response:
+                        return json.load(response)
+
+                def send_event():
+                    probe.record("advance", "change", lambda: {"outputs": {"state": "waiting"}}, revision=1)
+                    result = probe.flush(timeout=10)
+                    delivered.set()
+                    return result
+
+                try:
+                    with patch.object(target, name, slow), ThreadPoolExecutor(max_workers=2) as pool:
+                        view = pool.submit(read_view)
+                        self.assertTrue(entered.wait(3))
+                        event = pool.submit(send_event)
+                        try:
+                            independent = delivered.wait(2)
+                        finally:
+                            release.set()
+                        self.assertTrue(event.result(timeout=10))
+                        captured = view.result(timeout=10)
+                        self.assertEqual(captured["binding_status"]["status"], "current")
+                        self.assertEqual(captured["health"]["written"], initial["health"]["written"])
+                        self.assertEqual(captured["events"], initial["events"],
+                                         "A delayed display read must keep its original runtime boundary")
+                        self.assertTrue(independent, "Display metadata serialized event ingestion")
+                        self.assertEqual(session.sequence, 1)
+                        self.assertEqual(probe.bo_errors, 0)
+                finally:
+                    release.set()
+                    probe.close()
+                    server.shutdown()
+                    server.server_close()
+                    thread.join()
+                    session.close()
+
     def test_conditional_declarations_and_maintenance_refresh(self):
         from bo_sync import maintenance_task
 

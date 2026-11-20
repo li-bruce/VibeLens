@@ -84,3 +84,7 @@ pass independent source/runtime/browser checks, complete a business iteration
 and a source-only refactor, and preserve their resulting graph changes and
 captures. Product scenes and their final export follow those gates. The ledger
 retains P7 as `in_progress` until that complete evidence exists.
+
+[Repair 06](repair-06/README.md) moves presentation-file reads outside the event
+admission lock. Its complete regression passes; native recording throughput
+remains under investigation and is not accepted by this component receipt.

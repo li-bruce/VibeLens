@@ -450,9 +450,7 @@ class GraphSession:
                 if o.get("state_model_id") is not None:
                     cfg["state_model_id"] = o["state_model_id"]
                 configurations.append(cfg)
-            from ..web.semantic_names import overlay_model
-
-            model = overlay_model(self.root, self._view_model())
+            model = self._view_model()
             health = self.history.health()
             producer = self.bo_producer_health() if self.bo_producer_health else None
             current_frame = self.frames.get(current.get("evidence_id"), (None, 0))[0]
@@ -462,9 +460,7 @@ class GraphSession:
                 "program_url": self.program_url,
                 "layout_id": self.project["project_id"],
                 "model": model,
-                "behavior_context": (
-                    self.bo_behavior_context.view() if self.bo_project_context.get() else None
-                ),
+                "behavior_context": None,
                 "project_structure": project_structure,
                 "api_structure": api_structure,
                 "concept_structure": (
@@ -526,6 +522,14 @@ class GraphSession:
             }
         # Freeze metadata and event references at one admission boundary, then
         # clone the immutable event payloads without blocking producer admission.
+        # Captions and the latest recorded verification read presentation files.
+        # They do not determine a runtime event's identity or admission. Keep this
+        # IO outside the capture lock so a busy/slow viewer cannot delay producers.
+        from ..web.semantic_names import overlay_model
+
+        result["model"] = overlay_model(self.root, result["model"])
+        if self.bo_project_context.get():
+            result["behavior_context"] = self.bo_behavior_context.view()
         result["events"] = deepcopy(
             [event for event in events if event.get("build_id") == result["manifest"]["build_id"]]
         )

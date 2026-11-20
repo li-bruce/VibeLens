@@ -1,0 +1,59 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Display metadata does not serialize live event admission; native recording acceptance remains open.",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "434ff9d4911c8f1480e0a4492536458170644ad8",
+  "gates": {
+    "focused": {
+      "tests": 47,
+      "exit_code": 0,
+      "log": "focused.log"
+    },
+    "source": {
+      "valid": true,
+      "receipt": "source.json"
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "log": "full-verify-retest.log",
+      "unittest_suites": 95,
+      "unittest_reported_tests": 1108,
+      "skips": 1,
+      "skip_reason": "Windows file-symlink privilege",
+      "tlc": "Pinned TLC 1.7.4 and Java 17 enabled"
+    },
+    "managed_examples": {
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ],
+      "business_source_unchanged": true,
+      "frozen_round": "behavior-contracts-p7-repair06-20261120"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json",
+      "revision": "2403ceef811235b238a0ee1c2d198ff5e7382dbf"
+    }
+  },
+  "retained_failures": [
+    "display-lock-first.log"
+  ],
+  "remaining": [
+    "Native Node recording still reports backlog and timeouts with the diagnostic candidate; this repair alone does not resolve all transport delays.",
+    "Both complete initial native acceptance runs, business iteration and source-only refactor",
+    "Accepted product scenes and final P7 closure"
+  ],
+  "candidate_files": [
+    {
+      "path": "skills/vibelens/scripts/bo_observer/observation/session.py",
+      "sha256": "4e4f21952e083a2e1eab818de673d50cc065e314af8eb07ff6785db5735e51f3"
+    },
+    {
+      "path": "tests/test_code_graph.py",
+      "sha256": "b35a2cf3afaf58dcde796e0d30e49cb03bbdac4667a8dc8d4c9456007f38073e"
+    }
+  ]
+}
