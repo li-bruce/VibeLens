@@ -65,6 +65,34 @@ uninspected properties remain explicitly unverified.
 
 ## Development and runtime
 
+### Match SQLite collection to native persistence
+
+The coding agent reads the native persistence implementation before choosing a
+collector mode. This is a source fact, not a new product question. Record the
+implementation file in the store's `source_files` and preserve it during scans.
+
+- `sqlite_file_mode: transactional` (the default) opens the existing SQLite file
+  read-only. Use it for ordinary SQLite connections, transactions and WAL.
+- `sqlite_file_mode: atomic_replace` is for immutable, complete SQLite images
+  published with an atomic file replacement, such as `sql.js` export followed by
+  rename. SQLAlchemy reflects an isolated, query-only in-memory image. On Windows,
+  a temporary hard link pins the published image without opening its replaceable
+  name; that link is deleted on handle close. The temporary directory must be on
+  the database volume and support hard links. File bytes remain unchanged.
+
+The image mode reads up to 128 MiB of database bytes into memory; this is a
+collector limit, not application capacity. Only schema metadata is exported.
+WAL/journal sidecars, in-place changes detected during reading, extra URL driver
+options, unsupported volumes and oversized images produce explicit collection
+errors. There is no fallback to live-file copying or declaration-only coverage.
+Do not select this mode for a transactional database or infer it from a filename.
+
+Test native writes while collection is active and compare observer-on/off results.
+Read-only access can still interfere with a publisher's Windows rename. Keep
+failed collection visible, retain the last valid catalog as stale, and verify
+the next successful poll detects actual schema changes. Source changes to the
+persistence mechanism require mode review and the same regression checks.
+
 **Code execution** includes executed queries, transactions and selected transformations:
 what was read or written, relevant values or counts, elapsed work and the actual
 commit/rollback outcome. **Data structure** describes stores, tables/collections

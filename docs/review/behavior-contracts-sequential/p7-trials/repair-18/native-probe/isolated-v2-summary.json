@@ -1,0 +1,2626 @@
+{
+  "version": 2,
+  "based_on_repro_sha256": "7cfe07308dba3d796178396d81bc8b62c07941299e6619c3dbcf05ce1b503e49",
+  "provider": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens",
+  "store_source_sha256": "5b69d55d058c5a85a6b599d3626f056b09aa2702b6271c273805a6fb81ad2cb4",
+  "valid": true,
+  "case_results": [
+    {
+      "phase": "snapshot_handle",
+      "database": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\atomic-catalog-upgrade-20261120\\isolated-v2\\snapshot_handle\\application.sqlite",
+      "provider": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens",
+      "sqlite_file_mode": "atomic_replace",
+      "writer_ready": {
+        "stage": "writer_ready",
+        "pid": 53940
+      },
+      "without_collector": {
+        "stage": "publication",
+        "ok": true,
+        "pid": 53940,
+        "method": "Unmodified Store.persist",
+        "operation": "persist"
+      },
+      "old_image_sha256": "4a476de72e806022ed8739f2d88e4772c3789ccd57b21771bc32d94c97f22037",
+      "barrier": {
+        "stage": "barrier",
+        "phase": "snapshot_handle",
+        "pid": 52608,
+        "stream_closed": false,
+        "actual_windows_handle_path": "\\\\?\\C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\atomic-catalog-upgrade-20261120\\isolated-v2\\snapshot_handle\\snapshot-temp\\vibelens-sqlite-xuvsbxsw\\image.sqlite",
+        "alias_path": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\atomic-catalog-upgrade-20261120\\isolated-v2\\snapshot_handle\\snapshot-temp\\vibelens-sqlite-xuvsbxsw\\image.sqlite",
+        "alias_differs_from_published_path": true,
+        "same_file_before_replacement": true,
+        "file_inode_before_replacement": 3096224747914754
+      },
+      "publication_while_held": {
+        "stage": "publication",
+        "ok": true,
+        "pid": 53940,
+        "method": "Unmodified Store.persist",
+        "operation": "publish_schema"
+      },
+      "new_image_sha256": "54ea28e3d6405e3fa2a063d92ea89c25f170de5312a68bf81d4e4db9bec64ac0",
+      "first_catalog": {
+        "stage": "first_catalog",
+        "pid": 52608,
+        "sqlite_file_mode": "atomic_replace",
+        "canonical_catalog": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens\\scripts\\bo_observer\\data\\catalog.py",
+        "canonical_snapshot": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens\\scripts\\bo_observer\\data\\sqlite_snapshot.py",
+        "image_sha256": "4a476de72e806022ed8739f2d88e4772c3789ccd57b21771bc32d94c97f22037",
+        "catalog": {
+          "protocol": "bo-data-catalog/v1",
+          "store_id": "application",
+          "engine": "sqlalchemy",
+          "origin": "database",
+          "coverage": "complete",
+          "limitations": [
+            "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+          ],
+          "resources": [
+            {
+              "key": "table:announcements",
+              "kind": "table",
+              "name": "announcements",
+              "fields": [
+                {
+                  "name": "author_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "body",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "title",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "updated_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('published','deleted')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "author_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:files",
+              "kind": "table",
+              "name": "files",
+              "fields": [
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "name",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "owner_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "sha256",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "size",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "storage_path",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "size >= 0"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "owner_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:grants",
+              "kind": "table",
+              "name": "grants",
+              "fields": [
+                {
+                  "name": "active",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "file_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "recipient_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "active IN (0,1)"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "file_id"
+                  ],
+                  "target": "table:files",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "recipient_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "file_id",
+                    "recipient_id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:sessions",
+              "kind": "table",
+              "name": "sessions",
+              "fields": [
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "token_hash",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "trace_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "user_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('active','ended')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "user_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "token_hash"
+                  ]
+                },
+                {
+                  "kind": "unique",
+                  "name": "",
+                  "fields": [
+                    "trace_id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:tasks",
+              "kind": "table",
+              "name": "tasks",
+              "fields": [
+                {
+                  "name": "authorized_at_submission",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "file_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "last_error",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "prepared_path",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "ready_at",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "requester_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "sha256",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "started_at",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "authorized_at_submission=1"
+                },
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('queued','preparing','ready')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "file_id"
+                  ],
+                  "target": "table:files",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "requester_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:users",
+              "kind": "table",
+              "name": "users",
+              "fields": [
+                {
+                  "name": "display_name",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "editor",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "password_hash",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "password_salt",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "username",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "editor IN (0,1)"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                },
+                {
+                  "kind": "unique",
+                  "name": "",
+                  "fields": [
+                    "username"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "all_file_streams_closed": true,
+        "remaining_aliases": []
+      },
+      "next_catalog": {
+        "stage": "next_catalog",
+        "pid": 52608,
+        "sqlite_file_mode": "atomic_replace",
+        "canonical_catalog": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens\\scripts\\bo_observer\\data\\catalog.py",
+        "canonical_snapshot": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens\\scripts\\bo_observer\\data\\sqlite_snapshot.py",
+        "image_sha256": "54ea28e3d6405e3fa2a063d92ea89c25f170de5312a68bf81d4e4db9bec64ac0",
+        "catalog": {
+          "protocol": "bo-data-catalog/v1",
+          "store_id": "application",
+          "engine": "sqlalchemy",
+          "origin": "database",
+          "coverage": "complete",
+          "limitations": [
+            "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+          ],
+          "resources": [
+            {
+              "key": "table:announcements",
+              "kind": "table",
+              "name": "announcements",
+              "fields": [
+                {
+                  "name": "author_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "body",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "title",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "updated_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('published','deleted')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "author_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:diag_snapshot_handle_v2",
+              "kind": "table",
+              "name": "diag_snapshot_handle_v2",
+              "fields": [
+                {
+                  "name": "id",
+                  "native_type": "INTEGER",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "payload",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:files",
+              "kind": "table",
+              "name": "files",
+              "fields": [
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "name",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "owner_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "sha256",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "size",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "storage_path",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "size >= 0"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "owner_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:grants",
+              "kind": "table",
+              "name": "grants",
+              "fields": [
+                {
+                  "name": "active",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "file_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "recipient_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "active IN (0,1)"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "file_id"
+                  ],
+                  "target": "table:files",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "recipient_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "file_id",
+                    "recipient_id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:sessions",
+              "kind": "table",
+              "name": "sessions",
+              "fields": [
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "token_hash",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "trace_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "user_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('active','ended')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "user_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "token_hash"
+                  ]
+                },
+                {
+                  "kind": "unique",
+                  "name": "",
+                  "fields": [
+                    "trace_id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:tasks",
+              "kind": "table",
+              "name": "tasks",
+              "fields": [
+                {
+                  "name": "authorized_at_submission",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "file_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "last_error",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "prepared_path",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "ready_at",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "requester_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "sha256",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "started_at",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "authorized_at_submission=1"
+                },
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('queued','preparing','ready')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "file_id"
+                  ],
+                  "target": "table:files",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "requester_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:users",
+              "kind": "table",
+              "name": "users",
+              "fields": [
+                {
+                  "name": "display_name",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "editor",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "password_hash",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "password_salt",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "username",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "editor IN (0,1)"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                },
+                {
+                  "kind": "unique",
+                  "name": "",
+                  "fields": [
+                    "username"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "all_file_streams_closed": true,
+        "remaining_aliases": []
+      },
+      "reader_exit": 0,
+      "reader_stderr": "",
+      "after_collector": {
+        "stage": "publication",
+        "ok": true,
+        "pid": 53940,
+        "method": "Unmodified Store.persist",
+        "operation": "persist"
+      },
+      "valid": true
+    },
+    {
+      "phase": "reflection",
+      "database": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\atomic-catalog-upgrade-20261120\\isolated-v2\\reflection\\application.sqlite",
+      "provider": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens",
+      "sqlite_file_mode": "atomic_replace",
+      "writer_ready": {
+        "stage": "writer_ready",
+        "pid": 47336
+      },
+      "without_collector": {
+        "stage": "publication",
+        "ok": true,
+        "pid": 47336,
+        "method": "Unmodified Store.persist",
+        "operation": "persist"
+      },
+      "old_image_sha256": "4a476de72e806022ed8739f2d88e4772c3789ccd57b21771bc32d94c97f22037",
+      "barrier": {
+        "stage": "barrier",
+        "phase": "reflection",
+        "pid": 17292,
+        "tables": [
+          "announcements",
+          "files",
+          "grants",
+          "sessions",
+          "tasks",
+          "users"
+        ],
+        "database_list": [
+          [
+            0,
+            "main",
+            ""
+          ]
+        ],
+        "query_only": 1,
+        "all_file_streams_closed": true,
+        "snapshot_sha256": "4a476de72e806022ed8739f2d88e4772c3789ccd57b21771bc32d94c97f22037"
+      },
+      "publication_while_held": {
+        "stage": "publication",
+        "ok": true,
+        "pid": 47336,
+        "method": "Unmodified Store.persist",
+        "operation": "publish_schema"
+      },
+      "new_image_sha256": "4c284282681119631e3cd479c255bb9158fc417d73e8332d42d411bba6ff053d",
+      "first_catalog": {
+        "stage": "first_catalog",
+        "pid": 17292,
+        "sqlite_file_mode": "atomic_replace",
+        "canonical_catalog": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens\\scripts\\bo_observer\\data\\catalog.py",
+        "canonical_snapshot": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens\\scripts\\bo_observer\\data\\sqlite_snapshot.py",
+        "image_sha256": "4a476de72e806022ed8739f2d88e4772c3789ccd57b21771bc32d94c97f22037",
+        "catalog": {
+          "protocol": "bo-data-catalog/v1",
+          "store_id": "application",
+          "engine": "sqlalchemy",
+          "origin": "database",
+          "coverage": "complete",
+          "limitations": [
+            "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+          ],
+          "resources": [
+            {
+              "key": "table:announcements",
+              "kind": "table",
+              "name": "announcements",
+              "fields": [
+                {
+                  "name": "author_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "body",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "title",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "updated_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('published','deleted')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "author_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:files",
+              "kind": "table",
+              "name": "files",
+              "fields": [
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "name",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "owner_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "sha256",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "size",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "storage_path",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "size >= 0"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "owner_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:grants",
+              "kind": "table",
+              "name": "grants",
+              "fields": [
+                {
+                  "name": "active",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "file_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "recipient_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "active IN (0,1)"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "file_id"
+                  ],
+                  "target": "table:files",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "recipient_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "file_id",
+                    "recipient_id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:sessions",
+              "kind": "table",
+              "name": "sessions",
+              "fields": [
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "token_hash",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "trace_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "user_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('active','ended')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "user_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "token_hash"
+                  ]
+                },
+                {
+                  "kind": "unique",
+                  "name": "",
+                  "fields": [
+                    "trace_id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:tasks",
+              "kind": "table",
+              "name": "tasks",
+              "fields": [
+                {
+                  "name": "authorized_at_submission",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "file_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "last_error",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "prepared_path",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "ready_at",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "requester_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "sha256",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "started_at",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "authorized_at_submission=1"
+                },
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('queued','preparing','ready')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "file_id"
+                  ],
+                  "target": "table:files",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "requester_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:users",
+              "kind": "table",
+              "name": "users",
+              "fields": [
+                {
+                  "name": "display_name",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "editor",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "password_hash",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "password_salt",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "username",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "editor IN (0,1)"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                },
+                {
+                  "kind": "unique",
+                  "name": "",
+                  "fields": [
+                    "username"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "all_file_streams_closed": true,
+        "remaining_aliases": []
+      },
+      "next_catalog": {
+        "stage": "next_catalog",
+        "pid": 17292,
+        "sqlite_file_mode": "atomic_replace",
+        "canonical_catalog": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens\\scripts\\bo_observer\\data\\catalog.py",
+        "canonical_snapshot": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\atomic-catalog-skills\\vibelens\\scripts\\bo_observer\\data\\sqlite_snapshot.py",
+        "image_sha256": "4c284282681119631e3cd479c255bb9158fc417d73e8332d42d411bba6ff053d",
+        "catalog": {
+          "protocol": "bo-data-catalog/v1",
+          "store_id": "application",
+          "engine": "sqlalchemy",
+          "origin": "database",
+          "coverage": "complete",
+          "limitations": [
+            "Coverage is limited to tables in the configured/default schema and dialect-supported constraints; triggers and stored routines are not inspected."
+          ],
+          "resources": [
+            {
+              "key": "table:announcements",
+              "kind": "table",
+              "name": "announcements",
+              "fields": [
+                {
+                  "name": "author_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "body",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "title",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "updated_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('published','deleted')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "author_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:diag_reflection_v2",
+              "kind": "table",
+              "name": "diag_reflection_v2",
+              "fields": [
+                {
+                  "name": "id",
+                  "native_type": "INTEGER",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "payload",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:files",
+              "kind": "table",
+              "name": "files",
+              "fields": [
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "name",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "owner_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "sha256",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "size",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "storage_path",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "size >= 0"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "owner_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:grants",
+              "kind": "table",
+              "name": "grants",
+              "fields": [
+                {
+                  "name": "active",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "file_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "recipient_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "active IN (0,1)"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "file_id"
+                  ],
+                  "target": "table:files",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "recipient_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "file_id",
+                    "recipient_id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:sessions",
+              "kind": "table",
+              "name": "sessions",
+              "fields": [
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "token_hash",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "trace_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "user_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('active','ended')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "user_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "token_hash"
+                  ]
+                },
+                {
+                  "kind": "unique",
+                  "name": "",
+                  "fields": [
+                    "trace_id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:tasks",
+              "kind": "table",
+              "name": "tasks",
+              "fields": [
+                {
+                  "name": "authorized_at_submission",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "created_at",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "file_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "last_error",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "prepared_path",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "ready_at",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "requester_id",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "revision",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": "1",
+                  "generated": false
+                },
+                {
+                  "name": "sha256",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "started_at",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "status",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "authorized_at_submission=1"
+                },
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "status IN ('queued','preparing','ready')"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "file_id"
+                  ],
+                  "target": "table:files",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "foreign_key",
+                  "name": "",
+                  "fields": [
+                    "requester_id"
+                  ],
+                  "target": "table:users",
+                  "target_fields": [
+                    "id"
+                  ],
+                  "description": "{}"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "table:users",
+              "kind": "table",
+              "name": "users",
+              "fields": [
+                {
+                  "name": "display_name",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "editor",
+                  "native_type": "INTEGER",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "id",
+                  "native_type": "TEXT",
+                  "nullable": true,
+                  "primary_key": true,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "password_hash",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "password_salt",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                },
+                {
+                  "name": "username",
+                  "native_type": "TEXT",
+                  "nullable": false,
+                  "primary_key": false,
+                  "default": null,
+                  "generated": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "check",
+                  "name": "",
+                  "fields": [],
+                  "description": "editor IN (0,1)"
+                },
+                {
+                  "kind": "primary_key",
+                  "name": "",
+                  "fields": [
+                    "id"
+                  ]
+                },
+                {
+                  "kind": "unique",
+                  "name": "",
+                  "fields": [
+                    "username"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "all_file_streams_closed": true,
+        "remaining_aliases": []
+      },
+      "reader_exit": 0,
+      "reader_stderr": "",
+      "after_collector": {
+        "stage": "publication",
+        "ok": true,
+        "pid": 47336,
+        "method": "Unmodified Store.persist",
+        "operation": "persist"
+      },
+      "valid": true
+    }
+  ],
+  "business_database_modified": false,
+  "business_source_or_installation_modified": false,
+  "browser_or_recording_started": false
+}

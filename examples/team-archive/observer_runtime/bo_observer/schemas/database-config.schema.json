@@ -98,6 +98,10 @@
             },
             "uniqueItems": true
           },
+          "sqlite_file_mode": {
+            "enum": ["transactional", "atomic_replace"],
+            "description": "Native persistence mechanism: ordinary SQLite transactions, or immutable complete images published by atomic file replacement."
+          },
           "sample_limit": {
             "type": "integer",
             "minimum": 0,
@@ -109,6 +113,10 @@
             "maximum": 100
           }
         },
+        "allOf": [{
+          "if": {"required": ["sqlite_file_mode"]},
+          "then": {"properties": {"engine": {"const": "sqlalchemy"}}}
+        }],
         "required": [
           "id",
           "label",

@@ -134,3 +134,13 @@ the subsequent viewer startup failure. Design and runtime viewers now share
 bounded static-asset connection reuse. Independent desktop checks pass against
 the original recording; final native capture still requires both applications
 to upgrade normally, with nonempty live history for observer-exclusion checks.
+
+[Python initial acceptance](python-initial-repair17/README.md) freezes the complete
+native run and independent live-observer desktop checks before the simulated
+user's cancellation request. This initial acceptance does not close P7.
+
+[Repair 18](repair-18/README.md) preserves the Node native SQLite replacement
+failure and OS-backed reproduction. It adds explicit complete-image collection
+for atomic file publishers, retaining ordinary transactional/WAL behavior and
+all catalog checks. Final trial captures, iterations and source refactors remain
+separate acceptance requirements.

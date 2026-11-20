@@ -21,6 +21,7 @@ def main():
     args = parser.parse_args()
     for name in (
         "catalog",
+        "atomic_snapshot",
         "runtime",
         "sync",
         "guidance",

@@ -1,0 +1,171 @@
+{
+  "state": "diagnosis_complete_waiting_for_new_independent_installation",
+  "candidate_id": "e69ab132d4b5744650208f713c5675a8472963bbd0b3f73e3dd5eee391e1999c",
+  "build_id": "5dc7cccff1add8a3e1f4c89aea87f6e658ff47e8359ae284a76f61c3574a3fe5",
+  "provider": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\asset-transport-skills\\vibelens",
+  "reproduction": {
+    "source": "controlled_real_catalog_connection_and_unmodified_native_Store.persist",
+    "fixture": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\repair17-native-browser-20261120\\sqlite-handle-repro\\application.sqlite",
+    "original_application_database_modified": false,
+    "installed_files_modified": false,
+    "reader_patch_scope": "Process-local barrier after canonical get_table_names SQL, preserving the actual result and connection; no installed file edit.",
+    "writer_ready": {
+      "stage": "writer_ready",
+      "pid": 45036
+    },
+    "before_collector": {
+      "ok": true,
+      "pid": 45036,
+      "method": "Store.persist"
+    },
+    "holders_before": {
+      "pids": [],
+      "processes": []
+    },
+    "reader_held": {
+      "stage": "actual_reflection_connection_held",
+      "pid": 18572,
+      "tables": [
+        "announcements",
+        "files",
+        "grants",
+        "sessions",
+        "tasks",
+        "users"
+      ],
+      "database_list": [
+        [
+          0,
+          "main",
+          "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\repair17-native-browser-20261120\\sqlite-handle-repro\\application.sqlite"
+        ]
+      ],
+      "canonical_module": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\asset-transport-skills\\vibelens\\scripts\\bo_observer\\data\\catalog.py"
+    },
+    "holders_while_reflecting": {
+      "pids": [
+        18572
+      ],
+      "processes": [
+        {
+          "pid": 18572,
+          "name": "Python"
+        }
+      ]
+    },
+    "while_collector_connection_open": {
+      "ok": false,
+      "pid": 45036,
+      "method": "Store.persist",
+      "code": "EPERM",
+      "errno": -4048,
+      "syscall": "rename",
+      "path": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\repair17-native-browser-20261120\\sqlite-handle-repro\\application.sqlite.tmp",
+      "dest": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\repair17-native-browser-20261120\\sqlite-handle-repro\\application.sqlite",
+      "stack": "Error: EPERM: operation not permitted, rename 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\repair17-native-browser-20261120\\sqlite-handle-repro\\application.sqlite.tmp' -> 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\repair17-native-browser-20261120\\sqlite-handle-repro\\application.sqlite'\n    at renameSync (node:fs:1033:11)\n    at Store.persist (file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/.validation/p7-trials/node-retest-app/src/store.mjs:83:5)\n    at Interface.<anonymous> (file:///C:/Users/Lvi_P/Documents/Work/CF/%E5%B9%B3%E5%8F%B0%E8%BD%AF%E8%91%97/SoftwareStatusObserverSkill/.validation/p7-trials/node-retest-app/review/runtime/repair17-native-browser-20261120/sqlite-handle-repro/writer.mjs:10:13)\n    at Interface.emit (node:events:524:28)\n    at [_onLine] [as _onLine] (node:internal/readline/interface:419:12)\n    at [_normalWrite] [as _normalWrite] (node:internal/readline/interface:613:22)\n    at Socket.ondata (node:internal/readline/interface:246:23)\n    at Socket.emit (node:events:524:28)\n    at addChunk (node:internal/streams/readable:561:12)\n    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)"
+    },
+    "reader_returned": {
+      "stage": "canonical_collect_returned",
+      "pid": 18572,
+      "resources": 6,
+      "coverage": "complete"
+    },
+    "reader_still_alive_after_dispose": true,
+    "holders_after_dispose": {
+      "pids": [],
+      "processes": []
+    },
+    "after_canonical_dispose_same_reader_process": {
+      "ok": true,
+      "pid": 45036,
+      "method": "Store.persist"
+    },
+    "reader_exit_code": 0,
+    "reader_stderr": "",
+    "fixture_database_sha256": "4a476de72e806022ed8739f2d88e4772c3789ccd57b21771bc32d94c97f22037",
+    "valid_reproduction": true
+  },
+  "repro_script_sha256": "7cfe07308dba3d796178396d81bc8b62c07941299e6619c3dbcf05ce1b503e49",
+  "repro_result_sha256": "aee0062f820bd2cc7ba41b67c87b0667ec705b31248ca5f7e8d7f8e6da8c0168",
+  "persistence_mode_evidence": {
+    "dependency": "sql.js 1.14.1",
+    "source": "src/store.mjs",
+    "source_sha256": "5b69d55d058c5a85a6b599d3626f056b09aa2702b6271c273805a6fb81ad2cb4",
+    "evidence": [
+      {
+        "line": 23,
+        "fact": "Existing persisted bytes are loaded into an in-memory SQL.Database."
+      },
+      {
+        "line": 75,
+        "fact": "The synchronous native transaction commits the in-memory database before calling persist."
+      },
+      {
+        "line": 82,
+        "fact": "db.export() yields the complete SQLite database image; writeFileSync finishes writing it to filename + .tmp."
+      },
+      {
+        "line": 83,
+        "fact": "renameSync publishes the complete temporary file over the destination in the same directory."
+      }
+    ],
+    "server_single_store_source": "src/server.mjs:9",
+    "scope": "This explicit full-image publication mode is supported by this SQL.js Store path. Do not generalize it to transaction/WAL writers or replace real catalog collection with declarations.",
+    "mode_declaration_added": false
+  },
+  "historical_attribution_boundary": "The sufficient configured catalog/rename collision is reproduced with an OS-confirmed holder PID. No original-crash handle snapshot exists, so the exact holder of the historical incident is not retrospectively established.",
+  "actual_file_holders_after_cleanup": {
+    "pids": [],
+    "processes": []
+  },
+  "ports_occupied_after_cleanup": {
+    "8925": false,
+    "8926": false,
+    "8935": false,
+    "8936": false
+  },
+  "other_reader_audit": {
+    "native_reader": "tests/native_reader.mjs:readPersistedInstances uses readFile bytes, in-memory SQL.js, finally database.close(). browser_evidence.mjs closes its in-memory SQL.js database too.",
+    "schema_exporter": "integrations/bo_export_schema.py uses sqlite:///:memory: and engine.dispose(); it does not read the actual database file.",
+    "canonical_catalog": "data/sync.py:131-132 collect(store) reads the actual configured file independently of declarations. catalog.py:135 opens the connection; 169 disposes. The open interval alone causes the demonstrated collision.",
+    "transport_diagnostic": "tooling/transport_repro.py:16-19 explicitly closes its native SQLite connection in finally; it was not selected in this --recording run.",
+    "one_shot_preflight_snapshot": "An ephemeral preflight command used with sqlite3.connect without explicit close; process exit released it before first verify/browser launch. It is not established as a recording-time holder."
+  },
+  "preservation": {
+    "failed_archive": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\repair17-native-browser-20261120\\failed-unified-original-evidence.zip",
+    "failed_archive_sha256": "827f6c00d495c073c524f23e8ded8515fbbdbaac82a9c2c730d78bcc8b628d52",
+    "original_frozen_files_checked": 178,
+    "original_frozen_files_unchanged": true,
+    "provider_files_checked": 2776,
+    "provider_unchanged": true,
+    "business_sources_and_assertions_unchanged": true,
+    "expected_metadata_or_runtime_changes": {
+      "bo_stategraph/data/events.jsonl": "actual recording event log",
+      "bo_stategraph/data/events.jsonl.1": "actual rotated event log",
+      "initial-node-app/verification.json": "new genuine first full verify output",
+      "progress.md": "authorization/progress note",
+      "task_plan.md": "authorization/progress note"
+    },
+    "concurrency_source_sha256": "5db30738b7244cfbd10cfc23555d70388da0ab394d9f37a436d0eb7a827de441"
+  },
+  "actual_run": {
+    "first_full_verify_exit": 1,
+    "first_full_verify_missing_browser_errors": 19,
+    "all_four_test_commands_exit": 0,
+    "normal_recording": "1155de8f7af248febb68c9c2778bb921",
+    "normal_events": 1160,
+    "interrupted_recording": "5ae95d6942d748cc9aa59d94080bdc30",
+    "interrupted_events": 304,
+    "gui_full_path_exit": 1,
+    "remaining_gui_cases_complete": false,
+    "original_app_error": "Store.persist renameSync EPERM -> native worker error-record persistence throws -> native app exit 1"
+  },
+  "not_run_after_diagnostic_steering": [
+    "whole_browser_retry",
+    "post_recording_full_verify",
+    "new_mode_declaration",
+    "business_or_framework_source_fix",
+    "service_restart",
+    "accept"
+  ]
+}

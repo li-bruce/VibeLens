@@ -12,6 +12,7 @@ from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit, unquote
 
 from bo_observer.observation.observation_scope import bo_internal
+from .sqlite_snapshot import SnapshotError, create_snapshot_engine, file_mode
 
 
 class CatalogError(RuntimeError):
@@ -80,8 +81,11 @@ def collect(store, *, root=None):
     if not url:
         raise CatalogError("The configured database URL environment variable is missing.")
     try:
+        file_mode(store)
         with bo_internal():
             return _finish(collectors[engine](store, url, root))
+    except SnapshotError as error:
+        raise CatalogError(str(error)) from None
     except CatalogError:
         raise
     except Exception as error:
@@ -111,6 +115,13 @@ def _inspect(inspector, method, catalog, *args, **kwargs):
 def _sqlalchemy(store, url, root):
     sa = _dependency("sqlalchemy")
     connection_url = sa.engine.make_url(url)
+    mode = file_mode(store)
+    if "sqlite_file_mode" in store and connection_url.get_backend_name() != "sqlite":
+        raise CatalogError("sqlite_file_mode requires a SQLite connection.")
+    if mode == "atomic_replace" and (
+        connection_url.drivername not in {"sqlite", "sqlite+pysqlite"} or connection_url.query
+    ):
+        raise CatalogError("Atomic SQLite snapshots do not support extra driver options.")
     if connection_url.get_backend_name() == "sqlite":
         database = connection_url.database
         if not database or database == ":memory:" or database.startswith("file:"):
@@ -130,7 +141,11 @@ def _sqlalchemy(store, url, root):
         )
     catalog = _catalog(store)
     schema = store.get("namespace") or None
-    engine = sa.create_engine(connection_url)
+    engine = (
+        create_snapshot_engine(sa, path)
+        if mode == "atomic_replace"
+        else sa.create_engine(connection_url)
+    )
     try:
         with engine.connect() as connection:
             inspector = sa.inspect(connection)

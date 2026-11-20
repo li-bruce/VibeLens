@@ -53,6 +53,11 @@ Generate concise, layer-specific node and relationship names in English and Chin
 
 When the requested software stores data, reuse its database choice or run `bo_db.py guide --root PROJECT` to prepare a short selection question. Recommend a database that fits the stated workload, explain the tradeoff, and record the user's choice. Keep confirmed business scope unchanged. See [database observation](references/database-observation.md) for supported stores and model layers.
 
+Derive the collector's access mode from the actual native persistence code. Check
+that metadata collection can run alongside application writes; read-only handles
+can still interfere with atomic file replacement. Preserve this implementation
+fact and repeat the check when persistence code changes.
+
 ## 2. Establish declarations, adapters, and expectations
 
 Read [multilanguage architecture and protocols](references/multilanguage.md). Python provides shared graph validation, source aggregation, recording, querying, export, and the complete viewer. The application keeps native execution and authoritative state; both sides exchange versioned JSON.

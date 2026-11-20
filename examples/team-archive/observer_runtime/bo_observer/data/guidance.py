@@ -60,6 +60,7 @@ def storage_questions(config=None, *, required=False):
                 "tasks": [
                     "Record the confirmed choice and locator in bo_stategraph/databases.json.",
                     "Configure the native ORM/ODM or explicit model layer; export its public metadata as bo-data-catalog/v1.",
+                    "Inspect the actual persistence mechanism. For SQLite, keep transactional collection by default; declare sqlite_file_mode=atomic_replace only for immutable complete-file publishers such as sql.js export plus rename. Verify concurrent publication with the collector enabled and disabled.",
                     "Bind each read, write, transaction and selected transformation to source, targets, selected fields and real acceptance cases.",
                     "Use bo_ wiring and BO adapters; exclude observer-only connections, metadata reads and transport at capture entry.",
                     "Run bo_db sync, independent check, actual runtime cases and existing change_sync gates after code or migration changes.",

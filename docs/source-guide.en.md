@@ -1,5 +1,11 @@
 # Source guide
 
+`data/sqlite_snapshot.py` handles explicitly declared immutable SQLite file
+publishers. It pins one published image through a temporary Windows hard link,
+releases file handles before SQLAlchemy reflection, and rejects WAL, unsupported
+driver options and oversized images. `catalog.py` retains the normal read-only
+transactional path; both paths use the same Inspector and catalog validation.
+
 [中文](source-guide.zh-CN.md) · [Usage](usage.en.md) · [Architecture](refactor-multilanguage.md)
 
 Read this guide when you want to change the Skill, inspect a recorded value, or find the code behind a graph interaction. The maintained implementation lives in [skills/vibelens](../skills/vibelens/). Example projects contain installed copies to test real project integration.

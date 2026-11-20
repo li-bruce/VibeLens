@@ -1,0 +1,63 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "844b878d147f11840f207bb5036c91e3009c0777",
+  "scope": "Explicit atomic SQLite image collection; native publication unaffected by held snapshot/reflection readers",
+  "gates": {
+    "database": {
+      "exit_code": 0,
+      "unittest_reports": 10,
+      "reported_tests": 107,
+      "reported_skips": 0,
+      "log": "database.log"
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "unittest_reports": 115,
+      "reported_tests": 1281,
+      "reported_skips": 1,
+      "log": "full.log"
+    },
+    "native_writer_probe": {
+      "valid": true,
+      "cases": 2,
+      "receipt": "native-probe/isolated-v2-summary.json"
+    },
+    "source": {
+      "valid": true,
+      "python_modules": 247,
+      "javascript_modules": 142
+    },
+    "managed_examples": {
+      "valid": true,
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ]
+    },
+    "installation": {
+      "valid": true,
+      "owned_files": 462,
+      "receipt": "installation.json"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json"
+    }
+  },
+  "retained_failures": [
+    "baseline-failure.log",
+    "first-retest.log",
+    "host-retest.log",
+    "node-original/native-failure-review.zip"
+  ],
+  "historical_attribution": "Controlled sufficient conflict reproduced; original-crash holder PID not established",
+  "public_evidence": "Originals remain local; review archives omit credentials/raw databases and retain member hashes",
+  "pending": [
+    "Node native baseline capture and desktop checks after normal upgrade",
+    "Both semantic iterations and source-only refactors",
+    "Final native capture/UI checks and local product scene export"
+  ]
+}

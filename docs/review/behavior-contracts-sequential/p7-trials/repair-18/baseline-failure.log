@@ -1,0 +1,142 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+EEFFFF.EEFEFFF
+======================================================================
+ERROR: test_config_accepts_explicit_modes_and_rejects_unknown_values (__main__.AtomicSnapshotTests.test_config_accepts_explicit_modes_and_rejects_unknown_values)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 146, in test_config_accepts_explicit_modes_and_rejects_unknown_values
+    jsonschema.validate(mode, store_schema["sqlite_file_mode"])
+                              ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+KeyError: 'sqlite_file_mode'
+
+======================================================================
+ERROR: test_file_read_handle_allows_atomic_publication (__main__.AtomicSnapshotTests.test_file_read_handle_allows_atomic_publication)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 70, in test_file_read_handle_allows_atomic_publication
+    from bo_observer.data.sqlite_snapshot import open_shared_read
+ModuleNotFoundError: No module named 'bo_observer.data.sqlite_snapshot'
+
+======================================================================
+ERROR: test_replacement_during_reflection_is_safe_and_next_poll_sees_new_schema (__main__.AtomicSnapshotTests.test_replacement_during_reflection_is_safe_and_next_poll_sees_new_schema)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 59, in test_replacement_during_reflection_is_safe_and_next_poll_sees_new_schema
+    before = self.collect()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 46, in collect
+    return catalog.collect(self.store, root=self.root)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\data\catalog.py", line 89, in collect
+    raise CatalogError(
+        f"{engine} metadata collection failed ({type(error).__name__})."
+    ) from None
+bo_observer.data.catalog.CatalogError: sqlalchemy metadata collection failed (PermissionError).
+
+======================================================================
+ERROR: test_snapshot_engine_is_memory_only_and_query_only (__main__.AtomicSnapshotTests.test_snapshot_engine_is_memory_only_and_query_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 97, in test_snapshot_engine_is_memory_only_and_query_only
+    self.collect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 46, in collect
+    return catalog.collect(self.store, root=self.root)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\data\catalog.py", line 89, in collect
+    raise CatalogError(
+        f"{engine} metadata collection failed ({type(error).__name__})."
+    ) from None
+bo_observer.data.catalog.CatalogError: sqlalchemy metadata collection failed (AssertionError).
+
+======================================================================
+ERROR: test_snapshot_size_is_bounded_and_does_not_fall_back_to_live_connection (__main__.AtomicSnapshotTests.test_snapshot_size_is_bounded_and_does_not_fall_back_to_live_connection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 118, in test_snapshot_size_is_bounded_and_does_not_fall_back_to_live_connection
+    from bo_observer.data import sqlite_snapshot
+ImportError: cannot import name 'sqlite_snapshot' from 'bo_observer.data' (C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\data\__init__.py)
+
+======================================================================
+FAIL: test_invalid_mode_and_wrong_backend_are_rejected (__main__.AtomicSnapshotTests.test_invalid_mode_and_wrong_backend_are_rejected) (mode='typo')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 127, in test_invalid_mode_and_wrong_backend_are_rejected
+    with self.assertRaisesRegex(catalog.CatalogError, "sqlite_file_mode"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CatalogError not raised
+
+======================================================================
+FAIL: test_invalid_mode_and_wrong_backend_are_rejected (__main__.AtomicSnapshotTests.test_invalid_mode_and_wrong_backend_are_rejected) (mode=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 127, in test_invalid_mode_and_wrong_backend_are_rejected
+    with self.assertRaisesRegex(catalog.CatalogError, "sqlite_file_mode"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CatalogError not raised
+
+======================================================================
+FAIL: test_invalid_mode_and_wrong_backend_are_rejected (__main__.AtomicSnapshotTests.test_invalid_mode_and_wrong_backend_are_rejected) (mode=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 127, in test_invalid_mode_and_wrong_backend_are_rejected
+    with self.assertRaisesRegex(catalog.CatalogError, "sqlite_file_mode"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CatalogError not raised
+
+======================================================================
+FAIL: test_invalid_mode_and_wrong_backend_are_rejected (__main__.AtomicSnapshotTests.test_invalid_mode_and_wrong_backend_are_rejected)
+----------------------------------------------------------------------
+bo_observer.data.catalog.CatalogError: sqlalchemy metadata collection failed (ModuleNotFoundError).
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 130, in test_invalid_mode_and_wrong_backend_are_rejected
+    with self.assertRaisesRegex(catalog.CatalogError, "SQLite"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "SQLite" does not match "sqlalchemy metadata collection failed (ModuleNotFoundError)."
+
+======================================================================
+FAIL: test_snapshot_rejects_driver_options_that_it_cannot_preserve (__main__.AtomicSnapshotTests.test_snapshot_rejects_driver_options_that_it_cannot_preserve)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 137, in test_snapshot_rejects_driver_options_that_it_cannot_preserve
+    with self.assertRaisesRegex(catalog.CatalogError, "options"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CatalogError not raised
+
+======================================================================
+FAIL: test_wal_and_journal_are_rejected_without_touching_source (__main__.AtomicSnapshotTests.test_wal_and_journal_are_rejected_without_touching_source) (suffix='-wal')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 107, in test_wal_and_journal_are_rejected_without_touching_source
+    with self.assertRaisesRegex(catalog.CatalogError, "standalone"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CatalogError not raised
+
+======================================================================
+FAIL: test_wal_and_journal_are_rejected_without_touching_source (__main__.AtomicSnapshotTests.test_wal_and_journal_are_rejected_without_touching_source) (suffix='-journal')
+----------------------------------------------------------------------
+bo_observer.data.catalog.CatalogError: sqlalchemy metadata collection failed (OperationalError).
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 107, in test_wal_and_journal_are_rejected_without_touching_source
+    with self.assertRaisesRegex(catalog.CatalogError, "standalone"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "standalone" does not match "sqlalchemy metadata collection failed (OperationalError)."
+
+======================================================================
+FAIL: test_wal_and_journal_are_rejected_without_touching_source (__main__.AtomicSnapshotTests.test_wal_and_journal_are_rejected_without_touching_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_database_atomic_snapshot.py", line 114, in test_wal_and_journal_are_rejected_without_touching_source
+    with self.assertRaisesRegex(catalog.CatalogError, "standalone"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CatalogError not raised
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.535s
+
+FAILED (failures=8, errors=5)

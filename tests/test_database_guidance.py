@@ -43,6 +43,7 @@ class GuidanceTests(unittest.TestCase):
         self.assertEqual(result["coding"][0]["depends_on"], [])
         self.assertEqual(config, before)
         self.assertTrue(any("actual runtime cases" in t for t in result["coding"][0]["tasks"]))
+        self.assertTrue(any("persistence mechanism" in t for t in result["coding"][0]["tasks"]))
 
     def test_silence_or_agent_guess_is_not_a_choice(self):
         for selection in (
