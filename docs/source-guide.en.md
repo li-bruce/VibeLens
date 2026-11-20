@@ -29,6 +29,14 @@ which competes with active viewer computations. It retains no content or file
 attribute cache. `observation/event_batch.py` applies the unchanged pre/post source
 checks around a group; state snapshots remain separately validated barriers.
 
+`service.py` prepares design metadata before opening the HTTP listener and before
+publishing a replacement session. `web/bo_design.py` checks current document
+bytes on each poll and reuses the validated revision; full-document callers
+receive detached copies. This avoids repeating design work during capture while
+preserving edit detection. `tests/test_design_polling.py` covers startup, reload,
+concurrent reads, same-size edits and invalid drafts. The [repair receipt](review/behavior-contracts-sequential/p7-trials/repair-23/README.md)
+separates regression results from the remaining native trial acceptance.
+
 The [behavior-contract plan](development/behavior-contracts/README.md) is tracked
 by its [phase ledger](development/behavior-contracts/progress.json). P0–P6 are
 implemented and regressed on the sequential branch; independent P7 trials are

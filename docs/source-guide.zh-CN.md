@@ -13,6 +13,12 @@ GET 复用 HTTP/1.1 连接，空闲五秒后关闭。JSON、控制、采集及�
 
 `graph/source_files.py` 在当前线程中读取实际源码字节并检查路径边界，避免把小文件读取分派给线程池后，与正在计算的视图争用执行时间。它不缓存文件内容或属性。`observation/event_batch.py` 仍在批量事件接收前后分别检查源码；状态快照仍经过独立校验。
 
+`service.py` 在 HTTP 开始监听及重载会话发布之前准备设计元数据。
+`web/bo_design.py` 每次轮询仍读取当前文档字节，复用已校验版本；读取完整文档的调用者获得独立副本。
+这样可避免采集期间重复处理设计文档，同时保留修改检测。`tests/test_design_polling.py`
+覆盖启动、重载、并发读取、同大小编辑及非法草案。[修复记录](review/behavior-contracts-sequential/p7-trials/repair-23/README.md)
+分别说明回归结果和仍待完成的真实项目验收。
+
 [bo_models.py](../skills/vibelens/scripts/bo_models.py) 统一模型身份、注册、按模型校验和子网成员。
 `concepts/networks.py` 生成业务、状态与规则的子网定义；`model-networks.js` 为二维、三维和
 Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码前恢复当前与上一轮的模型清单。
