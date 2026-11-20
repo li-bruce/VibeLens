@@ -1,0 +1,33 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+FFF
+======================================================================
+FAIL: test_retry_cannot_change_json_type_behind_the_same_evidence_id (test_snapshot_evidence.SnapshotEvidenceTests.test_retry_cannot_change_json_type_behind_the_same_evidence_id)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_snapshot_evidence.py", line 131, in test_retry_cannot_change_json_type_behind_the_same_evidence_id
+    self.assertFalse(report["valid"], report)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false : {'valid': True, 'required': True, 'status': 'checked', 'checks': [{'case': 'native', 'position': 0, 'evidence_id': '8c8b2e2d611e4236854c1094b4e16539:f64a82a70e304afdab169309ab1d5428:1', 'accepted': True, 'state_model_id': None, 'instance_id': 'task', 'revision': 0}, {'case': 'native', 'position': 1, 'evidence_id': '8c8b2e2d611e4236854c1094b4e16539:f64a82a70e304afdab169309ab1d5428:1', 'accepted': True, 'state_model_id': None, 'instance_id': 'task', 'revision': 0}], 'errors': [], 'state_errors': [], 'scope': 'Canonical captured snapshot admission; transport and native value witnesses remain separate'}
+
+======================================================================
+FAIL: test_native_observer_duplicate_comparison_preserves_json_types (test_snapshot_evidence.SnapshotEvidenceTests.test_native_observer_duplicate_comparison_preserves_json_types) (value=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_snapshot_evidence.py", line 141, in test_native_observer_duplicate_comparison_preserves_json_types
+    self.assertFalse(result["accepted"], result)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false : {'accepted': True, 'duplicate': True, 'errors': []}
+
+======================================================================
+FAIL: test_native_observer_duplicate_comparison_preserves_json_types (test_snapshot_evidence.SnapshotEvidenceTests.test_native_observer_duplicate_comparison_preserves_json_types) (value=1.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_snapshot_evidence.py", line 141, in test_native_observer_duplicate_comparison_preserves_json_types
+    self.assertFalse(result["accepted"], result)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false : {'accepted': True, 'duplicate': True, 'errors': []}
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.192s
+
+FAILED (failures=3)

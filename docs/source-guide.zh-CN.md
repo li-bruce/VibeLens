@@ -282,3 +282,7 @@ HTTP 等待测试通过现有检查钩子暂停真实任务，观察到“运行
 回执，拒收会计入采集错误并反映在录制结果中。
 
 完整 Skill 位于 `skills/vibelens/`。`plugins/deepseek-harness/` 负责宿主注册与当前对话绑定；`distributions/skillhub/` 处理目录平台的文件数限制，在本地校验并解包资源。`tools/build_distribution.py` 打包同一份源码并输出校验信息。`tools/harness-tests/` 检查真实宿主的调用流程，`tests/test_distribution.py` 检查包内容、对话隔离及篡改拒绝。
+
+`observation/snapshot_admission.py` 提供实时采集与离线验收共用的身份、归属和版本校验。`workflow/snapshot_evidence.py` 按提交顺序检查中间快照；开启观测闭合检查时，每个明确携带状态版本的标准事件都必须有对应快照。采集被拒绝与如实采集到非法状态分别报告。
+
+`web/http_close.py` 处理拒绝请求后的连接关闭：先发送错误响应，再限时、限量处理未读数据。丢弃的数据不进入解析和采集；鉴权、大小限制及正常接收仍由 `service.py` 负责。

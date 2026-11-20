@@ -2,10 +2,12 @@
 
 from copy import deepcopy
 import json
+from http.client import HTTPResponse
 import queue
 from pathlib import Path
 import subprocess
 import sys
+import socket
 import tempfile
 import threading
 import time
@@ -175,6 +177,41 @@ class RemoteEventBatchTests(unittest.TestCase):
         with self.assertRaises(HTTPError) as error:
             self.post({"protocol": "bo-event-batch/v1", "events": values})
         self.assertEqual(error.exception.code, 400)
+        self.assertEqual(self.session.sequence, 0)
+
+    def test_rejected_small_bodies_return_complete_receipts_repeatedly(self):
+        for _ in range(40):
+            with self.assertRaises(HTTPError) as error:
+                self.post({}, token="wrong")
+            with error.exception as response:
+                self.assertEqual(response.code, 403)
+                self.assertEqual(response.headers["Connection"], "close")
+                self.assertEqual(json.load(response), {"error": "origin or collector token denied"})
+        self.assertEqual(self.session.sequence, 0)
+        self.assertTrue(
+            all(
+                row["accepted"]
+                for row in self.post({"protocol": "bo-event-batch/v1", "events": self.envelopes()})
+            )
+        )
+
+    def test_rejection_is_sent_before_an_incomplete_body_arrives(self):
+        with socket.create_connection(
+            ("127.0.0.1", self.server.server_port), timeout=2
+        ) as connection:
+            headers = (
+                "POST /api/bo/events/batch HTTP/1.1\r\n"
+                f"Host: 127.0.0.1:{self.server.server_port}\r\n"
+                "X-BO-Token: wrong\r\nContent-Length: 2\r\n\r\n"
+            )
+            connection.sendall(headers.encode())
+            response = HTTPResponse(connection)
+            response.begin()
+            self.assertEqual(response.status, 403)
+            self.assertEqual(
+                json.loads(response.read()), {"error": "origin or collector token denied"}
+            )
+            response.close()
         self.assertEqual(self.session.sequence, 0)
 
     def test_flush_prefix_finishes_while_later_http_work_is_blocked(self):

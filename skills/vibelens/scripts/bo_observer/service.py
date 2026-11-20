@@ -16,6 +16,7 @@ from .observation.session import GraphSession
 from .session_lifecycle import SessionHost
 from .web.bo_web import BOHTTPServer, bo_content_type
 from .delivery.dependencies import LOCK_NAME, ensure_assets
+from .web.http_close import reject_unread_body
 
 try:
     from ..view_preferences import PreferenceConflict
@@ -96,6 +97,7 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                 ("Content-Length", str(len(raw))),
                 ("Cache-Control", "no-store"),
                 ("X-Content-Type-Options", "nosniff"),
+                ("Connection", "close"),
             ]:
                 self.send_header(k, v)
             origin = self.headers.get("Origin")
@@ -195,16 +197,19 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
             path = urlsplit(self.path).path
             ingest = path.startswith("/api/bo/")
             if not self.permitted(ingest):
-                return self.reply(403, {"error": "origin or collector token denied"})
+                return reject_unread_body(self, 403, {"error": "origin or collector token denied"})
+            body_read = False
             try:
                 if not ingest and not session.web.allowed(path):
-                    return self.reply(
-                        404, {"error": "Debug Web is disabled", "code": "bo_web_disabled"}
+                    return reject_unread_body(
+                        self, 404, {"error": "Debug Web is disabled", "code": "bo_web_disabled"}
                     )
                 size = int(self.headers.get("Content-Length", "0"))
                 if not 0 < size <= (24576 if ingest else 2 * 1024 * 1024):
                     raise ValueError("invalid payload size")
-                body = json.loads(self.rfile.read(size))
+                raw = self.rfile.read(size)
+                body_read = True
+                body = json.loads(raw)
                 if path == "/api/bo/capture":
                     return self.reply(200, session.bo_capture_bridge.exchange(body))
                 control = session.web.post(self.path, body)
@@ -239,6 +244,8 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                     with session.lock:
                         session.errors += 1
                         session.last_error = str(exc)
+                if not body_read:
+                    return reject_unread_body(self, 400, {"error": str(exc)})
                 return self.reply(400, {"error": str(exc)})
 
     class SessionServer(BOHTTPServer):

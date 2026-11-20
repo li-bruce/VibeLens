@@ -290,7 +290,9 @@ class BOStateGraph:
             }
             previous = self._instances.get(instance_id)
             if previous and revision <= previous["observed"]["revision"]:
-                same = observed == previous["observed"]
+                # Python equality equates True, 1 and 1.0. A retried wire fact
+                # must retain its JSON values/types as well as its evidence ID.
+                same = bo_digest(observed) == bo_digest(previous["observed"])
                 if not same:
                     self.bo_rejected += 1
                 return {

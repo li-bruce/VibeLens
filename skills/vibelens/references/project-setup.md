@@ -42,6 +42,11 @@ records a synthetic developer/user trial, separate from human acceptance.
    unavailable observer must leave native effects unchanged. Use the
    [mapping contract](mapping-contract.md) and [validation rules](validation-rules.md)
    for exact fields. Configuration alone is not runtime evidence.
+   Preserve the ordered raw `snapshots` alongside `events` for enabled cases.
+   Verification replays them through the live snapshot-admission rules; a
+   list-only sink and final database projection cannot establish admission.
+   With observation closure required, each canonical revision-bearing event
+   needs its snapshot. Off/fault cases still check native effects independently.
 5. **Establish the first executable baseline.** Once the initial project can be
    parsed, run `change_sync begin`. The earlier semantic confirmation remains the
    meaning baseline; an initial begin does not claim a nonexistent previous-code
@@ -64,6 +69,8 @@ Pay particular attention to three native boundaries:
   The collector compares the complete state, context, configuration and build;
   conflicting content or an older revision remains rejected. Do not increment a
   business revision merely to make observation pass.
+  Separate versioned context from per-operation inputs as described in
+  [native behavior bindings](native-behavior.md#state-context-and-operation-inputs).
 - **Capture fields:** declare fields actually read or returned at each boundary.
   For uploads, an explicit byte count can represent content without collecting the
   file. Verify all declared fields and HTTP error returns; do not reuse a broad

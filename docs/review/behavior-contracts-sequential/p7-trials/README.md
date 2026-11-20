@@ -1,7 +1,8 @@
 # P7 — Independent candidate trials
 
 The later canonical repairs and their separate gates are indexed in
-[`repair-09`](repair-09/README.md) and [`repair-10`](repair-10/README.md).
+[`repair-09`](repair-09/README.md), [`repair-10`](repair-10/README.md) and
+[`repair-11`](repair-11/README.md).
 The original failed recordings remain preserved. Current native acceptance,
 iteration and complete desktop checks are still open; a repair gate alone does
 not close this phase.
@@ -99,3 +100,11 @@ remains under investigation and is not accepted by this component receipt.
 atomic reducer as local capture. Its full regression passes, and the native
 trial completed one recording. A later recording remains interrupted; original
 evidence and that distinction are retained in the repair receipt.
+
+[Repair 11](repair-11/README.md) checks every submitted intermediate canonical
+snapshot through the same admission reducer as live capture. It reproduces a
+previously passing trial whose final SQL projection was correct but whose
+same-version pre-state context contained a newly computed permission result.
+Context/input guidance and the persisted iteration plan now keep these roles
+explicit. Native recording, the semantic iteration and source-only refactor
+remain required after the repaired candidate passes its complete gates.

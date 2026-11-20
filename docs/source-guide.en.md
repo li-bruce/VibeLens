@@ -439,3 +439,7 @@ and JavaScript probes validate application-level acceptance receipts after HTTP
 delivery; recording settlement continues to report actual capture errors.
 
 The canonical Skill lives in `skills/vibelens/`. `plugins/deepseek-harness/` registers it with the pinned host and binds explicit invocation to the real conversation. `distributions/skillhub/` contains the local archive bootstrap for that catalog's file limit. `tools/build_distribution.py` packages the same canonical bytes and emits checksums. `tools/harness-tests/` tests the actual host registry and invocation pipeline; `tests/test_distribution.py` verifies archive parity, isolation and tamper rejection.
+
+`observation/snapshot_admission.py` shares identity, ownership and version admission between the live collector and `workflow/snapshot_evidence.py`. Verification checks every submitted intermediate snapshot in order, and requires snapshots for canonical revision-bearing events when observation closure is enabled. Rejected capture and accepted but invalid native states remain separate results.
+
+`web/http_close.py` handles rejected unread HTTP bodies with a bounded staged close. It sends the error first and never parses or admits the discarded bytes. Normal observation admission, authentication and size limits remain in `service.py`.

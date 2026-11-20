@@ -10,6 +10,7 @@ import ast
 from collections import defaultdict
 
 from ..graph.classification import classify, layer_of
+from ..protocol import machine_registry
 
 LAYER_CHECKS = {
     "business": ("feature entrypoints and effects", "actual invocation and selected result"),
@@ -37,6 +38,7 @@ def observation_plan(model, index):
     for feature in features:
         for node in feature.get("nodes", []):
             by_node[node].append(feature)
+    machines = machine_registry(model) if "machine" in model or "machines" in model else {}
     grouped = {layer: [] for layer in LAYER_CHECKS}
     for node in model.get("nodes", []):
         obligations = by_node[node["id"]]
@@ -59,6 +61,21 @@ def observation_plan(model, index):
         )
     return {
         "schema": "bo-observation-plan/v1",
+        "state_evidence": {
+            "context": "Complete native version; do not replace it with new per-operation inputs",
+            "event_inputs": "Typed payload and evaluated rule facts at the actual operation boundary",
+            "verification": "Ordered raw snapshots and matching revision-bearing events; final projections are checked separately",
+            "models": {
+                ident: {
+                    "context": chart.get("context", {}),
+                    "event_inputs": {
+                        name: value.get("payload", {})
+                        for name, value in chart.get("events", {}).items()
+                    },
+                }
+                for ident, chart in machines.items()
+            },
+        },
         "layers": {
             layer: {"scan": checks[0], "observe": checks[1], "nodes": grouped[layer]}
             for layer, checks in LAYER_CHECKS.items()

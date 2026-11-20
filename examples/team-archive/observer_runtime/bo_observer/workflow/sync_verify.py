@@ -275,6 +275,21 @@ def verify(root, cfg, change, *, inspect, snapshot):
             mapping_errors.extend(closure["errors"])
             reports["mapping"]["invocation_closure"] = closure
             reports["mapping"]["layers"] = layer_evidence(current["model"], payload)
+            from ..project_artifacts import parse, load_bundle
+            from .snapshot_evidence import assess_snapshot_admission
+
+            envelope = parse((root / cfg["model"]).read_bytes())
+            if envelope.get("protocol") in {"bo-project/v1", "bo-project/v2"}:
+                project, _ = load_bundle(root, cfg["model"])
+                snapshot_report = assess_snapshot_admission(
+                    project,
+                    capture(root, current["model"])["build_id"],
+                    payload,
+                    required=cfg.get("require_observation_closure", False),
+                )
+                mapping_errors.extend(snapshot_report["errors"])
+                rule_errors.extend(snapshot_report["state_errors"])
+                reports["mapping"]["snapshot_admission"] = snapshot_report
             if current.get("behavior") is not None:
                 from ..behavior.native_runtime import assess_runtime
 

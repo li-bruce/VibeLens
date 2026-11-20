@@ -18,14 +18,14 @@ from .capture_context import call_key, invocation_boundary, minimal_boundary
 from .concept_context import ConceptContext
 from .capture_bridge import CaptureBridge
 from .behavior_context import BehaviorContext
-from .snapshot_reads import matches_current_read
+from .snapshot_admission import admit_snapshot
 
 OPEN_CONTEXT_LIMIT = 10000
 
 try:
     from ...behavior_model import read, capture, check, contained, digest
     from ...bo_stategraph import BOStateGraph
-    from ...bo_models import machine_registry, instance_key
+    from ...bo_models import machine_registry
     from ...bo_retention import EventHistory
     from ...view_preferences import Preferences
     from ...recording_session import Recordings
@@ -33,7 +33,7 @@ try:
 except ImportError:
     from behavior_model import read, capture, check, contained, digest
     from bo_stategraph import BOStateGraph
-    from bo_models import machine_registry, instance_key
+    from bo_models import machine_registry
     from bo_retention import EventHistory
     from view_preferences import Preferences
     from recording_session import Recordings
@@ -238,60 +238,11 @@ class GraphSession:
             if self.binding()["status"] != "current":
                 raise ValueError("source or declaration changed")
             evidence = self.seen.get(value["evidence_id"])
-            if not evidence or (evidence["run_id"], evidence["producer_id"]) != (
-                value["run_id"],
-                value["producer_id"],
-            ):
-                raise ValueError("snapshot lacks a matching recorded event")
-            if evidence["revision"] != value["revision"]:
-                raise ValueError("snapshot needs the same explicit state revision as its event")
+            result, ident, previous = admit_snapshot(
+                self.graph, value, evidence, self.owners, self.frames
+            )
             model_id = value.get("state_model_id")
-            ident = instance_key(value["run_id"], value["instance_id"], model_id)
-            owner = value["producer_id"]
-            if ident in self.owners and self.owners[ident] != owner:
-                raise ValueError("instance already has another authoritative producer")
-            if ident not in self.owners and len(self.owners) >= 1024:
-                raise ValueError("instance limit reached")
-            if evidence.get("snapshot_instance") not in (None, ident):
-                raise ValueError("event already belongs to another instance snapshot")
-            previous_entry = next(
-                (i for i in self.graph.bo_instances() if i["observed"]["instance_id"] == ident),
-                None,
-            )
-            previous = previous_entry["observed"] if previous_entry else None
-            read_witness = matches_current_read(value, evidence, previous_entry)
-            # A fresh read has another evidence ID but does not replace the
-            # engine's version/transition. Keep its frame independently. True
-            # duplicates still reuse their original frame and byte accounting.
-            result = (
-                {
-                    "accepted": True,
-                    "duplicate": value["evidence_id"] in self.frames,
-                    "observation": "read",
-                    "errors": [],
-                }
-                if read_witness
-                else self.graph.bo_observe(
-                    ident,
-                    **({"state_model_id": model_id} if model_id is not None else {}),
-                    **{
-                        k: value[k]
-                        for k in (
-                            "state",
-                            "context",
-                            "revision",
-                            "evidence_id",
-                            "build_id",
-                            "configuration",
-                            "event",
-                            "guards",
-                            "payload",
-                        )
-                    },
-                )
-            )
             if result["accepted"]:
-                self.owners[ident] = owner
                 self.identities[ident] = {
                     "entity": evidence["entity"],
                     "attempt": evidence["attempt"],
@@ -299,7 +250,6 @@ class GraphSession:
                     **({"state_model_id": model_id} if model_id is not None else {}),
                 }
                 self.current_instance = ident
-                evidence["snapshot_instance"] = ident
                 if not result.get("duplicate"):
                     cfg = deepcopy(
                         value.get("configuration")

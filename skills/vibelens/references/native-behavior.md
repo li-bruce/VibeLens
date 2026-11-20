@@ -32,6 +32,21 @@ An inner commit has its own event/call identity. Use its actual parent call when
 the independently read result belongs to the enclosing action. Keep the inner
 identity intact.
 
+## State context and operation inputs
+
+Classify each selected value before writing a state binding. A snapshot's
+`context` belongs to the complete native state version: its values must be read
+at that version's actual boundary. A freshly evaluated permission, request
+argument or external response usually belongs to the current event's typed
+`payload` and rule evidence. Bind the native guard to that input. A stored last
+decision may be context, but a new decision cannot silently replace it at the
+same revision. Independently changing state requires its own native version or
+an explicit jointly versioned snapshot; observation must not invent revisions.
+
+Test a changed input while the source state remains unchanged, followed by the
+actual allowed/denied transition. Keep both the pre-state read and the evaluated
+input. The collector validates the complete context, not just the state label.
+
 ## Cross-model boundaries
 
 | Declaration | Native facts |

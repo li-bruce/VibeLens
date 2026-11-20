@@ -44,6 +44,15 @@ payload["mapping_checks"] = [
 
 Each run still supplies its actual `projection`, `authority_snapshot`, events and producer health. A top-level witness does not replace the protected per-instance projection checks.
 
+Enabled canonical-protocol runs also retain ordered raw `snapshots`. The
+`snapshot_admission` report checks their event/build/model/instance ownership,
+complete state revisions and intermediate transition evidence using the same
+reducer as live collection. It does not sort rejected facts into a valid history.
+When observation closure is required, missing snapshots for explicit state
+revision events fail mapping. Accepted facts that violate a declared state or
+transition are reported under state rules; faithful capture is a separate result.
+This local check complements actual HTTP receipts and recording-drain checks.
+
 When events record `provenance`, protect native comparisons in `context_fields`
 for each exercised case, node and phase. Compare the complete `actor`,
 `workflow_id` and `objects` components that are present, or the complete
