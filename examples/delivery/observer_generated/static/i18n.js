@@ -20,7 +20,7 @@ const explicit = browser ? new URL(window.location.href).searchParams.get("lang"
 // Read the agent-recorded language before modules create their translated labels.
 // A browser locale alone does not change an English-first project.
 let conversationLocale = null;
-if (browser) {
+if (browser && !normalizeLocale(explicit)) {
   try {
     const response = await fetch("/api/design", { cache: "no-store" });
     if (response.ok) conversationLocale = (await response.json()).locale;

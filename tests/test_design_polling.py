@@ -68,6 +68,83 @@ class DesignPollingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "focus configuration"):
             self.design.snapshot()
 
+    def test_metadata_reuses_validated_revision_without_cloning_the_document(self):
+        doc = self.design.document()
+        folder = self.root / "bo_stategraph/config"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "design-focus.json").write_text(
+            json.dumps(
+                {
+                    "schema": 1,
+                    "nodes": [],
+                    "label": "Current",
+                    "discovery_revision": bo_design.bo_digest(doc),
+                }
+            ),
+            encoding="utf-8",
+        )
+        with patch.object(bo_design, "deepcopy", side_effect=AssertionError("full document copy")):
+            self.assertFalse(self.design.snapshot()["stale"])
+        doc["project_id"] = "changed-project"
+        self.path.write_text(json.dumps(doc), encoding="utf-8")
+        self.assertTrue(self.design.snapshot()["stale"])
+
+    def test_server_primes_design_before_accepting_capture_traffic(self):
+        # Startup ordering is deterministic; no machine-dependent timing limit.
+        sys.path.insert(0, str(ROOT / "tools"))
+        from test_multilanguage import project_fixture
+        from bo_observer import service
+
+        project_fixture(self.root)
+        session = service.GraphSession(self.root)
+        self.addCleanup(session.close)
+        with patch.object(bo_design, "assess", wraps=bo_design.assess) as assess:
+            original_server = service.BOHTTPServer.__init__
+
+            def listen(server, *args, **kwargs):
+                self.assertEqual(assess.call_count, 1, "Assess before opening the listener")
+                return original_server(server, *args, **kwargs)
+
+            with patch.object(service.BOHTTPServer, "__init__", listen):
+                server = service.make_server(session, port=0)
+            self.addCleanup(server.server_close)
+            session.web.design.snapshot()
+            self.assertEqual(assess.call_count, 1, "First poll must reuse validated bytes")
+
+    def test_invalid_optional_draft_keeps_its_error_without_disabling_valid_runtime(self):
+        sys.path.insert(0, str(ROOT / "tools"))
+        from test_multilanguage import project_fixture
+        from bo_observer import service
+
+        project_fixture(self.root)
+        self.path.write_text('{"schema":"invalid"}', encoding="utf-8")
+        session = service.GraphSession(self.root)
+        self.addCleanup(session.close)
+        server = service.make_server(session, port=0)
+        self.addCleanup(server.server_close)
+        self.assertEqual(session.binding()["status"], "current")
+        with self.assertRaisesRegex(ValueError, "Invalid discovery record"):
+            session.web.design.snapshot()
+
+    def test_reloaded_build_is_prepared_before_the_first_metadata_request(self):
+        sys.path.insert(0, str(ROOT / "tools"))
+        from test_multilanguage import project_fixture
+        from bo_observer import service
+
+        project_fixture(self.root)
+        session = service.GraphSession(self.root)
+        self.addCleanup(session.close)
+        server = service.make_server(session, port=0)
+        self.addCleanup(server.server_close)
+        source = self.root / "worker.py"
+        source.write_text(source.read_text() + "\n# Source-only iteration\n", encoding="utf-8")
+        with patch.object(bo_design, "assess", wraps=bo_design.assess) as assess:
+            self.assertTrue(server.bo_reload())
+            self.assertEqual(assess.call_count, 1, "Prepare before publishing the new session")
+            self.assertIsNot(server.bo_session, session)
+            server.bo_session.web.design.snapshot()
+            self.assertEqual(assess.call_count, 1, "First poll must reuse that preparation")
+
 
 if __name__ == "__main__":
     unittest.main()

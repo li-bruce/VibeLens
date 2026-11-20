@@ -52,6 +52,14 @@ starts. A saved recording retains its initial file tree; checkpointing and recor
 catalog polling must not rescan that tree. Live graph views still rescan their
 declared source scope. Reject source/version changes during capture selection.
 
+Prepare the conversation-document validation before the collector starts
+listening and before publishing a reloaded build. Runtime metadata polls check
+current bytes and reuse the validated revision; they do not copy the complete
+conversation. A changed draft still
+undergoes the same validation. An explicit interface language needs no discovery
+request. If recording fails, preserve the original result and distinguish slow
+metadata work, transport timeouts and queue overflow before changing any budget.
+
 Saved records bind loaded model/source. Do not display new code as old implementation. Replay includes only prior events and exact journal revisions. Never copy final check/approval/commit outcomes into early frames. Missing boundaries are unknown; final snapshot is used only at the end. Header replay values require explicit presentation.replay_parameters node/direction/field bindings, e.g. limit_bytes from project_limit out.limit_bytes; matching field names alone are insufficient.
 
 Edge animation requires real dependency references, same-call parent identity, captured input/return, or exact activity resource/join evidence. Static calls/shared references/temporal adjacency are not transfers. Use a separate animation layer, stop when done, and handle background tabs, reduced motion, and disposal.

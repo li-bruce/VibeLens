@@ -42,10 +42,24 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
     if session.web.status()["enabled"] and (assets / LOCK_NAME).is_file():
         ensure_assets(assets)
     session.program_url = next(iter(origins)) if len(origins) == 1 else None
+
+    def prepare_metadata(current):
+        """Prepare a new build before initial listening or atomic replacement."""
+        # A cold schema assessment competes with short capture deadlines even
+        # without holding an admission lock. Prime it before publishing this
+        # session. Later polls still read current bytes and revalidate edits.
+        try:
+            current.web.design.snapshot()
+        except (OSError, ValueError, KeyError, TypeError):
+            # Invalid optional drafts keep their original error on request;
+            # they cannot disable observation of a valid loaded runtime build.
+            pass
+        return current
+
     host = SessionHost(
-        session,
-        lambda previous: GraphSession(
-            previous.root, previous.path.relative_to(previous.root).as_posix()
+        prepare_metadata(session),
+        lambda previous: prepare_metadata(
+            GraphSession(previous.root, previous.path.relative_to(previous.root).as_posix())
         ),
     )
     session.web.control_view = session.view

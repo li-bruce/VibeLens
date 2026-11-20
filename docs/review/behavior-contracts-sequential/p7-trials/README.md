@@ -163,3 +163,5 @@ desktop acceptance. Its finite native queue is explicitly sized to the measured
 trial workload. The original fields, cases, deadlines and capture-gap checks
 remain. Python's cancellation iteration, Node's semantic change, both source
 refactors and final product scenes are still required before P7 closes.
+
+[Repair 23](repair-23/README.md) preserves the Python recording settlement failure and isolated timing diagnostics. Initial and reloaded sessions prepare design metadata before publication; explicit viewer language avoids an unused metadata request. Full regression, the fresh installation and clean export passed. Original capture budgets and source checks remain; native iteration acceptance is pending.

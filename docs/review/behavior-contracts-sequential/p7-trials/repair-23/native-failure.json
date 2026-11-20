@@ -1,0 +1,133 @@
+{
+  "recorded_utc": "2026-11-20T19:47:34.910702+00:00",
+  "recording_id": "bef6eebce72447579ebd8f2ab562147d",
+  "candidate_id": "1a12882d94002aeb4a8fc7b85b549d786ad3cc82e284e250906908f64d96bbb5",
+  "build_id": "6ea4804726f6c01abc992d47194f49e40a4ea611d6f02021c1f4d2e590192888",
+  "status": "completed_with_findings",
+  "passed_checks": 17,
+  "failed_checks": [
+    "recording actually stopped without gaps",
+    "fixed producer prefix drained",
+    "capture has no errors drops or frame evictions"
+  ],
+  "events": 2748,
+  "frames": 24,
+  "gaps": [
+    "Producer queue did not drain; only received events are retained."
+  ],
+  "settlement": {
+    "flushed": false,
+    "target": 3296,
+    "completed": 3278,
+    "submitted": 3312,
+    "pending": 34
+  },
+  "start_producer_health": {
+    "enabled": true,
+    "boundary_context": true,
+    "errors": 1,
+    "dropped": 0,
+    "pending": 0,
+    "queue_submitted": 522,
+    "queue_completed": 522,
+    "flush_target": 522,
+    "transport_retries": 1,
+    "producers": 1,
+    "producer_details": [
+      {
+        "producer_id": "4c61fd54ffeb4d40aa168a2b51cdce9b",
+        "errors": 1,
+        "dropped": 0,
+        "pending": 0,
+        "transport_retries": 1,
+        "last_error": {
+          "stage": "transport",
+          "type": "TimeoutError"
+        },
+        "tracing": {
+          "backend": "opentelemetry",
+          "open_spans": 0,
+          "automatic_open": 0,
+          "automatic_errors": 0,
+          "ignored": 0,
+          "external_build_contexts": 0
+        }
+      }
+    ]
+  },
+  "final_producer_health": {
+    "enabled": true,
+    "boundary_context": true,
+    "errors": 1,
+    "dropped": 0,
+    "pending": 34,
+    "queue_submitted": 3312,
+    "queue_completed": 3278,
+    "flush_target": 3296,
+    "transport_retries": 2,
+    "producers": 1,
+    "producer_details": [
+      {
+        "producer_id": "4c61fd54ffeb4d40aa168a2b51cdce9b",
+        "errors": 1,
+        "dropped": 0,
+        "pending": 34,
+        "transport_retries": 2,
+        "last_error": {
+          "stage": "transport",
+          "type": "TimeoutError"
+        },
+        "tracing": {
+          "backend": "opentelemetry",
+          "open_spans": 0,
+          "automatic_open": 0,
+          "automatic_errors": 0,
+          "ignored": 1,
+          "external_build_contexts": 0
+        }
+      }
+    ]
+  },
+  "current_producer_health": {
+    "enabled": true,
+    "boundary_context": true,
+    "errors": 1,
+    "dropped": 0,
+    "pending": 18,
+    "queue_submitted": 3312,
+    "queue_completed": 3294,
+    "flush_target": 3296,
+    "transport_retries": 2,
+    "producers": 1,
+    "producer_details": [
+      {
+        "producer_id": "4c61fd54ffeb4d40aa168a2b51cdce9b",
+        "errors": 1,
+        "dropped": 0,
+        "pending": 18,
+        "transport_retries": 2,
+        "last_error": {
+          "stage": "transport",
+          "type": "TimeoutError"
+        },
+        "tracing": {
+          "backend": "opentelemetry",
+          "open_spans": 0,
+          "automatic_open": 0,
+          "automatic_errors": 0,
+          "ignored": 1,
+          "external_build_contexts": 0
+        }
+      }
+    ]
+  },
+  "original_record_unchanged_after_stop": true,
+  "configuration_capacity": 2048,
+  "capacity_changed": false,
+  "deadlines_changed": false,
+  "record_backfilled": false,
+  "immediate_finding": "Producer transport TimeoutError already present at recording start (errors=1, retries=1). Stop adds another retry and misses its fixed prefix. Pending=34 at stop is below capacity 2048; no drops or frame evictions were reported. Do not diagnose this as queue saturation or increase capacity without further evidence.",
+  "next": "Analyze preserved server/producer diagnostics before any further recording. Do not silently retry. Services remain idle; no accept.",
+  "archive": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\python-retest-app\\review\\cancel-queued-v1\\source-index-acceptance\\original-recording-v1-failure-frozen.zip",
+  "archive_sha256": "d856c3d90555eb73c5f9b1741a2a336920cacb7e489578296cf0776f473d25ec"
+}

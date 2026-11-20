@@ -51,18 +51,31 @@ class BODesign:
         locale and implementation bindings remain independently checked.
         """
         with self._document_lock:
-            path = contained(self.root, self.path.relative_to(self.root))
-            raw = path.read_bytes()
-            if self._document_cache is None or raw != self._document_cache[0]:
-                doc = json.loads(raw.decode("utf-8-sig"))
-                result = assess(doc)
-                if not result["valid"]:
-                    raise ValueError(
-                        "Invalid discovery record: "
-                        + json.dumps(result["errors"], ensure_ascii=False)
-                    )
-                self._document_cache = raw, doc
-            return deepcopy(self._document_cache[1])
+            return deepcopy(self._read_document()[1])
+
+    def _read_document(self):
+        """Read current bytes under the document lock; cache only validated meaning.
+
+        The digest belongs to these exact bytes. Metadata polling needs that
+        digest, not a detached copy of the complete requirements conversation.
+        Source edits, including unchanged size/mtime, still trigger assessment.
+        """
+        path = contained(self.root, self.path.relative_to(self.root))
+        raw = path.read_bytes()
+        if self._document_cache is None or raw != self._document_cache[0]:
+            doc = json.loads(raw.decode("utf-8-sig"))
+            result = assess(doc)
+            if not result["valid"]:
+                raise ValueError(
+                    "Invalid discovery record: " + json.dumps(result["errors"], ensure_ascii=False)
+                )
+            self._document_cache = raw, doc, bo_digest(doc)
+        return self._document_cache
+
+    def document_revision(self):
+        """Return the freshly checked design identity without copying its content."""
+        with self._document_lock:
+            return self._read_document()[2]
 
     def _identities(self, doc):
         nodes = [n for net in doc["networks"] for n in net["nodes"]]
@@ -78,7 +91,7 @@ class BODesign:
         language = read_language(self.root)["conversation_locale"]
         if not self.path.exists():
             return {"available": False, "locale": language}
-        doc = self.document()
+        document_revision = self.document_revision()
         path = contained(self.root, "bo_stategraph/config/design-focus.json")
         focus = read(path) if path.exists() else {"schema": 1, "nodes": [], "label": ""}
         if (
@@ -96,7 +109,7 @@ class BODesign:
             "nodes": focus["nodes"],
             "label": focus["label"],
             "stale": bool(
-                focus.get("discovery_revision") and focus["discovery_revision"] != bo_digest(doc)
+                focus.get("discovery_revision") and focus["discovery_revision"] != document_revision
             ),
         }
 

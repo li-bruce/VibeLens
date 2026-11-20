@@ -1,0 +1,59 @@
+{
+  "scope": "Diagnosis only, not final native acceptance or a general performance guarantee",
+  "native_failure_archives": [
+    {
+      "path": ".validation/p7-trials/python-retest-app/review/cancel-queued-v1/source-index-acceptance/original-recording-v1-failure-frozen.zip",
+      "bytes": 3354470,
+      "sha256": "d856c3d90555eb73c5f9b1741a2a336920cacb7e489578296cf0776f473d25ec"
+    },
+    {
+      "path": ".validation/p7-trials/python-retest-app/review/cancel-queued-v1/source-index-acceptance/failure-handoff-stopped-final.zip",
+      "bytes": 5336846,
+      "sha256": "8be67f5c0d01eb47899a1981d270acddbfb376fd4bb0a97f867c73b51c54594b"
+    }
+  ],
+  "runs": [
+    {
+      "version": "v2",
+      "archive": "diagnostic-v2.zip",
+      "sha256": "634c8d1f0dfa111587213b58d8a853560dcb38db9377f9e11f5c293eab2a7360",
+      "source": ".validation/p7-trials/python-capture-diagnostic-v2",
+      "reports": []
+    },
+    {
+      "version": "v3",
+      "archive": "diagnostic-v3.zip",
+      "sha256": "35d499f8a5bb4dc1720aa018cf070d1505c370d236fdb2637050d5b864a0af06",
+      "source": ".validation/p7-trials/python-capture-diagnostic-v3",
+      "reports": [
+        "passed"
+      ]
+    },
+    {
+      "version": "v4",
+      "archive": "diagnostic-v4.zip",
+      "sha256": "a050c7575e06a8b7f70a6b2963bf8f8265811326c7229c6c869f002f6d55229d",
+      "source": ".validation/p7-trials/python-capture-diagnostic-v4",
+      "reports": [
+        "completed_with_findings"
+      ]
+    },
+    {
+      "version": "v5",
+      "archive": "diagnostic-v5.zip",
+      "sha256": "93ea7616d5e8f148b5f290dcc5de94b7c661e74a16e83d7c752382d4d27042b1",
+      "source": ".validation/p7-trials/python-capture-diagnostic-v5",
+      "reports": [
+        "passed"
+      ]
+    }
+  ],
+  "setup_failures": [
+    "First launch refused occupied ports; no copy or service was created.",
+    "First copy omitted root static assets; source validation rejected it.",
+    "v2 normal CLI discovered the copied database path and changed its source identity; original build check rejected it.",
+    "First read-only schema profile used collector decoration and was rejected; v2 reconstructed only wire metadata for timing, never admission."
+  ],
+  "diagnostic_boundary": "v3-v5 pin the already verified model in GraphSession and use the normal HTTP server/native case script. They do not test CLI database rediscovery. v4 adds cProfile overhead; concurrent profile totals are not used as proof.",
+  "original_native_failure_kept": true
+}

@@ -1,0 +1,46 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+test_focus_and_language_are_fresh_when_discovery_bytes_are_unchanged (test_design_polling.DesignPollingTests.test_focus_and_language_are_fresh_when_discovery_bytes_are_unchanged) ... ok
+test_identical_bytes_are_validated_once_even_for_concurrent_readers (test_design_polling.DesignPollingTests.test_identical_bytes_are_validated_once_even_for_concurrent_readers) ... ok
+test_invalid_optional_draft_keeps_its_error_without_disabling_valid_runtime (test_design_polling.DesignPollingTests.test_invalid_optional_draft_keeps_its_error_without_disabling_valid_runtime) ... ok
+test_metadata_reuses_validated_revision_without_cloning_the_document (test_design_polling.DesignPollingTests.test_metadata_reuses_validated_revision_without_cloning_the_document) ... FAIL
+test_same_size_same_timestamp_invalid_change_cannot_reuse_validation (test_design_polling.DesignPollingTests.test_same_size_same_timestamp_invalid_change_cannot_reuse_validation) ... ok
+test_server_primes_design_before_accepting_capture_traffic (test_design_polling.DesignPollingTests.test_server_primes_design_before_accepting_capture_traffic) ... FAIL
+
+======================================================================
+FAIL: test_metadata_reuses_validated_revision_without_cloning_the_document (test_design_polling.DesignPollingTests.test_metadata_reuses_validated_revision_without_cloning_the_document)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_design_polling.py", line 80, in test_metadata_reuses_validated_revision_without_cloning_the_document
+    self.assertFalse(self.design.snapshot()["stale"])
+                     ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.validation\p7-trials\source-index-final-skills\vibelens\scripts\bo_observer\web\bo_design.py", line 81, in snapshot
+    doc = self.document()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.validation\p7-trials\source-index-final-skills\vibelens\scripts\bo_observer\web\bo_design.py", line 65, in document
+    return deepcopy(self._document_cache[1])
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1169, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1173, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1234, in _execute_mock_call
+    raise effect
+AssertionError: full document copy
+
+======================================================================
+FAIL: test_server_primes_design_before_accepting_capture_traffic (test_design_polling.DesignPollingTests.test_server_primes_design_before_accepting_capture_traffic)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_design_polling.py", line 100, in test_server_primes_design_before_accepting_capture_traffic
+    server = service.make_server(session, port=0)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.validation\p7-trials\source-index-final-skills\vibelens\scripts\bo_observer\service.py", line 267, in make_server
+    server = SessionServer(("127.0.0.1", port), Handler)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_design_polling.py", line 97, in listen
+    self.assertEqual(assess.call_count, 1, "Assess before opening the listener")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1 : Assess before opening the listener
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.548s
+
+FAILED (failures=2)

@@ -57,4 +57,25 @@ const html=await readFile(new URL('../skills/vibelens/assets/stategraph-viewer/i
 assert.match(html,/<html lang="en">/);
 assert.match(html,/id="language"/);
 assert.doesNotMatch(html,/[\u3400-\u9fff]/);
+// A declared locale needs no design request. Without one, retain the recorded
+// conversation language; an invalid URL tag must still take that fallback.
+const originalFetch = globalThis.fetch;
+try {
+  let reads = 0;
+  globalThis.fetch = async () => {
+    reads += 1;
+    return {ok:true,json:async()=>({locale:'zh-CN'})};
+  };
+  for (const [tag, expected, expectedReads] of [
+    ['en','en',0], ['zh-CN','zh-CN',0], ['fr','zh-CN',1], ['', 'zh-CN',2],
+  ]) {
+    globalThis.window = {location:{href:'http://localhost/graph?lang='+tag}};
+    const translated = await import('../skills/vibelens/assets/stategraph-viewer/i18n.js?test='+encodeURIComponent(tag));
+    assert.equal(translated.locale(), expected);
+    assert.equal(reads, expectedReads);
+  }
+} finally {
+  delete globalThis.window;
+  globalThis.fetch = originalFetch;
+}
 console.log('PASS: locale precedence, fallback, interpolation, stable identity, project persistence, concurrent writes, and conflict reporting.');
