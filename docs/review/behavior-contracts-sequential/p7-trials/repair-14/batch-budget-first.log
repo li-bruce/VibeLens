@@ -1,0 +1,43 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+EF
+======================================================================
+ERROR: test_batch_budget_is_separate_from_the_single_envelope_budget (tests.test_remote_event_batch.RemoteEventBatchTests.test_batch_budget_is_separate_from_the_single_envelope_budget)
+A legal group can exceed 24 KiB without accepting an oversized event.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_remote_event_batch.py", line 251, in test_batch_budget_is_separate_from_the_single_envelope_budget
+    receipts = self.post({"protocol": "bo-event-batch/v1", "events": values})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_remote_event_batch.py", line 50, in post
+    with urlopen(request, timeout=3) as response:
+         ~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 189, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 495, in open
+    response = meth(req, response)
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 604, in http_response
+    response = self.parent.error(
+        'http', request, response, code, msg, hdrs)
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 533, in error
+    return self._call_chain(*args)
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\Lvi_P\miniforge3\Lib\urllib\request.py", line 613, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 400: Bad Request
+
+======================================================================
+FAIL: test_both_producers_use_bounded_large_groups_for_realistic_envelopes (tests.test_remote_event_batch.RemoteEventBatchTests.test_both_producers_use_bounded_large_groups_for_realistic_envelopes)
+Source validation is amortized over envelopes carrying actual-size context.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_remote_event_batch.py", line 282, in test_both_producers_use_bounded_large_groups_for_realistic_envelopes
+    self.assertTrue(any(size > 24576 for size in sizes), sizes)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : [24273, 24300, 11080, 11805, 11847, 5949]
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.600s
+
+FAILED (failures=1, errors=1)

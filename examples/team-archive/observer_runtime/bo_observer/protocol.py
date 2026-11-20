@@ -13,6 +13,10 @@ except ImportError:
     from bo_models import machine_registry, select_machine
 
 SCHEMAS = Path(__file__).parent / "schemas"
+# A group amortizes admission over several ordinary envelopes. Its wire budget
+# is separate; no event or snapshot gains a larger individual payload allowance.
+ENVELOPE_BYTES = 24 * 1024
+EVENT_BATCH_BYTES = 256 * 1024
 
 
 def _shared():
@@ -56,7 +60,7 @@ def _validator(directory, name):
     return Draft202012Validator(schema, registry=registry)
 
 
-def schema_check(value, name):
+def schema_check(value, name, *, max_bytes=None):
     """Validate every envelope and portable number against the loaded protocol."""
     errors = sorted(
         _validator(SCHEMAS, name).iter_errors(value),
@@ -77,7 +81,9 @@ def schema_check(value, name):
                 portable(x)
 
     portable(value)
-    json.dumps(value, allow_nan=False)
+    encoded = json.dumps(value, allow_nan=False, ensure_ascii=False, separators=(",", ":"))
+    if max_bytes is not None and len(encoded.encode("utf-8")) > max_bytes:
+        raise ValueError("observation envelope exceeds payload limit")
 
 
 def schema_diagnostics(value, name):
@@ -141,7 +147,7 @@ def validate_project(project):
 
 def validate_event(event, project, build_id):
     """Check build identity and allowlisted capture fields; return the validated event copy."""
-    schema_check(event, "event")
+    schema_check(event, "event", max_bytes=ENVELOPE_BYTES)
     from .observation.provenance import trace_metadata, object_metadata, exception_metadata
 
     if "trace" in event:
@@ -190,7 +196,7 @@ def validate_snapshot(value, project, build_id):
 
     State mismatches remain runtime evidence for BOStateGraph to report.
     """
-    schema_check(value, "snapshot")
+    schema_check(value, "snapshot", max_bytes=ENVELOPE_BYTES)
     if (value["project_id"], value["model_revision"], value["build_id"]) != (
         project["project_id"],
         project["model"]["revision"],

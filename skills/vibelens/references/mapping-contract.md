@@ -62,6 +62,10 @@ does not count as another business execution.
 Keep the actual viewer open and the application's normal workers active during
 this check. Offline sink tests and detached envelope replays help diagnose load;
 they do not establish that an ordinary interactive recording completes.
+Load diagnostics must keep the producer in a separate process when the real
+application uses remote capture. A producer sharing the collector's Python
+process can slow down with the viewer and conceal ingestion backlog. Retain its
+input rate, queue settlement, exact event/frame counts and active viewer workers.
 
 When events record `provenance`, protect native comparisons in `context_fields`
 for each exercised case, node and phase. Compare the complete `actor`,

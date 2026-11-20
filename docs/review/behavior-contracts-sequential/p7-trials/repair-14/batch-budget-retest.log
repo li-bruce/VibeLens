@@ -1,0 +1,85 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+.........F.........................E.EE.
+======================================================================
+ERROR: test_internal_directory_link_reads_actual_target (tests.test_source_files.SourceFileTests.test_internal_directory_link_reads_actual_target)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 98, in test_internal_directory_link_reads_actual_target
+    self.directory_link(link, self.root / "app")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 88, in directory_link
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp3tact82x\\linked', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp3tact82x\\app']' returned non-zero exit status 1.
+
+======================================================================
+ERROR: test_outside_directory_link_is_rejected_even_for_matching_bytes (tests.test_source_files.SourceFileTests.test_outside_directory_link_is_rejected_even_for_matching_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 111, in test_outside_directory_link_is_rejected_even_for_matching_bytes
+    self.directory_link(link, Path(external))
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 88, in directory_link
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpvguq980g\\linked', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmph9axhz8w']' returned non-zero exit status 1.
+
+======================================================================
+ERROR: test_replaced_parent_is_rechecked_within_the_same_pass (tests.test_source_files.SourceFileTests.test_replaced_parent_is_rechecked_within_the_same_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 129, in test_replaced_parent_is_rechecked_within_the_same_pass
+    self.directory_link(link, Path(external))
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 88, in directory_link
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpx1hl7auw\\app', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpj9qua7b0']' returned non-zero exit status 1.
+
+======================================================================
+FAIL: test_lost_batch_response_retries_the_group_before_individual_fallback (tests.test_remote_event_batch.RemoteEventBatchTests.test_lost_batch_response_retries_the_group_before_individual_fallback) (language='python')
+One lost ACK must not turn a committed group into many source-check requests.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_remote_event_batch.py", line 155, in test_lost_batch_response_retries_the_group_before_individual_fallback
+    self.assertNotIn("/api/bo/events", requests[first_batch:])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '/api/bo/events' unexpectedly found in ['/api/bo/events/batch', '/api/bo/events/batch', '/api/bo/events/batch', '/api/bo/events', '/api/bo/snapshots', '/api/bo/events/batch', '/api/bo/events/batch', '/api/bo/events/batch']
+
+----------------------------------------------------------------------
+Ran 40 tests in 24.253s
+
+FAILED (failures=1, errors=3)

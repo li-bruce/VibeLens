@@ -1,5 +1,7 @@
 // Native application adapter. No Python imports or observer-dependent decisions.
 // Only the declared flat bo.fsm/1 subset executes here; other engines need adapters.
+// Each event keeps its 24 KiB bound; only the multi-event HTTP group is larger.
+const BO_EVENT_BATCH_BYTES = 256 * 1024;
 /** Reject unsupported machine semantics and missing guards before an executor is created. */
 export function bo_validateMachine(machine, guards = {}) {
   if (machine.engine !== "bo.fsm" || machine.version !== "1")
@@ -796,7 +798,7 @@ export class BOProbe {
           const limit = prefix > 0 ? Math.min(64, prefix) : 64;
           while (items.length < limit && this.bo_queue[0]?.kind === "events") {
             const nextSize = encoder.encode(JSON.stringify(this.bo_queue[0].body)).length + 1;
-            if (size + nextSize > 24576) break;
+            if (size + nextSize > BO_EVENT_BATCH_BYTES) break;
             size += nextSize;
             items.push(this.bo_queue.shift());
           }

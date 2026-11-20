@@ -24,6 +24,9 @@ except ImportError:
 
 
 _bo_internal = ContextVar("bo_transport_internal", default=False)
+# Keep this standalone adapter independent of collector imports. The HTTP
+# regression suite checks the same group budget across both portable SDKs.
+BO_EVENT_BATCH_BYTES = 256 * 1024
 
 
 def bo_exception_metadata(value):
@@ -644,8 +647,8 @@ class BOProbe:
                             prefix = self.bo_flush_target - self.bo_completed
                         if prefix > 0:
                             batch_limit = min(batch_limit, prefix)
-                        # Keep the existing HTTP payload ceiling, including JSON
-                        # separators and wrapper. Local delivery needs no cap.
+                        # A group has a separate bounded wire budget. Each raw
+                        # envelope already passed its unchanged 24 KiB check.
                         batch_bytes = len(raw) + 64
                         while len(batch) < batch_limit:
                             try:
@@ -653,7 +656,8 @@ class BOProbe:
                             except queue.Empty:
                                 break
                             if following[0] != "events" or (
-                                remote and batch_bytes + len(following[1]) + 2 > 24576
+                                remote
+                                and batch_bytes + len(following[1]) + 2 > BO_EVENT_BATCH_BYTES
                             ):
                                 deferred = following
                                 break

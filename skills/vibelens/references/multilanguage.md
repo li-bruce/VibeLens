@@ -50,8 +50,9 @@ The service validates model revision and build identity; native clients return t
 The shared service listens locally. Native probes use bounded asynchronous queues, explicit field selection, and capture diagnostics on failure. Frontends need explicit permitted local origins and a development token, never wildcard CORS. Do not commit tokens, runtime records, or personal layouts. Web visibility and capture are independent switches; neither removes declarations or the actual executor.
 
 HTTP producers can send existing event backlog to `/api/bo/events/batch`, with
-the same collector token. A request contains at most 64 events and 24 KiB. The
-collector validates every original envelope and checks current source bytes
+the same collector token. A group contains at most 64 events and 256 KiB of
+wire data. Each event and snapshot retains its 24 KiB limit; the collector also
+checks that limit inside a group. It validates every original envelope and checks current source bytes
 before and after atomic admission. Per-event IDs, sequences and receipts stay
 unchanged; snapshots remain ordered barriers. Both adapters preserve the flush
 prefix, payload limits and transport deadlines. An unsupported endpoint or an

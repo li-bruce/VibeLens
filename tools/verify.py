@@ -164,6 +164,7 @@ def main():
     run(ROOT, "tests/test_concept_projection.py")
     run(ROOT, "tests/test_effect_projection.py")
     run(ROOT, "tests/test_design_preview.py")
+    run(ROOT, "tests/test_design_polling.py")
     run(ROOT, "tests/test_concept_capture.py")
     run(ROOT, "tests/test_iteration_dialogue.py")
     run(ROOT, "tests/test_relation_insertion.py")

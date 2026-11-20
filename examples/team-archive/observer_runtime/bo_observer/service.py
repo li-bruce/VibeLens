@@ -13,6 +13,7 @@ from pathlib import Path
 import secrets
 from urllib.parse import urlsplit, parse_qs
 from .observation.session import GraphSession
+from .protocol import ENVELOPE_BYTES, EVENT_BATCH_BYTES
 from .session_lifecycle import SessionHost
 from .web.bo_web import BOHTTPServer, bo_content_type
 from .delivery.dependencies import LOCK_NAME, ensure_assets
@@ -205,7 +206,12 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                         self, 404, {"error": "Debug Web is disabled", "code": "bo_web_disabled"}
                     )
                 size = int(self.headers.get("Content-Length", "0"))
-                if not 0 < size <= (24576 if ingest else 2 * 1024 * 1024):
+                limit = (
+                    EVENT_BATCH_BYTES
+                    if path == "/api/bo/events/batch"
+                    else ENVELOPE_BYTES if ingest else 2 * 1024 * 1024
+                )
+                if not 0 < size <= limit:
                     raise ValueError("invalid payload size")
                 raw = self.rfile.read(size)
                 body_read = True
@@ -219,8 +225,9 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                     return self.reply(200, session.event(body))
                 if path == "/api/bo/events/batch":
                     # The same bounded, atomic reducer serves local and remote
-                    # producers. Preserve each envelope and the original HTTP
-                    # byte limit; snapshots never enter an event batch.
+                    # producers. The bounded group has its own wire budget;
+                    # every event retains its 24 KiB limit and strict checks.
+                    # Snapshots remain separate ordered barriers.
                     return self.reply(200, session.bo_sink.bo_accept_envelope(body))
                 if path == "/api/bo/snapshots":
                     return self.reply(200, session.snapshot(body))

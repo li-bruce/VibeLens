@@ -5,9 +5,11 @@ requirements and stores which nodes that conversation is currently discussing.
 """
 
 import argparse
+from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
+import threading
 from urllib.parse import urlsplit
 from .interface_language import read_language, set_language
 from ..graph.relation_identity import relation_index
@@ -36,15 +38,31 @@ class BODesign:
         config = self.root / "sync.json"
         cfg = read(config) if config.exists() else {}
         self.path = contained(self.root, discovery or cfg.get("discovery", "discovery.json"))
+        self._document_lock = threading.Lock()
+        self._document_cache = None
 
     def document(self):
-        doc = read(self.path)
-        result = assess(doc)
-        if not result["valid"]:
-            raise ValueError(
-                "Invalid discovery record: " + json.dumps(result["errors"], ensure_ascii=False)
-            )
-        return doc
+        """Validate changed bytes once; keep every caller's document detached.
+
+        The viewer polls discussion focus during runtime capture. Rechecking an
+        unchanged design's complete schema on each poll can stall ingress. This
+        cache contains only successful, document-only assessment: actual bytes
+        are reread every time, including same-size/same-timestamp edits. Focus,
+        locale and implementation bindings remain independently checked.
+        """
+        with self._document_lock:
+            path = contained(self.root, self.path.relative_to(self.root))
+            raw = path.read_bytes()
+            if self._document_cache is None or raw != self._document_cache[0]:
+                doc = json.loads(raw.decode("utf-8-sig"))
+                result = assess(doc)
+                if not result["valid"]:
+                    raise ValueError(
+                        "Invalid discovery record: "
+                        + json.dumps(result["errors"], ensure_ascii=False)
+                    )
+                self._document_cache = raw, doc
+            return deepcopy(self._document_cache[1])
 
     def _identities(self, doc):
         nodes = [n for net in doc["networks"] for n in net["nodes"]]

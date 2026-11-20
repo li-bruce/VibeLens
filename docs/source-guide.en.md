@@ -449,3 +449,13 @@ The canonical Skill lives in `skills/vibelens/`. `plugins/deepseek-harness/` reg
 `observation/snapshot_admission.py` shares identity, ownership and version admission between the live collector and `workflow/snapshot_evidence.py`. Verification checks every submitted intermediate snapshot in order, and requires snapshots for canonical revision-bearing events when observation closure is enabled. Rejected capture and accepted but invalid native states remain separate results.
 
 `web/http_close.py` handles rejected unread HTTP bodies with a bounded staged close. It sends the error first and never parses or admits the discarded bytes. Normal observation admission, authentication and size limits remain in `service.py`.
+
+Event groups have a separate 256 KiB HTTP budget, with at most 64 original events.
+Each event and snapshot still has its 24 KiB limit, checked by the shared protocol
+validator, including events nested in a group. Source checks bracket the complete
+atomic group; snapshot order, flush prefixes and HTTP deadlines are unchanged.
+
+`web/bo_design.py` reuses successful document-only validation for identical input
+bytes. Discussion polling still reads the current file and independently checks
+focus and locale. Changed, missing or invalid inputs never reuse an old approval;
+runtime source, transition and binding checks remain on their original paths.

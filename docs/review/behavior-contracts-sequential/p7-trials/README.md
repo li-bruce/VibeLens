@@ -109,3 +109,11 @@ same-version pre-state context contained a newly computed permission result.
 Context/input guidance and the persisted iteration plan now keep these roles
 explicit. Native recording, the semantic iteration and source-only refactor
 remain required after the repaired candidate passes its complete gates.
+
+[Repair 14](repair-14/README.md) retains the next incomplete native recording and
+corrects two shared throughput problems: an undersized group wire budget and
+repeated validation during discussion polling. A separate producer process is now
+required in remote-load diagnosis. The full regression passes, and the maintained
+implementation records all 3260 diagnostic events and 106 frames with an ordinary
+stop. These derived inputs remain diagnostic evidence; both native trials and
+their iteration/UI acceptance are still pending.

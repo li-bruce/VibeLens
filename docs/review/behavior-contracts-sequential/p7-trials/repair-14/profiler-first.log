@@ -1,0 +1,23 @@
+session loaded
+watcher warmed
+actual viewer loaded
+recording started
+enqueue complete 762
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.validation\profile_ingress_hotpath.py", line 149, in <module>
+    stopped = session.recordings.stop()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\observation\recording_session.py", line 551, in stop
+    self._capture(ident, self.provider())
+                         ~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\observation\recording_session.py", line 130, in read
+    return callback()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\observation\session.py", line 366, in recording_view
+    return self.view()
+           ~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.validation\profile_ingress_hotpath.py", line 85, in wrapped
+    return trace.runcall(original, *values, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\cProfile.py", line 111, in runcall
+    self.enable()
+    ~~~~~~~~~~~^^
+ValueError: Another profiling tool is already active

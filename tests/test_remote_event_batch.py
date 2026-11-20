@@ -129,8 +129,14 @@ class RemoteEventBatchTests(unittest.TestCase):
         original = handler.do_POST
         for language in ("python", "node"):
             requests = []
+            lost_ids, individual_ids = set(), []
             lost = False
             initial = self.session.sequence
+            single = self.session.event
+
+            def individual(value):
+                individual_ids.append(value["id"])
+                return single(value)
 
             def respond(request):
                 nonlocal lost
@@ -138,21 +144,26 @@ class RemoteEventBatchTests(unittest.TestCase):
                 if request.path != "/api/bo/events/batch" or lost:
                     return original(request)
                 body = json.loads(request.rfile.read(int(request.headers["Content-Length"])))
+                lost_ids.update(value["id"] for value in body["events"])
                 self.session.bo_sink.bo_accept_many(body["events"])
                 lost = True
                 request.close_connection = True
                 request.connection.shutdown(socket.SHUT_RDWR)
                 request.connection.close()
 
-            with self.subTest(language=language), patch.object(handler, "do_POST", respond):
+            with (
+                self.subTest(language=language),
+                patch.object(handler, "do_POST", respond),
+                patch.object(self.session, "event", side_effect=individual),
+            ):
                 result = self.produce(language)
                 self.assertTrue(lost)
                 self.assertTrue(result["flushed"])
                 self.assertEqual(result["health"]["errors"], 0)
-                # A single event can precede the first batch while the Python
-                # worker starts. Replaying a lost group should add none afterward.
-                first_batch = requests.index("/api/bo/events/batch")
-                self.assertNotIn("/api/bo/events", requests[first_batch:])
+                # The lost group's original IDs must retry as a group. A later
+                # singleton at a snapshot barrier is legitimate ordinary traffic,
+                # regardless of thread scheduling or the chosen batch byte limit.
+                self.assertFalse(lost_ids.intersection(individual_ids), individual_ids)
                 self.assertEqual(result["health"]["transport_retries"], 1)
                 self.assertEqual(
                     [event["id"] for event in self.session.history.snapshot()[initial:]],
@@ -237,6 +248,59 @@ class RemoteEventBatchTests(unittest.TestCase):
                 self.post(body)
             self.assertEqual(error.exception.code, 400)
         self.assertEqual(self.session.sequence, 0)
+
+    def test_batch_budget_is_separate_from_the_single_envelope_budget(self):
+        """A legal group can exceed 24 KiB without accepting an oversized event."""
+        template = self.envelopes()[0]
+        values = []
+        for index in range(64):
+            event = deepcopy(template)
+            event.update(id=f"bounded-group:{index}", seq=index + 1)
+            event["basis"] = {"diagnostic_text": "值" * 400}
+            values.append(event)
+        self.assertGreater(len(json.dumps(values, ensure_ascii=False).encode()), 24576)
+        receipts = self.post({"protocol": "bo-event-batch/v1", "events": values})
+        self.assertEqual(len(receipts), 64)
+        self.assertEqual(self.session.sequence, 64)
+        large = [dict(value, basis={"diagnostic_text": "x" * 23000}) for value in values[:12]]
+        with self.assertRaises(HTTPError) as error:
+            self.post({"protocol": "bo-event-batch/v1", "events": large})
+        self.assertEqual(error.exception.code, 400)
+        self.assertEqual(json.load(error.exception), {"error": "invalid payload size"})
+        self.assertEqual(self.session.sequence, 64)
+        oversized = deepcopy(values[0])
+        oversized.update(id="too-large", seq=65, basis={"diagnostic_text": "x" * 24576})
+        for path, body in (
+            ("events", oversized),
+            ("events/batch", {"protocol": "bo-event-batch/v1", "events": [oversized]}),
+        ):
+            with self.subTest(path=path), self.assertRaises(HTTPError) as error:
+                self.post(body, path=path)
+            self.assertEqual(error.exception.code, 400)
+        self.assertEqual(self.session.sequence, 64)
+
+    def test_both_producers_use_bounded_large_groups_for_realistic_envelopes(self):
+        """Source validation is amortized over envelopes carrying actual-size context."""
+        handler = self.server.RequestHandlerClass
+        original = handler.do_POST
+        for language in ("python", "node"):
+            sizes = []
+
+            def observe(request):
+                if request.path == "/api/bo/events/batch":
+                    sizes.append(int(request.headers["Content-Length"]))
+                return original(request)
+
+            initial = self.session.sequence
+            with self.subTest(language=language), patch.object(handler, "do_POST", observe):
+                result = self.produce(language, padding=1600)
+            self.assertTrue(result["flushed"])
+            self.assertEqual(result["health"]["errors"], 0)
+            self.assertTrue(any(size > 24576 for size in sizes), sizes)
+            self.assertTrue(all(size <= 256 * 1024 for size in sizes), sizes)
+            self.assertEqual(
+                [event["id"] for event in self.session.history.snapshot()[initial:]], result["ids"]
+            )
 
     def test_changed_source_rejects_whole_http_batch(self):
         values = self.envelopes()
@@ -389,7 +453,7 @@ class RemoteEventBatchTests(unittest.TestCase):
                         if waiter:
                             waiter.join(3)
 
-    def produce(self, language):
+    def produce(self, language, *, padding=0):
         """Run real adapter code against the collector, without timing thresholds."""
         if language == "node":
             module = (
@@ -403,12 +467,13 @@ class RemoteEventBatchTests(unittest.TestCase):
                 }));
                 const p=new BOProbe({project:data.project,buildId:data.build,endpoint:data.base,token:data.token});
                 const ids=[];
-                for(let i=0;i<80;i++) ids.push(p.record('advance','return',()=>({outputs:{state:'running'}})));
+                const options=data.padding ? {basis:{diagnostic_text:'x'.repeat(data.padding)}} : {};
+                for(let i=0;i<80;i++) ids.push(p.record('advance','return',()=>({outputs:{state:'running'}}), options));
                 const evidence=p.record('advance','change',()=>({outputs:{state:'pending'}}),
                     {entity:'node-item',attempt:'node-item',scope:'entity',revision:1});
                 ids.push(evidence);
                 p.snapshot('node-item','pending',{slots:1},1,evidence);
-                for(let i=0;i<40;i++) ids.push(p.record('advance','return',()=>({outputs:{state:'running'}})));
+                for(let i=0;i<40;i++) ids.push(p.record('advance','return',()=>({outputs:{state:'running'}}), options));
                 const flushed=await p.flush(10000);
                 console.log(JSON.stringify({ids,flushed,health:p.bo_health()}));
             """.replace(
@@ -422,6 +487,7 @@ class RemoteEventBatchTests(unittest.TestCase):
                         "build": self.session.manifest["build_id"],
                         "base": self.base,
                         "token": self.token,
+                        "padding": padding,
                     }
                 ),
                 capture_output=True,
@@ -436,7 +502,12 @@ class RemoteEventBatchTests(unittest.TestCase):
         )
         try:
             ids = [
-                probe.record("advance", "return", lambda: {"outputs": {"state": "running"}})
+                probe.record(
+                    "advance",
+                    "return",
+                    lambda: {"outputs": {"state": "running"}},
+                    **({"basis": {"diagnostic_text": "x" * padding}} if padding else {}),
+                )
                 for _ in range(80)
             ]
             evidence = probe.record(
@@ -451,7 +522,12 @@ class RemoteEventBatchTests(unittest.TestCase):
             ids.append(evidence)
             probe.snapshot("python-item", "pending", {"slots": 1}, 1, evidence)
             ids += [
-                probe.record("advance", "return", lambda: {"outputs": {"state": "running"}})
+                probe.record(
+                    "advance",
+                    "return",
+                    lambda: {"outputs": {"state": "running"}},
+                    **({"basis": {"diagnostic_text": "x" * padding}} if padding else {}),
+                )
                 for _ in range(40)
             ]
             return {"ids": ids, "flushed": probe.flush(10), "health": probe.bo_health()}
