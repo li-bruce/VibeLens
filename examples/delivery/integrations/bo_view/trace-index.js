@@ -1,55 +1,17 @@
 /** Immutable execution index. Static projections locate facts and never become calls. */
 import { boFacts } from "./replay-steps.js";
 import { layerOf, layers, canonicalLayer, expandLayerIds } from "./graph-layers.js";
-import { traceTime, configurationScopeMatches } from "./trace-evidence.js";
+import { configurationScopeMatches } from "./trace-evidence.js";
+import { traceClock } from "./trace-clock.js";
 import { contextualLifecycles } from "./trace-context.js";
 import { stateResidencies, activityResidencies } from "./trace-residencies.js";
 import { indexFlows } from "./trace-flows.js";
-import { lowerBound } from "./trace-viewport.js";
+import { lowerBound, upperBound } from "./trace-viewport.js";
 import { executionIndex, executionRows } from "./trace-executions.js";
 import { apiObservationIds } from "./api-observation.js";
 import { conceptActivityIds } from "./concept-observation.js";
 
 const canonical = (node) => node.referenceOf || node.event_node || node.id;
-
-/** Establish one axis without reordering the graph's authoritative replay ordinals. */
-function clock(items, until) {
-  const dates = items.map((item) => traceTime(item.observed_at));
-  const observed = dates.filter((_, i) => !["start", "end"].includes(items[i].kind));
-  const invalid =
-    dates.some((value) => value === null) ||
-    observed.some((value, i) => i && value < observed[i - 1]);
-  const visual = [...dates];
-  let boundaryAdjusted = false;
-  if (!invalid && visual.length) {
-    if (items[0].kind === "start" && observed.length && dates[0] > observed[0]) {
-      visual[0] = observed[0];
-      boundaryAdjusted = true;
-    }
-    if (items.at(-1).kind === "end" && observed.length && dates.at(-1) < observed.at(-1)) {
-      visual[visual.length - 1] = observed.at(-1);
-      boundaryAdjusted = true;
-    }
-  }
-  const minimum = visual.reduce(
-    (min, value) => (value === null ? min : Math.min(min, value)),
-    Infinity,
-  );
-  const origin = Number.isFinite(minimum) ? minimum : 0;
-  const times = invalid ? items.map((_, i) => i) : visual.map((value) => value - origin);
-  const tail = traceTime(until);
-  return {
-    dates,
-    times,
-    ordered: !invalid,
-    boundaryAdjusted,
-    total: times.reduce(
-      (max, time) => Math.max(max, time),
-      tail !== null && !invalid ? Math.max(1, tail - origin) : 1,
-    ),
-    origin,
-  };
-}
 
 /** Build a reverse map from an observed identity to explicit source/capture projections. */
 function projections(all, edges) {
@@ -99,7 +61,7 @@ export function buildTraceIndex(
 ) {
   if (recording.origin === "model_analysis")
     throw new Error("Model analysis uses the logical trace adapter, not runtime lifetimes");
-  const axis = clock(items, recording.observed_until),
+  const axis = traceClock(items, recording.observed_until),
     calls = contextualLifecycles(recording, items, all),
     facts = boFacts(recording, items);
   const aliases = projections(all, edges),
@@ -231,7 +193,8 @@ export function buildTraceIndex(
     rows.get(slice.node).slices.push(slice);
   }
   for (const row of rows.values()) {
-    row.marks.sort((a, b) => a.raw - b.raw);
+    // Time queries use a separate sorted index; replay IDs/ordinals stay intact.
+    row.marks.sort((a, b) => a.time - b.time || a.raw - b.raw);
     row.slices.sort((a, b) => a.start - b.start || a.raw - b.raw);
     let end = -Infinity;
     row.maxEnds = row.slices.map((slice) => (end = Math.max(end, slice.end)));
@@ -304,7 +267,7 @@ export function tracePoints(rows, index, plan) {
 
 export function marksInWindow(row, start, end) {
   const first = lowerBound(row.marks, start, (mark) => mark.time);
-  const last = lowerBound(row.marks, end, (mark) => mark.time);
-  return row.marks.slice(first, last + 1);
+  const last = upperBound(row.marks, end, (mark) => mark.time);
+  return row.marks.slice(first, last);
 }
 import { sameStateModel } from "./model-networks.js";

@@ -6,6 +6,11 @@ export function cleanReplaySelection(value, items) {
       ids.has(id),
     ),
     loop: value?.loop === true,
+    // A source-time window can select non-contiguous delivery ordinals. Keep
+    // its exact IDs separately from explicit skips and the editable endpoints.
+    ...(Array.isArray(value?.included)
+      ? { included: [...new Set(value.included)].filter((id) => ids.has(id)) }
+      : {}),
     from: ids.has(value?.from) ? value.from : items[0]?.id,
     to: ids.has(value?.to) ? value.to : items.at(-1)?.id,
   };
@@ -13,13 +18,17 @@ export function cleanReplaySelection(value, items) {
 
 export function selectedReplayPlan(items, plan, value) {
   const settings = cleanReplaySelection(value, items),
-    skipped = new Set(settings.skipped);
+    skipped = new Set(settings.skipped),
+    included = settings.included ? new Set(settings.included) : null;
   const a = items.findIndex((item) => item.id === settings.from);
   const b = items.findIndex((item) => item.id === settings.to);
   return plan.filter(
     (raw) =>
       !skipped.has(items[raw]?.id) &&
-      (!settings.loop || (raw >= Math.min(a, b) && raw <= Math.max(a, b))),
+      (!settings.loop ||
+        (raw >= Math.min(a, b) &&
+          raw <= Math.max(a, b) &&
+          (!included || included.has(items[raw]?.id)))),
   );
 }
 

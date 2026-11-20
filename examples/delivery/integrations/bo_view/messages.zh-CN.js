@@ -134,6 +134,7 @@ export default {
     "时间戳缺失或顺序异常，按事件顺序显示",
   "Focused recording": "局部录制",
   "Multiple producer clocks": "来自多个采集端的时钟",
+  "Source timestamps; replay keeps recorded delivery order": "按源端时间显示，回放保留原接收顺序",
   "{0} recording notes": "{0} 项录制说明",
   "Open call": "未记录结束",
   "Overlapping call ID": "调用 ID 重叠",

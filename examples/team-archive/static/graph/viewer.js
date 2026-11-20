@@ -3132,8 +3132,9 @@ $("replay-steps-toggle").onclick = () => {
   $("replay-steps-toggle").setAttribute("aria-expanded", String(!$("replay-selection").hidden));
 };
 $("replay-loop").onchange = (e) => changeReplaySelection({ loop: e.target.checked });
-$("replay-loop-from").onchange = (e) => changeReplaySelection({ from: e.target.value });
-$("replay-loop-to").onchange = (e) => changeReplaySelection({ to: e.target.value });
+$("replay-loop-from").onchange = (e) =>
+  changeReplaySelection({ from: e.target.value, included: null });
+$("replay-loop-to").onchange = (e) => changeReplaySelection({ to: e.target.value, included: null });
 $("replay-include-all").onclick = () => changeReplaySelection({ skipped: [] });
 
 /** Pausing repeats presentation of the same fact; no seek, capture or model mutation. */

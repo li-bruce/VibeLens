@@ -191,6 +191,7 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 | [recording-timeline.js](../skills/vibelens/assets/stategraph-viewer/recording-timeline.js) | 时间轴面板、鼠标与键盘交互；通过同一个回放游标联动 Graph。 |
 | [trace-evidence.js](../skills/vibelens/assets/stategraph-viewer/trace-evidence.js) | 图动画与时间轴共用的调用身份和父调用判定。 |
 | [trace-index.js](../skills/vibelens/assets/stategraph-viewer/trace-index.js) | 调用耗时配对、事件依赖索引和跨层映射。 |
+| [trace-clock.js](../skills/vibelens/assets/stategraph-viewer/trace-clock.js) | 分别检查各采集端的时间，不将批次交错到达误判为时钟倒退；保留原始事件身份、时间戳和回放顺序。 |
 | [trace-executions.js](../skills/vibelens/assets/stategraph-viewer/trace-executions.js) | 按实际调用根识别执行链，为并发分组，每层保留一行，结束后复用同一组行。 |
 | [node-lifecycle.js](../skills/vibelens/assets/stategraph-viewer/node-lifecycle.js) | 解析节点注册的事件、值与生命周期含义，提供通用执行描述。 |
 | [trace-bars.js](../skills/vibelens/assets/stategraph-viewer/trace-bars.js)、[trace-routing.js](../skills/vibelens/assets/stategraph-viewer/trace-routing.js)、[trace-tooltip.js](../skills/vibelens/assets/stategraph-viewer/trace-tooltip.js) | 持续区间、圆角连线及其命中与动画位置，以及对应事实的悬停详情。 |

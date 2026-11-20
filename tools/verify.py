@@ -147,6 +147,7 @@ def main():
     subprocess.run(["node", "tools/test_trace_lifecycles.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_trace_context.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_trace_executions.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "tools/test_trace_delivery_clocks.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_edge_centres.mjs"], cwd=ROOT, check=True)
     subprocess.run(["node", "tools/test_caption_layout.mjs"], cwd=ROOT, check=True)
     run(ROOT, "tools/test_trace_lifecycle.py")

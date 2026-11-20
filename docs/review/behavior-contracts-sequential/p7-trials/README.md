@@ -152,3 +152,5 @@ stale live policy fingerprint is a separate bootstrap defect; old records remain
 unchanged. Complete trial acceptance is still pending.
 
 [Repair 20](repair-20/README.md) retains passed Node native captures and the subsequent independent Timeline rejection. API replay identity now follows the actual API projection, while real source/model/interface changes still invalidate old recordings. A fresh package passed complete regression; the projects must upgrade and recapture before final acceptance.
+
+[Repair 21](repair-21/README.md) retains the Node native Timeline duration failure. Independent producer clocks now keep measured intervals despite interleaved batch delivery; time-window loops select exact event IDs without rewriting replay order. True clock reversals remain explicit. Native trial recapture and complete desktop acceptance remain pending.

@@ -318,6 +318,7 @@ stream lock is independent of JSON serialization; public views are detached.
 | [recording-timeline.js](../skills/vibelens/assets/stategraph-viewer/recording-timeline.js) | Timeline dock, pointer/keyboard gestures and requests to the shared replay cursor. |
 | [trace-evidence.js](../skills/vibelens/assets/stategraph-viewer/trace-evidence.js) | Invocation scope and parent-call evidence shared with graph animation. |
 | [trace-index.js](../skills/vibelens/assets/stategraph-viewer/trace-index.js) | Duration pairing, event/dependency indexes and explicit cross-layer projections. |
+| [trace-clock.js](../skills/vibelens/assets/stategraph-viewer/trace-clock.js) | Validate source clocks separately from collector delivery order; preserve original replay IDs and timestamps. |
 | [trace-executions.js](../skills/vibelens/assets/stategraph-viewer/trace-executions.js) | Group actual invocation roots into concurrent bands, reuse completed bands, and project one row per layer. |
 | [trace-viewport.js](../skills/vibelens/assets/stategraph-viewer/trace-viewport.js) and [trace-paint.js](../skills/vibelens/assets/stategraph-viewer/trace-paint.js) | Pure window/search arithmetic and visible-range Canvas drawing. |
 | [runtime-frames.js](../skills/vibelens/assets/stategraph-viewer/runtime-frames.js) | Locate exact snapshots and compare state/resource changes. |

@@ -341,6 +341,8 @@ export class RecordingTimeline {
       issues.push(t("Recording boundary overlaps event delivery"));
     if (!this.index.axis.ordered)
       issues.push(t("Timestamps unavailable or out of order; event-order axis"));
+    else if (!this.index.axis.arrivalOrdered)
+      issues.push(t("Source timestamps; replay keeps recorded delivery order"));
     if (recording.capture?.mode === "focused") issues.push(t("Focused recording"));
     const producers = new Set(
       items
@@ -785,13 +787,21 @@ export class RecordingTimeline {
   /** Reuse ID-based replay ranges so skipping/looping never rewrites recorded facts. */
   commitRange() {
     if (!this.range) return;
-    const from = nearestEvent(this.points, this.range[0]),
-      to = nearestEvent(this.points, this.range[1]);
-    if (from && to)
+    const [start, end] = [...this.range].sort((a, b) => a - b);
+    const selected = this.points.filter((point) => point.time >= start && point.time <= end);
+    // A sub-pixel click can contain no event. Select its nearest real event;
+    // never invent an event or expand a time range into unrelated deliveries.
+    if (!selected.length) {
+      const nearest = nearestEvent(this.points, start);
+      if (nearest) selected.push(nearest);
+    }
+    selected.sort((a, b) => a.raw - b.raw);
+    if (selected.length)
       this.callbacks.onRange({
         loop: true,
-        from: this.index.items[from.raw].id,
-        to: this.index.items[to.raw].id,
+        from: this.index.items[selected[0].raw].id,
+        to: this.index.items[selected.at(-1).raw].id,
+        included: selected.map((point) => this.index.items[point.raw].id),
       });
   }
   key(event) {

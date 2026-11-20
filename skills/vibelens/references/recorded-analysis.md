@@ -69,9 +69,19 @@ the graph transfer IDs. Arrow keys seek; +/- zoom; Home/End select endpoints.
 The project view file retains dock visibility, height, scope, expanded layers and observation depth. Choose a bottom layer to retain all layers above it, or use **Single layer**. Lower facts remain stored; their call/return extensions are hidden. The time ruler uses adaptive ticks and smooth zoom; reduced-motion preferences apply.
 
 Pair calls by build/run/producer/stream/entity/attempt/node/call identity and
-occurrence. Unfinished calls and overlapping ID reuse remain explicit. Invalid or
-reversed timestamps use event order; multiple producer clocks and recording gaps
-are reported. Static source mappings have no inferred duration. No additional
+occurrence. Unfinished calls and overlapping ID reuse remain explicit. Invalid
+timestamps or backwards time within one build/run/producer use event order.
+Independent producers may deliver batches out of timestamp order: retain that
+delivery order for replay, but use their reported source times for the ruler and
+paired call durations. The collector's merged stream is not a producer clock.
+Missing producer identity cannot justify a backwards timestamp. Time-window
+queries use a separate time-sorted index and resolve the original event ID.
+Time-range loops retain the selected event IDs even when delivery is interleaved;
+manual endpoint edits return to a contiguous delivery range. Explicit skips remain
+separate and leaving a loop restores the full eligible replay sequence.
+Multiple producer clocks and recording gaps are reported; clock alignment and
+cross-producer causality are not inferred from timestamp proximity. Static
+source mappings have no inferred duration. No additional
 business endpoint, recorder or playback clock is needed. See [lifecycles and representations](lifecycles-and-representations.md) for real operation spans, persistent graph states and independent cross-layer parameter mappings.
 
 ## Exact frames and shared resources

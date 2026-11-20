@@ -185,8 +185,22 @@ try {
   await page.mouse.up();
   await page.keyboard.up("Shift");
   assert.ok((await snapshot()).range);
+  const selectionBefore = await snapshot();
+  const expectedRange = selectionBefore.points
+    .filter(
+      (point) =>
+        point.time >= Math.min(...selectionBefore.range) &&
+        point.time <= Math.max(...selectionBefore.range),
+    )
+    .map((point) => point.raw)
+    .sort((a, b) => a - b);
   await page.click(".trace-loop");
   assert.equal(await page.locator("#replay-loop").isChecked(), true);
+  assert.deepEqual(
+    (await snapshot()).points.map((point) => point.raw).sort((a, b) => a - b),
+    expectedRange,
+    "Loop navigation contains precisely the selected time-window events",
+  );
   await page.click(".trace-clear");
   assert.equal(await page.locator("#replay-loop").isChecked(), false);
   checks.push({ ctrlWheelZoom: true, overviewDrag: true, shiftRangeUsesExistingLoop: true });
