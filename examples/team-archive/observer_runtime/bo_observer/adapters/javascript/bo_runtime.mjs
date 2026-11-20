@@ -464,6 +464,7 @@ export class BOProbe {
     this.bo_dropped = 0;
     this.bo_suppressed = 0;
     this.bo_filtered = 0;
+    this.bo_transport_retries = 0;
     this.bo_capture_nodes = null;
     this.bo_last_error = null;
     this.bo_nodes = new Map(project.model.nodes.map((n) => [n.id, n]));
@@ -502,6 +503,7 @@ export class BOProbe {
       errors: this.bo_errors,
       dropped: this.bo_dropped,
       filtered: this.bo_filtered,
+      transport_retries: this.bo_transport_retries,
       last_error: this.bo_last_error ? { ...this.bo_last_error } : null,
       ...(this.bo_tracing ? { tracing: this.bo_tracing.health() } : {}),
     };
@@ -741,6 +743,7 @@ export class BOProbe {
         return;
       } catch (error) {
         if (attempt === 1 || (batch && !this.bo_remote_batch)) throw error;
+        this.bo_transport_retries++;
       }
     }
   }

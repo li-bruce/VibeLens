@@ -123,6 +123,42 @@ class RemoteEventBatchTests(unittest.TestCase):
     def test_ambiguous_batch_receipts_retry_original_ids_without_duplicates(self):
         self.check_fallback(legacy=False)
 
+    def test_lost_batch_response_retries_the_group_before_individual_fallback(self):
+        """One lost ACK must not turn a committed group into many source-check requests."""
+        handler = self.server.RequestHandlerClass
+        original = handler.do_POST
+        for language in ("python", "node"):
+            requests = []
+            lost = False
+            initial = self.session.sequence
+
+            def respond(request):
+                nonlocal lost
+                requests.append(request.path)
+                if request.path != "/api/bo/events/batch" or lost:
+                    return original(request)
+                body = json.loads(request.rfile.read(int(request.headers["Content-Length"])))
+                self.session.bo_sink.bo_accept_many(body["events"])
+                lost = True
+                request.close_connection = True
+                request.connection.shutdown(socket.SHUT_RDWR)
+                request.connection.close()
+
+            with self.subTest(language=language), patch.object(handler, "do_POST", respond):
+                result = self.produce(language)
+                self.assertTrue(lost)
+                self.assertTrue(result["flushed"])
+                self.assertEqual(result["health"]["errors"], 0)
+                # A single event can precede the first batch while the Python
+                # worker starts. Replaying a lost group should add none afterward.
+                first_batch = requests.index("/api/bo/events/batch")
+                self.assertNotIn("/api/bo/events", requests[first_batch:])
+                self.assertEqual(result["health"]["transport_retries"], 1)
+                self.assertEqual(
+                    [event["id"] for event in self.session.history.snapshot()[initial:]],
+                    result["ids"],
+                )
+
     def check_fallback(self, *, legacy):
         """Exercise legacy HTTP and a lost receipt after actual atomic admission."""
         handler = self.server.RequestHandlerClass
@@ -156,6 +192,38 @@ class RemoteEventBatchTests(unittest.TestCase):
                 )
                 if legacy:
                     self.assertEqual(len(batches) - attempts, 1)
+
+    def test_lost_snapshot_response_retries_the_same_frame(self):
+        """Transport recovery cannot fabricate another revision or advance past its barrier."""
+        handler = self.server.RequestHandlerClass
+        original = handler.do_POST
+        for language in ("python", "node"):
+            lost = False
+            initial = self.session.sequence
+            previous_frames = len(self.session.frames)
+
+            def respond(request):
+                nonlocal lost
+                if request.path != "/api/bo/snapshots" or lost:
+                    return original(request)
+                body = json.loads(request.rfile.read(int(request.headers["Content-Length"])))
+                self.assertTrue(self.session.snapshot(body)["accepted"])
+                lost = True
+                request.close_connection = True
+                request.connection.shutdown(socket.SHUT_RDWR)
+                request.connection.close()
+
+            with self.subTest(language=language), patch.object(handler, "do_POST", respond):
+                result = self.produce(language)
+                self.assertTrue(lost)
+                self.assertTrue(result["flushed"])
+                self.assertEqual(result["health"]["errors"], 0)
+                self.assertEqual(result["health"]["transport_retries"], 1)
+                self.assertEqual(len(self.session.frames), previous_frames + 1)
+                self.assertEqual(
+                    [event["id"] for event in self.session.history.snapshot()[initial:]],
+                    result["ids"],
+                )
 
     def test_byte_limit_and_batch_shape_are_strict(self):
         values = self.envelopes()

@@ -3,13 +3,14 @@
 from contextvars import ContextVar
 from contextlib import contextmanager, nullcontext
 from datetime import datetime, timezone
+from http.client import HTTPException
 import json
 import math
 import queue
 import threading
 import time
 from urllib.request import Request, urlopen
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 import uuid
 
 try:
@@ -216,6 +217,7 @@ class BOProbe:
         self.bo_tracing = None
         self.bo_seq = self.bo_errors = self.bo_dropped = self.bo_suppressed = 0
         self.bo_filtered = 0
+        self.bo_transport_retries = 0
         self.bo_capture_nodes = None
         self.bo_last_error = None
         self.bo_queue = queue.Queue(maxsize=max(1, capacity))
@@ -279,6 +281,7 @@ class BOProbe:
                 "errors": self.bo_errors,
                 "dropped": self.bo_dropped,
                 "filtered": self.bo_filtered,
+                "transport_retries": self.bo_transport_retries,
                 "last_error": dict(self.bo_last_error) if self.bo_last_error else None,
                 **({"tracing": self.bo_tracing.health()} if self.bo_tracing else {}),
             }
@@ -547,17 +550,35 @@ class BOProbe:
             if isinstance(result, dict) and "accepted" in result and result["accepted"] is not True:
                 raise ValueError("Collector rejected observation")
             return result
-        req = Request(
+        receipt = self.bo_http_request(kind, raw)
+        if not isinstance(receipt, dict) or receipt.get("accepted") is not True:
+            raise ValueError("Observation lacks an acceptance receipt")
+        return receipt
+
+    def bo_http_request(self, kind, raw):
+        """Retry an ambiguous transport once with the exact original wire identity.
+
+        The collector deduplicates events and snapshots. Repeating a committed
+        batch avoids a burst of individual rechecks after a lost response. Each
+        attempt keeps the original socket deadline. Explicit HTTP rejection and
+        negative receipts remain errors, rather than permission to retry forever.
+        """
+        request = Request(
             self.bo_endpoint + "/api/bo/" + kind,
             data=raw,
             headers={"Content-Type": "application/json", "X-BO-Token": self.bo_token},
             method="POST",
         )
-        with urlopen(req, timeout=self.bo_timeout) as response:
-            receipt = json.loads(response.read(32768))
-        if not isinstance(receipt, dict) or receipt.get("accepted") is not True:
-            raise ValueError("Observation lacks an acceptance receipt")
-        return receipt
+        for attempt in range(2):
+            try:
+                with urlopen(request, timeout=self.bo_timeout) as response:
+                    return json.loads(response.read(32768))
+            except HTTPError:
+                raise
+            except (OSError, URLError, HTTPException, json.JSONDecodeError):
+                if attempt:
+                    raise
+                self.bo_transport_retries += 1
 
     def bo_transport_error(self, error):
         self.bo_errors += 1
@@ -568,23 +589,16 @@ class BOProbe:
 
         This only groups queued facts. The collector still validates every
         envelope and checks current source bytes before and after admission.
-        A failed or ambiguous response falls back with the same event IDs, so
-        duplicate receipts and per-event rejection retain their usual meaning.
+        An ambiguous transport retries the group once. A rejected group falls
+        back with the same event IDs for individual acceptance/rejection.
         """
         raw = json.dumps(
             {"protocol": "bo-event-batch/v1", "events": values},
             ensure_ascii=False,
             allow_nan=False,
         ).encode()
-        request = Request(
-            self.bo_endpoint + "/api/bo/events/batch",
-            data=raw,
-            headers={"Content-Type": "application/json", "X-BO-Token": self.bo_token},
-            method="POST",
-        )
         try:
-            with urlopen(request, timeout=self.bo_timeout) as response:
-                return json.loads(response.read(32768))
+            return self.bo_http_request("events/batch", raw)
         except HTTPError as error:
             if error.code in {404, 405}:
                 self.bo_remote_batch = False

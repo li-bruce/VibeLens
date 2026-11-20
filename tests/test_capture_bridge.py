@@ -82,6 +82,26 @@ class CaptureBridgeTests(unittest.TestCase):
         self.assertEqual(saved["status"], "interrupted")
         self.assertTrue(any("restore failed" in gap for gap in saved["gaps"]))
 
+    def test_health_retains_safe_producer_error_and_retry_identity(self):
+        """A stopped recording can identify the failed producer without leaking a message."""
+        probe, _ = self.client()
+        probe.bo_errors = 1
+        probe.bo_transport_retries = 2
+        probe.bo_last_error = {
+            "stage": "transport",
+            "type": "TimeoutError",
+            "message": "private payload",
+        }
+        self.assertTrue(self.session.bo_capture_bridge.flush())
+        health = self.session.bo_capture_bridge.health()
+        self.assertEqual(health["transport_retries"], 2)
+        self.assertEqual(
+            health["producer_details"][0]["last_error"],
+            {"stage": "transport", "type": "TimeoutError"},
+        )
+        self.assertEqual(health["producer_details"][0]["producer_id"], probe.bo_producer)
+        self.assertNotIn("private payload", json.dumps(health))
+
     def test_controls_reject_cross_build_and_application_commands(self):
         base = {
             "protocol": "bo-capture-control/v1",

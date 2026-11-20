@@ -53,6 +53,13 @@ revision events fail mapping. Accepted facts that violate a declared state or
 transition are reported under state rules; faithful capture is a separate result.
 This local check complements actual HTTP receipts and recording-drain checks.
 
+For an actual recording, retain the stop settlement and producer health. A complete
+interval requires its accepted queue prefix to settle, matching state frames and
+no capture loss. Inspect each producer's error type and transport retry count when
+it fails. Repair the shared transport or mapping before repeating the trial; keep
+the original failed recording. A recovered retry retains the original IDs and
+does not count as another business execution.
+
 When events record `provenance`, protect native comparisons in `context_fields`
 for each exercised case, node and phase. Compare the complete `actor`,
 `workflow_id` and `objects` components that are present, or the complete

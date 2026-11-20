@@ -1,0 +1,26 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+FE
+======================================================================
+ERROR: test_lost_batch_response_retries_the_group_before_individual_fallback (test_remote_event_batch.RemoteEventBatchTests.test_lost_batch_response_retries_the_group_before_individual_fallback) (language='node')
+One lost ACK must not turn a committed group into many source-check requests.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_remote_event_batch.py", line 156, in test_lost_batch_response_retries_the_group_before_individual_fallback
+    self.assertEqual(result["health"]["transport_retries"], 1)
+                     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'transport_retries'
+
+======================================================================
+FAIL: test_lost_batch_response_retries_the_group_before_individual_fallback (test_remote_event_batch.RemoteEventBatchTests.test_lost_batch_response_retries_the_group_before_individual_fallback) (language='python')
+One lost ACK must not turn a committed group into many source-check requests.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_remote_event_batch.py", line 155, in test_lost_batch_response_retries_the_group_before_individual_fallback
+    self.assertNotIn("/api/bo/events", requests[first_batch:])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '/api/bo/events' unexpectedly found in ['/api/bo/events/batch', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events', '/api/bo/events/batch', '/api/bo/events/batch', '/api/bo/snapshots', '/api/bo/events/batch', '/api/bo/events/batch', '/api/bo/events/batch']
+
+----------------------------------------------------------------------
+Ran 1 test in 1.856s
+
+FAILED (failures=1, errors=1)

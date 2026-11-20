@@ -1,0 +1,52 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Bounded idempotent HTTP recovery and per-producer diagnostics; native acceptance remains open",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "f5797379f1416606ceed50c537d01510b4989970",
+  "gates": {
+    "focused": {
+      "tests": 30,
+      "exit_code": 0,
+      "log": "focused-final.log"
+    },
+    "source": {
+      "valid": true,
+      "python_modules": 244,
+      "javascript_modules": 142,
+      "receipt": "source.json"
+    },
+    "managed_examples": {
+      "valid": true,
+      "examples": [
+        "delivery",
+        "team-archive"
+      ]
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "unittest_suites": 103,
+      "reported_tests": 1160,
+      "reported_skips": 1,
+      "log": "full-verify-retest.log"
+    },
+    "installation": {
+      "valid": true,
+      "receipt": "installation.json"
+    }
+  },
+  "failures_preserved": [
+    "prior-python-recording.zip",
+    "prior-python-source.zip",
+    "retry-first.log",
+    "retry-request-count-first.log",
+    "health-first.log"
+  ],
+  "pending": [
+    "Fresh Python drive and Node observe recording acceptance",
+    "Independent desktop layers and Timeline",
+    "Business iteration and source-only refactor in both trials",
+    "Final dialogue review, screenshots and local product materials"
+  ]
+}

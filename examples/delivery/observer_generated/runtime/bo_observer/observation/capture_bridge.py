@@ -87,7 +87,12 @@ class CaptureBridge:
                 for key in ("errors", "dropped", "pending"):
                     if type(health.get(key)) is not int or health[key] < 0:
                         raise ValueError("capture acknowledgement needs actual health counters")
-                for key in ("queue_submitted", "queue_completed", "flush_target"):
+                for key in (
+                    "queue_submitted",
+                    "queue_completed",
+                    "flush_target",
+                    "transport_retries",
+                ):
                     if key in health and (type(health[key]) is not int or health[key] < 0):
                         raise ValueError("capture queue counters must be nonnegative integers")
                 request["waiting"].remove(producer)
@@ -136,6 +141,7 @@ class CaptureBridge:
         return self.request("flush", timeout_ms=max(1, int(self.timeout * 800)))
 
     def health(self):
+        """Keep aggregate counters and bounded, message-free producer diagnostics."""
         with self.condition:
             return {
                 "enabled": bool(self.clients),
@@ -149,7 +155,46 @@ class CaptureBridge:
                         "queue_submitted",
                         "queue_completed",
                         "flush_target",
+                        "transport_retries",
                     )
                 },
                 "producers": len(self.clients),
+                "producer_details": [
+                    {
+                        "producer_id": producer,
+                        **{
+                            key: client["health"].get(key, 0)
+                            for key in ("errors", "dropped", "pending", "transport_retries")
+                        },
+                        "last_error": self.safe_error(client["health"].get("last_error")),
+                    }
+                    for producer, client in self.clients.items()
+                ],
             }
+
+    def safe_error(self, value):
+        """Expose code identities only; arbitrary exception messages can contain user data."""
+        if not isinstance(value, dict):
+            return None
+        result = {}
+        for key in ("stage", "type"):
+            name = value.get(key)
+            if not isinstance(name, str) or not 0 < len(name) <= 160:
+                return None
+            if not all(part.isidentifier() for part in name.split(".")):
+                return None
+            result[key] = name
+        if isinstance(value.get("node"), str) and value["node"] in self.session.bo_nodes:
+            result["node"] = value["node"]
+        if isinstance(value.get("phase"), str) and value["phase"] in {
+            "enter",
+            "return",
+            "read",
+            "decision",
+            "wait",
+            "commit",
+            "change",
+            "error",
+        }:
+            result["phase"] = value["phase"]
+        return result

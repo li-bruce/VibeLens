@@ -2,7 +2,7 @@
 
 The later canonical repairs and their separate gates are indexed in
 [`repair-09`](repair-09/README.md), [`repair-10`](repair-10/README.md) and
-[`repair-11`](repair-11/README.md).
+[`repair-11`](repair-11/README.md) and [`repair-12`](repair-12/README.md).
 The original failed recordings remain preserved. Current native acceptance,
 iteration and complete desktop checks are still open; a repair gate alone does
 not close this phase.
