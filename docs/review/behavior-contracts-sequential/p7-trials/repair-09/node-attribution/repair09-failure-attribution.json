@@ -1,0 +1,393 @@
+{
+  "diagnostic_only": true,
+  "final_acceptance_performed": false,
+  "failures": [
+    {
+      "client_failure": {
+        "wall_ms": 1795154022076,
+        "pid": 27572,
+        "request_id": "d4e86828-32a7-4cda-8ab3-64d1885991cb",
+        "method": "POST",
+        "endpoint": "http://127.0.0.1:8926/api/bo/events",
+        "protocol": "bo-event/v1",
+        "id": "0f0d50eb-214a-432c-8340-c89a42928cbb:af5764e4-ac24-4bd5-b892-4c2c4b8b422a:34",
+        "node": "api_login",
+        "phase": "enter",
+        "seq": 34,
+        "run_id": "0f0d50eb-214a-432c-8340-c89a42928cbb",
+        "producer_id": "af5764e4-ac24-4bd5-b892-4c2c4b8b422a",
+        "build_id": "fba54b746a910206fa87701dc0cc2d4245ee0d724a68261acbdf92af2124df34",
+        "body_bytes": 880,
+        "request_sha256": "275ff7171cae0e741252171bee947cd18ddbf356725f34de50c96af298913283",
+        "event": "failure",
+        "error_type": "TimeoutError",
+        "elapsed_ms": 1006.5154000000039
+      },
+      "unique_server_match": {
+        "client_request_id": "d4e86828-32a7-4cda-8ab3-64d1885991cb",
+        "server_request_id": 1210,
+        "identity": {
+          "endpoint": "http://127.0.0.1:8926/api/bo/events",
+          "method": "POST",
+          "id": "0f0d50eb-214a-432c-8340-c89a42928cbb:af5764e4-ac24-4bd5-b892-4c2c4b8b422a:34",
+          "seq": 34,
+          "body_bytes": 880
+        },
+        "client_start_ms": 1795154021070,
+        "undici_send_headers_ms": 1795154021244,
+        "server_dispatch_start_ms": 1795154021253.6824,
+        "server_dispatch_end_ms": 1795154023212.5488,
+        "before_send_ms": 174,
+        "send_to_dispatch_ms": 9.682373046875,
+        "dispatch_to_binding_ms": 422.51708984375,
+        "server_status": 200,
+        "client_outcome": [
+          {
+            "wall_ms": 1795154022076,
+            "pid": 27572,
+            "request_id": "d4e86828-32a7-4cda-8ab3-64d1885991cb",
+            "method": "POST",
+            "endpoint": "http://127.0.0.1:8926/api/bo/events",
+            "protocol": "bo-event/v1",
+            "id": "0f0d50eb-214a-432c-8340-c89a42928cbb:af5764e4-ac24-4bd5-b892-4c2c4b8b422a:34",
+            "node": "api_login",
+            "phase": "enter",
+            "seq": 34,
+            "run_id": "0f0d50eb-214a-432c-8340-c89a42928cbb",
+            "producer_id": "af5764e4-ac24-4bd5-b892-4c2c4b8b422a",
+            "build_id": "fba54b746a910206fa87701dc0cc2d4245ee0d724a68261acbdf92af2124df34",
+            "body_bytes": 880,
+            "request_sha256": "275ff7171cae0e741252171bee947cd18ddbf356725f34de50c96af298913283",
+            "event": "failure",
+            "error_type": "TimeoutError",
+            "elapsed_ms": 1006.5154000000039
+          }
+        ],
+        "method_spans": [
+          {
+            "call_id": 1217,
+            "parent_call_id": null,
+            "method": "GraphSession.binding",
+            "thread_name": "Thread-1248 (process_request_thread)",
+            "start_ms": 1795154021676.1995,
+            "end_ms": 1795154023121.8044,
+            "elapsed_ms": 1445.577,
+            "exception_type": null
+          }
+        ]
+      },
+      "other_overlapping_completed_spans": [
+        {
+          "call_id": 1184,
+          "parent_call_id": null,
+          "method": "DataWatch.tick",
+          "thread": "bo-database-watch",
+          "http_id": null,
+          "start_ms": 1795154019768.1055,
+          "end_ms": 1795154024525.2903,
+          "elapsed_ms": 4757.1322,
+          "http_path": null,
+          "overlap_ms": 1958.866455078125
+        },
+        {
+          "call_id": 1202,
+          "parent_call_id": null,
+          "method": "GraphSession.view",
+          "thread": "stategraph-recordings",
+          "http_id": null,
+          "start_ms": 1795154020771.3481,
+          "end_ms": 1795154022133.5078,
+          "elapsed_ms": 1348.4491,
+          "http_path": null,
+          "overlap_ms": 879.825439453125
+        },
+        {
+          "call_id": 1205,
+          "parent_call_id": 1202,
+          "method": "GraphSession.binding",
+          "thread": "stategraph-recordings",
+          "http_id": null,
+          "start_ms": 1795154020929.7898,
+          "end_ms": 1795154021658.711,
+          "elapsed_ms": 728.6555,
+          "http_path": null,
+          "overlap_ms": 405.028564453125
+        },
+        {
+          "call_id": 1240,
+          "parent_call_id": null,
+          "method": "BOSessionSink.bo_accept_many",
+          "thread": "Thread-1276 (process_request_thread)",
+          "http_id": 1239,
+          "start_ms": 1795154023139.8838,
+          "end_ms": 1795154024079.3345,
+          "elapsed_ms": 939.4306,
+          "http_path": "/api/bo/events/batch",
+          "overlap_ms": 72.6650390625
+        }
+      ]
+    },
+    {
+      "client_failure": {
+        "wall_ms": 1795154023081,
+        "pid": 27572,
+        "request_id": "42d0a7fb-9c69-4691-97e8-53746b5f34da",
+        "method": "POST",
+        "endpoint": "http://127.0.0.1:8926/api/bo/events",
+        "protocol": "bo-event/v1",
+        "id": "0f0d50eb-214a-432c-8340-c89a42928cbb:af5764e4-ac24-4bd5-b892-4c2c4b8b422a:34",
+        "node": "api_login",
+        "phase": "enter",
+        "seq": 34,
+        "run_id": "0f0d50eb-214a-432c-8340-c89a42928cbb",
+        "producer_id": "af5764e4-ac24-4bd5-b892-4c2c4b8b422a",
+        "build_id": "fba54b746a910206fa87701dc0cc2d4245ee0d724a68261acbdf92af2124df34",
+        "body_bytes": 880,
+        "request_sha256": "275ff7171cae0e741252171bee947cd18ddbf356725f34de50c96af298913283",
+        "event": "failure",
+        "error_type": "TimeoutError",
+        "elapsed_ms": 1003.5063000000009
+      },
+      "unique_server_match": {
+        "client_request_id": "42d0a7fb-9c69-4691-97e8-53746b5f34da",
+        "server_request_id": 1225,
+        "identity": {
+          "endpoint": "http://127.0.0.1:8926/api/bo/events",
+          "method": "POST",
+          "id": "0f0d50eb-214a-432c-8340-c89a42928cbb:af5764e4-ac24-4bd5-b892-4c2c4b8b422a:34",
+          "seq": 34,
+          "body_bytes": 880
+        },
+        "client_start_ms": 1795154022077,
+        "undici_send_headers_ms": 1795154022080,
+        "server_dispatch_start_ms": 1795154022394.1519,
+        "server_dispatch_end_ms": 1795154023951.5098,
+        "before_send_ms": 3,
+        "send_to_dispatch_ms": 314.15185546875,
+        "dispatch_to_binding_ms": 1489.036376953125,
+        "server_status": 200,
+        "client_outcome": [
+          {
+            "wall_ms": 1795154023081,
+            "pid": 27572,
+            "request_id": "42d0a7fb-9c69-4691-97e8-53746b5f34da",
+            "method": "POST",
+            "endpoint": "http://127.0.0.1:8926/api/bo/events",
+            "protocol": "bo-event/v1",
+            "id": "0f0d50eb-214a-432c-8340-c89a42928cbb:af5764e4-ac24-4bd5-b892-4c2c4b8b422a:34",
+            "node": "api_login",
+            "phase": "enter",
+            "seq": 34,
+            "run_id": "0f0d50eb-214a-432c-8340-c89a42928cbb",
+            "producer_id": "af5764e4-ac24-4bd5-b892-4c2c4b8b422a",
+            "build_id": "fba54b746a910206fa87701dc0cc2d4245ee0d724a68261acbdf92af2124df34",
+            "body_bytes": 880,
+            "request_sha256": "275ff7171cae0e741252171bee947cd18ddbf356725f34de50c96af298913283",
+            "event": "failure",
+            "error_type": "TimeoutError",
+            "elapsed_ms": 1003.5063000000009
+          }
+        ],
+        "method_spans": [
+          {
+            "call_id": 1254,
+            "parent_call_id": null,
+            "method": "GraphSession.binding",
+            "thread_name": "Thread-1262 (process_request_thread)",
+            "start_ms": 1795154023883.1882,
+            "end_ms": 1795154023949.0286,
+            "elapsed_ms": 65.8201,
+            "exception_type": null
+          }
+        ]
+      },
+      "other_overlapping_completed_spans": [
+        {
+          "call_id": 1184,
+          "parent_call_id": null,
+          "method": "DataWatch.tick",
+          "thread": "bo-database-watch",
+          "http_id": null,
+          "start_ms": 1795154019768.1055,
+          "end_ms": 1795154024525.2903,
+          "elapsed_ms": 4757.1322,
+          "http_path": null,
+          "overlap_ms": 1557.35791015625
+        },
+        {
+          "call_id": 1240,
+          "parent_call_id": null,
+          "method": "BOSessionSink.bo_accept_many",
+          "thread": "Thread-1276 (process_request_thread)",
+          "http_id": 1239,
+          "start_ms": 1795154023139.8838,
+          "end_ms": 1795154024079.3345,
+          "elapsed_ms": 939.4306,
+          "http_path": "/api/bo/events/batch",
+          "overlap_ms": 811.6259765625
+        },
+        {
+          "call_id": 1217,
+          "parent_call_id": null,
+          "method": "GraphSession.binding",
+          "thread": "Thread-1248 (process_request_thread)",
+          "http_id": 1210,
+          "start_ms": 1795154021676.1995,
+          "end_ms": 1795154023121.8044,
+          "elapsed_ms": 1445.577,
+          "http_path": "/api/bo/events",
+          "overlap_ms": 727.652587890625
+        },
+        {
+          "call_id": 1243,
+          "parent_call_id": null,
+          "method": "BOSessionSink.bo_accept_many",
+          "thread": "Thread-1278 (process_request_thread)",
+          "http_id": 1242,
+          "start_ms": 1795154023274.653,
+          "end_ms": 1795154024486.2466,
+          "elapsed_ms": 1211.5733,
+          "http_path": "/api/bo/events/batch",
+          "overlap_ms": 676.856689453125
+        },
+        {
+          "call_id": 1244,
+          "parent_call_id": null,
+          "method": "GraphSession.view",
+          "thread": "stategraph-recordings",
+          "http_id": null,
+          "start_ms": 1795154023289.5107,
+          "end_ms": 1795154024769.903,
+          "elapsed_ms": 1480.3674,
+          "http_path": null,
+          "overlap_ms": 661.9990234375
+        },
+        {
+          "call_id": 1241,
+          "parent_call_id": null,
+          "method": "GraphSession.binding",
+          "thread": "Thread-1249 (process_request_thread)",
+          "http_id": 1211,
+          "start_ms": 1795154023227.5632,
+          "end_ms": 1795154023799.8052,
+          "elapsed_ms": 572.2139,
+          "http_path": "/api/bo/events",
+          "overlap_ms": 572.241943359375
+        },
+        {
+          "call_id": 1252,
+          "parent_call_id": null,
+          "method": "GraphSession.binding",
+          "thread": "Thread-1260 (process_request_thread)",
+          "http_id": 1223,
+          "start_ms": 1795154023803.3103,
+          "end_ms": 1795154023882.0364,
+          "elapsed_ms": 78.7009,
+          "http_path": "/api/bo/events",
+          "overlap_ms": 78.72607421875
+        },
+        {
+          "call_id": 1245,
+          "parent_call_id": 1244,
+          "method": "GraphSession._view_model",
+          "thread": "stategraph-recordings",
+          "http_id": null,
+          "start_ms": 1795154023289.526,
+          "end_ms": 1795154023350.6907,
+          "elapsed_ms": 61.1473,
+          "http_path": null,
+          "overlap_ms": 61.164794921875
+        },
+        {
+          "call_id": 1257,
+          "parent_call_id": 1240,
+          "method": "GraphSession.binding",
+          "thread": "Thread-1276 (process_request_thread)",
+          "http_id": 1239,
+          "start_ms": 1795154023949.2207,
+          "end_ms": 1795154024010.709,
+          "elapsed_ms": 61.4535,
+          "http_path": "/api/bo/events/batch",
+          "overlap_ms": 2.2890625
+        }
+      ]
+    }
+  ],
+  "method_stats": {
+    "protocol.validate_project": {
+      "count": 7,
+      "median_ms": 383.9916,
+      "p95_ms": 749.858,
+      "max_ms": 1046.3198
+    },
+    "GraphSession.binding": {
+      "count": 191,
+      "median_ms": 63.2304,
+      "p95_ms": 330.8892,
+      "max_ms": 1445.577
+    },
+    "DataWatch.tick": {
+      "count": 23,
+      "median_ms": 932.4571,
+      "p95_ms": 3393.0922,
+      "max_ms": 4757.1322
+    },
+    "BOSessionSink.bo_accept_many": {
+      "count": 66,
+      "median_ms": 153.33215,
+      "p95_ms": 548.8819,
+      "max_ms": 1211.5733
+    },
+    "GraphSession.snapshot": {
+      "count": 8,
+      "median_ms": 78.83715,
+      "p95_ms": 420.7032,
+      "max_ms": 981.7756
+    },
+    "GraphSession._view_model": {
+      "count": 36,
+      "median_ms": 51.4494,
+      "p95_ms": 147.3211,
+      "max_ms": 261.4171
+    },
+    "GraphSession.view": {
+      "count": 23,
+      "median_ms": 428.1302,
+      "p95_ms": 13410.1111,
+      "max_ms": 15155.3412
+    }
+  },
+  "completed_ticks": 23,
+  "project_validation_inside_ticks": 1,
+  "watcher_validation_spans": [
+    {
+      "call_id": 10,
+      "parent_call_id": 5,
+      "method": "protocol.validate_project",
+      "thread": "bo-database-watch",
+      "http_id": null,
+      "start_ms": 1795153975796.2102,
+      "end_ms": 1795153976448.5159,
+      "elapsed_ms": 652.2474
+    }
+  ],
+  "timed_out_event_retained": {
+    "id": "0f0d50eb-214a-432c-8340-c89a42928cbb:af5764e4-ac24-4bd5-b892-4c2c4b8b422a:34",
+    "node": "api_login",
+    "phase": "enter",
+    "source_seq": 34,
+    "observed_at": "2026-11-20T05:53:41.066Z"
+  },
+  "native_sequence_coverage": {
+    "first": 34,
+    "last": 1125,
+    "count": 1092,
+    "contiguous": true
+  },
+  "unique_joins": 478,
+  "unmatched_joins": 98,
+  "limits": [
+    "No session/lock object IDs or intra-binding subphase timers were recorded. Overlap alone cannot assign a unique lock owner or CPU cause.",
+    "The source/data catalog inputs are still independently checked; this timing run is not final acceptance."
+  ]
+}

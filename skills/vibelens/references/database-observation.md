@@ -65,11 +65,21 @@ uninspected properties remain explicitly unverified.
 
 ## Development and runtime
 
-The **Data operations** layer shows executed queries, transactions and selected transformations: what was read or written, relevant values or counts, elapsed work and the actual commit/rollback outcome. The **Data structure** layer describes stores, tables/collections and fields. The function layers show the implementation that performs those operations. Link these facts in the existing graph; use recorded calls and values for execution evidence. A collector's own metadata queries stay excluded. Empty operation layers need no plane, and technical collection wrappers must not appear as application data processing.
+**Code execution** includes executed queries, transactions and selected transformations:
+what was read or written, relevant values or counts, elapsed work and the actual
+commit/rollback outcome. **Data structure** describes stores, tables/collections
+and fields. Link these operations to their source functions and storage targets in
+the same graph. Recorded calls and values provide execution evidence; the
+collector's own metadata queries remain excluded.
 
 Store configuration belongs in `bo_stategraph/databases.json`. Connection URLs
 come from named environment variables. Native exporters write catalog JSON to
 stdout; the synchronizer validates it before publishing generated files.
+
+The watcher rereads current source and collects database metadata on each tick.
+It reuses pure graph validation only for exactly matching JSON that already
+passed. Changed definitions, real schema changes and failed collection remain
+visible. `bo_db check` and forced synchronization run the original validators.
 
 Exporters execute project code. Keep their entrypoints offline and limited to
 registered metadata: SQLAlchemy `MetaData` without `create_all`, Mongoose schemas

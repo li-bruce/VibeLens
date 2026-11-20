@@ -3,6 +3,7 @@
 import threading
 from .sync import synchronize
 from .contract import write_if_changed
+from .projection_validation import ProjectionValidation
 
 
 class DataWatch:
@@ -12,6 +13,7 @@ class DataWatch:
         self.server = server
         self.interval = max(0.2, interval)
         self.stopped = threading.Event()
+        self.validation_cache = ProjectionValidation()
         self.thread = threading.Thread(target=self.run, name="bo-database-watch", daemon=True)
 
     def settings(self):
@@ -30,7 +32,9 @@ class DataWatch:
         """Expose failed collection as stale evidence; replace only a validated projection."""
         session = self.server.bo_session
         report = synchronize(
-            session.root, model_path=session.path.relative_to(session.root).as_posix()
+            session.root,
+            model_path=session.path.relative_to(session.root).as_posix(),
+            validation_cache=self.validation_cache,
         )
         if self.stopped.is_set():
             return report

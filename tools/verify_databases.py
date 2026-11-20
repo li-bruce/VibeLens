@@ -26,6 +26,7 @@ def main():
         "guidance",
         "acceptance",
         "watch",
+        "watch_validation",
         "identity",
         "protocol",
     ):

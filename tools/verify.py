@@ -100,6 +100,7 @@ def main():
     run(ROOT, "tests/test_source_inventory_walk.py")
     run(ROOT, "tests/test_project_identity.py")
     run(ROOT, "tests/test_capture_settlement.py")
+    run(ROOT, "tests/test_observation_display_work.py")
     run(ROOT, "tests/test_capture_context.py")
     run(ROOT, "tests/test_event_batch.py")
     run(ROOT, "tests/test_remote_event_batch.py")

@@ -1,0 +1,102 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Separate static display copying from event admission and reuse exact successful database projection validation.",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "7c9b89ade11e45cda183aa798d05e5aed7bdc3e3",
+  "gates": {
+    "focused": {
+      "tests": 84,
+      "exit_code": 0,
+      "log": "focused.log"
+    },
+    "database": {
+      "tests": 94,
+      "unittest_suites": 9,
+      "exit_code": 0,
+      "log": "database.log",
+      "scope": "Local adapters, JavaScript causal/data checks and dialogue fixture; no fresh external DB servers"
+    },
+    "source": {
+      "valid": true,
+      "receipt": "source.json"
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "log": "full-verify-second.log",
+      "unittest_suites": 99,
+      "unittest_reported_tests": 1126,
+      "skips": 1,
+      "tlc": "Pinned TLC 1.7.4 and Java 17 enabled"
+    },
+    "managed_examples": {
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ],
+      "business_source_unchanged": true,
+      "frozen_round": "behavior-contracts-p7-repair09-20261120"
+    },
+    "clean_export": {
+      "status": "passed",
+      "receipt": "clean-export.json",
+      "revision": "efaecbb3b8a9da03eeea86fedffb7846763a3561"
+    }
+  },
+  "retained_failures": [
+    "static-view-first.log",
+    "watch-validation-first.log",
+    "focused-first-retest.log",
+    "diagnostic-install.log",
+    "full-verify-retest.log"
+  ],
+  "native_diagnostic": "node-before-repair09-timing.json",
+  "remaining": [
+    "Complete Python and Node recording retests; distinguish measured timeout recovery from capture acceptance.",
+    "Business iteration, source-only refactor and independent desktop/Timeline acceptance in both native chats.",
+    "Accepted product scenes and final P7 closure."
+  ],
+  "candidate_files": [
+    {
+      "path": "skills/vibelens/scripts/bo_observer/data/projection_validation.py",
+      "sha256": "9f9a2c5bef35f4962cb553fb8d88ceb365c64f7467924a6f16191a801aaad899"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/data/sync.py",
+      "sha256": "ce211cdad1ec486168cc956f14ba1deb541213dc4014c292b79007acdf1276cb"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/data/watcher.py",
+      "sha256": "630301644b0ff23040a4e1f5238f040a57b9e0387cd05aca323a8b91a9dab125"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/observation/session.py",
+      "sha256": "d74b179c40a4aaf419dbad9ff7d342bc3cd5f9b072e9a2a41fd2746f10a0d182"
+    },
+    {
+      "path": "tests/test_database_watch_validation.py",
+      "sha256": "2a926ad4cd42b35f85a3a628c7688c6536a21103a9483023a34401d0543085a8"
+    },
+    {
+      "path": "tests/test_observation_display_work.py",
+      "sha256": "da6ed71e7810383df0e1730e19bff4a77d5e29b8f1ec0cbb4b2a24b8d829a861"
+    },
+    {
+      "path": "skills/vibelens/references/database-observation.md",
+      "sha256": "a160401ed22deae41eb4a37dac545d1b9f772ae642c491b89bafe3a03017f456"
+    },
+    {
+      "path": "tools/verify.py",
+      "sha256": "8e4c3b276aee46da179cb65548fa195dda1bf9d5f182a8e82c67304d8e2a87ab"
+    },
+    {
+      "path": "tools/verify_databases.py",
+      "sha256": "b1d28302f792b45c3e098d7dfb77612b8262523eeaa379fa3c2bdecbdcc87f8b"
+    }
+  ],
+  "native_retests": [
+    "native-repair09-failures.json",
+    "python-timed09-failure.json"
+  ]
+}

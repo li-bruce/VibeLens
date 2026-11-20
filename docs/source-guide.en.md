@@ -11,6 +11,12 @@ explicit ownership for source enrichment. `workflow/review_validation.py` checks
 shared review field shapes before the state, behavior and coverage guards read
 them. Those guards still decide whether a change is authorized and verified.
 
+`observation/session.py` copies immutable build declarations outside the runtime
+admission lock. The lock protects mutable event/state cursors. Database watching
+uses `data/projection_validation.py` to remember one successfully validated JSON
+candidate; every tick still reads source bytes and collects current metadata.
+Independent and forced checks always run the original validators.
+
 The [behavior-contract plan](development/behavior-contracts/README.md) is tracked
 by its [phase ledger](development/behavior-contracts/progress.json). P0–P6 are
 implemented and regressed on the sequential branch; independent P7 trials are

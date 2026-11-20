@@ -360,7 +360,7 @@ class GraphSession:
             return result
 
     def _view_model(self):
-        """Copy presentation defaults while the caller holds the session lock."""
+        """Detach this build's static declaration without locking runtime admission."""
         model = deepcopy(self.model)
         model.setdefault("presentation", {}).setdefault("subject", self.project["project_id"])
         for chart in machine_registry(model).values():
@@ -374,14 +374,16 @@ class GraphSession:
         path separate from control inspection, which also needs physical source
         and API inventories to resolve a user's selection.
         """
-        with self.lock:
-            return {
-                "stage": "runtime",
-                "layout_id": self.project["project_id"],
-                "model": self._view_model(),
-                "manifest": deepcopy(self.manifest),
-                "concept_structure": self.bo_concept_context.view(),
-            }
+        # SessionHost pins this build for the request. These declarations never
+        # mutate during admission; reload constructs another GraphSession. A
+        # large static copy must not hold the lock used by incoming observations.
+        return {
+            "stage": "runtime",
+            "layout_id": self.project["project_id"],
+            "model": self._view_model(),
+            "manifest": deepcopy(self.manifest),
+            "concept_structure": self.bo_concept_context.view(),
+        }
 
     def control_context(self):
         """Expose the same static identities as Web without transferring runtime history."""
@@ -415,6 +417,10 @@ class GraphSession:
         )
         api_structure = (
             self.web.bo_api_graph.api_snapshot() if self.bo_project_context.get() else None
+        )
+        model = self._view_model()
+        concept_structure = (
+            self.bo_concept_context.view() if self.bo_project_context.get() else None
         )
         with self.lock:
             instances = self.graph.bo_instances()
@@ -450,7 +456,6 @@ class GraphSession:
                 if o.get("state_model_id") is not None:
                     cfg["state_model_id"] = o["state_model_id"]
                 configurations.append(cfg)
-            model = self._view_model()
             health = self.history.health()
             producer = self.bo_producer_health() if self.bo_producer_health else None
             current_frame = self.frames.get(current.get("evidence_id"), (None, 0))[0]
@@ -463,9 +468,7 @@ class GraphSession:
                 "behavior_context": None,
                 "project_structure": project_structure,
                 "api_structure": api_structure,
-                "concept_structure": (
-                    self.bo_concept_context.view() if self.bo_project_context.get() else None
-                ),
+                "concept_structure": concept_structure,
                 "manifest": deepcopy(self.manifest),
                 "binding_status": self.binding(),
                 "events": [],

@@ -58,19 +58,32 @@ def _declarations(root, config, *, export):
     return declarations
 
 
-def synchronize(root, *, model_path="bo_stategraph/project.json", update=True, force=False):
+def synchronize(
+    root,
+    *,
+    model_path="bo_stategraph/project.json",
+    update=True,
+    force=False,
+    validation_cache=None,
+):
     """Serialize independent watch/scan/check processes over the project catalog bundle."""
     from ..web.view_preferences import file_lock
 
     root = Path(root).absolute().resolve()
     try:
         with file_lock(root / ".stategraph/database.lock"):
-            return _synchronize(root, model_path=model_path, update=update, force=force)
+            return _synchronize(
+                root,
+                model_path=model_path,
+                update=update,
+                force=force,
+                validation_cache=validation_cache if update and not force else None,
+            )
     except (OSError, ValueError) as exc:
         return {"configured": True, "valid": False, "changed": False, "errors": [str(exc)]}
 
 
-def _synchronize(root, *, model_path, update, force):
+def _synchronize(root, *, model_path, update, force, validation_cache=None):
     """Refresh generated facts without accepting a coding batch or changing any business data.
 
     A failed read leaves the last good files intact. Check mode recomputes current
@@ -140,14 +153,15 @@ def _synchronize(root, *, model_path, update, force):
             and document.get("protocol") in {"bo-project/v1", "bo-project/v2"}
             else model
         )
-        from ..protocol import validate_project
-        from ..graph.behavior_model import validate_graph
-        from .protocol import validate_data_projection
+        from .projection_validation import validate
 
-        validate_data_projection(model)
-        validate_graph(model)
-        if candidate.get("protocol") in {"bo-project/v1", "bo-project/v2"}:
-            validate_project(candidate)
+        # Every tick still collects actual catalogs and reads current sources.
+        # Only pure validation of an identical completed candidate is reusable.
+        # Independent checks and forced refreshes always run all validators.
+        if validation_cache is None:
+            validate(candidate)
+        else:
+            validation_cache.check(candidate)
         declared = {d["store_id"]: d for d in declarations}
         differences = [
             {"store": c["store_id"], **d}
