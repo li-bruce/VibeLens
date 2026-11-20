@@ -1,12 +1,19 @@
 # P7 — Independent candidate trials
 
-The later canonical repairs and their separate gates are indexed in
-[`repair-09`](repair-09/README.md), [`repair-10`](repair-10/README.md) and
-[`repair-11`](repair-11/README.md), [`repair-12`](repair-12/README.md) and
-[`repair-13`](repair-13/README.md).
-The original failed recordings remain preserved. Current native acceptance,
-iteration and complete desktop checks are still open; a repair gate alone does
-not close this phase.
+Current evidence:
+
+- [Framework repair 23](repair-23/README.md): complete regression, clean export
+  and immutable installation passed.
+- [Ordering review](python-ordering-review/README.md): the failed normal recording
+  exposed a test ordering assumption; original evidence and the correction remain.
+- [Python cancellation iteration](python-cancellation-ordered/README.md): complete
+  native retest, separate controlled/normal records and independent desktop checks.
+- [Node initial acceptance](node-initial-repair22/README.md): accepted initial
+  behavior; its newly confirmed permission-timing change is in progress.
+
+Both source-only refactors, the final matrix and accepted product scenes remain
+open. The history below retains earlier failures and repair-specific boundaries;
+those historical pending statements are not the current status of later runs.
 
 Status: in progress. P0–P6 were implemented, regressed and committed before
 creating either trial. Initial candidate: `87ab32d5` on
