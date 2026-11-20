@@ -117,3 +117,8 @@ required in remote-load diagnosis. The full regression passes, and the maintaine
 implementation records all 3260 diagnostic events and 106 frames with an ordinary
 stop. These derived inputs remain diagnostic evidence; both native trials and
 their iteration/UI acceptance are still pending.
+
+[Repair 15](repair-15/README.md) retains the first complete Python native recording
+on repair 14 and its independent desktop checks. It also fixes state-model
+folding shared by 2D/3D and records the naming and readiness findings. Node native
+recording, both iterations, refactors and the final acceptance remain open.

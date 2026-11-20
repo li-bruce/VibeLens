@@ -1,0 +1,16 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+..F
+======================================================================
+FAIL: test_rejected_event_group_can_drain_without_truncating_the_response (test_http_close.RejectedBodyTests.test_rejected_event_group_can_drain_without_truncating_the_response)
+A group just above the 256 KiB admission limit still receives its error.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_http_close.py", line 58, in test_rejected_event_group_can_drain_without_truncating_the_response
+    self.assertEqual(handler.rfile.tell(), len(payload))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 65536 != 307200
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.002s
+
+FAILED (failures=1)

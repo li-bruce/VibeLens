@@ -9,7 +9,11 @@ admit that body, and never wait indefinitely for an incomplete client request.
 import socket
 import time
 
-DRAIN_LIMIT = 65536
+# Cleanup is not admission: a rejected 256 KiB event group may still be in
+# flight when the response is sent. Drain up to the viewer's largest supported
+# body size in small chunks, under the same short deadline. A 64 KiB cleanup
+# cap left ordinary oversized groups unread and could reset their HTTP error.
+DRAIN_LIMIT = 2 * 1024 * 1024
 DRAIN_SECONDS = 0.25
 
 

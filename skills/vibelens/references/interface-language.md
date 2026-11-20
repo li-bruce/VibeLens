@@ -50,6 +50,18 @@ wording for every conceptual occurrence. Keep filenames and source identifiers i
 details and source-name mode. Relations describe the specific dependency or branch;
 mechanical relation types use the viewer's localized legend.
 
+The names check verifies inventory coverage and fingerprints, not translation
+quality. Copying `not_requested` into both locale entries satisfies neither the
+state explanation nor the Chinese presentation. Review the actual affected
+business, state and rule captions in both languages, including native state
+values and transition events. Preserve literal identifiers in source-name mode;
+use concise domain meaning in semantic-name mode. Technical terms such as HTTP
+may remain unchanged. Keep missing translation and rendering defects separate
+from a correct business/runtime result in the acceptance report.
+Name a state's condition, not one possible cause: use "Preparation rejected" for
+the rejected state and show an actual revocation reason in that invocation's
+decision details. Missing current authorization alone does not prove revocation.
+
 `bo_sync scan` lists missing/stale translations after the artifact is enabled.
 `change_sync verify` reports them under project checks. Review the affected meaning
 before renewing its fingerprint. A new translation cannot authorize behavior drift.

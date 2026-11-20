@@ -1,0 +1,67 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "27893a4adc1531bfd81e3fe26ae691e5341064ea",
+  "scope": "State model display groups, bilingual naming guidance, source scope and bounded HTTP rejection cleanup",
+  "gates": {
+    "grouping": {
+      "exit_code": 0,
+      "log": "state-model-groups-retest.log",
+      "native_projection": "state-groups-native-context.json"
+    },
+    "http": {
+      "tests": 16,
+      "repeated_actual_over_limit_requests": 3,
+      "exit_code": 0,
+      "log": "http-close-retest.log"
+    },
+    "source": {
+      "valid": true,
+      "python_modules": 244,
+      "javascript_modules": 142
+    },
+    "managed_examples": {
+      "valid": true,
+      "receipts": [
+        "post-http/delivery-acceptance.json",
+        "post-http/team-archive-acceptance.json"
+      ]
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "unittest_suites": 104,
+      "reported_tests": 1166,
+      "reported_skips": 1,
+      "log": "full-verify-second.log"
+    },
+    "installation": {
+      "valid": true,
+      "receipt": "installation-final.json"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json"
+    }
+  },
+  "failures_preserved": [
+    "state-model-groups-first.log",
+    "full-verify.log",
+    "full-verify-retest.log",
+    "http-close-first.log",
+    "installed-node-dependencies-final.log",
+    "python-ui-before-repair.zip"
+  ],
+  "native_evidence": [
+    "python-native-recording.zip",
+    "python-native-summary.json",
+    "python-name-review.zip"
+  ],
+  "pending": [
+    "Fresh installed browser model grouping and readiness checks",
+    "Node native policy wiring and transaction completion diagnostics",
+    "Node ordinary recording and both semantic iterations/source-only refactors",
+    "Final dialogues, screenshots, per-layer acceptance and local product story"
+  ]
+}

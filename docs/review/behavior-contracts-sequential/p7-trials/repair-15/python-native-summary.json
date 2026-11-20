@@ -1,0 +1,306 @@
+{
+  "status": "passed",
+  "recording_id": "a5e61bbc90bf4d17a65ecb7c0aaf35bc",
+  "build_id": "484c9be7ce3c87abb18ba9eab3499944f7e8d463a9f2ca235dc64682ebd76568",
+  "events": 2310,
+  "frames": 24,
+  "producer_settlement": {
+    "flushed": true,
+    "target": 2388,
+    "completed": 2388,
+    "submitted": 2392,
+    "pending": 4
+  },
+  "gaps": [],
+  "page_errors": [],
+  "viewer_http_errors": [],
+  "transport_retries": 1,
+  "scope": "Original Python drive capture on repair 14, before display-only repair 15",
+  "native_checks": [
+    {
+      "name": "real preferences response succeeds",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "native early authentication and CSRF returns",
+      "passed": true,
+      "details": {
+        "authentication": 302,
+        "csrf": 400
+      }
+    },
+    {
+      "name": "recipient reshare actually denied",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "first attempt is genuinely queued before revocation",
+      "passed": true,
+      "details": {
+        "sequence": 11,
+        "id": "5919d8ab3488438caf0dd6bedb5e0d12",
+        "file_id": "c4bd004f6b114823a1613c0289b95853",
+        "requester_id": "bob",
+        "grant_revision": 1,
+        "state": "queued",
+        "revision": 1,
+        "admitted": 0,
+        "result_name": "",
+        "error_code": "",
+        "created_at": "2026-11-20T10:45:55.410854+00:00"
+      }
+    },
+    {
+      "name": "automatic worker rejects revoked queued attempt",
+      "passed": true,
+      "details": {
+        "row": {
+          "sequence": 11,
+          "id": "5919d8ab3488438caf0dd6bedb5e0d12",
+          "file_id": "c4bd004f6b114823a1613c0289b95853",
+          "requester_id": "bob",
+          "grant_revision": 1,
+          "state": "rejected",
+          "revision": 2,
+          "admitted": 0,
+          "result_name": "",
+          "error_code": "share_revoked",
+          "created_at": "2026-11-20T10:45:55.410854+00:00"
+        },
+        "journal": [
+          {
+            "sequence": 71,
+            "model_id": "download-job",
+            "instance_id": "5919d8ab3488438caf0dd6bedb5e0d12",
+            "event": "request",
+            "before": "not_requested",
+            "after": "queued",
+            "revision": 1,
+            "guards": "{\"may_request\": true}",
+            "permission_allowed": 1,
+            "transaction_id": "ba5f54631e5b428982ecb09b7f63db53",
+            "build_id": "484c9be7ce3c87abb18ba9eab3499944f7e8d463a9f2ca235dc64682ebd76568"
+          },
+          {
+            "sequence": 73,
+            "model_id": "download-job",
+            "instance_id": "5919d8ab3488438caf0dd6bedb5e0d12",
+            "event": "reject",
+            "before": "queued",
+            "after": "rejected",
+            "revision": 2,
+            "guards": "{\"may_start\": false}",
+            "permission_allowed": 0,
+            "transaction_id": "8565acc510f04e88a687a6b3fcce0657",
+            "build_id": "484c9be7ce3c87abb18ba9eab3499944f7e8d463a9f2ca235dc64682ebd76568"
+          }
+        ]
+      }
+    },
+    {
+      "name": "fresh admitted result bytes 1",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "fresh admitted result bytes 2",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "re-sharing did not revive the old request",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "recording actually stopped without gaps",
+      "passed": true,
+      "details": {
+        "status": 200,
+        "body": {
+          "id": "a5e61bbc90bf4d17a65ecb7c0aaf35bc",
+          "label": "Operation recording",
+          "status": "stopped",
+          "started_at": "2026-11-20T10:45:52.844100+00:00",
+          "ended_at": "2026-11-20T10:46:04.393746+00:00",
+          "build_id": "484c9be7ce3c87abb18ba9eab3499944f7e8d463a9f2ca235dc64682ebd76568",
+          "events": 2310,
+          "commands": 0,
+          "gaps": [],
+          "capture": {
+            "mode": "all",
+            "nodes": null,
+            "roots": [],
+            "boundary_nodes": []
+          },
+          "capture_filtered": 0,
+          "graph_version": [
+            "484c9be7ce3c87abb18ba9eab3499944f7e8d463a9f2ca235dc64682ebd76568",
+            "52aebe5ad3ac9d715788cf1a6e97d782300367ebd332368cce6bb0b5b9e0acd9"
+          ]
+        }
+      }
+    },
+    {
+      "name": "fixed producer prefix drained",
+      "passed": true,
+      "details": {
+        "flushed": true,
+        "target": 2388,
+        "completed": 2388,
+        "submitted": 2392,
+        "pending": 4
+      }
+    },
+    {
+      "name": "each recorded producer prefix is continuous",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "every real transition in all four models has an exact frame",
+      "passed": true,
+      "details": {
+        "transitions": 12,
+        "instances": [
+          [
+            "announcement",
+            "54bf3abd8c9546dcbca9e7536e44a037"
+          ],
+          [
+            "download-job",
+            "5919d8ab3488438caf0dd6bedb5e0d12"
+          ],
+          [
+            "download-job",
+            "69b878bc0d08452c96e3a7be60666bcc"
+          ],
+          [
+            "file",
+            "c4bd004f6b114823a1613c0289b95853"
+          ],
+          [
+            "grant",
+            "c4bd004f6b114823a1613c0289b95853:bob"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "every initial and same-version read retains exact native context",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "changed denied input does not rewrite queued context",
+      "passed": true,
+      "details": [
+        {
+          "event_id": "bb295d86c66741ca90203f4bcdd8c77f:647e7471861346d49344c662e7409360:1019",
+          "model_id": "download-job",
+          "instance_id": "5919d8ab3488438caf0dd6bedb5e0d12",
+          "revision": 1,
+          "native_state": "queued",
+          "native_context": {
+            "allowed": true
+          },
+          "current_operation_allowed": false,
+          "matching_own_frame": true,
+          "native_journal_sequence": 71
+        }
+      ]
+    },
+    {
+      "name": "all recorded invocation lifecycles close",
+      "passed": true,
+      "details": {
+        "valid": true,
+        "closed_calls": 487,
+        "legacy_events": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "real HTTP rejections retain API return events",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "safe per-producer diagnostics and retry counts retained",
+      "passed": true,
+      "details": {
+        "producer_details": [
+          {
+            "producer_id": "647e7471861346d49344c662e7409360",
+            "errors": 0,
+            "dropped": 0,
+            "pending": 3,
+            "transport_retries": 1,
+            "last_error": null
+          }
+        ],
+        "transport_retries": 1
+      }
+    },
+    {
+      "name": "capture has no errors drops or frame evictions",
+      "passed": true,
+      "details": {
+        "errors": 0,
+        "dropped": 0,
+        "run_id": "c4d0f670711622379b2a4556",
+        "attempted": 2372,
+        "written": 2372,
+        "enabled": true,
+        "producer": {
+          "enabled": true,
+          "boundary_context": true,
+          "errors": 0,
+          "dropped": 0,
+          "pending": 3,
+          "queue_submitted": 2396,
+          "queue_completed": 2393,
+          "flush_target": 2388,
+          "transport_retries": 1,
+          "producers": 1,
+          "producer_details": [
+            {
+              "producer_id": "647e7471861346d49344c662e7409360",
+              "errors": 0,
+              "dropped": 0,
+              "pending": 3,
+              "transport_retries": 1,
+              "last_error": null
+            }
+          ]
+        },
+        "runtime_frame_evictions": 0,
+        "context_evictions": 0,
+        "retained_events": 2372,
+        "evicted_events": 0,
+        "history_start_seq": 1,
+        "log_errors": 0,
+        "listener_errors": 0,
+        "retention": {
+          "memory_events": 10000,
+          "memory_seconds": 1800,
+          "log_bytes": 8388608,
+          "log_backups": 2
+        }
+      }
+    },
+    {
+      "name": "read-only inspection preserves native rows",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "original recording is not supplemented after stop",
+      "passed": true,
+      "details": null
+    }
+  ],
+  "final_accept": "not_run"
+}

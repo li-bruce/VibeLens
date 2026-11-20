@@ -47,6 +47,17 @@ class RejectedBodyTests(unittest.TestCase):
         self.assertEqual(calls[-1], ("reply", 403))
         handler.connection.settimeout.assert_called_with(7)
 
+    def test_rejected_event_group_can_drain_without_truncating_the_response(self):
+        """A group just above the 256 KiB admission limit still receives its error."""
+        handler, calls = self.handler()
+        payload = b"x" * (300 * 1024)
+        handler.headers["Content-Length"] = str(len(payload))
+        handler.rfile = BytesIO(payload)
+        reject_unread_body(handler, 400, {"error": "invalid payload size"})
+        self.assertEqual(calls, [("reply", 400), ("shutdown", socket.SHUT_WR)])
+        self.assertEqual(handler.rfile.tell(), len(payload))
+        handler.connection.settimeout.assert_called_with(7)
+
 
 if __name__ == "__main__":
     unittest.main()

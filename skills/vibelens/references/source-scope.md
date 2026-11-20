@@ -102,6 +102,13 @@ change or `.gitignore` edit. Update the same scope when ownership changes, then
 run the existing scan/inspect/verify workflow. The inventory hashes `.gitignore`
 as an advisory scope input so its changes remain visible.
 
+When a new test or evidence file appears, inspect its actual imports and role.
+Keep application helpers and native readers registered; classify generated reports
+and diagnostic outputs at their exact paths. Do not add business names to output
+files merely to silence a naming gap. Source-view membership, test execution and
+watched-file integrity are separate: excluding an output from the engineering
+view must not remove the corresponding test command or protected evidence check.
+
 The source inventory reports encountered pruned prefixes and their reasons. It
 does not count unvisited descendants or claim that those files were inspected.
 First-party files retain independent discovery, language-adapter errors and
