@@ -10,6 +10,8 @@ Current evidence:
   native retest, separate controlled/normal records and independent desktop checks.
 - [Node initial acceptance](node-initial-repair22/README.md): accepted initial
   behavior; its newly confirmed permission-timing change is in progress.
+- [Provider upgrade order](provider-upgrade-order/README.md): original strict
+  rejection and verified baseline handoff, without changing runtime checks.
 
 Both source-only refactors, the final matrix and accepted product scenes remain
 open. The history below retains earlier failures and repair-specific boundaries;

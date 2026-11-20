@@ -66,3 +66,15 @@ background application produced no events. Actual updated preferences were kept.
 Screenshots establish tested UI behavior, not a claim that an expanded full graph
 is suitable advertising artwork. Focused product scenes and the final P7 matrix
 remain separate deliverables.
+
+## Manual readability finding
+
+The rules screenshot exposes a generated alias omission:
+`policy-operation:cancel_download` appears as
+`源码元素 · policy-operation:cancel_download`; `Rules` also retains a generic
+source-element prefix. The inventory/fingerprint checks and locale switch pass,
+but those captions do not explain the concepts. The existing interface-language
+guide already requires this review and explicitly separates it from mechanical
+coverage checks. A later, separately recorded presentation correction must retain
+IDs, definitions and personal names/notes. This finding remains open here; the
+original screenshot and accepted native evidence are unchanged.

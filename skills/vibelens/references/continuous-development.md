@@ -31,6 +31,26 @@ Other conversations follow ordinary project instructions without starting VibeLe
 
 The normal validation command propagates synchronization failures for everyone changing the project. This is a project integrity requirement, independent of skill activation. Rehearse a source-only change that omits graph/probe maintenance: the gate must reject it and pass only after repair and revalidation. Never persist a conversation activation or control authorization as a project-wide flag.
 
+## Upgrade an accepted project's toolchain
+
+An accepted candidate includes the observer's executed tool fingerprints. Start
+the change with the currently accepted provider **before** replacing that provider
+or updating managed adapters. Then use the new provider for upgrade checks,
+inspection, implementation and complete verification. Keep the previous accepted
+receipt and the newly created baseline unchanged. A provider update alone can
+invalidate the previous candidate even when application source has not changed.
+
+If the provider was already selected before `begin`, first compare read-only
+snapshots from the preserved old and new installations. The old installation may
+establish the new baseline only when its current snapshot still exactly matches
+the previous accepted candidate and the difference is limited to the identified
+toolchain update. It must not be used to validate the new implementation. If
+application inputs, generated adapters or meaning have also changed, this recovery
+does not apply: retain the strict rejection and reconcile the existing change.
+Never rewrite an accepted ID, move the active-change pointer manually, remove tool
+fingerprints or restore a view to manufacture continuity. Retain the original
+failed command and both snapshot differences as upgrade evidence.
+
 ## Before implementation
 
 1. Derive the business, state and rule models from supplied requirements into `intent.json`, version 2 `discovery.json`, and a candidate graph. Follow [dialogue rules](requirements-dialogue.md) and [scoped concept confirmation](concept-models.md). Keep user-owned ambiguity pending; proceed with ordinary technical choices.
