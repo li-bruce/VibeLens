@@ -30,6 +30,22 @@ failing result, restore the implementation and repeat the clean checks. Do not
 replace protected baselines, weaken expected values or count a syntax error as
 evidence of business-rule sensitivity.
 
+For order-sensitive behavior, distinguish a controlled case from an ordinary
+background run. Establish the required interleaving with existing native test
+boundaries and completed transactions. A queued screen or a successful read is
+not a barrier against the next worker operation. Keep the normal entry point,
+worker schedule and deadlines unchanged when testing normal capture. Derive its
+expected outcome from independently witnessed ordering and the confirmed rule,
+not from the observed result itself or mouse speed.
+
+Preserve every required case across these runs. A branch absent from a recording
+is unexercised there; bind its assertions to separately retained controlled
+evidence. Require exact model, object, revision and transaction identities for
+that evidence, including denied inputs and unchanged pre-state context. Keep the
+first failed attempt, an explicit old-to-new assertion map and each run's scope.
+Do not retry until a preferred schedule appears, relax an expected value, or
+report successful recording finalization as a business-case pass.
+
 ## Run the connected project gate
 
 ```text

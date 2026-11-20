@@ -1,0 +1,64 @@
+{
+  "valid": true,
+  "recording_id": "5b14eefae26b4fee923137191a16014d",
+  "file_id": "c03b32f619934133ab2f82132962b0d5",
+  "job_id": "38db43d2d37946f8acbc5d84ddc7c252",
+  "requester": "bob",
+  "business_semantics": {
+    "result": "correct for the actual observed order",
+    "native_final_job": {
+      "sequence": 19,
+      "id": "38db43d2d37946f8acbc5d84ddc7c252",
+      "file_id": "c03b32f619934133ab2f82132962b0d5",
+      "requester_id": "bob",
+      "grant_revision": 1,
+      "state": "ready",
+      "revision": 3,
+      "admitted": 1,
+      "result_name": "38db43d2d37946f8acbc5d84ddc7c252.zip",
+      "error_code": "",
+      "created_at": "2026-11-20T20:50:27.159955+00:00"
+    },
+    "native_final_grant": {
+      "file_id": "c03b32f619934133ab2f82132962b0d5",
+      "recipient_id": "bob",
+      "state": "inactive",
+      "revision": 2
+    },
+    "reason": "The worker admitted and completed while the matching grant was still active/fresh; revoke began after completion committed. A later revoke does not undo an admitted attempt."
+  },
+  "test_ordering": {
+    "result": "required revoke-before-admission order was not established",
+    "checks_passed_before_exception": 4,
+    "original_required_checks": 20,
+    "remaining_checks": "not executed",
+    "original_timeout_ms": 20000,
+    "reason": "The test reads queued once, then performs a separate owner-browser revoke click while the default worker remains free to claim. It has no barrier/transaction proving revoke commits before admission."
+  },
+  "capture_mapping": {
+    "result": "complete for the actually executed prefix only",
+    "events": 1580,
+    "native_commits": 6,
+    "exact_commit_frames": 6,
+    "exact_read_frames": 6,
+    "prefix_continuous": true,
+    "invocation_closure_valid": true,
+    "gaps": [],
+    "ownership_gaps": [],
+    "ordinary_stop": "passed as capture finalization only",
+    "settlement": {
+      "flushed": true,
+      "target": 1760,
+      "completed": 1760,
+      "submitted": 1760,
+      "pending": 0
+    },
+    "whole_scenario": "failed/incomplete; not accepted"
+  },
+  "sql_evidence_limit": "Captured driver SELECT statements identify tables/conditions and transaction scope, but parameters are empty and returned rows are not captured (rows_known=false). Exact object identity/value is established by source-bound ORM selection, same-scope policy facts, native SQL backup/journal and state/transaction joins together; it is not claimed from the SQL trace alone.",
+  "attribution": "Existing ordinary-recording test scheduling assumption; no application or observer defect is evidenced by this failure. Full repair23 ordinary-recording acceptance remains incomplete.",
+  "actions": "No application/test expectation change, deadline change, business retry, second recording or post-verify. Preserve services idle for diagnosis; no main UI test started.",
+  "record_original_sha256": "03266bc057977068eb343839c396a93ca2f0fb4bf8041e6ac8f3d83a2dfd3b1b",
+  "record_original_unchanged": true,
+  "accepted": false
+}

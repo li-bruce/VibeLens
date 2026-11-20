@@ -1,0 +1,658 @@
+[
+  {
+    "journal": {
+      "sequence": 117,
+      "model_id": "file",
+      "instance_id": "c03b32f619934133ab2f82132962b0d5",
+      "event": "upload",
+      "before": "absent",
+      "after": "available",
+      "revision": 1,
+      "guards": "{\"may_upload\": true}",
+      "permission_allowed": 1,
+      "transaction_id": "b32404b350ad457aa6d79df58f2c79fd",
+      "build_id": "2c10b3448ff1f5d865b92bcce95e778a0141c52004dc4ed3ce83854d79b73a57"
+    },
+    "native_service_entry": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:599",
+      "node": "upload_file",
+      "observed_at": "2026-11-20T20:50:26.375083+00:00",
+      "inputs": {
+        "actor_id": "alice",
+        "filename": "repair23-original-20261120T205022.txt"
+      }
+    },
+    "state_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:619",
+      "source_seq": 619,
+      "observed_at": "2026-11-20T20:50:26.407436+00:00",
+      "outputs": {
+        "model_id": "file",
+        "instance_id": "c03b32f619934133ab2f82132962b0d5",
+        "event": "upload",
+        "before": "absent",
+        "after": "available",
+        "revision": 1,
+        "transaction_id": "b32404b350ad457aa6d79df58f2c79fd",
+        "committed": true,
+        "admitted": false,
+        "allowed": true
+      }
+    },
+    "database_transaction_call_id": "637e8de29e3241a6b98e4ee7e39274df",
+    "database_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:618",
+      "source_seq": 618,
+      "observed_at": "2026-11-20T20:50:26.407179+00:00",
+      "outputs": {
+        "status": "committed",
+        "duration_ms": 31.383,
+        "transaction_id": "637e8de29e3241a6b98e4ee7e39274df",
+        "targets": [],
+        "unknown_targets": [],
+        "committed": true,
+        "target_source": "not_applicable",
+        "target_access": []
+      }
+    },
+    "policy_values": [
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:605",
+        "source_seq": 605,
+        "node": "policy:logged_in",
+        "check_id": "7386cfa497914a04840a2d8230762c73",
+        "fact_revision": "b32404b350ad457aa6d79df58f2c79fd",
+        "value": true
+      }
+    ],
+    "sql_return_event_ids": [
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:602",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:604",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:607",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:609",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:615",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:617"
+    ]
+  },
+  {
+    "journal": {
+      "sequence": 118,
+      "model_id": "grant",
+      "instance_id": "c03b32f619934133ab2f82132962b0d5:bob",
+      "event": "share",
+      "before": "inactive",
+      "after": "active",
+      "revision": 1,
+      "guards": "{\"may_manage\": true}",
+      "permission_allowed": 1,
+      "transaction_id": "97dd8f830f8e4df2abba3a706140ce31",
+      "build_id": "2c10b3448ff1f5d865b92bcce95e778a0141c52004dc4ed3ce83854d79b73a57"
+    },
+    "native_service_entry": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:753",
+      "node": "share_file",
+      "observed_at": "2026-11-20T20:50:26.673449+00:00",
+      "inputs": {
+        "actor_id": "alice",
+        "file_id": "c03b32f619934133ab2f82132962b0d5",
+        "recipient_id": "bob",
+        "revoke": false
+      }
+    },
+    "state_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:783",
+      "source_seq": 783,
+      "observed_at": "2026-11-20T20:50:26.707345+00:00",
+      "outputs": {
+        "model_id": "grant",
+        "instance_id": "c03b32f619934133ab2f82132962b0d5:bob",
+        "event": "share",
+        "before": "inactive",
+        "after": "active",
+        "revision": 1,
+        "transaction_id": "97dd8f830f8e4df2abba3a706140ce31",
+        "committed": true,
+        "admitted": false,
+        "allowed": true
+      }
+    },
+    "database_transaction_call_id": "461c10f2d82c4e7d9d004cb9a1585e93",
+    "database_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:782",
+      "source_seq": 782,
+      "observed_at": "2026-11-20T20:50:26.707191+00:00",
+      "outputs": {
+        "status": "committed",
+        "duration_ms": 33.497,
+        "transaction_id": "461c10f2d82c4e7d9d004cb9a1585e93",
+        "targets": [],
+        "unknown_targets": [],
+        "committed": true,
+        "target_source": "not_applicable",
+        "target_access": []
+      }
+    },
+    "policy_values": [
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:763",
+        "source_seq": 763,
+        "node": "policy:logged_in",
+        "check_id": "e5ae45359ce04025b520bece14ef731b",
+        "fact_revision": "97dd8f830f8e4df2abba3a706140ce31",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:764",
+        "source_seq": 764,
+        "node": "policy:actor_id",
+        "check_id": "e5ae45359ce04025b520bece14ef731b",
+        "fact_revision": "97dd8f830f8e4df2abba3a706140ce31",
+        "value": "alice"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:765",
+        "source_seq": 765,
+        "node": "policy:owner_id",
+        "check_id": "e5ae45359ce04025b520bece14ef731b",
+        "fact_revision": "97dd8f830f8e4df2abba3a706140ce31",
+        "value": "alice"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:766",
+        "source_seq": 766,
+        "node": "policy:is_owner",
+        "check_id": "e5ae45359ce04025b520bece14ef731b",
+        "fact_revision": "97dd8f830f8e4df2abba3a706140ce31",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:767",
+        "source_seq": 767,
+        "node": "policy:file_management",
+        "check_id": "e5ae45359ce04025b520bece14ef731b",
+        "fact_revision": "97dd8f830f8e4df2abba3a706140ce31",
+        "value": true
+      }
+    ],
+    "sql_return_event_ids": [
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:756",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:758",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:760",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:762",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:769",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:771",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:773",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:779",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:781"
+    ]
+  },
+  {
+    "journal": {
+      "sequence": 119,
+      "model_id": "download-job",
+      "instance_id": "38db43d2d37946f8acbc5d84ddc7c252",
+      "event": "request",
+      "before": "not_requested",
+      "after": "queued",
+      "revision": 1,
+      "guards": "{\"may_request\": true}",
+      "permission_allowed": 1,
+      "transaction_id": "ebad64130ecf4028ab4457a6c6b7cdc3",
+      "build_id": "2c10b3448ff1f5d865b92bcce95e778a0141c52004dc4ed3ce83854d79b73a57"
+    },
+    "native_service_entry": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1090",
+      "node": "request_download",
+      "observed_at": "2026-11-20T20:50:27.141770+00:00",
+      "inputs": {
+        "actor_id": "bob",
+        "file_id": "c03b32f619934133ab2f82132962b0d5"
+      }
+    },
+    "state_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1123",
+      "source_seq": 1123,
+      "observed_at": "2026-11-20T20:50:27.172857+00:00",
+      "outputs": {
+        "model_id": "download-job",
+        "instance_id": "38db43d2d37946f8acbc5d84ddc7c252",
+        "event": "request",
+        "before": "not_requested",
+        "after": "queued",
+        "revision": 1,
+        "transaction_id": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "committed": true,
+        "admitted": false,
+        "allowed": true
+      }
+    },
+    "database_transaction_call_id": "342a3e83974a463f83289b2b91e15823",
+    "database_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1122",
+      "source_seq": 1122,
+      "observed_at": "2026-11-20T20:50:27.172726+00:00",
+      "outputs": {
+        "status": "committed",
+        "duration_ms": 30.805,
+        "transaction_id": "342a3e83974a463f83289b2b91e15823",
+        "targets": [],
+        "unknown_targets": [],
+        "committed": true,
+        "target_source": "not_applicable",
+        "target_access": []
+      }
+    },
+    "policy_values": [
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1100",
+        "source_seq": 1100,
+        "node": "policy:logged_in",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1101",
+        "source_seq": 1101,
+        "node": "policy:actor_id",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": "bob"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1102",
+        "source_seq": 1102,
+        "node": "policy:owner_id",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": "alice"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1103",
+        "source_seq": 1103,
+        "node": "policy:is_owner",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": false
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1104",
+        "source_seq": 1104,
+        "node": "policy:recipient_id",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": "bob"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1105",
+        "source_seq": 1105,
+        "node": "policy:is_recipient",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1106",
+        "source_seq": 1106,
+        "node": "policy:grant_active",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1107",
+        "source_seq": 1107,
+        "node": "policy:current_recipient",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1108",
+        "source_seq": 1108,
+        "node": "policy:current_file_access",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1109",
+        "source_seq": 1109,
+        "node": "policy:interactive_file_access",
+        "check_id": "90bd5540d4b1434ca81f5e9fe51032f5",
+        "fact_revision": "ebad64130ecf4028ab4457a6c6b7cdc3",
+        "value": true
+      }
+    ],
+    "sql_return_event_ids": [
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1093",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1095",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1097",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1099",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1111",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1113",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1119",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1121"
+    ]
+  },
+  {
+    "journal": {
+      "sequence": 120,
+      "model_id": "download-job",
+      "instance_id": "38db43d2d37946f8acbc5d84ddc7c252",
+      "event": "start",
+      "before": "queued",
+      "after": "preparing",
+      "revision": 2,
+      "guards": "{\"may_start\": true}",
+      "permission_allowed": 1,
+      "transaction_id": "d3070086f6af4fdcbc619a461f9ce458",
+      "build_id": "2c10b3448ff1f5d865b92bcce95e778a0141c52004dc4ed3ce83854d79b73a57"
+    },
+    "native_service_entry": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1287",
+      "node": "start_preparation",
+      "observed_at": "2026-11-20T20:50:27.354314+00:00",
+      "inputs": {}
+    },
+    "state_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1323",
+      "source_seq": 1323,
+      "observed_at": "2026-11-20T20:50:27.386828+00:00",
+      "outputs": {
+        "model_id": "download-job",
+        "instance_id": "38db43d2d37946f8acbc5d84ddc7c252",
+        "event": "start",
+        "before": "queued",
+        "after": "preparing",
+        "revision": 2,
+        "transaction_id": "d3070086f6af4fdcbc619a461f9ce458",
+        "committed": true,
+        "admitted": true,
+        "allowed": true
+      }
+    },
+    "database_transaction_call_id": "e94dae1e1ea14d50bb0eee04bc4dd8bd",
+    "database_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1322",
+      "source_seq": 1322,
+      "observed_at": "2026-11-20T20:50:27.386652+00:00",
+      "outputs": {
+        "status": "committed",
+        "duration_ms": 32.106,
+        "transaction_id": "e94dae1e1ea14d50bb0eee04bc4dd8bd",
+        "targets": [],
+        "unknown_targets": [],
+        "committed": true,
+        "target_source": "not_applicable",
+        "target_access": []
+      }
+    },
+    "policy_values": [
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1300",
+        "source_seq": 1300,
+        "node": "policy:actor_id",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": "bob"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1301",
+        "source_seq": 1301,
+        "node": "policy:owner_id",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": "alice"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1302",
+        "source_seq": 1302,
+        "node": "policy:is_owner",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": false
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1303",
+        "source_seq": 1303,
+        "node": "policy:recipient_id",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": "bob"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1304",
+        "source_seq": 1304,
+        "node": "policy:is_recipient",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1305",
+        "source_seq": 1305,
+        "node": "policy:grant_active",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1306",
+        "source_seq": 1306,
+        "node": "policy:current_recipient",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1307",
+        "source_seq": 1307,
+        "node": "policy:current_file_access",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1308",
+        "source_seq": 1308,
+        "node": "policy:grant_fresh",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1309",
+        "source_seq": 1309,
+        "node": "policy:preparation_access",
+        "check_id": "48ca7070fa59422c8a80cf9dd1fab902",
+        "fact_revision": "d3070086f6af4fdcbc619a461f9ce458",
+        "value": true
+      }
+    ],
+    "sql_return_event_ids": [
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1291",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1293",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1295",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1297",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1312",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1318",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1320"
+    ]
+  },
+  {
+    "journal": {
+      "sequence": 121,
+      "model_id": "download-job",
+      "instance_id": "38db43d2d37946f8acbc5d84ddc7c252",
+      "event": "complete",
+      "before": "preparing",
+      "after": "ready",
+      "revision": 3,
+      "guards": "{}",
+      "permission_allowed": 1,
+      "transaction_id": "df283ca93929429aa12cf3342d99cb35",
+      "build_id": "2c10b3448ff1f5d865b92bcce95e778a0141c52004dc4ed3ce83854d79b73a57"
+    },
+    "native_service_entry": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1325",
+      "node": "complete_preparation",
+      "observed_at": "2026-11-20T20:50:27.387176+00:00",
+      "inputs": {
+        "job_id": "38db43d2d37946f8acbc5d84ddc7c252"
+      }
+    },
+    "state_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1345",
+      "source_seq": 1345,
+      "observed_at": "2026-11-20T20:50:27.411307+00:00",
+      "outputs": {
+        "model_id": "download-job",
+        "instance_id": "38db43d2d37946f8acbc5d84ddc7c252",
+        "event": "complete",
+        "before": "preparing",
+        "after": "ready",
+        "revision": 3,
+        "transaction_id": "df283ca93929429aa12cf3342d99cb35",
+        "committed": true,
+        "admitted": true,
+        "allowed": true
+      }
+    },
+    "database_transaction_call_id": "46da4c3aafd847bba8bc042e1f91a1f0",
+    "database_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1344",
+      "source_seq": 1344,
+      "observed_at": "2026-11-20T20:50:27.411160+00:00",
+      "outputs": {
+        "status": "committed",
+        "duration_ms": 14.276,
+        "transaction_id": "46da4c3aafd847bba8bc042e1f91a1f0",
+        "targets": [],
+        "unknown_targets": [],
+        "committed": true,
+        "target_source": "not_applicable",
+        "target_access": []
+      }
+    },
+    "policy_values": [],
+    "sql_return_event_ids": [
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1332",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1334",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1336",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1341",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1343"
+    ]
+  },
+  {
+    "journal": {
+      "sequence": 122,
+      "model_id": "grant",
+      "instance_id": "c03b32f619934133ab2f82132962b0d5:bob",
+      "event": "revoke",
+      "before": "active",
+      "after": "inactive",
+      "revision": 2,
+      "guards": "{\"may_manage\": true}",
+      "permission_allowed": 1,
+      "transaction_id": "b86b483df57d4390936f785464fe0c78",
+      "build_id": "2c10b3448ff1f5d865b92bcce95e778a0141c52004dc4ed3ce83854d79b73a57"
+    },
+    "native_service_entry": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1348",
+      "node": "revoke_share",
+      "observed_at": "2026-11-20T20:50:27.418037+00:00",
+      "inputs": {
+        "actor_id": "alice",
+        "file_id": "c03b32f619934133ab2f82132962b0d5",
+        "recipient_id": "bob",
+        "revoke": true
+      }
+    },
+    "state_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1376",
+      "source_seq": 1376,
+      "observed_at": "2026-11-20T20:50:27.449914+00:00",
+      "outputs": {
+        "model_id": "grant",
+        "instance_id": "c03b32f619934133ab2f82132962b0d5:bob",
+        "event": "revoke",
+        "before": "active",
+        "after": "inactive",
+        "revision": 2,
+        "transaction_id": "b86b483df57d4390936f785464fe0c78",
+        "committed": true,
+        "admitted": false,
+        "allowed": true
+      }
+    },
+    "database_transaction_call_id": "cecc6ae2e1d24010bf4d8a3d6d3c56bd",
+    "database_commit_event": {
+      "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1375",
+      "source_seq": 1375,
+      "observed_at": "2026-11-20T20:50:27.449766+00:00",
+      "outputs": {
+        "status": "committed",
+        "duration_ms": 31.527,
+        "transaction_id": "cecc6ae2e1d24010bf4d8a3d6d3c56bd",
+        "targets": [],
+        "unknown_targets": [],
+        "committed": true,
+        "target_source": "not_applicable",
+        "target_access": []
+      }
+    },
+    "policy_values": [
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1358",
+        "source_seq": 1358,
+        "node": "policy:logged_in",
+        "check_id": "6cc33a1284cf4da5ab7401bff8a6ef57",
+        "fact_revision": "b86b483df57d4390936f785464fe0c78",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1359",
+        "source_seq": 1359,
+        "node": "policy:actor_id",
+        "check_id": "6cc33a1284cf4da5ab7401bff8a6ef57",
+        "fact_revision": "b86b483df57d4390936f785464fe0c78",
+        "value": "alice"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1360",
+        "source_seq": 1360,
+        "node": "policy:owner_id",
+        "check_id": "6cc33a1284cf4da5ab7401bff8a6ef57",
+        "fact_revision": "b86b483df57d4390936f785464fe0c78",
+        "value": "alice"
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1361",
+        "source_seq": 1361,
+        "node": "policy:is_owner",
+        "check_id": "6cc33a1284cf4da5ab7401bff8a6ef57",
+        "fact_revision": "b86b483df57d4390936f785464fe0c78",
+        "value": true
+      },
+      {
+        "id": "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1362",
+        "source_seq": 1362,
+        "node": "policy:file_management",
+        "check_id": "6cc33a1284cf4da5ab7401bff8a6ef57",
+        "fact_revision": "b86b483df57d4390936f785464fe0c78",
+        "value": true
+      }
+    ],
+    "sql_return_event_ids": [
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1351",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1353",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1355",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1357",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1364",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1366",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1372",
+      "36864fa2d3964fce8919f16dcb8575de:fd14b3342b6a426587ced702726ff958:1374"
+    ]
+  }
+]

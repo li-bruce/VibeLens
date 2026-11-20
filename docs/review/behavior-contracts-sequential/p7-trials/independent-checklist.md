@@ -25,6 +25,12 @@ remain in the recorded dialogue; new meaning is confirmed before implementation.
   a new request fails. Repeat retrieval must not close the accepted task.
 - Use two actual users and overlapping task executions. Check invocation,
   model, object, attempt and parent/handoff identities against actual results.
+- Establish order-specific cases with actual synchronization boundaries. An
+  observed queued state does not prevent the next worker admission. Normal
+  background runs retain their schedule and use independently witnessed native
+  ordering plus the confirmed rule as the oracle. Keep a per-assertion evidence
+  map: an absent branch remains unexercised in that recording and needs separate
+  controlled evidence, rather than a retry or a relaxed expected outcome.
 - Match HTTP denials/errors, rule input/output, state changes and database effects
   to their captured values and lifecycle intervals. Do not infer missing facts.
 - Include rejections before a route handler executes: actual CSRF/origin guards,
