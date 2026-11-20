@@ -2,6 +2,9 @@
 
 Current evidence:
 
+- [Framework repair 24](repair-24/README.md): the Python source-refactor trial
+  exposed a 3D caption/right-click mismatch. Original failures are retained;
+  the shared fix is undergoing full regression and fresh-install acceptance.
 - [Framework repair 23](repair-23/README.md): complete regression, clean export
   and immutable installation passed.
 - [Ordering review](python-ordering-review/README.md): the failed normal recording
@@ -10,6 +13,9 @@ Current evidence:
   native retest, separate controlled/normal records and independent desktop checks.
 - [Node initial acceptance](node-initial-repair22/README.md): accepted initial
   behavior; its newly confirmed permission-timing change is in progress.
+- [Node iteration static handoff](node-iteration-static/README.md): the changed
+  permission checkpoint is implemented and statically checked; native migration,
+  recordings and runtime acceptance have not started for this iteration.
 - [Provider upgrade order](provider-upgrade-order/README.md): original strict
   rejection and verified baseline handoff, without changing runtime checks.
 - [Fact read scope](fact-read-scope/README.md): a new worker checkpoint was

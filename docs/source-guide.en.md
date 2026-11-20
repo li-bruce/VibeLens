@@ -457,7 +457,14 @@ The JavaScript comparison uses TypeScript from the native adapter's development 
     python tools/check_package.py
     python tools/verify.py
 
-When a managed runtime changes, rebuild each example's source bindings, inspect its new candidate, run verify, then accept/check before freezing a new record. Earlier accepted records remain available for review.
+When a managed runtime changes, use this order for the maintained examples:
+
+1. Change the canonical source and synchronize its managed copies. Compare configured application sources with the reviewed baseline and installed assets with the canonical source before reviewing the ownership seal.
+2. Rebuild affected source bindings, inspect the candidate, and run the unchanged verification and acceptance checks. Run the complete repository regression against these reviewed examples.
+3. Freeze each accepted change into a new directory under `.release/stategraph/`. Verify that its candidate matches the current inputs and its accepted verification hash matches the actual verification record. Update the frozen active pointer and manifest; retain earlier records.
+4. Stage the source, managed copies, and new frozen records together, then run the clean-export check below. The exporter restores those records; it does not approve them.
+
+Synchronizing managed copies after their review, or exporting before freezing the new approval, correctly makes the candidate stale. Preserve that failed result and repeat the affected review and export steps.
 
 ## Routing and node icons
 

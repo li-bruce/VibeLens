@@ -492,6 +492,7 @@ export class SpatialRenderer {
       label.title = displayName(box.node, preferences);
       label.dataset.nodeId = node.id;
       label.onpointerdown = (event) => this.startLabelDrag(event, { id: node.id });
+      label.oncontextmenu = (event) => this.openLabelMenu(event, { id: node.id });
 
       this.labels.append(label);
       this.labelItems.push({ el: label, id: node.id, offset: 18 });
@@ -508,6 +509,8 @@ export class SpatialRenderer {
       label.style.setProperty("--node-color", "#" + owner.color.toString(16).padStart(6, "0"));
       label.onpointerdown = (event) =>
         this.startLabelDrag(event, { region: volume.id, anchor: volume.center });
+      label.oncontextmenu = (event) =>
+        this.openLabelMenu(event, { region: volume.id, anchor: volume.center });
       this.labels.append(label);
       const leader = document.createElementNS("http://www.w3.org/2000/svg", "line");
       leader.setAttribute("stroke", "#" + owner.color.toString(16).padStart(6, "0"));
@@ -959,10 +962,22 @@ export class SpatialRenderer {
     return null;
   }
 
-  /** A caption overlapping another glyph must not steal that glyph's clicks. */
-  startLabelDrag(event, owner) {
+  /** A visible glyph under a caption owns the pointer; empty caption space belongs to its label. */
+  labelTarget(event, owner) {
     const hit = this.pick(event.clientX, event.clientY);
-    this.startDrag(event, hit?.id ? hit : owner);
+    return hit?.id ? hit : owner;
+  }
+
+  /** Left and right clicks resolve overlaps in the same way in every layer. */
+  startLabelDrag(event, owner) {
+    this.startDrag(event, this.labelTarget(event, owner));
+  }
+
+  /** Resolve before bubbling reaches the planar menu's data-node-id fallback. */
+  openLabelMenu(event, owner) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.callbacks.onMenu?.(this.labelTarget(event, owner), event.clientX, event.clientY);
   }
 
   /** Labels and meshes share dragging, so text never starts a browser selection. */

@@ -189,4 +189,39 @@ assert(
   "A visible glyph retains its own physical drag anchor",
 );
 assert.equal(JSON.stringify({ model, positions, volumes }), before);
-console.log("Spatial ring visibility, endpoint routing and perspective drag anchors passed");
+
+// Captions may overlap a different icon. Both pointer actions must target that
+// visible icon, while a caption over empty space still selects its own owner.
+for (const labelOwner of [
+  { id: "caption-owner" },
+  { region: "ring-owner", anchor: projection.center },
+]) {
+  for (const hit of [{ id: "visible-icon" }, { edge: { id: "behind-caption" } }, null]) {
+    const actions = [],
+      event = {
+        clientX: 217,
+        clientY: 391,
+        preventDefault() {
+          actions.push("prevent-default");
+        },
+        stopPropagation() {
+          actions.push("stop-bubbling");
+        },
+      },
+      context = {
+        pick: () => hit,
+        labelTarget: SpatialRenderer.prototype.labelTarget,
+        startDrag: (_event, target) => actions.push(["drag", target]),
+        callbacks: { onMenu: (target, x, y) => actions.push(["menu", target, x, y]) },
+      },
+      expected = hit?.id ? hit : labelOwner;
+    SpatialRenderer.prototype.startLabelDrag.call(context, event, labelOwner);
+    SpatialRenderer.prototype.openLabelMenu.call(context, event, labelOwner);
+    assert.deepEqual(
+      actions,
+      [["drag", expected], "prevent-default", "stop-bubbling", ["menu", expected, 217, 391]],
+      "The planar menu cannot replace a 3D glyph selection with the covering caption owner",
+    );
+  }
+}
+console.log("Spatial bounds, drag anchors and overlapping-caption pointer ownership passed");
