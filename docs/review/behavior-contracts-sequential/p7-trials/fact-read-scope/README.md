@@ -28,3 +28,20 @@ Two existing regressions passed: read-basis changes invalidate confirmation, and
 reducing the active scope cannot conceal affected shared consumers. No runtime
 check was weakened or changed. [Results and original-file hashes](results.json)
 describe this intermediate diagnosis only; P7 remains in progress.
+
+## Static resolution
+
+The final local review includes the changed share/revoke neighbor in the already
+requested download scope. Five worker-checkpoint facts retain their own bindings;
+the original announcement and file fact definitions and accepted confirmations
+remain unchanged. The [resulting design check](concept-ready-validation.json)
+is valid and ready, with no blocked records. No new announcement confirmation
+was added, and the dependency checker is unchanged.
+
+The attempted partial confirmation's source-reuse rejection remains in
+[its original receipt](concept-share-neighbor-confirmation.json). Erroneous and
+incomplete authoring snapshots are preserved in
+[the authoring archive](rejected-authoring-snapshots.zip), separately from the
+accepted initial history. [Resolution hashes](resolution-results.json) establish
+the static correction; native behavior and runtime capture still need their own
+tests.
