@@ -1,0 +1,149 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+EEEFFFEEEEEEE
+======================================================================
+ERROR: test_domain_guard_rejects_malformed_requirement_reasons (test_review_shapes.ReviewShapeTests.test_domain_guard_rejects_malformed_requirement_reasons) (value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 25, in test_domain_guard_rejects_malformed_requirement_reasons
+    result = protected_errors(before, deepcopy(before), {"requirement_changes": value})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\behavior\iteration.py", line 78, in protected_errors
+    basis = {key for key in allowed if isinstance(reasons.get(key), str) and reasons[key].strip()}
+                                                  ^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+
+======================================================================
+ERROR: test_domain_guard_rejects_malformed_requirement_reasons (test_review_shapes.ReviewShapeTests.test_domain_guard_rejects_malformed_requirement_reasons) (value=[])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 25, in test_domain_guard_rejects_malformed_requirement_reasons
+    result = protected_errors(before, deepcopy(before), {"requirement_changes": value})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\behavior\iteration.py", line 78, in protected_errors
+    basis = {key for key in allowed if isinstance(reasons.get(key), str) and reasons[key].strip()}
+                                                  ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'get'
+
+======================================================================
+ERROR: test_domain_guard_rejects_malformed_requirement_reasons (test_review_shapes.ReviewShapeTests.test_domain_guard_rejects_malformed_requirement_reasons) (value='approved')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 25, in test_domain_guard_rejects_malformed_requirement_reasons
+    result = protected_errors(before, deepcopy(before), {"requirement_changes": value})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\behavior\iteration.py", line 78, in protected_errors
+    basis = {key for key in allowed if isinstance(reasons.get(key), str) and reasons[key].strip()}
+                                                  ^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'get'
+
+======================================================================
+ERROR: test_review_shape_is_checked_before_other_review_consumers (test_review_shapes.ReviewShapeTests.test_review_shape_is_checked_before_other_review_consumers) (value=[])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 37, in test_review_shape_is_checked_before_other_review_consumers
+    result = review_errors(root, {}, {}, {})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\change_sync.py", line 295, in review_errors
+    errors.extend(protected_behavior_errors(base, current, review))
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\behavior\iteration.py", line 77, in protected_errors
+    reasons = review.get("requirement_changes", {})
+              ^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'get'
+
+======================================================================
+ERROR: test_review_shape_is_checked_before_other_review_consumers (test_review_shapes.ReviewShapeTests.test_review_shape_is_checked_before_other_review_consumers) (value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 37, in test_review_shape_is_checked_before_other_review_consumers
+    result = review_errors(root, {}, {}, {})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\change_sync.py", line 295, in review_errors
+    errors.extend(protected_behavior_errors(base, current, review))
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\behavior\iteration.py", line 77, in protected_errors
+    reasons = review.get("requirement_changes", {})
+              ^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+
+======================================================================
+ERROR: test_review_shape_is_checked_before_other_review_consumers (test_review_shapes.ReviewShapeTests.test_review_shape_is_checked_before_other_review_consumers) (value={'requirement_changes': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 37, in test_review_shape_is_checked_before_other_review_consumers
+    result = review_errors(root, {}, {}, {})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\change_sync.py", line 306, in review_errors
+    if review.get("candidate_id") != current["id"]:
+                                     ~~~~~~~^^^^^^
+KeyError: 'id'
+
+======================================================================
+ERROR: test_review_shape_is_checked_before_other_review_consumers (test_review_shapes.ReviewShapeTests.test_review_shape_is_checked_before_other_review_consumers) (value={'decisions': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 37, in test_review_shape_is_checked_before_other_review_consumers
+    result = review_errors(root, {}, {}, {})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\change_sync.py", line 306, in review_errors
+    if review.get("candidate_id") != current["id"]:
+                                     ~~~~~~~^^^^^^
+KeyError: 'id'
+
+======================================================================
+ERROR: test_review_shape_is_checked_before_other_review_consumers (test_review_shapes.ReviewShapeTests.test_review_shape_is_checked_before_other_review_consumers) (value={'decisions': {'business': []}})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 37, in test_review_shape_is_checked_before_other_review_consumers
+    result = review_errors(root, {}, {}, {})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\change_sync.py", line 306, in review_errors
+    if review.get("candidate_id") != current["id"]:
+                                     ~~~~~~~^^^^^^
+KeyError: 'id'
+
+======================================================================
+ERROR: test_review_shape_is_checked_before_other_review_consumers (test_review_shapes.ReviewShapeTests.test_review_shape_is_checked_before_other_review_consumers) (value={'excluded_symbols': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 37, in test_review_shape_is_checked_before_other_review_consumers
+    result = review_errors(root, {}, {}, {})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\change_sync.py", line 306, in review_errors
+    if review.get("candidate_id") != current["id"]:
+                                     ~~~~~~~^^^^^^
+KeyError: 'id'
+
+======================================================================
+ERROR: test_review_shape_is_checked_before_other_review_consumers (test_review_shapes.ReviewShapeTests.test_review_shape_is_checked_before_other_review_consumers) (value={'excluded_symbols': {'a.py::run': False}})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 37, in test_review_shape_is_checked_before_other_review_consumers
+    result = review_errors(root, {}, {}, {})
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\change_sync.py", line 306, in review_errors
+    if review.get("candidate_id") != current["id"]:
+                                     ~~~~~~~^^^^^^
+KeyError: 'id'
+
+======================================================================
+FAIL: test_domain_guard_rejects_malformed_requirement_reasons (test_review_shapes.ReviewShapeTests.test_domain_guard_rejects_malformed_requirement_reasons) (value={'R1': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 26, in test_domain_guard_rejects_malformed_requirement_reasons
+    self.assertTrue(result)
+    ~~~~~~~~~~~~~~~^^^^^^^^
+AssertionError: [] is not true
+
+======================================================================
+FAIL: test_domain_guard_rejects_malformed_requirement_reasons (test_review_shapes.ReviewShapeTests.test_domain_guard_rejects_malformed_requirement_reasons) (value={'R1': 1})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 26, in test_domain_guard_rejects_malformed_requirement_reasons
+    self.assertTrue(result)
+    ~~~~~~~~~~~~~~~^^^^^^^^
+AssertionError: [] is not true
+
+======================================================================
+FAIL: test_domain_guard_rejects_malformed_requirement_reasons (test_review_shapes.ReviewShapeTests.test_domain_guard_rejects_malformed_requirement_reasons) (value={'R1': ' '})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_review_shapes.py", line 26, in test_domain_guard_rejects_malformed_requirement_reasons
+    self.assertTrue(result)
+    ~~~~~~~~~~~~~~~^^^^^^^^
+AssertionError: [] is not true
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.102s
+
+FAILED (failures=3, errors=10)

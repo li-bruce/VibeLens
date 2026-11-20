@@ -19,13 +19,20 @@ an empty event list must fail that case. Preserve the distinction between a
 received HTTP request and a business operation that the guard never permitted.
 See the tested boundary wiring in [telemetry](telemetry.md).
 
-- `features`: entrypoint source identity, visible business node, capture nodes, real cases. Display names may differ from code.
+- `features`: entrypoint source identity, explicit purpose, capture nodes and real cases. The default `category: business` requires a visible `business_node`. A technical endpoint or implementation helper uses `category: technical`, an `implementation_node` from its own `nodes`, and a source-backed `classification_reason`. Omit `business_node` for that category. Display names may differ from code.
 - `support`: assigns support symbols to a node, preserving searchable source nodes and resolvable calls. Unobserved helpers remain static, never marked executed.
 - `excluded`: only identifiable observer code or constructors with reasons. Ordinary utility/business routes cannot escape coverage. Inspect observer HTTP routes using [exclusion rules](observer-exclusion.md); source remains versioned even when no business node/event is generated.
 - `parameters`: every feature-entry argument. `value` captures directly. `derived` and `redacted` require reason and a real captured representation. `context` is limited to agreed technical context, never business inputs such as note. Signature/field changes invalidate old entries.
 - `cases`: actual `case/node/phase`. Every declared capture field must occur with a valid type; absent events/fields or another build cannot pass. `values` compares events to independently obtained observations. Key inputs/decisions/effects need these comparisons or existing white-box/mapping assertions; both sides must not read the same probe.
 
 Version binding and anti-weakening protect inventory/cases. Do not repair tests by deleting fields/scenarios. Feature deletion/rename/meaning changes require source migration and recorded requirement changes.
+
+Keep readiness checks, generic state executors and database adapters in their
+implementation views. Their technical classification retains every source,
+parameter, captured field and runtime case. A node already bound to a business
+concept or carrying a business role cannot be hidden by that classification.
+Determine purpose from the confirmed models and source responsibility; a URL,
+function name or observed invocation is insufficient to invent a business step.
 
 `Trace.record(..., scope="application")` covers login/configuration operations outside a task. `scope="entity"` spans attempts for one entity. Default attempt scope remains strict. Declare scope explicitly. Replay cannot inject later login/configuration events into earlier frames.
 

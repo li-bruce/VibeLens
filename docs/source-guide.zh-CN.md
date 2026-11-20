@@ -9,6 +9,8 @@ Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码�
 
 这份导览按实际执行路径介绍源码。维护中的实现位于 [skills/vibelens](../skills/vibelens/)，示例项目中的同名模块是安装副本，用于验证接入真实项目后的行为。
 
+`workflow/implementation_coverage.py` 检查业务与技术功能的覆盖。两者都保留源码、参数和运行证据，业务功能另外需要业务投影。`graph/code_structure.py` 根据明确的归属补充源码结构。`workflow/review_validation.py` 先校验迭代说明的字段格式，再交给状态、行为和覆盖检查判断修改依据及证据。
+
 [行为约束开发方案](development/behavior-contracts/README.zh-CN.md)的 P0–P6 已在顺序开发分支完成实现和回归，P7 正在独立试用。[开发工作表](development/behavior-contracts/progress.json)保留各阶段状态与证据。
 
 | 职责 | 源码与说明 |

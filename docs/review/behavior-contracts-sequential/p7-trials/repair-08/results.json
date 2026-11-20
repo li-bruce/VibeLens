@@ -1,0 +1,94 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Strict review diagnostics and complete technical feature coverage without manufacturing business operations.",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "e40c3ffd59971f70446d0078dd02c38a00fdbbe6",
+  "gates": {
+    "focused": {
+      "tests": 33,
+      "exit_code": 0,
+      "log": "focused.log"
+    },
+    "source": {
+      "valid": true,
+      "receipt": "source.json"
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "log": "full-verify-retest.log",
+      "unittest_suites": 98,
+      "unittest_reported_tests": 1124,
+      "skips": 1,
+      "tlc": "Pinned TLC 1.7.4 and Java 17 enabled"
+    },
+    "managed_examples": {
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ],
+      "business_source_unchanged": true,
+      "frozen_round": "behavior-contracts-p7-repair08-20261120"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json",
+      "revision": "fa0f9602d618af05464e00dddedb82504bdd6b44"
+    }
+  },
+  "retained_failures": [
+    "invalid-review-first.log",
+    "review-first.log",
+    "classification-first.log",
+    "technical-business-classification.json"
+  ],
+  "remaining": [
+    "Initial native runtime/recording checks remain open; the Python candidate exposed invocation/effect wiring errors and old-build runtime evidence.",
+    "Node event receipt timeouts: preserve diagnostics; measure admission/display contention before native retest.",
+    "Business iteration, source-only refactor and independent desktop/Timeline checks in both native chats.",
+    "Accepted product scenes and final P7 closure."
+  ],
+  "candidate_files": [
+    {
+      "path": "skills/vibelens/scripts/bo_observer/workflow/review_validation.py",
+      "sha256": "ec824decfbb095fff2302611276b4551b313fe1f6c6e9cc64877cc76103b355f"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/workflow/change_sync.py",
+      "sha256": "525f52d05ca07259d1765fbda0e72881eb7db7ec89d496d3c2cc6e85b47ca4ab"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/workflow/implementation_coverage.py",
+      "sha256": "0b8ad5cfb263f972729c35f7ef70d98ffe21eef81737f330346a1dc1262afbfb"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/graph/code_structure.py",
+      "sha256": "b7638a15326f8b9a8b8ccb6247d8d7d4fc7e56e94b15e11d45deda37b13f2440"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/behavior/iteration.py",
+      "sha256": "243a76d8a7a45c0e42cc3acf1b7494388a9f2d2c9cffa33456920725d25d2772"
+    },
+    {
+      "path": "tests/test_review_shapes.py",
+      "sha256": "9457e13ac36cf8c4388c1995c53e8ebf2ad506709d3531cc8fe4e2990091b550"
+    },
+    {
+      "path": "tests/test_technical_feature_coverage.py",
+      "sha256": "8a05cc59b42bfb8aca9c28f33e40be6e68adb27cc8adc5f5e29bda5932a6663b"
+    },
+    {
+      "path": "skills/vibelens/SKILL.md",
+      "sha256": "4f97259f8456a51750fbff7ffd4a6278b1e4eb5a48d22df6c95ec1ff4ef48738"
+    },
+    {
+      "path": "skills/vibelens/references/implementation-coverage.md",
+      "sha256": "80523e89bf803cb18f27bf0dfffe4134853da3fd2904e46421865e3bb7f2f908"
+    },
+    {
+      "path": "skills/vibelens/references/multilanguage.md",
+      "sha256": "cd9a766d3bebb4a927e833f49b9e4bf98a9bbc1dcb8ee3fbfe6dcae5acfb04fa"
+    }
+  ]
+}

@@ -13,6 +13,14 @@ Existing Python projects may retain their v3 graph file and move execution decla
 
 The shared implementation is in `scripts/bo_observer/`: `graph/`, `workflow/`, `observation/`, `web/`, `delivery/`, `adapters/`. Top-level `scripts/*.py` preserve installed command entrypoints without duplicating implementation. The three-file independent Python state core can still be packaged alone. Native JS executors and probes do not import Python.
 
+Resolve installed adapters from one project integration setting. Reuse that
+provider in the application, test subprocesses and independent readers; refresh
+all three during a managed upgrade. In JavaScript, observation suppression is
+owned by the imported adapter instance. Import `bo_internal` from the same
+provider as the instrumented data adapter. Test that verification reads and
+observer controls add no business events, and that on/off/fault comparisons use
+the same adapter version.
+
 ## Current support
 
 - Python AST locates functions, parameters, annotations, and calls. Existing complete examples retain transitions, concurrent activities, resources, waiting, joins, and recovery.

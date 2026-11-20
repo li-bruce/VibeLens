@@ -427,8 +427,13 @@ def enrich(authored, index, depth=1):
     plan = model.get("implementation") or {}
     owners = {sid: item.get("node") for sid, item in plan.get("support", {}).items()}
     for feature in plan.get("features", []):
-        owner = feature.get("business_node")
-        if owner in by_id:
+        category = feature.get("category", "business")
+        owner = feature.get("implementation_node" if category == "technical" else "business_node")
+        if not isinstance(owner, str):
+            continue  # The inventory checker reports malformed or missing ownership.
+        # Technical functions remain searchable and observable without becoming
+        # business operations. Coverage validates the explicit classification.
+        if category == "business" and owner in by_id:
             roles = by_id[owner].setdefault("semantic_roles", [])
             if "business" not in roles:
                 roles.append("business")

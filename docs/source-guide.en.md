@@ -4,6 +4,13 @@
 
 Read this guide when you want to change the Skill, inspect a recorded value, or find the code behind a graph interaction. The maintained implementation lives in [skills/vibelens](../skills/vibelens/). Example projects contain installed copies to test real project integration.
 
+`workflow/implementation_coverage.py` checks business and technical feature
+coverage. Both retain source, parameters and runtime evidence; only business
+features require a business projection. `graph/code_structure.py` uses that
+explicit ownership for source enrichment. `workflow/review_validation.py` checks
+shared review field shapes before the state, behavior and coverage guards read
+them. Those guards still decide whether a change is authorized and verified.
+
 The [behavior-contract plan](development/behavior-contracts/README.md) is tracked
 by its [phase ledger](development/behavior-contracts/progress.json). P0–P6 are
 implemented and regressed on the sequential branch; independent P7 trials are

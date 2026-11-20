@@ -290,6 +290,11 @@ def review_errors(change, base, current, changes):
     if not path.exists():
         return ["missing review.json for this candidate"]
     review = read(path)
+    from .review_validation import errors as review_shape_errors
+
+    shape_errors = review_shape_errors(review)
+    if shape_errors:
+        return errors + shape_errors
     from ..behavior.iteration import protected_errors as protected_behavior_errors
 
     errors.extend(protected_behavior_errors(base, current, review))

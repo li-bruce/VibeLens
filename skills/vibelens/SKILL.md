@@ -106,6 +106,8 @@ change_sync begin -> coding and local generation -> bo_sync scan -> change_sync 
 
 Keep the active baseline immutable. Scan project-owned source independently of the existing graph, including new and deleted files. Maintain actual source/comment/parameter bindings, isolated `bo_`/`BO` observation wiring and selected fields. Run the strict documentation and API checks for their configured scope. Require probe health and invocation closure; observer operations produce no business events. Preserve stable IDs, accepted expectations, required captures and personal views.
 
+Classify inventory features by purpose: confirmed business operations have business projections; technical endpoints and shared implementation helpers stay in implementation views. Both retain the same source, parameter, capture and runtime-case checks. Follow [implementation coverage](references/implementation-coverage.md); observation alone never creates a business operation.
+
 The semantic contract detects changed state/rule/business definitions; source and runtime checks establish their implementation. A refreshed hash or rewritten test does not authorize a changed meaning. Missing evidence remains a gap. See the detailed obligations for database refresh, lifecycle registration, telemetry, focused capture and source migration.
 
 ## 4. Present and inspect

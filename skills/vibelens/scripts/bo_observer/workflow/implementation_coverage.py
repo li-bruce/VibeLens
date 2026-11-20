@@ -92,6 +92,53 @@ def infrastructure(symbol, category):
     )
 
 
+def feature_projection_errors(feature, model, nodes):
+    """Keep technical coverage in implementation views and preserve business meaning.
+
+    Classification is explicitly authored from source responsibility. Neither an
+    endpoint name nor the fact that a function is observed creates a business
+    operation. Both categories keep the same source, capture and case obligations.
+    """
+    fid = feature.get("id")
+    category = feature.get("category", "business")
+    if category not in ("business", "technical"):
+        return [{"invalid_feature_category": fid}]
+    if category == "business":
+        owner_id = feature.get("business_node")
+        owner = nodes.get(owner_id, {}) if isinstance(owner_id, str) else {}
+        if not owner or (
+            owner.get("layer") != "business" and "business" not in owner.get("semantic_roles", [])
+        ):
+            return [{"feature_missing_business_projection": fid}]
+        return []
+
+    owner_id = feature.get("implementation_node")
+    owner = nodes.get(owner_id, {}) if isinstance(owner_id, str) else {}
+    reason = feature.get("classification_reason")
+    if (
+        not owner
+        or owner_id not in feature.get("nodes", [])
+        or "business_node" in feature
+        or not isinstance(reason, str)
+        or not reason.strip()
+    ):
+        return [{"invalid_technical_feature_projection": fid}]
+    # A classification flag cannot conceal an already declared business role or
+    # a cross-model binding. Source coverage still checks every owned symbol.
+    bindings = (model.get("concepts") or {}).get("business", {})
+    bound = {nid for targets in bindings.values() for nid in targets}
+    business_nodes = sorted(
+        nid
+        for nid in feature.get("nodes", [])
+        if nid in bound
+        or nodes.get(nid, {}).get("layer") == "business"
+        or "business" in nodes.get(nid, {}).get("semantic_roles", [])
+    )
+    if business_nodes:
+        return [{"technical_feature_contains_business_projection": fid, "nodes": business_nodes}]
+    return []
+
+
 def static_errors(plan, model, index):
     """Check every discovered implementation symbol against a feature or reviewed exclusion."""
     errors = []
@@ -137,12 +184,7 @@ def static_errors(plan, model, index):
         covered_nodes.update(owned)
         if not any(any(nodes.get(n, {}).get("capture", {}).values()) for n in owned):
             errors.append({"feature_has_no_observed_values": fid})
-        business_node = nodes.get(feature.get("business_node"), {})
-        if not business_node or (
-            business_node.get("layer") != "business"
-            and "business" not in business_node.get("semantic_roles", [])
-        ):
-            errors.append({"feature_missing_business_projection": fid})
+        errors.extend(feature_projection_errors(feature, model, nodes))
         cases = feature.get("cases", [])
         if not cases or any(
             not c.get("case") or c.get("node") not in owned or not c.get("phase") for c in cases

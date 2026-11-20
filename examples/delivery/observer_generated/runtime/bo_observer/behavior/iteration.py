@@ -69,12 +69,22 @@ def meaning_changes(before, after):
 
 def protected_errors(before, after, review):
     """Preserve protected scope and mandatory analysis without a new approval store."""
+    if not isinstance(review, dict):
+        return [{"code": "invalid_behavior_change_review", "path": "review.json"}]
     errors = []
     if before.get("behavior") is not None and after.get("behavior") is None:
         return [{"code": "behavior_contract_removed"}]
     changes = meaning_changes(before, after)
     allowed = set(before.get("requested_requirements", []))
     reasons = review.get("requirement_changes", {})
+    if not isinstance(reasons, dict) or any(
+        not isinstance(key, str)
+        or not key.strip()
+        or not isinstance(value, str)
+        or not value.strip()
+        for key, value in reasons.items()
+    ):
+        return [{"code": "invalid_requirement_change_review", "path": "requirement_changes"}]
     basis = {key for key in allowed if isinstance(reasons.get(key), str) and reasons[key].strip()}
     current_requirements = {r["id"] for r in after.get("intent", {}).get("requirements", [])}
     # Every changed record has its own request basis; one generic reason must not
