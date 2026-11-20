@@ -9,6 +9,7 @@ import queue
 import threading
 import time
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 import uuid
 
 try:
@@ -211,6 +212,7 @@ class BOProbe:
             producer_id or uuid.uuid4().hex,
         )
         self.bo_enabled = enabled
+        self.bo_remote_batch = True
         self.bo_tracing = None
         self.bo_seq = self.bo_errors = self.bo_dropped = self.bo_suppressed = 0
         self.bo_filtered = 0
@@ -555,12 +557,39 @@ class BOProbe:
         self.bo_errors += 1
         self.bo_last_error = {"stage": "transport", "type": type(error).__name__}
 
+    def bo_send_many(self, values):
+        """Use optional HTTP batch ingress; old collectors fall back to originals.
+
+        This only groups queued facts. The collector still validates every
+        envelope and checks current source bytes before and after admission.
+        A failed or ambiguous response falls back with the same event IDs, so
+        duplicate receipts and per-event rejection retain their usual meaning.
+        """
+        raw = json.dumps(
+            {"protocol": "bo-event-batch/v1", "events": values},
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode()
+        request = Request(
+            self.bo_endpoint + "/api/bo/events/batch",
+            data=raw,
+            headers={"Content-Type": "application/json", "X-BO-Token": self.bo_token},
+            method="POST",
+        )
+        try:
+            with urlopen(request, timeout=self.bo_timeout) as response:
+                return json.loads(response.read(32768))
+        except HTTPError as error:
+            if error.code in {404, 405}:
+                self.bo_remote_batch = False
+            raise
+
     def bo_drain(self):
         """Drain bounded event groups; snapshots remain ordered completion barriers.
 
-        Only explicitly batch-capable local sinks opt in. HTTP and plain callable
-        sinks retain their single-envelope contract. Failed batch preflight falls
-        back to the original envelopes, preserving per-message error isolation.
+        Capable local sinks and remote collectors share bounded event batches.
+        Plain callables retain single-envelope delivery. Failed batch preflight
+        falls back to originals, preserving per-message error isolation.
         """
         deferred = None
         while deferred is not None or not self.bo_closed.is_set() or not self.bo_queue.empty():
@@ -583,20 +612,33 @@ class BOProbe:
                         accept_many = getattr(self.bo_sink, "bo_accept_many", None)
                     except Exception:
                         accept_many = None  # An optional capability cannot break a plain sink.
+                    remote = self.bo_sink is None and self.bo_remote_batch
+                    if remote:
+                        accept_many = self.bo_send_many
                     if kind == "events" and callable(accept_many):
                         # Amortize the sink's strict pre/post source checks over
                         # its existing 64-event contract during a real backlog.
                         # Ordinary traffic keeps the smaller low-latency group.
                         batch_limit = 64 if self.bo_queue.qsize() >= 64 else 16
+                        with self.bo_progress:
+                            prefix = self.bo_flush_target - self.bo_completed
+                        if prefix > 0:
+                            batch_limit = min(batch_limit, prefix)
+                        # Keep the existing HTTP payload ceiling, including JSON
+                        # separators and wrapper. Local delivery needs no cap.
+                        batch_bytes = len(raw) + 64
                         while len(batch) < batch_limit:
                             try:
                                 following = self.bo_queue.get_nowait()
                             except queue.Empty:
                                 break
-                            if following[0] != "events":
+                            if following[0] != "events" or (
+                                remote and batch_bytes + len(following[1]) + 2 > 24576
+                            ):
                                 deferred = following
                                 break
                             batch.append(following[1])
+                            batch_bytes += len(following[1]) + 2
                     if len(batch) > 1:
                         try:
                             receipts = accept_many([json.loads(value) for value in batch])

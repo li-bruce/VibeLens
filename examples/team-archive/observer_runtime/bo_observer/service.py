@@ -212,6 +212,11 @@ def make_server(session, port=8830, *, token=None, origins=(), assets=ASSETS):
                     return self.reply(200, control)
                 if path == "/api/bo/events":
                     return self.reply(200, session.event(body))
+                if path == "/api/bo/events/batch":
+                    # The same bounded, atomic reducer serves local and remote
+                    # producers. Preserve each envelope and the original HTTP
+                    # byte limit; snapshots never enter an event batch.
+                    return self.reply(200, session.bo_sink.bo_accept_envelope(body))
                 if path == "/api/bo/snapshots":
                     return self.reply(200, session.snapshot(body))
                 if path == "/api/preferences":

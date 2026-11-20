@@ -1,0 +1,91 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Bounded remote event admission shares the atomic reducer; complete native recording acceptance remains open.",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "093f70da3e6ed6722ee964f1a2af92cde6555749",
+  "gates": {
+    "remote_http": {
+      "tests": 7,
+      "exit_code": 0,
+      "log": "remote-complete.log"
+    },
+    "focused": {
+      "tests": 50,
+      "exit_code": 0,
+      "log": "focused.log"
+    },
+    "capture": {
+      "tests": 31,
+      "exit_code": 0,
+      "log": "capture.log"
+    },
+    "source": {
+      "valid": true,
+      "receipt": "source.json"
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "log": "full-verify-retest.log",
+      "unittest_suites": 96,
+      "unittest_reported_tests": 1115,
+      "skips": 1,
+      "skip_reason": "Windows file-symlink privilege",
+      "tlc": "Pinned TLC 1.7.4 and Java 17 enabled"
+    },
+    "managed_examples": {
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ],
+      "business_source_unchanged": true,
+      "frozen_round": "behavior-contracts-p7-repair07-20261120"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json",
+      "revision": "b9f4ba54643f50cadda358bd0dba076eca46474b"
+    }
+  },
+  "retained_failures": [
+    "remote-first.log",
+    "remote-reproduction.log",
+    "remote-reproduction-corrected.log",
+    "remote-retest.log",
+    "full-verify-sandbox.log",
+    "native-candidate-capture.json"
+  ],
+  "remaining": [
+    "Native first recording passed; second recording interrupted with 148 pending items. Provider consistency and remaining transport diagnostics require retest.",
+    "Malformed iteration review and technical-feature business projection (repair 08)",
+    "Both complete native trials, business iteration, source-only refactor and independent desktop/Timeline checks",
+    "Accepted product scenes and final P7 closure"
+  ],
+  "candidate_files": [
+    {
+      "path": "skills/vibelens/scripts/bo_observer/service.py",
+      "sha256": "a97798900695a45d794afb35e3207373a879d78f46531c4f85b7a441ac816d7c"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/observation/event_batch.py",
+      "sha256": "26080ac3f5d2a7f15fc10111345b184ace9b152cf08197f44826f2f4c3525bc4"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/adapters/python/bo_probe.py",
+      "sha256": "ac0645c612cc36daeabb7b35c254fe2364ebf3a04c2b7a4c655841c1519460de"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs",
+      "sha256": "d7a046bfe761f92ad5a35abdf4fb823c41cb08d1c918983e48091eb0e3f17b20"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/schemas/event-batch.schema.json",
+      "sha256": "8c55fc23cd576a5124e99a6f8a13b6b3fecc58e4c09e279f58886087e1f6131f"
+    },
+    {
+      "path": "tests/test_remote_event_batch.py",
+      "sha256": "996d4024cdd5044f1bbb69337fafd1183e6d7ce64db268b670a11228e24c4789"
+    }
+  ]
+}

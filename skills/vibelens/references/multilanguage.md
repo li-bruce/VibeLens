@@ -32,6 +32,7 @@ Schemas are in `scripts/bo_observer/schemas/`. Python checks JSON Schema 2020-12
 | `bo-project/v1` | User mode choice, business abstraction, source bindings, state/capture declarations |
 | `bo-source/v1` | Common symbols, parameters, possible calls, unresolved items, errors |
 | `bo-event/v1` | Project/build/model/run/producer/call identity, before/after values, explicit causal dependencies |
+| `bo-event-batch/v1` | Optional transport group of original event envelopes; no new runtime identity |
 | `bo-snapshot/v1` | Actual complete instance state, parameters, activities, and resources tied to the same evidence |
 | `bo-capture-control/v1` | Acknowledged scope and queue-flush commands, pinned to project/build/producer |
 | `bo-stategraph/v1` | Full structure and retained actual evidence, independent of UI filters |
@@ -39,6 +40,16 @@ Schemas are in `scripts/bo_observer/schemas/`. Python checks JSON Schema 2020-12
 The service validates model revision and build identity; native clients return them unchanged. Producer sequences increase within their own streams. Receipt order supports replay, not inferred cross-process causality. Each instance has one authoritative producer. Duplicate events must match exactly. Old sequences, conflicting identity, wrong builds, and invalid protocols fail. Invalid actual business states retain their original values and report `mismatch`. JSON cannot carry functions, cyclic objects, NaN, Infinity, or integers outside the JS safe range; use an explicitly typed string convention for large integers.
 
 The shared service listens locally. Native probes use bounded asynchronous queues, explicit field selection, and capture diagnostics on failure. Frontends need explicit permitted local origins and a development token, never wildcard CORS. Do not commit tokens, runtime records, or personal layouts. Web visibility and capture are independent switches; neither removes declarations or the actual executor.
+
+HTTP producers can send existing event backlog to `/api/bo/events/batch`, with
+the same collector token. A request contains at most 64 events and 24 KiB. The
+collector validates every original envelope and checks current source bytes
+before and after atomic admission. Per-event IDs, sequences and receipts stay
+unchanged; snapshots remain ordered barriers. Both adapters preserve the flush
+prefix, payload limits and transport deadlines. An unsupported endpoint or an
+ambiguous batch receipt falls back to the original envelopes; duplicate-ID
+checks prevent replayed delivery from creating extra facts. This transport
+optimization requires no application business-code changes.
 
 State-change events require the application's `revision`, immediately followed by the actual snapshot with that revision and `evidence_id`. Ordinary calls need not have state snapshots. Missing state frames remain unknown. Replay uses receipt sequence, not wall-clock ordering across processes. Frame count and byte limits apply; final state must not fill historical gaps.
 

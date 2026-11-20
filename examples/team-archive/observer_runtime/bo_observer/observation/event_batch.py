@@ -2,7 +2,7 @@
 
 from copy import copy
 
-from ..protocol import validate_event
+from ..protocol import schema_check, validate_event
 
 
 class BOSessionSink:
@@ -64,3 +64,8 @@ class BOSessionSink:
                 setattr(session, name, getattr(staged, name))
             session.history.append_many(staged.history)
             return receipts
+
+    def bo_accept_envelope(self, body):
+        """Validate the optional HTTP wrapper, then use the shared atomic reducer."""
+        schema_check(body, "event-batch")
+        return self.bo_accept_many(body["events"])

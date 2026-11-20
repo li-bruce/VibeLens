@@ -1,0 +1,67 @@
+{
+  "status": "partial",
+  "interpretation": "First recording passed; the second failed at stop_record -> native_idle after business operations. Overall acceptance remains open.",
+  "records": [
+    {
+      "id": "80c79457da6d458e98f08ed95a8aeaf1",
+      "build_id": "b134e1a0a4c488ba9f5a19d5f8679f5dd00f826b714259bca9277b61d2d196fa",
+      "status": "stopped",
+      "gaps": [],
+      "producer_settlement": {
+        "flushed": true,
+        "target": 857,
+        "completed": 857,
+        "submitted": 857,
+        "pending": 0
+      },
+      "events": 816
+    },
+    {
+      "id": "2bfbcf27b8db42d490f3b19c5ac3abb8",
+      "build_id": "b134e1a0a4c488ba9f5a19d5f8679f5dd00f826b714259bca9277b61d2d196fa",
+      "status": "interrupted",
+      "gaps": [
+        "Producer queue did not drain; only received events are retained.",
+        "Producer capture or transport failed during this recording."
+      ],
+      "producer_settlement": {
+        "flushed": false,
+        "target": 4389,
+        "completed": 4241,
+        "submitted": 4389,
+        "pending": 148
+      },
+      "events": 3372
+    }
+  ],
+  "load_context": "No complete root regression ran during this native capture. Managed-example checks briefly overlapped. The original lifecycle flag is preserved and corrected here; no isolated performance comparison is claimed.",
+  "provider_limitation": "The trial found off/fault subprocesses still selected the prior provider. All cohorts must use the same package in the final retest.",
+  "archive_sha256": "ae6032ab8331a77b750912c4d42d267c7e7f825e3a7548a473247e3e289d9dd3",
+  "entries": [
+    {
+      "path": "review/runtime/unified-1795147982/lifecycle.json",
+      "bytes": 3068,
+      "sha256": "907899cd4f0527f177fac9e957209758c169f9e0b8d02962eed98d0aae9544db"
+    },
+    {
+      "path": "review/runtime/unified-1795147982/native-fetch.jsonl",
+      "bytes": 938322,
+      "sha256": "91bfaaa6d69e63f410f334106da8b402ba54542057440c4cd7932c3446553d0d"
+    },
+    {
+      "path": "review/runtime/independent-recording-80c79457da6d458e98f08ed95a8aeaf1.json",
+      "bytes": 7024194,
+      "sha256": "88de2e5ea642bc08ce0d45375dd52d3075c42bf5c75acde161602d38cdf06113"
+    },
+    {
+      "path": "review/runtime/failed-recording-2bfbcf27b8db42d490f3b19c5ac3abb8.json",
+      "bytes": 12819520,
+      "sha256": "c10632b656d93db42a8004397959d5fa5020f0424f57f05662e5335ced4496fe"
+    },
+    {
+      "path": "review/runtime/batch-candidate-real-recording-command.log",
+      "bytes": 3040,
+      "sha256": "d573d56c63a94af2d4cc7ab8488f15e299fc4b626ba905950a0d98fd19202249"
+    }
+  ]
+}

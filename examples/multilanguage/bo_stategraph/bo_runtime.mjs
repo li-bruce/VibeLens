@@ -443,6 +443,8 @@ export class BOProbe {
     this.bo_submitted = this.bo_completed = this.bo_flush_target = 0;
     this.bo_seq = 0;
     this.bo_busy = false;
+    this.bo_inflight = 0;
+    this.bo_remote_batch = true;
     this.bo_internal = false;
     this.bo_errors = 0;
     this.bo_dropped = 0;
@@ -479,7 +481,7 @@ export class BOProbe {
       run_id: this.bo_run,
       producer_id: this.bo_producer,
       enqueued: this.bo_seq,
-      pending: this.bo_queue.length + (this.bo_busy ? 1 : 0),
+      pending: this.bo_queue.length + this.bo_inflight,
       queue_submitted: this.bo_submitted,
       queue_completed: this.bo_completed,
       flush_target: this.bo_flush_target,
@@ -679,49 +681,102 @@ export class BOProbe {
       return false;
     }
   }
+  /** Send one bounded request using the original deadlines and retry policy. */
+  async bo_request(kind, body, batch = false) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const sendRequest = () =>
+          fetch(`${this.bo_endpoint}/api/bo/${kind}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-BO-Token": this.bo_token },
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(this.bo_timeout),
+          });
+        const response = await (this.bo_tracing
+          ? this.bo_tracing.internal(sendRequest)
+          : sendRequest());
+        if (batch && [404, 405].includes(response.status)) {
+          this.bo_remote_batch = false;
+          throw Error("Collector has no event batch ingress");
+        }
+        if (!response.ok) throw Error("Collector rejected observation");
+        if (batch) {
+          const receipts = await response.json();
+          if (
+            !Array.isArray(receipts) ||
+            receipts.length !== body.events.length ||
+            receipts.some((receipt) => receipt?.accepted !== true)
+          )
+            throw Error("Event batch lacks acceptance receipts");
+        }
+        return;
+      } catch (error) {
+        if (attempt === 1 || (batch && !this.bo_remote_batch)) throw error;
+      }
+    }
+  }
+  /** Preserve single-envelope behavior for custom sinks and fallback delivery. */
+  async bo_deliver(item) {
+    try {
+      if (this.bo_sink) {
+        let pending;
+        this.bo_internal = true;
+        try {
+          const deliverToSink = () => this.bo_sink(item.body, item.kind);
+          pending = this.bo_tracing ? this.bo_tracing.internal(deliverToSink) : deliverToSink();
+        } finally {
+          this.bo_internal = false;
+        }
+        await pending;
+      } else {
+        await this.bo_request(item.kind, item.body);
+      }
+    } catch (error) {
+      this.bo_errors++;
+      this.bo_last_error = { stage: "transport", type: bo_error_type(error) };
+    } finally {
+      this.bo_completed++;
+      this.bo_inflight--;
+    }
+  }
+  /** Group existing backlog only; snapshots stay ordered barriers, with no timer delay. */
   async bo_drain() {
     if (this.bo_busy) return;
     this.bo_busy = true;
     try {
       while (this.bo_queue.length) {
-        const item = this.bo_queue.shift();
-        try {
-          if (this.bo_sink) {
-            let pending;
-            this.bo_internal = true;
-            try {
-              const deliverToSink = () => this.bo_sink(item.body, item.kind);
-              pending = this.bo_tracing ? this.bo_tracing.internal(deliverToSink) : deliverToSink();
-            } finally {
-              this.bo_internal = false;
-            }
-            await pending;
-          } else {
-            for (let attempt = 0; attempt < 2; attempt++) {
-              try {
-                const sendRequest = () =>
-                  fetch(`${this.bo_endpoint}/api/bo/${item.kind}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "X-BO-Token": this.bo_token },
-                    body: JSON.stringify(item.body),
-                    signal: AbortSignal.timeout(this.bo_timeout),
-                  });
-                const response = await (this.bo_tracing
-                  ? this.bo_tracing.internal(sendRequest)
-                  : sendRequest());
-                if (!response.ok) throw Error("Collector rejected observation");
-                break;
-              } catch (error) {
-                if (attempt === 1) throw error;
-              }
-            }
+        const items = [this.bo_queue.shift()];
+        if (!this.bo_sink && this.bo_remote_batch && items[0].kind === "events") {
+          const encoder = new TextEncoder();
+          let size = encoder.encode(JSON.stringify(items[0].body)).length + 64;
+          // A flush owns an already submitted prefix. Keep later work out of
+          // its final atomic request so continuing traffic cannot delay it.
+          const prefix = this.bo_flush_target - this.bo_completed;
+          const limit = prefix > 0 ? Math.min(64, prefix) : 64;
+          while (items.length < limit && this.bo_queue[0]?.kind === "events") {
+            const nextSize = encoder.encode(JSON.stringify(this.bo_queue[0].body)).length + 1;
+            if (size + nextSize > 24576) break;
+            size += nextSize;
+            items.push(this.bo_queue.shift());
           }
-        } catch (error) {
-          this.bo_errors++;
-          this.bo_last_error = { stage: "transport", type: bo_error_type(error) };
-        } finally {
-          this.bo_completed++;
         }
+        this.bo_inflight = items.length;
+        if (items.length > 1) {
+          try {
+            await this.bo_request(
+              "events/batch",
+              { protocol: "bo-event-batch/v1", events: items.map((item) => item.body) },
+              true,
+            );
+            this.bo_completed += items.length;
+            this.bo_inflight = 0;
+            continue;
+          } catch {
+            // Atomic rejection or an ambiguous transport reply: originals keep
+            // their IDs, so retry deduplicates and isolates individual failures.
+          }
+        }
+        for (const item of items) await this.bo_deliver(item);
       }
     } finally {
       this.bo_busy = false;

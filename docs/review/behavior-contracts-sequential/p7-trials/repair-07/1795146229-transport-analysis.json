@@ -1,0 +1,1524 @@
+{
+  "source": "actual-process-local-audits",
+  "original_recording_request_unknown": true,
+  "configuration": {
+    "managed_timeout_ms": 1000,
+    "attempts": 2,
+    "changed": false
+  },
+  "function_statistics": {
+    "bo_observer/sources.py::scan": {
+      "calls": 73,
+      "median_ms": 659.41015625,
+      "p95_ms": 1136.993896484375,
+      "max_ms": 1795.451904296875,
+      "total_ms": 51883.613037109375
+    },
+    "bo_observer/observation/session.py::GraphSession.binding": {
+      "calls": 539,
+      "median_ms": 38.023681640625,
+      "p95_ms": 134.62353515625,
+      "max_ms": 1931.346923828125,
+      "total_ms": 35565.9951171875
+    },
+    "bo_observer/observation/session.py::GraphSession.event": {
+      "calls": 471,
+      "median_ms": 40.659423828125,
+      "p95_ms": 329.863037109375,
+      "max_ms": 1593.678466796875,
+      "total_ms": 38740.49365234375
+    },
+    "bo_observer/observation/session.py::GraphSession.snapshot": {
+      "calls": 8,
+      "median_ms": 36.334716796875,
+      "p95_ms": 74.336181640625,
+      "max_ms": 74.336181640625,
+      "total_ms": 330.97509765625
+    },
+    "bo_observer/code_graph/service.py::CodeGraph.view": {
+      "calls": 5,
+      "median_ms": 7442.44091796875,
+      "p95_ms": 8636.060791015625,
+      "max_ms": 8636.060791015625,
+      "total_ms": 34679.04736328125
+    },
+    "bo_observer/code_graph/service.py::CodeGraph.refresh": {
+      "calls": 5,
+      "median_ms": 5870.2373046875,
+      "p95_ms": 10117.4013671875,
+      "max_ms": 10117.4013671875,
+      "total_ms": 32813.628662109375
+    },
+    "bo_observer/web/semantic_names.py::validate": {
+      "calls": 36,
+      "median_ms": 35.053466796875,
+      "p95_ms": 72.859130859375,
+      "max_ms": 78.47998046875,
+      "total_ms": 1369.561279296875
+    },
+    "bo_observer/web/semantic_names.py::read_names": {
+      "calls": 36,
+      "median_ms": 49.96533203125,
+      "p95_ms": 327.057861328125,
+      "max_ms": 338.458740234375,
+      "total_ms": 2736.28515625
+    },
+    "bo_observer/web/semantic_names.py::overlay_model": {
+      "calls": 36,
+      "median_ms": 85.8975830078125,
+      "p95_ms": 386.86767578125,
+      "max_ms": 458.862060546875,
+      "total_ms": 4193.71044921875
+    },
+    "bo_observer/observation/behavior_context.py::BehaviorContext.last_verification": {
+      "calls": 5,
+      "median_ms": 1.621826171875,
+      "p95_ms": 2.447509765625,
+      "max_ms": 2.447509765625,
+      "total_ms": 7.607666015625
+    },
+    "bo_observer/observation/behavior_context.py::BehaviorContext.view": {
+      "calls": 5,
+      "median_ms": 3.01318359375,
+      "p95_ms": 4.17333984375,
+      "max_ms": 4.17333984375,
+      "total_ms": 15.35791015625
+    },
+    "bo_observer/observation/session.py::GraphSession.view": {
+      "calls": 36,
+      "median_ms": 287.239013671875,
+      "p95_ms": 14673.0537109375,
+      "max_ms": 18988.271484375,
+      "total_ms": 84522.21044921875
+    }
+  },
+  "failures": [
+    {
+      "wall_ms": 1795146287036,
+      "pid": 46880,
+      "request_id": "bfc650ee-4307-4b00-8e7e-e637d803e4d2",
+      "method": "POST",
+      "endpoint": "http://127.0.0.1:8926/api/bo/events",
+      "protocol": "bo-event/v1",
+      "id": "a2f49433-f490-4f7e-97e6-ec09dbfbb5fe:a96ec9ef-c726-49b8-8b13-997247f33c96:34",
+      "node": "api_login",
+      "phase": "enter",
+      "seq": 34,
+      "run_id": "a2f49433-f490-4f7e-97e6-ec09dbfbb5fe",
+      "producer_id": "a96ec9ef-c726-49b8-8b13-997247f33c96",
+      "build_id": "58c9af03b415b0cf60b7ccf696c633741498e844be4409a74069513a82aa730c",
+      "event": "failure",
+      "error_type": "TimeoutError",
+      "elapsed_ms": 1002.4029999999984,
+      "overlapping_viewer_calls": [
+        {
+          "wall_ms": 1795146285968.4973,
+          "pid": 47460,
+          "thread": 46660,
+          "frame": 1795157360704,
+          "event": "call",
+          "function": "GraphSession.view",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 407,
+          "request_path": null,
+          "observation_id": null,
+          "ended_ms": 1795146287353.6306,
+          "elapsed_ms": 1385.13330078125
+        }
+      ],
+      "overlapping_lock_waits": [
+        {
+          "wall_ms": 1795146286534.9897,
+          "pid": 47460,
+          "thread": 22616,
+          "frame": 1795120102784,
+          "event": "lock_request",
+          "function": "GraphSession.event",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 159,
+          "request_path": "/api/bo/events",
+          "observation_id": null,
+          "acquired_ms": 1795146287407.1602,
+          "wait_ms": 872.17041015625
+        },
+        {
+          "wall_ms": 1795146286825.5588,
+          "pid": 47460,
+          "thread": 23876,
+          "frame": 1795120100096,
+          "event": "lock_request",
+          "function": "GraphSession.event",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 159,
+          "request_path": "/api/bo/events",
+          "observation_id": null,
+          "acquired_ms": 1795146287464.6543,
+          "wait_ms": 639.095458984375
+        }
+      ],
+      "same_observation_calls": [],
+      "same_observation_lock_waits": [],
+      "temporal_event_calls": [
+        {
+          "wall_ms": 1795146286440.7107,
+          "pid": 47460,
+          "thread": 46660,
+          "frame": 1795127491136,
+          "event": "call",
+          "function": "GraphSession.binding",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 126,
+          "request_path": null,
+          "observation_id": null,
+          "ended_ms": 1795146287351.8872,
+          "elapsed_ms": 911.176513671875
+        },
+        {
+          "wall_ms": 1795146286534.2144,
+          "pid": 47460,
+          "thread": 22616,
+          "frame": 1795120102784,
+          "event": "call",
+          "function": "GraphSession.event",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 152,
+          "request_path": "/api/bo/events",
+          "observation_id": null,
+          "ended_ms": 1795146287464.2207,
+          "elapsed_ms": 930.00634765625
+        },
+        {
+          "wall_ms": 1795146286824.7148,
+          "pid": 47460,
+          "thread": 23876,
+          "frame": 1795120100096,
+          "event": "call",
+          "function": "GraphSession.event",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 152,
+          "request_path": "/api/bo/events",
+          "observation_id": null,
+          "ended_ms": 1795146287510.8523,
+          "elapsed_ms": 686.137451171875
+        }
+      ],
+      "overlapping_lock_holds": [
+        {
+          "wall_ms": 1795146285968.5293,
+          "pid": 47460,
+          "thread": 46660,
+          "frame": 1795157360704,
+          "event": "lock_acquired",
+          "function": "GraphSession.view",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 420,
+          "request_path": null,
+          "observation_id": null,
+          "released_ms": 1795146287352.2166,
+          "held_ms": 1383.687255859375,
+          "release_boundary": "first_line_after_with"
+        }
+      ]
+    },
+    {
+      "wall_ms": 1795146303447,
+      "pid": 46880,
+      "request_id": "be5cc376-d010-4d41-a31e-3c6567d6bc81",
+      "method": "POST",
+      "endpoint": "http://127.0.0.1:8926/api/bo/events",
+      "protocol": "bo-event/v1",
+      "id": "a2f49433-f490-4f7e-97e6-ec09dbfbb5fe:a96ec9ef-c726-49b8-8b13-997247f33c96:236",
+      "node": "data_read",
+      "phase": "enter",
+      "seq": 236,
+      "run_id": "a2f49433-f490-4f7e-97e6-ec09dbfbb5fe",
+      "producer_id": "a96ec9ef-c726-49b8-8b13-997247f33c96",
+      "build_id": "58c9af03b415b0cf60b7ccf696c633741498e844be4409a74069513a82aa730c",
+      "event": "failure",
+      "error_type": "TimeoutError",
+      "elapsed_ms": 1001.4147999999986,
+      "overlapping_viewer_calls": [
+        {
+          "wall_ms": 1795146302734.0312,
+          "pid": 47460,
+          "thread": 46660,
+          "frame": 1795127459904,
+          "event": "call",
+          "function": "GraphSession.view",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 407,
+          "request_path": null,
+          "observation_id": null,
+          "ended_ms": 1795146304320.7295,
+          "elapsed_ms": 1586.6982421875
+        }
+      ],
+      "overlapping_lock_waits": [
+        {
+          "wall_ms": 1795146302734.077,
+          "pid": 47460,
+          "thread": 46660,
+          "frame": 1795127459904,
+          "event": "lock_request",
+          "function": "GraphSession.view",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 419,
+          "request_path": null,
+          "observation_id": null,
+          "acquired_ms": 1795146304059.2124,
+          "wait_ms": 1325.135498046875
+        }
+      ],
+      "same_observation_calls": [],
+      "same_observation_lock_waits": [],
+      "temporal_event_calls": [
+        {
+          "wall_ms": 1795146302410.6465,
+          "pid": 47460,
+          "thread": 16832,
+          "frame": 1795120101888,
+          "event": "call",
+          "function": "GraphSession.event",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 152,
+          "request_path": "/api/bo/events",
+          "observation_id": null,
+          "ended_ms": 1795146302446.087,
+          "elapsed_ms": 35.4404296875
+        },
+        {
+          "wall_ms": 1795146302450.1992,
+          "pid": 47460,
+          "thread": 44852,
+          "frame": 1795077927488,
+          "event": "call",
+          "function": "GraphSession.binding",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 126,
+          "request_path": "/api/bo/events",
+          "observation_id": null,
+          "ended_ms": 1795146303813.0596,
+          "elapsed_ms": 1362.8603515625
+        },
+        {
+          "wall_ms": 1795146302449.4238,
+          "pid": 47460,
+          "thread": 44852,
+          "frame": 1795120100096,
+          "event": "call",
+          "function": "GraphSession.event",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 152,
+          "request_path": "/api/bo/events",
+          "observation_id": null,
+          "ended_ms": 1795146304043.1023,
+          "elapsed_ms": 1593.678466796875
+        }
+      ],
+      "overlapping_lock_holds": [
+        {
+          "wall_ms": 1795146302411.765,
+          "pid": 47460,
+          "thread": 16832,
+          "frame": 1795120101888,
+          "event": "lock_acquired",
+          "function": "GraphSession.event",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 160,
+          "request_path": "/api/bo/events",
+          "observation_id": null,
+          "released_ms": 1795146302446.087,
+          "held_ms": 34.322021484375,
+          "release_boundary": "function_return"
+        },
+        {
+          "wall_ms": 1795146302450.1958,
+          "pid": 47460,
+          "thread": 44852,
+          "frame": 1795120100096,
+          "event": "lock_acquired",
+          "function": "GraphSession.event",
+          "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+          "line": 160,
+          "request_path": "/api/bo/events",
+          "observation_id": null,
+          "released_ms": 1795146304043.1023,
+          "held_ms": 1592.906494140625,
+          "release_boundary": "function_return"
+        }
+      ]
+    }
+  ],
+  "slow_viewer_network": [
+    {
+      "observed_wall_ms": 1795146266716.163,
+      "network_start_ms": 1795146254893.002,
+      "event": "finished",
+      "method": "GET",
+      "path": "/api/view",
+      "request_key": 2346600740912,
+      "elapsed_ms": 11796.004,
+      "network_end_ms": 1795146266689.0059
+    },
+    {
+      "observed_wall_ms": 1795146284622.6157,
+      "network_start_ms": 1795146269857.125,
+      "event": "finished",
+      "method": "GET",
+      "path": "/api/view",
+      "request_key": 2346602871216,
+      "elapsed_ms": 14735.612,
+      "network_end_ms": 1795146284592.737
+    },
+    {
+      "observed_wall_ms": 1795146317132.3928,
+      "network_start_ms": 1795146287764.7288,
+      "event": "finished",
+      "method": "GET",
+      "path": "/api/view",
+      "request_key": 2346605881936,
+      "elapsed_ms": 14134.592,
+      "network_end_ms": 1795146301899.3208
+    }
+  ],
+  "longest_lock_waits": [
+    {
+      "wall_ms": 1795146302734.077,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795127459904,
+      "event": "lock_request",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 419,
+      "request_path": null,
+      "observation_id": null,
+      "acquired_ms": 1795146304059.2124,
+      "wait_ms": 1325.135498046875
+    },
+    {
+      "wall_ms": 1795146303504.223,
+      "pid": 47460,
+      "thread": 47256,
+      "frame": 1795120100768,
+      "event": "lock_request",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 159,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "acquired_ms": 1795146304381.063,
+      "wait_ms": 876.840087890625
+    },
+    {
+      "wall_ms": 1795146286534.9897,
+      "pid": 47460,
+      "thread": 22616,
+      "frame": 1795120102784,
+      "event": "lock_request",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 159,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "acquired_ms": 1795146287407.1602,
+      "wait_ms": 872.17041015625
+    },
+    {
+      "wall_ms": 1795146293995.1284,
+      "pid": 47460,
+      "thread": 44072,
+      "frame": 1795120089792,
+      "event": "lock_request",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 159,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "acquired_ms": 1795146294853.6384,
+      "wait_ms": 858.510009765625
+    },
+    {
+      "wall_ms": 1795146318080.998,
+      "pid": 47460,
+      "thread": 7800,
+      "frame": 1795079803552,
+      "event": "lock_request",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 159,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "acquired_ms": 1795146318831.9329,
+      "wait_ms": 750.934814453125
+    },
+    {
+      "wall_ms": 1795146317458.998,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795127427136,
+      "event": "lock_request",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 419,
+      "request_path": null,
+      "observation_id": null,
+      "acquired_ms": 1795146318154.651,
+      "wait_ms": 695.65283203125
+    },
+    {
+      "wall_ms": 1795146321678.866,
+      "pid": 47460,
+      "thread": 21432,
+      "frame": 1795073960992,
+      "event": "lock_request",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 419,
+      "request_path": "/api/recordings/stop",
+      "observation_id": null,
+      "acquired_ms": 1795146322364.778,
+      "wait_ms": 685.912109375
+    },
+    {
+      "wall_ms": 1795146297182.8486,
+      "pid": 47460,
+      "thread": 22616,
+      "frame": 1795120088448,
+      "event": "lock_request",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 159,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "acquired_ms": 1795146297824.9216,
+      "wait_ms": 642.072998046875
+    },
+    {
+      "wall_ms": 1795146286825.5588,
+      "pid": 47460,
+      "thread": 23876,
+      "frame": 1795120100096,
+      "event": "lock_request",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 159,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "acquired_ms": 1795146287464.6543,
+      "wait_ms": 639.095458984375
+    },
+    {
+      "wall_ms": 1795146287689.5918,
+      "pid": 47460,
+      "thread": 46932,
+      "frame": 1795120089568,
+      "event": "lock_request",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 159,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "acquired_ms": 1795146288306.789,
+      "wait_ms": 617.197265625
+    },
+    {
+      "wall_ms": 1795146314173.8535,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795127427968,
+      "event": "lock_request",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 419,
+      "request_path": null,
+      "observation_id": null,
+      "acquired_ms": 1795146314755.9976,
+      "wait_ms": 582.14404296875
+    },
+    {
+      "wall_ms": 1795146287194.438,
+      "pid": 47460,
+      "thread": 41220,
+      "frame": 1795120089568,
+      "event": "lock_request",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 159,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "acquired_ms": 1795146287551.003,
+      "wait_ms": 356.56494140625
+    },
+    {
+      "wall_ms": 1795146307967.7317,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795073960992,
+      "event": "lock_request",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 419,
+      "request_path": null,
+      "observation_id": null,
+      "acquired_ms": 1795146308323.6414,
+      "wait_ms": 355.90966796875
+    },
+    {
+      "wall_ms": 1795146311034.5054,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795152824832,
+      "event": "lock_request",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 419,
+      "request_path": null,
+      "observation_id": null,
+      "acquired_ms": 1795146311356.8516,
+      "wait_ms": 322.34619140625
+    },
+    {
+      "wall_ms": 1795146287192.872,
+      "pid": 47460,
+      "thread": 37488,
+      "frame": 1795120091360,
+      "event": "lock_request",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 159,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "acquired_ms": 1795146287511.1904,
+      "wait_ms": 318.318359375
+    }
+  ],
+  "longest_refresh_calls": [
+    {
+      "wall_ms": 1795146313457.366,
+      "pid": 47460,
+      "thread": 38632,
+      "frame": 1795121132496,
+      "event": "call",
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "line": 69,
+      "request_path": "/api/view",
+      "observation_id": null,
+      "ended_ms": 1795146323574.7673,
+      "elapsed_ms": 10117.4013671875
+    },
+    {
+      "wall_ms": 1795146295302.3254,
+      "pid": 47460,
+      "thread": 36048,
+      "frame": 1795107500208,
+      "event": "call",
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "line": 69,
+      "request_path": "/api/view",
+      "observation_id": null,
+      "ended_ms": 1795146301650.8818,
+      "elapsed_ms": 6348.556396484375
+    },
+    {
+      "wall_ms": 1795146278495.9766,
+      "pid": 47460,
+      "thread": 31048,
+      "frame": 1795153508080,
+      "event": "call",
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "line": 69,
+      "request_path": "/api/view",
+      "observation_id": null,
+      "ended_ms": 1795146284366.2139,
+      "elapsed_ms": 5870.2373046875
+    },
+    {
+      "wall_ms": 1795146260989.639,
+      "pid": 47460,
+      "thread": 27104,
+      "frame": 1795127498272,
+      "event": "call",
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "line": 69,
+      "request_path": "/api/view",
+      "observation_id": null,
+      "ended_ms": 1795146266478.2468,
+      "elapsed_ms": 5488.60791015625
+    },
+    {
+      "wall_ms": 1795146273339.1885,
+      "pid": 47460,
+      "thread": 6808,
+      "frame": 1795121036592,
+      "event": "call",
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "line": 69,
+      "request_path": "/api/recordings/start",
+      "observation_id": null,
+      "ended_ms": 1795146278328.0142,
+      "elapsed_ms": 4988.82568359375
+    }
+  ],
+  "limits": [
+    "The original recording retained aggregate TimeoutError health, not a per-request audit.",
+    "The request/lock audit run is a separate reproduction with distinct process and recording identities.",
+    "Instrumentation adds overhead; timings are not an isolated performance benchmark.",
+    "See lifecycle and host-load samples for the reported regression context; resource contention is not excluded."
+  ],
+  "longest_lock_holds": [
+    {
+      "wall_ms": 1795146267368.566,
+      "pid": 47460,
+      "thread": 6808,
+      "frame": 1795073960992,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": "/api/recordings/start",
+      "observation_id": null,
+      "released_ms": 1795146269423.72,
+      "held_ms": 2055.154052734375,
+      "release_boundary": "first_line_after_with"
+    },
+    {
+      "wall_ms": 1795146302450.1958,
+      "pid": 47460,
+      "thread": 44852,
+      "frame": 1795120100096,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146304043.1023,
+      "held_ms": 1592.906494140625,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146285968.5293,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795157360704,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": null,
+      "observation_id": null,
+      "released_ms": 1795146287352.2166,
+      "held_ms": 1383.687255859375,
+      "release_boundary": "first_line_after_with"
+    },
+    {
+      "wall_ms": 1795146293950.6353,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795068213120,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": null,
+      "observation_id": null,
+      "released_ms": 1795146294792.156,
+      "held_ms": 841.520751953125,
+      "release_boundary": "first_line_after_with"
+    },
+    {
+      "wall_ms": 1795146282791.9038,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795117111040,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": null,
+      "observation_id": null,
+      "released_ms": 1795146283528.5283,
+      "held_ms": 736.62451171875,
+      "release_boundary": "first_line_after_with"
+    },
+    {
+      "wall_ms": 1795146321654.2732,
+      "pid": 47460,
+      "thread": 32340,
+      "frame": 1795120090912,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146322317.548,
+      "held_ms": 663.27490234375,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146307665.137,
+      "pid": 47460,
+      "thread": 44448,
+      "frame": 1795079802432,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146308323.1956,
+      "held_ms": 658.05859375,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146314119.705,
+      "pid": 47460,
+      "thread": 47284,
+      "frame": 1795120098752,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146314755.6265,
+      "held_ms": 635.92138671875,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146297152.0122,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795157362368,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": null,
+      "observation_id": null,
+      "released_ms": 1795146297778.8455,
+      "held_ms": 626.833251953125,
+      "release_boundary": "first_line_after_with"
+    },
+    {
+      "wall_ms": 1795146287684.1511,
+      "pid": 47460,
+      "thread": 15172,
+      "frame": 1795120099200,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146288306.3838,
+      "held_ms": 622.232666015625,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146304565.5093,
+      "pid": 47460,
+      "thread": 10640,
+      "frame": 1795079805792,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146305185.7485,
+      "held_ms": 620.2392578125,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146300333.361,
+      "pid": 47460,
+      "thread": 44660,
+      "frame": 1795120087776,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146300949.4932,
+      "held_ms": 616.132080078125,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146317342.6755,
+      "pid": 47460,
+      "thread": 46684,
+      "frame": 1795120090464,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146317957.886,
+      "held_ms": 615.21044921875,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146318154.651,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795127427136,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": null,
+      "observation_id": null,
+      "released_ms": 1795146318727.2576,
+      "held_ms": 572.606689453125,
+      "release_boundary": "first_line_after_with"
+    },
+    {
+      "wall_ms": 1795146310814.1472,
+      "pid": 47460,
+      "thread": 46264,
+      "frame": 1795079802656,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146311345.759,
+      "held_ms": 531.61181640625,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146290717.3784,
+      "pid": 47460,
+      "thread": 19912,
+      "frame": 1795120090912,
+      "event": "lock_acquired",
+      "function": "GraphSession.event",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 160,
+      "request_path": "/api/bo/events",
+      "observation_id": null,
+      "released_ms": 1795146291165.0322,
+      "held_ms": 447.65380859375,
+      "release_boundary": "function_return"
+    },
+    {
+      "wall_ms": 1795146311356.8516,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795152824832,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": null,
+      "observation_id": null,
+      "released_ms": 1795146311712.5789,
+      "held_ms": 355.727294921875,
+      "release_boundary": "first_line_after_with"
+    },
+    {
+      "wall_ms": 1795146291181.0942,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795153004640,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": null,
+      "observation_id": null,
+      "released_ms": 1795146291524.99,
+      "held_ms": 343.895751953125,
+      "release_boundary": "first_line_after_with"
+    },
+    {
+      "wall_ms": 1795146280196.56,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795117108544,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": null,
+      "observation_id": null,
+      "released_ms": 1795146280478.986,
+      "held_ms": 282.426025390625,
+      "release_boundary": "first_line_after_with"
+    },
+    {
+      "wall_ms": 1795146304059.2124,
+      "pid": 47460,
+      "thread": 46660,
+      "frame": 1795127459904,
+      "event": "lock_acquired",
+      "function": "GraphSession.view",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\observation\\session.py",
+      "line": 420,
+      "request_path": null,
+      "observation_id": null,
+      "released_ms": 1795146304313.554,
+      "held_ms": 254.341552734375,
+      "release_boundary": "first_line_after_with"
+    }
+  ],
+  "scan_triggers": [
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": null,
+      "wall_ms": 1795146245122.6365,
+      "elapsed_ms": 542.151611328125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146255943.0022,
+      "elapsed_ms": 582.562255859375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146256528.1716,
+      "elapsed_ms": 659.754638671875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146257197.6045,
+      "elapsed_ms": 615.482421875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146257830.1914,
+      "elapsed_ms": 722.49267578125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146258595.4949,
+      "elapsed_ms": 567.298828125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146259187.2778,
+      "elapsed_ms": 463.1943359375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146259651.5842,
+      "elapsed_ms": 469.85888671875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146260273.322,
+      "elapsed_ms": 4.8662109375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146261694.5981,
+      "elapsed_ms": 450.638427734375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146262146.6094,
+      "elapsed_ms": 526.804443359375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146262676.3901,
+      "elapsed_ms": 461.2958984375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146263151.883,
+      "elapsed_ms": 468.891357421875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146263621.492,
+      "elapsed_ms": 513.08056640625
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146264201.903,
+      "elapsed_ms": 559.13232421875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146264762.3257,
+      "elapsed_ms": 538.31396484375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146265509.0488,
+      "elapsed_ms": 813.99609375
+    },
+    {
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146260989.639,
+      "elapsed_ms": 5488.60791015625
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146269532.424,
+      "elapsed_ms": 504.25537109375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146270038.0535,
+      "elapsed_ms": 510.63916015625
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146270549.9282,
+      "elapsed_ms": 444.664794921875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146270996.9924,
+      "elapsed_ms": 510.380126953125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146271508.345,
+      "elapsed_ms": 627.85107421875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146272141.9902,
+      "elapsed_ms": 589.06884765625
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146272731.8467,
+      "elapsed_ms": 485.27783203125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146273481.367,
+      "elapsed_ms": 518.586669921875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146273475.7583,
+      "elapsed_ms": 525.021484375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146274003.1023,
+      "elapsed_ms": 899.462158203125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146274003.3699,
+      "elapsed_ms": 904.1064453125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146274909.92,
+      "elapsed_ms": 571.59375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146274913.4924,
+      "elapsed_ms": 570.52294921875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146275492.2483,
+      "elapsed_ms": 552.49951171875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146275489.009,
+      "elapsed_ms": 569.406982421875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146276045.6516,
+      "elapsed_ms": 548.464599609375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146276059.3057,
+      "elapsed_ms": 546.713623046875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146276596.3447,
+      "elapsed_ms": 683.859130859375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146276609.8623,
+      "elapsed_ms": 701.740966796875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146277387.993,
+      "elapsed_ms": 731.43310546875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146277450.4556,
+      "elapsed_ms": 671.29443359375
+    },
+    {
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "request_path": "/api/recordings/start",
+      "wall_ms": 1795146273339.1885,
+      "elapsed_ms": 4988.82568359375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146278691.7324,
+      "elapsed_ms": 959.797607421875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146279653.4773,
+      "elapsed_ms": 794.747314453125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146280474.6025,
+      "elapsed_ms": 586.435546875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146281064.1206,
+      "elapsed_ms": 609.774658203125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146281675.7122,
+      "elapsed_ms": 618.66748046875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146282297.239,
+      "elapsed_ms": 637.975830078125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146283197.038,
+      "elapsed_ms": 1014.709228515625
+    },
+    {
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146278495.9766,
+      "elapsed_ms": 5870.2373046875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146288468.0173,
+      "elapsed_ms": 821.980224609375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146289293.5354,
+      "elapsed_ms": 737.40771484375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146290036.366,
+      "elapsed_ms": 627.30712890625
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146290675.1064,
+      "elapsed_ms": 723.247802734375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146291443.5623,
+      "elapsed_ms": 815.256591796875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146292268.689,
+      "elapsed_ms": 850.2236328125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146293121.7468,
+      "elapsed_ms": 789.733154296875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146295459.6726,
+      "elapsed_ms": 676.584228515625
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146296140.229,
+      "elapsed_ms": 659.41015625
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146296802.4414,
+      "elapsed_ms": 637.423583984375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146297836.345,
+      "elapsed_ms": 621.588623046875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146298459.5354,
+      "elapsed_ms": 738.39111328125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146299202.133,
+      "elapsed_ms": 721.212890625
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146299926.127,
+      "elapsed_ms": 985.795166015625
+    },
+    {
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146295302.3254,
+      "elapsed_ms": 6348.556396484375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146305394.5173,
+      "elapsed_ms": 820.854248046875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146306234.45,
+      "elapsed_ms": 769.686279296875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146307008.1155,
+      "elapsed_ms": 851.74609375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146308283.6838,
+      "elapsed_ms": 1016.464599609375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146309305.1768,
+      "elapsed_ms": 765.03173828125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146310077.7065,
+      "elapsed_ms": 772.80419921875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146310853.2957,
+      "elapsed_ms": 1795.451904296875
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146313644.6953,
+      "elapsed_ms": 1085.46923828125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146314737.463,
+      "elapsed_ms": 1112.7568359375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146315853.4004,
+      "elapsed_ms": 978.195068359375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146316842.3574,
+      "elapsed_ms": 1344.850830078125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146318357.2302,
+      "elapsed_ms": 1334.4365234375
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146319701.2876,
+      "elapsed_ms": 844.5439453125
+    },
+    {
+      "function": "scan",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\sources.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146320550.567,
+      "elapsed_ms": 1136.993896484375
+    },
+    {
+      "function": "CodeGraph.refresh",
+      "source_file": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-migration-final-skills\\vibelens\\scripts\\bo_observer\\code_graph\\service.py",
+      "request_path": "/api/view",
+      "wall_ms": 1795146313457.366,
+      "elapsed_ms": 10117.4013671875
+    }
+  ]
+}

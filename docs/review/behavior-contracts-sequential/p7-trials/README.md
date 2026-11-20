@@ -88,3 +88,8 @@ retains P7 as `in_progress` until that complete evidence exists.
 [Repair 06](repair-06/README.md) moves presentation-file reads outside the event
 admission lock. Its complete regression passes; native recording throughput
 remains under investigation and is not accepted by this component receipt.
+
+[Repair 07](repair-07/README.md) adds bounded HTTP event batches using the same
+atomic reducer as local capture. Its full regression passes, and the native
+trial completed one recording. A later recording remains interrupted; original
+evidence and that distinction are retained in the repair receipt.
