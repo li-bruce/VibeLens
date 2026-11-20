@@ -12,6 +12,23 @@ from pathlib import Path
 import re
 
 
+def host_context_only(text):
+    """Recognize an entire injected setup message, not a user's mention of it.
+
+    Desktop sessions can prepend AGENTS instructions to the environment block.
+    A real request after that block remains public dialogue and must be retained.
+    """
+    return (
+        re.fullmatch(
+            r"\s*(?:# AGENTS\.md instructions\s*<INSTRUCTIONS>.*?</INSTRUCTIONS>\s*)?"
+            r"<environment_context>.*?</environment_context>\s*",
+            text,
+            re.S,
+        )
+        is not None
+    )
+
+
 def public_record(record):
     """Select externally visible dialogue without collecting internal context."""
     if record.get("type") != "response_item":
@@ -39,7 +56,7 @@ def public_record(record):
         for part in item.get("content", [])
         if part.get("type") in {"input_text", "output_text", "text"}
     )
-    if not text.strip() or text.lstrip().startswith("<environment_context>"):
+    if not text.strip() or (role == "user" and host_context_only(text)):
         return None
     return {"role": role, "text": text, "phase": item.get("phase")}
 

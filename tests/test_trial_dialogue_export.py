@@ -57,6 +57,24 @@ class ExportTests(unittest.TestCase):
             )
         )
 
+    def test_host_environment_with_agents_is_not_a_trial_user_answer(self):
+        text = (
+            "# AGENTS.md instructions\n\n<INSTRUCTIONS>Host setup</INSTRUCTIONS>\n"
+            "<environment_context><cwd>C:/private</cwd></environment_context>"
+        )
+        self.assertIsNone(module.public_record(self.message("user", None, text)))
+
+    def test_environment_tag_does_not_discard_a_following_actual_request(self):
+        text = (
+            "<environment_context>host</environment_context>\n"
+            "## My request:\nKeep the download rule unchanged."
+        )
+        self.assertEqual(module.public_record(self.message("user", None, text))["text"], text)
+
+    def test_user_discussion_of_agents_and_environment_is_preserved(self):
+        text = "Please review AGENTS.md and the <environment_context> example in this guide."
+        self.assertEqual(module.public_record(self.message("user", None, text))["text"], text)
+
     def test_export_preserves_cost_phase_without_exporting_private_context(self):
         root = Path(__file__).resolve().parents[1] / ".validation"
         root.mkdir(exist_ok=True)

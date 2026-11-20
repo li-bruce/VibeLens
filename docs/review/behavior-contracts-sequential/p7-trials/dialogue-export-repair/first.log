@@ -1,0 +1,24 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+.E.F....
+======================================================================
+ERROR: test_environment_tag_does_not_discard_a_following_actual_request (__main__.ExportTests.test_environment_tag_does_not_discard_a_following_actual_request)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_trial_dialogue_export.py", line 72, in test_environment_tag_does_not_discard_a_following_actual_request
+    self.assertEqual(module.public_record(self.message("user", None, text))["text"], text)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+======================================================================
+FAIL: test_host_environment_with_agents_is_not_a_trial_user_answer (__main__.ExportTests.test_host_environment_with_agents_is_not_a_trial_user_answer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_trial_dialogue_export.py", line 65, in test_host_environment_with_agents_is_not_a_trial_user_answer
+    self.assertIsNone(module.public_record(self.message("user", None, text)))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'role': 'user', 'text': '# AGENTS.md instructions\n\n<INSTRUCTIONS>Host setup</INSTRUCTIONS>\n<environment_context><cwd>C:/private</cwd></environment_context>', 'phase': None} is not None
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.016s
+
+FAILED (failures=1, errors=1)
