@@ -34,6 +34,30 @@ The prior independent trial's capture/recording findings remain preserved in its
 [assessment](review/clarity-story-20261105/TRIAL-ASSESSMENT.md). Product and packaging
 regressions do not establish universal application correctness.
 
+## Behavior-contract development branch
+
+The [ordered plan](development/behavior-contracts/implementation.md) has completed
+P0–P6 implementation and regression. P7's independent native trials and product
+delivery remain in progress; the [execution ledger](development/behavior-contracts/progress.json)
+records the evidence and current status. This section describes the development
+branch, not a completed release acceptance.
+
+| Area | Implemented behavior | Evidence boundary |
+|---|---|---|
+| Model construction | Inventory independent capabilities, state owners and shared rules before binding source | Missing-model obligations remain open even when no questions are pending. |
+| Dialogue | Optional role/depth preferences, grouped questions, partial answers and scoped graph confirmation | Implementation facts go to the coding agent; its recommendation does not become user confirmation. |
+| Behavior definitions | Versioned typed facts, actions, parameters, effects and frame conditions | Invalid references, types and unsupported bound semantics fail validation. |
+| Native correspondence | Source-bound state, decision and effect witnesses with actual invocation ownership | Static mapping, runtime capture and business outcomes have separate results. |
+| Iteration | Restore durable obligations, compare semantic dependencies and expire affected evidence | Unchanged display text can reuse evidence; changed meaning or source bindings require the relevant checks. |
+| Optional finite analysis | Explicit finite domains and assumptions, pinned TLA+/TLC adapter, preserved logical counterexamples | Checks the admitted design subset. Native implementation correspondence requires independent runtime evidence. |
+| Inspection | Original model identities connect definition details, runtime replay and logical analysis | Logical steps carry no invented runtime duration; actual producer clocks retain their own ownership. |
+
+See the [source guide](source-guide.en.md) for module
+ownership and the [acceptance matrix](development/behavior-contracts/acceptance.md)
+for the required native, iteration and desktop checks. Capture capacity is an
+explicit finite transport budget; overflow remains a reported gap and cannot
+silently produce a complete-recording result.
+
 [Protocols](../skills/vibelens/references/multilanguage.md) ·
 [Recording](../skills/vibelens/references/recorded-analysis.md) ·
 [Database support](../skills/vibelens/references/database-observation.md) ·

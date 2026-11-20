@@ -156,3 +156,10 @@ unchanged. Complete trial acceptance is still pending.
 [Repair 21](repair-21/README.md) retains the Node native Timeline duration failure. Independent producer clocks now keep measured intervals despite interleaved batch delivery; time-window loops select exact event IDs without rewriting replay order. True clock reversals remain explicit. Native trial recapture and complete desktop acceptance remain pending.
 
 [Repair 22](repair-22/README.md) retains the Node queue overflow and isolated diagnostics. Source inventory reuses unchanged excluded JavaScript findings and avoids redundant ordinary Windows path resolution while retaining link checks. Full regression and fresh installation passed; native transport sizing and complete P7 acceptance remain open.
+
+[Node initial acceptance](node-initial-repair22/README.md) retains the subsequent
+complete native run, stopped recordings, full verification and independent
+desktop acceptance. Its finite native queue is explicitly sized to the measured
+trial workload. The original fields, cases, deadlines and capture-gap checks
+remain. Python's cancellation iteration, Node's semantic change, both source
+refactors and final product scenes are still required before P7 closes.
