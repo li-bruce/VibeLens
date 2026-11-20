@@ -304,7 +304,7 @@ HTTP 等待测试通过现有检查钩子暂停真实任务，观察到“运行
 
 ## 图层和录制的读取边界
 
-- `graph-classification.js` 统一业务、状态、规则、实现、数据五类视图；API、工程结构、函数和数据操作保留为实现视图的筛选项。`layer-style.js` 统一顺序和颜色，形状表示节点类型。未分类内容单独显示，便于发现映射遗漏。
+- `graph-classification.js` 区分业务、状态、规则、实现、数据五类关注内容。`implementation-planes.js` 再把实现内容映射到入口、工程结构、代码执行三个显示层；调用、参数和数据访问随代码执行显示。`graph-layers.js` 统一图、Timeline 和视图筛选使用的显示层，`layer-style.js` 统一顺序和颜色。节点身份保持不变，未分类内容单独显示，便于发现映射遗漏。
 - `layout.js` 用 ELK 排列层与类型分组，`cluster-layout.js` 和 worker 用 D3 排列组内完整子树；两种视图共用初始平面坐标。
 - `trace-tracks.js` 在同一层行内错开并发区间；`step-hierarchy.js` 按真实父调用缩进记录条目，并显示层颜色。
 - `code_graph/service.py` 单独维护文件与导入关系，完整符号分析仍按需加载。开始录制时保存文件树，旧记录使用当时保存的树。
