@@ -1,0 +1,99 @@
+{
+  "scope": "Read-only intermediate design diagnosis, not runtime or final acceptance",
+  "source_sha256": "17644f0b8455b3274107dbe47eb918b0690e0ab2d2e2c6817e25c26c201481d8",
+  "target": "publish_announcement",
+  "required_count": 129,
+  "changed_records": {
+    "fact:file-owner": {
+      "before": {
+        "kind": "fact",
+        "id": "file-owner",
+        "object": "file",
+        "field": "owner_id",
+        "type": "string",
+        "read_basis": {
+          "timing": "before_file_view_share_or_task_submission",
+          "scope": "current_file_operation",
+          "version": "file_revision"
+        }
+      },
+      "current": {
+        "kind": "fact",
+        "id": "file-owner",
+        "object": "file",
+        "field": "owner_id",
+        "type": "string",
+        "read_basis": {
+          "timing": "before_current_file_access_decision",
+          "scope": "current_file_operation",
+          "version": "file_revision"
+        }
+      }
+    },
+    "fact:grant-active": {
+      "before": {
+        "kind": "fact",
+        "id": "grant-active",
+        "object": "grant",
+        "field": "active",
+        "type": "boolean",
+        "read_basis": {
+          "timing": "before_file_view_or_task_submission",
+          "scope": "current_file_operation",
+          "version": "grant_revision"
+        }
+      },
+      "current": {
+        "kind": "fact",
+        "id": "grant-active",
+        "object": "grant",
+        "field": "active",
+        "type": "boolean",
+        "read_basis": {
+          "timing": "before_current_file_access_decision",
+          "scope": "current_file_operation",
+          "version": "grant_revision"
+        }
+      }
+    },
+    "fact:grant-recipient": {
+      "before": {
+        "kind": "fact",
+        "id": "grant-recipient",
+        "object": "grant",
+        "field": "recipient_id",
+        "type": "string",
+        "read_basis": {
+          "timing": "before_file_view_or_task_submission",
+          "scope": "current_file_operation",
+          "version": "grant_revision"
+        }
+      },
+      "current": {
+        "kind": "fact",
+        "id": "grant-recipient",
+        "object": "grant",
+        "field": "recipient_id",
+        "type": "string",
+        "read_basis": {
+          "timing": "before_current_file_access_decision",
+          "scope": "current_file_operation",
+          "version": "grant_revision"
+        }
+      }
+    }
+  },
+  "expanded_dependency_path": [
+    "publish_announcement",
+    "state-model:announcement",
+    "guard:announcement:may_manage",
+    "policy-operation:manage_announcement",
+    "expectation:editor-has-no-file-power",
+    "policy-operation:manage_share",
+    "policy:may_manage",
+    "policy:is_owner",
+    "policy:owner",
+    "fact:file-owner"
+  ],
+  "source_modified": false
+}

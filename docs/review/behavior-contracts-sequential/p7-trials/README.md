@@ -12,6 +12,8 @@ Current evidence:
   behavior; its newly confirmed permission-timing change is in progress.
 - [Provider upgrade order](provider-upgrade-order/README.md): original strict
   rejection and verified baseline handoff, without changing runtime checks.
+- [Fact read scope](fact-read-scope/README.md): a new worker checkpoint was
+  incorrectly broadened into shared facts; dependency checks exposed the change.
 
 Both source-only refactors, the final matrix and accepted product scenes remain
 open. The history below retains earlier failures and repair-specific boundaries;

@@ -1,0 +1,1739 @@
+{
+  "blocked_count": 86,
+  "changed_record_count": 60,
+  "blocked_directly_changed": [],
+  "blocked_record_unchanged": [
+    "announcement-delete",
+    "announcement-delete-event",
+    "announcement-delete-guard",
+    "announcement-edit",
+    "announcement-edit-event",
+    "announcement-edit-guard",
+    "announcement-publish-event",
+    "announcement-publish-guard",
+    "announcement-published-read",
+    "applicability:delete_announcement",
+    "applicability:edit_announcement",
+    "applicability:list_files",
+    "applicability:publish_announcement",
+    "applicability:read_announcements",
+    "applicability:share_file",
+    "applicability:view_file",
+    "business-contains:announcements:delete_announcement",
+    "business-contains:announcements:edit_announcement",
+    "business-contains:announcements:publish_announcement",
+    "business-contains:announcements:read_announcements",
+    "business-contains:files:list_files",
+    "business-contains:files:share_file",
+    "business-contains:files:view_file",
+    "delete_announcement",
+    "edit_announcement",
+    "event-trigger:announcement:delete",
+    "event-trigger:announcement:edit",
+    "event-trigger:announcement:publish",
+    "event:announcement:delete",
+    "event:announcement:edit",
+    "event:announcement:publish",
+    "expectation:editor-own-announcement-only",
+    "file-share-revoke",
+    "file-upload-share",
+    "file-upload-view",
+    "guard-decision:guard%3Aannouncement%3Amay_manage",
+    "guard-decision:guard%3Aannouncement%3Amay_publish",
+    "guard:announcement:may_manage",
+    "guard:announcement:may_publish",
+    "list_files",
+    "operation-rule:delete_announcement:manage_announcement",
+    "operation-rule:edit_announcement:manage_announcement",
+    "operation-rule:list_files:view_file",
+    "operation-rule:publish_announcement:publish_announcement",
+    "operation-rule:read_announcements:read_announcements",
+    "operation-rule:share_file:manage_share",
+    "operation-rule:view_file:view_file",
+    "operation-state:delete_announcement:announcement",
+    "operation-state:edit_announcement:announcement",
+    "operation-state:list_files:grant",
+    "operation-state:publish_announcement:announcement",
+    "operation-state:read_announcements:announcement",
+    "operation-state:share_file:grant",
+    "operation-state:view_file:grant",
+    "policy-operation:view_file",
+    "policy-result:view_file",
+    "publish_announcement",
+    "read_announcements",
+    "share-event",
+    "share_file",
+    "state-contains:announcement:absent",
+    "state-contains:announcement:deleted",
+    "state-contains:announcement:published",
+    "state-event:announcement:delete",
+    "state-event:announcement:edit",
+    "state-event:announcement:publish",
+    "state-guard:announcement:may_manage",
+    "state-guard:announcement:may_publish",
+    "state-model:announcement",
+    "state-subject:announcement",
+    "state-transition:announcement:delete:published",
+    "state-transition:announcement:edit:published",
+    "state-transition:announcement:publish:absent",
+    "state:announcement:absent",
+    "state:announcement:deleted",
+    "state:announcement:published",
+    "transition-guard:announcement:delete:may_manage",
+    "transition-guard:announcement:edit:may_manage",
+    "transition-guard:announcement:publish:may_publish",
+    "transition-target:announcement:delete",
+    "transition-target:announcement:edit",
+    "transition-target:announcement:publish",
+    "transition:announcement:delete",
+    "transition:announcement:edit",
+    "transition:announcement:publish",
+    "view_file"
+  ],
+  "blocked_records": [
+    {
+      "id": "announcement-delete",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "delete_announcement",
+        "relation": "flow"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "delete_announcement",
+        "relation": "flow"
+      }
+    },
+    {
+      "id": "announcement-delete-event",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "delete_announcement",
+        "to": "event:announcement:delete",
+        "relation": "action_requests_event"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "delete_announcement",
+        "to": "event:announcement:delete",
+        "relation": "action_requests_event"
+      }
+    },
+    {
+      "id": "announcement-delete-guard",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "transition:announcement:delete",
+        "to": "policy-operation:manage_announcement",
+        "relation": "transition_guarded_by"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "transition:announcement:delete",
+        "to": "policy-operation:manage_announcement",
+        "relation": "transition_guarded_by"
+      }
+    },
+    {
+      "id": "announcement-edit",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "edit_announcement",
+        "relation": "flow"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "edit_announcement",
+        "relation": "flow"
+      }
+    },
+    {
+      "id": "announcement-edit-event",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "edit_announcement",
+        "to": "event:announcement:edit",
+        "relation": "action_requests_event"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "edit_announcement",
+        "to": "event:announcement:edit",
+        "relation": "action_requests_event"
+      }
+    },
+    {
+      "id": "announcement-edit-guard",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "transition:announcement:edit",
+        "to": "policy-operation:manage_announcement",
+        "relation": "transition_guarded_by"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "transition:announcement:edit",
+        "to": "policy-operation:manage_announcement",
+        "relation": "transition_guarded_by"
+      }
+    },
+    {
+      "id": "announcement-publish-event",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "event:announcement:publish",
+        "relation": "action_requests_event"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "event:announcement:publish",
+        "relation": "action_requests_event"
+      }
+    },
+    {
+      "id": "announcement-publish-guard",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "transition:announcement:publish",
+        "to": "policy-operation:publish_announcement",
+        "relation": "transition_guarded_by"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "transition:announcement:publish",
+        "to": "policy-operation:publish_announcement",
+        "relation": "transition_guarded_by"
+      }
+    },
+    {
+      "id": "announcement-published-read",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "read_announcements",
+        "relation": "data"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "read_announcements",
+        "relation": "data"
+      }
+    },
+    {
+      "id": "applicability:delete_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "applicability",
+        "operation": "delete_announcement",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "announcement"
+          ],
+          "mode": "change"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "manage_announcement"
+          ]
+        }
+      },
+      "new": {
+        "kind": "applicability",
+        "operation": "delete_announcement",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "announcement"
+          ],
+          "mode": "change"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "manage_announcement"
+          ]
+        }
+      }
+    },
+    {
+      "id": "applicability:edit_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "applicability",
+        "operation": "edit_announcement",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "announcement"
+          ],
+          "mode": "change"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "manage_announcement"
+          ]
+        }
+      },
+      "new": {
+        "kind": "applicability",
+        "operation": "edit_announcement",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "announcement"
+          ],
+          "mode": "change"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "manage_announcement"
+          ]
+        }
+      }
+    },
+    {
+      "id": "applicability:list_files",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "applicability",
+        "operation": "list_files",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "grant"
+          ],
+          "mode": "read"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "view_file"
+          ]
+        }
+      },
+      "new": {
+        "kind": "applicability",
+        "operation": "list_files",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "grant"
+          ],
+          "mode": "read"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "view_file"
+          ]
+        }
+      }
+    },
+    {
+      "id": "applicability:publish_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "applicability",
+        "operation": "publish_announcement",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "announcement"
+          ],
+          "mode": "change"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "publish_announcement"
+          ]
+        }
+      },
+      "new": {
+        "kind": "applicability",
+        "operation": "publish_announcement",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "announcement"
+          ],
+          "mode": "change"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "publish_announcement"
+          ]
+        }
+      }
+    },
+    {
+      "id": "applicability:read_announcements",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "applicability",
+        "operation": "read_announcements",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "announcement"
+          ],
+          "mode": "read"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "read_announcements"
+          ]
+        }
+      },
+      "new": {
+        "kind": "applicability",
+        "operation": "read_announcements",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "announcement"
+          ],
+          "mode": "read"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "read_announcements"
+          ]
+        }
+      }
+    },
+    {
+      "id": "applicability:share_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "applicability",
+        "operation": "share_file",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "grant"
+          ],
+          "mode": "change"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "manage_share"
+          ]
+        }
+      },
+      "new": {
+        "kind": "applicability",
+        "operation": "share_file",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "grant"
+          ],
+          "mode": "change"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "manage_share"
+          ]
+        }
+      }
+    },
+    {
+      "id": "applicability:view_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "applicability",
+        "operation": "view_file",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "grant"
+          ],
+          "mode": "read"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "view_file"
+          ]
+        }
+      },
+      "new": {
+        "kind": "applicability",
+        "operation": "view_file",
+        "state": {
+          "status": "applicable",
+          "models": [
+            "grant"
+          ],
+          "mode": "read"
+        },
+        "rules": {
+          "status": "applicable",
+          "operations": [
+            "view_file"
+          ]
+        }
+      }
+    },
+    {
+      "id": "business-contains:announcements:delete_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "business-network:announcements",
+        "to": "delete_announcement",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "business-network:announcements",
+        "to": "delete_announcement",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "business-contains:announcements:edit_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "business-network:announcements",
+        "to": "edit_announcement",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "business-network:announcements",
+        "to": "edit_announcement",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "business-contains:announcements:publish_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "business-network:announcements",
+        "to": "publish_announcement",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "business-network:announcements",
+        "to": "publish_announcement",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "business-contains:announcements:read_announcements",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "business-network:announcements",
+        "to": "read_announcements",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "business-network:announcements",
+        "to": "read_announcements",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "business-contains:files:list_files",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "business-network:files",
+        "to": "list_files",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "business-network:files",
+        "to": "list_files",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "business-contains:files:share_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "business-network:files",
+        "to": "share_file",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "business-network:files",
+        "to": "share_file",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "business-contains:files:view_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "business-network:files",
+        "to": "view_file",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "business-network:files",
+        "to": "view_file",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "delete_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "action",
+        "meaning": "An authenticated announcement editor may delete only an announcement they authored."
+      },
+      "new": {
+        "kind": "action",
+        "meaning": "An authenticated announcement editor may delete only an announcement they authored."
+      }
+    },
+    {
+      "id": "edit_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "action",
+        "meaning": "An authenticated announcement editor may edit only an announcement they authored."
+      },
+      "new": {
+        "kind": "action",
+        "meaning": "An authenticated announcement editor may edit only an announcement they authored."
+      }
+    },
+    {
+      "id": "event-trigger:announcement:delete",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "event:announcement:delete",
+        "to": "transition:announcement:delete",
+        "relation": "requests_transition"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "event:announcement:delete",
+        "to": "transition:announcement:delete",
+        "relation": "requests_transition"
+      }
+    },
+    {
+      "id": "event-trigger:announcement:edit",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "event:announcement:edit",
+        "to": "transition:announcement:edit",
+        "relation": "requests_transition"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "event:announcement:edit",
+        "to": "transition:announcement:edit",
+        "relation": "requests_transition"
+      }
+    },
+    {
+      "id": "event-trigger:announcement:publish",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "event:announcement:publish",
+        "to": "transition:announcement:publish",
+        "relation": "requests_transition"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "event:announcement:publish",
+        "to": "transition:announcement:publish",
+        "relation": "requests_transition"
+      }
+    },
+    {
+      "id": "event:announcement:delete",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "event",
+        "payload": {}
+      },
+      "new": {
+        "kind": "event",
+        "payload": {}
+      }
+    },
+    {
+      "id": "event:announcement:edit",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "event",
+        "payload": {}
+      },
+      "new": {
+        "kind": "event",
+        "payload": {}
+      }
+    },
+    {
+      "id": "event:announcement:publish",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "event",
+        "payload": {}
+      },
+      "new": {
+        "kind": "event",
+        "payload": {}
+      }
+    },
+    {
+      "id": "expectation:editor-own-announcement-only",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "expectation",
+        "id": "editor-own-announcement-only",
+        "scope": [
+          "edit_announcement",
+          "delete_announcement"
+        ],
+        "given": {
+          "editor": true,
+          "is_author": false
+        },
+        "when": {
+          "operations": [
+            "edit_announcement",
+            "delete_announcement"
+          ]
+        },
+        "then": [
+          {
+            "path": [
+              "allowed"
+            ],
+            "equals": false
+          }
+        ]
+      },
+      "new": {
+        "kind": "expectation",
+        "id": "editor-own-announcement-only",
+        "scope": [
+          "edit_announcement",
+          "delete_announcement"
+        ],
+        "given": {
+          "editor": true,
+          "is_author": false
+        },
+        "when": {
+          "operations": [
+            "edit_announcement",
+            "delete_announcement"
+          ]
+        },
+        "then": [
+          {
+            "path": [
+              "allowed"
+            ],
+            "equals": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "file-share-revoke",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "share_file",
+        "to": "revoke_share",
+        "relation": "flow"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "share_file",
+        "to": "revoke_share",
+        "relation": "flow"
+      }
+    },
+    {
+      "id": "file-upload-share",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "upload_file",
+        "to": "share_file",
+        "relation": "data"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "upload_file",
+        "to": "share_file",
+        "relation": "data"
+      }
+    },
+    {
+      "id": "file-upload-view",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "upload_file",
+        "to": "view_file",
+        "relation": "data"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "upload_file",
+        "to": "view_file",
+        "relation": "data"
+      }
+    },
+    {
+      "id": "guard-decision:guard%3Aannouncement%3Amay_manage",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "guard:announcement:may_manage",
+        "to": "policy-operation:manage_announcement",
+        "relation": "guard_resolves_decision"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "guard:announcement:may_manage",
+        "to": "policy-operation:manage_announcement",
+        "relation": "guard_resolves_decision"
+      }
+    },
+    {
+      "id": "guard-decision:guard%3Aannouncement%3Amay_publish",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "guard:announcement:may_publish",
+        "to": "policy-operation:publish_announcement",
+        "relation": "guard_resolves_decision"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "guard:announcement:may_publish",
+        "to": "policy-operation:publish_announcement",
+        "relation": "guard_resolves_decision"
+      }
+    },
+    {
+      "id": "guard:announcement:may_manage",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "guard",
+        "decision": "policy-operation:manage_announcement"
+      },
+      "new": {
+        "kind": "guard",
+        "decision": "policy-operation:manage_announcement"
+      }
+    },
+    {
+      "id": "guard:announcement:may_publish",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "guard",
+        "decision": "policy-operation:publish_announcement"
+      },
+      "new": {
+        "kind": "guard",
+        "decision": "policy-operation:publish_announcement"
+      }
+    },
+    {
+      "id": "list_files",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "action",
+        "meaning": "List only files the authenticated colleague may currently view, using the same current viewing permission as file details. This records the existing native listFiles behavior."
+      },
+      "new": {
+        "kind": "action",
+        "meaning": "List only files the authenticated colleague may currently view, using the same current viewing permission as file details. This records the existing native listFiles behavior."
+      }
+    },
+    {
+      "id": "operation-rule:delete_announcement:manage_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "delete_announcement",
+        "to": "policy-operation:manage_announcement",
+        "relation": "requires_decision"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "delete_announcement",
+        "to": "policy-operation:manage_announcement",
+        "relation": "requires_decision"
+      }
+    },
+    {
+      "id": "operation-rule:edit_announcement:manage_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "edit_announcement",
+        "to": "policy-operation:manage_announcement",
+        "relation": "requires_decision"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "edit_announcement",
+        "to": "policy-operation:manage_announcement",
+        "relation": "requires_decision"
+      }
+    },
+    {
+      "id": "operation-rule:list_files:view_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "list_files",
+        "to": "policy-operation:view_file",
+        "relation": "requires_decision"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "list_files",
+        "to": "policy-operation:view_file",
+        "relation": "requires_decision"
+      }
+    },
+    {
+      "id": "operation-rule:publish_announcement:publish_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "policy-operation:publish_announcement",
+        "relation": "requires_decision"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "policy-operation:publish_announcement",
+        "relation": "requires_decision"
+      }
+    },
+    {
+      "id": "operation-rule:read_announcements:read_announcements",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "read_announcements",
+        "to": "policy-operation:read_announcements",
+        "relation": "requires_decision"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "read_announcements",
+        "to": "policy-operation:read_announcements",
+        "relation": "requires_decision"
+      }
+    },
+    {
+      "id": "operation-rule:share_file:manage_share",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "share_file",
+        "to": "policy-operation:manage_share",
+        "relation": "requires_decision"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "share_file",
+        "to": "policy-operation:manage_share",
+        "relation": "requires_decision"
+      }
+    },
+    {
+      "id": "operation-rule:view_file:view_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "view_file",
+        "to": "policy-operation:view_file",
+        "relation": "requires_decision"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "view_file",
+        "to": "policy-operation:view_file",
+        "relation": "requires_decision"
+      }
+    },
+    {
+      "id": "operation-state:delete_announcement:announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "delete_announcement",
+        "to": "state-model:announcement",
+        "relation": "changes_state"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "delete_announcement",
+        "to": "state-model:announcement",
+        "relation": "changes_state"
+      }
+    },
+    {
+      "id": "operation-state:edit_announcement:announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "edit_announcement",
+        "to": "state-model:announcement",
+        "relation": "changes_state"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "edit_announcement",
+        "to": "state-model:announcement",
+        "relation": "changes_state"
+      }
+    },
+    {
+      "id": "operation-state:list_files:grant",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "list_files",
+        "to": "state-model:grant",
+        "relation": "reads_state"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "list_files",
+        "to": "state-model:grant",
+        "relation": "reads_state"
+      }
+    },
+    {
+      "id": "operation-state:publish_announcement:announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "state-model:announcement",
+        "relation": "changes_state"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "publish_announcement",
+        "to": "state-model:announcement",
+        "relation": "changes_state"
+      }
+    },
+    {
+      "id": "operation-state:read_announcements:announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "read_announcements",
+        "to": "state-model:announcement",
+        "relation": "reads_state"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "read_announcements",
+        "to": "state-model:announcement",
+        "relation": "reads_state"
+      }
+    },
+    {
+      "id": "operation-state:share_file:grant",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "share_file",
+        "to": "state-model:grant",
+        "relation": "changes_state"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "share_file",
+        "to": "state-model:grant",
+        "relation": "changes_state"
+      }
+    },
+    {
+      "id": "operation-state:view_file:grant",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "view_file",
+        "to": "state-model:grant",
+        "relation": "reads_state"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "view_file",
+        "to": "state-model:grant",
+        "relation": "reads_state"
+      }
+    },
+    {
+      "id": "policy-operation:view_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "rule_operation",
+        "id": "view_file",
+        "root": "may_access"
+      },
+      "new": {
+        "kind": "rule_operation",
+        "id": "view_file",
+        "root": "may_access"
+      }
+    },
+    {
+      "id": "policy-result:view_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "policy:may_access",
+        "to": "policy-operation:view_file",
+        "relation": "decision_result"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "policy:may_access",
+        "to": "policy-operation:view_file",
+        "relation": "decision_result"
+      }
+    },
+    {
+      "id": "publish_announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "action",
+        "meaning": "The designated announcement editor may publish their own announcement."
+      },
+      "new": {
+        "kind": "action",
+        "meaning": "The designated announcement editor may publish their own announcement."
+      }
+    },
+    {
+      "id": "read_announcements",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "action",
+        "meaning": "Authenticated colleagues may read published announcements without file access."
+      },
+      "new": {
+        "kind": "action",
+        "meaning": "Authenticated colleagues may read published announcements without file access."
+      }
+    },
+    {
+      "id": "share-event",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "share_file",
+        "to": "event:grant:share",
+        "relation": "action_requests_event"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "share_file",
+        "to": "event:grant:share",
+        "relation": "action_requests_event"
+      }
+    },
+    {
+      "id": "share_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "action",
+        "meaning": "The uploader grants file access to a named colleague; recipients cannot re-share."
+      },
+      "new": {
+        "kind": "action",
+        "meaning": "The uploader grants file access to a named colleague; recipients cannot re-share."
+      }
+    },
+    {
+      "id": "state-contains:announcement:absent",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "state:announcement:absent",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "state:announcement:absent",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "state-contains:announcement:deleted",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "state:announcement:deleted",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "state:announcement:deleted",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "state-contains:announcement:published",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "state:announcement:published",
+        "relation": "contains"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "state:announcement:published",
+        "relation": "contains"
+      }
+    },
+    {
+      "id": "state-event:announcement:delete",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "event:announcement:delete",
+        "relation": "declares_event"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "event:announcement:delete",
+        "relation": "declares_event"
+      }
+    },
+    {
+      "id": "state-event:announcement:edit",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "event:announcement:edit",
+        "relation": "declares_event"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "event:announcement:edit",
+        "relation": "declares_event"
+      }
+    },
+    {
+      "id": "state-event:announcement:publish",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "event:announcement:publish",
+        "relation": "declares_event"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "event:announcement:publish",
+        "relation": "declares_event"
+      }
+    },
+    {
+      "id": "state-guard:announcement:may_manage",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "guard:announcement:may_manage",
+        "relation": "declares_guard"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "guard:announcement:may_manage",
+        "relation": "declares_guard"
+      }
+    },
+    {
+      "id": "state-guard:announcement:may_publish",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "guard:announcement:may_publish",
+        "relation": "declares_guard"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "guard:announcement:may_publish",
+        "relation": "declares_guard"
+      }
+    },
+    {
+      "id": "state-model:announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "state_model",
+        "id": "announcement",
+        "subject": {
+          "object": "announcement",
+          "identity": [
+            "announcement_id"
+          ]
+        },
+        "initial": "absent",
+        "context": {
+          "author_id": {
+            "type": "string"
+          }
+        },
+        "members": {
+          "states": [
+            "absent",
+            "published",
+            "deleted"
+          ],
+          "events": [
+            "publish",
+            "edit",
+            "delete"
+          ],
+          "guards": [
+            "may_publish",
+            "may_manage"
+          ],
+          "effects": [],
+          "transitions": [
+            "publish",
+            "edit",
+            "delete"
+          ]
+        }
+      },
+      "new": {
+        "kind": "state_model",
+        "id": "announcement",
+        "subject": {
+          "object": "announcement",
+          "identity": [
+            "announcement_id"
+          ]
+        },
+        "initial": "absent",
+        "context": {
+          "author_id": {
+            "type": "string"
+          }
+        },
+        "members": {
+          "states": [
+            "absent",
+            "published",
+            "deleted"
+          ],
+          "events": [
+            "publish",
+            "edit",
+            "delete"
+          ],
+          "guards": [
+            "may_publish",
+            "may_manage"
+          ],
+          "effects": [],
+          "transitions": [
+            "publish",
+            "edit",
+            "delete"
+          ]
+        }
+      }
+    },
+    {
+      "id": "state-subject:announcement",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "object:announcement",
+        "relation": "state_subject"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state-model:announcement",
+        "to": "object:announcement",
+        "relation": "state_subject"
+      }
+    },
+    {
+      "id": "state-transition:announcement:delete:published",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state:announcement:published",
+        "to": "state:announcement:deleted",
+        "relation": "transition",
+        "transition": "transition:announcement:delete",
+        "trigger": "delete",
+        "conditions": [
+          "may_manage"
+        ],
+        "unless": []
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state:announcement:published",
+        "to": "state:announcement:deleted",
+        "relation": "transition",
+        "transition": "transition:announcement:delete",
+        "trigger": "delete",
+        "conditions": [
+          "may_manage"
+        ],
+        "unless": []
+      }
+    },
+    {
+      "id": "state-transition:announcement:edit:published",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state:announcement:published",
+        "to": "state:announcement:published",
+        "relation": "transition",
+        "transition": "transition:announcement:edit",
+        "trigger": "edit",
+        "conditions": [
+          "may_manage"
+        ],
+        "unless": []
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state:announcement:published",
+        "to": "state:announcement:published",
+        "relation": "transition",
+        "transition": "transition:announcement:edit",
+        "trigger": "edit",
+        "conditions": [
+          "may_manage"
+        ],
+        "unless": []
+      }
+    },
+    {
+      "id": "state-transition:announcement:publish:absent",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "state:announcement:absent",
+        "to": "state:announcement:published",
+        "relation": "transition",
+        "transition": "transition:announcement:publish",
+        "trigger": "publish",
+        "conditions": [
+          "may_publish"
+        ],
+        "unless": []
+      },
+      "new": {
+        "kind": "relation",
+        "from": "state:announcement:absent",
+        "to": "state:announcement:published",
+        "relation": "transition",
+        "transition": "transition:announcement:publish",
+        "trigger": "publish",
+        "conditions": [
+          "may_publish"
+        ],
+        "unless": []
+      }
+    },
+    {
+      "id": "state:announcement:absent",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "state",
+        "name": "absent"
+      },
+      "new": {
+        "kind": "state",
+        "name": "absent"
+      }
+    },
+    {
+      "id": "state:announcement:deleted",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "state",
+        "name": "deleted"
+      },
+      "new": {
+        "kind": "state",
+        "name": "deleted"
+      }
+    },
+    {
+      "id": "state:announcement:published",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "state",
+        "name": "published"
+      },
+      "new": {
+        "kind": "state",
+        "name": "published"
+      }
+    },
+    {
+      "id": "transition-guard:announcement:delete:may_manage",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "transition:announcement:delete",
+        "to": "guard:announcement:may_manage",
+        "relation": "guarded_by",
+        "negated": false
+      },
+      "new": {
+        "kind": "relation",
+        "from": "transition:announcement:delete",
+        "to": "guard:announcement:may_manage",
+        "relation": "guarded_by",
+        "negated": false
+      }
+    },
+    {
+      "id": "transition-guard:announcement:edit:may_manage",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "transition:announcement:edit",
+        "to": "guard:announcement:may_manage",
+        "relation": "guarded_by",
+        "negated": false
+      },
+      "new": {
+        "kind": "relation",
+        "from": "transition:announcement:edit",
+        "to": "guard:announcement:may_manage",
+        "relation": "guarded_by",
+        "negated": false
+      }
+    },
+    {
+      "id": "transition-guard:announcement:publish:may_publish",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "transition:announcement:publish",
+        "to": "guard:announcement:may_publish",
+        "relation": "guarded_by",
+        "negated": false
+      },
+      "new": {
+        "kind": "relation",
+        "from": "transition:announcement:publish",
+        "to": "guard:announcement:may_publish",
+        "relation": "guarded_by",
+        "negated": false
+      }
+    },
+    {
+      "id": "transition-target:announcement:delete",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "transition:announcement:delete",
+        "to": "state:announcement:deleted",
+        "relation": "declares_target"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "transition:announcement:delete",
+        "to": "state:announcement:deleted",
+        "relation": "declares_target"
+      }
+    },
+    {
+      "id": "transition-target:announcement:edit",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "transition:announcement:edit",
+        "to": "state:announcement:published",
+        "relation": "declares_target"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "transition:announcement:edit",
+        "to": "state:announcement:published",
+        "relation": "declares_target"
+      }
+    },
+    {
+      "id": "transition-target:announcement:publish",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "relation",
+        "from": "transition:announcement:publish",
+        "to": "state:announcement:published",
+        "relation": "declares_target"
+      },
+      "new": {
+        "kind": "relation",
+        "from": "transition:announcement:publish",
+        "to": "state:announcement:published",
+        "relation": "declares_target"
+      }
+    },
+    {
+      "id": "transition:announcement:delete",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "transition",
+        "id": "delete",
+        "source": "published",
+        "dest": "deleted",
+        "trigger": "delete",
+        "conditions": [
+          "may_manage"
+        ],
+        "priority": 2
+      },
+      "new": {
+        "kind": "transition",
+        "id": "delete",
+        "source": "published",
+        "dest": "deleted",
+        "trigger": "delete",
+        "conditions": [
+          "may_manage"
+        ],
+        "priority": 2
+      }
+    },
+    {
+      "id": "transition:announcement:edit",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "transition",
+        "id": "edit",
+        "source": "published",
+        "dest": "published",
+        "trigger": "edit",
+        "conditions": [
+          "may_manage"
+        ],
+        "priority": 1
+      },
+      "new": {
+        "kind": "transition",
+        "id": "edit",
+        "source": "published",
+        "dest": "published",
+        "trigger": "edit",
+        "conditions": [
+          "may_manage"
+        ],
+        "priority": 1
+      }
+    },
+    {
+      "id": "transition:announcement:publish",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "transition",
+        "id": "publish",
+        "source": "absent",
+        "dest": "published",
+        "trigger": "publish",
+        "conditions": [
+          "may_publish"
+        ],
+        "priority": 0
+      },
+      "new": {
+        "kind": "transition",
+        "id": "publish",
+        "source": "absent",
+        "dest": "published",
+        "trigger": "publish",
+        "conditions": [
+          "may_publish"
+        ],
+        "priority": 0
+      }
+    },
+    {
+      "id": "view_file",
+      "record_directly_changed": false,
+      "old": {
+        "kind": "action",
+        "meaning": "Only the uploader or a currently designated recipient may view file metadata. Other colleagues cannot discover the file."
+      },
+      "new": {
+        "kind": "action",
+        "meaning": "Only the uploader or a currently designated recipient may view file metadata. Other colleagues cannot discover the file."
+      }
+    }
+  ]
+}

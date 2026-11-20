@@ -186,6 +186,17 @@ Shared rules bring their dependent operations into review. A code move, label
 change or equivalent refactor updates bindings and tests without repeating a
 settled business question.
 
+When adding a later decision point, compare its fact timing, scope and version
+basis with the existing reads. The same database column can supply distinct facts
+at request submission and at worker admission. Bind those reads to their actual
+checkpoints; reuse the predicate definition where its meaning is unchanged.
+Keep existing fact definitions when their original uses have not changed. If a
+shared fact's meaning really changes, review its affected consumers and joint
+expectations rather than cloning it to avoid review. For an unexpected blocked
+consumer, retain the changed records and exact dependency path before deciding
+whether the model or the dependency checker needs repair. Reconfirming unchanged
+business scope merely to clear the report is not a repair.
+
 Run scan, inspect, verify, accept and check. Keep these results separate:
 
 - Definition legality and recorded confirmation.
