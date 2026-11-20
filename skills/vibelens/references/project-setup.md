@@ -59,6 +59,11 @@ Pay particular attention to three native boundaries:
   sending a fabricated reference. Check that return before marking local
   snapshot initialization complete. Existing capture/transport errors remain
   health failures; an omitted pre-state must not be reconstructed from the end state.
+  A later read of an unchanged state keeps the native revision and has its own
+  evidence ID and frame. Mark it `read`, without a transition event/guards/payload.
+  The collector compares the complete state, context, configuration and build;
+  conflicting content or an older revision remains rejected. Do not increment a
+  business revision merely to make observation pass.
 - **Capture fields:** declare fields actually read or returned at each boundary.
   For uploads, an explicit byte count can represent content without collecting the
   file. Verify all declared fields and HTTP error returns; do not reuse a broad

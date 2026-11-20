@@ -432,4 +432,10 @@ The older delivery example’s [HTTP adapter](../examples/delivery/integrations/
 
 ## Distribution adapters
 
+`observation/snapshot_reads.py` recognizes an exact read of the current validated
+native version. `GraphSession.snapshot` checks source and evidence ownership first,
+retains a distinct replay frame, and leaves the state engine unchanged. Python
+and JavaScript probes validate application-level acceptance receipts after HTTP
+delivery; recording settlement continues to report actual capture errors.
+
 The canonical Skill lives in `skills/vibelens/`. `plugins/deepseek-harness/` registers it with the pinned host and binds explicit invocation to the real conversation. `distributions/skillhub/` contains the local archive bootstrap for that catalog's file limit. `tools/build_distribution.py` packages the same canonical bytes and emits checksums. `tools/harness-tests/` tests the actual host registry and invocation pipeline; `tests/test_distribution.py` verifies archive parity, isolation and tamper rejection.

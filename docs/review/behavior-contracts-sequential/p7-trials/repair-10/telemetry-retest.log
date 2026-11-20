@@ -1,0 +1,22 @@
+...........Attempting to instrument Flask app while already instrumented
+....................F
+======================================================================
+FAIL: test_upstream_urllib_instrumentation_does_not_record_observer_transport (__main__.TelemetryTests.test_upstream_urllib_instrumentation_does_not_record_observer_transport)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_telemetry.py", line 959, in test_upstream_urllib_instrumentation_does_not_record_observer_transport
+    self.assertEqual([event["phase"] for event in received], ["enter", "return"])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['enter', 'return', 'enter', 'return'] != ['enter', 'return']
+
+First list contains 2 additional elements.
+First extra element 2:
+'enter'
+
+- ['enter', 'return', 'enter', 'return']
++ ['enter', 'return']
+
+----------------------------------------------------------------------
+Ran 32 tests in 3.437s
+
+FAILED (failures=1)

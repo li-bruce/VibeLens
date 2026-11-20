@@ -1,5 +1,11 @@
 # P7 — Independent candidate trials
 
+The later canonical repairs and their separate gates are indexed in
+[`repair-09`](repair-09/README.md) and [`repair-10`](repair-10/README.md).
+The original failed recordings remain preserved. Current native acceptance,
+iteration and complete desktop checks are still open; a repair gate alone does
+not close this phase.
+
 Status: in progress. P0–P6 were implemented, regressed and committed before
 creating either trial. Initial candidate: `87ab32d5` on
 `feat/behavior-contracts-sequential`. No merge, release or public deployment.

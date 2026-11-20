@@ -911,11 +911,30 @@ class TelemetryTests(unittest.TestCase):
         from threading import Thread
         from opentelemetry.instrumentation.urllib import URLLibInstrumentor
 
+        project = self.project
+        received = []
+
         class Collector(BaseHTTPRequestHandler):
             def do_POST(self):
-                self.rfile.read(int(self.headers["Content-Length"]))
+                body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                batch = self.path.endswith("/events/batch")
+                events = body["events"] if batch else [body]
+                for event in events:
+                    validate_event(event, project, "build")
+                received.extend(events)
+                # This transport fixture must acknowledge the same contract as
+                # the real collector. An empty 200 now correctly means failure.
+                receipt = (
+                    [{"accepted": True} for _ in events]
+                    if batch
+                    else {"accepted": True}
+                )
+                raw = json.dumps(receipt).encode()
                 self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(raw)))
                 self.end_headers()
+                self.wfile.write(raw)
 
             def log_message(self, *args):
                 pass
@@ -937,6 +956,7 @@ class TelemetryTests(unittest.TestCase):
         spans = self.exporter.get_finished_spans()
         self.assertEqual([span.name for span in spans], ["advance"])
         self.assertEqual(probe.bo_errors, 0, probe.bo_health())
+        self.assertEqual([event["phase"] for event in received], ["enter", "return"])
 
     def test_noop_provider_does_not_masquerade_as_working_capture(self):
         from opentelemetry.trace import NoOpTracerProvider

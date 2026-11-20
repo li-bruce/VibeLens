@@ -288,7 +288,14 @@ export class BOProbe {
   /** Adopt an already-emitted native call; synchronous return identity stays untouched. */
   bo_call_context(node, callId, identity, callback) {
     if (!bo_invocation_store && !this.bo_tracing) return callback();
-    const state = { probe: this, node, callId, identity, entryId: identity.entryId, active: true };
+    const state = {
+      probe: this,
+      node,
+      callId,
+      identity,
+      entryId: identity.entryId,
+      active: true,
+    };
     const run = this.bo_tracing ? this.bo_tracing : bo_invocation_store;
     return run.run(state, () => {
       try {
@@ -301,7 +308,14 @@ export class BOProbe {
 
   async bo_call_context_async(node, callId, identity, callback) {
     if (!bo_invocation_store && !this.bo_tracing) return await callback();
-    const state = { probe: this, node, callId, identity, entryId: identity.entryId, active: true };
+    const state = {
+      probe: this,
+      node,
+      callId,
+      identity,
+      entryId: identity.entryId,
+      active: true,
+    };
     const run = this.bo_tracing ? this.bo_tracing : bo_invocation_store;
     return await run.run(state, async () => {
       try {
@@ -523,7 +537,9 @@ export class BOProbe {
         revision = null,
         lifecycle = null,
         provenance = null,
-      } = this.bo_context_options(options, { allowEnded: boundary === "start" });
+      } = this.bo_context_options(options, {
+        allowEnded: boundary === "start",
+      });
       if (!this.bo_nodes.has(node)) throw Error("Unknown capture node");
       const spec = this.bo_nodes.get(node).capture || {};
       if (
@@ -557,7 +573,11 @@ export class BOProbe {
         call_id: callId || id,
         parent_call_id: parentCallId,
         parent_event_id: parentEventId,
-        basis: bo_selected(basis, { param_version: "number", epoch: "number", clock: "number" }),
+        basis: bo_selected(basis, {
+          param_version: "number",
+          epoch: "number",
+          clock: "number",
+        }),
         inputs: bo_selected(values.inputs || {}, spec.in || {}),
         outputs: bo_selected(values.outputs || {}, spec.out || {}),
         depends,
@@ -688,7 +708,10 @@ export class BOProbe {
         const sendRequest = () =>
           fetch(`${this.bo_endpoint}/api/bo/${kind}`, {
             method: "POST",
-            headers: { "Content-Type": "application/json", "X-BO-Token": this.bo_token },
+            headers: {
+              "Content-Type": "application/json",
+              "X-BO-Token": this.bo_token,
+            },
             body: JSON.stringify(body),
             signal: AbortSignal.timeout(this.bo_timeout),
           });
@@ -708,6 +731,12 @@ export class BOProbe {
             receipts.some((receipt) => receipt?.accepted !== true)
           )
             throw Error("Event batch lacks acceptance receipts");
+        } else {
+          // A 200 response can still contain a rejected state observation.
+          // Delivery health reflects the collector's receipt, not HTTP alone.
+          const receipt = await response.json();
+          if (!receipt || Array.isArray(receipt) || receipt.accepted !== true)
+            throw Error("Observation lacks an acceptance receipt");
         }
         return;
       } catch (error) {
@@ -727,7 +756,16 @@ export class BOProbe {
         } finally {
           this.bo_internal = false;
         }
-        await pending;
+        const receipt = await pending;
+        // Plain local callbacks historically return no receipt. An explicit
+        // negative receipt is different and must remain visible in health.
+        if (
+          receipt &&
+          typeof receipt === "object" &&
+          Object.hasOwn(receipt, "accepted") &&
+          receipt.accepted !== true
+        )
+          throw Error("Collector rejected observation");
       } else {
         await this.bo_request(item.kind, item.body);
       }
@@ -765,7 +803,10 @@ export class BOProbe {
           try {
             await this.bo_request(
               "events/batch",
-              { protocol: "bo-event-batch/v1", events: items.map((item) => item.body) },
+              {
+                protocol: "bo-event-batch/v1",
+                events: items.map((item) => item.body),
+              },
               true,
             );
             this.bo_completed += items.length;

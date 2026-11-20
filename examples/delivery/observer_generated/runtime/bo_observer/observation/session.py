@@ -18,6 +18,7 @@ from .capture_context import call_key, invocation_boundary, minimal_boundary
 from .concept_context import ConceptContext
 from .capture_bridge import CaptureBridge
 from .behavior_context import BehaviorContext
+from .snapshot_reads import matches_current_read
 
 OPEN_CONTEXT_LIMIT = 10000
 
@@ -253,31 +254,41 @@ class GraphSession:
                 raise ValueError("instance limit reached")
             if evidence.get("snapshot_instance") not in (None, ident):
                 raise ValueError("event already belongs to another instance snapshot")
-            previous = next(
-                (
-                    i["observed"]
-                    for i in self.graph.bo_instances()
-                    if i["observed"]["instance_id"] == ident
-                ),
+            previous_entry = next(
+                (i for i in self.graph.bo_instances() if i["observed"]["instance_id"] == ident),
                 None,
             )
-            result = self.graph.bo_observe(
-                ident,
-                **({"state_model_id": model_id} if model_id is not None else {}),
-                **{
-                    k: value[k]
-                    for k in (
-                        "state",
-                        "context",
-                        "revision",
-                        "evidence_id",
-                        "build_id",
-                        "configuration",
-                        "event",
-                        "guards",
-                        "payload",
-                    )
-                },
+            previous = previous_entry["observed"] if previous_entry else None
+            read_witness = matches_current_read(value, evidence, previous_entry)
+            # A fresh read has another evidence ID but does not replace the
+            # engine's version/transition. Keep its frame independently. True
+            # duplicates still reuse their original frame and byte accounting.
+            result = (
+                {
+                    "accepted": True,
+                    "duplicate": value["evidence_id"] in self.frames,
+                    "observation": "read",
+                    "errors": [],
+                }
+                if read_witness
+                else self.graph.bo_observe(
+                    ident,
+                    **({"state_model_id": model_id} if model_id is not None else {}),
+                    **{
+                        k: value[k]
+                        for k in (
+                            "state",
+                            "context",
+                            "revision",
+                            "evidence_id",
+                            "build_id",
+                            "configuration",
+                            "event",
+                            "guards",
+                            "payload",
+                        )
+                    },
+                )
             )
             if result["accepted"]:
                 self.owners[ident] = owner

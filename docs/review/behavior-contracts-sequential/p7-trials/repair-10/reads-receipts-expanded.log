@@ -1,0 +1,21 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+......E.....
+======================================================================
+ERROR: test_retried_read_does_not_duplicate_frame_or_bytes (test_snapshot_reads.SnapshotReadTests.test_retried_read_does_not_duplicate_frame_or_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_snapshot_reads.py", line 115, in test_retried_read_does_not_duplicate_frame_or_bytes
+    receipt = self.session.snapshot(value)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\observation\session.py", line 236, in snapshot
+    value = validate_snapshot(value, self.project, self.manifest["build_id"])
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\protocol.py", line 193, in validate_snapshot
+    schema_check(value, "snapshot")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\protocol.py", line 66, in schema_check
+    raise ValueError("; ".join(f"{list(e.path)}: {e.message}" for e in errors[:12]))
+ValueError: []: Additional properties are not allowed ('schema' was unexpected); []: 'protocol' is a required property; []: 'model_revision' is a required property; []: 'state_model_id' is a required property
+
+----------------------------------------------------------------------
+Ran 12 tests in 5.710s
+
+FAILED (errors=1)

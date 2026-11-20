@@ -1,0 +1,100 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Same-version read frames and explicit collector receipt validation; not final native acceptance",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "2c4cd43ebaa4b6b608a0adb063cfb2fab8267256",
+  "gates": {
+    "focused": {
+      "tests": 100,
+      "exit_code": 0,
+      "log": "focused.log"
+    },
+    "source": {
+      "valid": true,
+      "receipt": "source.json"
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "log": "full-verify-second.log",
+      "unittest_suites": 101,
+      "unittest_reported_tests": 1138,
+      "skips": 1,
+      "tlc": "Pinned TLC 1.7.4 and Java 17 enabled"
+    },
+    "managed_examples": {
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ],
+      "business_source_unchanged": true,
+      "frozen_round": "behavior-contracts-p7-repair10-20261120"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json",
+      "revision": "5adfae9b312e3d20fe7d94c5eaaf5add4361e5c3"
+    }
+  },
+  "retained_failures": [
+    "snapshot-reads-first.log",
+    "probe-receipts-first.log",
+    "reads-receipts-expanded.log",
+    "source-first.log",
+    "first-managed-review.log",
+    "full-verify-retest.log",
+    "telemetry-retest.log"
+  ],
+  "prior_trial_diagnosis": [
+    "python-prior-timing.md",
+    "python-prior-boundaries.json"
+  ],
+  "remaining": [
+    "Python and Node native recording acceptance, including capture settlement.",
+    "Independent Web/Timeline interactions, semantic iteration and source-only refactor.",
+    "Accepted product material and final P7 closure."
+  ],
+  "candidate_files": [
+    {
+      "path": "skills/vibelens/scripts/bo_observer/observation/snapshot_reads.py",
+      "sha256": "13c10aae8d219b3c9c4a68fd0b727d5fdc82253cf3610c02b04c0b9a79beccee"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/observation/session.py",
+      "sha256": "cfa5e938a6edbd72c0317a84cbeb9feef45898f35f01fb639bc0274c67913402"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/adapters/python/bo_probe.py",
+      "sha256": "8d7505627b0ff5fa510c610dfdb8c5bdc66e2e2603e4987a743b08a72ab6f34c"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs",
+      "sha256": "82b13e06a44d5db40808b4dce514be697302ae00865247004eb7cbe88731975f"
+    },
+    {
+      "path": "tests/test_snapshot_reads.py",
+      "sha256": "5583744262862b9249b4833cab66ca086816e032b6e03feaf2cf04541d78526f"
+    },
+    {
+      "path": "tests/test_probe_receipts.py",
+      "sha256": "93876f3fa85f81e0e7c171e129c2f88a866a8eb5ee662eea2816f8b355558b53"
+    },
+    {
+      "path": "tests/test_telemetry.py",
+      "sha256": "0bb0c646870c3b95756ca8d7f34519b5f7fe48747d2d289c122d9a91c3ee99b6"
+    },
+    {
+      "path": "tools/verify.py",
+      "sha256": "61431a3a82901116bbc536b3bebe2d3d1c6a9be5e1cc6c4d053ee90b8b40a6ab"
+    },
+    {
+      "path": "skills/vibelens/references/project-setup.md",
+      "sha256": "73ebc41a584a6ef8ef7d4648f32fc2aa7c1a6b24f003c62f7d59ef7002abdcdb"
+    },
+    {
+      "path": "skills/vibelens/references/recorded-analysis.md",
+      "sha256": "159539092ff59816d7d7a16aac8ed8737ad23351223dd831efbe3f08174f9786"
+    }
+  ]
+}

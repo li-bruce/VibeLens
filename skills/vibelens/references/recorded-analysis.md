@@ -24,6 +24,10 @@ Stop flushes the queue prefix already submitted when the barrier begins; later
 application refreshes cannot extend that target. Include snapshots in the prefix
 and retain target/completed/submitted/pending counters. Do not raise deadlines,
 hide dropped events or exclude native refresh requests to make a trial pass.
+HTTP 200 alone does not prove admission: event and snapshot deliveries require
+`accepted: true`. A negative or missing remote receipt is a capture error.
+Local callbacks may retain their legacy no-receipt contract; an explicit rejection
+must still appear in producer health and the recording's gaps.
 
 Keep three read boundaries separate: current graph identity for list/get/clear,
 runtime evidence for periodic checkpoints, and static source context when capture
@@ -79,6 +83,12 @@ Set `runtime_frames.partial: true` when snapshots accompany only state-change ev
 Project phase labels take precedence for business-phase changes. Activity enums use activity meanings. Raw captured strings remain raw; the value `pending` in a parameter must not automatically become the activity label "Not started". Missing optional display labels fall back to the original state ID.
 
 Obtain frames from transactional snapshots/version history; periodic sampling cannot reconstruct intervening changes. Missing frames stay unknown; start/end snapshots prove only endpoints. Frame count/bytes share recording limits.
+
+A fresh read of the same validated version retains its own bounded frame without
+updating native state or repeating a transition journal entry. Source/build,
+model/instance, producer, evidence and revision checks still apply. Only a `read`
+witness with identical complete state can reuse that version; transition claims,
+conflicting values and older versions follow the original strict checks.
 
 machine.configurations retains existing run structure. machine.shared_resources stores one global entry per actual resource-node ID with selected fields. presentation.runtime_owner identifies the abstract node showing flow changes. Viewer shows before/after flow/activity/resource values without fabricating per-run pools. Project scenarios still verify global mutual exclusion/capacity/fairness. Snapshot differences alone do not prove calls or causality.
 

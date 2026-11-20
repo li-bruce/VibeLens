@@ -541,9 +541,12 @@ class BOProbe:
         return False
 
     def bo_send_one(self, kind, raw):
-        """Deliver an original envelope through the existing local or HTTP contract."""
+        """Require HTTP acceptance; preserve no-receipt legacy local callbacks."""
         if self.bo_sink:
-            return self.bo_sink(json.loads(raw), kind)
+            result = self.bo_sink(json.loads(raw), kind)
+            if isinstance(result, dict) and "accepted" in result and result["accepted"] is not True:
+                raise ValueError("Collector rejected observation")
+            return result
         req = Request(
             self.bo_endpoint + "/api/bo/" + kind,
             data=raw,
@@ -551,7 +554,10 @@ class BOProbe:
             method="POST",
         )
         with urlopen(req, timeout=self.bo_timeout) as response:
-            response.read(32768)
+            receipt = json.loads(response.read(32768))
+        if not isinstance(receipt, dict) or receipt.get("accepted") is not True:
+            raise ValueError("Observation lacks an acceptance receipt")
+        return receipt
 
     def bo_transport_error(self, error):
         self.bo_errors += 1

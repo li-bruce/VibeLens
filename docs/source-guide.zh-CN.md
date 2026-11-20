@@ -276,4 +276,9 @@ HTTP 等待测试通过现有检查钩子暂停真实任务，观察到“运行
 
 ## 发布适配模块
 
+`observation/snapshot_reads.py` 识别同一有效状态版本的再次读取。
+`GraphSession.snapshot` 先核对源码与证据归属，再保存独立回放帧；读取不改变原生
+状态，也不重复生成转换记录。Python 和 JavaScript 探针在 HTTP 请求后检查实际接收
+回执，拒收会计入采集错误并反映在录制结果中。
+
 完整 Skill 位于 `skills/vibelens/`。`plugins/deepseek-harness/` 负责宿主注册与当前对话绑定；`distributions/skillhub/` 处理目录平台的文件数限制，在本地校验并解包资源。`tools/build_distribution.py` 打包同一份源码并输出校验信息。`tools/harness-tests/` 检查真实宿主的调用流程，`tests/test_distribution.py` 检查包内容、对话隔离及篡改拒绝。
