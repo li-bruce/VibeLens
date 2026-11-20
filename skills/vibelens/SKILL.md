@@ -70,6 +70,11 @@ Observe HTTP boundaries before rejecting middleware and parsers. Test actual ear
 responses as well as handler results; a request rejected before business execution
 must retain its API response evidence without inventing a business invocation.
 
+When browser recordings supply acceptance evidence, use the canonical evidence
+export and rerun the complete gate after capture. Preserve native snapshots,
+per-producer tracing and current declaration identities as described in
+[recording evidence](references/multilanguage.md#recording-evidence-for-the-coding-gate).
+
 Store the mode decision and complete model in `bo_stategraph/project.json`. Use `bo-project/v2` with pinned discovery and behavior artifacts for this modeling workflow; existing `bo-project/v1` projects retain their original checks until explicitly migrated. `model.machines` registers independent state declarations by stable model ID; drive mode binds each to its selected native executor. Snapshot v2 carries `state_model_id` alongside the actual instance identity. Legacy `model.machine` remains supported. Bind functions through stable source references; do not embed executable function code in JSON. Existing Python projects may retain a v3 graph and a shared `bo_stategraph/machine.json` consumed by their real executor and graph generator. Never edit generated copies independently.
 
 Carry confirmed rule identities into `model.policy`, bind native predicate functions and parameters, and register independent operation cases. `bo_policy.py sync` generates their nodes, shared dependencies and business/source links in the same graph. Drive may use the native evaluator; observe captures the application's actual evaluation. Record each check separately and retain skipped, unknown and error evidence. See the rule reference for the JSON and probe interfaces.

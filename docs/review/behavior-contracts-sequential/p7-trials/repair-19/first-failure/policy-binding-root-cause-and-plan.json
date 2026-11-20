@@ -1,0 +1,24 @@
+{
+  "status": "root_cause_and_concrete_binding_design_checked_implementation_pending_repair19",
+  "project_entry": "integrations/bo_observe.mjs::bo_create line 55",
+  "live_entry": "integrations/bo_observe.mjs::bo_start line 150",
+  "stale_source": "review/policy-fingerprint.json",
+  "observed_policy_hash": "0bef0516679409c7052399a7c20647ae15205120c55621ac80514b9c5e29898b",
+  "canonical_bound_policy_hash": "e0a2fb193c646dfc93c4dbfffbafa7f9d184c0896e12b01838f99f4d2e57fec0",
+  "static_bo_policy_check_valid": true,
+  "canonical_source": "bo_observer.model_io.read_model + bo_observer.policy.definition.validate(bound=True)/fingerprint",
+  "current_collector_receipt_fields": [
+    "endpoint",
+    "token",
+    "build_id"
+  ],
+  "design": [
+    "Resolve and validate the one current bound policy via installed canonical capabilities, with current manifest/build freshness checked.",
+    "Have bo_create obtain that canonical policy/build binding for both live bootstrap and native tests; options.policyHash becomes a checked expected value, never an overriding source.",
+    "Remove the review/policy-fingerprint.json fallback, preserving that old artifact as historical evidence. Do not merely rewrite its value.",
+    "Use a small project adapter around the installed Python API or repair19 public binding/export API; do not implement JavaScript JSON canonicalization or re-evaluate native authorization.",
+    "Reject observer initialization if caller policy/build and canonical binding disagree. Preserve optional-observer startup so native business execution survives observer absence.",
+    "After repair19 installation, implement source binding, refresh managed/source review, run normal tests and complete new recording with a newly attested build; never rewrite old event hashes."
+  ],
+  "source_edited_for_this_design": false
+}

@@ -71,6 +71,11 @@ SDK 与原生上下文，以及观察器关闭或传输失败时的业务结果�
 `bo_integrate.py` 安装最小原生依赖，并与已安装 Skill 的源码核对；源码扫描仅将核对通过的框架副本排除出业务覆盖检查。
 `observation/capture_bridge.py` 协调跨进程录制范围和队列排空，原生 `bo_capture` 客户端只处理这些观测操作。业务状态转换仍由项目执行。
 
+[observation/recording_evidence.py](../skills/vibelens/scripts/bo_observer/observation/recording_evidence.py)
+从正常停止的录制导出原生验证信封。`session.py` 保留原始快照及接收顺序，
+`runtime_frames.py` 将它们与显示投影一并保存。`bo_trace.py evidence` 恢复生产者
+序号，原采集协议仍严格校验；远程健康信息按生产者保留追踪来源。导出后仍需运行完整验证。
+
 `concept-flow-layout.js` 根据关系类型为 ELK 提供业务、状态和规则的布局方向，
 `layout.js` 负责嵌套区域与位置保存。`concepts/presentation.py` 校验可选链路标签引用的节点、边和确认来源；布局不修改图中的实际关系。
 

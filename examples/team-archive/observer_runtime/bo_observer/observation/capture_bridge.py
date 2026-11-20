@@ -164,13 +164,42 @@ class CaptureBridge:
                         "producer_id": producer,
                         **{
                             key: client["health"].get(key, 0)
-                            for key in ("errors", "dropped", "pending", "transport_retries")
+                            for key in (
+                                "errors",
+                                "dropped",
+                                "pending",
+                                "transport_retries",
+                            )
                         },
                         "last_error": self.safe_error(client["health"].get("last_error")),
+                        **self.safe_tracing(client["health"].get("tracing")),
                     }
                     for producer, client in self.clients.items()
                 ],
             }
+
+    @staticmethod
+    def safe_tracing(value):
+        """Retain per-producer backend evidence without arbitrary SDK attributes."""
+        if not isinstance(value, dict) or value.get("backend") != "opentelemetry":
+            return {}
+        fields = (
+            "open_spans",
+            "automatic_open",
+            "automatic_errors",
+            "ignored",
+            "external_build_contexts",
+        )
+        return {
+            "tracing": {
+                "backend": "opentelemetry",
+                **{
+                    key: value[key]
+                    for key in fields
+                    if type(value.get(key)) is int and value[key] >= 0
+                },
+            }
+        }
 
     def safe_error(self, value):
         """Expose code identities only; arbitrary exception messages can contain user data."""

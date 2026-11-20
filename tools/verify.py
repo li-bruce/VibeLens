@@ -65,6 +65,7 @@ def main():
     run(ROOT, "tests/test_viewer_dependencies.py")
     run(ROOT, "tests/test_integration_boundary.py")
     run(ROOT, "tests/test_capture_bridge.py")
+    run(ROOT, "tests/test_recording_evidence.py")
     run(ROOT, "tests/test_concept_routes.py")
     run(ROOT, "tests/test_node_explanations.py")
     run(ROOT, "tests/test_semantic_names.py")

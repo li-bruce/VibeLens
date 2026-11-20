@@ -73,6 +73,13 @@ framework copies from business coverage and carries integrity errors into the ga
 coordinates remote recording scope and queue flushes; native `bo_capture` clients
 only acknowledge those operations. Business state transitions remain native.
 
+[observation/recording_evidence.py](../skills/vibelens/scripts/bo_observer/observation/recording_evidence.py)
+exports strict native envelopes from settled recordings. `session.py` retains
+original snapshots with their own receipt order; `runtime_frames.py` carries them
+beside display projections. `bo_trace.py evidence` restores producer sequences
+without weakening wire validation. Remote health retains each producer's tracing
+backend. Exported facts still require the existing complete verification gates.
+
 Conceptual flow geometry is in
 [concept-flow-layout.js](../skills/vibelens/assets/stategraph-viewer/concept-flow-layout.js).
 It selects typed ordering constraints for ELK, then feeds compound packing in

@@ -1,0 +1,105 @@
+{
+  "valid": false,
+  "error_count": 1358,
+  "error_counts": {
+    "missing_tracing_backend": 1,
+    "missing_state_snapshot": 6,
+    "native_event_invalid": 1264,
+    "policy evaluation belongs to another declaration": 83,
+    "project test failed: ['{python}', '-B', 'tooling/project_checks.py']": 1,
+    "behavior_evidence_missing": 3
+  },
+  "report_statuses": {
+    "mapping": "failed",
+    "state_rules": "passed",
+    "project_checks": "failed",
+    "business": "passed",
+    "concepts": "passed"
+  },
+  "tests": [
+    {
+      "argv": [
+        "node",
+        "--test",
+        "tests/business.test.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tests/http-boundary.mjs",
+        "after"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "{python}",
+        "-B",
+        "tooling/project_checks.py"
+      ],
+      "exit_code": 1
+    },
+    {
+      "argv": [
+        "node",
+        "--test",
+        "tests/concurrency.test.mjs"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "mapping_parts": {
+    "database": {
+      "valid": true,
+      "errors": 0
+    },
+    "code_structure": {
+      "valid": true,
+      "errors": 0
+    },
+    "api_observation": {
+      "valid": true,
+      "errors": 0
+    },
+    "producer_health": {
+      "valid": true,
+      "errors": 0
+    },
+    "invocation_closure": {
+      "valid": true,
+      "errors": 0
+    },
+    "layers": {
+      "valid": null,
+      "errors": 0
+    },
+    "snapshot_admission": {
+      "valid": false,
+      "errors": 6
+    },
+    "behavior": {
+      "valid": false,
+      "errors": 1264
+    },
+    "policy": {
+      "valid": false,
+      "errors": 83
+    },
+    "concept_associations": {
+      "valid": true,
+      "errors": 0
+    },
+    "implementation": {
+      "valid": null,
+      "errors": 0
+    }
+  },
+  "invocation_closure": {
+    "valid": true,
+    "closed_calls": 565,
+    "legacy_events": 0,
+    "errors": []
+  }
+}

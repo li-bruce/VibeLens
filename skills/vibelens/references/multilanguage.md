@@ -111,6 +111,34 @@ Run actual full/focused recordings, queued-stop, timeout, on/off/fault and zero
 observer-write cases. Keep source/identity checks, event gaps and application
 effects independent of recording health.
 
+### Recording evidence for the coding gate
+
+Use the installed exporter when a browser recording becomes a verification run:
+
+```bash
+python <skill>/scripts/bo_trace.py evidence --root <project> --recording review/recording.json --out review/recording-evidence.json
+```
+
+Add the exported `events`, `snapshots`, `probe_health` and `recording_id` to the
+on-mode case, together with independent native results and the actual policy
+evaluation reports. The exporter restores producer sequence numbers from stored
+receipt metadata. Wire ingress remains strict. It preserves original snapshot
+envelopes and their recorded receipt order; display frames and final state cannot
+replace missing native snapshots. Old recordings remain unchanged and may lack
+these envelopes. Such gaps still fail verification.
+
+Export is not acceptance. Run the complete gate after assembling real browser
+evidence, including snapshot admission, tracing provenance, policy identity,
+capture/native value comparison and independent business assertions. Keep the
+first failed report. Verify remote tracing against each participating span
+producer, rather than borrowing another producer's backend health.
+
+Derive policy identity from the current pinned declaration for both live startup
+and test startup (`bo_policy.py fingerprint --root <project>`). Keep any generated
+bootstrap artifact in the normal source/build dependency chain and refresh it
+when that declaration changes. A cached review report is not a runtime identity
+source. A stale policy hash must fail before recording; do not relabel old events.
+
 ## Installation
 
 ```bash

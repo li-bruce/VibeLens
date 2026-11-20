@@ -12,7 +12,11 @@ CONFIG = "bo_stategraph/telemetry.json"
 
 def validate_registrations(value, model):
     """Reject ambiguous selectors, stale source bindings and undeclared payload fields."""
-    if not isinstance(value, dict) or set(value) != {"protocol", "backend", "registrations"}:
+    if not isinstance(value, dict) or set(value) != {
+        "protocol",
+        "backend",
+        "registrations",
+    }:
         raise ValueError("invalid telemetry configuration fields")
     if value["protocol"] != "bo-telemetry/v1" or value["backend"] != "opentelemetry":
         raise ValueError("unsupported telemetry backend/protocol")
@@ -21,7 +25,12 @@ def validate_registrations(value, model):
         raise ValueError("invalid telemetry registrations")
     nodes, selectors = {n["id"]: n for n in model["nodes"]}, set()
     for item in items:
-        if not isinstance(item, dict) or set(item) - {"node", "source", "match", "capture"}:
+        if not isinstance(item, dict) or set(item) - {
+            "node",
+            "source",
+            "match",
+            "capture",
+        }:
             raise ValueError("invalid telemetry registration")
         node = nodes.get(item.get("node"))
         if not node or not node.get("source") or item.get("source") != node["source"]:
@@ -100,7 +109,43 @@ def runtime_errors(configuration, payload):
     for run in payload.get("runs", []):
         if run.get("mode") != "on":
             continue
-        if (run.get("probe_health") or {}).get("tracing", {}).get("backend") != "opentelemetry":
+        health = run.get("probe_health") or {}
+        if "producer_details" in health:
+            # A remote recording can contain both browser and server producers.
+            # One producer's SDK cannot vouch for another producer's spans.
+            details = health["producer_details"]
+            details = details if isinstance(details, list) else []
+            required = {
+                event.get("producer_id")
+                for event in run.get("events", [])
+                if event.get("lifecycle") == "span" or event.get("node") in registered
+            }
+            if not required and not any(
+                isinstance(item, dict)
+                and isinstance(item.get("tracing"), dict)
+                and item["tracing"].get("backend") == "opentelemetry"
+                for item in details
+            ):
+                errors.append({"case": run.get("case"), "missing_tracing_backend": True})
+            for producer in sorted(required, key=str):
+                matching = [
+                    item
+                    for item in details
+                    if isinstance(item, dict) and item.get("producer_id") == producer
+                ]
+                if (
+                    len(matching) != 1
+                    or not isinstance(matching[0].get("tracing"), dict)
+                    or matching[0]["tracing"].get("backend") != "opentelemetry"
+                ):
+                    errors.append(
+                        {
+                            "case": run.get("case"),
+                            "producer_id": producer,
+                            "missing_tracing_backend": True,
+                        }
+                    )
+        elif health.get("tracing", {}).get("backend") != "opentelemetry":
             errors.append({"case": run.get("case"), "missing_tracing_backend": True})
         for event in run.get("events", []):
             if (

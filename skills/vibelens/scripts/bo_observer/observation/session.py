@@ -82,6 +82,7 @@ class GraphSession:
         self.frames = OrderedDict()
         self.frame_bytes = 0
         self.frame_evictions = 0
+        self.bo_snapshot_sequence = 0
         self.history = EventHistory(
             project_root=self.root, path=self.root / "bo_stategraph/data/events.jsonl"
         )
@@ -289,6 +290,8 @@ class GraphSession:
                         cfg["state_transition"] = transition
                         journal = [transition]
                     frame = {
+                        "native_snapshot": deepcopy(value),
+                        "snapshot_seq": self.bo_snapshot_sequence + 1,
                         "event_id": value["evidence_id"],
                         "run_id": value["run_id"],
                         "build_id": value["build_id"],
@@ -312,6 +315,7 @@ class GraphSession:
                         },
                     }
                     size = len(json.dumps(frame, ensure_ascii=False, allow_nan=False).encode())
+                    self.bo_snapshot_sequence = frame["snapshot_seq"]
                     self.frames[value["evidence_id"]] = (frame, size)
                     self.frame_bytes += size
                     while len(self.frames) > 2000 or self.frame_bytes > 16 * 1024 * 1024:

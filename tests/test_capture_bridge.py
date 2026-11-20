@@ -122,6 +122,41 @@ class CaptureBridgeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unsupported capture control command"):
             self.session.bo_capture_bridge.request("execute", source="app.py")
 
+    def test_health_preserves_real_tracing_backend_by_producer(self):
+        from bo_observer.adapters.python.bo_otel import BOOpenTelemetry
+        from opentelemetry.sdk.trace import TracerProvider
+        from bo_observer.observation.telemetry import runtime_errors
+
+        probe, _ = self.client()
+        provider = TracerProvider()
+        self.addCleanup(provider.shutdown)
+        probe.bo_bind_tracing(BOOpenTelemetry(provider.get_tracer("recording-test")))
+        with probe.span("advance", lambda: {}):
+            pass
+        self.assertTrue(self.session.bo_capture_bridge.flush())
+        health = self.session.bo_capture_bridge.health()
+        self.assertEqual(
+            health["producer_details"][0]["tracing"]["backend"], "opentelemetry"
+        )
+        run = {
+            "case": "remote",
+            "mode": "on",
+            "events": self.session.view()["events"],
+            "probe_health": health,
+        }
+        config = {"registrations": []}
+        self.assertEqual(runtime_errors(config, {"runs": [run]}), [])
+        # Another producer's report and even an aggregate backend cannot replace
+        # the actual span producer's SDK evidence.
+        health["tracing"] = {"backend": "opentelemetry"}
+        health["producer_details"][0]["producer_id"] = "other"
+        self.assertTrue(
+            runtime_errors(config, {"runs": [run]})[0]["missing_tracing_backend"]
+        )
+        health["producer_details"] = []
+        run["events"] = []
+        self.assertTrue(runtime_errors(config, {"runs": [run]})[0]["missing_tracing_backend"])
+
     def test_malformed_health_does_not_complete_a_request(self):
         bridge = self.session.bo_capture_bridge
         base = {

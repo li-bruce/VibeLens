@@ -5,14 +5,14 @@ from hashlib import sha256
 import json
 from pathlib import Path
 
-from bo_observer.policy.definition import validate
+from bo_observer.policy.definition import validate, fingerprint
 from bo_observer.policy.evidence import evaluation_errors
 from bo_observer.policy.sync import synchronize
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["validate", "sync", "check"])
+    parser.add_argument("command", choices=["validate", "fingerprint", "sync", "check"])
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--model", default="bo_stategraph/project.json")
     parser.add_argument("--policy", help="Standalone declaration for initial dialogue modeling")
@@ -20,12 +20,16 @@ def main():
     parser.add_argument("--evaluation", help="Actual native policy evaluation JSON")
     args = parser.parse_args()
     root = args.root.resolve()
-    if args.command == "validate":
+    if args.command in {"validate", "fingerprint"}:
         path = (root / (args.policy or args.model)).resolve()
         if not path.is_relative_to(root):
             parser.error("policy path escapes project")
-        value = json.loads(path.read_text(encoding="utf-8-sig"))
-        policy = value if args.policy else value.get("model", value).get("policy")
+        if args.policy:
+            policy = json.loads(path.read_text(encoding="utf-8-sig"))
+        else:
+            from bo_observer.model_io import read_model
+
+            policy = read_model(path, project_root=root).get("policy")
         result = validate(policy, bound=not args.draft)
         report = {
             "valid": True,
@@ -34,6 +38,8 @@ def main():
             "operations": list(result["operations"]),
             "order": result["order"],
         }
+        if args.command == "fingerprint":
+            report.update(policy_hash=fingerprint(policy), policy_revision=policy["revision"])
     else:
         report = synchronize(root, model_path=args.model, update=args.command == "sync")
         if args.command == "check" and report["enabled"] and report["valid"]:

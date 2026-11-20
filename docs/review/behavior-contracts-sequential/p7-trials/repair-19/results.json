@@ -1,0 +1,78 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "93ff0dd24eb367cdf9f72ca1a7b73e0a85efd1ab",
+  "scope": "Explicit strict native-evidence export from settled recordings; original snapshot retention and producer-specific SDK health",
+  "gates": {
+    "full_regression": {
+      "exit_code": 0,
+      "unittest_reports": 116,
+      "reported_tests": 1293,
+      "reported_skips": 1,
+      "log": "full-final.log"
+    },
+    "targeted": {
+      "exit_code": 0,
+      "unittest_reports": 1,
+      "reported_tests": 85,
+      "reported_skips": 0,
+      "log": "targeted.log"
+    },
+    "expanded": {
+      "exit_code": 0,
+      "unittest_reports": 1,
+      "reported_tests": 38,
+      "reported_skips": 0,
+      "log": "expanded-retest.log"
+    },
+    "final_targeted": {
+      "exit_code": 0,
+      "unittest_reports": 1,
+      "reported_tests": 19,
+      "reported_skips": 0,
+      "log": "final-targeted.log"
+    },
+    "source": {
+      "valid": true,
+      "python_modules": 248,
+      "javascript_modules": 142
+    },
+    "managed_examples": {
+      "valid": true,
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ]
+    },
+    "installation": {
+      "valid": true,
+      "owned_files": 463,
+      "receipt": "installation-final.json"
+    },
+    "installed_collector": {
+      "valid": true,
+      "receipt": "installed-final.json"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json"
+    }
+  },
+  "retained_failures": [
+    "first-failure/post-recording-verify/failure-breakdown.json",
+    "frozen-baseline.json",
+    "expanded.log",
+    "source.log",
+    "full.log",
+    "full-retest.log"
+  ],
+  "public_evidence": "Unmodified review members and per-member hashes; collector secrets and raw DBs remain private",
+  "pending": [
+    "Node native baseline recording and independent desktop checks after the bootstrap fix",
+    "Python cancellation browser capture and independent desktop checks",
+    "Node semantic iteration; both source-only refactors",
+    "Complete final native/UI acceptance and local product scene export"
+  ]
+}

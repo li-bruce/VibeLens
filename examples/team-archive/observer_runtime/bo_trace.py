@@ -18,6 +18,13 @@ def main():
     export = sub.add_parser("export")
     export.add_argument("--recording", type=Path, required=True)
     export.add_argument("--out", type=Path, required=True)
+    evidence = sub.add_parser(
+        "evidence", help="Export captured native facts for separate verification"
+    )
+    evidence.add_argument("--root", type=Path, required=True)
+    evidence.add_argument("--project", default="bo_stategraph/project.json")
+    evidence.add_argument("--recording", type=Path, required=True)
+    evidence.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     if args.command == "check":
         model = read_model(args.root / args.model)
@@ -28,12 +35,38 @@ def main():
                 {
                     "valid": not errors,
                     "backend": "opentelemetry" if configuration else "native",
-                    "registrations": len(configuration["registrations"]) if configuration else 0,
+                    "registrations": (len(configuration["registrations"]) if configuration else 0),
                     "errors": errors,
                 }
             )
         )
         return int(bool(errors))
+    if args.command == "evidence":
+        from behavior_model import capture
+        from bo_observer.project_artifacts import load_project
+        from bo_observer.observation.recording_evidence import export_evidence
+
+        project = load_project(args.root, args.project)
+        build_id = capture(args.root, project["model"])["build_id"]
+        recording = json.loads(args.recording.read_text(encoding="utf-8"))
+        result = export_evidence(recording, project, build_id)
+        if args.out.resolve() == args.recording.resolve():
+            parser.error("evidence output must not overwrite the original recording")
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(
+            json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        print(
+            json.dumps(
+                {
+                    "exported": True,
+                    "events": len(result["events"]),
+                    "snapshots": len(result["snapshots"]),
+                    "acceptance": "not_run",
+                }
+            )
+        )
+        return 0
     value = json.loads(args.recording.read_text(encoding="utf-8"))
     events = (
         value

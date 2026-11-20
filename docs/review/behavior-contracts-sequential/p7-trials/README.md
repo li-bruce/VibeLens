@@ -144,3 +144,9 @@ failure and OS-backed reproduction. It adds explicit complete-image collection
 for atomic file publishers, retaining ordinary transactional/WAL behavior and
 all catalog checks. Final trial captures, iterations and source refactors remain
 separate acceptance requirements.
+
+[Repair 19](repair-19/README.md) preserves Node's normally stopped recordings and
+the subsequently failed full verification. It adds explicit native-evidence
+export, original snapshot retention and per-producer tracing health. The trial's
+stale live policy fingerprint is a separate bootstrap defect; old records remain
+unchanged. Complete trial acceptance is still pending.

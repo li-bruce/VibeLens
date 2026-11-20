@@ -83,6 +83,16 @@ def merge_frames(recording, view, checkpoint):
             selected = checkpoint({**view, "authority": frame["authority"], "machine": machine})
             clean = {k: deepcopy(frame[k]) for k in ("event_id", "run_id", "build_id", "revision")}
             clean.update(machine=selected["machine"], authority=selected["authority"])
+            if "native_snapshot" in frame or "snapshot_seq" in frame:
+                from .recording_evidence import frame_snapshot
+
+                # Preserve the original accepted wire facts as well as the
+                # selected display projection. Neither one replaces the other.
+                project = {"project_id": event["project_id"], "model": view["model"]}
+                clean["native_snapshot"] = frame_snapshot(
+                    frame, event, project, recording["build_id"]
+                )
+                clean["snapshot_seq"] = frame["snapshot_seq"]
             json.dumps(clean, allow_nan=False)
         except (KeyError, TypeError, ValueError, AttributeError):
             gap("Invalid runtime snapshot content; the step remains missing.")

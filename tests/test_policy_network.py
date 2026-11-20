@@ -289,6 +289,37 @@ class PolicyTests(unittest.TestCase):
             self.assertNotEqual(second.returncode, 0)
             self.assertTrue(any("stale" in error for error in json.loads(second.stdout)["errors"]))
 
+    def test_fingerprint_cli_reads_current_declaration_instead_of_review_cache(self):
+        with tempfile.TemporaryDirectory(dir=TEMP) as folder:
+            root = Path(folder)
+            document = root / "model.json"
+            graph = self.graph()
+            document.write_text(json.dumps(graph), encoding="utf-8")
+            command = [
+                sys.executable,
+                "-B",
+                "-X",
+                "utf8",
+                str(ROOT / "skills/vibelens/scripts/bo_policy.py"),
+                "fingerprint",
+                "--root",
+                str(root),
+                "--model",
+                "model.json",
+            ]
+            hashes = []
+            for label in ("Shared policy", "共享规则"):
+                graph["policy"]["revision"] = label
+                document.write_text(json.dumps(graph), encoding="utf-8")
+                result = subprocess.run(
+                    command, capture_output=True, text=True, encoding="utf-8"
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                report = json.loads(result.stdout)
+                self.assertEqual(report["policy_hash"], fingerprint(graph["policy"]))
+                hashes.append(report["policy_hash"])
+            self.assertNotEqual(*hashes)
+
     def test_concurrent_requests_do_not_share_values(self):
         def one(i):
             return self.run_policy(
