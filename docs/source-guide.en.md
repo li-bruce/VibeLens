@@ -1,41 +1,8 @@
 # Source guide
 
-`data/sqlite_snapshot.py` handles explicitly declared immutable SQLite file
-publishers. It pins one published image through a temporary Windows hard link,
-releases file handles before SQLAlchemy reflection, and rejects WAL, unsupported
-driver options and oversized images. `catalog.py` retains the normal read-only
-transactional path; both paths use the same Inspector and catalog validation.
-
 [中文](source-guide.zh-CN.md) · [Usage](usage.en.md) · [Architecture](refactor-multilanguage.md)
 
 Read this guide when you want to change the Skill, inspect a recorded value, or find the code behind a graph interaction. The maintained implementation lives in [skills/vibelens](../skills/vibelens/). Example projects contain installed copies to test real project integration.
-
-`workflow/implementation_coverage.py` checks business and technical feature
-coverage. Both retain source, parameters and runtime evidence; only business
-features require a business projection. `graph/code_structure.py` uses that
-explicit ownership for source enrichment. `workflow/review_validation.py` checks
-shared review field shapes before the state, behavior and coverage guards read
-them. Those guards still decide whether a change is authorized and verified.
-
-`observation/session.py` copies immutable build declarations outside the runtime
-admission lock. The lock protects mutable event/state cursors. Database watching
-uses `data/projection_validation.py` to remember one successfully validated JSON
-candidate; every tick still reads source bytes and collects current metadata.
-Independent and forced checks always run the original validators.
-
-`graph/source_files.py` checks current bytes and physical containment in the
-calling thread. Admission does not delegate small file reads to a worker pool,
-which competes with active viewer computations. It retains no content or file
-attribute cache. `observation/event_batch.py` applies the unchanged pre/post source
-checks around a group; state snapshots remain separately validated barriers.
-
-`service.py` prepares design metadata before opening the HTTP listener and before
-publishing a replacement session. `web/bo_design.py` checks current document
-bytes on each poll and reuses the validated revision; full-document callers
-receive detached copies. This avoids repeating design work during capture while
-preserving edit detection. `tests/test_design_polling.py` covers startup, reload,
-concurrent reads, same-size edits and invalid drafts. The [repair receipt](review/behavior-contracts-sequential/p7-trials/repair-23/README.md)
-separates regression results from the remaining native trial acceptance.
 
 The [behavior-contract plan](development/behavior-contracts/README.md) is tracked
 by its [phase ledger](development/behavior-contracts/progress.json). P0–P6 are
@@ -56,6 +23,25 @@ definitions and executes a bounded, optional TLC process; it does not replace
 native state execution, runtime capture or independent business checks.
 
 ## Repository map
+
+| Location | What to read or change here |
+|---|---|
+| [SKILL.md](../skills/vibelens/SKILL.md) | The conversation and iteration workflow followed by the coding agent. |
+| [scripts/bo_observer/control](../skills/vibelens/scripts/bo_observer/control/) | Explicit conversation/project scope, validated view/replay plans and the control CLI. |
+| [scripts/bo_observer/policy](../skills/vibelens/scripts/bo_observer/policy/) | Shared rule declarations, projection into the main graph, native evaluations and source/event verification. |
+| [graph/relations](../skills/vibelens/scripts/bo_observer/graph/relations/) | Construction-time edge registration: strict meanings/context, duplicate definitions, typed summary proofs, restoration and atomic JSON updates. |
+| [scripts/bo.py](../skills/vibelens/scripts/bo.py) | Entry point for serving, validating, inspecting, and exporting a native project. |
+| [scripts/bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) | Independent state declaration, observed instances, and complete graph export. |
+| [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | Value types, state hierarchy, active-state calculation, and strict declaration checks. |
+| [scripts/execution_contract.py](../skills/vibelens/scripts/execution_contract.py) | Activity, join, resource, and runtime-configuration constraints. |
+| [scripts/bo_observer](../skills/vibelens/scripts/bo_observer/) | Shared services, language adapters, development checks, and Web support. |
+| [source_scope.py](../skills/vibelens/scripts/bo_observer/source_scope.py) | Shared source ownership, dependency/output boundaries and validation for scans, executable bindings and the project tree. |
+| [assets/stategraph-viewer](../skills/vibelens/assets/stategraph-viewer/) | The real project's interactive graph, layout, recording, and replay UI. |
+| [schemas](../skills/vibelens/scripts/bo_observer/schemas/) | Versioned JSON contracts used at language and service boundaries. |
+| [examples](../examples/) | Executable applications with their own business rules and acceptance contracts. |
+| [tools](../tools/) and [tests](../tests/) | Installation, managed-copy synchronization, and repository acceptance checks. |
+| [docs/site](site/) | The bilingual product page and its separate browser-only sample walkthrough. |
+| [docs/review](review/) | Recorded acceptance evidence. Prior records remain unchanged. |
 
 First-design presentation uses `web/design_preview.py` and
 `workflow/construction_review.py`. Both resolve semantic captions through
@@ -146,25 +132,6 @@ page loads the summary; the embedded viewer loads one complete build on demand.
 viewer reads them. `node tools/test_case_transport.mjs` verifies exact equality
 with both archives after `python tools/build_site_viewer.py`.
 
-| Location | What to read or change here |
-|---|---|
-| [SKILL.md](../skills/vibelens/SKILL.md) | The conversation and iteration workflow followed by the coding agent. |
-| [scripts/bo_observer/control](../skills/vibelens/scripts/bo_observer/control/) | Explicit conversation/project scope, validated view/replay plans and the control CLI. |
-| [scripts/bo_observer/policy](../skills/vibelens/scripts/bo_observer/policy/) | Shared rule declarations, projection into the main graph, native evaluations and source/event verification. |
-| [graph/relations](../skills/vibelens/scripts/bo_observer/graph/relations/) | Construction-time edge registration: strict meanings/context, duplicate definitions, typed summary proofs, restoration and atomic JSON updates. |
-| [scripts/bo.py](../skills/vibelens/scripts/bo.py) | Entry point for serving, validating, inspecting, and exporting a native project. |
-| [scripts/bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) | Independent state declaration, observed instances, and complete graph export. |
-| [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | Value types, state hierarchy, active-state calculation, and strict declaration checks. |
-| [scripts/execution_contract.py](../skills/vibelens/scripts/execution_contract.py) | Activity, join, resource, and runtime-configuration constraints. |
-| [scripts/bo_observer](../skills/vibelens/scripts/bo_observer/) | Shared services, language adapters, development checks, and Web support. |
-| [source_scope.py](../skills/vibelens/scripts/bo_observer/source_scope.py) | Shared source ownership, dependency/output boundaries and validation for scans, executable bindings and the project tree. |
-| [assets/stategraph-viewer](../skills/vibelens/assets/stategraph-viewer/) | The real project's interactive graph, layout, recording, and replay UI. |
-| [schemas](../skills/vibelens/scripts/bo_observer/schemas/) | Versioned JSON contracts used at language and service boundaries. |
-| [examples](../examples/) | Executable applications with their own business rules and acceptance contracts. |
-| [tools](../tools/) and [tests](../tests/) | Installation, managed-copy synchronization, and repository acceptance checks. |
-| [docs/site](site/) | The bilingual product page and its separate browser-only sample walkthrough. |
-| [docs/review](review/) | Recorded acceptance evidence. Prior records remain unchanged. |
-
 Most Python files directly under scripts are small import/CLI entry points retained for installed projects. Follow their imports into bo_observer to edit the implementation. The independent state module and its two contract files are deliberately kept importable without the observer service.
 
 ## Three paths through the implementation
@@ -193,6 +160,13 @@ geometry-dependent fit/zoom range and wheel-unit conversion. Three.js draws node
 in a second depth pass, keeping them legible above connections without moving their layers.
 
 ### 1. A coding iteration changes the graph
+
+`workflow/implementation_coverage.py` checks business and technical feature
+coverage. Both retain source, parameters and runtime evidence; only business
+features require a business projection. `graph/code_structure.py` uses that
+explicit ownership for source enrichment. `workflow/review_validation.py` checks
+shared review field shapes before the state, behavior and coverage guards read
+them. Those guards still decide whether a change is authorized and verified.
 
 1. [workflow/bo_sync.py](../skills/vibelens/scripts/bo_observer/workflow/bo_sync.py): source_inventory enumerates the declared project scope independently of existing graph nodes. maintenance_task compares that inventory with the last accepted baseline.
 2. [sources.py](../skills/vibelens/scripts/bo_observer/sources.py): scan dispatches Python and JavaScript-family analysis. It caches only matching source/parser versions and retains unresolved calls.
@@ -296,6 +270,28 @@ publishes its detached cursor. `bo_retention.py` delivers each event to listener
 and writes bounded groups with the same per-line log rotation. The recorder's
 stream lock is independent of JSON serialization; public views are detached.
 
+#### Capture and refresh boundaries
+
+`observation/session.py` copies immutable build declarations outside the runtime
+admission lock. The lock protects mutable event/state cursors. Database watching
+uses `data/projection_validation.py` to remember one successfully validated JSON
+candidate; every tick still reads source bytes and collects current metadata.
+Independent and forced checks always run the original validators.
+
+`graph/source_files.py` checks current bytes and physical containment in the
+calling thread. Admission does not delegate small file reads to a worker pool,
+which competes with active viewer computations. It retains no content or file
+attribute cache. `observation/event_batch.py` applies the unchanged pre/post source
+checks around a group; state snapshots remain separately validated barriers.
+
+`service.py` prepares design metadata before opening the HTTP listener and before
+publishing a replacement session. `web/bo_design.py` checks current document
+bytes on each poll and reuses the validated revision; full-document callers
+receive detached copies. This avoids repeating design work during capture while
+preserving edit detection. `tests/test_design_polling.py` covers startup, reload,
+concurrent reads, same-size edits and invalid drafts. The [repair receipt](review/behavior-contracts-sequential/p7-trials/repair-23/README.md)
+separates regression results from the remaining native trial acceptance.
+
 ### 3. A click changes the view
 
 | Viewer module | Responsibility |
@@ -356,6 +352,12 @@ expansion, dragging, relation details and camera continuity in 2D and 3D.
 ## Database structure and operations
 
 Start at [data/contract.py](../skills/vibelens/scripts/bo_observer/data/contract.py) for strict JSON and identity, then [catalog.py](../skills/vibelens/scripts/bo_observer/data/catalog.py) for native metadata, [projection.py](../skills/vibelens/scripts/bo_observer/data/projection.py) for graph nodes and relations, and [sync.py](../skills/vibelens/scripts/bo_observer/data/sync.py) for refresh and independent verification. [runtime.py](../skills/vibelens/scripts/bo_observer/data/runtime.py) and [bo_data.mjs](../skills/vibelens/scripts/bo_observer/adapters/javascript/bo_data.mjs) observe native calls. [watcher.py](../skills/vibelens/scripts/bo_observer/data/watcher.py) replaces the validated Web build; [data-layer.js](../skills/vibelens/assets/stategraph-viewer/data-layer.js) renders its provenance and values. These modules share the existing event, recording and preference services.
+
+`data/sqlite_snapshot.py` handles explicitly declared immutable SQLite file
+publishers. It pins one published image through a temporary Windows hard link,
+releases file handles before SQLAlchemy reflection, and rejects WAL, unsupported
+driver options and oversized images. `catalog.py` retains the normal read-only
+transactional path; both paths use the same Inspector and catalog validation.
 
 Native data adapters borrow the active same-probe invocation context. Python uses
 ContextVar; Node registers AsyncLocalStorage through the probe's public context

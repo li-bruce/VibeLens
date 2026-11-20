@@ -1,34 +1,8 @@
 # 源码导览
 
-`data/sqlite_snapshot.py` 处理明确采用完整 SQLite 文件原子发布的程序。Windows 上
-通过同卷临时硬链接固定一个已发布镜像，读取结束即关闭文件，再由 SQLAlchemy
-对内存镜像读取结构。WAL、额外驱动选项和超限文件会明确报错。普通事务型 SQLite
-仍走 `catalog.py` 原有的只读连接；两种方式共用结构反射与校验。
-
-`web/http_assets.py` 统一设计页面和运行页面的连接处理。成功且不带请求体的静态资源
-GET 复用 HTTP/1.1 连接，空闲五秒后关闭。JSON、控制、采集及拒绝响应仍关闭连接；
-模型校验和录制期限保持不变。传输测试验证连续模块请求复用同一连接，并隔离拒绝的请求体。
-
-`observation/session.py` 在采集锁之外复制当前构建的静态定义，锁仅保护运行事件与状态的可变数据。数据库监视通过 `data/projection_validation.py` 复用上一份相同 JSON 的校验结果；每轮仍读取源码字节和当前数据库结构。独立检查和强制检查始终执行原有校验。
-
-`graph/source_files.py` 在当前线程中读取实际源码字节并检查路径边界，避免把小文件读取分派给线程池后，与正在计算的视图争用执行时间。它不缓存文件内容或属性。`observation/event_batch.py` 仍在批量事件接收前后分别检查源码；状态快照仍经过独立校验。
-
-`service.py` 在 HTTP 开始监听及重载会话发布之前准备设计元数据。
-`web/bo_design.py` 每次轮询仍读取当前文档字节，复用已校验版本；读取完整文档的调用者获得独立副本。
-这样可避免采集期间重复处理设计文档，同时保留修改检测。`tests/test_design_polling.py`
-覆盖启动、重载、并发读取、同大小编辑及非法草案。[修复记录](review/behavior-contracts-sequential/p7-trials/repair-23/README.md)
-分别说明回归结果和仍待完成的真实项目验收。
-
-[bo_models.py](../skills/vibelens/scripts/bo_models.py) 统一模型身份、注册、按模型校验和子网成员。
-`concepts/networks.py` 生成业务、状态与规则的子网定义；`model-networks.js` 为二维、三维和
-Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码前恢复当前与上一轮的模型清单。
-图层负责展示分类，各个模型独立绑定和校验。
-
 [English](source-guide.en.md) · [使用说明](usage.zh-CN.md) · [架构说明](refactor-multilanguage.md)
 
 这份导览按实际执行路径介绍源码。维护中的实现位于 [skills/vibelens](../skills/vibelens/)，示例项目中的同名模块是安装副本，用于验证接入真实项目后的行为。
-
-`workflow/implementation_coverage.py` 检查业务与技术功能的覆盖。两者都保留源码、参数和运行证据，业务功能另外需要业务投影。`graph/code_structure.py` 根据明确的归属补充源码结构。`workflow/review_validation.py` 先校验迭代说明的字段格式，再交给状态、行为和覆盖检查判断修改依据及证据。
 
 [行为约束开发方案](development/behavior-contracts/README.zh-CN.md)的 P0–P6 已在顺序开发分支完成实现和回归，P7 正在独立试用。[开发工作表](development/behavior-contracts/progress.json)保留各阶段状态与证据。
 
@@ -42,6 +16,26 @@ Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码�
 | 可选的有限模型分析 | `analysis/`、`analysis/tla/`、`workflow/analysis_cli.py`；[分析模块](architecture/behavior-analysis.md) |
 
 验收仍由原有迭代流程统一协调。TLC 分析选定的设计定义；程序状态由项目自身执行，实际采集、映射和业务检查各自提供证据。
+
+## 先找到对应目录
+
+| 位置 | 负责什么 |
+|---|---|
+| [SKILL.md](../skills/vibelens/SKILL.md) | 开发对话、业务图确认、迭代检查的操作流程。 |
+| [scripts/bo_observer/control](../skills/vibelens/scripts/bo_observer/control/) | 对话与项目范围、视图及回放计划校验，以及控制命令入口。 |
+| [graph/relations](../skills/vibelens/scripts/bo_observer/graph/relations/) | 构图时登记关系，检查重复定义、汇总路径及条件；路径失效后恢复原边，原始 ID 始终保留。 |
+| [scripts/bo.py](../skills/vibelens/scripts/bo.py) | 原生项目的启动、校验、源码检索与导出入口。 |
+| [scripts/bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) | 独立状态声明、观测到的实例与完整关系结构导出。 |
+| [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | 参数类型、状态层次、活动状态计算和声明的严格校验。 |
+| [scripts/execution_contract.py](../skills/vibelens/scripts/execution_contract.py) | 并发活动、汇合、资源与运行配置的约束。 |
+| [scripts/bo_observer](../skills/vibelens/scripts/bo_observer/) | 共用服务、语言适配、开发检查及 Web 支持。 |
+| [source_scope.py](../skills/vibelens/scripts/bo_observer/source_scope.py) | 统一声明项目源码、依赖和产物范围，供扫描、执行映射检查和工程目录视图使用。 |
+| [assets/stategraph-viewer](../skills/vibelens/assets/stategraph-viewer/) | 项目实际使用的图页面、布局、记录和回放。 |
+| [schemas](../skills/vibelens/scripts/bo_observer/schemas/) | 各语言与服务之间使用的 JSON 协议。 |
+| [examples](../examples/) | 可运行项目、业务逻辑和验收场景。 |
+| [tools](../tools/) 与 [tests](../tests/) | 安装、同步安装副本、仓库验收。 |
+| [docs/site](site/) | 产品介绍页和独立的浏览器示例演示。 |
+| [docs/review](review/) | 历次验收材料。历史记录保留原文。 |
 
 Python 追踪适配器的 `bo_instrument_flask` 将上游请求采集入口放在应用守卫之前，
 让认证、CSRF 等检查提前返回时也能保留实际 HTTP 响应。业务守卫顺序及结果不变，
@@ -70,7 +64,10 @@ SDK 与原生上下文，以及观察器关闭或传输失败时的业务结果�
 展开和收起保留已有坐标；拟合包围圈得到的中心不会覆盖节点的保存位置。
 [逐层浏览器测试](../tools/test_expansion_relations_browser.mjs) 检查二维、三维中的展开、拖动、关系详情和视角保持。
 
-## 先找到对应目录
+[bo_models.py](../skills/vibelens/scripts/bo_models.py) 统一模型身份、注册、按模型校验和子网成员。
+`concepts/networks.py` 生成业务、状态与规则的子网定义；`model-networks.js` 为二维、三维和
+Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码前恢复当前与上一轮的模型清单。
+图层负责展示分类，各个模型独立绑定和校验。
 
 项目与框架的接入边界位于
 [delivery/integration.py](../skills/vibelens/scripts/bo_observer/delivery/integration.py)。
@@ -120,24 +117,6 @@ Python 的 `graph/classification.py` 与前端 `graph-classification.js` 通过�
 
 工程结构由 [code_graph/filesystem.py](../skills/vibelens/scripts/bo_observer/code_graph/filesystem.py) 扫描目录与文件，`manifests.py` 读取包依赖，`structure.py` 连接包含树并分析文件依赖与循环。`index.py` 把这些结果与函数、类、参数串联；`query.py` 提供局部检索，`service.py` 负责自动刷新、源码读取和独立核验。界面的“工程结构”查看目录与文件，“代码结构”继续下钻到符号。它们共享同一份索引，详见[接口说明](../skills/vibelens/references/code-structure.md)。
 
-| 位置 | 负责什么 |
-|---|---|
-| [SKILL.md](../skills/vibelens/SKILL.md) | 开发对话、业务图确认、迭代检查的操作流程。 |
-| [scripts/bo_observer/control](../skills/vibelens/scripts/bo_observer/control/) | 对话与项目范围、视图及回放计划校验，以及控制命令入口。 |
-| [graph/relations](../skills/vibelens/scripts/bo_observer/graph/relations/) | 构图时登记关系，检查重复定义、汇总路径及条件；路径失效后恢复原边，原始 ID 始终保留。 |
-| [scripts/bo.py](../skills/vibelens/scripts/bo.py) | 原生项目的启动、校验、源码检索与导出入口。 |
-| [scripts/bo_stategraph.py](../skills/vibelens/scripts/bo_stategraph.py) | 独立状态声明、观测到的实例与完整关系结构导出。 |
-| [scripts/bo_contracts.py](../skills/vibelens/scripts/bo_contracts.py) | 参数类型、状态层次、活动状态计算和声明的严格校验。 |
-| [scripts/execution_contract.py](../skills/vibelens/scripts/execution_contract.py) | 并发活动、汇合、资源与运行配置的约束。 |
-| [scripts/bo_observer](../skills/vibelens/scripts/bo_observer/) | 共用服务、语言适配、开发检查及 Web 支持。 |
-| [source_scope.py](../skills/vibelens/scripts/bo_observer/source_scope.py) | 统一声明项目源码、依赖和产物范围，供扫描、执行映射检查和工程目录视图使用。 |
-| [assets/stategraph-viewer](../skills/vibelens/assets/stategraph-viewer/) | 项目实际使用的图页面、布局、记录和回放。 |
-| [schemas](../skills/vibelens/scripts/bo_observer/schemas/) | 各语言与服务之间使用的 JSON 协议。 |
-| [examples](../examples/) | 可运行项目、业务逻辑和验收场景。 |
-| [tools](../tools/) 与 [tests](../tests/) | 安装、同步安装副本、仓库验收。 |
-| [docs/site](site/) | 产品介绍页和独立的浏览器示例演示。 |
-| [docs/review](review/) | 历次验收材料。历史记录保留原文。 |
-
 介绍页与观察器运行时分开。[build_case_preview.py](../tools/build_case_preview.py)
 从原始演示记录生成轻量的对话摘要，以及去除重复内容的传输文件。父页面只读取摘要，
 图视窗按当前步骤读取完整记录。[case-data.mjs](site/case-data.mjs) 在读取后还原独立副本。
@@ -148,6 +127,8 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 ## 按三条路径阅读
 
 ### 一次代码修改怎样更新到图中
+
+`workflow/implementation_coverage.py` 检查业务与技术功能的覆盖。两者都保留源码、参数和运行证据，业务功能另外需要业务投影。`graph/code_structure.py` 根据明确的归属补充源码结构。`workflow/review_validation.py` 先校验迭代说明的字段格式，再交给状态、行为和覆盖检查判断修改依据及证据。
 
 1. [workflow/bo_sync.py](../skills/vibelens/scripts/bo_observer/workflow/bo_sync.py) 的 source_inventory 从项目范围枚举源码，maintenance_task 与上次验收基线比较。因此新增文件也在检查范围内。
 2. [sources.py](../skills/vibelens/scripts/bo_observer/sources.py) 的 scan 分派 Python、JavaScript 等语言解析；只有文件和解析器版本都匹配时才复用缓存。无法确定的调用会保留。
@@ -176,6 +157,27 @@ scripts 根目录下多数小文件负责转发导入或命令调用。需要修
 6. [observation/recording_session.py](../skills/vibelens/scripts/bo_observer/observation/recording_session.py) 保存指定时间段及缺失信息。view/export 返回结构和保留的运行事实。
 
 驱动模式还会在应用自身调用 BOExecutor.step，依据声明求取下一状态；观察模式由应用自己的逻辑决定。两种模式遵守相同的观测协议。
+
+#### 采集与刷新边界
+
+`data/sqlite_snapshot.py` 处理明确采用完整 SQLite 文件原子发布的程序。Windows 上
+通过同卷临时硬链接固定一个已发布镜像，读取结束即关闭文件，再由 SQLAlchemy
+对内存镜像读取结构。WAL、额外驱动选项和超限文件会明确报错。普通事务型 SQLite
+仍走 `catalog.py` 原有的只读连接；两种方式共用结构反射与校验。
+
+`web/http_assets.py` 统一设计页面和运行页面的连接处理。成功且不带请求体的静态资源
+GET 复用 HTTP/1.1 连接，空闲五秒后关闭。JSON、控制、采集及拒绝响应仍关闭连接；
+模型校验和录制期限保持不变。传输测试验证连续模块请求复用同一连接，并隔离拒绝的请求体。
+
+`observation/session.py` 在采集锁之外复制当前构建的静态定义，锁仅保护运行事件与状态的可变数据。数据库监视通过 `data/projection_validation.py` 复用上一份相同 JSON 的校验结果；每轮仍读取源码字节和当前数据库结构。独立检查和强制检查始终执行原有校验。
+
+`graph/source_files.py` 在当前线程中读取实际源码字节并检查路径边界，避免把小文件读取分派给线程池后，与正在计算的视图争用执行时间。它不缓存文件内容或属性。`observation/event_batch.py` 仍在批量事件接收前后分别检查源码；状态快照仍经过独立校验。
+
+`service.py` 在 HTTP 开始监听及重载会话发布之前准备设计元数据。
+`web/bo_design.py` 每次轮询仍读取当前文档字节，复用已校验版本；读取完整文档的调用者获得独立副本。
+这样可避免采集期间重复处理设计文档，同时保留修改检测。`tests/test_design_polling.py`
+覆盖启动、重载、并发读取、同大小编辑及非法草案。[修复记录](review/behavior-contracts-sequential/p7-trials/repair-23/README.md)
+分别说明回归结果和仍待完成的真实项目验收。
 
 ### 一次点击怎样改变图的显示
 
