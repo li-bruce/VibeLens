@@ -25,3 +25,8 @@ business definitions and capture budgets are unchanged. The next fresh Skill
 installation and actual retests will supply their own receipts; this review does
 not mark those pending checks as passed. Original artifacts are copied byte for
 byte and indexed in [provenance](provenance.json).
+
+The package check passed. A [fresh installation](installation.json) matches all
+464 committed owned files; only `references/iteration-graph-checks.md` differs
+from repair 23. Runtime bytes are unchanged, so its complete regression remains
+applicable. The revised native trials still need their own complete results.
