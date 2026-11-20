@@ -131,3 +131,9 @@ Preserve existing source, mapping, business and runtime checks. Verify a new loc
 module is discovered, a dependency/output tree is never traversed, and an
 out-of-scope execution binding fails. Source-scope changes must not erase existing
 feature or parameter obligations.
+
+Repeated viewer reads may reuse exclusion findings only when both source bytes
+and the parser fingerprint match. Keep rejected routes and parser errors in the
+cached result. Reread files, invalidate deletions, and inspect a new or changed
+file; file timestamps alone are insufficient. This applies equally to Python
+and JavaScript-family sources and must not become a broader exclusion rule.

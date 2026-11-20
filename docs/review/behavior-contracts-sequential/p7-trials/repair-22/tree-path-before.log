@@ -1,0 +1,31 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+F
+======================================================================
+FAIL: test_project_tree_checks_plain_ancestors_without_resolving_each_file (__main__.SourceInventoryWalkTests.test_project_tree_checks_plain_ancestors_without_resolving_each_file)
+Full Windows path resolution is reserved for actual link boundaries.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_inventory_walk.py", line 36, in test_project_tree_checks_plain_ancestors_without_resolving_each_file
+    result = inventory(root, {"source_scope": {"roots": ["."]}}, {
+        "files": {"src/service.py": "known-source-hash"}, "excluded": {}
+    })
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\filesystem.py", line 105, in inventory
+    visit(start)
+    ~~~~~^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\filesystem.py", line 78, in visit
+    visit(Path(child.path))
+    ~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\filesystem.py", line 78, in visit
+    visit(Path(child.path))
+    ~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\filesystem.py", line 72, in visit
+    if not path.resolve().is_relative_to(root):
+           ~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_inventory_walk.py", line 32, in resolve
+    raise AssertionError("Ordinary source unnecessarily resolved")
+AssertionError: Ordinary source unnecessarily resolved
+
+----------------------------------------------------------------------
+Ran 1 test in 0.023s
+
+FAILED (failures=1)

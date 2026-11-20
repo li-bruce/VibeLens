@@ -1,0 +1,28 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+F
+======================================================================
+FAIL: test_javascript_exclusion_cache_keeps_findings_and_checks_actual_bytes (__main__.SourceInventoryWalkTests.test_javascript_exclusion_cache_keeps_findings_and_checks_actual_bytes)
+A warm view must not launch Node again for unchanged excluded code.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_inventory_walk.py", line 35, in test_javascript_exclusion_cache_keeps_findings_and_checks_actual_bytes
+    self.assertEqual(first, source_inventory(root, cfg, inspection_cache=cache))
+                            ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\bo_sync.py", line 193, in source_inventory
+    result = scan_sources(root, [name])
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\sources.py", line 133, in scan
+    result = parse_javascript([{"path": f["path"], "source": f["source"]} for f in pending])
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1169, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1173, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1234, in _execute_mock_call
+    raise effect
+AssertionError: Unchanged excluded JavaScript reparsed
+
+----------------------------------------------------------------------
+Ran 1 test in 0.379s
+
+FAILED (failures=1)

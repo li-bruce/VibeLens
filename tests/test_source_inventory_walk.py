@@ -16,6 +16,105 @@ from bo_observer.workflow.bo_sync import source_inventory
 
 
 class SourceInventoryWalkTests(unittest.TestCase):
+    def test_project_tree_resolves_other_reparse_file_types(self):
+        """The fast path must not treat an unfamiliar Windows reparse file as plain."""
+        from types import SimpleNamespace
+        from bo_observer.code_graph.filesystem import inventory
+
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
+            root = Path(folder).resolve()
+            file = root / "linked.json"
+            file.write_text("{}", encoding="utf-8")
+            details = file.lstat()
+            original_stat, original_resolve = Path.lstat, Path.resolve
+
+            def lstat(path):
+                if path == file:
+                    return SimpleNamespace(st_mode=details.st_mode, st_size=details.st_size,
+                        st_file_attributes=0x400, st_reparse_tag=0)
+                return original_stat(path)
+
+            def resolve(path, *args, **kwargs):
+                if path == file:
+                    return root.parent / "outside.json"
+                return original_resolve(path, *args, **kwargs)
+
+            with patch.object(Path, "lstat", lstat), patch.object(Path, "resolve", resolve):
+                result = inventory(root, {"source_scope": {"roots": ["."]}}, {
+                    "files": {}, "excluded": {}
+                })
+            self.assertNotIn("linked.json", result["entries"])
+            self.assertTrue(any(error["path"] == "linked.json" for error in result["errors"]))
+
+    def test_project_tree_checks_plain_ancestors_without_resolving_each_file(self):
+        """Full Windows path resolution is reserved for actual link boundaries."""
+        from bo_observer.code_graph.filesystem import inventory
+
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
+            root = Path(folder).resolve()
+            (root / "src").mkdir()
+            file = root / "src/service.py"
+            file.write_text("def run(): pass\n", encoding="utf-8")
+            original = Path.resolve
+
+            def resolve(path, *args, **kwargs):
+                if path == file:
+                    raise AssertionError("Ordinary source unnecessarily resolved")
+                return original(path, *args, **kwargs)
+
+            with patch.object(Path, "resolve", resolve):
+                result = inventory(root, {"source_scope": {"roots": ["."]}}, {
+                    "files": {"src/service.py": "known-source-hash"}, "excluded": {}
+                })
+            self.assertEqual(result["entries"]["src/service.py"]["hash"], "known-source-hash")
+            self.assertEqual(result["errors"], [])
+
+    def test_javascript_exclusion_cache_keeps_findings_and_checks_actual_bytes(self):
+        """A warm view must not launch Node again for unchanged excluded code."""
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
+            root = Path(folder)
+            path = root / "hidden.mjs"
+            body = b"export function hidden() { return 1; }\n"
+            path.write_bytes(body)
+            stamp = path.stat()
+            cfg = {"source_scope": {"roots": ["."], "exclude": {"hidden.mjs": "Review"}}}
+            cache = {}
+            first = source_inventory(root, cfg, inspection_cache=cache)
+            self.assertEqual(first["excluded_implementations"], ["hidden.mjs"])
+            with patch(
+                "bo_observer.sources.parse_javascript",
+                side_effect=AssertionError("Unchanged excluded JavaScript reparsed"),
+            ):
+                self.assertEqual(first, source_inventory(root, cfg, inspection_cache=cache))
+            # Matching stat metadata does not excuse a new syntax error.
+            path.write_bytes(body.replace(b"return 1", b"return )"))
+            os.utime(path, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
+            changed = source_inventory(root, cfg, inspection_cache=cache)
+            self.assertIn("hidden.mjs", changed["excluded_entrypoints"])
+            with patch(
+                "bo_observer.sources.parse_javascript",
+                side_effect=AssertionError("Cached parse failure discarded"),
+            ):
+                self.assertEqual(changed, source_inventory(root, cfg, inspection_cache=cache))
+            path.unlink()
+            source_inventory(root, cfg, inspection_cache=cache)
+            self.assertEqual(cache, {})
+
+    def test_exclusion_cache_is_invalidated_by_parser_change(self):
+        """Same bytes must be reinspected when the parser implementation changes."""
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
+            root = Path(folder)
+            (root / "hidden.mjs").write_text("export function hidden() {}", encoding="utf-8")
+            cfg = {"source_scope": {"roots": ["."], "exclude": {"hidden.mjs": "Review"}}}
+            cache = {}
+            source_inventory(root, cfg, inspection_cache=cache)
+            with (
+                patch("bo_observer.sources.adapter_identity", return_value="changed-parser"),
+                patch("bo_observer.sources.parse_javascript", side_effect=ValueError("parser offline")),
+            ):
+                result = source_inventory(root, cfg, inspection_cache=cache)
+            self.assertIn("hidden.mjs", result["excluded_entrypoints"])
+
     def test_generated_directories_are_pruned_before_descending(self):
         with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as folder:
             root = Path(folder)

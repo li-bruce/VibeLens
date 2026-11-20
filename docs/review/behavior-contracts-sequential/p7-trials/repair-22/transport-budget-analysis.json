@@ -1,0 +1,33 @@
+{
+  "status": "Measured transport-sizing analysis, not a configured or accepted result",
+  "workload": "Unchanged complete GUI operations on the preserved populated Node application",
+  "source_recording": "7800290145cd4373910d42769eb73353",
+  "recorded_events": 6462,
+  "capture_incomplete": true,
+  "queue_capacity_before": 4096,
+  "candidate_capacity": 8192,
+  "sample_wire_bytes": {
+    "mean": 1186.2,
+    "p95": 1376,
+    "max": 1585
+  },
+  "estimated_wire_mib_at_candidate_capacity": 9.27,
+  "protocol_payload_ceiling_mib_at_candidate_capacity": 192.0,
+  "memory_boundary": "Wire sizes exclude JavaScript object overhead and other observer buffers; not measured process memory.",
+  "source_audit": {
+    "successful_list_events": "8 + 14*owned_files + 16*(all_files-owned_files)",
+    "gui_list_requests": {
+      "alice": 6,
+      "other_members": 8
+    },
+    "extra_events_per_added_alice_file": 212,
+    "duplicate_probes_found": false,
+    "observer_self_capture_found": false
+  },
+  "requirements": [
+    "Any configuration change needs a normal new source candidate/build and fresh native verification.",
+    "Retain the 4096 overflow evidence and deliberate tiny-queue failure cases.",
+    "Keep original capture scope, operations, replay/Timeline assertions and deadlines.",
+    "Capacity covers finite measured bursts, not sustained or unbounded event production."
+  ]
+}

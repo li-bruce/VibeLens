@@ -76,6 +76,11 @@ def source_inventory(root, cfg, *, inspection_cache=None, model=None, telemetry=
         telemetry = load_registrations(root, model)
     validate_executable_sources(policy, cfg, model, telemetry)
     reader = SourceFiles(root)
+    from ..sources import adapter_identity
+
+    # Cache findings, not exclusions. Every read still checks actual source bytes;
+    # parser changes invalidate both successful inspection and failure evidence.
+    inspection_adapter = adapter_identity() if inspection_cache is not None else None
     inspected = set()
     known = None
     scope = cfg.get("source_scope", {})
@@ -177,10 +182,14 @@ def source_inventory(root, cfg, *, inspection_cache=None, model=None, telemetry=
                         )
                     if known.get(name) == hashlib.sha256(raw).hexdigest():
                         continue
-                if path.suffix == ".py" and inspection_cache is not None:
+                if inspection_cache is not None:
                     inspected.add(name)
                     previous = inspection_cache.get(name)
-                    if previous and previous["hash"] == hashlib.sha256(raw).hexdigest():
+                    if (
+                        previous
+                        and previous["hash"] == hashlib.sha256(raw).hexdigest()
+                        and previous.get("adapter") == inspection_adapter
+                    ):
                         if previous["implementation"]:
                             hidden_implementations.append(name)
                         if previous["entrypoints"]:
@@ -199,43 +208,44 @@ def source_inventory(root, cfg, *, inspection_cache=None, model=None, telemetry=
                         routes = [d for v in symbols for d in v.get("entrypoints", [])]
                         if routes:
                             hidden_entrypoints[name] = routes
-                        continue
-                    tree = ast.parse(raw.decode("utf-8-sig"), filename=name)
-                    if not infrastructure_path(name) and any(
-                        isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
-                        for n in ast.walk(tree)
-                    ):
-                        hidden_implementations.append(name)
-                    routes = [
-                        ast.unparse(d)
-                        for n in ast.walk(tree)
-                        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
-                        for d in n.decorator_list
-                        if isinstance(d, ast.Call)
-                        and isinstance(d.func, ast.Attribute)
-                        and d.func.attr
-                        in {
-                            "route",
-                            "get",
-                            "post",
-                            "put",
-                            "patch",
-                            "delete",
-                            "websocket",
-                            "command",
-                            "task",
-                        }
-                    ]
-                    from ..graph.python_routes import registrations
+                    else:
+                        tree = ast.parse(raw.decode("utf-8-sig"), filename=name)
+                        if not infrastructure_path(name) and any(
+                            isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                            for n in ast.walk(tree)
+                        ):
+                            hidden_implementations.append(name)
+                        routes = [
+                            ast.unparse(d)
+                            for n in ast.walk(tree)
+                            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                            for d in n.decorator_list
+                            if isinstance(d, ast.Call)
+                            and isinstance(d.func, ast.Attribute)
+                            and d.func.attr
+                            in {
+                                "route",
+                                "get",
+                                "post",
+                                "put",
+                                "patch",
+                                "delete",
+                                "websocket",
+                                "command",
+                                "task",
+                            }
+                        ]
+                        from ..graph.python_routes import registrations
 
-                    routes.extend(item["declaration"] for item in registrations(tree, name))
-                    if routes:
-                        hidden_entrypoints[name] = routes
+                        routes.extend(item["declaration"] for item in registrations(tree, name))
+                        if routes:
+                            hidden_entrypoints[name] = routes
                 except (SyntaxError, UnicodeError) as exc:
                     hidden_entrypoints[name] = ["cannot inspect excluded Python: " + str(exc)]
-                if path.suffix == ".py" and inspection_cache is not None:
+                if inspection_cache is not None:
                     inspection_cache[name] = {
                         "hash": hashlib.sha256(raw).hexdigest(),
+                        "adapter": inspection_adapter,
                         "implementation": name in hidden_implementations,
                         "entrypoints": deepcopy(hidden_entrypoints.get(name, [])),
                     }

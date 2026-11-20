@@ -10,6 +10,7 @@ import stat
 from pathlib import Path
 
 from ..graph.behavior_model import digest
+from ..graph.source_files import SourceFiles
 from ..source_scope import compile_scope
 
 TEXT_SUFFIXES = {".json", ".toml", ".yaml", ".yml", ".html", ".css", ".sql", ".md", ".txt"}
@@ -24,6 +25,7 @@ def inventory(root, config, source):
     """
     root = Path(root).resolve()
     policy = compile_scope(root, config)
+    sources = SourceFiles(root)
     scope = config.get("source_scope", {})
     exclusions = scope.get("exclude", {})
     entries, text_files, excluded, errors = {}, {}, {}, []
@@ -69,7 +71,13 @@ def inventory(root, config, source):
                     ),
                 }
                 return
-            if not path.resolve().is_relative_to(root):
+            # Recheck ancestor attributes on every visit. Ordinary files need no
+            # full physical resolution of the same absolute Windows prefix;
+            # changed/reparse ancestors still take the original containment path.
+            plain = (
+                path != root and not sources.linked(details) and sources.plain_parent(path.parent)
+            )
+            if not plain and not path.resolve().is_relative_to(root):
                 raise ValueError("Project entry escapes its declared root")
             if path.is_dir():
                 directory(name)

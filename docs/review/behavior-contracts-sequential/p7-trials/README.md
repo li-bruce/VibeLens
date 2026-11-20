@@ -154,3 +154,5 @@ unchanged. Complete trial acceptance is still pending.
 [Repair 20](repair-20/README.md) retains passed Node native captures and the subsequent independent Timeline rejection. API replay identity now follows the actual API projection, while real source/model/interface changes still invalidate old recordings. A fresh package passed complete regression; the projects must upgrade and recapture before final acceptance.
 
 [Repair 21](repair-21/README.md) retains the Node native Timeline duration failure. Independent producer clocks now keep measured intervals despite interleaved batch delivery; time-window loops select exact event IDs without rewriting replay order. True clock reversals remain explicit. Native trial recapture and complete desktop acceptance remain pending.
+
+[Repair 22](repair-22/README.md) retains the Node queue overflow and isolated diagnostics. Source inventory reuses unchanged excluded JavaScript findings and avoids redundant ordinary Windows path resolution while retaining link checks. Full regression and fresh installation passed; native transport sizing and complete P7 acceptance remain open.

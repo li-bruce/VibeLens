@@ -29,6 +29,23 @@ HTTP 200 alone does not prove admission: event and snapshot deliveries require
 Local callbacks may retain their legacy no-receipt contract; an explicit rejection
 must still appear in producer health and the recording's gaps.
 
+If a normal run overflows the producer queue, preserve that failed recording and
+each producer's counters before changing anything. Diagnose in a copy of the
+same project and data, with the original capture scope, capacity and deadlines.
+Separate source-index work, event admission, transport and persistence timings;
+then rerun the unchanged application operations after a framework correction.
+A drained queue does not repair events already dropped. Instrumented diagnostics
+and generated load tests supplement, rather than replace, native acceptance.
+
+Choose the producer's bounded queue from measured operation bursts and delivery
+rate, including per-object permission checks and concurrent requests. Keep this
+transport budget separate from business cardinality and formal-analysis bounds.
+When data growth requires a capacity adjustment, record the workload, old/new
+capacity and memory estimate as a technical configuration change. Preserve the
+old overflow evidence and fault cases, then scan and verify the new candidate
+with the same native operations, capture fields, deadlines and loss checks.
+Extra capacity absorbs a finite burst; it does not prove sustained lossless capture.
+
 Keep three read boundaries separate: current graph identity for list/get/clear,
 runtime evidence for periodic checkpoints, and static source context when capture
 starts. A saved recording retains its initial file tree; checkpointing and record
