@@ -75,6 +75,10 @@ The Node retest then refused the known two-to-three-file dependency upgrade.
 [Repair 04](repair-04/README.md) preserves that failure and adds an explicit
 receipt-preserving migration. The trial's business definitions stay unchanged.
 
+[Repair 05](repair-05/README.md) removes managed upgrade backups and registered
+definition files from the application engineering view. Independent source
+coverage and watched-file integrity checks retain their original scope.
+
 Before closing P7, both retests must use the repaired canonical installation,
 pass independent source/runtime/browser checks, complete a business iteration
 and a source-only refactor, and preserve their resulting graph changes and

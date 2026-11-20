@@ -1,0 +1,85 @@
+{
+  "schema": "vibelens-development-evidence/v1",
+  "phase": "P7",
+  "status": "partial",
+  "scope": "Application engineering projection after managed upgrade; native trial acceptance remains open.",
+  "branch": "feat/behavior-contracts-sequential",
+  "basis_commit": "9ddd6661ac70e9506be6558158ab657dd738dc91",
+  "gates": {
+    "focused": {
+      "tests": 75,
+      "skips": 1,
+      "exit_code": 0,
+      "log": "focused.log"
+    },
+    "source": {
+      "valid": true,
+      "receipt": "source.json"
+    },
+    "native_source_projection": {
+      "before": "native-structure-before.json",
+      "after": "native-structure-after.json",
+      "source_inventory_unchanged": true,
+      "removed_definition_and_archive_entries": 5,
+      "scope": "Read-only in-progress native project, not complete native acceptance"
+    },
+    "full_regression": {
+      "exit_code": 0,
+      "log": "full-verify-retest.log",
+      "unittest_suites": 95,
+      "unittest_reported_tests": 1107,
+      "skips": 1,
+      "skip_reason": "Windows file-symlink privilege",
+      "tlc": "Pinned TLC 1.7.4 and Java 17 enabled"
+    },
+    "managed_examples": {
+      "receipts": [
+        "delivery-acceptance.json",
+        "team-archive-acceptance.json"
+      ],
+      "business_source_unchanged": true,
+      "frozen_round": "behavior-contracts-p7-repair05-20261120"
+    },
+    "clean_export": {
+      "valid": true,
+      "receipt": "clean-export.json",
+      "revision": "5c2b789b5a9fa535c6ab02b765bb121fe62de768"
+    }
+  },
+  "retained_failures": [
+    "scope-first.log",
+    "display-first.log",
+    "display-reproduction.log"
+  ],
+  "remaining": [
+    "Both initial native acceptance runs, including actual recording integrity and desktop views",
+    "Business iteration and source-only refactor in both modes",
+    "Accepted product scenes and final P7 closure"
+  ],
+  "candidate_files": [
+    {
+      "path": "skills/vibelens/scripts/bo_observer/source_scope.py",
+      "sha256": "24ad39bc927f9c67a53d685337a49ba96aa4564c19fd11a3f36424ef9dde3945"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/code_graph/display_scope.py",
+      "sha256": "bdd1edebdac1a767d839a6d19abfa66482a9d954f1194c959e8e95ea4d59b247"
+    },
+    {
+      "path": "skills/vibelens/scripts/bo_observer/code_graph/service.py",
+      "sha256": "13c7d9e387e355aaaf9a04714919f841963cf5070e5b26aba6392e387594d722"
+    },
+    {
+      "path": "skills/vibelens/references/source-scope.md",
+      "sha256": "2fe953f04c80889ac7c815eadcac79ed376540b83e568d03b1fb478df63bb1a8"
+    },
+    {
+      "path": "tests/test_source_inventory_walk.py",
+      "sha256": "2f884ef5c96b373fd9054979bc7568446c903c68d0bf9308242fec972cba69a3"
+    },
+    {
+      "path": "tests/test_code_graph.py",
+      "sha256": "7a9ae2aa9f0be9f86348ca122882eaa88e17e305eb124f09e74569b49cb881ad"
+    }
+  ]
+}

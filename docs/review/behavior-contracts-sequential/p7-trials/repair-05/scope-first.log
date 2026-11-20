@@ -1,0 +1,62 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+...............E..FF.....
+======================================================================
+ERROR: test_owned_root_cannot_follow_a_link_into_classified_storage (test_source_inventory_walk.SharedSourceScopeTests.test_owned_root_cannot_follow_a_link_into_classified_storage)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_inventory_walk.py", line 491, in test_owned_root_cannot_follow_a_link_into_classified_storage
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp9d28hf4g\\owned-link', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp9d28hf4g\\artifacts']' returned non-zero exit status 1.
+
+======================================================================
+FAIL: test_reserved_observer_outputs_are_pruned_before_source_and_tree_descent (test_source_inventory_walk.SharedSourceScopeTests.test_reserved_observer_outputs_are_pruned_before_source_and_tree_descent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_inventory_walk.py", line 520, in test_reserved_observer_outputs_are_pruned_before_source_and_tree_descent
+    sources = source_inventory(self.root, config)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\bo_sync.py", line 107, in source_inventory
+    for path in source_paths(start, supported_path, policy=policy):
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\bo_sync.py", line 52, in source_paths
+    yield from policy.walk_sources(start, supported)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\source_scope.py", line 249, in walk_sources
+    for parent, directories, files in os.walk(start, followlinks=False):
+                                      ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 369, in walk
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1169, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1173, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1240, in _execute_mock_call
+    result = effect(*args, **kwargs)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_inventory_walk.py", line 515, in inspect
+    raise AssertionError("Reserved observer output was traversed: " + str(current))
+AssertionError: Reserved observer output was traversed: C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\.validation\tmpfk8pqmcw\bo_stategraph\migrations
+
+======================================================================
+FAIL: test_reserved_outputs_reject_direct_ast_and_physical_bindings_by_default (test_source_inventory_walk.SharedSourceScopeTests.test_reserved_outputs_reject_direct_ast_and_physical_bindings_by_default) (path='bo_stategraph/migrations/local.py')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_inventory_walk.py", line 550, in test_reserved_outputs_reject_direct_ast_and_physical_bindings_by_default
+    with self.assertRaisesRegex(ValueError, "source scope"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 25 tests in 5.344s
+
+FAILED (failures=2, errors=1)

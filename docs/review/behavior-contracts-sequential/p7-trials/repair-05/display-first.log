@@ -1,0 +1,45 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+........E...................E.....
+======================================================================
+ERROR: test_display_exclusions_do_not_erase_definition_hashes (test_code_graph.CodeGraphTests.test_display_exclusions_do_not_erase_definition_hashes)
+Display filtering cannot change independent source/build evidence.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_code_graph.py", line 130, in test_display_exclusions_do_not_erase_definition_hashes
+    _, _, excluded = application_inventory(
+                     ~~~~~~~~~~~~~~~~~~~~~^
+        self.root, config, inventory, definition_paths=("outline.json",)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+TypeError: application_inventory() got an unexpected keyword argument 'definition_paths'
+
+======================================================================
+ERROR: test_registered_definitions_are_hidden_in_both_source_views_and_refresh (test_code_graph.CodeGraphTests.test_registered_definitions_are_hidden_in_both_source_views_and_refresh)
+Use declared artifact paths, keeping same-named application files visible.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_code_graph.py", line 113, in test_registered_definitions_are_hidden_in_both_source_views_and_refresh
+    check("outline.json", "revised-outline.json")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_code_graph.py", line 104, in check
+    for graph in (self.service.refresh()[0], self.service.project_view(limit=5000)):
+                  ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\code_graph\service.py", line 80, in refresh
+    inventory = source_inventory(
+        self.root,
+    ...<3 lines>...
+        telemetry=telemetry,
+    )
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\workflow\bo_sync.py", line 64, in source_inventory
+    framework = inspect_framework(root)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\integration.py", line 210, in inspect
+    expected = native_sources(native.get("language"))
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\delivery\integration.py", line 66, in native_sources
+    raise ValueError("language must be python or javascript (including React/Vue)")
+ValueError: language must be python or javascript (including React/Vue)
+
+----------------------------------------------------------------------
+Ran 34 tests in 17.610s
+
+FAILED (errors=2)

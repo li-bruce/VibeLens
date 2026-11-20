@@ -60,6 +60,11 @@ DEFAULT_PRUNES = (
         "reason": "Observer recordings and generated runtime data",
     },
     {
+        "path": "bo_stategraph/migrations",
+        "category": "artifact",
+        "reason": "Managed observer upgrade receipts and migration backups",
+    },
+    {
         "path": "review/runtime",
         "category": "artifact",
         "reason": "Generated runtime review records",

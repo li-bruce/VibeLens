@@ -6,6 +6,7 @@ from pathlib import Path
 import threading
 from ..graph.behavior_model import contained, read, digest
 from ..model_io import model_from_value
+from ..project_artifacts import references
 from ..sources import scan
 from ..workflow.bo_sync import source_inventory
 from .index import build, identity
@@ -28,6 +29,7 @@ class CodeGraph:
         self.persist = persist
         self.project_inspections = {}
         self.model_cache = None
+        self.definition_paths = ()
         self.cache = contained(self.root, ".stategraph/code-graph.json")
 
     def inputs(self):
@@ -58,12 +60,22 @@ class CodeGraph:
             }
         model_path = contained(self.root, cfg.get("model", "bo_stategraph/project.json"))
         model = {"nodes": [], "source_files": []}
+        self.definition_paths = ()
         if model_path.is_file():
             raw = model_path.read_bytes()
             if self.model_cache is None or raw != self.model_cache[0]:
-                parsed = model_from_value(json.loads(raw.decode("utf-8-sig")))
-                self.model_cache = raw, parsed
+                envelope = json.loads(raw.decode("utf-8-sig"))
+                parsed = model_from_value(envelope)
+                # Keep display ownership beside the validated model. Source and
+                # hash verification still consume the complete original scope.
+                paths = (
+                    tuple(ref["path"] for _, ref in references(envelope))
+                    if envelope.get("protocol") == "bo-project/v2"
+                    else ()
+                )
+                self.model_cache = raw, parsed, paths
             model = deepcopy(self.model_cache[1])
+            self.definition_paths = self.model_cache[2]
         return cfg, model
 
     def refresh(self):
@@ -85,7 +97,7 @@ class CodeGraph:
                 telemetry=telemetry,
             )
             application, display_cfg, display_excluded = application_inventory(
-                self.root, cfg, inventory
+                self.root, cfg, inventory, definition_paths=self.definition_paths
             )
             project = project_inventory(self.root, display_cfg, application)
             project = prune_support_shells(project, display_excluded)
@@ -289,7 +301,7 @@ class CodeGraph:
                 self.root, cfg, inspection_cache=self.project_inspections, model=model
             )
             application, display_cfg, display_excluded = application_inventory(
-                self.root, cfg, inventory
+                self.root, cfg, inventory, definition_paths=self.definition_paths
             )
             project = project_inventory(self.root, display_cfg, application)
             project = prune_support_shells(project, display_excluded)

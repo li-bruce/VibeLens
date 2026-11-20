@@ -64,10 +64,17 @@ The shared policy also recognizes standard dependency/cache locations. A normal
 directory named `data`, `runtime` or `review` may contain project-owned code;
 classify the actual output subtree rather than excluding its whole parent by
 name. The standard `review/runtime` evidence subtree is an output location.
-`bo_stategraph/config` and `bo_stategraph/data` are reserved observer outputs in
-the same shared policy. Preferences and recordings there stay outside source,
+`bo_stategraph/config`, `bo_stategraph/data` and `bo_stategraph/migrations` are
+reserved observer outputs in the same shared policy. Preferences, recordings and
+managed upgrade backups there stay outside source,
 API and filesystem discovery. Explicit hash-only watched inputs retain their
 integrity checks.
+
+The engineering view also omits installed observer receipts and exact definition
+paths registered by the project envelope. These display exclusions leave source
+coverage and watched-file hashes intact. Keep native application state executors
+and project-owned observation adapters inspectable. A filename alone, such as
+`observer.py` or `discovery.json`, does not establish observer ownership.
 
 An explicit additional source root restores only its own subtree. For example,
 `roots: [".", "third_party/local_plugins"]` includes local plugin source while

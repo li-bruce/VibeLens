@@ -81,6 +81,63 @@ class CodeGraphTests(unittest.TestCase):
         third = self.service.view(projection="project", limit=5000)
         self.assertNotIn("web/new.css", {n.get("project_path") for n in third["nodes"]})
 
+    def test_registered_definitions_are_hidden_in_both_source_views_and_refresh(self):
+        """Use declared artifact paths, keeping same-named application files visible."""
+        from bo_observer.graph.behavior_model import digest
+        from bo_observer.delivery.integration import install
+
+        self.project["protocol"] = "bo-project/v2"
+        self.project["contracts"] = {"discovery": None, "behavior": None, "analysis_profiles": []}
+        self.write("discovery.json", "{}")
+        install(self.root, "python")
+        for name in ("outline.json", "revised-outline.json"):
+            self.write(name, "{}")
+
+        def bind(name):
+            self.project["contracts"]["discovery"] = {
+                "path": name,
+                "schema": "business-discovery/v3",
+                "sha256": digest((self.root / name).read_bytes()),
+            }
+            self.write("bo_stategraph/project.json", json.dumps(self.project))
+
+        def check(hidden, visible):
+            for graph in (self.service.refresh()[0], self.service.project_view(limit=5000)):
+                paths = set(graph["project"]["entries"])
+                self.assertNotIn(hidden, paths)
+                self.assertNotIn("bo_stategraph/integration.json", paths)
+                self.assertIn(visible, paths)
+                self.assertIn("discovery.json", paths, "An unregistered name is not an ownership claim")
+                self.assertIn("worker.py", paths)
+
+        bind("outline.json")
+        check("outline.json", "revised-outline.json")
+        bind("revised-outline.json")
+        check("revised-outline.json", "outline.json")
+        self.assertEqual((self.root / "outline.json").read_text(), "{}")
+
+    def test_display_exclusions_do_not_erase_definition_hashes(self):
+        """Display filtering cannot change independent source/build evidence."""
+        from bo_observer.code_graph.display_scope import application_inventory
+        from bo_observer.graph.behavior_model import capture
+        from bo_observer.workflow.bo_sync import source_inventory
+
+        self.write("outline.json", '{"version": 1}')
+        config, model = self.service.inputs()
+        model["source_files"].append("outline.json")
+        inventory = source_inventory(self.root, config, model=model)
+        before_inventory = deepcopy(inventory)
+        before = capture(self.root, model)
+        _, _, excluded = application_inventory(
+            self.root, config, inventory, definition_paths=("outline.json",)
+        )
+        self.assertIn("outline.json", excluded)
+        self.assertEqual(inventory, before_inventory)
+        self.write("outline.json", '{"version": 2}')
+        after = capture(self.root, model)
+        self.assertNotEqual(before["build_id"], after["build_id"])
+        self.assertNotEqual(before["files"]["outline.json"], after["files"]["outline.json"])
+
     def test_file_dependencies_do_not_require_resolving_function_identities(self):
         """Legal repeated JS declarations can still expose their file dependencies."""
         self.write("imports.js", "import './target.js';\nfunction repeat() {}\nfunction repeat() {}\n")

@@ -504,9 +504,9 @@ class SharedSourceScopeTests(unittest.TestCase):
 
         self.project()
         self.write("modules/local.py", "def local(): return 1\n")
-        for directory in ("bo_stategraph/config", "bo_stategraph/data"):
+        for directory in ("bo_stategraph/config", "bo_stategraph/data", "bo_stategraph/migrations"):
             self.write(directory + "/invalid.py", "not application Python !!!\n")
-        blocked = {self.root / "bo_stategraph/config", self.root / "bo_stategraph/data"}
+        blocked = {self.root / name for name in ("bo_stategraph/config", "bo_stategraph/data", "bo_stategraph/migrations")}
         original = os.scandir
 
         def inspect(directory):
@@ -522,18 +522,18 @@ class SharedSourceScopeTests(unittest.TestCase):
         self.assertIn("modules/local.py", sources["files"])
         self.assertIn("modules/local.py", tree["entries"])
         self.assertTrue(
-            {"bo_stategraph/config", "bo_stategraph/data"}
+            {"bo_stategraph/config", "bo_stategraph/data", "bo_stategraph/migrations"}
             <= {item["path"] for item in sources["pruned"]}
         )
         self.assertFalse(
             any(
-                name.startswith(("bo_stategraph/config/", "bo_stategraph/data/"))
+                name.startswith(("bo_stategraph/config/", "bo_stategraph/data/", "bo_stategraph/migrations/"))
                 for name in sources["files"]
             )
         )
         self.assertFalse(
             any(
-                name.startswith(("bo_stategraph/config/", "bo_stategraph/data/"))
+                name.startswith(("bo_stategraph/config/", "bo_stategraph/data/", "bo_stategraph/migrations/"))
                 for name in tree["entries"]
             )
         )
@@ -544,7 +544,7 @@ class SharedSourceScopeTests(unittest.TestCase):
 
         self.project()
         policy = compile_scope(self.root, self.configuration())
-        for name in ("bo_stategraph/config/local.py", "bo_stategraph/data/local.py"):
+        for name in ("bo_stategraph/config/local.py", "bo_stategraph/data/local.py", "bo_stategraph/migrations/local.py"):
             self.write(name, "def local(value): return value\n")
             with self.subTest(path=name):
                 with self.assertRaisesRegex(ValueError, "source scope"):
@@ -572,6 +572,7 @@ class SharedSourceScopeTests(unittest.TestCase):
         owned = {
             "bo_stategraph/config/local_rules/api.py": "/owned-config",
             "bo_stategraph/data/local_api.py": "/owned-data",
+            "bo_stategraph/migrations/local_api.py": "/owned-migration",
         }
         for name, route in owned.items():
             self.write(
@@ -581,7 +582,7 @@ class SharedSourceScopeTests(unittest.TestCase):
                 + '")\ndef read():\n    """Read local project rules."""\n    return []\n',
             )
         config = self.configuration(
-            roots=[".", "bo_stategraph/config/local_rules", "bo_stategraph/data/local_api.py"]
+            roots=[".", "bo_stategraph/config/local_rules", "bo_stategraph/data/local_api.py", "bo_stategraph/migrations/local_api.py"]
         )
         config["code_files"] = ["worker.py", *owned]
         self.project(config)
@@ -634,7 +635,7 @@ class SharedSourceScopeTests(unittest.TestCase):
         from bo_observer.graph.behavior_model import capture
         from bo_observer.workflow.sync_config import snapshot
 
-        names = ["bo_stategraph/config/settings.json", "bo_stategraph/data/native-model.json"]
+        names = ["bo_stategraph/config/settings.json", "bo_stategraph/data/native-model.json", "bo_stategraph/migrations/prior-receipt.json"]
         config = self.configuration()
         config.update(
             {

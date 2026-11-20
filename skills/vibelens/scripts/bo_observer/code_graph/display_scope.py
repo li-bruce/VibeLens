@@ -11,7 +11,7 @@ from pathlib import PurePosixPath
 from ..graph.behavior_model import read
 
 
-def application_inventory(root, config, inventory):
+def application_inventory(root, config, inventory, *, definition_paths=()):
     """Return a display inventory and exact exclusions for the project tree.
 
     Ownership declarations are preferable to a filename prefix: a business module
@@ -25,6 +25,10 @@ def application_inventory(root, config, inventory):
 
     for key in ("model", "manifest", "discovery", "intent", "acceptance", "mapping_contract"):
         exclude(config.get(key))
+    # The validated envelope owns these exact paths. Do not infer ownership
+    # from common names such as behavior.json or from a source-file watch.
+    for path in definition_paths:
+        exclude(path)
     if (root / "sync.json").is_file():
         exclude("sync.json")
     # Reserved config/data directories are already handled by source_scope,
@@ -37,6 +41,7 @@ def application_inventory(root, config, inventory):
         "database-catalog.json",
         "databases.json",
         "runtime-version.json",
+        "integration.json",
     ):
         exclude("bo_stategraph/" + name)
     ownership_path = root / "ownership.json"
