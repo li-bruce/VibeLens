@@ -8,7 +8,11 @@ establish ownership.
 
 from collections import defaultdict
 
-from .common import canonical_id, encoded
+from .common import canonical_id
+from .effect_evidence import (
+    effect_errors as _effect_errors,
+    effect_ownership_errors as _effect_ownership_errors,
+)
 
 IDENTITY_FIELDS = (
     "project_id",
@@ -28,7 +32,10 @@ class InvocationEvidence:
         self.by_id = {event["id"]: event for event in events}
         self.entries = defaultdict(list)
         self.calls = defaultdict(list)
+        self.observations = defaultdict(list)
         for event in events:
+            if event.get("call_id"):
+                self.observations[self.key(event)].append(event)
             if event.get("phase") == "enter" and event.get("call_id"):
                 self.entries[self.key(event)].append(event)
                 self.calls[self.call_key(event)].append(event)
@@ -60,6 +67,14 @@ class InvocationEvidence:
     def entry(self, event):
         matches = self.entries.get(self.key(event), [])
         return matches[0] if len(matches) == 1 else None
+
+    def endings(self, entry, phases):
+        """Keep duplicate or contradictory terminals visible to the caller."""
+        return [
+            event
+            for event in self.observations.get(self.key(entry), [])
+            if event.get("phase") in phases
+        ]
 
     def upstream(self, event):
         """Return witnessed ancestors, bounding malformed or cyclic input work."""
@@ -126,92 +141,6 @@ def _policy_errors(model, run, index):
         )
         if not owns_check and not uses_check:
             errors.append("concept rule invocation target differs: " + evaluation["check_id"])
-    return errors
-
-
-def _effect_errors(binding, transition, witness, event_node, run, index):
-    """Require actual invocation, completion value and stable transaction identity."""
-    errors = []
-    effect = witness["effect"]
-    completion = witness["completion"]
-    cases = binding["expectations"].get(completion["expectation"], [])
-    if run.get("case") not in cases:
-        return errors
-    prefix = transition + "/" + effect + "/" + str(run.get("case"))
-    targets = set(binding["effects"].get(effect, []))
-    entries = [
-        event
-        for event in index.events
-        if event.get("node") in targets and event.get("phase") == "enter"
-    ]
-    related = []
-    for entry in entries:
-        if any(
-            index.by_id[identity].get("node") == event_node
-            and index.by_id[identity].get("phase") == "enter"
-            for identity in index.upstream(entry)
-        ):
-            related.append(entry)
-    if {entry["node"] for entry in related} != targets or not targets:
-        errors.append("concept effect invocation missing: " + prefix)
-    completed = set()
-    for event in index.events:
-        if event.get("node") != completion["node"] or event.get("phase") != completion["phase"]:
-            continue
-        entry = index.entry(event)
-        if entry is None or entry not in related:
-            # A shared effect can execute for another declared transition in the
-            # same case. The case-wide ownership gate handles real orphans;
-            # this transition only checks completions of its own invocations.
-            continue
-        # A successful return from another transaction cannot complete this
-        # effect. The native collector captures the identity at both boundaries.
-        identity = completion.get("identity_field")
-        if identity and (
-            not isinstance(entry.get("outputs", {}).get(identity), str)
-            or not entry["outputs"][identity]
-            or event.get("outputs", {}).get(identity) != entry["outputs"][identity]
-        ):
-            errors.append("concept completion identity differs: " + prefix)
-            continue
-        if completion["field"] not in event.get("outputs", {}) or encoded(
-            event["outputs"][completion["field"]]
-        ) != encoded(completion["equals"]):
-            errors.append("concept effect completion value differs: " + prefix)
-            continue
-        completed.add(entry["id"])
-    required = {entry["id"] for entry in related if entry["node"] == completion["node"]}
-    if not required or completed != required:
-        errors.append("concept effect completion missing: " + prefix)
-    return errors
-
-
-def _effect_ownership_errors(binding, specifications, run, index):
-    """Reject orphan effects once, accepting each declared transition owner.
-
-    Sharing and revoking may reuse the same native transaction function. Their
-    call instances stay separate even when one independent case exercises both.
-    """
-    errors, owners, completions = [], defaultdict(set), defaultdict(set)
-    for _, event_node, witness in specifications:
-        completion = witness["completion"]
-        cases = binding["expectations"].get(completion["expectation"], [])
-        if run.get("case") not in cases:
-            continue
-        for target in binding["effects"].get(witness["effect"], []):
-            owners[target].add(event_node)
-        completions[completion["node"]].add(completion["phase"])
-    for event in index.events:
-        node = event.get("node")
-        if node in owners and event.get("phase") == "enter":
-            if not any(
-                index.by_id[identity].get("node") in owners[node]
-                and index.by_id[identity].get("phase") == "enter"
-                for identity in index.upstream(event)
-            ):
-                errors.append("concept effect has no transition invocation: " + event["id"])
-        if event.get("phase") in completions.get(node, set()) and index.entry(event) is None:
-            errors.append("concept completion has no matching effect entry: " + event["id"])
     return errors
 
 

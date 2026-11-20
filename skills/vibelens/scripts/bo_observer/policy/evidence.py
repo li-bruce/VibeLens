@@ -246,12 +246,13 @@ def runtime_errors(policy, payload, *, manifest=None):
                     "bo_basis": evaluation["fact_revision"],
                     **step["arguments"],
                 }
-                if (
-                    event.get("inputs") != expected_inputs
-                    or event.get("outputs") != {"value": step["value"], "status": step["status"]}
-                    or event.get("call_id") != identity + ":" + step["node"]
-                ):
+                if event.get("inputs") != expected_inputs or event.get("outputs") != {
+                    "value": step["value"],
+                    "status": step["status"],
+                }:
                     failures.append("policy graph values differ: " + step["node"])
+                if event.get("call_id") != identity + ":" + step["node"]:
+                    failures.append("policy graph call identity differs: " + step["node"])
                 wanted = {event_ids[r] for r in step["used"] if r in event_ids}
                 actual = {
                     d.get("event") for d in event.get("depends", []) if d.get("type") == "data"

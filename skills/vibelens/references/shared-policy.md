@@ -51,6 +51,17 @@ The native evaluator copies the selected scalar inputs at entry. Predicates must
 
 In observe mode, emit the same `bo-policy-evaluation/v1` report from actual native decisions; never rerun functions just to populate the graph. Reports carry declaration hash/revision, check identity, fact basis, operation, selected inputs, actual function bindings, visited expression steps and diagnostics. The Python adapter can send these completed facts through `record_evaluation` and the existing bounded `BOProbe`; nodes and event identities are shared with the viewer. Deferred reporting records capture time, not a precise predicate-duration trace.
 
+For a native adapter in another language, keep the same event contract: a visited
+step uses node `policy:<step.node>`, phase `decision`, call ID
+`<check_id>:<step.node>`, inputs `{bo_check, bo_basis, ...arguments}` and outputs
+`{value, status}`. Each actually used child result links by its original event ID
+with dependency type `data`. Keep the real business parent invocation separately;
+a new random call ID or `control` dependency changes the meaning of this evidence.
+Verify one actual recorded evaluation early, then retain all configured cases in
+the complete mapping check. A valid evaluation JSON alone does not verify its
+graph events. When a shared permission is also used to filter a list, register
+that actual business use in both the confirmed model and native binding.
+
 Arbitrary recursive relationship checks are not forced into an acyclic business model. A native predicate may perform bounded traversal and report its real reads through the existing data layer. Record incomplete context or traversal limits as unknown. Do not enumerate every database permission instance as a new definition.
 
 ## Check each iteration

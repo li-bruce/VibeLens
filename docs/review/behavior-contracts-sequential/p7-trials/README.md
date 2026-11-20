@@ -122,3 +122,9 @@ their iteration/UI acceptance are still pending.
 on repair 14 and its independent desktop checks. It also fixes state-model
 folding shared by 2D/3D and records the naming and readiness findings. Node native
 recording, both iterations, refactors and the final acceptance remain open.
+
+[Repair 16](repair-16/README.md) separates effect-attempt completion checks,
+retains commits and rollbacks with their actual owners, and clarifies custom
+native policy event contracts. Original Node diagnostics and the controlled
+adapter repair comparison remain archived. Its full regression, fresh install
+and clean export passed; the remaining native trials and iterations stay open.

@@ -73,8 +73,9 @@ SDK 与原生上下文，以及观察器关闭或传输失败时的业务结果�
 `model.py` 组合业务、状态和规则定义，`state.py` 校验状态语义，`semantics.py`
 保存确认范围和变更。`binding.py` 与 `anchors.py` 核对原生状态、规则、源码绑定和独立测试断言，
 `projection.py` 为页面生成明确的实现关联。这些模块不执行用户程序的状态转换。
-`associations.py` 核对规则适用目标、转换副作用及完成要求；`runtime.py` 使用原始调用 ID、
-因果引用、实际完成值和事务身份检查这些关联。`concept-containment.js` 将明确的包含关系
+`associations.py` 核对规则适用目标、转换副作用及完成要求；`runtime.py` 索引原始调用 ID
+和因果引用。`effect_evidence.py` 核对事务身份及实际完成值，分别检查提交与失败终止的尝试；
+缺失或相互矛盾的终止记录仍会报错。`concept-containment.js` 将明确的包含关系
 转换为显示区域，原始关系与原生归属保持独立。
 命令入口为 [bo_concepts.py](../skills/vibelens/scripts/bo_concepts.py)，操作说明见
 [概念模型](../skills/vibelens/references/concept-models.md)。

@@ -401,6 +401,16 @@ class PolicyTests(unittest.TestCase):
                 attempt="attempt-1",
             )
         self.assertEqual(runtime_errors(self.policy, payload), [])
+        wrong_call = deepcopy(payload)
+        wrong_call["runs"][0]["events"][0]["call_id"] = "unrelated-call"
+        call_errors = runtime_errors(self.policy, wrong_call)
+        self.assertTrue(any("call identity differs" in error for error in call_errors))
+        self.assertFalse(any("graph values differ" in error for error in call_errors))
+        wrong_values = deepcopy(payload)
+        wrong_values["runs"][0]["events"][0]["outputs"]["status"] = "unknown"
+        value_errors = runtime_errors(self.policy, wrong_values)
+        self.assertTrue(any("graph values differ" in error for error in value_errors))
+        self.assertFalse(any("call identity differs" in error for error in value_errors))
         broken = deepcopy(payload)
         broken["runs"][0]["events"].pop()
         self.assertTrue(runtime_errors(self.policy, broken))

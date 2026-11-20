@@ -161,6 +161,7 @@ def main():
     run(ROOT, "tests/test_ast_fingerprint.py")
     run(ROOT, "tests/test_requirements_dialogue.py")
     run(ROOT, "tests/test_concept_models.py")
+    run(ROOT, "tests/test_effect_attempts.py")
     run(ROOT, "tests/test_concept_workflow.py")
     run(ROOT, "tests/test_concept_projection.py")
     run(ROOT, "tests/test_effect_projection.py")

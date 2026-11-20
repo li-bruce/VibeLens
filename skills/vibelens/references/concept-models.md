@@ -121,6 +121,16 @@ invocations and observe that completion for the same transaction. A generic
 function return or a source-backed unrelated function cannot replace this proof.
 Effects absent from the confirmed model require no invented transaction or node.
 
+The transaction identity at entry can be a selected input or output; if both are
+captured they must agree. The completion still supplies the declared output and
+the same native identity. In a case containing commits and rollbacks, retain
+every attempt. An error closes a failed attempt only when its exact owning
+business invocation also has one observed error terminal, with no conflicting
+completion or successful effect value. It does not count as a committed effect.
+The expected successful completion must still occur in that case; missing,
+contradictory or unrelated terminals remain failures. Do not discard rollback
+events or rewrite their values to satisfy a completion expectation.
+
 Each fact binding identifies its captured `node`, `direction` and `field`.
 `basis_checks` point to independent acceptance cases and paths whose expected
 value contains that reader and the complete `read_basis`. The observation command

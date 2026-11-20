@@ -80,8 +80,10 @@ and `anchors.py` compare those declarations with native state/rule/source bindin
 and independent assertions. `projection.py` adds explicit implementation links
 to Web metadata. These modules never execute the application's transitions.
 `associations.py` checks native rule targets and transition-effect completion
-contracts. `runtime.py` checks those associations against original invocation
-IDs, causal references, selected completion values and transaction identities.
+contracts. `runtime.py` indexes original invocation IDs and causal references.
+`effect_evidence.py` checks exact transaction identities and completion values,
+separating committed effects from observed aborted attempts. Missing or
+contradictory terminal observations remain explicit failures.
 [bo_concepts.py](../skills/vibelens/scripts/bo_concepts.py) is the public CLI;
 [concept-models.md](../skills/vibelens/references/concept-models.md) describes its workflow.
 
