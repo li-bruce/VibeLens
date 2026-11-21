@@ -110,6 +110,8 @@ def main():
     run(ROOT, "tests/test_remote_event_batch.py")
     run(ROOT, "tests/test_http_close.py")
     run(ROOT, "tests/test_protocol_reuse.py")
+    run(ROOT, "tests/test_canonical_digest.py")
+    run(ROOT, "tests/test_event_schema_engine.py")
     run(ROOT, "tests/test_history_batch.py")
     run(ROOT, "tests/test_probe_health.py")
     run(ROOT, "tests/test_probe_receipts.py")

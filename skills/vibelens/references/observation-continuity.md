@@ -113,4 +113,11 @@ can be useful for local inspection without claiming complete execution evidence.
 
 ## Trial repair order
 
-When an independent trial fails, classify the cause: Skill guidance, shared framework/viewer, or application implementation. Fix general defects in maintained sources and regressions first. Then start a fresh trial with ordinary human requests and natural answers to actual design questions. Do not give instrumentation reminders in routine iterations. Keep each failed run and subsequent repair as evidence.
+When an independent trial fails, collect findings in one issue list and classify
+their causes: Skill guidance, shared framework/viewer, or application code. Repair
+general defects in maintained sources first, complete the batch's targeted
+regressions, and then run its complete acceptance. Continue the existing trial
+unless the acceptance plan explicitly requires a new conversation; do not open
+one per defect. Use ordinary human requests and natural answers to design
+questions. Routine iterations carry no extra instrumentation reminders. Preserve
+each failed run, repair and retest under its own source/provider identity.

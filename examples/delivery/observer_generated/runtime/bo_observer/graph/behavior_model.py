@@ -225,7 +225,7 @@ def capture(root, model):
     }
 
 
-def check(root, model, baseline, *, sources=None):
+def check(root, model, baseline, *, sources=None, model_digest=None):
     from .source_files import SourceFiles
 
     sources = sources or SourceFiles(root)
@@ -234,7 +234,10 @@ def check(root, model, baseline, *, sources=None):
     for name, current in sources.read_all(names).items():
         if current is None or digest(current) != baseline["files"].get(name):
             changed.append(name)
-    model_changed = digest(model) != baseline["model_hash"]
+    # The session can reuse an already computed canonical digest only after an
+    # exact, type-sensitive comparison of the entire current declaration.
+    # Source-byte reads and all affected-node checks remain unconditional.
+    model_changed = (model_digest or digest)(model) != baseline["model_hash"]
     try:
         raw_intent = sources.read(model["intent"])
         intent_changed = (

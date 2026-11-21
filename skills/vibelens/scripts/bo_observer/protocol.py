@@ -60,14 +60,42 @@ def _validator(directory, name):
     return Draft202012Validator(schema, registry=registry)
 
 
+@lru_cache(maxsize=32)
+def _fast_event_validator(directory):
+    """Compile the same bundled event schema; never resolve external resources.
+
+    The native Draft 2020-12 implementation avoids Python keyword dispatch for
+    every valid observation. Other schemas and detailed rejection diagnostics
+    retain jsonschema. Minimal installations can still use that original path.
+    """
+    try:
+        from jsonschema_rs import Draft202012Validator
+    except ImportError:
+        return None
+    return Draft202012Validator(
+        _validator(directory, "event").schema, validate_formats=False, offline=True
+    )
+
+
 def schema_check(value, name, *, max_bytes=None):
     """Validate every envelope and portable number against the loaded protocol."""
-    errors = sorted(
-        _validator(SCHEMAS, name).iter_errors(value),
-        key=lambda e: str(list(e.path)),
-    )
-    if errors:
-        raise ValueError("; ".join(f"{list(e.path)}: {e.message}" for e in errors[:12]))
+    accepted = False
+    if name == "event":
+        validator = _fast_event_validator(SCHEMAS)
+        if validator is not None:
+            try:
+                accepted = validator.is_valid(value)
+            except (TypeError, ValueError, OverflowError):
+                # Non-JSON Python values retain the original error path. An
+                # accelerator conversion error must never imply acceptance.
+                pass
+    if not accepted:
+        errors = sorted(
+            _validator(SCHEMAS, name).iter_errors(value),
+            key=lambda e: str(list(e.path)),
+        )
+        if errors:
+            raise ValueError("; ".join(f"{list(e.path)}: {e.message}" for e in errors[:12]))
 
     # Python accepts non-finite JSON numbers and integers wider than JS can retain.
     def portable(v):

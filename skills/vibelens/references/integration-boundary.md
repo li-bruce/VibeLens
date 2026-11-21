@@ -97,6 +97,20 @@ When invoking a legacy project-local CLI, set `VIBELENS_SKILL` to the installed
 Skill directory. Existing launchers may supply its `BO_ADAPTER_HOME` instead.
 The copied runtime cannot use itself as the independent canonical provider.
 
+Resolve the selected installed provider once in the isolated integration
+bootstrap and reuse that choice for launchers, generators, checks, optional
+adapters and browser bundling. A browser import of an older installation does not
+follow a server-side `VIBELENS_SKILL` override. After maintenance, inspect both
+runtime imports and bundler inputs, record the resolved adapter paths/hashes, and
+run the documented ordinary launch/build commands. Do not hide an old default
+behind test-only environment overrides. Keep personal provider locations in
+project-local integration configuration rather than business functions.
+
+When a confirmed iteration changes permission timing or state behavior, update
+the application's maintained usage description in the same change. Historical
+dialogues and failed-run evidence retain their original statements. Passing a
+source/mapping check alone does not establish that a prose promise is current.
+
 `/vibelens` uses `bo_control.py` and its validated view/replay specifications.
 It can change presentation choices and replay selection, never source, executable
 declarations, raw recordings, required probes or acceptance cases. Other hosts

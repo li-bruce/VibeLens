@@ -34,6 +34,7 @@ dependencies, not bundled with the Skill.
 | [six](https://github.com/benjaminp/six/tree/1.17.0) | 1.17.0 | MIT | Installed by pip; not vendored |
 
 | [jsonschema](https://github.com/python-jsonschema/jsonschema) | 4.25.1 | MIT | Installed by pip for protocol validation |
+| [jsonschema-rs](https://github.com/Stranger6667/jsonschema/tree/python-v0.60.1/crates/jsonschema-py) | 0.60.1 | MIT | Installed by pip in the observer service; validates the same event schema offline; not copied into business applications |
 | [TypeScript](https://github.com/microsoft/TypeScript) | 5.9.3 | Apache-2.0 | Locked npm source parser; not vendored |
 | [Vue / compiler-sfc](https://github.com/vuejs/core) | 3.5.22 | MIT | Locked parser and example dependencies |
 | [React / React DOM](https://github.com/facebook/react) | 19.2.0 | MIT | Example dependencies |

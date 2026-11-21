@@ -187,6 +187,33 @@ class EventBatchTests(unittest.TestCase):
                 path.write_bytes(raw)
                 os.utime(path, ns=(info.st_atime_ns, info.st_mtime_ns))
 
+    def test_nested_model_edit_during_preflight_rejects_the_entire_group(self):
+        values = self.events()
+        original = GraphSession._accept_event
+        node = next(item for item in self.session.model["nodes"] if item["id"] == "advance")
+        fields = node["capture"]["out"]
+        before = deepcopy(fields)
+
+        def model_edit(receiver, value):
+            result = original(receiver, value)
+            if isinstance(receiver.history, list):
+                fields["state"] = "boolean"
+            return result
+
+        try:
+            # Warm the exact-value cache before mutating a shared nested object
+            # between the two admission boundaries. No staged event may escape.
+            self.assertEqual(self.session.binding()["status"], "current")
+            with patch.object(GraphSession, "_accept_event", model_edit):
+                with self.assertRaisesRegex(ValueError, "changed during"):
+                    self.session.bo_sink.bo_accept_many(values)
+            self.unchanged()
+        finally:
+            fields.clear()
+            fields.update(before)
+        self.assertEqual(self.session.binding()["status"], "current")
+        self.assertEqual(len(self.session.bo_sink.bo_accept_many(values)), len(values))
+
     def test_bounds_and_snapshot_envelopes_cannot_bypass_event_validation(self):
         first = self.events(1)[0]
         for values in ([], [first] * 65, (first,)):

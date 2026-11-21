@@ -13,6 +13,7 @@ import secrets
 import threading
 from ..protocol import validate_project, validate_event, validate_snapshot
 from ..graph.source_files import SourceFiles
+from ..graph.canonical_digest import CanonicalDigest
 from ..json_values import copy_json
 from .event_batch import BOSessionSink
 from .capture_context import call_key, invocation_boundary, minimal_boundary
@@ -54,6 +55,7 @@ class GraphSession:
         self.bo_behavior_context = BehaviorContext(self.root, self.project, documents)
         self.project_hash = digest(self.project)
         self.bo_project_sources = SourceFiles(self.root)
+        self.bo_model_digest = CanonicalDigest(digest)
         self.bo_project_content_hash = None
         self.bo_sink = BOSessionSink(self)
         self.model = self.project["model"]
@@ -128,7 +130,13 @@ class GraphSession:
 
     def binding(self):
         """Report whether current source bytes still match the loaded build."""
-        status = check(self.root, self.model, self.manifest, sources=self.bo_project_sources)
+        status = check(
+            self.root,
+            self.model,
+            self.manifest,
+            sources=self.bo_project_sources,
+            model_digest=self.bo_model_digest,
+        )
         try:
             # Read actual bytes every time. Only already verified identical bytes
             # may skip JSON parsing; same-size/same-mtime edits still get checked.

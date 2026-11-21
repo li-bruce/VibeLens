@@ -1,0 +1,107 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+....E.EEE.
+======================================================================
+ERROR: test_internal_directory_link_reads_actual_target (__main__.SourceFileTests.test_internal_directory_link_reads_actual_target)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 98, in test_internal_directory_link_reads_actual_target
+    self.directory_link(link, self.root / "app")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 88, in directory_link
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp072bv2r0\\linked', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp072bv2r0\\app']' returned non-zero exit status 1.
+
+======================================================================
+ERROR: test_outside_directory_link_is_rejected_even_for_matching_bytes (__main__.SourceFileTests.test_outside_directory_link_is_rejected_even_for_matching_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 111, in test_outside_directory_link_is_rejected_even_for_matching_bytes
+    self.directory_link(link, Path(external))
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 88, in directory_link
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmp9glb7zo3\\linked', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmprfdwnusd']' returned non-zero exit status 1.
+
+======================================================================
+ERROR: test_parent_replacement_between_path_check_and_open_is_rejected (__main__.SourceFileTests.test_parent_replacement_between_path_check_and_open_is_rejected)
+Validate the opened object even when a directory changes during open.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 171, in test_parent_replacement_between_path_check_and_open_is_rejected
+    reader.read("app/service.py")
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\graph\source_files.py", line 61, in read
+    return read_contained(self._windows_root, target)
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\graph\windows_source.py", line 90, in read_contained
+    with target.open("rb") as stream:
+         ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 164, in open_after_replacement
+    self.directory_link(parent, Path(external))
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 88, in directory_link
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpuqc2h0m9\\app', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpvtfcyyj9']' returned non-zero exit status 1.
+
+======================================================================
+ERROR: test_replaced_parent_is_rechecked_within_the_same_pass (__main__.SourceFileTests.test_replaced_parent_is_rechecked_within_the_same_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 129, in test_replaced_parent_is_rechecked_within_the_same_pass
+    self.directory_link(link, Path(external))
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_source_files.py", line 88, in directory_link
+    subprocess.run(
+    ~~~~~~~~~~~~~~^
+        ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        check=True,
+        ^^^^^^^^^^^
+        capture_output=True,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Lvi_P\miniforge3\Lib\subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['cmd', '/c', 'mklink', '/J', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpdoh8tk16\\app', 'C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\tmpnvlpzf93']' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.189s
+
+FAILED (errors=4)
