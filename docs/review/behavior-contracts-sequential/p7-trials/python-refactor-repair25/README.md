@@ -5,6 +5,13 @@ passed canonical verification, acceptance and current-input checking. The instal
 provider contains the 464 owned files from `b8bdff26`; its manifest is pinned in
 [repair 25](../repair-25/final/installation-commit.json). P7 remains in progress.
 
+[Completed dialogue](completed-dialogue.json) indexes all 357 visible messages,
+questions and simulated-user replies. Entries 13–18 preserve the request to review
+all state owners before implementation; 178–182 show the cancellation request,
+affected graph and confirmation; 274 starts the source-only refactor. Host
+approvals and repair coordination are identified separately. The transcript's
+usage totals are not an onboarding-cost or A/B-efficiency measurement.
+
 The existing download operations moved to `app/downloads.py`, the worker to
 `app/download_worker.py`, and shared exceptions to `app/errors.py`. The public
 Service facade remains. Independent comparison found the eleven reviewed
