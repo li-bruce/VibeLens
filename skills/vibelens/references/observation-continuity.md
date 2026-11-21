@@ -40,6 +40,16 @@ Project structure is a filesystem projection available independently of optional
 
 Recording settlement waits for the queue prefix submitted at the stop boundary, including snapshots. New business traffic may continue beyond that watermark. Preserve submitted/completed/pending counters and actual errors/drops; neither a settled prefix nor a healthy observer proves that an open business operation completed.
 
+Keep application interactions, producer completeness and viewer controls as separate
+acceptance results. Exercise submit/save actions after extracting a frontend module;
+an unchanged native method body does not prove the new module received its helpers.
+For an event burst, retain the original queue limit, capture fields, workload,
+before/after producer counters and raw recordings. A completed flush after queue
+overflow remains incomplete capture. Diagnose transport/admission costs on an
+isolated copy; collect independent failures before a shared repair batch and its
+full regression. Do not reduce fields, raise capacity or rerun ordinary traffic
+until a preferred schedule appears to turn a failed receipt into a pass.
+
 Pass the current model when checking invocation closure. Data projections register their native boundaries in each operation's `lifecycle`: a transaction may finish with `commit`, and a transformation with `change` and the captured `transformed` status. Graph activation, Timeline and verification use those bindings. A commit inside an explicit function span does not replace its actual return/exception; arbitrary value changes do not end calls. Missing data exits and wrong call identities still fail. Older data recordings retain their original bytes and use only the adapter's known action/status vocabulary as a compatibility fallback.
 
 Exercise actual denied/error paths and compare response status/fields independently from storage, native results or HTTP. A correct response with missing observation fails mapping. Capture health and closure are separate checks; retain both.

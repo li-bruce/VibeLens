@@ -13,7 +13,7 @@ sys.path[:0] = [str(ROOT / "skills/vibelens/scripts"), str(ROOT / "tools")]
 from test_multilanguage import project_fixture
 from bo_observer.adapters.python.bo_probe import BOProbe
 from bo_observer.observation.session import GraphSession
-from bo_observer.protocol import schema_check, validate_event
+from bo_observer.protocol import schema_check, validate_event, validate_event_batch
 
 
 class ProtocolReuseTests(unittest.TestCase):
@@ -78,6 +78,49 @@ class ProtocolReuseTests(unittest.TestCase):
         with ThreadPoolExecutor(max_workers=8) as workers:
             actual = list(workers.map(validate, range(128)))
         self.assertEqual(actual, [not index % 2 for index in range(128)])
+
+    def test_batch_preserves_individual_rejections_and_detached_values(self):
+        """A shared lookup must not turn a valid prefix into partial acceptance."""
+        build = self.session.manifest["build_id"]
+        cases = [
+            {"phase": "invented"},
+            {"seq": 9007199254740992},
+            {"build_id": "another-build"},
+            {"node": "absent"},
+            {"outputs": {"extra": True}},
+            {"outputs": {"state": False}},
+            {"outputs": {"state": "x" * 25000}},
+            {"trace": {"trace_id": "invalid"}},
+        ]
+        for changes in cases:
+            with self.subTest(changes=list(changes)):
+                invalid = {**self.event, **changes}
+                with self.assertRaises(ValueError) as single:
+                    validate_event(invalid, self.project, build)
+                with self.assertRaises(ValueError) as batch:
+                    validate_event_batch([self.event, invalid], self.project, build)
+                self.assertEqual(str(single.exception), str(batch.exception))
+        received = validate_event_batch([self.event], self.project, build)
+        received[0]["outputs"]["state"] = "changed"
+        self.assertEqual(self.event["outputs"]["state"], "running")
+
+    def test_next_batch_reads_current_capture_and_observer_declarations(self):
+        """Index lifetime is one request, including same-object model edits."""
+        project = deepcopy(self.project)
+        build = self.session.manifest["build_id"]
+        validate_event_batch([self.event], project, build)
+        node = next(n for n in project["model"]["nodes"] if n["id"] == "advance")
+        node["capture"]["out"]["state"] = "boolean"
+        with self.assertRaisesRegex(ValueError, "unapproved type or value length"):
+            validate_event_batch([self.event], project, build)
+        node["capture"]["out"]["state"] = "string"
+        project["model"]["implementation"] = {
+            "excluded": {"worker.py::advance": {"category": "observer"}}
+        }
+        with self.assertRaisesRegex(ValueError, "observer infrastructure"):
+            validate_event_batch([self.event], project, build)
+        project["model"]["implementation"]["excluded"].clear()
+        self.assertEqual(validate_event_batch([self.event], project, build), [self.event])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,267 @@
+{
+  "valid_readonly_extraction": true,
+  "ordinary_replay_or_new_instrumentation": false,
+  "candidate_id": "4697073ae0da8a50bec7c4541e5ea35c327c0224e1694b681d0aa99c7f96fab3",
+  "build_id": "df85427462bd8faf293b740102d40e8be57960a40214efe22894a6d504ec6f55",
+  "run": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\unified-1795291546",
+  "confirmed_failure": "Native producer finite waiting queue overflow: dropped 421, stage queue / type Full. Later flush completed; lost envelopes remain lost and the second recording is interrupted.",
+  "configured_limits": {
+    "native_waiting_queue": 8192,
+    "browser_waiting_queue": 4096,
+    "native_request_max_events": 64,
+    "native_request_max_bytes": 262144,
+    "per_envelope_max_bytes": 24576,
+    "request_deadline_ms": 1000,
+    "request_attempts": 2,
+    "native_drain_parallel_groups": 1,
+    "snapshot_barrier": "Separate single-envelope ordered request",
+    "failed_group_recovery": "Ordered recursive halves down to single envelopes; no fanout",
+    "pending_8256_explanation": "Observed queue is capped at 8192 waiting items plus up to 64 currently in flight. This is not an increased configured queue."
+  },
+  "source_references": [
+    {
+      "installed_path": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\context-closure-skills\\vibelens\\scripts\\bo_observer\\adapters\\javascript\\bo_runtime.mjs",
+      "sha256": "564074344add655b3b7715e0819fcd7b50c7b13f1511053cf4f8b64c225a4a94",
+      "frozen_copy": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\announcement-module-bootstrap-repaired-20261122\\flow-source-snapshot\\bo_runtime.mjs"
+    },
+    {
+      "installed_path": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\context-closure-skills\\vibelens\\scripts\\bo_observer\\service.py",
+      "sha256": "ec32a8f74bf1b91b8dfb0f8eaa8f464f90092a4a2d7b6cc2be40e697d86d006f",
+      "frozen_copy": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\announcement-module-bootstrap-repaired-20261122\\flow-source-snapshot\\service.py"
+    },
+    {
+      "installed_path": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\context-closure-skills\\vibelens\\scripts\\bo_observer\\observation\\event_batch.py",
+      "sha256": "26080ac3f5d2a7f15fc10111345b184ace9b152cf08197f44826f2f4c3525bc4",
+      "frozen_copy": "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\平台软著\\SoftwareStatusObserverSkill\\.validation\\p7-trials\\node-retest-app\\review\\runtime\\announcement-module-bootstrap-repaired-20261122\\flow-source-snapshot\\event_batch.py"
+    }
+  ],
+  "sampled_drop_window": {
+    "last_observed_no_drop": {
+      "wall_ms": 1795291612875.738,
+      "utc": "2026-11-21T20:06:52.875738+00:00",
+      "stage": "after-start-1a56737f20d34900bbecd418eb18836b",
+      "enqueued": 2423,
+      "pending": 0,
+      "queue_submitted": 2431,
+      "queue_completed": 2431,
+      "dropped": 0,
+      "errors": 0,
+      "transport_retries": 0,
+      "last_error": null
+    },
+    "first_observed_drop": {
+      "wall_ms": 1795291616599.578,
+      "utc": "2026-11-21T20:06:56.599578+00:00",
+      "stage": "before-stop-1a56737f20d34900bbecd418eb18836b",
+      "enqueued": 11799,
+      "pending": 8256,
+      "queue_submitted": 11418,
+      "queue_completed": 3162,
+      "dropped": 421,
+      "errors": 0,
+      "transport_retries": 0,
+      "last_error": {
+        "stage": "queue",
+        "type": "Full"
+      }
+    },
+    "scope": "Existing health samples bound the observed transition. They do not timestamp each lost envelope."
+  },
+  "second_recording_flow": {
+    "after_start_health": {
+      "enabled": true,
+      "boundary_context": true,
+      "run_id": "e686dac7-9d66-466a-a386-64dcb569360d",
+      "producer_id": "e82306dd-cd69-428a-9b63-65645becb520",
+      "enqueued": 2423,
+      "pending": 0,
+      "queue_submitted": 2431,
+      "queue_completed": 2431,
+      "flush_target": 2431,
+      "errors": 0,
+      "dropped": 0,
+      "filtered": 0,
+      "transport_retries": 0,
+      "last_error": null,
+      "tracing": {
+        "backend": "opentelemetry",
+        "open_spans": 0,
+        "automatic_open": 0,
+        "automatic_errors": 0,
+        "ignored": 0,
+        "external_build_contexts": 0
+      },
+      "data_errors": 0,
+      "order_witness_errors": 0,
+      "capture_control_errors": 0
+    },
+    "before_stop_first_health": {
+      "enabled": true,
+      "boundary_context": true,
+      "run_id": "e686dac7-9d66-466a-a386-64dcb569360d",
+      "producer_id": "e82306dd-cd69-428a-9b63-65645becb520",
+      "enqueued": 11799,
+      "pending": 8256,
+      "queue_submitted": 11418,
+      "queue_completed": 3162,
+      "flush_target": 2431,
+      "errors": 0,
+      "dropped": 421,
+      "filtered": 0,
+      "transport_retries": 0,
+      "last_error": {
+        "stage": "queue",
+        "type": "Full"
+      },
+      "tracing": {
+        "backend": "opentelemetry",
+        "open_spans": 0,
+        "automatic_open": 0,
+        "automatic_errors": 0,
+        "ignored": 0,
+        "external_build_contexts": 0
+      },
+      "data_errors": 0,
+      "order_witness_errors": 0,
+      "capture_control_errors": 0
+    },
+    "after_wait_health": {
+      "enabled": true,
+      "boundary_context": true,
+      "run_id": "e686dac7-9d66-466a-a386-64dcb569360d",
+      "producer_id": "e82306dd-cd69-428a-9b63-65645becb520",
+      "enqueued": 11799,
+      "pending": 0,
+      "queue_submitted": 11418,
+      "queue_completed": 11418,
+      "flush_target": 2431,
+      "errors": 0,
+      "dropped": 421,
+      "filtered": 0,
+      "transport_retries": 1,
+      "last_error": {
+        "stage": "queue",
+        "type": "Full"
+      },
+      "tracing": {
+        "backend": "opentelemetry",
+        "open_spans": 0,
+        "automatic_open": 0,
+        "automatic_errors": 0,
+        "ignored": 0,
+        "external_build_contexts": 0
+      },
+      "data_errors": 0,
+      "order_witness_errors": 0,
+      "capture_control_errors": 0
+    },
+    "observed_burst_interval_seconds": 3.700945556640625,
+    "enqueued_counter_delta": 9376,
+    "completed_envelope_delta": 731,
+    "completed_per_second_during_observed_burst": 197.5170909197416,
+    "pending_drain_seconds": 29.4676376953125,
+    "completed_per_second_during_drain": 280.1717628459001,
+    "scope": "Rates are differences of captured envelope counters over wall-clock sample windows; they are not per-request server latencies or exact packet sizes."
+  },
+  "second_recording": {
+    "id": "1a56737f20d34900bbecd418eb18836b",
+    "status": "interrupted",
+    "events_retained": 9029,
+    "native_events_retained": 8955,
+    "top_observed_native_nodes": [
+      [
+        "data_read",
+        2904
+      ],
+      [
+        "policy_facts",
+        578
+      ],
+      [
+        "policy:member",
+        570
+      ],
+      [
+        "policy:actor",
+        553
+      ],
+      [
+        "policy:owner",
+        549
+      ],
+      [
+        "policy:is_owner",
+        549
+      ],
+      [
+        "guard_view_file",
+        546
+      ],
+      [
+        "policy:file_access",
+        546
+      ],
+      [
+        "policy:may_access",
+        546
+      ],
+      [
+        "policy:recipient",
+        303
+      ],
+      [
+        "policy:is_recipient",
+        303
+      ],
+      [
+        "policy:active",
+        303
+      ],
+      [
+        "policy:has_grant",
+        302
+      ],
+      [
+        "data_write",
+        46
+      ],
+      [
+        "api_files",
+        27
+      ]
+    ],
+    "producer_settlement": {
+      "flushed": true,
+      "target": 11504,
+      "completed": 11504,
+      "submitted": 11504,
+      "pending": 0
+    },
+    "gaps": [
+      "Producer capture or transport failed during this recording."
+    ]
+  },
+  "existing_server_request_timing": {
+    "available": false,
+    "reason": "The unprofiled original run has producer health polls, stop-request elapsed times, aggregate system CPU and original event observed_at values. Viewer stdout/stderr contain no ingress request timing/access records. No packet-level batch-size or collector-request duration trace was collected. Do not substitute stop elapsed time or backlog-drain time for event-batch server latency.",
+    "normal_stop_request_elapsed_ms": [
+      2305.396900046617,
+      3201.930000039283
+    ],
+    "transport_retries_observed": 1,
+    "retry_type_or_individual_duration": "Not retained; one retry alone does not establish a timeout cause."
+  },
+  "system_load_existing_window": {
+    "samples": 17,
+    "cpu_percent_min": 12.204724409448819,
+    "cpu_percent_max": 38.8235294117647,
+    "cpu_percent_mean": 22.642289701133368,
+    "scope": "Whole-machine aggregate; no per-process or per-function attribution."
+  },
+  "source_based_candidates_for_main_session": [
+    "bo_runtime.mjs:709-835: serial bounded drain, JSON encoding, 64/256KiB grouping, one-second acknowledgement deadline and ordered group recovery.",
+    "service.py:243-247: HTTP events/batch routes to the existing atomic session sink.",
+    "event_batch.py:26-66: per-event validation, two source binding checks, cursor copies, acceptance reducers and publication under the session lock. These are candidate measurement locations, not individually proven hotspots."
+  ],
+  "boundary": "Evidence confirms production exceeded delivery during this burst and the finite source queue overflowed. Existing artifacts cannot divide the latency among client serialization, wire, server validation/source checks, publication and viewer rendering. Provider/capacity/fields/timeout remain unchanged; main session will evaluate its batching channel before any next ordinary run."
+}

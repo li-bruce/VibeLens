@@ -147,6 +147,31 @@ def validate_project(project):
 
 def validate_event(event, project, build_id):
     """Check build identity and allowlisted capture fields; return the validated event copy."""
+    return _validate_event(event, project, build_id, _event_declarations(project))
+
+
+def _event_declarations(project):
+    """Resolve this call's declared owners once, without a persistent model cache."""
+    _, _, internal_nodes = _shared()
+    nodes = {}
+    for node in project["model"]["nodes"]:
+        nodes.setdefault(node["id"], node)
+    return nodes, internal_nodes(project["model"])
+
+
+def validate_event_batch(events, project, build_id):
+    """Validate every event against one request-local declaration index.
+
+    A batch shares its project, not its validation result. Rebuilding the index
+    for each request preserves edited capture declarations and observer exclusions.
+    Source checks and atomic publication remain the session sink's responsibility.
+    """
+    declarations = _event_declarations(project)
+    return [_validate_event(event, project, build_id, declarations) for event in events]
+
+
+def _validate_event(event, project, build_id, declarations):
+    """Apply the same schema, provenance and capture checks to one envelope."""
     schema_check(event, "event", max_bytes=ENVELOPE_BYTES)
     from .observation.provenance import trace_metadata, object_metadata, exception_metadata
 
@@ -162,10 +187,10 @@ def validate_event(event, project, build_id):
         build_id,
     ):
         raise ValueError("event belongs to a different project, model revision or build")
-    _, _, internal_nodes = _shared()
-    if event["node"] in internal_nodes(project["model"]):
+    nodes, internal_nodes = declarations
+    if event["node"] in internal_nodes:
         raise ValueError("observer infrastructure is not a business event")
-    node = next((n for n in project["model"]["nodes"] if n["id"] == event["node"]), None)
+    node = nodes.get(event["node"])
     if node is None:
         raise ValueError("unknown event node")
     if node.get("data_role") in OPERATION_ROLES and "target_source" in event["outputs"]:

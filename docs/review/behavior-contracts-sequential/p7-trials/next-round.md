@@ -116,3 +116,20 @@ source-only refactor and recording bytes remain intact. No new chat was created.
 Node's announcement refactor and R27-09 application fix are in the existing chat.
 Complete their targeted checks before the final native/UI run. Product changes
 and the consolidated A24–A34 decision still follow that acceptance.
+
+## Consolidated repair 28
+
+The announcement helper dependency and login input race now pass their targeted
+cases and the original ordinary UI flow. A separate queue-overflow failure leaves
+the repaired candidate unaccepted: 421 discarded producer events, with a correctly
+interrupted second recording even though its stop prefix settled. Independent
+desktop and interval checks continued without another application run or new chat.
+
+[Repair 28](repair-28/README.md) contains the frozen failures, candidate source,
+24-case frontend controls, raw records, seven desktop groups and visible dialogue.
+Maintained code now builds one declaration index per admission request; strict
+event/source/capture checks and all capacities remain unchanged. Its isolated
+validation measurement is not proof of lossless throughput. Complete the remaining
+detached admission/transport/view workload diagnosis and the shared regression
+before another native trial batch. Do not run the prepared P7 finalization script
+while this capture failure remains unresolved.

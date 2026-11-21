@@ -63,11 +63,18 @@ ordinary browser recording is retained and prevents acceptance of that candidate
 - Application browser checks establish the tested visible workflows.
 - VibeLens desktop checks establish Graph/Timeline inspection and saved settings.
 
-The Node candidate's native verifier passed while its ordinary announcement GUI
+The earlier Node candidate's native verifier passed while its ordinary announcement GUI
 failed. Both outcomes are recorded. The root acceptance preflight now explicitly
 requires the complete ordinary browser command and both consecutive recordings
 in addition to the native and viewer receipts. Its negative regression rejects
 the real failed receipt; it does not reinterpret it as successful capture.
+
+The repaired candidate subsequently passed all seven ordinary application UI
+checks but dropped 421 producer events in the second recording. Six independent
+desktop groups and a 4,932-event Timeline interval check pass on that candidate;
+they do not close its capture failure. [Repair 28](../repair-28/README.md) retains
+both failed epochs, targeted repairs, unchanged limits and the remaining batch.
+P7 and the final Node acceptance remain incomplete.
 
 ## Limits retained in the final interpretation
 

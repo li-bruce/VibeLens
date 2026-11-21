@@ -2,7 +2,7 @@
 
 from copy import copy
 
-from ..protocol import schema_check, validate_event
+from ..protocol import schema_check, validate_event_batch
 
 
 class BOSessionSink:
@@ -33,9 +33,7 @@ class BOSessionSink:
         if not isinstance(events, list) or not 1 <= len(events) <= 64:
             raise ValueError("event batch requires 1 to 64 envelopes")
         session = self.session
-        values = [
-            validate_event(event, session.project, session.manifest["build_id"]) for event in events
-        ]
+        values = validate_event_batch(events, session.project, session.manifest["build_id"])
         with session.lock:
             if session.binding()["status"] != "current":
                 raise ValueError("source or declaration changed; reload after verification")

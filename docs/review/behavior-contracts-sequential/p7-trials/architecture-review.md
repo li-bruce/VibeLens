@@ -81,3 +81,21 @@ installed provider; no local framework patch was accepted as product evidence.
 A24–A34 still need the final Node refactor/initialization results, consolidated
 visible dialogue review and accepted product scenes. Their completion is tracked
 by the phase ledger rather than inferred from this architecture review.
+
+## Subsequent consolidated findings
+
+[Product scenes](product-forest-27/results.json) and the public dialogue export
+are now retained. The Node refactor exposed a missing frontend helper dependency;
+actual submit/save checks were added to the original command and the repaired UI
+passes. Its subsequent burst recording still lost 421 producer events. Final
+Node acceptance and the P7 decision remain open; independent desktop checks do
+not supersede a capture failure.
+
+[Repair 28](repair-28/README.md) keeps the admission optimization inside the
+observer protocol and shared session sink. A request-local declaration index
+replaces repeated whole-model scans. There is no new application hook, persistent
+cache or execution authority. Per-event schema, provenance and selected values
+remain validated, followed by the existing atomic reducer and source checks.
+Changing capture definitions or observer exclusions in the next request is still
+detected. The measured validation savings do not establish lossless whole-system
+throughput; that remaining capacity issue is explicitly tracked.
