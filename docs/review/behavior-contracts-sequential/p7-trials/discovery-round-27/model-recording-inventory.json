@@ -1,0 +1,141 @@
+{
+  "project_id": "node-retest-team-files",
+  "mode": "observe",
+  "model_revision": "native-start-permission-3-session-ui",
+  "declared_networks": [
+    {
+      "id": "files",
+      "nodes": 5
+    },
+    {
+      "id": "downloads",
+      "nodes": 5
+    },
+    {
+      "id": "announcements",
+      "nodes": 4
+    },
+    {
+      "id": "authentication",
+      "nodes": 2
+    }
+  ],
+  "state_registry_ids_match": true,
+  "state_models": {
+    "grant": {
+      "declared_states": [
+        "inactive",
+        "active"
+      ],
+      "bound_states": [
+        "inactive",
+        "active"
+      ],
+      "states_match": true,
+      "initial_match": true,
+      "declared_transitions": 2,
+      "bound_transitions": 2
+    },
+    "download_task": {
+      "declared_states": [
+        "created",
+        "queued",
+        "preparing",
+        "ready",
+        "cancelled"
+      ],
+      "bound_states": [
+        "created",
+        "queued",
+        "preparing",
+        "ready",
+        "cancelled"
+      ],
+      "states_match": true,
+      "initial_match": true,
+      "declared_transitions": 4,
+      "bound_transitions": 4
+    },
+    "announcement": {
+      "declared_states": [
+        "absent",
+        "published",
+        "deleted"
+      ],
+      "bound_states": [
+        "absent",
+        "published",
+        "deleted"
+      ],
+      "states_match": true,
+      "initial_match": true,
+      "declared_transitions": 3,
+      "bound_transitions": 3
+    },
+    "session": {
+      "declared_states": [
+        "absent",
+        "active",
+        "ended"
+      ],
+      "bound_states": [
+        "absent",
+        "active",
+        "ended"
+      ],
+      "states_match": true,
+      "initial_match": true,
+      "declared_transitions": 2,
+      "bound_transitions": 2
+    }
+  },
+  "records": [
+    {
+      "id": "5e4c8036b5a4428aaba2266820113d94",
+      "sha256": "30f7cbcf3d268f7d957b1ae8ed88fc006548c4ca579691cee6d76964de5fbf96",
+      "status": "stopped",
+      "build_id": "150b7a8c49d72b8debd3022d464f516601b471bebd02bd7cc93590cd715c258b",
+      "interval_events": 2066,
+      "context_events": 33,
+      "start_seq": 33,
+      "end_seq": 2099,
+      "gaps": [],
+      "ownership_gaps": 0,
+      "observed_nodes": 58,
+      "frames_by_state_model": {
+        "session": 2,
+        "download_task": 4
+      },
+      "models_without_frames_in_this_record": [
+        "announcement",
+        "grant"
+      ],
+      "meaning": "Recorded frame presence is not complete transition or business coverage."
+    },
+    {
+      "id": "380df57764ce4038b1e20cd1c7ca7ad2",
+      "sha256": "c6abc94e83e8d5cd995fe650b7198923866c4b068597b7236dcaf843bb26968b",
+      "status": "stopped",
+      "build_id": "150b7a8c49d72b8debd3022d464f516601b471bebd02bd7cc93590cd715c258b",
+      "interval_events": 8178,
+      "context_events": 2000,
+      "start_seq": 2099,
+      "end_seq": 10277,
+      "gaps": [
+        "Pre-recording context retains only the latest 2000 events.",
+        "A parent invocation entry was not retained; its execution boundary is incomplete."
+      ],
+      "ownership_gaps": 446,
+      "observed_nodes": 106,
+      "frames_by_state_model": {
+        "session": 21,
+        "grant": 3,
+        "download_task": 4,
+        "announcement": 4
+      },
+      "models_without_frames_in_this_record": [],
+      "meaning": "Recorded frame presence is not complete transition or business coverage."
+    }
+  ],
+  "scope": "Read-only identity inventory on Node candidate; not a full semantic or coverage validator."
+}

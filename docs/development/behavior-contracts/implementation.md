@@ -288,8 +288,17 @@ Depends on the phases included in the intended release.
 - Inspect the initial model inventory and construction dialogue, including independent
   capabilities, different state owners, shared rules and an interpretation corrected
   by the simulated user. Retain graph revisions and the exact confirmed boundaries.
-- Diagnose framework/Skill failures at their source; repair the maintained
-  package, then repeat in a clean trial. Do not teach only the sample app a workaround.
+- Diagnose framework/Skill failures at their source and include them in the
+  consolidated repair batch. Rebuild the maintained package for the final clean
+  installation test. Do not teach only the sample app a workaround.
+- Batch acceptance work into discovery, repair and final verification rounds.
+  During discovery, preserve failures and continue independent checks on the same
+  candidate where their preconditions still hold. Keep one issue inventory with
+  scope, cause, affected cases and evidence. Do not start a fresh dialogue or rerun
+  the complete suite for each newly found defect. Apply the reviewed repair batch,
+  run focused regressions as needed, then perform the complete final run and the
+  authorized dialogue trial. Failed capture evidence may support UI diagnosis;
+  it never counts as complete runtime acceptance.
 - Retain failures, fixes and the final complete retest, with screenshots of initial
   graphs, actual replay, drilldown and updated graphs. Mark simulated conversation
   and model-generated traces accurately in the review material.

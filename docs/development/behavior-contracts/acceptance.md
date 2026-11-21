@@ -81,6 +81,13 @@ Each primary trial includes:
 6. A source-only refactor without unnecessary repeated business questions.
 7. Full retest after the last framework/Skill repair and preserved screenshots.
 
+During issue discovery, collect all independent findings on the current candidate
+before starting a repair batch. Keep failed evidence and pending dependent checks
+distinct. Fix the batch with targeted regressions, then run the complete candidate
+gate. A fresh installation verifies package delivery; it does not require a new
+dialogue after each defect. Existing authorized trial chats and their evidence are
+reused; any further fresh dialogue is reserved for the completed batch.
+
 Include a small secondary fixture with an explicitly independent capability when
 the main sharing story does not naturally contain one. Keep this requirement in the
 trial setup; do not teach the Skill to add capabilities to ordinary user projects.

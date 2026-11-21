@@ -47,7 +47,8 @@ work. Do not use the abandoned draft or premature trial chats as acceptance.
 - Treat analysis bounds, production limits and abstractions as different inputs.
   A finite model pass is limited to its exact properties, assumptions and version.
 - Do not modify framework code inside an application trial. Repair the maintained
-  framework, rebuild managed adapters and retest a fresh installation.
+  framework in a consolidated batch, rebuild managed adapters and retest a fresh
+  installation after that batch.
 - Keep application integration small. Tool dependencies, viewer and TLC stay
   outside production application bundles. Preserve explicit chat activation and
   `/vibelens` control allowlists.
@@ -100,6 +101,26 @@ Mandatory check omissions block acceptance for their affected scope. Optional
 formal analysis may be unavailable while ordinary observation works; report that
 distinction explicitly. No background file watcher is assumed to wake an arbitrary
 host or perform semantic reconciliation without an active integration.
+
+## Issue collection and dialogue retest cost
+
+Collect remaining independent findings before starting the next repair batch.
+Use one issue document with reproduction evidence, affected layers/modules,
+cause classification, proposed fix, regression case and completion status.
+Application defects, framework defects and test setup errors remain separate.
+The current P7 inventory is [next-round.md](../../review/behavior-contracts-sequential/p7-trials/next-round.md).
+
+Continue checks whose prerequisites still hold on the same candidate. If a
+recording is incomplete, its rendering can be diagnosed, but runtime acceptance
+stays failed. Mark dependent checks pending instead of changing their input or
+removing their assertions to get through them.
+
+Apply the collected fixes together, with focused regression for each affected
+boundary. Run the complete phase/final gate after the batch. A clean installation
+does not require a new chat for each defect: reuse authorized existing trial chats
+and their retained evidence. Reserve any additional authorized fresh dialogue for
+the complete candidate. Preserve every failed attempt, fix and retest; do not
+restart the whole conversation to obtain a more favorable result.
 
 ## Engineering conventions
 
