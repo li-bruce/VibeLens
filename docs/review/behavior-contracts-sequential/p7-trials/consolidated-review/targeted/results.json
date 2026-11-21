@@ -1,0 +1,94 @@
+{
+  "valid": false,
+  "checks": [
+    {
+      "name": "forest-split-retire",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\\u5e73\u53f0\u8f6f\u8457\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_baseline.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "forest-split-retire.log"
+    },
+    {
+      "name": "model-review-and-iteration",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\\u5e73\u53f0\u8f6f\u8457\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_guided_construction.py",
+        "-v"
+      ],
+      "exit_code": 1,
+      "log": "model-review-and-iteration.log"
+    },
+    {
+      "name": "scope-confirmation",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\\u5e73\u53f0\u8f6f\u8457\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_construction_contract.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "scope-confirmation.log"
+    },
+    {
+      "name": "evidence-dependencies",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\\u5e73\u53f0\u8f6f\u8457\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_evidence.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "evidence-dependencies.log"
+    },
+    {
+      "name": "iteration-meaning",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\\u5e73\u53f0\u8f6f\u8457\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "tests/test_behavior_iteration.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "iteration-meaning.log"
+    },
+    {
+      "name": "test-lint",
+      "command": [
+        "C:\\Users\\Lvi_P\\Documents\\Work\\CF\\\u5e73\u53f0\u8f6f\u8457\\SoftwareStatusObserverSkill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "--config",
+        "tools/formatting/ruff.toml",
+        "tests/test_behavior_baseline.py"
+      ],
+      "exit_code": 0,
+      "log": "test-lint.log"
+    }
+  ],
+  "scope": "Additional exact forest split/retirement cases and related existing confirmation/history/dependency suites; no application workload"
+}
