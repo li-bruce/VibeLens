@@ -2,6 +2,7 @@
 import * as T from "./viewer/spatial-three.vendor.js";
 import { nodeGeometry, nodeMaterial, transferGeometry } from "./viewer/spatial-geometry.js";
 import { edgePoints, labelOf } from "./case-graph-geometry.mjs";
+import { preparedNodeActive } from "./case-activity.mjs";
 
 export function spatialGraph(host) {
   const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
@@ -187,7 +188,7 @@ export function spatialGraph(host) {
     }
     const pulse = reduced ? 0.2 : (Math.sin(time * 0.006) + 1) * 0.18;
     for (const { node, mesh } of meshes) {
-      const active = node.id === step?.node || (node.value && node.value === step?.state);
+      const active = preparedNodeActive(node, step);
       mesh.material.emissive?.set(active ? node.color : 0);
       mesh.material.emissiveIntensity = active ? pulse : 0;
     }

@@ -1,5 +1,6 @@
 /** Small, pre-laid-out story graphs. No inventory scans, layout workers or API polling. */
 import { iconFor } from "./viewer/node-icons.js";
+import { preparedNodeActive } from "./case-activity.mjs";
 const ns = "http://www.w3.org/2000/svg";
 const svgNode = (tag, attrs = {}, text) => {
   const node = document.createElementNS(ns, tag);
@@ -138,7 +139,7 @@ export function preparedGraph(host, { onInspect = () => {} } = {}) {
       }
       group.style.transform = `translate(${node.x}px,${node.y}px)`;
       group.style.setProperty("--node-color", node.color);
-      const running = node.id === step?.node || (node.value && node.value === step?.state);
+      const running = preparedNodeActive(node, step);
       group.classList.toggle("is-active", !!running);
       group.setAttribute("aria-label", labelOf(node, language));
       group.setAttribute("data-layer", node.layer);
