@@ -1,8 +1,9 @@
 # P7 architecture and evidence review
 
-Reviewed against maintained provider `66efb5e2`, the accepted Python maintenance
-and accepted Node permission iteration. The Node announcement refactor is still
-under test; the conclusions below do not accept that pending source revision.
+Final review uses provider `0ac64bc0` and both accepted repair29 applications.
+Earlier repair27 and repair28 findings below retain their original scope and
+explain the consolidated corrections. Exact final receipts are linked from the
+[consolidated review](consolidated-review/README.md).
 
 ## Ownership and execution
 
@@ -32,8 +33,8 @@ dependency set and observer-free exports.
 
 | Accepted snapshot | Mode | State registries | Configured source inputs | Base graph |
 |---|---|---|---:|---:|
-| Python repair 27 | drive | file, grant, download-job, announcement | 51 | 454 nodes / 1,025 edges |
-| Node semantic repair 27 | observe | grant, download_task, announcement, session | 35 | 618 nodes / 1,765 edges |
+| Python repair 29 | drive | file, grant, download-job, announcement | 51 | 454 nodes / 1,025 edges |
+| Node repair 29 | observe | grant, download_task, announcement, session | 40 | 647 nodes / 1,731 edges |
 
 Counts describe base definitions, not the visible first screen or every expanded
 API/project/static-code projection. Source inputs include declarations, tests and
@@ -63,7 +64,7 @@ the protocol boundary; internal services still need careful field access and
 explicit diagnostics. No typing or total semantic-correctness claim follows from
 formatting checks.
 
-The current source-quality receipt covers 250 maintained Python modules and 143
+The earlier source-quality receipt covers 250 maintained Python modules and 143
 JavaScript modules. It is available in
 [Node semantic evidence](node-semantic-repair27/source-check.json). The complete
 [repair-27 gate](repair-27/results.json) also includes source/binding, integration,
@@ -78,9 +79,9 @@ records and personal settings. The Node semantic iteration retained every one of
 568 original field definitions and its reviewed additions. Both used a clean
 installed provider; no local framework patch was accepted as product evidence.
 
-A24–A34 still need the final Node refactor/initialization results, consolidated
-visible dialogue review and accepted product scenes. Their completion is tracked
-by the phase ledger rather than inferred from this architecture review.
+A24–A34 now include the complete final Node refactor/provider results, public
+dialogue review and the accepted product scene batch. Their scoped decisions
+are recorded in the phase ledger and consolidated evidence matrix.
 
 ## Subsequent consolidated findings
 
@@ -113,5 +114,9 @@ launchers and the browser bundler. The Skill now requires one selected provider
 for generation, checks, startup and optional integrations, with actual path/hash
 receipts. Current instructions must follow confirmed business changes while
 original dialogue and failed-run evidence remain immutable. Application wiring
-correction and native capture are still pending; repository tests alone do not
-close them.
+correction and native capture now pass on the final installed candidate. The
+default npm build/dev runs independently establish selection without provider
+environment overrides; actual native recordings and desktop results supplement
+the repository tests. The final Node gate checks 73 candidate inputs, including
+40 graph-source files. Source-and-model archives and all-input archives make
+these different inventories explicit.

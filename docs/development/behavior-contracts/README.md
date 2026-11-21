@@ -5,7 +5,8 @@
 [Model construction through dialogue](model-construction.md) ·
 [Acceptance](acceptance.md) · [AI development guide](agent-guide.md)
 
-**Current status: P0–P6 implemented and regressed; P7 independent trials in progress.**
+**Current status: P0–P7 complete within the documented acceptance scope.**
+[Final review](../../review/behavior-contracts-sequential/p7-trials/consolidated-review/README.md) retains failures, repairs and exact-candidate retests.
 The original planning baseline was prepared on 2026-11-17 from `main` at
 `106fddb3`, on `feat/behavior-contracts`. That planning delivery changed no
 runtime behavior. The sequential implementation and its evidence are tracked below.

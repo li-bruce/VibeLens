@@ -77,11 +77,14 @@ schedule, field removal, queue enlargement or raw-record repair is used.
   the identical pinned host install succeeded. No global proxy or installed
   provider was changed.
 
-## Remaining work
+## Final native acceptance
 
 The 92 targeted tests and the complete repository gate, including database
 checks, pass. Both shipped examples passed standard maintenance and their
-accepted receipts were frozen. Next, review provider maintenance and all remaining
-Node issues together before one native/desktop acceptance batch. Keep the accepted Python provider evidence separate from new-provider
-results. A24–A34 remain tied to exact source, provider, candidate and recording
-identities. No main merge, release or site deployment is included.
+accepted receipts were frozen. [Python drive](../python-current-repair29/README.md)
+and [Node observe](../node-current-repair29/README.md) then passed complete native,
+recording, independent desktop and canonical acceptance on provider `0ac64bc0`.
+Node retained all 666 fields and original limits; its two records contain
+2,514 and 9,882 events without gaps. The stronger synthetic overflow above
+remains a capacity boundary, separate from the accepted real workload.
+No main merge, release or site deployment is included.

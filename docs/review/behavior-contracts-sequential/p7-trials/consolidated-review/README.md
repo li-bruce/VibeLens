@@ -1,25 +1,46 @@
 # P7 consolidated review
 
-Status: **in progress**. Python's final native and desktop acceptance and the
-product presentation batch have passed. The Node announcement-module repair has
-passed its targeted frontend checks; its complete repaired-candidate acceptance
-is still required. This document does not promote P7 from that partial result.
+Status: **complete within the planned acceptance scope**. Python drive and Node
+observe passed on provider `0ac64bc0`, followed by independent desktop checks and
+canonical acceptance. This consolidated batch opened no new chats. Original
+failures, application repairs and complete retests remain separate records.
+
+| Final evidence | Python drive | Node observe |
+|---|---|---|
+| Accepted candidate | `3a4ce73b…` | `82e5caa3…` |
+| Business assertions | 162 / 162 | 147 / 147 |
+| Recording event counts | 866 controlled; 4,314 ordinary | 2,514 and 9,882 consecutive ordinary |
+| Missing events / unsettled stop | None | None |
+| Independent desktop groups | 7 passed | 7 passed |
+| Exact Timeline interval | 2,158 event IDs | 5,089 event IDs |
+| Canonical accept/check | Passed | Passed |
+
+[Python evidence](../python-current-repair29/README.md),
+[Node evidence](../node-current-repair29/README.md) and the
+[A01–A34 decisions](results.json) include exact hashes and qualification of each
+claim. The shared repair passed 92 targeted test executions, the full
+database-enabled repository gate and a clean exported installation. The separate
+model/role/iteration batch below adds 70 passing test executions.
+
+[Final ledger and documentation checks](final-checks/results.json) passed the
+inventory gate, eight ledger regressions and six document-link checks after the
+completion decisions were recorded.
 
 ## Review questions and evidence
 
-| Case | What the final review must establish | Evidence already available |
+| Case | Review question | Final evidence |
 |---|---|---|
 | A24 | Ownership, readable modules and minimal application coupling | [Architecture review](../architecture-review.md), current provider source and integration checks |
-| A25 | Desktop views, interactions, actual recording/replay and Timeline | [Python final desktop](../python-current-repair27/results.json), [Node accepted semantic desktop](../node-semantic-repair27/results.json); Node final source revision pending |
+| A25 | Desktop views, interactions, actual recording/replay and Timeline | [Python desktop](../python-current-repair29/results.json), [Node desktop](../node-current-repair29/results.json); seven independent groups on each final candidate |
 | A26 | A concise, accurate product story and responsive loading | [Combined product batch](../product-forest-27/results.json), original loading/startup checks and retained visual failures |
-| A27 | Python drive and Node observe with real native evidence | Python final and Node accepted semantic results; reverse-mode/React/Vue fixtures remain separately identified |
-| A28 | Complete dialogue, semantic change, source-only refactor and final run | Retained visible dialogues and distinct candidate/build receipts; Node final run pending |
+| A27 | Python drive and Node observe with real native evidence | Both repair29 candidates; reverse-mode/React/Vue fixtures remain separately identified |
+| A28 | Complete dialogue, semantic change, source-only refactor and final run | Retained visible dialogues, complete repaired-candidate runs and distinct candidate/build receipts |
 | A29 | Independent capabilities, state owners and shared decisions | Both trials retain four state models; baseline, construction and model-view tests |
 | A30 | Missing models/relations remain obligations before questions exist | Source-backed construction targets and typed relation checks; an empty question list cannot close an omission |
 | A31 | Role-appropriate questions with one decision history | Actual product/developer trial replies plus product/technical/mixed-role, conditional-answer and restart fixtures |
 | A32 | Scoped, current confirmation | Omitted-boundary, stale-presentation and exact-scope confirmation tests; views use canonical identities |
 | A33 | Semantic iteration and structural changes preserve unrelated work | Actual permission iteration and source-only refactors; explicit split/retirement, shared-rule and evidence-dependency regressions |
-| A34 | End-to-end model and boundary coverage with accurate scene export | Both native trials and full model inventories; final Node run and consolidated attestation pending |
+| A34 | End-to-end model and boundary coverage with accurate scene export | Both accepted native trials, full model inventories, prepared initial/changed scenes and scoped final decisions |
 
 [The additional targeted batch](targeted-results.json) contains 70 passing test
 executions. The first guided-construction invocation failed on the sandbox's
@@ -74,7 +95,9 @@ checks but dropped 421 producer events in the second recording. Six independent
 desktop groups and a 4,932-event Timeline interval check pass on that candidate;
 they do not close its capture failure. [Repair 28](../repair-28/README.md) retains
 both failed epochs, targeted repairs, unchanged limits and the remaining batch.
-P7 and the final Node acceptance remain incomplete.
+Repair 29 then passed the unchanged ordinary workload with two complete records,
+seven native browser groups, 147 business assertions and independent desktop
+acceptance. The old 421 missing events remain missing in the old record.
 
 ## Limits retained in the final interpretation
 
@@ -84,10 +107,12 @@ Cross-model permission and transaction checks have native evidence; P3 interacti
 and P6 TLC fixtures are separate support. These results do not prove exhaustive
 correctness of either application or arbitrary generated programs.
 
-The ordinary updated recording starts preparation before revocation and correctly
-finishes. Controlled tests establish the opposite ordering. No ordinary workload
-is rerun to obtain a preferred story. A full rerun after an actual source repair
-has a different purpose: verify the repaired candidate under its new identity.
+In Node's final ordinary recording, preparation began before revocation and
+finished. Python's final ordinary recording committed revocation first and
+rejected preparation; its expectation came from the native ordering witness.
+Controlled cases exercise the complementary orderings. Neither ordinary run was
+repeated to select a preferred story. A complete run after an actual repair
+verifies the new candidate under its own identity.
 
 The product story condenses the simulated exchanges. The original visible
 transcripts remain the review source. Usage counters include repair work and
@@ -97,3 +122,11 @@ split/retirement cases use labeled fixtures, not additional fresh conversations.
 The full viewer's floating replay controls can still cover the upper canvas.
 This usability limitation is recorded in the product batch; it is not represented
 as repaired by a successful browser test.
+
+The supplementary Node fresh-live smoke retained a resource-404 console message
+without its URL. Login/list refresh and all required application/viewer checks
+passed; the missing URL needs better diagnostic evidence in a later grouped
+review. Its cause is not inferred here. A copied audit's literal file count of
+466 is also retained: the independent installation-manifest comparison verifies
+all 467 maintained files, while the trial's dynamic comparison covers 2,782
+installed files. These qualifications are indexed with the original evidence.

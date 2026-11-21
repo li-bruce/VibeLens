@@ -1,14 +1,17 @@
 # P7 — Independent candidate trials
 
+**P7 complete.** Both current-provider trials passed native and independent desktop acceptance.
+The [final scoped A01–A34 review](consolidated-review/README.md) distinguishes actual application results from fixtures.
+
 Current evidence:
 
 - [Consolidated status](batch-status.json): current issue decisions and remaining
   native acceptance, separate from the historical attempts below.
 - [Shared admission repair 29](repair-29/README.md): 92 targeted tests, the full
   database-enabled repository gate, clean Git export and a fresh installation
-  passed. [Python drive maintenance](python-current-repair29/README.md) is accepted
-  on this provider. The existing Node observe trial is completing its same-batch
-  wiring repairs and native acceptance.
+  passed. [Python drive](python-current-repair29/README.md) and
+  [Node observe](node-current-repair29/README.md) are accepted on this provider.
+  The current batch opened no new chats; original failed records remain unchanged.
 - [Repair 28 failures](repair-28/README.md): the repaired Node UI passed, but its
   second recording lost 421 producer events. Original records and independent
   desktop checks are retained without accepting that incomplete recording.
@@ -46,13 +49,15 @@ Current evidence:
 - [Fact read scope](fact-read-scope/README.md): a new worker checkpoint was
   incorrectly broadened into shared facts; dependency checks exposed the change.
 
-Node's latest refactor/capture acceptance, final-provider compatibility and the
-consolidated matrix remain open. The accepted semantic iteration and
-[product scene checks](product-forest-27/results.json) are preserved separately.
+Final-provider compatibility, native capture and the consolidated matrix are complete.
+The earlier accepted semantic iteration and [product scene checks](product-forest-27/results.json)
+retain their own source identities. Follow-up usability findings are listed in the final review.
 The history below retains earlier failures and repair-specific boundaries;
 those historical pending statements are not the current status of later runs.
 
-Status: in progress. P0–P6 were implemented, regressed and committed before
+## Historical development record
+
+P0–P6 were implemented, regressed and committed before
 creating either trial. Initial candidate: `87ab32d5` on
 `feat/behavior-contracts-sequential`. No merge, release or public deployment.
 
