@@ -1,0 +1,318 @@
+{
+  "scope": "Workflow configuration for the accepted snapshot; original case deadlines and commands retained",
+  "sync": {
+    "model": "bo_stategraph/project.json",
+    "manifest": "manifest.json",
+    "discovery": "discovery.json",
+    "code_files": [
+      "app/__init__.py",
+      "app/download_worker.py",
+      "app/downloads.py",
+      "app/errors.py",
+      "app/models.py",
+      "app/permissions.py",
+      "app/ports.py",
+      "app/rules.py",
+      "app/service.py",
+      "app/storage.py",
+      "app/web.py",
+      "bo_stategraph/query.py",
+      "bo_stategraph/workflow.py",
+      "integrations/__init__.py",
+      "integrations/bo_data.py",
+      "integrations/bo_http.py",
+      "integrations/bo_runtime.py",
+      "run.py",
+      "tests/__init__.py",
+      "tests/native_boundaries.py",
+      "tests/test_business.py",
+      "tests/test_http_observation.py",
+      "tooling/__init__.py",
+      "tooling/behavior_contract.py",
+      "tooling/bind_model.py",
+      "tooling/browser_acceptance.py",
+      "tooling/build_model.py",
+      "tooling/coverage.py",
+      "tooling/data_model.py",
+      "tooling/http_scenarios.py",
+      "tooling/name_graph.py",
+      "tooling/observe.py",
+      "tooling/strict_checks.py",
+      "tooling/verify.py"
+    ],
+    "watch_files": [
+      "bo_stategraph/__init__.py",
+      "bo_stategraph/integration.json",
+      "requirements-observation.txt",
+      "requirements.txt",
+      "tests/test_business.py",
+      "tests/test_http_observation.py",
+      "tooling/build_model.py",
+      "tooling/observe.py",
+      "tooling/strict_checks.py",
+      "tooling/vibelens.json"
+    ],
+    "source_scope": {
+      "roots": [
+        "."
+      ],
+      "require_symbol_classification": true,
+      "prune": [
+        {
+          "path": ".venv",
+          "category": "dependency",
+          "reason": "Project-local application dependencies"
+        },
+        {
+          "path": "var",
+          "category": "artifact",
+          "reason": "Application database, uploads and prepared results; no source code planned here"
+        },
+        {
+          "path": "review/tool-cache",
+          "category": "dependency",
+          "reason": "Pinned external viewer dependency cache"
+        },
+        {
+          "path": "review/runtime",
+          "category": "artifact",
+          "reason": "Runtime verification artifacts"
+        },
+        {
+          "path": "bo_stategraph/__init__.py",
+          "category": "dependency",
+          "reason": "Managed native VibeLens adapter; canonical bytes checked independently by integration.json."
+        },
+        {
+          "path": "bo_stategraph/bo_contracts.py",
+          "category": "dependency",
+          "reason": "Managed native VibeLens adapter; canonical bytes checked independently by integration.json."
+        },
+        {
+          "path": "bo_stategraph/bo_models.py",
+          "category": "dependency",
+          "reason": "Managed native VibeLens adapter; canonical bytes checked independently by integration.json."
+        },
+        {
+          "path": "bo_stategraph/execution_contract.py",
+          "category": "dependency",
+          "reason": "Managed native VibeLens adapter; canonical bytes checked independently by integration.json."
+        },
+        {
+          "path": "bo_stategraph/bo_probe.py",
+          "category": "dependency",
+          "reason": "Managed native VibeLens adapter; canonical bytes checked independently by integration.json."
+        },
+        {
+          "path": "bo_stategraph/bo_executor.py",
+          "category": "dependency",
+          "reason": "Managed native VibeLens adapter; canonical bytes checked independently by integration.json."
+        },
+        {
+          "path": "bo_stategraph/bo_capture.py",
+          "category": "dependency",
+          "reason": "Managed native VibeLens adapter; canonical bytes checked independently by integration.json."
+        },
+        {
+          "path": "review",
+          "category": "artifact",
+          "reason": "Original verification records, screenshots, dependency cache and archives; no application source lives here."
+        },
+        {
+          "path": "initial-v1",
+          "category": "artifact",
+          "reason": "Immutable baseline and verification receipts for the initial change; no application source lives here."
+        },
+        {
+          "path": "cancel-queued-v1",
+          "category": "artifact",
+          "reason": "Immutable baseline and verification receipts for this change; no application source lives here."
+        },
+        {
+          "path": "download-preparation-refactor-v1",
+          "category": "artifact",
+          "reason": "Immutable baseline and verification receipts for this change; no application source lives here."
+        },
+        {
+          "path": ".stategraph/repair26-provider-maintenance",
+          "category": "artifact",
+          "reason": "Immutable baseline and verification receipts for this change; no application source lives here."
+        }
+      ]
+    },
+    "stategraph": {
+      "module": "bo_stategraph/__init__.py",
+      "development_mode": "drive",
+      "execution_mode": "drive",
+      "decision_source": "user",
+      "decision": "我选择状态图驱动执行（drive）。"
+    },
+    "require_mapping_witnesses": true,
+    "require_probe_health": true,
+    "require_observation_closure": true,
+    "mapping_contract": "mapping.json",
+    "acceptance": "acceptance.json",
+    "probe_modes": [
+      "on",
+      "off",
+      "fault"
+    ],
+    "probe_callees": [
+      "self.bo.bo_call",
+      "self.bo.bo_transition",
+      "self.bo.bo_before_transition",
+      "self.bo_probe.span",
+      "probe.record",
+      "service.bo_probe.span"
+    ],
+    "required_probes": [
+      {
+        "symbol": "app/service.py::Service.upload_file",
+        "node": "upload_file",
+        "phase": "return"
+      },
+      {
+        "symbol": "app/downloads.py::DownloadOperations.start_preparation",
+        "node": "start_preparation",
+        "phase": "return"
+      },
+      {
+        "symbol": "app/downloads.py::DownloadOperations.complete_preparation",
+        "node": "complete_preparation",
+        "phase": "return"
+      },
+      {
+        "symbol": "app/downloads.py::DownloadOperations.cancel_download",
+        "node": "cancel_download",
+        "phase": "return"
+      }
+    ],
+    "required_runtime_probes": [
+      {
+        "case": "normal",
+        "node": "upload_file",
+        "phase": "return"
+      },
+      {
+        "case": "normal",
+        "node": "state_commit",
+        "phase": "commit"
+      },
+      {
+        "case": "queued_revoked",
+        "node": "start_preparation",
+        "phase": "return"
+      },
+      {
+        "case": "started_revoked",
+        "node": "collect_result",
+        "phase": "return"
+      },
+      {
+        "case": "normal",
+        "node": "cancel_download",
+        "phase": "return"
+      },
+      {
+        "case": "normal",
+        "node": "api:POST:/downloads/<job_id>/cancel",
+        "phase": "return"
+      },
+      {
+        "case": "queued_revoked",
+        "node": "cancel_download",
+        "phase": "return"
+      },
+      {
+        "case": "queued_revoked",
+        "node": "api:POST:/downloads/<job_id>/cancel",
+        "phase": "return"
+      },
+      {
+        "case": "started_revoked",
+        "node": "cancel_download",
+        "phase": "return"
+      },
+      {
+        "case": "started_revoked",
+        "node": "api:POST:/downloads/<job_id>/cancel",
+        "phase": "return"
+      }
+    ],
+    "observations_command": [
+      "{python}",
+      "-B",
+      "-X",
+      "utf8",
+      "tooling/observe.py"
+    ],
+    "test_commands": [
+      [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "tests.test_business",
+        "-v"
+      ],
+      [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "tests.test_http_observation",
+        "-v"
+      ],
+      [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tooling/strict_checks.py",
+        "docs"
+      ],
+      [
+        "{python}",
+        "-B",
+        "-X",
+        "utf8",
+        "tooling/strict_checks.py",
+        "api-check"
+      ]
+    ],
+    "timeout_seconds": 180
+  },
+  "integration": {
+    "schema": "vibelens-integration/v1",
+    "language": "python",
+    "protocols": {
+      "project": "bo-project/v1",
+      "event": "bo-event/v1",
+      "snapshot": "bo-snapshot/v1",
+      "snapshot_registry": "bo-snapshot/v2",
+      "capture": "bo-capture-control/v1"
+    },
+    "sources": {
+      "bo_stategraph/__init__.py": "bo_stategraph.py",
+      "bo_stategraph/bo_contracts.py": "bo_contracts.py",
+      "bo_stategraph/bo_models.py": "bo_models.py",
+      "bo_stategraph/execution_contract.py": "execution_contract.py",
+      "bo_stategraph/bo_probe.py": "bo_observer/adapters/python/bo_probe.py",
+      "bo_stategraph/bo_executor.py": "bo_observer/adapters/python/bo_executor.py",
+      "bo_stategraph/bo_capture.py": "bo_observer/adapters/python/bo_capture.py"
+    },
+    "files": {
+      "bo_stategraph/__init__.py": "907b2409cf836c764ac42b13f0bebae729e171d3c36eafb6aa13f69ddfe0d68f",
+      "bo_stategraph/bo_contracts.py": "6787f67c00a4ca038e045b45d112d79fcbb72cdbdafd39c3da5411eabab5d8c9",
+      "bo_stategraph/bo_models.py": "1fb6305993be8cb73634a28fb26e1cda94ad2ea8b225b3cad53f33065e1fa89e",
+      "bo_stategraph/execution_contract.py": "f01db20d2226440f198653bf8c6e198539733be52658514c71d6a7ed89a4b340",
+      "bo_stategraph/bo_probe.py": "2989c90989ecd42445a64f1beb5f9bed142fd369a371f0e08e00c64d0919d097",
+      "bo_stategraph/bo_executor.py": "c29c50a59f309ad0fe86a7a6c0e8e5e2bcd00a29d81955292293e5bd9298e130",
+      "bo_stategraph/bo_capture.py": "cbadf83e224195685936c358814dd81999e184f7ef1c62ba8ee8053a80fb6fe4"
+    }
+  }
+}

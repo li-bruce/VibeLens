@@ -54,6 +54,14 @@ workload was not rerun for this reviewer correction.
 Each ZIP has a same-named JSON member index. Native account databases remain local.
 The archives contain native checks, original observations, desktop checks, current
 source/models, standard maintenance preparation and root acceptance receipts.
+The [workflow configuration](workflow-config.json) retains the actual gate commands
+and native integration receipt alongside the immutable source archive.
+
+[Visible Python dialogue](visible-dialogue.zip) preserves 357 public messages and
+the available usage counters. The simulated customer's free-text correction,
+four-model confirmation and cancellation request remain in their original order.
+Framework coordination is also retained. These counters describe this trial,
+including its repairs; they are not a controlled measure of token efficiency.
 
 ![Current source and cancellation binding](screenshots/captions-source-visible.png)
 
