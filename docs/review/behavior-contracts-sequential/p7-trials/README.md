@@ -2,6 +2,19 @@
 
 Current evidence:
 
+- [Consolidated status](batch-status.json): current issue decisions and remaining
+  native acceptance, separate from the historical attempts below.
+- [Shared admission repair 29](repair-29/README.md): 92 targeted tests, the full
+  database-enabled repository gate, clean Git export and a fresh installation
+  passed. [Python drive maintenance](python-current-repair29/README.md) is accepted
+  on this provider. The existing Node observe trial is completing its same-batch
+  wiring repairs and native acceptance.
+- [Repair 28 failures](repair-28/README.md): the repaired Node UI passed, but its
+  second recording lost 421 producer events. Original records and independent
+  desktop checks are retained without accepting that incomplete recording.
+- [Python repair 27](python-current-repair27/results.json) and
+  [Node permission iteration](node-semantic-repair27/results.json): accepted
+  earlier candidates, with exact provider and source identities.
 - [Python source refactor](python-refactor-repair25/README.md): installed repair25
   passed native, controlled/ordinary recording, independent desktop and canonical
   accept/check gates. Model meaning and capture obligations survived nine source
@@ -33,8 +46,10 @@ Current evidence:
 - [Fact read scope](fact-read-scope/README.md): a new worker checkpoint was
   incorrectly broadened into shared facts; dependency checks exposed the change.
 
-Node's semantic iteration and source-only refactor, the final matrix and accepted
-product scenes remain open. The history below retains earlier failures and repair-specific boundaries;
+Node's latest refactor/capture acceptance, final-provider compatibility and the
+consolidated matrix remain open. The accepted semantic iteration and
+[product scene checks](product-forest-27/results.json) are preserved separately.
+The history below retains earlier failures and repair-specific boundaries;
 those historical pending statements are not the current status of later runs.
 
 Status: in progress. P0–P6 were implemented, regressed and committed before

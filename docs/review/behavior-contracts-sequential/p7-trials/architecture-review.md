@@ -99,3 +99,19 @@ remain validated, followed by the existing atomic reducer and source checks.
 Changing capture definitions or observer exclusions in the next request is still
 detected. The measured validation savings do not establish lossless whole-system
 throughput; that remaining capacity issue is explicitly tracked.
+
+[Repair 29](repair-29/README.md) keeps further optimization in those same shared
+services. The session retains one exact typed serialization and its canonical
+model digest. It still reads current source/contract bytes at the existing
+admission boundaries. The compiled event validator consumes the same bundled
+schema; detailed rejection diagnostics and the minimal-installation fallback
+remain in Python. This adds one pinned dependency to the external observer,
+without adding application state authority or changing native queue limits.
+
+The installation review also found inconsistent provider selection in project
+launchers and the browser bundler. The Skill now requires one selected provider
+for generation, checks, startup and optional integrations, with actual path/hash
+receipts. Current instructions must follow confirmed business changes while
+original dialogue and failed-run evidence remain immutable. Application wiring
+correction and native capture are still pending; repository tests alone do not
+close them.
