@@ -102,3 +102,17 @@ The native field audit distinguishes the 568 protected baseline entries from the
 belong to the earlier reviewed requirement iteration. No field was deleted to
 obtain acceptance. The strict preference-diff failure remains recorded alongside
 the source-backed explanation of two serialized existing defaults.
+
+## Python current-provider acceptance
+
+The existing Python trial now passes canonical accept/check after standard
+generation and the complete native/UI batch on repair 27. See
+[Python current repair 27](python-current-repair27/README.md). Both recordings are
+gap-free; their controlled and ordinary schedules remain separately identified.
+The ordinary schedule admitted before revocation and does not claim a denied-start
+branch. The controlled run supplies that evidence. Original failures, accepted
+source-only refactor and recording bytes remain intact. No new chat was created.
+
+Node's announcement refactor and R27-09 application fix are in the existing chat.
+Complete their targeted checks before the final native/UI run. Product changes
+and the consolidated A24–A34 decision still follow that acceptance.
