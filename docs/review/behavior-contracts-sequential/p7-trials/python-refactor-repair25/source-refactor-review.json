@@ -1,0 +1,233 @@
+{
+  "valid": true,
+  "meaning_comparison": {
+    "networks": true,
+    "objects": true,
+    "facts": true,
+    "state_models": true,
+    "policy": true,
+    "crosslinks": true,
+    "expectations": true,
+    "confirmations": true,
+    "changes": true,
+    "construction": true,
+    "participation": true
+  },
+  "native_state_definitions_equal": true,
+  "business_action_ids_and_capture_fields_preserved": [
+    "cancel_download",
+    "collect_result",
+    "complete_preparation",
+    "delete_announcement",
+    "edit_announcement",
+    "publish_announcement",
+    "read_announcements",
+    "request_download",
+    "revoke_share",
+    "share_file",
+    "sign_in",
+    "start_preparation",
+    "upload_file",
+    "view_file"
+  ],
+  "source_moves": [
+    {
+      "from": {
+        "path": "app/service.py",
+        "symbol": "Service.request_download"
+      },
+      "to": {
+        "path": "app/downloads.py",
+        "symbol": "DownloadOperations.request_download"
+      },
+      "reason": "Move the existing implementation; retain the public Service facade, business/probe identity, fields, native transaction and checks."
+    },
+    {
+      "from": {
+        "path": "app/service.py",
+        "symbol": "Service.cancel_download"
+      },
+      "to": {
+        "path": "app/downloads.py",
+        "symbol": "DownloadOperations.cancel_download"
+      },
+      "reason": "Move the existing implementation; retain the public Service facade, business/probe identity, fields, native transaction and checks."
+    },
+    {
+      "from": {
+        "path": "app/service.py",
+        "symbol": "Service.start_preparation"
+      },
+      "to": {
+        "path": "app/downloads.py",
+        "symbol": "DownloadOperations.start_preparation"
+      },
+      "reason": "Move the existing implementation; retain the public Service facade, business/probe identity, fields, native transaction and checks."
+    },
+    {
+      "from": {
+        "path": "app/service.py",
+        "symbol": "Service.complete_preparation"
+      },
+      "to": {
+        "path": "app/downloads.py",
+        "symbol": "DownloadOperations.complete_preparation"
+      },
+      "reason": "Move the existing implementation; retain the public Service facade, business/probe identity, fields, native transaction and checks."
+    },
+    {
+      "from": {
+        "path": "app/service.py",
+        "symbol": "Service.collect_result"
+      },
+      "to": {
+        "path": "app/downloads.py",
+        "symbol": "DownloadOperations.collect_result"
+      },
+      "reason": "Move the existing implementation; retain the public Service facade, business/probe identity, fields, native transaction and checks."
+    },
+    {
+      "from": {
+        "path": "app/service.py",
+        "symbol": "Service.list_jobs"
+      },
+      "to": {
+        "path": "app/downloads.py",
+        "symbol": "DownloadOperations.list_jobs"
+      },
+      "reason": "Move the existing implementation; retain the public Service facade, business/probe identity, fields, native transaction and checks."
+    },
+    {
+      "from": {
+        "path": "app/service.py",
+        "symbol": "Service.run_worker"
+      },
+      "to": {
+        "path": "app/download_worker.py",
+        "symbol": "run_worker"
+      },
+      "reason": "Relocate only the existing polling loop; preserve Service.run_worker entry, thread lifecycle, stop Event, interval and native callbacks."
+    },
+    {
+      "from": {
+        "path": "app/service.py",
+        "symbol": "PermissionDenied"
+      },
+      "to": {
+        "path": "app/errors.py",
+        "symbol": "PermissionDenied"
+      },
+      "reason": "Avoid circular imports and re-export from app.service so existing imports and handler identities remain compatible."
+    },
+    {
+      "from": {
+        "path": "app/service.py",
+        "symbol": "StateConflict"
+      },
+      "to": {
+        "path": "app/errors.py",
+        "symbol": "StateConflict"
+      },
+      "reason": "Avoid circular imports and re-export from app.service so existing imports and handler identities remain compatible."
+    }
+  ],
+  "source_files_checked": 51,
+  "base_inventory": {
+    "nodes": 454,
+    "edges": 1025
+  },
+  "actual_desktop_presets": [
+    {
+      "preset": "business",
+      "modes": [
+        {
+          "mode": "2D",
+          "shown": 26
+        },
+        {
+          "mode": "3D",
+          "shown": 26
+        }
+      ]
+    },
+    {
+      "preset": "states",
+      "modes": [
+        {
+          "mode": "2D",
+          "shown": 4
+        },
+        {
+          "mode": "3D",
+          "shown": 4
+        }
+      ]
+    },
+    {
+      "preset": "rules",
+      "modes": [
+        {
+          "mode": "2D",
+          "shown": 28
+        },
+        {
+          "mode": "3D",
+          "shown": 28
+        }
+      ]
+    },
+    {
+      "preset": "api",
+      "modes": [
+        {
+          "mode": "2D",
+          "shown": 11
+        },
+        {
+          "mode": "3D",
+          "shown": 11
+        }
+      ]
+    },
+    {
+      "preset": "project",
+      "modes": [
+        {
+          "mode": "2D",
+          "shown": 1
+        },
+        {
+          "mode": "3D",
+          "shown": 1
+        }
+      ]
+    },
+    {
+      "preset": "code",
+      "modes": [
+        {
+          "mode": "2D",
+          "shown": 347
+        },
+        {
+          "mode": "3D",
+          "shown": 347
+        }
+      ]
+    },
+    {
+      "preset": "database",
+      "modes": [
+        {
+          "mode": "2D",
+          "shown": 1
+        },
+        {
+          "mode": "3D",
+          "shown": 1
+        }
+      ]
+    }
+  ],
+  "note": "Base stored-data nodes receive their display layer through the shared projection. This report uses actual browser presets rather than treating a missing raw layer field as missing data. File/folder nodes have static provenance, not invented lifetimes."
+}

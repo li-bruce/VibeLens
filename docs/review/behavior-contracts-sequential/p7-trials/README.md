@@ -2,6 +2,10 @@
 
 Current evidence:
 
+- [Python source refactor](python-refactor-repair25/README.md): installed repair25
+  passed native, controlled/ordinary recording, independent desktop and canonical
+  accept/check gates. Model meaning and capture obligations survived nine source
+  moves; final archive and service-shutdown sealing follows those receipts.
 - [Framework repair 25](repair-25/README.md): the Python refactor's ordinary
   recording failed to settle its fixed event prefix. Ordered transport recovery,
   shared source inspection and display scheduling passed complete repository
@@ -29,8 +33,8 @@ Current evidence:
 - [Fact read scope](fact-read-scope/README.md): a new worker checkpoint was
   incorrectly broadened into shared facts; dependency checks exposed the change.
 
-Both source-only refactors, the final matrix and accepted product scenes remain
-open. The history below retains earlier failures and repair-specific boundaries;
+Node's semantic iteration and source-only refactor, the final matrix and accepted
+product scenes remain open. The history below retains earlier failures and repair-specific boundaries;
 those historical pending statements are not the current status of later runs.
 
 Status: in progress. P0–P6 were implemented, regressed and committed before
