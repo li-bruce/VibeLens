@@ -5,7 +5,7 @@ Current evidence:
 - [Python source refactor](python-refactor-repair25/README.md): installed repair25
   passed native, controlled/ordinary recording, independent desktop and canonical
   accept/check gates. Model meaning and capture obligations survived nine source
-  moves; final archive and service-shutdown sealing follows those receipts.
+  moves; accepted source, native checks and service-shutdown proofs are sealed.
 - [Framework repair 25](repair-25/README.md): the Python refactor's ordinary
   recording failed to settle its fixed event prefix. Ordered transport recovery,
   shared source inspection and display scheduling passed complete repository

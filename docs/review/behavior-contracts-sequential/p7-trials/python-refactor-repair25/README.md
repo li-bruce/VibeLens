@@ -68,8 +68,13 @@ submitted the same canonical `change_sync.py accept/check` action for approval.
 It was approved and both [original commands](root-acceptance.json) returned exit 0 and `current`. No accepted
 receipt was fabricated and no check was bypassed.
 
-The frozen native and source packages, shutdown result and acceptance manifest
-are indexed alongside this review when sealing completes. Node's semantic
+The [final result](results.json) indexes the [native checks](native-checks.json)
+and [accepted source and models](source-and-models.json). Both services were
+closed after process-identity checks; all 101 protected files, six native tables
+and the database bytes remained unchanged. Early handoffs keep their original
+pending status and are superseded by these dated acceptance/shutdown receipts.
+
+Node's semantic
 iteration, its source-only refactor, the final A24–A34 matrix and accepted product
 scenes are still required before closing P7. Neither application has a TLC
 analysis profile; the separate P6 fixtures do not constitute formal proof of it.
