@@ -782,6 +782,29 @@ export class BOProbe {
       this.bo_inflight--;
     }
   }
+  /** Recover original envelopes in ordered halves, bounded by the original 64 items. */
+  async bo_deliver_group(items) {
+    if (items.length > 1 && this.bo_remote_batch) {
+      try {
+        await this.bo_request(
+          "events/batch",
+          { protocol: "bo-event-batch/v1", events: items.map((item) => item.body) },
+          true,
+        );
+        this.bo_completed += items.length;
+        this.bo_inflight -= items.length;
+        return;
+      } catch {
+        // Preserve queue order and snapshot barriers. A lost group receipt must
+        // not immediately fan out into dozens of individual source validations.
+        const middle = Math.floor(items.length / 2);
+        await this.bo_deliver_group(items.slice(0, middle));
+        await this.bo_deliver_group(items.slice(middle));
+        return;
+      }
+    }
+    for (const item of items) await this.bo_deliver(item);
+  }
   /** Group existing backlog only; snapshots stay ordered barriers, with no timer delay. */
   async bo_drain() {
     if (this.bo_busy) return;
@@ -804,25 +827,10 @@ export class BOProbe {
           }
         }
         this.bo_inflight = items.length;
-        if (items.length > 1) {
-          try {
-            await this.bo_request(
-              "events/batch",
-              {
-                protocol: "bo-event-batch/v1",
-                events: items.map((item) => item.body),
-              },
-              true,
-            );
-            this.bo_completed += items.length;
-            this.bo_inflight = 0;
-            continue;
-          } catch {
-            // Atomic rejection or an ambiguous transport reply: originals keep
-            // their IDs, so retry deduplicates and isolates individual failures.
-          }
-        }
-        for (const item of items) await this.bo_deliver(item);
+        // Preserve the original single-envelope scheduling for local sinks and
+        // snapshot barriers. Group recovery must not add another microtask there.
+        if (items.length > 1) await this.bo_deliver_group(items);
+        else await this.bo_deliver(items[0]);
       }
     } finally {
       this.bo_busy = false;

@@ -2,6 +2,7 @@
 
 import json
 from copy import deepcopy
+from dataclasses import dataclass
 from pathlib import Path
 import threading
 from ..graph.behavior_model import contained, read, digest
@@ -17,6 +18,24 @@ from .display_scope import application_inventory, prune_support_shells
 from .observation import qualify
 from ..observation.telemetry import load_registrations
 from ..source_scope import semantic_inventory
+
+
+@dataclass(frozen=True)
+class SourceContext:
+    """One request's source inspection, shared only by its read-only projections.
+
+    This is not a time-based cache: every new request reads current files and
+    scope declarations. Project and API projections retain separate graph caches.
+    """
+
+    root: Path
+    model: dict
+    telemetry: dict | None
+    adapter: object
+    inventory: dict
+    application: dict
+    project: dict
+    display_excluded: dict
 
 
 class CodeGraph:
@@ -78,8 +97,8 @@ class CodeGraph:
             self.definition_paths = self.model_cache[2]
         return cfg, model
 
-    def refresh(self):
-        """Check file bytes on demand; parse only changed units and invalidate deletions."""
+    def source_context(self):
+        """Inspect the source scope once for sibling projections in this request."""
         with self.lock:
             cfg, model = self.inputs()
             telemetry = load_registrations(self.root, model)
@@ -101,6 +120,36 @@ class CodeGraph:
             )
             project = project_inventory(self.root, display_cfg, application)
             project = prune_support_shells(project, display_excluded)
+            return SourceContext(
+                self.root,
+                model,
+                telemetry,
+                adapter,
+                inventory,
+                application,
+                project,
+                display_excluded,
+            )
+
+    def _context(self, context):
+        """Reject accidental reuse of another project's source inspection."""
+        if context is None:
+            return self.source_context()
+        if not isinstance(context, SourceContext) or context.root != self.root:
+            raise ValueError("source context belongs to another project")
+        return context
+
+    def refresh(self, *, source_context=None):
+        """Check file bytes on demand; parse only changed units and invalidate deletions."""
+        with self.lock:
+            context = self._context(source_context)
+            model, telemetry, adapter = context.model, context.telemetry, context.adapter
+            inventory, application, project = (
+                context.inventory,
+                context.application,
+                context.project,
+            )
+            display_excluded = context.display_excluded
             # Source inventory reports hidden implementation separately from parser errors.
             fingerprint = digest([semantic_inventory(inventory), semantic_inventory(project)])
             fingerprint = digest([fingerprint, adapter, model, telemetry])
@@ -157,7 +206,7 @@ class CodeGraph:
             result["scope"] = graph["scope"]
             return result
 
-    def api_snapshot(self):
+    def api_snapshot(self, *, source_context=None):
         """Return exact HTTP endpoints for mandatory live/recording context.
 
         Native capture nodes already belong to the authored model. Only their
@@ -165,7 +214,7 @@ class CodeGraph:
         The caller's persist=False policy is respected by the shared refresh.
         """
         with self.lock:
-            graph, model = self.refresh()
+            graph, model = self.refresh(source_context=source_context)
             endpoints = [
                 deepcopy(node) for node in graph["nodes"] if node.get("code_role") == "endpoint"
             ]
@@ -292,28 +341,21 @@ class CodeGraph:
             "revision": snapshot["revision"],
         }
 
-    def project_view(self, **options):
+    def project_view(self, *, source_context=None, **options):
         """Expose files/containment independently of the optional symbol parser.
 
         This projection never replaces or seals the full AST cache. A fresh source
         inventory keeps additions, deletions and file links visible after coding.
         """
         with self.lock:
-            cfg, model = self.inputs()
-            from ..sources import adapter_identity
-
-            adapter = adapter_identity()
-            if getattr(self, "inspection_adapter", None) != adapter:
-                self.project_inspections.clear()
-                self.inspection_adapter = adapter
-            inventory = source_inventory(
-                self.root, cfg, inspection_cache=self.project_inspections, model=model
+            context = self._context(source_context)
+            model, adapter = context.model, context.adapter
+            inventory, application, project = (
+                context.inventory,
+                context.application,
+                context.project,
             )
-            application, display_cfg, display_excluded = application_inventory(
-                self.root, cfg, inventory, definition_paths=self.definition_paths
-            )
-            project = project_inventory(self.root, display_cfg, application)
-            project = prune_support_shells(project, display_excluded)
+            display_excluded = context.display_excluded
             fingerprint = digest([semantic_inventory(project), inventory["scope_id"], adapter])
             cached = getattr(self, "project_cache", None)
             if cached is None or cached[0] != fingerprint:

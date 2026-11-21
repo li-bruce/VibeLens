@@ -1,6 +1,7 @@
 """Real HTTP backlogs retain every event and ordered snapshot across both SDKs."""
 
 from copy import deepcopy
+from concurrent.futures import ThreadPoolExecutor
 import json
 from http.client import HTTPResponse
 import queue
@@ -170,6 +171,50 @@ class RemoteEventBatchTests(unittest.TestCase):
                     result["ids"],
                 )
 
+    def test_two_lost_group_receipts_recover_in_ordered_subgroups(self):
+        """Repeated ACK loss must not fan a large committed group into singleton requests."""
+        handler = self.server.RequestHandlerClass
+        original = handler.do_POST
+        for language in ("python", "node"):
+            lost_ids, singles, recovered = set(), set(), []
+            losses = 0
+            initial = self.session.sequence
+
+            def respond(request):
+                nonlocal losses
+                if request.path not in {"/api/bo/events", "/api/bo/events/batch"}:
+                    return original(request)
+                body = json.loads(request.rfile.read(int(request.headers["Content-Length"])))
+                if request.path.endswith("/events"):
+                    singles.add(body["id"])
+                    return request.reply(200, self.session.event(body))
+                values = body["events"]
+                ids = {value["id"] for value in values}
+                receipts = self.session.bo_sink.bo_accept_many(values)
+                if (not lost_ids and len(values) >= 4) or (ids == lost_ids and losses < 2):
+                    lost_ids.update(ids)
+                    losses += 1
+                    request.close_connection = True
+                    request.connection.shutdown(socket.SHUT_RDWR)
+                    request.connection.close()
+                    return
+                if ids < lost_ids:
+                    recovered.append(ids)
+                return request.reply(200, receipts)
+
+            with self.subTest(language=language), patch.object(handler, "do_POST", respond):
+                result = self.produce(language)
+                self.assertEqual(losses, 2)
+                self.assertTrue(result["flushed"])
+                self.assertEqual(result["health"]["errors"], 0)
+                self.assertEqual(result["health"]["pending"], 0)
+                self.assertFalse(lost_ids & singles)
+                self.assertEqual(set().union(*recovered), lost_ids)
+                self.assertEqual(
+                    [event["id"] for event in self.session.history.snapshot()[initial:]],
+                    result["ids"],
+                )
+
     def check_fallback(self, *, legacy):
         """Exercise legacy HTTP and a lost receipt after actual atomic admission."""
         handler = self.server.RequestHandlerClass
@@ -248,6 +293,71 @@ class RemoteEventBatchTests(unittest.TestCase):
                 self.post(body)
             self.assertEqual(error.exception.code, 400)
         self.assertEqual(self.session.sequence, 0)
+
+    def test_stop_prioritizes_real_admission_over_display_scans_and_sampling(self):
+        """A pending drain yields viewer work while new facts remain admissible."""
+        recordings = self.session.recordings
+        recordings.start("Settlement scheduling")
+        entered, release, reader_entered = threading.Event(), threading.Event(), threading.Event()
+        original_wait = recordings.wait_for_settlement
+
+        def settle():
+            entered.set()
+            if not release.wait(5):
+                raise TimeoutError("Test settlement was not released")
+            return True
+
+        def wait():
+            reader_entered.set()
+            return original_wait()
+
+        recordings.bo_capture_flush = settle
+        values = self.envelopes()
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            stopping = pool.submit(recordings.stop)
+            try:
+                self.assertTrue(entered.wait(2))
+                with (
+                    patch.object(recordings, "wait_for_settlement", side_effect=wait),
+                    patch.object(
+                        self.session.web,
+                        "structure_context",
+                        wraps=self.session.web.structure_context,
+                    ) as scan,
+                ):
+                    reading = pool.submit(self.session.view)
+                    self.assertTrue(reader_entered.wait(2))
+                    self.assertEqual(scan.call_count, 0)
+                    with patch.object(
+                        recordings, "provider", side_effect=AssertionError("Competing checkpoint")
+                    ):
+                        recordings.sample()
+                    receipts = self.post({"protocol": "bo-event-batch/v1", "events": values})
+                    self.assertTrue(all(receipt["accepted"] for receipt in receipts))
+                    release.set()
+                    self.assertEqual(stopping.result(timeout=5)["status"], "stopped")
+                    view = reading.result(timeout=5)
+                    self.assertEqual(scan.call_count, 1)
+                    self.assertEqual(
+                        [event["id"] for event in view["events"]], [event["id"] for event in values]
+                    )
+            finally:
+                release.set()
+        self.assertTrue(recordings.settlement_done.is_set())
+
+    def test_failed_settlement_releases_readers_and_retains_the_capture_gap(self):
+        recordings = self.session.recordings
+        identifier = recordings.start("Failed settlement")["id"]
+        with patch.object(recordings, "bo_capture_flush", side_effect=TimeoutError("Offline")):
+            stopped = recordings.stop()
+        self.assertEqual(stopped["status"], "interrupted")
+        self.assertTrue(recordings.settlement_done.is_set())
+        record = recordings.get(identifier)
+        self.assertEqual(record["producer_settlement"], {"flushed": False, "error": "TimeoutError"})
+        self.assertIn(
+            "Producer queue did not drain; only received events are retained.", record["gaps"]
+        )
+        self.assertEqual(recordings.list()["active"], None)
 
     def test_batch_budget_is_separate_from_the_single_envelope_budget(self):
         """A legal group can exceed 24 KiB without accepting an oversized event."""

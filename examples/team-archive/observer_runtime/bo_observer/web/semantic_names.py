@@ -5,6 +5,7 @@ locales and freshness; it never calls a model, renames source or changes behavio
 """
 
 from copy import deepcopy
+from functools import lru_cache
 import hashlib
 import json
 from pathlib import Path
@@ -71,18 +72,28 @@ def validate(document):
     return document
 
 
+@lru_cache(maxsize=8)
+def _validated_names(raw):
+    """Cache only validated, identical file bytes; timestamps never establish freshness."""
+    return validate(json.loads(raw.decode("utf-8-sig")))
+
+
 def read_names(root):
     """Load presentation-only names; an absent artifact keeps legacy projects readable."""
     path = contained(root, FILE)
-    return validate(json.loads(path.read_text(encoding="utf-8-sig"))) if path.is_file() else None
+    # Readers own their copy. A modified/deleted artifact is observed immediately,
+    # including same-size edits that deliberately preserve the modification time.
+    return deepcopy(_validated_names(path.read_bytes())) if path.is_file() else None
 
 
-def overlay_model(root, model):
+def overlay_model(root, model, *, detached=False):
     """Detach display metadata while preserving exact business, source and event identities."""
     document = read_names(root)
     if not document:
         return model
-    result = deepcopy(model)
+    # The session already detached its static model. Avoid cloning that entire
+    # graph again on every live poll; other callers retain copy-on-write behavior.
+    result = model if detached else deepcopy(model)
     names = result.setdefault("presentation", {}).setdefault("names", {})
     for category, entries in document["names"].items():
         names.setdefault(category, {}).update(entries)

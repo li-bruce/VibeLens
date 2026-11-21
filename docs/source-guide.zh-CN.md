@@ -74,6 +74,11 @@ Timeline 提供共用的模型查询。`workflow/iteration_recall.py` 在编码�
 `bo_integrate.py` 安装最小原生依赖，并与已安装 Skill 的源码核对；源码扫描仅将核对通过的框架副本排除出业务覆盖检查。
 `observation/capture_bridge.py` 协调跨进程录制范围和队列排空，原生 `bo_capture` 客户端只处理这些观测操作。业务状态转换仍由项目执行。
 
+停止录制时，`observation/recording_session.py` 暂缓显示读取和周期保存，优先接收停止前已提交的事件。
+事件校验与最终快照继续执行，未收齐仍报告失败。原生适配器将失败事件组按原顺序分半重试，保留身份和快照顺序。
+`BOWeb.structure_context()` 让工程结构和 API 共用一次即时源码检查；`web/semantic_names.py`
+按完整文件字节缓存名称校验，并为读取者返回独立副本，两者都不依赖修改时间判断内容是否一致。
+
 [observation/recording_evidence.py](../skills/vibelens/scripts/bo_observer/observation/recording_evidence.py)
 从正常停止的录制导出原生验证信封。`session.py` 保留原始快照及接收顺序，
 `runtime_frames.py` 将它们与显示投影一并保存。`bo_trace.py evidence` 恢复生产者

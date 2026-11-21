@@ -82,6 +82,17 @@ class BOWeb:
         self.explanations = None
         self.explanation_lock = threading.Lock()
 
+    def structure_context(self):
+        """Read files once for the project tree and exact API entrypoints.
+
+        A source context lasts for this call only. Neither projection can enable
+        the other's optional persisted code index, and the next call scans again.
+        """
+        source = self.bo_api_graph.source_context()
+        project = self.code_graph.view(projection="project", limit=5000, source_context=source)
+        api = self.bo_api_graph.api_snapshot(source_context=source)
+        return project, api
+
     def explanation_reply(self, path, value=None):
         """Serve display-only AI jobs through the same local observer boundary."""
         parsed = urlsplit(path)

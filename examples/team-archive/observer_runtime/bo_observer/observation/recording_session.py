@@ -144,6 +144,8 @@ class Recordings:
         self.interval, self.max_events, self.max_bytes = interval, max_events, max_bytes
         self.lock, self.operations = threading.RLock(), threading.Lock()
         self.stream_lock = threading.Lock()
+        self.settlement_done = threading.Event()
+        self.settlement_done.set()
         self._capture_open = False
         self.active, self.cached, self.last_error = None, {}, ""
         self.catalog = {}
@@ -527,10 +529,24 @@ class Recordings:
             self._save(value)
 
     def sample(self):
+        # The event listener keeps retaining every fact during Stop. Its final
+        # checkpoint owns this interval; another large copy/write would compete
+        # with the producer that must finish before that checkpoint can be taken.
+        if not self.settlement_done.is_set():
+            return
         with self.lock:
             ident = self.active["id"] if self.active else None
         if ident:
             self._capture(ident, self.provider())
+
+    def wait_for_settlement(self):
+        """Yield expensive display work while Stop drains its fixed producer prefix.
+
+        Admission and internal checkpoints never wait here. A broken custom
+        controller cannot indefinitely block a read; the normal bridge already
+        bounds its drain to five seconds and reports incomplete capture honestly.
+        """
+        self.settlement_done.wait(5)
 
     def stop(self):
         with self.operations:
@@ -542,12 +558,15 @@ class Recordings:
             if self.bo_capture_flush:
                 # The producer worker may need both session and recording locks.
                 # Never hold either lock while waiting for the bounded drain.
+                self.settlement_done.clear()
                 try:
                     with bo_internal():
                         completed = self.bo_capture_flush() is True
                     settlement = {"flushed": completed}
                 except Exception as error:
                     settlement = {"flushed": False, "error": type(error).__name__}
+                finally:
+                    self.settlement_done.set()
             self._capture(ident, self.provider())
             with self.lock:
                 value = self.cached[ident]
@@ -644,6 +663,7 @@ class Recordings:
         }
 
     def get(self, ident):
+        self.wait_for_settlement()
         current = graph_version(self.version_provider())
         with self.lock:
             path = self._path(ident)
@@ -685,6 +705,7 @@ class Recordings:
     def list(self):
         # Read outside the recording lock: a provider may take the application's
         # lock while business operations deliver events back to this recorder.
+        self.wait_for_settlement()
         current = graph_version(self.version_provider())
         with self.lock:
             stale = (

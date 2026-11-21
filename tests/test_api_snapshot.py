@@ -71,6 +71,34 @@ class ApiSnapshotTests(unittest.TestCase):
         ):
             self.assertIsNone(self.session.recording_view()["api_structure"])
 
+    def test_live_projections_share_one_fresh_source_scan_and_keep_separate_caches(self):
+        """Project/API projections must agree without repeating source-tree traversal."""
+        from bo_observer.code_graph import service
+
+        with patch.object(service, "source_inventory", wraps=service.source_inventory) as scan:
+            before = self.session.view()
+            self.assertEqual(scan.call_count, 1)
+            route = self.root / "routes.py"
+            route.write_text(
+                route.read_text(encoding="utf-8").replace("/files", "/items"), encoding="utf-8"
+            )
+            (self.root / "fresh.py").write_text("def fresh():\n    return 1\n", encoding="utf-8")
+            after = self.session.view()
+            self.assertEqual(scan.call_count, 2)
+        self.assertEqual(after["binding_status"]["status"], "stale")
+        self.assertNotEqual(before["api_structure"]["revision"], after["api_structure"]["revision"])
+        self.assertEqual(after["api_structure"]["nodes"][0]["api"]["path"], "/items")
+        self.assertTrue(
+            any(
+                node.get("source", {}).get("path") == "fresh.py"
+                for node in after["project_structure"]["nodes"]
+            )
+        )
+        self.assertIsNone(
+            self.session.web.code_graph.graph, "Project view enabled the full AST cache"
+        )
+        self.assertFalse((self.root / ".stategraph/code-graph.json").exists())
+
     def test_api_revision_ignores_unrelated_project_files_and_restarts(self):
         """A project-tree update cannot expire a recording with the same API."""
         service = self.session.web.bo_api_graph

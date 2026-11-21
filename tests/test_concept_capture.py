@@ -79,8 +79,12 @@ class ConceptCaptureTests(unittest.TestCase):
             session.bo_concept_context = SimpleNamespace(
                 view=lambda: deepcopy(view["concept_structure"])
             )
-            web.code_graph = SimpleNamespace(view=lambda **kwargs: {"nodes": [], "edges": []})
-            web.bo_api_graph = SimpleNamespace(api_snapshot=lambda: {"nodes": [], "edges": []})
+            # Replace the shared static inspection seam. Its source-admission
+            # behavior is covered separately; session/HTTP selection stays real.
+            web.structure_context = lambda: (
+                {"nodes": [], "edges": []},
+                {"nodes": [], "edges": []},
+            )
             session.web = web
             web.control_view = session.view
             requests = []

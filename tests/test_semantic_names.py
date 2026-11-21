@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -71,6 +72,34 @@ def document(items):
 
 
 class SemanticNamesTests(unittest.TestCase):
+    def test_repeated_reads_validate_exact_bytes_once_without_sharing_mutable_names(self):
+        names._validated_names.cache_clear()
+        doc = document(names.inventory(fixture()))
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as directory:
+            path = Path(directory) / names.FILE
+            path.parent.mkdir(parents=True)
+            path.write_text(json.dumps(doc), encoding="utf-8")
+            with patch.object(names, "validate", wraps=names.validate) as validate:
+                first = names.read_names(directory)
+                first["names"]["nodes"]["share"]["en"] = "Damaged copy"
+                self.assertEqual(names.read_names(directory), doc)
+                self.assertEqual(validate.call_count, 1)
+                info = path.stat()
+                changed = path.read_bytes().replace(b'"Share"', b'"Other"')
+                path.write_bytes(changed)
+                os.utime(path, ns=(info.st_atime_ns, info.st_mtime_ns))
+                self.assertEqual(
+                    names.read_names(directory)["names"]["nodes"]["share"]["en"], "Other"
+                )
+                self.assertEqual(validate.call_count, 2)
+                invalid = changed.replace(b'"Other"', b'"     "')
+                path.write_bytes(invalid)
+                os.utime(path, ns=(info.st_atime_ns, info.st_mtime_ns))
+                with self.assertRaises(ValueError):
+                    names.read_names(directory)
+                path.unlink()
+                self.assertIsNone(names.read_names(directory))
+
     def test_conversation_captions_preserve_concept_scope_and_missing_locale(self):
         model = fixture()["concept_structure"]
         original = deepcopy(model)

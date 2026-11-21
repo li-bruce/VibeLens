@@ -2,9 +2,15 @@
 
 Current evidence:
 
+- [Framework repair 25](repair-25/README.md): the Python refactor's ordinary
+  recording failed to settle its fixed event prefix. Ordered transport recovery,
+  shared source inspection and display scheduling passed complete repository
+  regression and clean export. Installed native trials are tracked separately;
+  original failed records remain unchanged.
 - [Framework repair 24](repair-24/README.md): the Python source-refactor trial
   exposed a 3D caption/right-click mismatch. Original failures are retained;
-  the shared fix is undergoing full regression and fresh-install acceptance.
+  the shared fix passed repository regression and clean installation. Native
+  refactor acceptance remains open after the subsequent recording failure.
 - [Framework repair 23](repair-23/README.md): complete regression, clean export
   and immutable installation passed.
 - [Ordering review](python-ordering-review/README.md): the failed normal recording
@@ -16,6 +22,8 @@ Current evidence:
 - [Node iteration static handoff](node-iteration-static/README.md): the changed
   permission checkpoint is implemented and statically checked; native migration,
   recordings and runtime acceptance have not started for this iteration.
+- [Node provider handoff](node-provider-switch/README.md): managed provider switch
+  and static checks, with the old native database and original evidence preserved.
 - [Provider upgrade order](provider-upgrade-order/README.md): original strict
   rejection and verified baseline handoff, without changing runtime checks.
 - [Fact read scope](fact-read-scope/README.md): a new worker checkpoint was

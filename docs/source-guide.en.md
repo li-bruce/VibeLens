@@ -67,6 +67,14 @@ framework copies from business coverage and carries integrity errors into the ga
 coordinates remote recording scope and queue flushes; native `bo_capture` clients
 only acknowledge those operations. Business state transitions remain native.
 
+During Stop, `observation/recording_session.py` yields display reads and periodic
+saves to the fixed-prefix drain. Event admission and the final runtime checkpoint
+continue; a failed drain remains visible. The native adapters recover failed event
+groups in ordered halves while preserving IDs and snapshot barriers.
+`BOWeb.structure_context()` shares one fresh source inspection between project and
+API projections. `web/semantic_names.py` caches validation by exact content bytes,
+with detached results; neither path relies on file timestamps for correctness.
+
 [observation/recording_evidence.py](../skills/vibelens/scripts/bo_observer/observation/recording_evidence.py)
 exports strict native envelopes from settled recordings. `session.py` retains
 original snapshots with their own receipt order; `runtime_frames.py` carries them

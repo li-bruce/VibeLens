@@ -592,8 +592,8 @@ class BOProbe:
 
         This only groups queued facts. The collector still validates every
         envelope and checks current source bytes before and after admission.
-        An ambiguous transport retries the group once. A rejected group falls
-        back with the same event IDs for individual acceptance/rejection.
+        An ambiguous transport retries the group once. The drain then splits a
+        failed group in order, retaining exact IDs through singleton rejection.
         """
         raw = json.dumps(
             {"protocol": "bo-event-batch/v1", "events": values},
@@ -607,12 +607,46 @@ class BOProbe:
                 self.bo_remote_batch = False
             raise
 
+    def bo_deliver_group(self, batch, accept_many, *, remote):
+        """Recover a rejected or unacknowledged group in smaller ordered groups.
+
+        Each split halves a fixed list of original wire envelopes. At most six
+        splits reach a singleton; neither retries nor queue growth can extend the
+        group. Snapshot barriers stay outside it. Legacy collectors still receive
+        singles directly. Exhausted singleton failures retain ordinary diagnostics.
+        """
+        if len(batch) > 1 and (not remote or self.bo_remote_batch):
+            try:
+                receipts = accept_many([json.loads(value) for value in batch])
+                if (
+                    not isinstance(receipts, list)
+                    or len(receipts) != len(batch)
+                    or any(
+                        not isinstance(receipt, dict) or receipt.get("accepted") is not True
+                        for receipt in receipts
+                    )
+                ):
+                    raise ValueError("event batch lacks acceptance receipts")
+                return
+            except Exception:
+                # Keep order when isolating bad data or a lost ACK. Immediately
+                # issuing 64 separate requests would multiply strict source checks.
+                middle = len(batch) // 2
+                self.bo_deliver_group(batch[:middle], accept_many, remote=remote)
+                self.bo_deliver_group(batch[middle:], accept_many, remote=remote)
+                return
+        for value in batch:
+            try:
+                self.bo_send_one("events", value)
+            except Exception as error:
+                self.bo_transport_error(error)
+
     def bo_drain(self):
         """Drain bounded event groups; snapshots remain ordered completion barriers.
 
         Capable local sinks and remote collectors share bounded event batches.
-        Plain callables retain single-envelope delivery. Failed batch preflight
-        falls back to originals, preserving per-message error isolation.
+        Plain callables retain single-envelope delivery. Failed groups shrink
+        around original envelopes, preserving per-message error isolation.
         """
         deferred = None
         while deferred is not None or not self.bo_closed.is_set() or not self.bo_queue.empty():
@@ -664,24 +698,7 @@ class BOProbe:
                             batch.append(following[1])
                             batch_bytes += len(following[1]) + 2
                     if len(batch) > 1:
-                        try:
-                            receipts = accept_many([json.loads(value) for value in batch])
-                            if (
-                                not isinstance(receipts, list)
-                                or len(receipts) != len(batch)
-                                or any(
-                                    not isinstance(receipt, dict)
-                                    or receipt.get("accepted") is not True
-                                    for receipt in receipts
-                                )
-                            ):
-                                raise ValueError("event batch lacks acceptance receipts")
-                        except Exception:
-                            for value in batch:
-                                try:
-                                    self.bo_send_one(kind, value)
-                                except Exception as error:
-                                    self.bo_transport_error(error)
+                        self.bo_deliver_group(batch, accept_many, remote=remote)
                     else:
                         self.bo_send_one(kind, raw)
             except Exception as error:

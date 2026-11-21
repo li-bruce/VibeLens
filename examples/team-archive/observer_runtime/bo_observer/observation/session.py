@@ -352,10 +352,11 @@ class GraphSession:
 
     def control_context(self):
         """Expose the same static identities as Web without transferring runtime history."""
+        project, api = self.web.structure_context()
         return {
             **self.recording_version_context(),
-            "project_structure": self.web.code_graph.view(projection="project", limit=5000),
-            "api_structure": self.web.bo_api_graph.api_snapshot(),
+            "project_structure": project,
+            "api_structure": api,
         }
 
     def recording_view(self):
@@ -373,15 +374,15 @@ class GraphSession:
 
     def view(self):
         """Assemble one consistent viewer snapshot from the graph and retained runtime evidence."""
+        if self.bo_project_context.get():
+            # The controller needs event admission, not new display scans, while
+            # settling a recording. The eventual view still reads fresh source
+            # and runtime facts; no cached or fabricated state is substituted.
+            self.recordings.wait_for_settlement()
         # The recorder needs static structure once at its initial boundary. Its
         # frequent runtime checkpoints must not repeatedly scan the source tree.
-        project_structure = (
-            self.web.code_graph.view(projection="project", limit=5000)
-            if self.bo_project_context.get()
-            else None
-        )
-        api_structure = (
-            self.web.bo_api_graph.api_snapshot() if self.bo_project_context.get() else None
+        project_structure, api_structure = (
+            self.web.structure_context() if self.bo_project_context.get() else (None, None)
         )
         model = self._view_model()
         concept_structure = (
@@ -495,7 +496,7 @@ class GraphSession:
         # IO outside the capture lock so a busy/slow viewer cannot delay producers.
         from ..web.semantic_names import overlay_model
 
-        result["model"] = overlay_model(self.root, result["model"])
+        result["model"] = overlay_model(self.root, result["model"], detached=True)
         if self.bo_project_context.get():
             result["behavior_context"] = self.bo_behavior_context.view()
         result["events"] = deepcopy(
