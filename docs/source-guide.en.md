@@ -236,6 +236,12 @@ projects actual invocation boundaries to value-free headers and extracts the
 ancestors required by focused facts. `session.py` retains bounded open-call
 context independently of ordinary history expiry; batch preflight copies that
 cache. `recording_session.py` keeps selected values plus those original boundaries.
+Its recent-value window is distinct from the ancestry needed to explain those
+values. `recording_context` retains witnessed entry/exit metadata for older
+ancestors; recording-local boundary candidates also support later asynchronous
+children. Full and focused recording use the same closure algorithm, with stable
+event IDs and scoped invocation ownership. `context_selection` describes omitted
+older values; missing required boundaries still appear in `ownership_gaps`.
 Python/Node probes skip unselected builders. `replay-steps.js` excludes headers
 from normal playback steps while Timeline retains their actual intervals.
 

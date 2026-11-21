@@ -1,7 +1,8 @@
 # P7 consolidated issue review
 
-Updated 2026-11-21. P7 remains in progress. Repair 26 is committed as
-`df6bba9d`; its repository gates pass. Native trial acceptance is separate.
+Updated 2026-11-22. P7 remains in progress. Repair 27 completes the shared
+context and reviewer batch; targeted, full repository and clean-package gates
+pass. Native trial acceptance is separate. Earlier failures remain below.
 
 ## Working sequence
 
@@ -72,3 +73,13 @@ member hashes in [discovery round 27](discovery-round-27/README.md).
    a per-defect requirement.
 5. Finish A24–A34 and product scenes after those results pass. P7 stays in progress
    until the whole scope is complete; no release claim follows from this inventory.
+
+## Repair 27 delivery status
+
+See [repair-27/results.json](repair-27/results.json) for the completed
+repository/package gates and retained environment failures. R27-01 now
+has shared full/focused ancestry closure; R27-06/07 have maintained
+review tools. All eight issues retain their independent native acceptance
+obligations. Continue the existing Node chat and root Python maintenance
+on the same pinned package, then complete source-refactor/UI evidence
+and A24–A34. No new per-defect conversation is required.

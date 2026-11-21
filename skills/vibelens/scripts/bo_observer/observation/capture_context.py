@@ -70,20 +70,22 @@ def context_candidates(events, allowed, model):
     return result
 
 
-def retain_scope(events, context, allowed, model):
-    """Keep selected facts and only their actual ancestor entries and exits.
+def _retain_witnesses(events, selected, model):
+    """Close selected facts over witnessed invocation boundaries, not value history.
 
-    Context and interval events remain separate so a caller already open at the
-    recording boundary has the correct clipped interval. No identity is rewritten.
+    An entry's identity distinguishes consecutive uses of a call ID. Ends are
+    associated in source order, so an old completed ancestor does not become a
+    fictitious open invocation. Explicit missing entry IDs never fall back to a
+    different invocation that happens to reuse its call ID.
     """
     nodes = {node["id"]: node for node in model["nodes"]}
-    by_id = {event["id"]: event for event in [*context, *events]}
+    by_id = {event["id"]: event for event in events}
     active, groups, owners, parents = {}, {}, {}, {}
     for event in sorted(by_id.values(), key=lambda item: item["seq"]):
         key = call_key(event)
         group = (*key[:-2], key[-1])
         parent = by_id.get(event.get("parent_event_id"))
-        if parent is None and event.get("parent_call_id"):
+        if not event.get("parent_event_id") and event.get("parent_call_id"):
             # Resolve an explicit scoped call against witnessed open entries.
             matches = groups.get((*key[:-2], event["parent_call_id"]), {})
             parent = next(iter(matches.values())) if len(matches) == 1 else None
@@ -95,12 +97,7 @@ def retain_scope(events, context, allowed, model):
         if invocation_boundary(event, nodes.get(event["node"], {})) == "end":
             active.pop(key, None)
             groups.get(group, {}).pop(key, None)
-    selected = {
-        event["id"]
-        for event in by_id.values()
-        if event["node"] in allowed and not event.get("context_only")
-    }
-    needed, queue = set(), [by_id[identity] for identity in selected]
+    needed, queue = set(), [by_id[identity] for identity in selected if identity in by_id]
     while queue:
         event = queue.pop()
         own = owners.get(event["id"])
@@ -110,15 +107,64 @@ def retain_scope(events, context, allowed, model):
                 needed.add(entry["id"])
                 queue.append(entry)
 
-    def keep(source):
-        retained = []
-        for event in source:
-            if event["id"] in selected:
-                retained.append(event)
-            elif (owners.get(event["id"]) or {}).get("id") in needed:
-                header = minimal_boundary(event, nodes.get(event["node"], {}))
-                if header:
-                    retained.append(header)
-        return sorted(retained, key=lambda event: event["seq"])
+    retained = []
+    for event in by_id.values():
+        if event["id"] in selected:
+            retained.append(event)
+        elif (owners.get(event["id"]) or {}).get("id") in needed:
+            header = minimal_boundary(event, nodes.get(event["node"], {}))
+            if header:
+                retained.append(header)
+    return sorted(retained, key=lambda event: event["seq"])
 
-    return keep(events), keep(context)
+
+def recording_context(events, opened, model, *, limit=2000):
+    """Return recent values with their ancestry, plus bounded boundary candidates.
+
+    Values retain the existing recent-event limit. Older available events provide
+    only entry/exit metadata. Candidates stay private to this recording so a later
+    asynchronous child can reference a caller completed before recording began.
+    Both lists are bounded by the already bounded history/open-invocation caches;
+    this function neither increases those caches nor reads more source history.
+    """
+    nodes = {node["id"]: node for node in model["nodes"]}
+    recent = {event["id"] for event in events[-limit:]}
+    selected = recent | {event["id"] for event in opened}
+    available = {event["id"]: event for event in [*opened, *events]}
+    candidates = []
+    for event in available.values():
+        value = (
+            event
+            if event["id"] in recent
+            else minimal_boundary(event, nodes.get(event["node"], {}))
+        )
+        if value is not None:
+            candidates.append(value)
+    candidates.sort(key=lambda event: event["seq"])
+    return _retain_witnesses(candidates, selected, model), candidates
+
+
+def _split_witnesses(events, context, selected, model):
+    """Keep original interval membership after selecting the causal closure."""
+    kept = _retain_witnesses([*context, *events], selected, model)
+    interval_ids = {event["id"] for event in events}
+    return (
+        [event for event in kept if event["id"] in interval_ids],
+        [event for event in kept if event["id"] not in interval_ids],
+    )
+
+
+def retain_recording(events, context, initial_ids, model):
+    """Retain every interval fact and only required older invocation metadata."""
+    selected = initial_ids | {event["id"] for event in events}
+    return _split_witnesses(events, context, selected, model)
+
+
+def retain_scope(events, context, allowed, model):
+    """Keep selected values and their actual ancestor entries/exits across start."""
+    selected = {
+        event["id"]
+        for event in [*context, *events]
+        if event["node"] in allowed and not event.get("context_only")
+    }
+    return _split_witnesses(events, context, selected, model)

@@ -57,7 +57,9 @@ class CaptureContextTests(unittest.TestCase):
             self.received.append(deepcopy(body))
             return self.session.bo_sink(body, kind)
 
-        self.probe = BOProbe(self.project, self.session.manifest["build_id"], sink=receive)
+        self.probe = BOProbe(
+            self.project, self.session.manifest["build_id"], sink=receive
+        )
         self.session.bo_bind_capture(
             scope_setter=self.probe.bo_set_scope,
             flush_capture=lambda: self.probe.flush(3),
@@ -79,12 +81,20 @@ class CaptureContextTests(unittest.TestCase):
         self.session.web.control_view = self.session.view
         with (
             patch.object(
-                self.session, "current_events", side_effect=AssertionError("history read")
+                self.session,
+                "current_events",
+                side_effect=AssertionError("history read"),
             ),
             patch.object(
-                self.session.graph, "bo_instances", side_effect=AssertionError("instances read")
+                self.session.graph,
+                "bo_instances",
+                side_effect=AssertionError("instances read"),
             ),
-            patch.object(self.session.history, "health", side_effect=AssertionError("health read")),
+            patch.object(
+                self.session.history,
+                "health",
+                side_effect=AssertionError("health read"),
+            ),
         ):
             context = self.session.web.get("/api/vibelens/control/context")
         self.assertEqual(context["model"], full["model"])
@@ -107,9 +117,13 @@ class CaptureContextTests(unittest.TestCase):
         # runtime history and instance queries must still never be assembled here.
         for name in ("concept_structure", "api_structure", "project_structure"):
             self.assertEqual(context[name], full[name])
-        self.assertTrue(self.session.web.is_observer_request("/api/vibelens/control/context"))
+        self.assertTrue(
+            self.session.web.is_observer_request("/api/vibelens/control/context")
+        )
         context["model"]["nodes"][0]["label"] = "Local display copy"
-        self.assertNotEqual(self.session.model["nodes"][0]["label"], "Local display copy")
+        self.assertNotEqual(
+            self.session.model["nodes"][0]["label"], "Local display copy"
+        )
 
     def test_standard_http_server_exposes_scoped_model_controls(self):
         """Exercise the shipped server dispatcher rather than a controller-only fixture."""
@@ -119,9 +133,13 @@ class CaptureContextTests(unittest.TestCase):
         base = "http://127.0.0.1:" + str(server.server_port)
         try:
             with patch.object(
-                self.session, "current_events", side_effect=AssertionError("history read")
+                self.session,
+                "current_events",
+                side_effect=AssertionError("history read"),
             ):
-                with urlopen(base + "/api/vibelens/control/context", timeout=5) as response:
+                with urlopen(
+                    base + "/api/vibelens/control/context", timeout=5
+                ) as response:
                     context = json.load(response)
             self.assertEqual(context["manifest"], self.session.manifest)
             before = self.session.current_events()
@@ -143,7 +161,9 @@ class CaptureContextTests(unittest.TestCase):
             results = {}
             with patch.dict(os.environ, {"CODEX_THREAD_ID": "standard-control-http"}):
                 for command in ("activate", "inspect", "plan", "apply"):
-                    with self.subTest(command=command), redirect_stdout(io.StringIO()) as output:
+                    with self.subTest(command=command), redirect_stdout(
+                        io.StringIO()
+                    ) as output:
                         code = control_main(
                             [
                                 command,
@@ -152,7 +172,11 @@ class CaptureContextTests(unittest.TestCase):
                                 "--url",
                                 base,
                                 "--message",
-                                "$vibelens" if command == "activate" else "/vibelens show task",
+                                (
+                                    "$vibelens"
+                                    if command == "activate"
+                                    else "/vibelens show task"
+                                ),
                                 "--spec",
                                 str(spec),
                             ]
@@ -160,10 +184,14 @@ class CaptureContextTests(unittest.TestCase):
                         self.assertEqual(code, 0, output.getvalue())
                         results[command] = json.loads(output.getvalue())["result"]
             token = results["activate"]["session"]
-            with urlopen(base + "/api/vibelens/control?vl_session=" + token, timeout=5) as response:
+            with urlopen(
+                base + "/api/vibelens/control?vl_session=" + token, timeout=5
+            ) as response:
                 queued = json.load(response)
             self.assertEqual(queued["plan"]["id"], results["apply"]["plan"]["id"])
-            self.assertEqual(queued["plan"]["base"]["build_id"], self.session.manifest["build_id"])
+            self.assertEqual(
+                queued["plan"]["base"]["build_id"], self.session.manifest["build_id"]
+            )
             with self.assertRaises(HTTPError) as denied:
                 urlopen(
                     Request(
@@ -178,7 +206,9 @@ class CaptureContextTests(unittest.TestCase):
                 urlopen(base + "/api/vibelens/control/context", timeout=5)
             self.assertEqual(disabled.exception.code, 404)
             with urlopen(base + "/api/bo/health", timeout=5) as response:
-                self.assertEqual(json.load(response)["build_id"], self.session.manifest["build_id"])
+                self.assertEqual(
+                    json.load(response)["build_id"], self.session.manifest["build_id"]
+                )
             self.assertEqual(self.session.current_events(), before)
         finally:
             self.session.web.set_mode("visible")
@@ -204,7 +234,9 @@ class CaptureContextTests(unittest.TestCase):
         )["id"]
         with self.probe.span("unrelated", self.omitted):
             pass
-        with self.probe.span("advance", self.omitted, entity="actor", attempt="request") as outer:
+        with self.probe.span(
+            "advance", self.omitted, entity="actor", attempt="request"
+        ) as outer:
             with self.probe.span("secondary", self.omitted) as inner:
                 identity = self.point()
                 inner.result(self.omitted)
@@ -213,7 +245,9 @@ class CaptureContextTests(unittest.TestCase):
         saved = self.session.recordings.get(identifier)
         self.assertEqual(saved["capture"]["value_nodes"], ["permission"])
         self.assertEqual(saved["capture"]["nodes"], ["advance", "permission"])
-        self.assertEqual(saved["capture"]["runtime_boundary_nodes"], ["advance", "secondary"])
+        self.assertEqual(
+            saved["capture"]["runtime_boundary_nodes"], ["advance", "secondary"]
+        )
         self.assertEqual(len(saved["events"]), 5)
         self.assertNotIn("unrelated", {event["node"] for event in saved["events"]})
         point = next(event for event in saved["events"] if event["id"] == identity)
@@ -227,15 +261,23 @@ class CaptureContextTests(unittest.TestCase):
                 self.assertEqual(event["outputs"], {})
                 self.assertEqual(event["basis"], {})
         self.assertTrue(parent_references(saved["events"], complete=True)["valid"])
-        self.assertTrue(observation_ownership(saved["events"], self.project["model"])["valid"])
+        self.assertTrue(
+            observation_ownership(saved["events"], self.project["model"])["valid"]
+        )
         payload = {"runs": [{"mode": "on", "events": saved["events"]}]}
-        self.assertTrue(invocation_closure(payload, model=self.project["model"])["valid"])
+        self.assertTrue(
+            invocation_closure(payload, model=self.project["model"])["valid"]
+        )
         report = invocation_closure(payload, required=True, model=self.project["model"])
         self.assertFalse(
-            report["valid"], "Partial headers cannot substitute for a complete acceptance run"
+            report["valid"],
+            "Partial headers cannot substitute for a complete acceptance run",
         )
         self.assertTrue(
-            any(error.get("partial_boundary_in_complete_run") for error in report["errors"])
+            any(
+                error.get("partial_boundary_in_complete_run")
+                for error in report["errors"]
+            )
         )
         self.assertEqual(saved["gaps"], [])
         self.assertEqual(self.session.bo_open_invocations, {})
@@ -244,18 +286,24 @@ class CaptureContextTests(unittest.TestCase):
 
     def test_mid_call_focus_preserves_entry_after_real_history_expiry(self):
         self.session.history.limits["memory_events"] = 2
-        with self.probe.span("advance", entity="actor", attempt="long-request") as outer:
+        with self.probe.span(
+            "advance", entity="actor", attempt="long-request"
+        ) as outer:
             self.assertTrue(self.probe.flush())
             for _ in range(5):
                 self.probe.record("unrelated", "read", lambda: {})
             self.assertTrue(self.probe.flush())
             self.assertNotIn(
-                outer.entry_id, {event["id"] for event in self.session.history.snapshot()}
+                outer.entry_id,
+                {event["id"] for event in self.session.history.snapshot()},
             )
             exported = self.session.export()["runtime"]["open_invocations"]
             self.assertIn(outer.entry_id, {event["id"] for event in exported})
             self.assertTrue(
-                all(event["inputs"] == {} and event["outputs"] == {} for event in exported)
+                all(
+                    event["inputs"] == {} and event["outputs"] == {}
+                    for event in exported
+                )
             )
             identifier = self.session.recordings.start(
                 scope={"mode": "focused", "roots": ["permission"]}
@@ -273,6 +321,39 @@ class CaptureContextTests(unittest.TestCase):
         self.assertTrue(parent_references(combined, complete=True)["valid"])
         self.assertTrue(observation_ownership(combined, self.project["model"])["valid"])
         self.assertEqual(saved["gaps"], [])
+
+    def test_consecutive_full_and_focused_recordings_keep_closed_pre_context(self):
+        """Exercise the native collector and Stop, using a smaller value window fixture."""
+        with self.probe.span("advance") as outer:
+            for _ in range(6):
+                self.point()
+        self.assertTrue(self.probe.flush())
+        with patch("bo_observer.observation.recording_session.RECENT_CONTEXT_LIMIT", 4):
+            for scope in (None, {"mode": "focused", "roots": ["permission"]}):
+                identifier = self.session.recordings.start(scope=scope)["id"]
+                self.point()
+                self.session.recordings.stop()
+                saved = self.session.recordings.get(identifier)
+                context = saved["context"]["events"]
+                parent = next(
+                    event for event in context if event["id"] == outer.entry_id
+                )
+                self.assertTrue(parent["context_only"])
+                self.assertEqual(parent["outputs"], {})
+                self.assertTrue(
+                    any(
+                        event["node"] == "advance" and event["phase"] == "return"
+                        for event in context
+                    )
+                )
+                self.assertLessEqual(
+                    sum(not event.get("context_only") for event in context), 4
+                )
+                self.assertGreater(
+                    saved["context_selection"]["older_value_events_omitted"], 0
+                )
+                self.assertEqual(saved["ownership_gaps"], [])
+                self.assertEqual(saved["gaps"], [])
 
     def test_header_schema_rejects_values_wrong_phase_and_missing_boundary(self):
         self.probe.bo_set_scope(["permission"])
@@ -310,24 +391,30 @@ class CaptureContextTests(unittest.TestCase):
         self.assertIn(second.entry_id, {event["id"] for event in saved["events"]})
 
     def test_native_call_entered_before_focus_keeps_exit_without_running_summary(self):
-        data = BODataRuntime(self.probe, {"operations": [{"id": "secondary", "action": "read"}]})
+        data = BODataRuntime(
+            self.probe, {"operations": [{"id": "secondary", "action": "read"}]}
+        )
         identifiers, result = [], object()
 
         def callback():
             identifiers.append(
-                self.session.recordings.start(scope={"mode": "focused", "roots": ["permission"]})[
-                    "id"
-                ]
+                self.session.recordings.start(
+                    scope={"mode": "focused", "roots": ["permission"]}
+                )["id"]
             )
             self.point()
             return result
 
         with self.probe.span("advance"):
-            actual = data.execute("secondary", callback, summarize=lambda _: self.omitted())
+            actual = data.execute(
+                "secondary", callback, summarize=lambda _: self.omitted()
+            )
         self.assertIs(actual, result)
         self.session.recordings.stop()
         saved = self.session.recordings.get(identifiers[0])
-        point = next(event for event in saved["events"] if event["node"] == "permission")
+        point = next(
+            event for event in saved["events"] if event["node"] == "permission"
+        )
         entries = {event["id"]: event for event in saved["context"]["events"]}
         self.assertEqual(entries[point["parent_event_id"]]["node"], "secondary")
         exits = [event for event in saved["events"] if event["node"] == "secondary"]
@@ -337,7 +424,9 @@ class CaptureContextTests(unittest.TestCase):
         self.assertEqual(data.bo_errors, 0)
         self.assertEqual(saved["gaps"], [])
 
-    def test_real_context_loss_is_disclosed_but_cache_expiry_is_not_fabricated_loss(self):
+    def test_real_context_loss_is_disclosed_but_cache_expiry_is_not_fabricated_loss(
+        self,
+    ):
         with patch("bo_observer.observation.session.OPEN_CONTEXT_LIMIT", 1):
             for start_before_entries in (True, False):
                 identifier = None
@@ -370,7 +459,10 @@ class CaptureContextTests(unittest.TestCase):
                         )
                     )
                     self.assertTrue(
-                        any("parent invocation entry" in message for message in saved["gaps"])
+                        any(
+                            "parent invocation entry" in message
+                            for message in saved["gaps"]
+                        )
                     )
 
     def test_focused_exception_keeps_exit_without_reading_error_payload(self):
@@ -392,7 +484,8 @@ class CaptureContextTests(unittest.TestCase):
 
     def test_native_node_headers_cross_the_strict_python_collector(self):
         runtime = (
-            ROOT / "skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs"
+            ROOT
+            / "skills/vibelens/scripts/bo_observer/adapters/javascript/bo_runtime.mjs"
         ).as_uri()
         script = f"""import assert from 'node:assert/strict';
 import {{ readFile }} from 'node:fs/promises';

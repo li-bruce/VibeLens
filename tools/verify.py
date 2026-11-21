@@ -105,6 +105,7 @@ def main():
     run(ROOT, "tests/test_capture_settlement.py")
     run(ROOT, "tests/test_observation_display_work.py")
     run(ROOT, "tests/test_capture_context.py")
+    run(ROOT, "tests/test_recording_context_window.py")
     run(ROOT, "tests/test_event_batch.py")
     run(ROOT, "tests/test_remote_event_batch.py")
     run(ROOT, "tests/test_http_close.py")

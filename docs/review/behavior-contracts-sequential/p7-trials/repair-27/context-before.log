@@ -1,0 +1,123 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+EFEEEEEEEE
+======================================================================
+ERROR: test_call_only_reference_is_scoped_to_its_producer (__main__.RecordingContextWindowTests.test_call_only_reference_is_scoped_to_its_producer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 92, in test_call_only_reference_is_scoped_to_its_producer
+    kept, _ = self.window(rows)
+              ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 51, in window
+    return capture_context.recording_context(events, list(opened), MODEL, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'bo_observer.observation.capture_context' has no attribute 'recording_context'
+
+======================================================================
+ERROR: test_closed_ancestor_has_both_boundaries_without_old_values (__main__.RecordingContextWindowTests.test_closed_ancestor_has_both_boundaries_without_old_values)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 56, in test_closed_ancestor_has_both_boundaries_without_old_values
+    kept, candidates = self.window(rows)
+                       ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 51, in window
+    return capture_context.recording_context(events, list(opened), MODEL, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'bo_observer.observation.capture_context' has no attribute 'recording_context'
+
+======================================================================
+ERROR: test_cyclic_references_terminate_without_creating_observations (__main__.RecordingContextWindowTests.test_cyclic_references_terminate_without_creating_observations)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 110, in test_cyclic_references_terminate_without_creating_observations
+    kept, _ = self.window(rows, limit=1)
+              ~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 51, in window
+    return capture_context.recording_context(events, list(opened), MODEL, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'bo_observer.observation.capture_context' has no attribute 'recording_context'
+
+======================================================================
+ERROR: test_entry_after_history_expiry_uses_only_open_header (__main__.RecordingContextWindowTests.test_entry_after_history_expiry_uses_only_open_header)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 76, in test_entry_after_history_expiry_uses_only_open_header
+    kept, _ = self.window([event(8, parent="event-1"), event(9)], [opened])
+              ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 51, in window
+    return capture_context.recording_context(events, list(opened), MODEL, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'bo_observer.observation.capture_context' has no attribute 'recording_context'
+
+======================================================================
+ERROR: test_expired_parent_stays_missing_and_reference_is_unchanged (__main__.RecordingContextWindowTests.test_expired_parent_stays_missing_and_reference_is_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 97, in test_expired_parent_stays_missing_and_reference_is_unchanged
+    kept, _ = self.window(rows)
+              ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 51, in window
+    return capture_context.recording_context(events, list(opened), MODEL, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'bo_observer.observation.capture_context' has no attribute 'recording_context'
+
+======================================================================
+ERROR: test_explicit_missing_parent_does_not_fall_back_to_reused_call_id (__main__.RecordingContextWindowTests.test_explicit_missing_parent_does_not_fall_back_to_reused_call_id)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 104, in test_explicit_missing_parent_does_not_fall_back_to_reused_call_id
+    kept, _ = self.window(rows)
+              ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 51, in window
+    return capture_context.recording_context(events, list(opened), MODEL, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'bo_observer.observation.capture_context' has no attribute 'recording_context'
+
+======================================================================
+ERROR: test_focused_scope_retains_shared_boundaries_without_other_values (__main__.RecordingContextWindowTests.test_focused_scope_retains_shared_boundaries_without_other_values)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 116, in test_focused_scope_retains_shared_boundaries_without_other_values
+    _, candidates = self.window(rows)
+                    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 51, in window
+    return capture_context.recording_context(events, list(opened), MODEL, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'bo_observer.observation.capture_context' has no attribute 'recording_context'
+
+======================================================================
+ERROR: test_future_child_can_resolve_closed_parent_outside_initial_tail (__main__.RecordingContextWindowTests.test_future_child_can_resolve_closed_parent_outside_initial_tail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 65, in test_future_child_can_resolve_closed_parent_outside_initial_tail
+    kept, candidates = self.window(rows)
+                       ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 51, in window
+    return capture_context.recording_context(events, list(opened), MODEL, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'bo_observer.observation.capture_context' has no attribute 'recording_context'
+
+======================================================================
+ERROR: test_reused_call_id_does_not_copy_unrelated_invocation (__main__.RecordingContextWindowTests.test_reused_call_id_does_not_copy_unrelated_invocation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 85, in test_reused_call_id_does_not_copy_unrelated_invocation
+    kept, _ = self.window(rows)
+              ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 51, in window
+    return capture_context.recording_context(events, list(opened), MODEL, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'bo_observer.observation.capture_context' has no attribute 'recording_context'
+
+======================================================================
+FAIL: test_checkpoint_keeps_available_parent_before_the_2000_value_tail (__main__.RecordingContextWindowTests.test_checkpoint_keeps_available_parent_before_the_2000_value_tail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_recording_context_window.py", line 43, in test_checkpoint_keeps_available_parent_before_the_2000_value_tail
+    self.assertIsNotNone(parent, "Available parent was cut off by the recent-value tail")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : Available parent was cut off by the recent-value tail
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.044s
+
+FAILED (failures=1, errors=9)

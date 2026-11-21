@@ -13,7 +13,12 @@ import re
 import threading
 import time
 import uuid
-from .capture_context import context_candidates, retain_scope
+from .capture_context import (
+    context_candidates,
+    recording_context,
+    retain_recording,
+    retain_scope,
+)
 from ..graph.observation_scope import capture_owners
 from ..json_values import copy_json
 
@@ -28,6 +33,7 @@ except ImportError:
 
 SCHEMA = "stategraph-recording/v1"
 OWNERSHIP_GAP = "A parent invocation entry was not retained; its execution boundary is incomplete."
+RECENT_CONTEXT_LIMIT = 2000
 
 
 def timestamp():
@@ -51,7 +57,7 @@ def graph_version(view):
     return [manifest["build_id"], model_hash]
 
 
-def checkpoint(view, *, context=False):
+def checkpoint(view, *, context=False, context_events=None):
     """Keep graph facts, not document bodies or arbitrary application state."""
     authority = view["authority"]
     model = view.get("model", {})
@@ -93,12 +99,14 @@ def checkpoint(view, *, context=False):
             model=deepcopy(view["model"]),
             manifest=deepcopy(view["manifest"]),
             events=deepcopy(
-                list(
-                    {
-                        e["id"]: e
-                        for e in [*view.get("open_invocations", []), *view["events"][-2000:]]
-                    }.values()
-                )
+                context_events
+                if context_events is not None
+                else recording_context(
+                    view["events"],
+                    view.get("open_invocations", []),
+                    model,
+                    limit=RECENT_CONTEXT_LIMIT,
+                )[0]
             ),
         )
     return value
@@ -153,6 +161,7 @@ class Recordings:
         self.command_fields = tuple(command_fields)
         self._stream_events = {}
         self._capture_context = []
+        self._context_seed_ids = set()
         self._starting = self._stream_limited = False
         self._unsubscribe = event_source.subscribe(self.bo_event) if event_source else None
         self.closed = threading.Event()
@@ -269,7 +278,10 @@ class Recordings:
     def bo_capture_plan(self, model, requested=None, *, view=None):
         """Resolve selected regions to descendants and the parents needed to explain them."""
         requested = requested or {"mode": "all"}
-        if not isinstance(requested, dict) or requested.get("mode") not in ("all", "focused"):
+        if not isinstance(requested, dict) or requested.get("mode") not in (
+            "all",
+            "focused",
+        ):
             raise ValueError("Invalid capture scope")
         if requested["mode"] == "all":
             return {"mode": "all", "nodes": None, "roots": [], "boundary_nodes": []}
@@ -386,6 +398,13 @@ class Recordings:
                 self.bo_restore_capture()
                 raise
             health = view["health"]
+        context_events, candidates = recording_context(
+            view["events"],
+            view.get("open_invocations", []),
+            view["model"],
+            limit=RECENT_CONTEXT_LIMIT,
+        )
+        self._context_seed_ids = {event["id"] for event in context_events}
         value = {
             "schema": SCHEMA,
             "id": uuid.uuid4().hex,
@@ -397,7 +416,7 @@ class Recordings:
             "run_id": health["run_id"],
             "start_seq": health["attempted"],
             "end_seq": health["attempted"],
-            "context": checkpoint(view, context=True),
+            "context": checkpoint(view, context=True, context_events=context_events),
             "final": checkpoint(view),
             "sources": deepcopy(self.sources),
             "events": [],
@@ -412,16 +431,19 @@ class Recordings:
         }
         if plan["nodes"] is not None:
             value_nodes = set(plan.get("value_nodes", plan["nodes"]))
-            self._capture_context = context_candidates(
-                value["context"]["events"], value_nodes, view["model"]
-            )
+            self._capture_context = context_candidates(candidates, value_nodes, view["model"])
             _, value["context"]["events"] = retain_scope(
                 [], self._capture_context, value_nodes, view["model"]
             )
         else:
-            self._capture_context = []
-        if len(view["events"]) > 2000:
-            value["gaps"].append("Pre-recording context retains only the latest 2000 events.")
+            self._capture_context = candidates
+        # Deliberate omission of older values is separate from a missing required
+        # caller. The strict ownership check below still reports actual gaps.
+        value["context_selection"] = {
+            "recent_value_limit": RECENT_CONTEXT_LIMIT,
+            "available_history_events": len(view["events"]),
+            "older_value_events_omitted": max(0, len(view["events"]) - RECENT_CONTEXT_LIMIT),
+        }
         merge_frames(value, view, checkpoint)
         with self.lock:
             try:
@@ -475,7 +497,11 @@ class Recordings:
             capture_plan = value.get("capture", {})
             allowed = capture_plan.get("value_nodes", capture_plan.get("nodes"))
             excluded = 0
-            if allowed is not None:
+            if allowed is None:
+                events, value["context"]["events"] = retain_recording(
+                    events, self._capture_context, self._context_seed_ids, view["model"]
+                )
+            else:
                 received_count = len(events)
                 events, value["context"]["events"] = retain_scope(
                     events, self._capture_context, set(allowed), view["model"]
@@ -493,11 +519,14 @@ class Recordings:
                 0,
                 health.get("filtered", health.get("producer", {}).get("filtered", 0))
                 - value["context"]["health"].get(
-                    "filtered", value["context"]["health"].get("producer", {}).get("filtered", 0)
+                    "filtered",
+                    value["context"]["health"].get("producer", {}).get("filtered", 0),
                 ),
             )
             value.update(
-                events=copy_json(events[: self.max_events]), end_seq=end, final=checkpoint(view)
+                events=copy_json(events[: self.max_events]),
+                end_seq=end,
+                final=checkpoint(view),
             )
             merge_frames(value, view, checkpoint)
             if len(events) > self.max_events or stream_limited:
@@ -721,7 +750,9 @@ class Recordings:
         with self.lock:
             entries = {}
             for path in sorted(
-                self.directory.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True
+                self.directory.glob("*.json"),
+                key=lambda p: p.stat().st_mtime,
+                reverse=True,
             ):
                 try:
                     if path.stem not in self.catalog:

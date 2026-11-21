@@ -1803,6 +1803,9 @@ function showSearch() {
   for (const result of results) {
     const button = document.createElement("button");
     button.type = "button";
+    // A semantic caption or source symbol can be shared by several occurrences.
+    // Keep the search result addressable by its stable graph identity.
+    button.dataset.resultId = result.node.id;
     const title = document.createElement("strong"),
       description = document.createElement("span");
     const parent = graph.all.get(result.node.parent),
