@@ -11,7 +11,13 @@ const server = await startSite(),
   results = [];
 let browser;
 try {
-  browser = await chromium.launch({ headless: true, args: ["--enable-unsafe-swiftshader"] });
+  browser = await chromium.launch({
+    headless: true,
+    args: ["--enable-unsafe-swiftshader"],
+    ...(process.env.BO_BROWSER_EXECUTABLE
+      ? { executablePath: process.env.BO_BROWSER_EXECUTABLE }
+      : {}),
+  });
   for (const language of ["en", "zh-CN"]) {
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
     page.setDefaultTimeout(45000);
@@ -30,7 +36,7 @@ try {
       await route.continue();
     });
     try {
-      await page.goto(server.url + "/demo.html?lang=" + language, {
+      await page.goto(server.url + "/demo.html?story=legacy&lang=" + language, {
         waitUntil: "domcontentloaded",
       });
       await page.locator("#foundation").waitFor();
@@ -90,7 +96,9 @@ try {
       await route.fulfill({ status: 503, body: "Unavailable" });
     } else await route.continue();
   });
-  await page.goto(server.url + "/demo.html?lang=zh-CN#run", { waitUntil: "domcontentloaded" });
+  await page.goto(server.url + "/demo.html?story=legacy&lang=zh-CN#run", {
+    waitUntil: "domcontentloaded",
+  });
   await page.waitForFunction(() => document.body.dataset.sceneReady === "run");
   await page.locator("#case-tools").click();
   await page.waitForFunction(

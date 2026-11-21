@@ -93,7 +93,7 @@ try {
           result.navigations.push(request.url());
       });
       try {
-        const response = await page.goto(base + "/demo.html?lang=" + language, {
+        const response = await page.goto(base + "/demo.html?story=legacy&lang=" + language, {
           waitUntil: "domcontentloaded",
         });
         assert.equal(response.status(), 200);

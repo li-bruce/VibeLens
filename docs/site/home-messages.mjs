@@ -32,8 +32,8 @@ export const messages = {
   ],
   "home.step.confirm": ["Agree on the model", "先确认模型"],
   "home.step.confirm.body": [
-    "Clarify the flow, states and shared rules. Review the graph before coding.",
-    "澄清流程、状态和共用规则，开发前看图确认。",
+    "Clarify each capability, its object states and shared rules. Review the connected models before coding.",
+    "梳理各项业务、对象状态和共用规则，开发前看图确认它们的衔接。",
   ],
   "home.step.confirm.link": ["See the first conversation ↗", "看第一轮对话 ↗"],
   "home.step.inspect": ["Follow a real run", "再观察运行"],
@@ -44,8 +44,8 @@ export const messages = {
   "home.step.inspect.link": ["Inspect the recording ↗", "查看运行记录 ↗"],
   "home.step.refine": ["Make the next change", "带着发现迭代"],
   "home.step.refine.body": [
-    "Describe the finding to AI. Code, mappings and checks evolve together.",
-    "把发现交给 AI，代码、映射和检查随每轮开发一起更新。",
+    "Describe the finding to AI. Review the changed region while your saved views follow the new code.",
+    "把发现交给 AI，核对这一轮变化，继续沿用自己的观察视图。",
   ],
   "home.step.refine.link": ["Follow the repair ↗", "跟随一次修改 ↗"],
   "home.depth.kicker": ["One graph, different depths", "同一张图，逐层深入"],

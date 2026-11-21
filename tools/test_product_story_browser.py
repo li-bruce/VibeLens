@@ -53,7 +53,7 @@ def run(base, output, browser_path):
                 )
                 results.append({"language": language, "home": "passed", "detail_tabs": 3})
 
-                page.goto(f"{base}/demo.html?lang={language}", wait_until="networkidle")
+                page.goto(f"{base}/demo.html?story=legacy&lang={language}", wait_until="networkidle")
 
                 def scene(name):
                     # Leave a focused viewer through the real chapter control.

@@ -10,6 +10,7 @@ await import("./test_guided_story.mjs");
 await import("./test_case_artifacts.mjs");
 await import("./test_prepared_scenes.mjs");
 await import("./test_prepared_activity.mjs");
+await import("./test_forest_demo.mjs");
 
 for (const version of [1, 2]) {
   const original = JSON.parse(

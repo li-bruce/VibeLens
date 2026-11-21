@@ -43,6 +43,17 @@ native state execution, runtime capture or independent business checks.
 | [docs/site](site/) | The bilingual product page and its separate browser-only sample walkthrough. |
 | [docs/review](review/) | Recorded acceptance evidence. Prior records remain unchanged. |
 
+The default product walkthrough has a separate presentation boundary:
+`tools/forest_preview.mjs` extracts small views from accepted recording epochs;
+`tools/export_forest_demo.mjs` saves those views and lossless recording archives.
+`forest-story.mjs` owns the conversation and replay controls, while
+`case-prepared-graph.mjs` shares geometry and activity with its 3D renderer.
+`forest-viewer.mjs` supplies a read-only archive transport to the canonical viewer.
+The story never runs a replacement business engine. Qualified model/node IDs,
+actual event times and archive hashes remain intact; only layout and captions
+are presentation choices. The previous teaching fixture is retained through
+`demo.html?story=legacy` and its original assertions still run.
+
 First-design presentation uses `web/design_preview.py` and
 `workflow/construction_review.py`. Both resolve semantic captions through
 `web/semantic_names.py` without changing focus identities or confirmation scope.

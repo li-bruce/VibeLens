@@ -37,6 +37,13 @@
 | [docs/site](site/) | 产品介绍页和独立的浏览器示例演示。 |
 | [docs/review](review/) | 历次验收材料。历史记录保留原文。 |
 
+默认产品演示使用独立的展示适配：`tools/forest_preview.mjs` 从已验收的录制版本
+提取局部图，`tools/export_forest_demo.mjs` 导出小型视图和无损录制压缩包。
+`forest-story.mjs` 负责对话、步骤和回放控件；`case-prepared-graph.mjs` 与三维渲染器
+共用布局及激活判断。`forest-viewer.mjs` 为原有完整工具提供只读录制接口。
+这里保留模型限定的节点 ID、真实事件时间和原始文件哈希，调整的是展示布局和名称。
+此前教学示例通过 `demo.html?story=legacy` 保留，原有断言继续执行。
+
 Python 追踪适配器的 `bo_instrument_flask` 将上游请求采集入口放在应用守卫之前，
 让认证、CSRF 等检查提前返回时也能保留实际 HTTP 响应。业务守卫顺序及结果不变，
 被拒绝的请求不会因此获得虚构的业务调用。`tests/test_telemetry.py` 检查真实拒绝、
