@@ -15,6 +15,7 @@ import time
 import uuid
 from .capture_context import context_candidates, retain_scope
 from ..graph.observation_scope import capture_owners
+from ..json_values import copy_json
 
 try:
     from ...bo_models import machine_registry
@@ -496,7 +497,7 @@ class Recordings:
                 ),
             )
             value.update(
-                events=deepcopy(events[: self.max_events]), end_seq=end, final=checkpoint(view)
+                events=copy_json(events[: self.max_events]), end_seq=end, final=checkpoint(view)
             )
             merge_frames(value, view, checkpoint)
             if len(events) > self.max_events or stream_limited:
@@ -674,7 +675,9 @@ class Recordings:
                 value = json.loads(path.read_text(encoding="utf-8"))
             if graph_version(value["context"]) != current:
                 raise ValueError("This recording belongs to an earlier graph version")
-            return deepcopy(value)
+            # Records are validated JSON documents. Detach the full response
+            # without Python-level recursion through every retained event.
+            return copy_json(value)
 
     def clear(self, ident):
         """Remove one stopped, current-version recording; leave business data untouched."""

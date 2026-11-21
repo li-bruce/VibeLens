@@ -1,0 +1,31 @@
+Failed to find real location of C:\Users\Lvi_P\miniforge3\python.exe
+..F
+======================================================================
+FAIL: test_recording_catalog_needs_identity_not_a_materialized_graph (test_observation_display_work.ObservationDisplayWorkTests.test_recording_catalog_needs_identity_not_a_materialized_graph)
+Listing or reading an interval must not rebuild its static context.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\tests\test_observation_display_work.py", line 78, in test_recording_catalog_needs_identity_not_a_materialized_graph
+    catalog = self.session.recordings.list()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\observation\recording_session.py", line 709, in list
+    current = graph_version(self.version_provider())
+                            ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\observation\recording_session.py", line 130, in read
+    return callback()
+  File "C:\Users\Lvi_P\Documents\Work\CF\平台软著\SoftwareStatusObserverSkill\skills\vibelens\scripts\bo_observer\observation\session.py", line 348, in recording_version_context
+    "model": self._view_model(),
+             ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1169, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1173, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lvi_P\miniforge3\Lib\unittest\mock.py", line 1234, in _execute_mock_call
+    raise effect
+AssertionError: Full model was copied
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.263s
+
+FAILED (failures=1)

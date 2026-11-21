@@ -13,6 +13,7 @@ import secrets
 import threading
 from ..protocol import validate_project, validate_event, validate_snapshot
 from ..graph.source_files import SourceFiles
+from ..json_values import copy_json
 from .event_batch import BOSessionSink
 from .capture_context import call_key, invocation_boundary, minimal_boundary
 from .concept_context import ConceptContext
@@ -95,7 +96,7 @@ class GraphSession:
             self.sources(),
             event_source=self.history,
             context_provider=self.view,
-            version_provider=self.recording_version_context,
+            version_provider=self.recording_identity,
         )
         self.bo_capture_bridge = CaptureBridge(self)
 
@@ -326,18 +327,31 @@ class GraphSession:
 
     def _view_model(self):
         """Detach this build's static declaration without locking runtime admission."""
-        model = deepcopy(self.model)
+        model = copy_json(self.model)
         model.setdefault("presentation", {}).setdefault("subject", self.project["project_id"])
         for chart in machine_registry(model).values():
             chart.setdefault("labels", {s: s for s in chart["values"]})
         return model
 
-    def recording_version_context(self):
-        """Read the pinned graph identity without scanning source or runtime history.
+    def recording_identity(self):
+        """Return only the pinned version used to select compatible recordings.
 
-        Recording catalog reads need version metadata only. Keep this frequent
-        path separate from control inspection, which also needs physical source
-        and API inventories to resolve a user's selection.
+        A catalog lookup does not need the model, source tree or runtime. The
+        session host pins this manifest for the request; a reload supplies a new
+        session. Returning fresh scalar metadata also prevents caller mutation.
+        """
+        return {
+            "manifest": {
+                "build_id": self.manifest["build_id"],
+                "model_hash": self.manifest["model_hash"],
+            }
+        }
+
+    def recording_version_context(self):
+        """Detach the pinned static graph used by recording and control contexts.
+
+        Catalog lookups use recording_identity instead. This richer context has
+        concept declarations; control_context adds source and API inventories.
         """
         # SessionHost pins this build for the request. These declarations never
         # mutate during admission; reload constructs another GraphSession. A
@@ -499,7 +513,7 @@ class GraphSession:
         result["model"] = overlay_model(self.root, result["model"], detached=True)
         if self.bo_project_context.get():
             result["behavior_context"] = self.bo_behavior_context.view()
-        result["events"] = deepcopy(
+        result["events"] = copy_json(
             [event for event in events if event.get("build_id") == result["manifest"]["build_id"]]
         )
         return result

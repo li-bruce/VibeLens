@@ -1,12 +1,13 @@
 """Read current source bytes without repeatedly resolving ordinary parent paths.
 
-Readers retain ancestor paths only. File contents and current attributes are
-always reread; timestamps and file sizes never stand in for source identity.
-Symlinks and Windows reparse points use full physical containment checks before
-any content is read.
+File contents are always reread; timestamps and file sizes never stand in for
+source identity. Windows verifies the actual opened handle before reading it.
+Other platforms retain ancestor paths only and check physical containment for
+links before reading any content.
 """
 
 from pathlib import Path
+import os
 import stat
 
 
@@ -16,6 +17,7 @@ class SourceFiles:
     def __init__(self, root):
         self.root = Path(root).absolute().resolve()
         self.parents = {self.root: (self.root,)}
+        self._windows_root = None
 
     @staticmethod
     def linked(info):
@@ -51,6 +53,12 @@ class SourceFiles:
             raise ValueError("expected contained relative path")
         target = self.root / relative
         try:
+            if os.name == "nt":
+                from .windows_source import read_contained, root_path
+
+                if self._windows_root is None:
+                    self._windows_root = root_path(self.root)
+                return read_contained(self._windows_root, target)
             info = target.lstat()
             if self.linked(info) or not self.plain_parent(target.parent):
                 target = target.resolve()

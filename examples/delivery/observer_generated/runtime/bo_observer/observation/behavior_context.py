@@ -1,7 +1,7 @@
 """Pin read-only behavior details and protect their artifact freshness in a session."""
 
-from copy import deepcopy
 import json
+from ..json_values import copy_json
 
 from ..behavior.presentation import project
 from ..graph.source_files import SourceFiles
@@ -93,4 +93,4 @@ class BehaviorContext:
         """Return detached metadata only at a full viewer/recording boundary."""
         if self.details is None:
             return None
-        return {**deepcopy(self.details), "last_verification": self.last_verification()}
+        return {**copy_json(self.details), "last_verification": self.last_verification()}

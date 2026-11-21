@@ -8,7 +8,7 @@ application remain authoritative when the viewer is closed or unavailable.
 from __future__ import annotations
 
 import json
-from copy import deepcopy
+from ..json_values import copy_json
 
 from ..graph.behavior_model import contained, digest
 from ..graph.source_files import SourceFiles
@@ -86,4 +86,4 @@ class ConceptContext:
 
     def view(self):
         """Detach static metadata so callers cannot mutate a build's confirmed graph."""
-        return deepcopy(self.projection)
+        return copy_json(self.projection)

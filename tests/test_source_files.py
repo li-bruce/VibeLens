@@ -136,6 +136,44 @@ class SourceFileTests(unittest.TestCase):
                 else:
                     link.unlink()
 
+    @unittest.skipUnless(os.name == "nt", "Windows handle containment")
+    def test_denied_handle_query_never_reads_unverified_bytes(self):
+        """A handle-resolution failure is not permission to read the path alias."""
+        reader = SourceFiles(self.root)
+        reader.read("app/service.py")  # Resolve this pass's project boundary.
+        with patch(
+            "bo_observer.graph.windows_source._handle_path", side_effect=PermissionError
+        ), patch.object(Path, "read_bytes", side_effect=AssertionError("Unchecked read")):
+            self.assertIsNone(reader.read("app/service.py"))
+
+    @unittest.skipUnless(os.name == "nt", "Windows handle containment")
+    def test_parent_replacement_between_path_check_and_open_is_rejected(self):
+        """Validate the opened object even when a directory changes during open."""
+        reader = SourceFiles(self.root)
+        original_open = Path.open
+        parent = self.root / "app"
+        backup = self.root / "original-app"
+        replaced = False
+        with tempfile.TemporaryDirectory(dir=ROOT / ".validation") as external:
+            (Path(external) / "service.py").write_bytes(b"outside = 1\n")
+
+            def open_after_replacement(path, *args, **kwargs):
+                nonlocal replaced
+                if path == self.file and not replaced:
+                    parent.rename(backup)
+                    self.directory_link(parent, Path(external))
+                    replaced = True
+                return original_open(path, *args, **kwargs)
+
+            try:
+                with patch.object(Path, "open", open_after_replacement):
+                    with self.assertRaisesRegex(ValueError, "escapes project"):
+                        reader.read("app/service.py")
+            finally:
+                if replaced:
+                    parent.rmdir()  # Remove only our temporary junction.
+                    backup.rename(parent)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -67,6 +67,13 @@ framework copies from business coverage and carries integrity errors into the ga
 coordinates remote recording scope and queue flushes; native `bo_capture` clients
 only acknowledge those operations. Business state transitions remain native.
 
+`observation/session.py` separates recording identity lookups from full graph
+contexts. `json_values.py` detaches validated JSON documents and bulk event
+lists at display boundaries. It does not copy arbitrary native Python objects.
+`graph/source_files.py` rereads source bytes; its Windows adapter verifies the
+opened file handle against the project directory in the same NT namespace.
+Directory replacement and same-size edits remain covered by source regressions.
+
 During Stop, `observation/recording_session.py` yields display reads and periodic
 saves to the fixed-prefix drain. Event admission and the final runtime checkpoint
 continue; a failed drain remains visible. The native adapters recover failed event

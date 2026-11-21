@@ -58,6 +58,50 @@ class ObservationDisplayWorkTests(unittest.TestCase):
     def test_live_view_copy_preserves_event_admission(self):
         self.check_copy(self.session.view)
 
+    def test_recording_catalog_needs_identity_not_a_materialized_graph(self):
+        """Listing or reading an interval must not rebuild its static context."""
+        identifier = self.session.recordings.start()["id"]
+        emitted = self.event()
+        self.assertTrue(self.probe.flush(2))
+        self.session.recordings.stop()
+        with patch.object(
+            self.session, "_view_model", side_effect=AssertionError("Full model was copied")
+        ), patch.object(
+            self.session.bo_concept_context,
+            "view",
+            side_effect=AssertionError("Concept graph was copied"),
+        ), patch.object(
+            self.session.graph,
+            "bo_instances",
+            side_effect=AssertionError("Runtime was copied"),
+        ):
+            catalog = self.session.recordings.list()
+            saved = self.session.recordings.get(identifier)
+            self.assertIsNone(catalog["active"])
+            self.assertEqual([event["id"] for event in saved["events"]], [emitted])
+            self.assertEqual(saved["context"]["manifest"]["build_id"], self.probe.bo_build)
+            saved["context"]["model"]["nodes"][0]["label"] = "Caller edit"
+            self.assertNotEqual(
+                self.session.recordings.get(identifier)["context"]["model"]["nodes"][0]["label"],
+                "Caller edit",
+            )
+
+    def test_view_and_recording_keep_independent_event_payloads(self):
+        """Display edits cannot change retained observations or the saved interval."""
+        identifier = self.session.recordings.start()["id"]
+        emitted = self.event()
+        self.assertTrue(self.probe.flush(2))
+        view = self.session.view()
+        event = next(item for item in view["events"] if item["id"] == emitted)
+        original = dict(event)
+        event["outputs"]["caller_edit"] = ["changed"]
+        self.session.recordings.stop()
+        saved = self.session.recordings.get(identifier)
+        retained = next(item for item in saved["events"] if item["id"] == emitted)
+        self.assertNotIn("caller_edit", retained["outputs"])
+        self.assertEqual(retained["node"], original["node"])
+        self.assertNotIn("caller_edit", self.session.history.snapshot()[-1]["outputs"])
+
 
 if __name__ == "__main__":
     unittest.main()

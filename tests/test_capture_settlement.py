@@ -6,7 +6,6 @@ import sys
 import tempfile
 import threading
 import unittest
-from copy import deepcopy
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,6 +13,7 @@ sys.path[:0] = [str(ROOT / "skills/vibelens/scripts"), str(ROOT / "tools")]
 from test_multilanguage import project_fixture
 from bo_observer.adapters.python.bo_probe import BOProbe
 from bo_observer.observation.session import GraphSession
+from bo_observer.json_values import copy_json
 
 
 class CaptureSettlementTests(unittest.TestCase):
@@ -180,9 +180,9 @@ class CaptureSettlementTests(unittest.TestCase):
                 entered.set()
                 if not release.wait(3):
                     raise TimeoutError("test view copy was not released")
-            return deepcopy(value)
+            return copy_json(value)
 
-        with patch("bo_observer.observation.session.deepcopy", side_effect=copy_payload):
+        with patch("bo_observer.observation.session.copy_json", side_effect=copy_payload):
             reader = threading.Thread(target=lambda: views.append(self.session.view()))
             reader.start()
             try:
