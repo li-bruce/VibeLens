@@ -83,3 +83,22 @@ review tools. All eight issues retain their independent native acceptance
 obligations. Continue the existing Node chat and root Python maintenance
 on the same pinned package, then complete source-refactor/UI evidence
 and A24–A34. No new per-defect conversation is required.
+
+## Final Node semantic-iteration review
+
+The unchanged native commands, both new gap-free recordings and seven independent
+desktop groups now pass on the repair-27 provider. Canonical accept/check accepted
+the preparation-start permission change. See
+[Node semantic repair 27](node-semantic-repair27/README.md). Python maintenance,
+Node source-only refactoring and overall P7 acceptance remain pending.
+
+| ID | Finding | Classification and next action |
+|---|---|---|
+| R27-09 | A real initial session response can clear a password typed into the already visible login form. The auxiliary login wait timed out; a controlled response delay reproduced the mechanism. | Application initialization race. Waiting before filling repairs reviewer setup only. Preserve the failed attempt, repair application readiness/input handling and retain a targeted race regression in the existing Node trial. |
+| R27-10 | The fixed-fraction Timeline drag covered an idle gap, so its passing assertion exercised one nearest event rather than a nonempty interval. | Reviewer coverage gap. Added `test_trial_timeline_range_browser.py`; a drag based on actual measured times selected exactly 4,427 events and clearing restored the full sequence. Original result retained; no runtime rerun or new chat. |
+
+The native field audit distinguishes the 568 protected baseline entries from the
+666 current entries: all original definitions remain identical; 98 additions
+belong to the earlier reviewed requirement iteration. No field was deleted to
+obtain acceptance. The strict preference-diff failure remains recorded alongside
+the source-backed explanation of two serialized existing defaults.
