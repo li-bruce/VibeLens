@@ -196,6 +196,8 @@ jobs:
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
           BO_TIMELINE_EVIDENCE: .validation/timeline-browser
+      - run: node tools/test_replay_workspace_browser.mjs
+        if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
       - run: node tools/test_timeline_performance.mjs
         if: ${{ !cancelled() && steps.browser-ready.conclusion == 'success' }}
         env:
@@ -238,6 +240,7 @@ jobs:
           include-hidden-files: true
           path: |
             .validation/timeline-*
+            .validation/replay-workspace
             .validation/semantic-names-*
             .validation/lifecycle-*
             .validation/execution-*

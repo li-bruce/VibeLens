@@ -31,6 +31,14 @@ failing result, restore the implementation and repeat the clean checks. Do not
 replace protected baselines, weaken expected values or count a syntax error as
 evidence of business-rule sensitivity.
 
+For browser checks, retain failed resource URLs, HTTP status, resource type and
+console locations along with screenshots. Distinguish an expected rejection from
+a missing page asset; a generic console message cannot establish the cause. Check
+lazy 3D assets after switching renderers. Replay controls, expanded step filters
+and the Timeline must remain operable without covering the graph; test both
+renderers with an actual recording and use the page's readiness signals rather
+than waiting for an idle network while live polling continues.
+
 For order-sensitive behavior, distinguish a controlled case from an ordinary
 background run. Establish the required interleaving with existing native test
 boundaries and completed transactions. A queued screen or a successful read is

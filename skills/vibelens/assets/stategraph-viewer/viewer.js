@@ -317,6 +317,21 @@ const toolObserver = new ResizeObserver((entries) => {
 });
 toolObserver.observe(document.querySelector(".view-tools"));
 toolObserver.observe($("layer-controls"));
+// A maximized timeline starts below the actual replay dock, including its filters.
+// Header wrapping, language changes and returning to live all resize these rows.
+const replayDockObserver = new ResizeObserver(() => {
+  const lastRow = $("replay").hidden ? document.querySelector(".toolbar") : $("replay");
+  $("recording-timeline").style.setProperty(
+    "--trace-maximized-top",
+    `${lastRow.getBoundingClientRect().bottom + 8}px`,
+  );
+});
+for (const row of [
+  document.querySelector("header"),
+  document.querySelector(".toolbar"),
+  $("replay"),
+])
+  replayDockObserver.observe(row);
 const contextMenu = createContextMenu($("graph-menu"));
 $("language").value = locale();
 $("language").addEventListener("change", async (event) => {
@@ -698,6 +713,7 @@ window.addEventListener("pagehide", (event) => {
   dirty = false;
   if (!event.persisted) {
     toolObserver.disconnect();
+    replayDockObserver.disconnect();
     disposed = true;
     poller.close();
     stopPlayback();

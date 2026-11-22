@@ -6,10 +6,14 @@ import { fileURLToPath } from "node:url";
 
 export async function serveRecording(
   recordingPath,
-  { names = null, port = 0, preferences: initialPreferences = null } = {},
+  { names = null, port = 0, preferences: initialPreferences = null, assetsPath = null } = {},
 ) {
   const root = fileURLToPath(new URL("../", import.meta.url));
-  const assets = path.join(root, "skills/vibelens/assets/stategraph-viewer");
+  // A frozen asset root allows the same interaction regression to prove the
+  // original failure without modifying installed providers or recorded facts.
+  const assets = assetsPath
+    ? path.resolve(assetsPath)
+    : path.join(root, "skills/vibelens/assets/stategraph-viewer");
   const bytes = await readFile(recordingPath);
   const recording = JSON.parse(bytes);
   // Optional AI-authored presentation accompanies the immutable recorded facts.

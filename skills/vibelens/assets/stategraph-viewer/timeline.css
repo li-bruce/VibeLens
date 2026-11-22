@@ -23,13 +23,18 @@
 }
 #recording-timeline.trace-maximized {
   position: fixed;
-  inset: 144px 10px 10px;
+  inset: var(--trace-maximized-top, 144px) 10px 10px;
   height: auto !important;
   max-height: none;
   z-index: 20;
   border: 1px solid #cddae5;
   border-radius: 10px;
   box-shadow: 0 12px 44px #26394b20;
+}
+/* Keep useful graph space when the desktop replay step filter is expanded. */
+body:has(#replay:not([hidden]) #replay-selection:not([hidden]))
+  #recording-timeline:not(.trace-maximized) {
+  max-height: 32dvh;
 }
 .trace-resize::after {
   content: "";
